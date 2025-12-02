@@ -107,12 +107,14 @@ export class CompatStructure extends FieldNodeStructure {
   override root: FieldNode;
   override pathKeys: Signal<readonly string[]>;
   override readonly children = signal([]);
-  override readonly childrenMap = signal(undefined);
+  override readonly childrenMap = computed(() => undefined);
   override readonly parent: ParentFieldNode | undefined;
   override readonly fieldManager: FormFieldManager;
 
   constructor(node: FieldNode, options: CompatFieldNodeOptions) {
-    super(options.logic);
+    super(options.logic, node, () => {
+      throw new Error(`Compat nodes don't have children.`);
+    });
     this.value = getControlValueSignal(options);
     this.parent = getParentFromOptions(options);
     this.root = this.parent?.structure.root ?? node;

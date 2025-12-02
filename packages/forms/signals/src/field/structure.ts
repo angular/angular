@@ -12,10 +12,10 @@ import {
   Injector,
   linkedSignal,
   Signal,
+  untracked,
   WritableSignal,
 } from '@angular/core';
 
-import {DYNAMIC} from '../schema/logic';
 import {LogicNode} from '../schema/logic_node';
 import type {FieldPathNode} from '../schema/path_node';
 import {deepSignal} from '../util/deep_signal';
@@ -31,17 +31,21 @@ import type {FieldNode, ParentFieldNode} from './node';
  * tracking key allocated for the object.
  */
 export type TrackingKey = PropertyKey & {__brand: 'FieldIdentity'};
-
 export type ChildNodeCtor = (
   key: string,
-  trackingId: TrackingKey | undefined,
+  trackingKey: TrackingKey | undefined,
   isArray: boolean,
 ) => FieldNode;
 
 /** Structural component of a `FieldNode` which tracks its path, parent, and children. */
 export abstract class FieldNodeStructure {
-  /** Computed map of child fields, based on the current value of this field. */
-  abstract readonly childrenMap: Signal<Map<TrackingKey, FieldNode> | undefined>;
+  /**
+   * Computed map of child fields, based on the current value of this field.
+   *
+   * This structure reacts to `this.value` and produces a new `ChildrenData` when the
+   * value changes structurally (fields added/removed/moved).
+   */
+  protected abstract readonly childrenMap: Signal<ChildrenData | undefined>;
 
   /** The field's value. */
   abstract readonly value: WritableSignal<unknown>;
@@ -64,6 +68,11 @@ export abstract class FieldNodeStructure {
   /** The parent field of this field. */
   abstract readonly parent: FieldNode | undefined;
 
+  readonly logic: LogicNode;
+  readonly node: FieldNode;
+
+  readonly createChildNode: ChildNodeCtor;
+
   /** Added to array elements for tracking purposes. */
   // TODO: given that we don't ever let a field move between parents, is it safe to just extract
   // this to a shared symbol for all fields, rather than having a separate one per parent?
@@ -81,39 +90,196 @@ export abstract class FieldNodeStructure {
     return this._injector;
   }
 
-  constructor(
-    /** The logic to apply to this field. */
-    readonly logic: LogicNode,
-  ) {}
+  constructor(logic: LogicNode, node: FieldNode, createChildNode: ChildNodeCtor) {
+    this.logic = logic;
+    this.node = node;
+    this.createChildNode = createChildNode;
+  }
 
   /** Gets the child fields of this field. */
   children(): Iterable<FieldNode> {
-    return this.childrenMap()?.values() ?? [];
+    const map = this.childrenMap();
+    if (map === undefined) {
+      return [];
+    }
+    return Array.from(map.byPropertyKey.values()).map((child) => untracked(child.reader)!);
   }
 
   /** Retrieve a child `FieldNode` of this node by property key. */
   getChild(key: PropertyKey): FieldNode | undefined {
+    const strKey = key.toString();
+
+    // Lookup the computed reader for this key in `childrenMap`. This lookup doesn't need to be
+    // reactive since `childrenMap` guarantees it will always return the same `reader` for the same
+    // `key`, so long as that key exists.
+    let reader = untracked(this.childrenMap)?.byPropertyKey.get(strKey)?.reader;
+
+    if (!reader) {
+      // The key doesn't exist / doesn't have a child field associated with it. In this case, we
+      // need to be clever. We want to return `undefined`, but also be notified by reactivity if the
+      // field _does_ pop into existence later. Basically, we want to depend on a reader for a key
+      // that doesn't exist.
+      //
+      // We do precisely that by creating an ephemeral reader which will be read and then dropped.
+      // If we're in a reactive context, the ephemeral reader will live on in the dependencies of
+      // that context and notify it if the field is later created. When the reactive context reruns,
+      // it will again attempt the read which will call `getChild()`, which will then find the real
+      // reader for that key.
+      reader = this.createReader(strKey);
+    }
+
+    return reader();
+  }
+
+  /**
+   * Perform a reduction over a field's children (if any) and return the result.
+   *
+   * Optionally, the reduction is short circuited based on the provided `shortCircuit` function.
+   */
+  reduceChildren<T>(
+    initialValue: T,
+    fn: (child: FieldNode, value: T) => T,
+    shortCircuit?: (value: T) => boolean,
+  ): T {
     const map = this.childrenMap();
-    const value = this.value();
-    if (!map || !isObject(value)) {
-      return undefined;
+    if (!map) {
+      return initialValue;
     }
 
-    if (isArray(value)) {
-      const childValue = value[key];
-      if (isObject(childValue) && childValue.hasOwnProperty(this.identitySymbol)) {
-        // For arrays, we want to use the tracking identity of the value instead of the raw property
-        // as our index into the `childrenMap`.
-        key = childValue[this.identitySymbol] as PropertyKey;
+    let value = initialValue;
+    for (const child of map.byPropertyKey.values()) {
+      if (shortCircuit?.(value)) {
+        break;
       }
+      value = fn(untracked(child.reader)!, value);
     }
-
-    return map.get((typeof key === 'number' ? key.toString() : key) as TrackingKey);
+    return value;
   }
 
   /** Destroys the field when it is no longer needed. */
   destroy(): void {
     this.injector.destroy();
+  }
+
+  protected createChildrenMap(): Signal<ChildrenData | undefined> {
+    return linkedSignal({
+      source: this.value,
+      computation: (
+        value: unknown,
+        previous: {source: unknown; value: ChildrenData | undefined} | undefined,
+      ): ChildrenData | undefined => {
+        if (!isObject(value)) {
+          // Non-object values have no children. This short-circuit path makes `childrenMap` fast
+          // for primitive-valued fields.
+          return undefined;
+        }
+
+        // Previous `ChildrenData` (immutable). This is also where we first initialize our map if
+        // needed.
+        const prevData: ChildrenData = previous?.value ?? {
+          byPropertyKey: new Map(),
+        };
+
+        // The next `ChildrenData` object to be returned. Initialized lazily when we know there's
+        // been a structural change to the model.
+        let data: MutableChildrenData | undefined;
+
+        const parentIsArray = isArray(value);
+
+        // Remove fields that have disappeared since the last time this map was computed.
+        if (prevData !== undefined) {
+          if (parentIsArray) {
+            data = maybeRemoveStaleArrayFields(prevData, value, this.identitySymbol);
+          } else {
+            data = maybeRemoveStaleObjectFields(prevData, value);
+          }
+        }
+
+        // Now, go through the values and add any new ones.
+        for (const key of Object.keys(value)) {
+          let trackingKey: TrackingKey | undefined = undefined;
+          const childValue = value[key] as unknown;
+
+          // Fields explicitly set to `undefined` are treated as if they don't exist.
+          // This ensures that `{value: undefined}` and `{}` have the same behavior for their `value`
+          // field.
+          if (childValue === undefined) {
+            // The value might have _become_ `undefined`, so we need to delete it here.
+            if (prevData.byPropertyKey.has(key)) {
+              data ??= {...(prevData as MutableChildrenData)};
+              data.byPropertyKey.delete(key);
+            }
+            continue;
+          }
+
+          if (parentIsArray && isObject(childValue) && !isArray(childValue)) {
+            // For object values in arrays, assign a synthetic identity. This will be used to
+            // preserve the field instance even as this object moves around in the parent array.
+            trackingKey = (childValue[this.identitySymbol] as TrackingKey) ??= Symbol(
+              ngDevMode ? `id:${globalId++}` : '',
+            ) as TrackingKey;
+          }
+
+          let childNode: FieldNode | undefined;
+
+          if (trackingKey) {
+            // If tracking is in use, then the `FieldNode` instance is always managed via its
+            // tracking key. Create the instance if needed, or look it up otherwise.
+            if (!prevData.byTrackingKey?.has(trackingKey)) {
+              data ??= {...(prevData as MutableChildrenData)};
+              data.byTrackingKey ??= new Map();
+
+              data.byTrackingKey.set(
+                trackingKey,
+                this.createChildNode(key, trackingKey, parentIsArray),
+              );
+            }
+
+            // Note: data ?? prevData is needed because we might have freshly instantiated
+            // `byTrackingKey` only in `data` above.
+            childNode = (data ?? prevData).byTrackingKey!.get(trackingKey)!;
+          }
+
+          // Next, make sure the `ChildData` for this key in `byPropertyKey` is up to date. We need
+          // to consider two cases:
+          //
+          // 1. No record exists for this field (yet).
+          // 2. A record does exist, but the field identity at this key has changed (only possible
+          //    when fields are tracked).
+          const child = prevData.byPropertyKey.get(key);
+          if (child === undefined) {
+            // No record exists yet - create one.
+            data ??= {...(prevData as MutableChildrenData)};
+
+            data.byPropertyKey.set(key, {
+              // TODO: creating a computed per-key is overkill when the field at a key can't change
+              // (e.g. the value is not an array). Maybe this can be optimized?
+              reader: this.createReader(key),
+              // If tracking is in use, then it already created/found the `childNode` for this key.
+              // Otherwise we create the child field here.
+              node: childNode ?? this.createChildNode(key, trackingKey, parentIsArray),
+            });
+          } else if (childNode && childNode !== child.node) {
+            // A record exists, but records the wrong `FieldNode`. Update it.
+            data ??= {...(prevData as MutableChildrenData)};
+            child.node = childNode;
+          }
+        }
+
+        return data ?? prevData;
+      },
+    });
+  }
+
+  /**
+   * Creates a "reader" computed for the given key.
+   *
+   * A reader is a computed signal that memoizes the access of the `FieldNode` stored at this key
+   * (or returns `undefined` if no such field exists). Accessing fields via the reader ensures that
+   * reactive consumers aren't notified unless the field at a key actually changes.
+   */
+  private createReader(key: string): Signal<FieldNode | undefined> {
+    return computed(() => this.childrenMap()?.byPropertyKey.get(key)?.node);
   }
 }
 
@@ -135,7 +301,7 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
     return ROOT_KEY_IN_PARENT;
   }
 
-  override readonly childrenMap: Signal<Map<TrackingKey, FieldNode> | undefined>;
+  protected override readonly childrenMap: Signal<ChildrenData | undefined>;
 
   /**
    * Creates the structure for the root node of a field tree.
@@ -150,14 +316,14 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
    */
   constructor(
     /** The full field node that corresponds to this structure. */
-    private readonly node: FieldNode,
+    node: FieldNode,
     logic: LogicNode,
     override readonly fieldManager: FormFieldManager,
     override readonly value: WritableSignal<unknown>,
     createChildNode: ChildNodeCtor,
   ) {
-    super(logic);
-    this.childrenMap = makeChildrenMapSignal(value, this.identitySymbol, createChildNode);
+    super(logic, node, createChildNode);
+    this.childrenMap = this.createChildrenMap();
   }
 }
 
@@ -167,8 +333,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
   override readonly pathKeys: Signal<readonly string[]>;
   override readonly keyInParent: Signal<string>;
   override readonly value: WritableSignal<unknown>;
-
-  override readonly childrenMap: Signal<Map<TrackingKey, FieldNode> | undefined>;
+  override readonly childrenMap: Signal<ChildrenData | undefined>;
 
   override get fieldManager(): FormFieldManager {
     return this.root.structure.fieldManager;
@@ -194,7 +359,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
     initialKeyInParent: string,
     createChildNode: ChildNodeCtor,
   ) {
-    super(logic);
+    super(logic, node, createChildNode);
 
     this.root = this.parent.structure.root;
 
@@ -203,7 +368,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
     if (identityInParent === undefined) {
       const key = initialKeyInParent;
       this.keyInParent = computed(() => {
-        if (parent.structure.childrenMap()?.get(key as TrackingKey) !== node) {
+        if (parent.structure.getChild(key) !== node) {
           throw new Error(
             `RuntimeError: orphan field, looking for property '${key}' of ${getDebugName(parent)}`,
           );
@@ -258,8 +423,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
     }
 
     this.value = deepSignal(this.parent.structure.value, this.keyInParent);
-    this.childrenMap = makeChildrenMapSignal(this.value, this.identitySymbol, createChildNode);
-
+    this.childrenMap = this.createChildrenMap();
     this.fieldManager.structures.add(this);
   }
 }
@@ -315,103 +479,105 @@ const ROOT_KEY_IN_PARENT = computed(() => {
   throw new Error(`RuntimeError: the top-level field in the form has no parent`);
 });
 
-/**
- * Creates a linked signal map of all child fields for a field.
- *
- * @param node The field to create the children map signal for.
- * @param valueSignal The value signal for the field.
- * @param identitySymbol The key used to access the tracking id of a field.
- * @param pathNode The path node corresponding to the field in the schema.
- * @param logic The logic to apply to the field.
- * @param adapter Adapter that knows how to create new fields and appropriate state.
- * @param createChildNode A factory function to create child nodes for this field.
- * @returns
- */
-function makeChildrenMapSignal(
-  valueSignal: WritableSignal<unknown>,
-  identitySymbol: symbol,
-  createChildNode: ChildNodeCtor,
-): Signal<Map<TrackingKey, FieldNode> | undefined> {
-  // We use a `linkedSignal` to preserve the instances of `FieldNode` for each child field even if
-  // the value of this field changes its object identity. The computation creates or updates the map
-  // of child `FieldNode`s for `node` based on its current value.
-  return linkedSignal<unknown, Map<TrackingKey, FieldNode> | undefined>({
-    source: valueSignal,
-    computation: (value, previous): Map<TrackingKey, FieldNode> | undefined => {
-      // We may or may not have a previous map. If there isn't one, then `childrenMap` will be lazily
-      // initialized to a new map instance if needed.
-      let childrenMap = previous?.value;
-
-      if (!isObject(value)) {
-        // Non-object values have no children.
-        return undefined;
-      }
-      const isValueArray = isArray(value);
-
-      // Remove fields that have disappeared since the last time this map was computed.
-      if (childrenMap !== undefined) {
-        let oldKeys: Set<TrackingKey> | undefined = undefined;
-        if (isValueArray) {
-          oldKeys = new Set(childrenMap.keys());
-          for (let i = 0; i < value.length; i++) {
-            const childValue = value[i] as unknown;
-            if (isObject(childValue) && childValue.hasOwnProperty(identitySymbol)) {
-              oldKeys.delete(childValue[identitySymbol] as TrackingKey);
-            } else {
-              oldKeys.delete(i.toString() as TrackingKey);
-            }
-          }
-
-          for (const key of oldKeys) {
-            childrenMap.delete(key);
-          }
-        } else {
-          for (let key of childrenMap.keys()) {
-            if (!value.hasOwnProperty(key)) {
-              childrenMap.delete(key);
-            }
-          }
-        }
-      }
-
-      // Add fields that exist in the value but don't yet have instances in the map.
-      for (let key of Object.keys(value)) {
-        let trackingId: TrackingKey | undefined = undefined;
-        const childValue = value[key] as unknown;
-
-        // Fields explicitly set to `undefined` are treated as if they don't exist.
-        // This ensures that `{value: undefined}` and `{}` have the same behavior for their `value`
-        // field.
-        if (childValue === undefined) {
-          // The value might have _become_ `undefined`, so we need to delete it here.
-          childrenMap?.delete(key as TrackingKey);
-          continue;
-        }
-
-        if (isValueArray && isObject(childValue) && !isArray(childValue)) {
-          // For object values in arrays, assign a synthetic identity instead.
-          trackingId = (childValue[identitySymbol] as TrackingKey) ??= Symbol(
-            ngDevMode ? `id:${globalId++}` : '',
-          ) as TrackingKey;
-        }
-
-        const identity = trackingId ?? (key as TrackingKey);
-
-        if (childrenMap?.has(identity)) {
-          continue;
-        }
-
-        childrenMap ??= new Map<TrackingKey, FieldNode>();
-        childrenMap.set(identity, createChildNode(key, trackingId, isValueArray));
-      }
-
-      return childrenMap;
-    },
-    equal: () => false,
-  });
-}
-
 /** Gets a human readable name for a field node for use in error messages. */
 function getDebugName(node: FieldNode) {
   return `<root>.${node.structure.pathKeys().join('.')}`;
+}
+
+interface MutableChildrenData {
+  readonly byPropertyKey: Map<string, ChildData>;
+  byTrackingKey?: Map<TrackingKey, FieldNode>;
+}
+
+/**
+ * Derived data regarding child fields for a specific parent field.
+ */
+interface ChildrenData {
+  /**
+   * Tracks `ChildData` for each property key within the parent.
+   */
+  readonly byPropertyKey: ReadonlyMap<string, ChildData>;
+
+  /**
+   * Tracks the instance of child `FieldNode`s by their tracking key, which is always 1:1 with the
+   * fields, even if they move around in the parent.
+   */
+  readonly byTrackingKey?: ReadonlyMap<TrackingKey, FieldNode>;
+}
+
+/**
+ * Data for a specific child within a parent.
+ */
+interface ChildData {
+  /**
+   * A computed signal to access the `FieldNode` currently stored at a specific key.
+   *
+   * Because this is a computed, it only updates whenever the `FieldNode` at that key changes.
+   * Because `ChildData` is always associated with a specific key via `ChildrenData.byPropertyKey`,
+   * this computed gives a stable way to watch the field stored for a given property and only
+   * receives notifications when that field changes.
+   */
+  readonly reader: Signal<FieldNode | undefined>;
+
+  /**
+   * The child `FieldNode` currently stored at this key.
+   */
+  node: FieldNode;
+}
+
+function maybeRemoveStaleArrayFields(
+  prevData: ChildrenData,
+  value: ReadonlyArray<unknown>,
+  identitySymbol: PropertyKey,
+): MutableChildrenData | undefined {
+  let data: MutableChildrenData | undefined;
+
+  // TODO: we should be able to optimize this diff away in the fast case where nothing has
+  // actually changed structurally.
+  const oldKeys = new Set(prevData.byPropertyKey.keys());
+  const oldTracking = new Set(prevData.byTrackingKey?.keys());
+
+  for (let i = 0; i < value.length; i++) {
+    const childValue = value[i];
+    oldKeys.delete(i.toString());
+    if (isObject(childValue) && childValue.hasOwnProperty(identitySymbol)) {
+      oldTracking.delete(childValue[identitySymbol] as TrackingKey);
+    }
+  }
+
+  // `oldKeys` and `oldTracking` now contain stale keys and tracking keys, respectively.
+  // Remove them from their corresponding maps.
+
+  if (oldKeys.size > 0) {
+    data ??= {...(prevData as MutableChildrenData)};
+    for (const key of oldKeys) {
+      data.byPropertyKey.delete(key);
+    }
+  }
+  if (oldTracking.size > 0) {
+    data ??= {...(prevData as MutableChildrenData)};
+    for (const id of oldTracking) {
+      data.byTrackingKey?.delete(id);
+    }
+  }
+
+  return data;
+}
+
+function maybeRemoveStaleObjectFields(
+  prevData: ChildrenData,
+  value: Record<PropertyKey, unknown>,
+): MutableChildrenData | undefined {
+  let data: MutableChildrenData | undefined;
+
+  // For objects, we diff a bit differently, and use the value to check whether an old
+  // property still exists on the object value.
+  for (const key of prevData.byPropertyKey.keys()) {
+    if (!value.hasOwnProperty(key)) {
+      data ??= {...(prevData as MutableChildrenData)};
+      data.byPropertyKey.delete(key);
+    }
+  }
+
+  return data;
 }

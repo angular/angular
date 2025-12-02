@@ -11,7 +11,7 @@ import type {Field} from '../api/field_directive';
 import type {Debouncer, DisabledReason} from '../api/types';
 import {DEBOUNCER} from './debounce';
 import type {FieldNode} from './node';
-import {reduceChildren, shortCircuitTrue} from './util';
+import {shortCircuitTrue} from './util';
 
 /**
  * The non-validation and non-submit state associated with a `FieldNode`, such as touched and dirty
@@ -76,8 +76,7 @@ export class FieldNodeState {
    */
   readonly dirty: Signal<boolean> = computed(() => {
     const selfDirtyValue = this.selfDirty() && !this.isNonInteractive();
-    return reduceChildren(
-      this.node,
+    return this.node.structure.reduceChildren(
       selfDirtyValue,
       (child, value) => value || child.nodeState.dirty(),
       shortCircuitTrue,
@@ -93,8 +92,7 @@ export class FieldNodeState {
    */
   readonly touched: Signal<boolean> = computed(() => {
     const selfTouchedValue = this.selfTouched() && !this.isNonInteractive();
-    return reduceChildren(
-      this.node,
+    return this.node.structure.reduceChildren(
       selfTouchedValue,
       (child, value) => value || child.nodeState.touched(),
       shortCircuitTrue,

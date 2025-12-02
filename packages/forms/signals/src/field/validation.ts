@@ -11,7 +11,7 @@ import type {FieldTree, TreeValidationResult, ValidationResult} from '../api/typ
 import type {ValidationError} from '../api/validation_errors';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
-import {reduceChildren, shortCircuitFalse} from './util';
+import {shortCircuitFalse} from './util';
 
 /**
  * Helper function taking validation state, and returning own state of the node.
@@ -191,8 +191,7 @@ export class FieldValidationState implements ValidationState {
       return true;
     }
 
-    return reduceChildren(
-      this.node,
+    return this.node.structure.reduceChildren(
       this.syncErrors().length === 0,
       (child, value) => value && child.validationState.syncValid(),
       shortCircuitFalse,
@@ -249,7 +248,7 @@ export class FieldValidationState implements ValidationState {
   ]);
 
   readonly errorSummary = computed(() =>
-    reduceChildren(this.node, this.errors(), (child, result) => [
+    this.node.structure.reduceChildren(this.errors(), (child, result) => [
       ...result,
       ...child.errorSummary(),
     ]),
@@ -259,8 +258,7 @@ export class FieldValidationState implements ValidationState {
    * Whether this field has any asynchronous validators still pending.
    */
   readonly pending = computed(() =>
-    reduceChildren(
-      this.node,
+    this.node.structure.reduceChildren(
       this.asyncErrors().includes('pending'),
       (child, value) => value || child.validationState.asyncErrors().includes('pending'),
     ),
@@ -290,8 +288,7 @@ export class FieldValidationState implements ValidationState {
     }
     let ownStatus = calculateValidationSelfStatus(this);
 
-    return reduceChildren<'valid' | 'invalid' | 'unknown'>(
-      this.node,
+    return this.node.structure.reduceChildren<'valid' | 'invalid' | 'unknown'>(
       ownStatus,
       (child, value) => {
         if (value === 'invalid' || child.validationState.status() === 'invalid') {
