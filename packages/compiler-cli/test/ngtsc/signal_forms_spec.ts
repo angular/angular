@@ -379,6 +379,33 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should check that the radio button value is a string', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({
+            template: \`
+              <form>
+                <input type="radio" [value]="num" [field]="f">
+              </form>
+            \`,
+            imports: [Field]
+          })
+          export class Comp {
+            f = form(signal('a'), {name: 'test'});
+            num = 1;
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
+    });
+
     it('should report unsupported static attributes of a field', () => {
       env.write(
         'test.ts',
