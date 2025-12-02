@@ -30,6 +30,7 @@ import {TreeD3Node, TreeVisualizerConfig} from '../../shared/tree-visualizer/tre
 import {TreeVisualizerComponent} from '../../shared/tree-visualizer/tree-visualizer.component';
 import {InjectorProvidersComponent} from './injector-providers/injector-providers.component';
 import {
+  areInjectorTreeNodesEqual,
   areInjectorTreesEqual,
   d3InjectorTreeLinkModifier,
   d3InjectorTreeNodeModifier,
@@ -92,6 +93,8 @@ export class InjectorTreeComponent {
   protected readonly providers = input.required<SerializedProviderRecord[]>();
   protected readonly componentExplorerView = input.required<ComponentExplorerView | null>();
   protected readonly hidden = input(false);
+
+  protected readonly treeNodesEqualityFn = areInjectorTreeNodesEqual;
 
   protected readonly diDebugAPIsAvailable = computed<boolean>(() => {
     const view = this.componentExplorerView();
