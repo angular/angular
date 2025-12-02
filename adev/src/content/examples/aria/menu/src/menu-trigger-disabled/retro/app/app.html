@@ -11,12 +11,14 @@
   <div ngMenu class="menu" #formatMenu="ngMenu">
     <ng-template ngMenuContent>
       <div ngMenuItem value="Mark as read" [disabled]="true">
-        <span class="icon material-symbols-outlined" translate="no">mark_email_read</span>
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >mark_email_read</span
+        >
         <span class="label">Mark as read</span>
       </div>
 
       <div ngMenuItem value="Snooze">
-        <span class="icon material-symbols-outlined" translate="no">snooze</span>
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">snooze</span>
         <span class="label">Snooze</span>
       </div>
 
@@ -29,9 +31,13 @@
         #categorizeItem
         [submenu]="categorizeMenu()"
       >
-        <span class="icon material-symbols-outlined" translate="no">category</span>
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >category</span
+        >
         <span class="label">Categorize</span>
-        <span class="icon material-symbols-outlined arrow" translate="no">arrow_right</span>
+        <span class="icon material-symbols-outlined arrow" translate="no" aria-hidden="true"
+          >arrow_right</span
+        >
       </div>
 
       <ng-template
@@ -43,17 +49,23 @@
         <div ngMenu class="menu" #categorizeMenu="ngMenu">
           <ng-template ngMenuContent>
             <div ngMenuItem value="Mark as important">
-              <span class="icon material-symbols-outlined" translate="no">label_important</span>
+              <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                >label_important</span
+              >
               <span class="label">Mark as important</span>
             </div>
 
             <div ngMenuItem value="Star">
-              <span class="icon material-symbols-outlined" translate="no">star</span>
+              <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                >star</span
+              >
               <span class="label">Star</span>
             </div>
 
             <div ngMenuItem value="Label">
-              <span class="icon material-symbols-outlined" translate="no">label</span>
+              <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                >label</span
+              >
               <span class="label">Label</span>
             </div>
           </ng-template>
@@ -63,17 +75,19 @@
       <div role="separator" aria-orientation="horizontal" class="separator"></div>
 
       <div ngMenuItem value="Archive">
-        <span class="icon material-symbols-outlined" translate="no">archive</span>
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >archive</span
+        >
         <span class="label">Archive</span>
       </div>
 
       <div ngMenuItem value="Report spam">
-        <span class="icon material-symbols-outlined" translate="no">report</span>
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">report</span>
         <span class="label">Report spam</span>
       </div>
 
       <div ngMenuItem value="Delete">
-        <span class="icon material-symbols-outlined" translate="no">delete</span>
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">delete</span>
         <span class="label">Delete</span>
       </div>
     </ng-template>
