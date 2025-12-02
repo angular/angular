@@ -37,6 +37,8 @@ import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {FirebaseStudioLauncher} from '../firebase-studio-launcher.service';
 import {MatTooltip} from '@angular/material/tooltip';
 import {injectEmbeddedTutorialManager} from '../inject-embedded-tutorial-manager';
+import {NodeRuntimeState} from '../node-runtime-state.service';
+import {LoadingStep} from '../enums/loading-steps';
 
 export const REQUIRED_FILES = new Set([
   'src/main.ts',
@@ -65,6 +67,7 @@ export class CodeEditor {
 
   private readonly destroyRef = inject(DestroyRef);
 
+  private readonly nodeRuntimeState = inject(NodeRuntimeState);
   private readonly codeMirrorEditor = inject(CodeMirrorEditor);
   private readonly diagnosticsState = inject(DiagnosticsState);
   private readonly downloadManager = inject(DownloadManager);
@@ -232,6 +235,9 @@ export class CodeEditor {
 
   private listenToDiagnosticsChange(): void {
     this.errors$.subscribe((diagnostics) => {
+      if (this.nodeRuntimeState.loadingStep() !== LoadingStep.READY) {
+        return;
+      }
       this.errors.set(diagnostics);
       this.displayErrorsBox.set(diagnostics.length > 0);
     });
