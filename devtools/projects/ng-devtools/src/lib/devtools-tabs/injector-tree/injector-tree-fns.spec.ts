@@ -9,6 +9,8 @@
 import {DevToolsNode, SerializedInjector} from '../../../../../protocol';
 
 import {
+  areInjectorTreeNodesEqual,
+  areInjectorTreesEqual,
   equalInjector,
   generateEdgeIdsFromNodeIds,
   getInjectorIdsToRootFromNode,
@@ -11516,5 +11518,136 @@ describe('grabInjectorPathsFromDirectiveForest', () => {
     ];
 
     expect(grabInjectorPathsFromDirectiveForest(directiveForest)).toEqual(expectedInjectorPaths);
+  });
+});
+
+describe('areInjectorTreeNodesEqual', () => {
+  const tree: InjectorTreeNode = {
+    label: 'Foo',
+    children: [],
+    injector: {
+      id: 'foo',
+      name: 'Foo',
+      type: 'environment',
+    },
+  };
+
+  it('should return true if the nodes are equal', () => {
+    const a = tree;
+    const b = structuredClone(tree); // Ensure that the ref is different
+
+    expect(areInjectorTreeNodesEqual(a, b)).toEqual(true);
+  });
+
+  it('should return true if the nodes are equal, irrespective of the children', () => {
+    const a = tree;
+    const b = structuredClone(tree); // Ensure that the ref is different
+
+    b.children.push({
+      label: 'Bar',
+      children: [],
+      injector: {
+        id: 'bar',
+        name: 'Bar',
+        type: 'element',
+      },
+    });
+
+    expect(areInjectorTreeNodesEqual(a, b)).toEqual(true);
+  });
+
+  it('should return false if the nodes are different', () => {
+    const a = tree;
+    const b = structuredClone(tree); // Ensure that the ref is different
+
+    b.injector.id = 'baz';
+
+    expect(areInjectorTreeNodesEqual(a, b)).toEqual(false);
+  });
+});
+
+describe('areInjectorTreesEqual', () => {
+  const tree: InjectorTreeNode = {
+    label: 'Foo',
+    injector: {
+      id: 'foo',
+      name: 'Foo',
+      type: 'null',
+    },
+    children: [
+      {
+        label: 'Bar',
+        injector: {
+          id: 'bar',
+          name: 'Bar',
+          type: 'environment',
+        },
+        children: [],
+      },
+      {
+        label: 'Baz',
+        injector: {
+          id: 'baz',
+          name: 'Baz',
+          type: 'environment',
+        },
+        children: [
+          {
+            label: 'Qux',
+            injector: {
+              id: 'qux',
+              name: 'Qux',
+              type: 'element',
+            },
+            children: [],
+          },
+        ],
+      },
+    ],
+  };
+
+  it('should return true when both null', () => {
+    expect(areInjectorTreesEqual(null, null)).toEqual(true);
+  });
+
+  it('should return false if one of the trees is null', () => {
+    expect(areInjectorTreesEqual(tree, null)).toEqual(false);
+    expect(areInjectorTreesEqual(null, tree)).toEqual(false);
+  });
+
+  it('should return true if the trees are equal', () => {
+    const a = tree;
+    const b = structuredClone(tree); // Ensure that the ref is different
+
+    expect(areInjectorTreesEqual(a, b)).toEqual(true);
+  });
+
+  it('should return false if the trees are different', () => {
+    const a = tree;
+
+    // Ensure that the refs are different
+    const b = structuredClone(tree);
+    const c = structuredClone(tree);
+    const d = structuredClone(tree);
+
+    // Update an existing node
+    b.children[0].label = 'Quux';
+    expect(areInjectorTreesEqual(a, b)).toEqual(false);
+
+    // Delete a node
+    c.children[1].children = [];
+    expect(areInjectorTreesEqual(a, c)).toEqual(false);
+
+    // Add a node
+    d.children[0].children.push({
+      label: 'Quux',
+      injector: {
+        id: 'quux',
+        name: 'Quux',
+        type: 'hidden',
+      },
+      children: [],
+    });
+    expect(areInjectorTreesEqual(a, d)).toEqual(false);
   });
 });

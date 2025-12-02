@@ -30,6 +30,7 @@ import {TreeD3Node, TreeVisualizerConfig} from '../../shared/tree-visualizer/tre
 import {TreeVisualizerComponent} from '../../shared/tree-visualizer/tree-visualizer.component';
 import {InjectorProvidersComponent} from './injector-providers/injector-providers.component';
 import {
+  areInjectorTreesEqual,
   d3InjectorTreeLinkModifier,
   d3InjectorTreeNodeModifier,
   filterOutAngularInjectors,
@@ -103,8 +104,12 @@ export class InjectorTreeComponent {
   private hideInjectorsWithNoProviders = false;
   private hideFrameworkInjectors = false;
 
-  protected readonly elementInjectorTree = signal<InjectorTreeNode | null>(null);
-  protected readonly environmentInjectorTree = signal<InjectorTreeNode | null>(null);
+  protected readonly elementInjectorTree = signal<InjectorTreeNode | null>(null, {
+    equal: areInjectorTreesEqual,
+  });
+  protected readonly environmentInjectorTree = signal<InjectorTreeNode | null>(null, {
+    equal: areInjectorTreesEqual,
+  });
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
