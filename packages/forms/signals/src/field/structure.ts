@@ -32,6 +32,12 @@ import type {FieldNode, ParentFieldNode} from './node';
  */
 export type TrackingKey = PropertyKey & {__brand: 'FieldIdentity'};
 
+export type ChildNodeCtor = (
+  key: string,
+  trackingId: TrackingKey | undefined,
+  isArray: boolean,
+) => FieldNode;
+
 /** Structural component of a `FieldNode` which tracks its path, parent, and children. */
 export abstract class FieldNodeStructure {
   /** Computed map of child fields, based on the current value of this field. */
@@ -145,23 +151,13 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
   constructor(
     /** The full field node that corresponds to this structure. */
     private readonly node: FieldNode,
-    pathNode: FieldPathNode,
     logic: LogicNode,
     override readonly fieldManager: FormFieldManager,
     override readonly value: WritableSignal<unknown>,
-    adapter: FieldAdapter,
-    createChildNode: (options: ChildFieldNodeOptions) => FieldNode,
+    createChildNode: ChildNodeCtor,
   ) {
     super(logic);
-    this.childrenMap = makeChildrenMapSignal(
-      node as ParentFieldNode,
-      value,
-      this.identitySymbol,
-      pathNode,
-      logic,
-      adapter,
-      createChildNode,
-    );
+    this.childrenMap = makeChildrenMapSignal(value, this.identitySymbol, createChildNode);
   }
 }
 
@@ -192,13 +188,11 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
    */
   constructor(
     node: FieldNode,
-    pathNode: FieldPathNode,
-    logic: LogicNode,
+    override readonly logic: LogicNode,
     override readonly parent: ParentFieldNode,
     identityInParent: TrackingKey | undefined,
     initialKeyInParent: string,
-    adapter: FieldAdapter,
-    createChildNode: (options: ChildFieldNodeOptions) => FieldNode,
+    createChildNode: ChildNodeCtor,
   ) {
     super(logic);
 
@@ -264,15 +258,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
     }
 
     this.value = deepSignal(this.parent.structure.value, this.keyInParent);
-    this.childrenMap = makeChildrenMapSignal(
-      node as ParentFieldNode,
-      this.value,
-      this.identitySymbol,
-      pathNode,
-      logic,
-      adapter,
-      createChildNode,
-    );
+    this.childrenMap = makeChildrenMapSignal(this.value, this.identitySymbol, createChildNode);
 
     this.fieldManager.structures.add(this);
   }
@@ -342,13 +328,9 @@ const ROOT_KEY_IN_PARENT = computed(() => {
  * @returns
  */
 function makeChildrenMapSignal(
-  node: FieldNode,
   valueSignal: WritableSignal<unknown>,
   identitySymbol: symbol,
-  pathNode: FieldPathNode,
-  logic: LogicNode,
-  adapter: FieldAdapter,
-  createChildNode: (options: ChildFieldNodeOptions) => FieldNode,
+  createChildNode: ChildNodeCtor,
 ): Signal<Map<TrackingKey, FieldNode> | undefined> {
   // We use a `linkedSignal` to preserve the instances of `FieldNode` for each child field even if
   // the value of this field changes its object identity. The computation creates or updates the map
@@ -419,33 +401,8 @@ function makeChildrenMapSignal(
           continue;
         }
 
-        // Determine the logic for the field that we're defining.
-        let childPath: FieldPathNode | undefined;
-        let childLogic: LogicNode;
-        if (isValueArray) {
-          // Fields for array elements have their logic defined by the `element` mechanism.
-          // TODO: other dynamic data
-          childPath = pathNode.getChild(DYNAMIC);
-          childLogic = logic.getChild(DYNAMIC);
-        } else {
-          // Fields for plain properties exist in our logic node's child map.
-          childPath = pathNode.getChild(key);
-          childLogic = logic.getChild(key);
-        }
-
         childrenMap ??= new Map<TrackingKey, FieldNode>();
-        childrenMap.set(
-          identity,
-          createChildNode({
-            kind: 'child',
-            parent: node as ParentFieldNode,
-            pathNode: childPath,
-            logic: childLogic,
-            initialKeyInParent: key,
-            identityInParent: trackingId,
-            fieldAdapter: adapter,
-          }),
-        );
+        childrenMap.set(identity, createChildNode(key, trackingId, isValueArray));
       }
 
       return childrenMap;
