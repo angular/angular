@@ -163,7 +163,12 @@ export class InjectorTreeComponent {
 
   onTreeRender(tree: InjectorTreeVisualizer, {initial}: {initial: boolean}) {
     if (initial) {
-      this.snapToRoot(tree);
+      // Slightly defer the node snapping since the production app
+      // needs a bit more time for registering the tree container size.
+      // INFO: Container size is not bound/related to tree rendering.
+      setTimeout(() => {
+        this.snapToRoot(tree);
+      }, 100);
     }
   }
 
