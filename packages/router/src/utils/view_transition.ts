@@ -99,6 +99,11 @@ export function createViewTransition(
       console.error(error);
     }
   });
+  transition.finished.catch((error) => {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      console.error(error);
+    }
+  });
   const {onViewTransitionCreated} = transitionOptions;
   if (onViewTransitionCreated) {
     runInInjectionContext(injector, () => onViewTransitionCreated({transition, from, to}));
