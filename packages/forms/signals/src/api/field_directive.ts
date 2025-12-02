@@ -10,6 +10,7 @@ import {
   computed,
   Directive,
   effect,
+  ElementRef,
   inject,
   InjectionToken,
   Injector,
@@ -62,9 +63,11 @@ export const FIELD = new InjectionToken<Field<unknown>>(
 })
 export class Field<T> implements ɵControl<T> {
   private readonly injector = inject(Injector);
+  private readonly host = inject(ElementRef<HTMLElement>);
   private config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
   readonly classes = Object.entries(this.config?.classes ?? {}).map(
-    ([className, computation]) => [className, computed(() => computation(this.state()))] as const,
+    ([className, computation]) =>
+      [className, computed(() => computation(this.state(), this.host.nativeElement))] as const,
   );
   readonly field = input.required<FieldTree<T>>();
   readonly state = computed(() => this.field()());

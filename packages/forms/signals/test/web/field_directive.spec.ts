@@ -103,6 +103,47 @@ describe('field directive', () => {
     });
   });
 
+  it('should pass host element into class predicates', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideSignalFormsConfig({
+          classes: {
+            'host-is-input': (state, el) => el?.tagName === 'INPUT',
+            'host-is-custom-element': (state, el) => el?.tagName === 'CUSTOM-CONTROL',
+          },
+        }),
+      ],
+    });
+
+    @Component({
+      selector: 'custom-control',
+      template: '',
+    })
+    class CustomControl implements FormValueControl<string> {
+      readonly value = model<string>('');
+    }
+
+    @Component({
+      imports: [Field, CustomControl],
+      template: `
+        <input [field]="f" />
+        <custom-control [field]="f" />
+      `,
+    })
+    class TestCmp {
+      readonly f = form(signal(''));
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    const inputEl = fixture.nativeElement.querySelector('input');
+    const customEl = fixture.nativeElement.querySelector('custom-control');
+
+    expect(inputEl.classList.contains('host-is-input')).toBe(true);
+    expect(customEl.classList.contains('host-is-custom-element')).toBe(true);
+  });
+
   describe('properties', () => {
     describe('disabled', () => {
       it('should bind to native control', () => {
@@ -2431,6 +2472,50 @@ describe('field directive', () => {
 
       act(() => fixture.componentInstance.f().value.set('valid'));
       expect(input.classList.contains('my-invalid-class')).toBe(false);
+    });
+
+    it('should apply classes based on state and host element', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideSignalFormsConfig({
+            classes: {
+              'invalid-text-only': (state, el) =>
+                state.invalid() && (el as HTMLInputElement).type === 'text',
+            },
+          }),
+        ],
+      });
+
+      @Component({
+        selector: 'custom-control',
+        template: '',
+      })
+      class CustomControl implements FormValueControl<string> {
+        readonly value = model.required<string>();
+      }
+
+      @Component({
+        imports: [Field, CustomControl],
+        template: `
+          <input type="text" [field]="f" />
+          <custom-control [field]="f" />
+        `,
+      })
+      class TestCmp {
+        readonly f = form(signal(''), (p) => {
+          required(p);
+        });
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLElement;
+      const custom = fixture.nativeElement.querySelector('custom-control') as HTMLElement;
+
+      expect(input.classList.contains('invalid-text-only')).toBe(true);
+      expect(custom.classList.contains('invalid-text-only')).toBe(false);
+
+      act(() => fixture.componentInstance.f().value.set('valid'));
+      expect(input.classList.contains('invalid-text-only')).toBe(false);
     });
 
     it('should apply NG_STATUS_CLASSES', () => {
