@@ -1070,15 +1070,30 @@ export class TestBedCompiler {
 
   private patchDefWithProviderOverrides(declaration: Type<any>, field: string): void {
     const def = (declaration as any)[field];
-    if (def && def.providersResolver) {
-      this.maybeStoreNgDef(field, declaration);
 
-      const resolver = def.providersResolver;
-      const processProvidersFn = (providers: Provider[]) => this.getOverriddenProviders(providers);
+    if (!def) {
+      return;
+    }
+
+    if (def.viewProvidersResolver) {
+      this.maybeStoreNgDef(field, declaration);
+      const viewProvidersResolver = def.viewProvidersResolver;
+      this.storeFieldOfDefOnType(declaration, field, 'viewProvidersResolver');
+      def.viewProvidersResolver = (ngDef: DirectiveDef<any>) =>
+        viewProvidersResolver(ngDef, this.processProviderOverrides);
+    }
+
+    if (def.providersResolver) {
+      this.maybeStoreNgDef(field, declaration);
+      const providersResolver = def.providersResolver;
       this.storeFieldOfDefOnType(declaration, field, 'providersResolver');
-      def.providersResolver = (ngDef: DirectiveDef<any>) => resolver(ngDef, processProvidersFn);
+      def.providersResolver = (ngDef: DirectiveDef<any>) =>
+        providersResolver(ngDef, this.processProviderOverrides);
     }
   }
+
+  private processProviderOverrides = (providers: Provider[]) =>
+    this.getOverriddenProviders(providers);
 }
 
 function initResolvers(): Resolvers {

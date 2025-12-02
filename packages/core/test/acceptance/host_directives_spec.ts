@@ -1230,6 +1230,50 @@ describe('host directives', () => {
         hostDirectiveCdr.detectChanges();
       }).not.toThrow();
     });
+
+    // See #65724.
+    it('should be able to inject host tokens defined through `viewProviders` in a component using host directives', () => {
+      const token = new InjectionToken<ProvidesExisting>('token');
+      let value: ProvidesExisting | undefined | null;
+
+      @Directive({
+        // These providers aren't injected, but they help hit the relevant code path.
+        providers: [{provide: new InjectionToken('unusedToken'), useValue: true}],
+      })
+      class HostDirective {}
+
+      @Directive({selector: '[injectsExisting]'})
+      class InjectsExisting {
+        constructor() {
+          value = inject(token, {host: true, optional: true});
+        }
+      }
+
+      @Directive({selector: '[providesExisting]'})
+      class ProvidesExisting {}
+
+      @Component({
+        selector: 'comp-with-host-directive',
+        template: '<div injectsExisting></div>',
+        imports: [InjectsExisting],
+        hostDirectives: [HostDirective],
+        viewProviders: [{provide: token, useExisting: ProvidesExisting}],
+      })
+      class CompWithHostDirective {}
+
+      @Component({
+        selector: 'app-root',
+        template: '<comp-with-host-directive providesExisting/>',
+        imports: [ProvidesExisting, CompWithHostDirective],
+      })
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(value).toBeTruthy();
+      expect(value instanceof ProvidesExisting).toBe(true);
+    });
   });
 
   describe('outputs', () => {
