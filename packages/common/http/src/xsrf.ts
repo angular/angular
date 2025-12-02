@@ -104,8 +104,8 @@ export function xsrfInterceptorFn(
   try {
     const locationHref = inject(PlatformLocation).href;
     const {origin: locationOrigin} = new URL(locationHref);
-    // new URL('//something.com', 'https://example.com') ->
-    // 'https://something.com'
+    // We can use `new URL` to normalize a relative URL like '//something.com' to
+    // 'https://something.com' in order to make consistent same-origin comparisons.
     const {origin: requestOrigin} = new URL(req.url, locationOrigin);
 
     if (locationOrigin !== requestOrigin) {
