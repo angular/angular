@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Component, NgZone} from '@angular/core';
+import {Component, NgZone, ViewChild} from '@angular/core';
 import {Location} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
-import {Router, provideRouter} from '../../src';
+import {Router, RouterLinkActive, RouterModule, provideRouter, withRouterConfig} from '../../src';
 import {By} from '@angular/platform-browser';
 import {
   RootCmp,
@@ -304,6 +304,42 @@ export function routerLinkActiveIntegrationSuite() {
       expect(location.path()).toEqual('/team/22/link/simple');
       expect(nativeLink.hasAttribute('aria-current')).toEqual(false);
       expect(nativeButton.hasAttribute('aria-current')).toEqual(false);
+    });
+
+    it('should work with array params when deep equality is configured', async () => {
+      @Component({
+        template: `  
+      <a routerLink="/test" routerLinkActive="active" #rla="routerLinkActive">  
+        Test Link  
+      </a>  
+    `,
+        standalone: false,
+      })
+      class TestComponent {
+        @ViewChild('rla') routerLinkActive!: RouterLinkActive;
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [TestComponent, SimpleCmp],
+        imports: [RouterModule],
+        providers: [
+          provideRouter(
+            [{path: 'test', component: SimpleCmp}],
+            withRouterConfig({paramsEqualityDepth: 'deep'}),
+          ),
+        ],
+      });
+
+      const router = TestBed.inject(Router);
+      const fixture = TestBed.createComponent(TestComponent);
+      await fixture.whenStable();
+
+      // Navigate to the route
+      await router.navigateByUrl('/test?tags=a&tags=b');
+      fixture.detectChanges();
+
+      // Check if the link is active
+      expect(fixture.componentInstance.routerLinkActive.isActive).toBe(true);
     });
   });
 }

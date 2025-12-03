@@ -8,7 +8,7 @@
 
 import {TestBed} from '@angular/core/testing';
 import {exactMatchOptions, Router, subsetMatchOptions} from '../src/router';
-import {containsTree, DefaultUrlSerializer} from '../src/url_tree';
+import {containsTree, DefaultUrlSerializer, equalParams} from '../src/url_tree';
 
 describe('UrlTree', () => {
   const serializer = new DefaultUrlSerializer();
@@ -327,6 +327,20 @@ describe('UrlTree', () => {
             expect(containsTree(t1, t2, {...subsetMatchOptions, matrixParams})).toBe(true);
           },
         );
+      });
+    });
+
+    describe('equalParams with deep equality', () => {
+      it('should use shallow equality by default', () => {
+        const a = {tags: ['angular', 'typescript']};
+        const b = {tags: ['angular', 'typescript']};
+        expect(equalParams(a, b)).toBe(false);
+      });
+
+      it('should use deep equality when configured', () => {
+        const a = {tags: ['angular', 'typescript']};
+        const b = {tags: ['angular', 'typescript']};
+        expect(equalParams(a, b, {paramsEqualityDepth: 'deep'})).toBe(true);
       });
     });
   });

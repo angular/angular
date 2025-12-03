@@ -136,6 +136,17 @@ export interface RouterConfigOptions {
    * if an error occurs.
    */
   resolveNavigationPromiseOnError?: boolean;
+
+  /**
+   * Configures the depth of equality checks for router parameters.
+   *
+   * - 'shallow': Compare parameters by reference (default, current behavior)
+   * - 'deep': Compare parameters by content, including arrays
+   *
+   * When set to 'deep', array-valued query parameters with identical content
+   * will be treated as equal even if they are different array instances.
+   */
+  paramsEqualityDepth?: 'shallow' | 'deep';
 }
 
 /**

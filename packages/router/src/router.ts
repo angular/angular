@@ -628,11 +628,11 @@ export class Router {
       options = matchOptions;
     }
     if (isUrlTree(url)) {
-      return containsTree(this.currentUrlTree, url, options);
+      return containsTree(this.currentUrlTree, url, options, this.options);
     }
 
     const urlTree = this.parseUrl(url);
-    return containsTree(this.currentUrlTree, urlTree, options);
+    return containsTree(this.currentUrlTree, urlTree, options, this.options);
   }
 
   private removeEmptyProps(params: Params): Params {

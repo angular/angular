@@ -10,7 +10,8 @@ import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
-import {equalArraysOrString, shallowEqual} from './utils/collection';
+import {deepEqual, equalArraysOrString, shallowEqual} from './utils/collection';
+import {RouterConfigOptions} from './router_config';
 
 /**
  * A set of options which specify how to determine if a `UrlTree` is active, given the `UrlTree`
@@ -67,12 +68,18 @@ type PathCompareFn = (
   containee: UrlSegmentGroup,
   matrixParams: ParamMatchOptions,
 ) => boolean;
-type ParamCompareFn = (container: Params, containee: Params) => boolean;
+
+type ParamCompareFn = (
+  container: Params,
+  containee: Params,
+  config?: RouterConfigOptions,
+) => boolean;
 
 const pathCompareMap: Record<IsActiveMatchOptions['paths'], PathCompareFn> = {
   'exact': equalSegmentGroups,
   'subset': containsSegmentGroup,
 };
+
 const paramCompareMap: Record<ParamMatchOptions, ParamCompareFn> = {
   'exact': equalParams,
   'subset': containsParams,
@@ -83,16 +90,26 @@ export function containsTree(
   container: UrlTree,
   containee: UrlTree,
   options: IsActiveMatchOptions,
+  config?: RouterConfigOptions,
 ): boolean {
   return (
     pathCompareMap[options.paths](container.root, containee.root, options.matrixParams) &&
-    paramCompareMap[options.queryParams](container.queryParams, containee.queryParams) &&
+    paramCompareMap[options.queryParams](container.queryParams, containee.queryParams, config) &&
     !(options.fragment === 'exact' && container.fragment !== containee.fragment)
   );
 }
 
-function equalParams(container: Params, containee: Params): boolean {
-  // TODO: This does not handle array params correctly.
+export function equalParams(
+  container: Params,
+  containee: Params,
+  config?: RouterConfigOptions,
+): boolean {
+  const equalityDepth = config?.paramsEqualityDepth ?? 'shallow';
+
+  if (equalityDepth === 'deep') {
+    return deepEqual(container, containee);
+  }
+
   return shallowEqual(container, containee);
 }
 
