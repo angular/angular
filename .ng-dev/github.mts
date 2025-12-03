@@ -9,5 +9,4 @@ export const github: GithubConfig = {
   name: 'angular',
   mainBranchName: 'main',
   useNgDevAuthService: true,
-  mergeMode: 'caretaker-only',
 };
