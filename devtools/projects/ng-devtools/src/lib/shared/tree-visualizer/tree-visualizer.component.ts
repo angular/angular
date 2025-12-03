@@ -56,19 +56,23 @@ export class TreeVisualizerComponent<T extends TreeNode = TreeNode> {
   protected readonly nodeMouseover = output<TreeD3Node<T>>();
 
   readonly panning = signal(false);
+  private readonly visualizer = signal<TreeVisualizer<T> | null>(null);
 
   private initialRender: boolean = true;
-  private visualizer?: TreeVisualizer<T>;
 
   constructor() {
-    afterNextRender(() => {
-      this.visualizer?.cleanup();
-      this.visualizer = new TreeVisualizer<T>(
-        this.container().nativeElement,
-        this.group().nativeElement,
-        this.config(),
-      );
-      this.ready.emit();
+    afterNextRender({
+      write: () => this.visualizer()?.cleanup(), // Cleans up the visualization DOM
+      read: () => {
+        this.visualizer.set(
+          new TreeVisualizer<T>(
+            this.container().nativeElement,
+            this.group().nativeElement,
+            this.config(),
+          ),
+        );
+        this.ready.emit();
+      },
     });
 
     effect(() => {
@@ -76,7 +80,7 @@ export class TreeVisualizerComponent<T extends TreeNode = TreeNode> {
     });
 
     inject(DestroyRef).onDestroy(() => {
-      this.visualizer?.dispose();
+      this.visualizer()?.dispose();
     });
   }
 
@@ -85,26 +89,27 @@ export class TreeVisualizerComponent<T extends TreeNode = TreeNode> {
   }
 
   snapToRoot(scale?: number) {
-    this.visualizer?.snapToRoot(scale);
+    this.visualizer()?.snapToRoot(scale);
   }
 
   snapToNode(node: T, scale?: number) {
-    this.visualizer?.snapToNode(node, scale);
+    this.visualizer()?.snapToNode(node, scale);
   }
 
   getNodeById(id: string) {
-    return this.visualizer?.getInternalNodeById(id);
+    return this.visualizer()?.getInternalNodeById(id);
   }
 
   private renderGraph(root: T): void {
-    if (!this.visualizer) {
+    const visualizer = this.visualizer();
+    if (!visualizer) {
       return;
     }
 
-    this.visualizer.render(root);
-    this.visualizer.onNodeClick((_, node) => this.nodeClick.emit(node));
-    this.visualizer.onNodeMouseout((_, node) => this.nodeMouseout.emit(node));
-    this.visualizer.onNodeMouseover((_, node) => this.nodeMouseover.emit(node));
+    visualizer.render(root);
+    visualizer.onNodeClick((_, node) => this.nodeClick.emit(node));
+    visualizer.onNodeMouseout((_, node) => this.nodeMouseout.emit(node));
+    visualizer.onNodeMouseover((_, node) => this.nodeMouseover.emit(node));
 
     this.render.emit({initial: this.initialRender});
     if (this.initialRender) {
