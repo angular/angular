@@ -1,3 +1,43 @@
+<a name="21.0.3"></a>
+
+# 21.0.3 (2025-12-03)
+
+### compiler-cli
+
+| Commit                                                                                           | Type | Description                                               |
+| ------------------------------------------------------------------------------------------------ | ---- | --------------------------------------------------------- |
+| [5a80a48e96](https://github.com/angular/angular/commit/5a80a48e962f72825050202198b32abbfee66714) | fix  | avoid allocating an object for signals in production mode |
+| [1f1856e897](https://github.com/angular/angular/commit/1f1856e897e0a10e2ca6d934c80fd69d1ac06210) | fix  | check that field radio button values are strings          |
+
+### core
+
+| Commit                                                                                           | Type | Description                                                                                                        |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------------------------------------------------------------ |
+| [8c3304c766](https://github.com/angular/angular/commit/8c3304c766131b031b736ee3fe2ec9c9a42fbe07) | fix  | run animation queue in environment injector context                                                                |
+| [4bb085311e](https://github.com/angular/angular/commit/4bb085311e24966ef2dd673f23746988c449c7ff) | fix  | unable to inject viewProviders when host directive with providers is present                                       |
+| [609699ae17](https://github.com/angular/angular/commit/609699ae1781a9160b0f474b7ebe0998221c0722) | perf | tree shake unused dynamic `[field]` binding instructions ([#65599](https://github.com/angular/angular/pull/65599)) |
+
+### forms
+
+| Commit                                                                                           | Type | Description                                                                                  |
+| ------------------------------------------------------------------------------------------------ | ---- | -------------------------------------------------------------------------------------------- |
+| [6b4ab876e8](https://github.com/angular/angular/commit/6b4ab876e811b4e3a6f9617a2b379f62cf187403) | feat | Allows transforms on `FormUiControl` signals                                                 |
+| [a5dbd4b382](https://github.com/angular/angular/commit/a5dbd4b382417fc111d6a622862a015c47027a41) | fix  | support dynamic `[field]` bindings ([#65599](https://github.com/angular/angular/pull/65599)) |
+
+### http
+
+| Commit                                                                                           | Type | Description                                          |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------- |
+| [20474d3f0f](https://github.com/angular/angular/commit/20474d3f0fd7c64071add6e84acf720627e5c19b) | fix  | enable XSRF protection for same-origin absolute URLs |
+
+### router
+
+| Commit                                                                                           | Type | Description                                         |
+| ------------------------------------------------------------------------------------------------ | ---- | --------------------------------------------------- |
+| [48b89f9fbe](https://github.com/angular/angular/commit/48b89f9fbe16acff8b2f3f37853e745ed43d3a32) | fix  | handle errors from view transition finished promise |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.2"></a>
 
 # 21.0.2 (2025-12-01)
