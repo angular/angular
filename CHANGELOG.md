@@ -1,3 +1,49 @@
+<a name="21.1.0-next.1"></a>
+
+# 21.1.0-next.1 (2025-12-03)
+
+### compiler
+
+| Commit                                                                                           | Type | Description                                                       |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------------------------------------- |
+| [1c6b0704fb](https://github.com/angular/angular/commit/1c6b0704fb63d051fab8acff84d076abfbc4893a) | fix  | prevent XSS via SVG animation `attributeName` and MathML/SVG URLs |
+
+### compiler-cli
+
+| Commit                                                                                           | Type | Description                                               |
+| ------------------------------------------------------------------------------------------------ | ---- | --------------------------------------------------------- |
+| [e30e61b789](https://github.com/angular/angular/commit/e30e61b7893a9b04ada54ab184c24e652dcd114e) | fix  | avoid allocating an object for signals in production mode |
+| [6773d3b97d](https://github.com/angular/angular/commit/6773d3b97d07dcbf7760c0c12d9384fa60f7082e) | fix  | check that field radio button values are strings          |
+
+### core
+
+| Commit                                                                                           | Type | Description                                                                                                        |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------------------------------------------------------------ |
+| [d8ab83ca82](https://github.com/angular/angular/commit/d8ab83ca82c36faacae9fc1a01e9eb9762e679fc) | fix  | run animation queue in environment injector context                                                                |
+| [886cf6c452](https://github.com/angular/angular/commit/886cf6c452abcf85b70058caeb080ff3a5c51cb9) | fix  | unable to inject viewProviders when host directive with providers is present                                       |
+| [e6d5632a30](https://github.com/angular/angular/commit/e6d5632a3059a4920f19eb6b193ec7edb11645d4) | perf | tree shake unused dynamic `[field]` binding instructions ([#65599](https://github.com/angular/angular/pull/65599)) |
+
+### forms
+
+| Commit                                                                                           | Type | Description                                                                                  |
+| ------------------------------------------------------------------------------------------------ | ---- | -------------------------------------------------------------------------------------------- |
+| [7d1e502345](https://github.com/angular/angular/commit/7d1e50234515185ee73c8bdd39f7af2a26635ca2) | feat | Allows transforms on `FormUiControl` signals                                                 |
+| [cd7ae7e2ce](https://github.com/angular/angular/commit/cd7ae7e2ce4648edf62c047b3e453c8b32539d4a) | fix  | support dynamic `[field]` bindings ([#65599](https://github.com/angular/angular/pull/65599)) |
+
+### http
+
+| Commit                                                                                           | Type | Description                                          |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------- |
+| [0659d11c85](https://github.com/angular/angular/commit/0659d11c854c9c6b886a2e925afef98d70bb005f) | fix  | enable XSRF protection for same-origin absolute URLs |
+
+### router
+
+| Commit                                                                                           | Type | Description                                         |
+| ------------------------------------------------------------------------------------------------ | ---- | --------------------------------------------------- |
+| [b74a0693f2](https://github.com/angular/angular/commit/b74a0693f2409812ad1ab02f19eb3fbe7ce1b83e) | fix  | handle errors from view transition finished promise |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.3"></a>
 
 # 21.0.3 (2025-12-03)
