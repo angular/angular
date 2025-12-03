@@ -255,6 +255,16 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   readonly errorSummary: Signal<ValidationError.WithField[]>;
 
   /**
+   * A signal indicating whether the field has been touched by the user.
+   */
+  readonly touched: Signal<boolean>;
+
+  /**
+   * A signal indicating whether the field has not been touched by the user.
+   */
+  readonly untouched: Signal<boolean>;
+
+  /**
    * A signal indicating whether the field's value is currently valid.
    *
    * Note: `valid()` is not the same as `!invalid()`.

@@ -102,6 +102,14 @@ export class FieldNodeState {
   });
 
   /**
+   * Whether this field is considered untouched.
+   *
+   * A field is considered untouched if it has not been touched by the user.
+   * This is the logical opposite of {@link touched}.
+   */
+  readonly untouched: Signal<boolean> = computed(() => !this.touched());
+
+  /**
    * The reasons for this field's disablement. This includes disabled reasons for any parent field
    * that may have been disabled, indirectly causing this field to be disabled as well.
    * The `field` property of the `DisabledReason` can be used to determine which field ultimately

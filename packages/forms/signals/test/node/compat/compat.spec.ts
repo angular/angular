@@ -336,6 +336,44 @@ describe('Forms compat', () => {
       expect(f().touched()).withContext('form is touched when a child is touched').toBeTrue();
     });
 
+    it('propagates untouched state to parent', async () => {
+      const control = new FormControl(5, Validators.min(3));
+      const cat = signal({
+        name: 'pirojok-the-cat',
+        age: control,
+      });
+
+      const f = compatForm(cat, {
+        injector: TestBed.inject(Injector),
+      });
+
+      expect(f.name().untouched()).withContext('name is initially untouched').toBeTrue();
+      expect(f().untouched()).withContext('form is initially untouched').toBeTrue();
+
+      control.markAsTouched();
+
+      expect(f.age().untouched())
+        .withContext('age is not untouched, when control is touched')
+        .toBeFalse();
+      expect(f().untouched())
+        .withContext('form is not untouched when a child is touched')
+        .toBeFalse();
+
+      control.markAsUntouched();
+
+      expect(f.name().untouched()).withContext('name is untouched when not touched').toBeTrue();
+      expect(f().untouched()).withContext('form is initially untouched').toBeTrue();
+
+      f.age().markAsTouched();
+
+      expect(f.age().untouched())
+        .withContext('age is not untouched, when control is touched')
+        .toBeFalse();
+      expect(f().untouched())
+        .withContext('form is not untouched when a child is touched')
+        .toBeFalse();
+    });
+
     it('picks up submittedState from parent', async () => {
       const control = new FormControl(5, Validators.min(3));
       const cat = signal({
@@ -418,6 +456,7 @@ describe('Forms compat', () => {
       expect(f.age().touched()).toBeFalse();
       expect(f().dirty()).toBeFalse();
       expect(f().touched()).toBeFalse();
+      expect(f().untouched).toBeTrue();
     });
   });
 

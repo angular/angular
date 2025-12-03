@@ -251,15 +251,16 @@ Here's a complete example:
 
 Every `field()` provides these state signals:
 
-| State        | Description                                                                |
-| ------------ | -------------------------------------------------------------------------- |
-| `valid()`    | Returns `true` if the field passes all validation rules                    |
-| `touched()`  | Returns `true` if the user has focused and blurred the field               |
-| `dirty()`    | Returns `true` if the user has changed the value                           |
-| `disabled()` | Returns `true` if the field is disabled                                    |
-| `readonly()` | Returns `true` if the field is readonly                                    |
-| `pending()`  | Returns `true` if async validation is in progress                          |
-| `errors()`   | Returns an array of validation errors with `kind` and `message` properties |
+| State         | Description                                                                |
+| ------------- | -------------------------------------------------------------------------- |
+| `valid()`     | Returns `true` if the field passes all validation rules                    |
+| `untouched()` | Returns `true` if the user hasn't focused and blurred the field            |
+| `touched()`   | Returns `true` if the user has focused and blurred the field               |
+| `dirty()`     | Returns `true` if the user has changed the value                           |
+| `disabled()`  | Returns `true` if the field is disabled                                    |
+| `readonly()`  | Returns `true` if the field is readonly                                    |
+| `pending()`   | Returns `true` if async validation is in progress                          |
+| `errors()`    | Returns an array of validation errors with `kind` and `message` properties |
 
 ## Next steps
 

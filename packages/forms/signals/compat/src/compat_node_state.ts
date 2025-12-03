@@ -17,6 +17,7 @@ import {CompatFieldNodeOptions} from './compat_structure';
  */
 export class CompatNodeState extends FieldNodeState {
   override readonly touched: Signal<boolean>;
+  override readonly untouched: Signal<boolean>;
   override readonly dirty: Signal<boolean>;
   override readonly disabled: Signal<boolean>;
   private readonly control: Signal<AbstractControl>;
@@ -28,6 +29,7 @@ export class CompatNodeState extends FieldNodeState {
     super(compatNode);
     this.control = options.control;
     this.touched = getControlEventsSignal(options, (c) => c.touched);
+    this.untouched = getControlEventsSignal(options, (c) => c.untouched);
     this.dirty = getControlEventsSignal(options, (c) => c.dirty);
     const controlDisabled = getControlStatusSignal(options, (c) => c.disabled);
 

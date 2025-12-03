@@ -188,6 +188,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     readonly pending: Signal<boolean>;
     reset(value?: TValue): void;
     readonly submitting: Signal<boolean>;
+    readonly untouched: Signal<boolean>;
     readonly valid: Signal<boolean>;
 }
 

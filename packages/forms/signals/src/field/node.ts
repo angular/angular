@@ -138,6 +138,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.touched;
   }
 
+  get untouched(): Signal<boolean> {
+    return this.nodeState.untouched;
+  }
+
   get disabled(): Signal<boolean> {
     return this.nodeState.disabled;
   }

@@ -563,6 +563,204 @@ describe('FieldNode', () => {
     });
   });
 
+  describe('untouched', () => {
+    it('is untouched initially', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f().untouched()).toBe(true);
+    });
+
+    it('becomes touched, therefore not untouched', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f().untouched()).toBe(true);
+
+      f().markAsTouched();
+      expect(f().untouched()).toBe(false);
+    });
+
+    it('propagates untouched=false from children', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().untouched()).toBe(true);
+
+      f.a().markAsTouched();
+      expect(f().untouched()).toBe(false);
+    });
+
+    it('does not propagate untouched to children', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.a().untouched()).toBe(true);
+      f().markAsTouched();
+      expect(f.a().untouched()).toBe(true);
+    });
+
+    it('children removed should not affect untouched', () => {
+      const value = signal<{a: number; b?: number}>({a: 1, b: 2});
+      const f = form(value, {injector: TestBed.inject(Injector)});
+
+      expect(f().untouched()).toBe(true);
+
+      f.b!().markAsTouched();
+      expect(f().untouched()).toBe(false);
+
+      value.set({a: 2});
+      expect(f().untouched()).toBe(true);
+      expect(f.b).toBeUndefined();
+    });
+
+    it('can be reset, becoming untouched again', () => {
+      const model = signal({a: 1, b: 2});
+      const f = form(model, {injector: TestBed.inject(Injector)});
+
+      f().markAsTouched();
+      expect(f().untouched()).toBe(false);
+
+      f().reset();
+      expect(f().untouched()).toBe(true);
+    });
+
+    it('reset should not track model changes', () => {
+      const f = form(signal(''), {injector: TestBed.inject(Injector)});
+      const spy = jasmine.createSpy();
+
+      effect(
+        () => {
+          spy();
+          f().reset();
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      TestBed.tick();
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      f().value.set('hi');
+      TestBed.tick();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should remain untouched when readonly', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          readonly(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().untouched()).toBe(true);
+
+      f().markAsTouched();
+      expect(f().untouched()).toBe(true);
+    });
+
+    it('should remain untouched when disabled', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          disabled(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().untouched()).toBe(true);
+
+      f().markAsTouched();
+      expect(f().untouched()).toBe(true);
+    });
+
+    it('should remain untouched when hidden', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          hidden(p, () => true);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().untouched()).toBe(true);
+
+      f().markAsTouched();
+      expect(f().untouched()).toBe(true);
+    });
+
+    it('becomes not untouched when interactive', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().untouched()).toBe(true);
+
+      f().markAsTouched();
+      expect(f().untouched()).toBe(false);
+    });
+
+    it('should become untouched when non-interactive after being touched', () => {
+      const isHidden = signal(false);
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          hidden(p, isHidden);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().hidden()).toBe(false);
+      expect(f().untouched()).toBe(true);
+
+      f().markAsTouched();
+      expect(f().untouched()).toBe(false);
+
+      isHidden.set(true);
+      expect(f().hidden()).toBe(true);
+      expect(f().untouched()).toBe(true);
+
+      isHidden.set(false);
+      expect(f().hidden()).toBe(false);
+      expect(f().untouched()).toBe(true);
+    });
+  });
+
   describe('arrays', () => {
     it('should only have child nodes for elements that exist', () => {
       const f = form(signal([1, 2]), {injector: TestBed.inject(Injector)});
