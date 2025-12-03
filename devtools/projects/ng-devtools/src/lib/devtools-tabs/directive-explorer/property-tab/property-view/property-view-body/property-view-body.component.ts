@@ -16,7 +16,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../../../protocol';
+import {DirectivePosition} from '../../../../../../../../protocol';
 
 import {
   DirectivePropertyResolver,
@@ -27,6 +27,7 @@ import {PropertyViewTreeComponent} from './property-view-tree/property-view-tree
 import {MatExpansionModule} from '@angular/material/expansion';
 import {DependencyViewerComponent} from './dependency-viewer/dependency-viewer.component';
 import {DocsRefButtonComponent} from '../../../../../shared/docs-ref-button/docs-ref-button.component';
+import {DevtoolsSignalGraphNode} from '../../../signal-graph';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -48,7 +49,7 @@ export class PropertyViewBodyComponent {
   readonly directiveStateControls = input.required<DirectiveTreeData>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
-  readonly showSignalGraph = output<DebugSignalGraphNode>();
+  readonly showSignalGraph = output<DevtoolsSignalGraphNode>();
 
   protected readonly dependencies = computed(() => {
     const metadata = this.controller().directiveMetadata;
