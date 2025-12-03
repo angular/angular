@@ -92,8 +92,10 @@ export function containsTree(
 }
 
 function equalParams(container: Params, containee: Params): boolean {
-  // TODO: This does not handle array params correctly.
-  return shallowEqual(container, containee);
+  return (
+    Object.keys(container).length === Object.keys(containee).length &&
+    Object.keys(containee).every((key) => equalArraysOrString(container[key], containee[key]))
+  );
 }
 
 function equalSegmentGroups(
