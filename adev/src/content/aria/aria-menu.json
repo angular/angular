@@ -343,7 +343,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
         "startLine": 143,
-        "endLine": 274
+        "endLine": 278
       }
     },
     {
@@ -504,8 +504,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 302,
-        "endLine": 386
+        "startLine": 306,
+        "endLine": 390
       }
     },
     {
@@ -718,8 +718,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 402,
-        "endLine": 482
+        "startLine": 406,
+        "endLine": 486
       }
     },
     {
@@ -739,8 +739,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 501,
-        "endLine": 506
+        "startLine": 505,
+        "endLine": 510
       }
     }
   ],
