@@ -21,38 +21,38 @@ In the image above, there is a series of change detection calls triggered by eve
 
 In such cases, you can instruct Angular to avoid calling change detection for tasks scheduled by a given piece of code using [NgZone](/api/core/NgZone).
 
-<docs-code header="Run outside of the Zone" language='ts' linenums>
-import { Component, NgZone, OnInit } from '@angular/core';
+```ts {header:"Run outside of the Zone" , linenums}
+import { Component, NgZone, OnInit, inject } from '@angular/core';
 
 @Component(...)
 class AppComponent implements OnInit {
-private ngZone = inject(NgZone);
+  private ngZone = inject(NgZone);
 
-ngOnInit() {
-this.ngZone.runOutsideAngular(() => setInterval(pollForUpdates), 500);
+  ngOnInit() {
+    this.ngZone.runOutsideAngular(() => setInterval(pollForUpdates, 500));
+  }
 }
-}
-</docs-code>
+```
 
 The preceding snippet instructs Angular to call `setInterval` outside the Angular Zone and skip running change detection after `pollForUpdates` runs.
 
 Third-party libraries commonly trigger unnecessary change detection cycles when their APIs are invoked within the Angular zone. This phenomenon particularly affects libraries that set up event listeners or initiate other tasks (such as timers, XHR requests, etc.). Avoid these extra cycles by calling library APIs outside the Angular zone:
 
-<docs-code header="Move the plot initialization outside of the Zone" language='ts' linenums>
-import { Component, NgZone, OnInit } from '@angular/core';
+```ts {header:"Move the plot initialization outside of the Zone" , linenums}
+import { Component, NgZone, OnInit, inject } from '@angular/core';
 import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-private ngZone = inject(NgZone);
+  private ngZone = inject(NgZone);
 
-ngOnInit() {
-this.ngZone.runOutsideAngular(() => {
-Plotly.newPlot('chart', data);
-});
+  ngOnInit() {
+    this.ngZone.runOutsideAngular(() => {
+      Plotly.newPlot('chart', data);
+    });
+  }
 }
-}
-</docs-code>
+```
 
 Running `Plotly.newPlot('chart', data);` within `runOutsideAngular` instructs the framework that it shouldn’t run change detection after the execution of tasks scheduled by the initialization logic.
 
@@ -60,24 +60,24 @@ For example, if `Plotly.newPlot('chart', data)` adds event listeners to a DOM el
 
 But sometimes, you may need to listen to events dispatched by third-party APIs. In such cases, it's important to remember that those event listeners will also execute outside of the Angular zone if the initialization logic was done there:
 
-<docs-code header="Check whether the handler is called outside of the Zone" language='ts' linenums>
-import { Component, NgZone, OnInit, output } from '@angular/core';
+```ts {header:"Check whether the handler is called outside of the Zone" , linenums}
+import { Component, NgZone, OnInit, output, inject } from '@angular/core';
 import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-private ngZone = inject(NgZone);
+  private ngZone = inject(NgZone);
 
-plotlyClick = output<Plotly.PlotMouseEvent>();
+  plotlyClick = output<Plotly.PlotMouseEvent>();
 
-ngOnInit() {
-this.ngZone.runOutsideAngular(() => {
-this.createPlotly();
-});
-}
+  ngOnInit() {
+    this.ngZone.runOutsideAngular(() => {
+      this.createPlotly();
+    });
+  }
 
-private async createPlotly() {
-const plotly = await Plotly.newPlot('chart', data);
+  private async createPlotly() {
+    const plotly = await Plotly.newPlot('chart', data);
 
     plotly.on('plotly_click', (event: Plotly.PlotMouseEvent) => {
       // This handler will be called outside of the Angular zone because
@@ -86,40 +86,38 @@ const plotly = await Plotly.newPlot('chart', data);
       console.log(NgZone.isInAngularZone());
       this.plotlyClick.emit(event);
     });
-
+  }
 }
-}
-</docs-code>
+```
 
 If you need to dispatch events to parent components and execute specific view update logic, you should consider re-entering the Angular zone to instruct the framework to run change detection or run change detection manually:
 
-<docs-code header="Re-enter the Angular zone when dispatching event" language='ts' linenums>
-import { Component, NgZone, OnInit, output } from '@angular/core';
+```ts {header:"Re-enter the Angular zone when dispatching event" , linenums}
+import { Component, NgZone, OnInit, output, inject } from '@angular/core';
 import * as Plotly from 'plotly.js-dist-min';
 
 @Component(...)
 class AppComponent implements OnInit {
-private ngZone = inject(NgZone);
+  private ngZone = inject(NgZone);
 
-plotlyClick = output<Plotly.PlotMouseEvent>();
+  plotlyClick = output<Plotly.PlotMouseEvent>();
 
-ngOnInit() {
-this.ngZone.runOutsideAngular(() => {
-this.createPlotly();
-});
-}
+  ngOnInit() {
+    this.ngZone.runOutsideAngular(() => {
+      this.createPlotly();
+    });
+  }
 
-private async createPlotly() {
-const plotly = await Plotly.newPlot('chart', data);
+  private async createPlotly() {
+    const plotly = await Plotly.newPlot('chart', data);
 
     plotly.on('plotly_click', (event: Plotly.PlotMouseEvent) => {
       this.ngZone.run(() => {
         this.plotlyClick.emit(event);
       });
     });
-
+  }
 }
-}
-</docs-code>
+```
 
 The scenario of dispatching events outside of the Angular zone may also arise. It's important to remember that triggering change detection (for example, manually) may result in the creation/update of views outside of the Angular zone.
