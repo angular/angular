@@ -8,17 +8,18 @@
 
 import {
   computed,
+  ɵɵcontrolCreate as createControlBinding,
   Directive,
   effect,
+  ElementRef,
   inject,
   InjectionToken,
   Injector,
   input,
+  ɵcontrolUpdate as updateControlBinding,
   ɵCONTROL,
   ɵControl,
-  ɵcontrolUpdate as updateControlBinding,
   ɵInteropControl,
-  ɵɵcontrolCreate as createControlBinding,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
@@ -71,6 +72,7 @@ const controlInstructions = {
   ],
 })
 export class Field<T> implements ɵControl<T> {
+  readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly injector = inject(Injector);
   private config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
   readonly classes = Object.entries(this.config?.classes ?? {}).map(

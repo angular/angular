@@ -154,6 +154,8 @@ export class Field<T> implements ɵControl<T> {
     // (undocumented)
     readonly classes: (readonly [string, i0.Signal<boolean>])[];
     // (undocumented)
+    readonly element: HTMLElement;
+    // (undocumented)
     readonly field: i0.InputSignal<FieldTree<T>>;
     protected getOrCreateNgControl(): InteropNgControl;
     // (undocumented)
