@@ -221,6 +221,13 @@ export class NavigationStateManager extends StateManager {
     };
 
     const info: NavigationInfo = {ɵrouterInfo: {intercept: true}};
+    // https://issues.chromium.org/issues/460137775 - Bug in all browsers where URL might actually not be updated
+    // by the time we get here. replaceUrl was set to true in the Router when navigating to sync with the browser
+    // because it assumes the URL is already committed. In this scenario, we need to go back to 'push' behavior
+    // because it was not yet been committed and we should not replace the current entry.
+    if (!this.navigation.transition && this.currentNavigation.navigationEvent) {
+      transition.extras.replaceUrl = false;
+    }
 
     // Determine if this should be a 'push' or 'replace' history operation.
     const history =
