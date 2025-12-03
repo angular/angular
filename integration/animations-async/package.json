@@ -13,8 +13,8 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "file:../../dist/packages-dist/animations",
-    "@angular/common": "file:../../dist/packages-dist/common",
-    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/common": "19.2.16",
+    "@angular/compiler": "19.2.17",
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
