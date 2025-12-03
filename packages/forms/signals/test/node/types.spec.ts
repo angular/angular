@@ -7,7 +7,14 @@
  */
 
 import {signal, WritableSignal} from '@angular/core';
-import {form, required, schema, SchemaFn} from '../../public_api';
+import {
+  form,
+  ReadonlyFieldState,
+  required,
+  schema,
+  SchemaFn,
+  SignalFormsConfig,
+} from '../../public_api';
 
 interface Order {
   id: string;
@@ -86,6 +93,60 @@ function typeVerificationOnlyDoNotRunMe() {
     it('should allow FieldTree of recursive type', () => {
       type RecursiveType = (number | RecursiveType)[];
       form(signal<RecursiveType>([5]));
+    });
+  });
+
+  describe('ReadonlyFieldState', () => {
+    it('should not expose mutation methods', () => {
+      const state: ReadonlyFieldState<string> = null!;
+      // @ts-expect-error
+      state.markAsDirty;
+      // @ts-expect-error
+      state.markAsTouched;
+      // @ts-expect-error
+      state.setControlValue;
+      // @ts-expect-error
+      state.reset;
+      // @ts-expect-error
+      state.fieldBindings;
+      // @ts-expect-error
+      state.value;
+    });
+
+    it('should expose read-only properties', () => {
+      const state: ReadonlyFieldState<string> = null!;
+      state.dirty;
+      state.touched;
+      state.valid;
+      state.invalid;
+      state.pending;
+      state.disabled;
+      state.errors;
+      state.hidden;
+    });
+  });
+
+  describe('SignalFormsConfig', () => {
+    it('should not allow mutation methods in classes predicate', () => {
+      const config: SignalFormsConfig = {
+        classes: {
+          'my-class': (state) => {
+            // @ts-expect-error
+            state.markAsDirty;
+            // @ts-expect-error
+            state.markAsTouched;
+            // @ts-expect-error
+            state.setControlValue;
+            // @ts-expect-error
+            state.reset;
+            // @ts-expect-error
+            state.fieldBindings;
+            // @ts-expect-error
+            state.value;
+            return state.valid();
+          },
+        },
+      };
     });
   });
 }
