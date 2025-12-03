@@ -18,6 +18,7 @@ import {
   inputBinding,
   model,
   numberAttribute,
+  resource,
   signal,
   viewChild,
   viewChildren,
@@ -39,6 +40,7 @@ import {
   provideSignalFormsConfig,
   readonly,
   required,
+  validateAsync,
   type DisabledReason,
   type FieldTree,
   type FormCheckboxControl,
@@ -1884,6 +1886,109 @@ describe('field directive', () => {
     expect(comp.myInput().invalid()).toBe(true);
     act(() => comp.f().value.set('valid'));
     expect(comp.myInput().invalid()).toBe(false);
+  });
+
+  it('should synchronize hidden status', () => {
+    @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class CustomInput implements FormValueControl<string> {
+      value = model('');
+      hidden = input(false);
+    }
+
+    @Component({
+      template: `
+        <my-input [field]="f" />
+      `,
+      imports: [CustomInput, Field],
+    })
+    class HiddenTestCmp {
+      myInput = viewChild.required<CustomInput>(CustomInput);
+      data = signal('');
+      f = form(this.data, (p) => {
+        hidden(p, ({value}) => value() === '');
+      });
+    }
+
+    const comp = act(() => TestBed.createComponent(HiddenTestCmp)).componentInstance;
+    expect(comp.myInput().hidden()).toBe(true);
+    act(() => comp.f().value.set('visible'));
+    expect(comp.myInput().hidden()).toBe(false);
+  });
+
+  it('should synchronize dirty status', () => {
+    @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class CustomInput implements FormValueControl<string> {
+      value = model('');
+      dirty = input(false);
+    }
+
+    @Component({
+      template: `
+        <my-input [field]="f" />
+      `,
+      imports: [CustomInput, Field],
+    })
+    class DirtyTestCmp {
+      myInput = viewChild.required<CustomInput>(CustomInput);
+      data = signal('');
+      f = form(this.data);
+    }
+
+    const comp = act(() => TestBed.createComponent(DirtyTestCmp)).componentInstance;
+    expect(comp.myInput().dirty()).toBe(false);
+    act(() => comp.f().markAsDirty());
+    expect(comp.myInput().dirty()).toBe(true);
+  });
+
+  it('should synchronize pending status', async () => {
+    const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+
+    @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class CustomInput implements FormValueControl<string> {
+      value = model('');
+      pending = input(false);
+    }
+
+    @Component({
+      template: `
+        <my-input [field]="f" />
+      `,
+      imports: [CustomInput, Field],
+    })
+    class PendingTestCmp {
+      myInput = viewChild.required<CustomInput>(CustomInput);
+      data = signal('test');
+      f = form(this.data, (p) => {
+        validateAsync(p, {
+          params: () => [],
+          factory: (params) =>
+            resource({
+              params,
+              loader: () => promise,
+            }),
+          onSuccess: (results) => results,
+          onError: () => null,
+        });
+      });
+    }
+
+    const fix = act(() => TestBed.createComponent(PendingTestCmp));
+
+    expect(fix.componentInstance.myInput().pending()).toBe(true);
+
+    resolve([]);
+    await promise;
+    await fix.whenStable();
+    expect(fix.componentInstance.myInput().pending()).toBe(false);
   });
 
   it(`should mark field as touched on native control 'blur' event`, () => {

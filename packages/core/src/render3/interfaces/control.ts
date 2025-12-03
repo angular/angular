@@ -144,6 +144,21 @@ export interface ɵFieldState<T> {
   readonly touched: Signal<boolean>;
 
   /**
+   * A signal indicating whether the field value has been changed by user.
+   */
+  readonly dirty: Signal<boolean>;
+
+  /**
+   * A signal indicating whether the field is hidden.
+   */
+  readonly hidden: Signal<boolean>;
+
+  /**
+   * A signal indicating whether there are any validators still pending for this field.
+   */
+  readonly pending: Signal<boolean>;
+
+  /**
    * A writable signal containing the value for this field.
    *
    * Updating this signal will update the data model that the field is bound to.
