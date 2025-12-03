@@ -339,13 +339,15 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
     initializeOrGetDirectiveForestHooks();
   }
 
+  const devMode = appIsAngularInDevMode();
+
   messageBus.emit('ngAvailability', [
     {
       version: ngVersion.toString(),
-      devMode: appIsAngularInDevMode(),
+      devMode,
       ivy: appIsIvy,
       hydration: isHydrationEnabled(),
-      supportedApis: getSupportedApis(),
+      supportedApis: devMode ? getSupportedApis() : null,
     },
   ]);
 };
