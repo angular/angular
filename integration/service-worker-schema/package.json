@@ -7,7 +7,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/common": "19.2.16",
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/service-worker": "file:../../dist/packages-dist/service-worker",
     "rxjs": "file:../../node_modules/rxjs",
