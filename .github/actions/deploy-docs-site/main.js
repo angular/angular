@@ -26834,7 +26834,7 @@ var YargsParser = class {
     }
     applyEnvVars(argv, true);
     applyEnvVars(argv, false);
-    setConfig2(argv);
+    setConfig(argv);
     setConfigObjects();
     applyDefaultsAndAliases(argv, flags.aliases, defaults, true);
     applyCoercions(argv);
@@ -27024,7 +27024,7 @@ var YargsParser = class {
       }
       return value;
     }
-    function setConfig2(argv2) {
+    function setConfig(argv2) {
       const configLookup = /* @__PURE__ */ Object.create(null);
       applyDefaultsAndAliases(configLookup, flags.aliases, defaults);
       Object.keys(flags.configs).forEach(function(configKey) {
@@ -31081,7 +31081,6 @@ function getCachedConfig() {
 // 
 import { pathToFileURL } from "url";
 var CONFIG_FILE_PATH_MATCHER = ".ng-dev/config.mjs";
-var setConfig = setCachedConfig;
 async function getConfig(baseDirOrAssertions) {
   let cachedConfig2 = getCachedConfig();
   if (cachedConfig2 === null) {
@@ -35591,13 +35590,7 @@ import { tmpdir as tmpdir2 } from "os";
 import { join as join5 } from "path";
 var refMatcher = /refs\/heads\/(.*)/;
 async function deployDocs() {
-  setConfig({
-    github: {
-      mainBranchName: "main",
-      name: "angular",
-      owner: "angular"
-    }
-  });
+  getConfig([assertValidGithubConfig]);
   AuthenticatedGitClient.configure(githubReleaseTrainReadToken);
   if (import_github3.context.eventName !== "push") {
     throw Error();
