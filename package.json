@@ -67,7 +67,7 @@
     "@bazel/runfiles": "5.8.1",
     "@bazel/terser": "5.8.1",
     "@bazel/worker": "5.8.1",
-    "@jridgewell/sourcemap-codec": "^1.4.14",
+    "@jridgewell/sourcemap-codec": "1.4.14",
     "@microsoft/api-extractor": "^7.24.2",
     "@rollup/plugin-babel": "^6.0.0",
     "@rollup/plugin-commonjs": "^28.0.0",
