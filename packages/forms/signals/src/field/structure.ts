@@ -189,43 +189,9 @@ export abstract class FieldNodeStructure {
         // Remove fields that have disappeared since the last time this map was computed.
         if (prevData !== undefined) {
           if (parentIsArray) {
-            // TODO: we should be able to optimize this diff away in the fast case where nothing has
-            // actually changed structurally.
-            const oldKeys = new Set(prevData.byPropertyKey.keys());
-            const oldTracking = new Set(prevData.byTrackingKey?.keys());
-
-            for (let i = 0; i < value.length; i++) {
-              const childValue = value[i];
-              oldKeys.delete(i.toString());
-              if (isObject(childValue) && childValue.hasOwnProperty(this.identitySymbol)) {
-                oldTracking.delete(childValue[this.identitySymbol] as TrackingKey);
-              }
-            }
-
-            // `oldKeys` and `oldTracking` now contain stale keys and tracking keys, respectively.
-            // Remove them from their corresponding maps.
-
-            if (oldKeys.size > 0) {
-              data ??= {...(prevData as MutableChildrenData)};
-              for (const key of oldKeys) {
-                data.byPropertyKey.delete(key);
-              }
-            }
-            if (oldTracking.size > 0) {
-              data ??= {...(prevData as MutableChildrenData)};
-              for (const id of oldTracking) {
-                data.byTrackingKey?.delete(id);
-              }
-            }
+            data = maybeRemoveStaleArrayFields(prevData, value, this.identitySymbol);
           } else {
-            // For objects, we diff a bit differently, and use the value to check whether an old
-            // property still exists on the object value.
-            for (const key of prevData.byPropertyKey.keys()) {
-              if (!value.hasOwnProperty(key)) {
-                data ??= {...(prevData as MutableChildrenData)};
-                data.byPropertyKey.delete(key);
-              }
-            }
+            data = maybeRemoveStaleObjectFields(prevData, value);
           }
         }
 
@@ -557,4 +523,61 @@ interface ChildData {
    * The child `FieldNode` currently stored at this key.
    */
   node: FieldNode;
+}
+
+function maybeRemoveStaleArrayFields(
+  prevData: ChildrenData,
+  value: ReadonlyArray<unknown>,
+  identitySymbol: PropertyKey,
+): MutableChildrenData | undefined {
+  let data: MutableChildrenData | undefined;
+
+  // TODO: we should be able to optimize this diff away in the fast case where nothing has
+  // actually changed structurally.
+  const oldKeys = new Set(prevData.byPropertyKey.keys());
+  const oldTracking = new Set(prevData.byTrackingKey?.keys());
+
+  for (let i = 0; i < value.length; i++) {
+    const childValue = value[i];
+    oldKeys.delete(i.toString());
+    if (isObject(childValue) && childValue.hasOwnProperty(identitySymbol)) {
+      oldTracking.delete(childValue[identitySymbol] as TrackingKey);
+    }
+  }
+
+  // `oldKeys` and `oldTracking` now contain stale keys and tracking keys, respectively.
+  // Remove them from their corresponding maps.
+
+  if (oldKeys.size > 0) {
+    data ??= {...(prevData as MutableChildrenData)};
+    for (const key of oldKeys) {
+      data.byPropertyKey.delete(key);
+    }
+  }
+  if (oldTracking.size > 0) {
+    data ??= {...(prevData as MutableChildrenData)};
+    for (const id of oldTracking) {
+      data.byTrackingKey?.delete(id);
+    }
+  }
+
+  return data;
+}
+
+function maybeRemoveStaleObjectFields(
+  prevData: ChildrenData,
+  value: Record<PropertyKey, unknown>,
+): MutableChildrenData | undefined {
+  let data: MutableChildrenData | undefined;
+
+  // For objects, we diff a bit differently, and use the value to check whether an old
+  // property still exists on the object value.
+  for (const key of prevData.byPropertyKey.keys()) {
+    if (!value.hasOwnProperty(key)) {
+      data ??= {...(prevData as MutableChildrenData)};
+      data.byPropertyKey.delete(key);
+    }
+  }
+
+  return data;
 }
