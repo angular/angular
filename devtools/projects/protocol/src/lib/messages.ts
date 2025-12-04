@@ -385,7 +385,7 @@ export interface Events {
     devMode: boolean;
     ivy: boolean;
     hydration: boolean;
-    supportedApis: SupportedApis;
+    supportedApis: SupportedApis | null;
   }) => void;
 
   inspectorStart: () => void;

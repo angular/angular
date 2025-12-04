@@ -100,7 +100,10 @@ export class DevToolsComponent implements OnDestroy {
       this.ivy.set(ivy);
       this._interval$.unsubscribe();
       this.hydration.set(hydration);
-      this.supportedApis.init(supportedApis);
+
+      if (supportedApis) {
+        this.supportedApis.init(supportedApis);
+      }
     });
   }
 
