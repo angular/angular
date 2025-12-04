@@ -23,6 +23,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     SANITIZATION_UNSAFE_SCRIPT = 5200,
     // (undocumented)
+    SHADOWDOM_NOT_SUPPORTED_IN_SSR = 5106,
+    // (undocumented)
     TESTABILITY_NOT_FOUND = 5103,
     // (undocumented)
     UNEXPECTED_SYNTHETIC_PROPERTY = 5105,
