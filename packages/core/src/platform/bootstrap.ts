@@ -49,7 +49,7 @@ import {PendingTasksInternal} from '../pending_tasks_internal';
  * from component rendering.
  */
 export const ENABLE_ROOT_COMPONENT_BOOTSTRAP = new InjectionToken<boolean>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'ENABLE_ROOT_COMPONENT_BOOTSTRAP' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'ENABLE_ROOT_COMPONENT_BOOTSTRAP' : '',
 );
 
 export interface BootstrapConfig {

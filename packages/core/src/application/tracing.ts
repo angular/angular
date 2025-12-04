@@ -26,7 +26,7 @@ export interface TracingSnapshot {
  * Injection token for a `TracingService`, optionally provided.
  */
 export const TracingService = new InjectionToken<TracingService<TracingSnapshot>>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'TracingService' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'TracingService' : '',
 );
 
 /**

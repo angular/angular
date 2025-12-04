@@ -33,7 +33,7 @@ import type {FieldTree} from './types';
  * @experimental 21.0.0
  */
 export const FIELD = new InjectionToken<Field<unknown>>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'FIELD' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'FIELD' : '',
 );
 
 /**
