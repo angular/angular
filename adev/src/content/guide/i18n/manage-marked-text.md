@@ -9,7 +9,7 @@ As described in [How meanings control text extraction and merges][GuideI18nCommo
 
 The following example displays translation units with unique IDs.
 
-<docs-code header="messages.fr.xlf.html" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" region="generated-id"/>
+<docs-code header="messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf" visibleRegion="generated-id"/>
 
 When you change the translatable text, the extractor generates a new ID for that translation unit.
 In most cases, changes in the source text also require a change to the translation.
@@ -34,7 +34,7 @@ variableText1 = $localize`:@@introductionHeader:Hello i18n!`;
 
 When you specify a custom ID, the extractor generates a translation unit with the custom ID.
 
-<docs-code header="messages.fr.xlf.html" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" region="custom-id"/>
+<docs-code header="messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf" visibleRegion="custom-id"/>
 
 If you change the text, the extractor does not change the ID.
 As a result, you don't have to take the extra step to update the translation.
@@ -75,7 +75,7 @@ For example, in the following code snippet the same `myId` custom ID is defined 
 
 The following displays the translation in French.
 
-<docs-code header="src/locale/messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" region="i18n-duplicate-custom-id"/>
+<docs-code header="src/locale/messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf" visibleRegion="i18n-duplicate-custom-id"/>
 
 Both elements now use the same translation \(`Bonjour`\), because both were defined with the same custom ID.
 

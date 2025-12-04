@@ -1,38 +1,28 @@
 <!-- #docregion -->
 <div class="container">
-
   <h2>Reactive Form</h2>
 
   <form [formGroup]="actorForm" #formDir="ngForm">
-
     <div [hidden]="formDir.submitted">
-
-      <div class="cross-validation"
-           [class.cross-validation-error]="actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)">
+      <div
+        class="cross-validation"
+        [class.cross-validation-error]="actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)"
+      >
         <div class="form-group">
-
           <label for="name">Name</label>
           <!-- #docregion name-with-error-msg -->
-          <input type="text" id="name" class="form-control"
-                 formControlName="name" required>
+          <input type="text" id="name" class="form-control" formControlName="name" required />
 
           @if (name.invalid && (name.dirty || name.touched)) {
             <div class="alert alert-danger">
-
               @if (name.hasError('required')) {
-                <div>
-                  Name is required.
-                </div>
+                <div>Name is required.</div>
               }
               @if (name.hasError('minlength')) {
-                <div>
-                  Name must be at least 4 characters long.
-                </div>
+                <div>Name must be at least 4 characters long.</div>
               }
               @if (name.hasError('forbiddenName')) {
-                <div>
-                  Name cannot be Bob.
-                </div>
+                <div>Name cannot be Bob.</div>
               }
             </div>
           }
@@ -41,8 +31,7 @@
 
         <div class="form-group">
           <label for="role">Role</label>
-          <input type="text" id="role" class="form-control"
-                 formControlName="role">
+          <input type="text" id="role" class="form-control" formControlName="role" />
 
           @if (role.pending) {
             <div>Validating...</div>
@@ -50,9 +39,7 @@
           @if (role.invalid) {
             <div class="alert alert-danger role-errors">
               @if (role.hasError('uniqueRole')) {
-                <div>
-                  Role is already taken.
-                </div>
+                <div>Role is already taken.</div>
               }
             </div>
           }
@@ -69,8 +56,7 @@
 
       <div class="form-group">
         <label for="skill">Skill</label>
-        <select id="skill" class="form-control"
-                formControlName="skill" required>
+        <select id="skill" class="form-control" formControlName="skill" required>
           @for (skill of skills; track $index) {
             <option [value]="skill">{{ skill }}</option>
           }
@@ -86,13 +72,8 @@
       </div>
 
       <p>Complete the form to enable the Submit button.</p>
-      <button type="submit"
-              class="btn btn-default"
-              [disabled]="actorForm.invalid">Submit
-      </button>
-      <button type="button" class="btn btn-default"
-              (click)="formDir.resetForm({})">Reset
-      </button>
+      <button type="submit" class="btn btn-default" [disabled]="actorForm.invalid">Submit</button>
+      <button type="button" class="btn btn-default" (click)="formDir.resetForm({})">Reset</button>
     </div>
   </form>
 

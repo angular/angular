@@ -21,10 +21,10 @@
     <thead>
       <tr>
         @for (day of weekdays(); track day.long) {
-        <th scope="col">
-          <span class="visually-hidden">{{day.long}}</span>
-          <span aria-hidden="true">{{day.narrow}}</span>
-        </th>
+          <th scope="col">
+            <span class="visually-hidden">{{day.long}}</span>
+            <span aria-hidden="true">{{day.narrow}}</span>
+          </th>
         }
       </tr>
     </thead>
@@ -36,10 +36,12 @@
             <td ngGridCell disabled>{{day}}</td>
           }
         }
-        
+
         @for (day of week; track day) {
           <td ngGridCell [(selected)]="day.selected">
-            <button ngGridCellWidget [attr.aria-label]="day.ariaLabel" [attr.data-day]="day.day">{{day.displayName}}</button>
+            <button ngGridCellWidget [attr.aria-label]="day.ariaLabel" [attr.data-day]="day.day">
+              {{day.displayName}}
+            </button>
           </td>
         }
 
