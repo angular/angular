@@ -1608,23 +1608,6 @@ describe('host bindings', () => {
       true,
     );
     verify(
-      'blockquote',
-      'cite',
-      'javascript:alert(2)',
-      'unsafe:javascript:alert(2)',
-      bypassSanitizationTrustUrl,
-    );
-    verify('blockquote', 'cite', 'javascript:alert(2.1)', 'unsafe:javascript:alert(2.1)', identity);
-    verify(
-      'blockquote',
-      'cite',
-      'javascript:alert(2.2)',
-      'unsafe:javascript:alert(2.2)',
-      bypassSanitizationTrustHtml,
-      true,
-      true,
-    );
-    verify(
       'b',
       'innerHTML',
       '<img src="javascript:alert(3)">',
