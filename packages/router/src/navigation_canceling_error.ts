@@ -42,7 +42,12 @@ export function navigationCancelingError(
   message: string | null | false,
   code: NavigationCancellationCode,
 ) {
-  const error = new Error(`NavigationCancelingError: ${message || ''}`) as NavigationCancelingError;
+  message = message || '';
+  const error = new Error(
+    typeof ngDevMode === 'undefined' || ngDevMode
+      ? `NavigationCancelingError: ${message}`
+      : message,
+  ) as NavigationCancelingError;
   error[NAVIGATION_CANCELING_ERROR] = true;
   error.cancellationCode = code;
   return error;

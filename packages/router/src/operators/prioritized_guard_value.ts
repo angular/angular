@@ -12,7 +12,9 @@ import {filter, map, startWith, switchMap, take} from 'rxjs/operators';
 import {GuardResult, RedirectCommand} from '../models';
 import {isUrlTree, UrlTree} from '../url_tree';
 
-const INITIAL_VALUE = /* @__PURE__ */ Symbol('INITIAL_VALUE');
+const INITIAL_VALUE = /* @__PURE__ */ Symbol(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'INITIAL_VALUE' : '',
+);
 declare type INTERIM_VALUES = typeof INITIAL_VALUE | GuardResult;
 
 export function prioritizedGuardValue(): OperatorFunction<Observable<GuardResult>[], GuardResult> {
