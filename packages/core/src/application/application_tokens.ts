@@ -42,7 +42,7 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
  * @publicApi
  */
 export const APP_ID = new InjectionToken<string>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'AppId' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'AppId' : '',
   {
     factory: () => DEFAULT_APP_ID,
   },
@@ -79,7 +79,7 @@ export const validAppIdInitializer: StaticProvider = {
  * @publicApi
  */
 export const PLATFORM_INITIALIZER = new InjectionToken<ReadonlyArray<() => void>>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'Platform Initializer' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Platform Initializer' : '',
 );
 
 /**
@@ -87,7 +87,7 @@ export const PLATFORM_INITIALIZER = new InjectionToken<ReadonlyArray<() => void>
  * @publicApi
  */
 export const PLATFORM_ID = new InjectionToken<Object>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'Platform ID' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Platform ID' : '',
   {
     providedIn: 'platform',
     factory: () => 'unknown', // set a default platform name, when none set explicitly
@@ -104,7 +104,7 @@ export const PLATFORM_ID = new InjectionToken<Object>(
  * @publicApi
  */
 export const ANIMATION_MODULE_TYPE = new InjectionToken<'NoopAnimations' | 'BrowserAnimations'>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'AnimationModuleType' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'AnimationModuleType' : '',
 );
 
 // TODO(crisbeto): link to CSP guide here.
@@ -118,7 +118,7 @@ export const ANIMATION_MODULE_TYPE = new InjectionToken<'NoopAnimations' | 'Brow
  * @publicApi
  */
 export const CSP_NONCE = new InjectionToken<string | null>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'CSP nonce' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'CSP nonce' : '',
   {
     factory: () => {
       // Ideally we wouldn't have to use `querySelector` here since we know that the nonce will be on
@@ -184,7 +184,7 @@ export const IMAGE_CONFIG_DEFAULTS: ImageConfig = {
  * @publicApi
  */
 export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'ImageConfig' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'ImageConfig' : '',
   {
     factory: () => IMAGE_CONFIG_DEFAULTS,
   },

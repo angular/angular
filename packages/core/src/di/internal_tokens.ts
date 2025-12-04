@@ -11,5 +11,5 @@ import {Type} from '../interface/type';
 import {InjectionToken} from './injection_token';
 
 export const INJECTOR_DEF_TYPES = new InjectionToken<ReadonlyArray<Type<unknown>>>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'INJECTOR_DEF_TYPES' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'INJECTOR_DEF_TYPES' : '',
 );
