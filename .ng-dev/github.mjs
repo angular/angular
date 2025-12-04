@@ -8,5 +8,5 @@ export const github = {
   owner: 'angular',
   name: 'angular',
   mainBranchName: 'main',
-  useNgDevAuthService: true,
+  mergeMode: 'caretaker-only',
 };
