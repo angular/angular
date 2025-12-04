@@ -370,6 +370,9 @@ export interface InMemoryScrollingOptions {
 }
 
 // @public
+export function isActive(url: string | UrlTree, router: Router, matchOptions: IsActiveMatchOptions): Signal<boolean>;
+
+// @public
 export interface IsActiveMatchOptions {
     fragment: 'exact' | 'ignored';
     matrixParams: 'exact' | 'subset' | 'ignored';
@@ -722,6 +725,7 @@ export class Router {
     initialNavigation(): void;
     // @deprecated
     isActive(url: string | UrlTree, exact: boolean): boolean;
+    // @deprecated
     isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;
     get lastSuccessfulNavigation(): Signal<Navigation | null>;
     navigate(commands: readonly any[], extras?: NavigationExtras): Promise<boolean>;
