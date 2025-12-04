@@ -1,0 +1,16 @@
+<!-- #docregion -->
+<div class="custom-input-container" [class.has-error]="firstError()">
+  <label class="custom-label">
+    <input
+      class="custom-input"
+      type="text"
+      [value]="value()"
+      [disabled]="disabled()"
+      (input)="onInput($event)"
+    />
+  </label>
+  @if (firstError()) {
+  <span class="error-message"> Validation error: {{ firstError() }} </span>
+  }
+</div>
+<!-- #enddocregion -->
