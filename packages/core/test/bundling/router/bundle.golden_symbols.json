@@ -781,6 +781,7 @@
       "interpolation1",
       "invokeDirectivesHostBindings",
       "invokeHostBindingsInCreationMode",
+      "isActive",
       "isActiveMatchOptions",
       "isAngularZoneProperty",
       "isAnimationEventType",
