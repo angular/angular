@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, resource, ɵisPromise, Signal} from '@angular/core';
+import {computed, resource, Signal, ɵisPromise} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../../field/validation';
-import {validateAsync} from './validate_async';
-import {validateTree} from '../validate_tree';
+import type {FieldTree, SchemaPath, SchemaPathTree} from '../../types';
 import {metadata} from '../metadata';
-import type {SchemaPath, SchemaPathTree, FieldTree} from '../../types';
+import {validateAsync} from './validate_async';
+import {validateTree} from './validate_tree';
 import {standardSchemaError, StandardSchemaValidationError} from './validation_errors';
 
 /**
