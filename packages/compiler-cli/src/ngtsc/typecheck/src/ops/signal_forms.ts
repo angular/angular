@@ -140,7 +140,10 @@ export class TcbNativeFieldDirectiveTypeOp extends TcbOp {
   private getExpectedTypeFromDomNode(node: TmplAstElement): ts.TypeNode {
     if (node.name === 'textarea' || node.name === 'select') {
       // `<textarea>` and `<select>` are always strings.
-      return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
+      return ts.factory.createUnionTypeNode([
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+        ts.factory.createLiteralTypeNode(ts.factory.createNull()),
+      ]);
     }
 
     if (node.name !== 'input') {
@@ -157,6 +160,7 @@ export class TcbNativeFieldDirectiveTypeOp extends TcbOp {
         return ts.factory.createUnionTypeNode([
           ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
           ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+          ts.factory.createLiteralTypeNode(ts.factory.createNull()),
         ]);
 
       case 'date':
@@ -172,7 +176,10 @@ export class TcbNativeFieldDirectiveTypeOp extends TcbOp {
     }
 
     // Fall back to string if we couldn't map the type.
-    return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
+    return ts.factory.createUnionTypeNode([
+      ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+      ts.factory.createLiteralTypeNode(ts.factory.createNull()),
+    ]);
   }
 
   private getUnsupportedType(): ts.TypeNode {

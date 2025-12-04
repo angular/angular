@@ -2595,26 +2595,26 @@ describe('type check blocks', () => {
       };
     });
 
-    it('should generate a string field for an input without a type', () => {
+    it('should generate a string field for input without a type', () => {
       const block = tcb('<input [field]="f"/>', [FieldMock]);
-      expect(block).toContain('var _t1 = null! as string;');
+      expect(block).toContain('var _t1 = null! as string | null;');
       expect(block).toContain('_t1 = ((this).f)().value();');
       expect(block).toContain('var _t2 = null! as i0.Field;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
     [
-      {inputType: 'text', expectedType: 'string'},
-      {inputType: 'radio', expectedType: 'string'},
+      {inputType: 'text', expectedType: 'string | null'},
+      {inputType: 'radio', expectedType: 'string | null'},
       {inputType: 'checkbox', expectedType: 'boolean'},
-      {inputType: 'number', expectedType: 'string | number'},
-      {inputType: 'range', expectedType: 'string | number'},
-      {inputType: 'datetime-local', expectedType: 'string | number'},
+      {inputType: 'number', expectedType: 'string | number | null'},
+      {inputType: 'range', expectedType: 'string | number | null'},
+      {inputType: 'datetime-local', expectedType: 'string | number | null'},
       {inputType: 'date', expectedType: 'string | number | Date | null'},
       {inputType: 'month', expectedType: 'string | number | Date | null'},
       {inputType: 'time', expectedType: 'string | number | Date | null'},
       {inputType: 'week', expectedType: 'string | number | Date | null'},
-      {inputType: 'unknown', expectedType: 'string'},
+      {inputType: 'unknown', expectedType: 'string | null'},
     ].forEach(({inputType, expectedType}) => {
       it(`should generate a '${expectedType}' field for an input with a '${inputType}' type`, () => {
         const block = tcb(`<input type="${inputType}" [field]="f"/>`, [FieldMock]);
@@ -2627,7 +2627,7 @@ describe('type check blocks', () => {
 
     it('should generate a string field for a textarea', () => {
       const block = tcb('<textarea [field]="f"></textarea>', [FieldMock]);
-      expect(block).toContain('var _t1 = null! as string;');
+      expect(block).toContain('var _t1 = null! as string | null;');
       expect(block).toContain('_t1 = ((this).f)().value();');
       expect(block).toContain('var _t2 = null! as i0.Field;');
       expect(block).toContain('_t2.field = (((this).f));');
@@ -2635,7 +2635,7 @@ describe('type check blocks', () => {
 
     it('should generate a string field for a select', () => {
       const block = tcb('<select [field]="f"></select>', [FieldMock]);
-      expect(block).toContain('var _t1 = null! as string;');
+      expect(block).toContain('var _t1 = null! as string | null;');
       expect(block).toContain('_t1 = ((this).f)().value();');
       expect(block).toContain('var _t2 = null! as i0.Field;');
       expect(block).toContain('_t2.field = (((this).f));');

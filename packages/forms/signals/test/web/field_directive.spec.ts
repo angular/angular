@@ -2568,6 +2568,110 @@ describe('field directive', () => {
     const select = fixture.debugElement.parent!.nativeElement.querySelector('select');
     expect(select.value).toBe('us');
   });
+
+  describe('null value handling', () => {
+    it('handles null values for plain inputs', () => {
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f">`,
+      })
+      class TestCmp {
+        f = form(signal('test' as string | null));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.value).toBe('test');
+
+      // Nullable value
+      act(() => cmp.f().value.set(null));
+      expect(input.value).toBe('');
+
+      act(() => cmp.f().value.set('test again'));
+      expect(input.value).toBe('test again');
+    });
+
+    it('handles null values for number inputs', () => {
+      @Component({
+        imports: [Field],
+        template: `<input type="number" [field]="f">`,
+      })
+      class TestCmp {
+        f = form(signal(123 as number | null));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.value).toBe('123');
+
+      // Nullable value
+      act(() => cmp.f().value.set(null));
+      expect(input.value).toBe('');
+
+      act(() => cmp.f().value.set(456));
+      expect(input.value).toBe('456');
+    });
+
+    it('handles null values for textarea', () => {
+      @Component({
+        imports: [Field],
+        template: `<textarea [field]="f"></textarea>`,
+      })
+      class TestCmp {
+        f = form(signal('test' as string | null));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const textarea = fix.nativeElement.firstChild as HTMLTextAreaElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(textarea.value).toBe('test');
+
+      // Nullable value
+      act(() => cmp.f().value.set(null));
+      expect(textarea.value).toBe('');
+
+      act(() => cmp.f().value.set('test again'));
+      expect(textarea.value).toBe('test again');
+    });
+
+    it('handles null values for a select', () => {
+      @Component({
+        imports: [Field],
+        template: `
+          <select #select [field]="f">
+            <option value="one">One</option>
+            <option value="two">Two</option>
+            <option value="three">Three</option>
+          </select>
+        `,
+      })
+      class TestCmp {
+        f = form(signal('two' as string | null));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const select = fix.nativeElement.firstChild as HTMLSelectElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(select.value).toBe('two');
+
+      // Nullable value
+      act(() => cmp.f().value.set(null));
+      expect(select.value).toBe('');
+
+      act(() => cmp.f().value.set('three'));
+      expect(select.value).toBe('three');
+    });
+  });
 });
 
 function setupRadioGroup() {
