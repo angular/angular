@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {addDefaultField} from '../../field/validation';
-import {FieldPathNode} from '../../schema/path_node';
-import {assertPathIsCurrent} from '../../schema/schema';
-import type {FieldContext, SchemaPath, TreeValidator, PathKind, SchemaPathRules} from '../types';
+import {addDefaultField} from '../../../field/validation';
+import {FieldPathNode} from '../../../schema/path_node';
+import {assertPathIsCurrent} from '../../../schema/schema';
+import type {FieldContext, PathKind, SchemaPath, SchemaPathRules, TreeValidator} from '../../types';
 
 /**
  * Adds logic to a field to determine if the field or any of its child fields has validation errors.
