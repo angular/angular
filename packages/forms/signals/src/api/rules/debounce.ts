@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DEBOUNCER} from '../field/debounce';
-import {FieldPathNode} from '../schema/path_node';
-import {assertPathIsCurrent} from '../schema/schema';
-import type {Debouncer, PathKind, SchemaPath, SchemaPathRules} from './types';
+import {DEBOUNCER} from '../../field/debounce';
+import {FieldPathNode} from '../../schema/path_node';
+import {assertPathIsCurrent} from '../../schema/schema';
+import type {Debouncer, PathKind, SchemaPath, SchemaPathRules} from '../types';
 
 /**
  * Configures the frequency at which a form field is updated by UI events.

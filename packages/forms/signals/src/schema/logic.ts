@@ -7,9 +7,9 @@
  */
 
 import {untracked} from '@angular/core';
-import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
+import type {AggregateMetadataKey, MetadataKey} from '../api/rules/metadata';
 import {DisabledReason, type FieldContext, type SchemaPath, type LogicFn} from '../api/types';
-import type {ValidationError} from '../api/validation_errors';
+import type {ValidationError} from '../api/rules/validation/validation_errors';
 import type {FieldNode} from '../field/node';
 import {isArray} from '../util/type_guards';
 

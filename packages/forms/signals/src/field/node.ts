@@ -17,9 +17,9 @@ import {
   MIN_LENGTH,
   PATTERN,
   REQUIRED,
-} from '../api/metadata';
+} from '../api/rules/metadata';
 import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
-import type {ValidationError} from '../api/validation_errors';
+import type {ValidationError} from '../api/rules/validation/validation_errors';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
 import {FieldNodeContext} from './context';

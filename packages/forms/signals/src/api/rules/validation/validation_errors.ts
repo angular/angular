@@ -7,7 +7,7 @@
  */
 
 import type {StandardSchemaV1} from '@standard-schema/spec';
-import {FieldTree} from './types';
+import {FieldTree} from '../../types';
 
 /**
  * Options used to create a `ValidationError`.

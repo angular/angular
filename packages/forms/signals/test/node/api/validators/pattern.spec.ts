@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {PATTERN, form, pattern} from '../../../../public_api';
-import {customError, patternError} from '../../../../src/api/validation_errors';
+import {customError, patternError} from '../../../../src/api/rules/validation/validation_errors';
 
 describe('pattern validator', () => {
   it('validates whether a value matches the pattern', () => {

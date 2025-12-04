@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AggregateMetadataKey, reducedMetadataKey} from '../api/metadata';
+import {AggregateMetadataKey, reducedMetadataKey} from '../api/rules/metadata';
 import {Debouncer} from '../api/types';
 
 /**

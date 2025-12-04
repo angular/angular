@@ -15,7 +15,7 @@ import {
   type ValidationErrors,
   type ValidatorFn,
 } from '@angular/forms';
-import {REQUIRED} from '../api/metadata';
+import {REQUIRED} from '../api/rules/metadata';
 import type {FieldState} from '../api/types';
 
 // TODO: Also consider supporting (if possible):

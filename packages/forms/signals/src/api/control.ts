@@ -8,7 +8,7 @@
 
 import {InputSignal, InputSignalWithTransform, ModelSignal, OutputRef} from '@angular/core';
 import type {DisabledReason} from './types';
-import {ValidationError, type WithOptionalField} from './validation_errors';
+import {ValidationError, type WithOptionalField} from './rules/validation/validation_errors';
 
 /**
  * The base set of properties shared by all form control contracts.
