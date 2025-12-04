@@ -8,12 +8,10 @@
     cdkDropListConnectedTo="even"
     class="example-list"
     (cdkDropListDropped)="drop($event)"
-    [cdkDropListEnterPredicate]="noReturnPredicate">
+    [cdkDropListEnterPredicate]="noReturnPredicate"
+  >
     @for (number of all; track number) {
-      <div
-          class="example-box"
-          [cdkDragData]="number"
-          cdkDrag>{{number}}</div>
+      <div class="example-box" [cdkDragData]="number" cdkDrag>{{number}}</div>
     }
   </div>
 </div>
@@ -28,12 +26,10 @@
     cdkDropListConnectedTo="all"
     class="example-list"
     (cdkDropListDropped)="drop($event)"
-    [cdkDropListEnterPredicate]="evenPredicate">
+    [cdkDropListEnterPredicate]="evenPredicate"
+  >
     @for (number of even; track number) {
-      <div
-          class="example-box"
-          cdkDrag
-          [cdkDragData]="number">{{number}}</div>
+      <div class="example-box" cdkDrag [cdkDragData]="number">{{number}}</div>
     }
   </div>
 </div>

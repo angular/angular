@@ -3,7 +3,7 @@
 <button type="button" (click)="randomize()">Randomize</button>
 
 <ul class="items">
-  @for(item of items; track item) {
+  @for (item of items; track item) {
     <li @itemAnimation class="item">{{ item }}</li>
   }
 </ul>

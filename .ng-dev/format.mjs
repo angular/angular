@@ -7,6 +7,7 @@ export const format = {
   'prettier': {
     'matchers': [
       '**/*.md',
+      '**/*.html',
       '**/*.{yaml,yml}',
       '**/*.{js,ts,mjs,mts,cjs,cts,tsx}',
       'devtools/**/*.{js,ts,mjs,mts,cjs,cts,html,scss}',

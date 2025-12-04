@@ -1,4 +1,9 @@
-<div ngToolbar orientation="vertical" class="vertical-material-toolbar" aria-label="Text Formatting Tools">
+<div
+  ngToolbar
+  orientation="vertical"
+  class="vertical-material-toolbar"
+  aria-label="Text Formatting Tools"
+>
   <div class="group">
     <button
       ngToolbarWidget
@@ -6,7 +11,8 @@
       type="button"
       aria-label="undo"
       class="material-symbols-outlined"
-     translate="no">
+      translate="no"
+    >
       undo
     </button>
 
@@ -16,7 +22,8 @@
       type="button"
       aria-label="redo"
       class="material-symbols-outlined"
-     translate="no">
+      translate="no"
+    >
       redo
     </button>
   </div>
@@ -32,7 +39,8 @@
       #bold="ngToolbarWidget"
       class="material-symbols-outlined"
       [aria-pressed]="bold.selected()"
-     translate="no">
+      translate="no"
+    >
       format_bold
     </button>
 
@@ -44,7 +52,8 @@
       #italic="ngToolbarWidget"
       class="material-symbols-outlined"
       [aria-pressed]="italic.selected()"
-     translate="no">
+      translate="no"
+    >
       format_italic
     </button>
 
@@ -56,7 +65,8 @@
       #underlined="ngToolbarWidget"
       class="material-symbols-outlined"
       [aria-pressed]="underlined.selected()"
-     translate="no">
+      translate="no"
+    >
       format_underlined
     </button>
   </div>

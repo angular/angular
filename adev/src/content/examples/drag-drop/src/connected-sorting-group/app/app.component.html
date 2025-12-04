@@ -6,7 +6,8 @@
       cdkDropList
       [cdkDropListData]="todo"
       class="example-list"
-      (cdkDropListDropped)="drop($event)">
+      (cdkDropListDropped)="drop($event)"
+    >
       @for (item of todo; track item) {
         <div class="example-box" cdkDrag>{{item}}</div>
       }
@@ -20,7 +21,8 @@
       cdkDropList
       [cdkDropListData]="done"
       class="example-list"
-      (cdkDropListDropped)="drop($event)">
+      (cdkDropListDropped)="drop($event)"
+    >
       @for (item of done; track item) {
         <div class="example-box" cdkDrag>{{item}}</div>
       }
