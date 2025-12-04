@@ -238,5 +238,8 @@ describe('DocViewer', () => {
     copyButton.click();
 
     expect(clipboardSpy).toHaveBeenCalled();
+    // Because the copyButton click bubbles up to an anchor tag, causing a navigation, it is
+    // necessary to undo this location change by going back in the history.
+    window.history.back();
   });
 });
