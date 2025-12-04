@@ -10,14 +10,14 @@ import {Injector, signal} from '@angular/core';
 import {form} from '../../../../src/api/structure';
 
 import {TestBed} from '@angular/core/testing';
-import {validate} from '../../../../src/api/logic';
+import {validate} from '../../../../src/api/rules';
 import {
   customError,
   CustomValidationError,
   minError,
   MinValidationError,
   ValidationError,
-} from '../../../../src/api/validation_errors';
+} from '../../../../src/api/rules/validation/validation_errors';
 import {FieldTree, FieldValidator, PathKind} from '../../../../src/api/types';
 import Root = PathKind.Root;
 

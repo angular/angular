@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {form, required} from '../../../../public_api';
-import {customError, requiredError} from '../../../../src/api/validation_errors';
+import {customError, requiredError} from '../../../../src/api/rules/validation/validation_errors';
 
 describe('required validator', () => {
   it('returns required Error when the value is not present', () => {

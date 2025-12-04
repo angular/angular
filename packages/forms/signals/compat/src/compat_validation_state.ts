@@ -8,7 +8,7 @@
 
 import {computed, Signal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
-import {ValidationError} from '../../src/api/validation_errors';
+import {ValidationError} from '../../src/api/rules/validation/validation_errors';
 import {calculateValidationSelfStatus, ValidationState} from '../../src/field/validation';
 import type {CompatValidationError} from './api/compat_validation_error';
 import {getControlStatusSignal} from './compat_field_node';

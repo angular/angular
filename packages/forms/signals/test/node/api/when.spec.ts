@@ -16,7 +16,7 @@ import {
   form,
   validate,
 } from '../../../public_api';
-import {customError, requiredError} from '../../../src/api/validation_errors';
+import {customError, requiredError} from '../../../src/api/rules/validation/validation_errors';
 
 export interface User {
   first: string;

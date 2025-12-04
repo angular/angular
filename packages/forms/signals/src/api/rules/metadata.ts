@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {FieldPathNode} from '../../schema/path_node';
+import {assertPathIsCurrent} from '../../schema/schema';
+import type {FieldContext, PathKind, SchemaPath, SchemaPathRules} from '../types';
+
 /**
  * Represents metadata that may be defined on a field when it is created using a `metadata` rule
  * in the schema. A particular `MetadataKey` can only be defined on a particular field **once**.
@@ -192,3 +196,59 @@ export const MAX_LENGTH: AggregateMetadataKey<number | undefined, number | undef
  * @experimental 21.0.0
  */
 export const PATTERN: AggregateMetadataKey<RegExp[], RegExp | undefined> = listMetadataKey();
+
+/**
+ * Creates a new {@link MetadataKey} and defines the value of the new metadata key for the given field.
+ *
+ * @param path The path to define the metadata for.
+ * @param factory A factory function that creates the value for the metadata.
+ *   This function is **not** reactive. It is run once when the field is created.
+ * @returns The newly created metadata key
+ *
+ * @category logic
+ * @experimental 21.0.0
+ */
+export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
+): MetadataKey<TData>;
+
+/**
+ * Defines the value of a {@link MetadataKey} for a given field.
+ *
+ * @param path The path to define the metadata for.
+ * @param key  The metadata key to define.
+ * @param factory A factory function that creates the value for the metadata.
+ *   This function is **not** reactive. It is run once when the field is created.
+ * @returns The given metadata key
+ *
+ * @category logic
+ * @experimental 21.0.0
+ */
+export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  key: MetadataKey<TData>,
+  factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
+): MetadataKey<TData>;
+
+export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  ...rest:
+    | [(ctx: FieldContext<TValue, TPathKind>) => TData]
+    | [MetadataKey<TData>, (ctx: FieldContext<TValue, TPathKind>) => TData]
+): MetadataKey<TData> {
+  assertPathIsCurrent(path);
+
+  let key: MetadataKey<TData>;
+  let factory: (ctx: FieldContext<TValue, TPathKind>) => TData;
+  if (rest.length === 2) {
+    [key, factory] = rest;
+  } else {
+    [factory] = rest;
+  }
+  key ??= createMetadataKey();
+
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  pathNode.builder.addMetadataFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
+  return key;
+}

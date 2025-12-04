@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {MIN, form, min} from '../../../../public_api';
-import {customError, minError} from '../../../../src/api/validation_errors';
+import {customError, minError} from '../../../../src/api/rules/validation/validation_errors';
 
 describe('min validator', () => {
   it('returns min error when the value is smaller', () => {

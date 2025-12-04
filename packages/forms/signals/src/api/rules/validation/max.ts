@@ -7,10 +7,11 @@
  */
 
 import {computed} from '@angular/core';
-import {aggregateMetadata, metadata, validate} from '../logic';
-import {MAX} from '../metadata';
-import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
-import {maxError} from '../validation_errors';
+import {aggregateMetadata} from '../aggregate_metadata';
+import {validate} from './validate';
+import {metadata, MAX} from '../metadata';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
+import {maxError} from './validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
 /**

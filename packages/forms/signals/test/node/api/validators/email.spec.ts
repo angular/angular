@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {email, form} from '../../../../public_api';
-import {customError, emailError} from '../../../../src/api/validation_errors';
+import {customError, emailError} from '../../../../src/api/rules/validation/validation_errors';
 
 describe('email validator', () => {
   it('returns requiredTrue error when the value is false', () => {

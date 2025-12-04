@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {MAX, form, max} from '../../../../public_api';
-import {customError, maxError} from '../../../../src/api/validation_errors';
+import {customError, maxError} from '../../../../src/api/rules/validation/validation_errors';
 
 describe('max validator', () => {
   it('returns max error when the value is larger', () => {
