@@ -7,8 +7,6 @@
 @let data = data$ | async;
 ```
 
-## Description
-
 `@let` declarations are similar to [JavaScript's `let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let) and
 their values can be any valid Angular expression. The expressions will be re-evaluated everytime the template is executed.
 

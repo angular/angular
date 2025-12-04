@@ -16,8 +16,6 @@ The `@switch` block is inspired by the JavaScript `switch` statement:
 }
 ```
 
-## Description
-
 The `@switch` blocks displays content selected by one of the cases matching against the conditional
 expression. The value of the conditional expression is compared to the case expression using
 the `===` operator.
@@ -27,3 +25,5 @@ is no `@default` block, nothing is shown.
 
 **`@switch` does not have fallthrough**, so you do not need an equivalent to a `break` or `return`
 statement.
+
+Learn more in the [conditionally display content with the `@switch` block](guide/templates/control-flow#conditionally-display-content-with-the-switch-block).

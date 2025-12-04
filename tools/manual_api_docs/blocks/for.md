@@ -4,13 +4,11 @@ The `@for` block repeatedly renders content of a block for each item in a collec
 
 ```angular-html
 @for (item of items; track item.name) {
-<li>{{ item.name }}</li>
+  <li> {{ item.name }}</li>
 } @empty {
-<li>There are no items.</li>
+  <li> There are no items. </li>
 }
 ```
-
-## Description
 
 The `@for` block renders its content in response to changes in a collection. Collections can be any
 JavaScript [iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols),
@@ -54,9 +52,11 @@ These variables are always available with these names, but can be aliased via a 
 
 ```angular-html
 @for (item of items; track item.id; let idx = $index, e = $even) {
-Item #{{ idx }}: {{ item.name }}
+  <p>Item #{{ idx }}: {{ item.name }}</p>
 }
 ```
 
 The aliasing is especially useful in case of using nested `@for` blocks where contextual variable
 names could collide.
+
+Learn more in the [Repeat content with the @for block](guide/templates/control-flow#repeat-content-with-the-for-block).

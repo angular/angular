@@ -12,8 +12,6 @@ The `@if` block conditionally displays its content when its condition expression
 }
 ```
 
-## Description
-
 Content is added and removed from the DOM based on the evaluation of conditional expressions in
 the `@if` and `@else` blocks.
 
@@ -25,3 +23,5 @@ patterns:
   {{ users.length }}
 }
 ```
+
+Learn more in the [conditionally display content with `@if` and `@else` blocks](guide/templates/control-flow#conditionally-display-content-with-if-else-if-and-else).
