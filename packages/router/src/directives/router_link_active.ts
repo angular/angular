@@ -21,13 +21,14 @@ import {
   QueryList,
   Renderer2,
   SimpleChanges,
+  untracked,
 } from '@angular/core';
 import {from, of, Subscription} from 'rxjs';
 import {mergeAll} from 'rxjs/operators';
 
 import {Event, NavigationEnd} from '../events';
-import {Router} from '../router';
-import {IsActiveMatchOptions} from '../url_tree';
+import {exactMatchOptions, Router, subsetMatchOptions} from '../router';
+import {isActive, IsActiveMatchOptions} from '../url_tree';
 
 import {RouterLink} from './router_link';
 
@@ -246,15 +247,16 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
 
   private isLinkActive(router: Router): (link: RouterLink) => boolean {
-    const options: boolean | IsActiveMatchOptions = isActiveMatchOptions(
-      this.routerLinkActiveOptions,
-    )
+    const options: IsActiveMatchOptions = isActiveMatchOptions(this.routerLinkActiveOptions)
       ? this.routerLinkActiveOptions
       : // While the types should disallow `undefined` here, it's possible without strict inputs
-        this.routerLinkActiveOptions.exact || false;
+        (this.routerLinkActiveOptions.exact ?? false)
+        ? {...exactMatchOptions}
+        : {...subsetMatchOptions};
+
     return (link: RouterLink) => {
       const urlTree = link.urlTree;
-      return urlTree ? router.isActive(urlTree, options) : false;
+      return urlTree ? untracked(isActive(urlTree, router, options)) : false;
     };
   }
 
