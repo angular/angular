@@ -105,6 +105,7 @@ For example, consider a beverage order form with a `size` field (6, 12, or 24 pa
 Although the size options look numeric, `<select>` elements work with string values, so `size` should be modeled as a string. An `<input type="number">` on the other hand, does work with numbers, so `quantity` can be modeled as a number.
 
 ```ts
+// Good: Appropriate data types for the bound UI controls
 interface BeverageOrderFormModel {
   size: string;      // Bound to: <select> (option values: "6", "12", "24")
   quantity: number;  // Bound to: <input type="number">
@@ -134,32 +135,35 @@ form(signal({name: '', birthday: null}));
 A form model has a dynamic structure if it changes shape (if the properties on the object change) based on its value. This happens when the model type allows for values with different shapes, such as a union of different object types, or a union of an object and a primitive. Let's look at a few examples to better understand.
 
 ```ts
-// ✅ Static structure models:
-
-interface FormModelA {
-  propertyA: string;
+// Good: Static structure models
+interface UserProfileFormModel {
+  username: string;
 }
 
-interface FormModelB {
-  propertyB: string | null;
+interface AppConfigFormModel {
+  theme: string | null;
 }
 ```
 
-In the above example, we can clearly see that `FormModelA` has a static structure, all of the assignable values have the same shape. Likewise all values that can be assigned to `FormModelB` have the same _shape_, even if the type of `propertyB` might differ (`{propertyB: ''}` has the same properties as `{propertyB: null}`).
+In the above example, we can clearly see that `UserProfileFormModel` has a static structure, all of the assignable values have the same shape. Likewise all values that can be assigned to `AppConfigFormModel` have the same _shape_, even if the type of `theme` might differ (`{theme: 'dark'}` has the same properties as `{theme: null}`).
 
 ```ts
-// ❌ Dynamic structure models:
 
-interface FormModelC {
-  propertyC: FormModelA | null;
+// Avoid: Dynamic structure models
+interface UserLocationFormModel {
+  location:
+    | {lat: string, long: string}
+    | null;
 }
 
-interface FormModelD {
-  propertyD: FormModelA | FormModelB;
+interface ContactFormModel {
+  contact:
+    | { email: string }
+    | { phone: string };
 }
 ```
 
-However in this example we can see that both `FormModelC` and `FormModelD` can hold values of different shapes. `FormModelC` could contain `{propertyC: {propertyA: ''}}` or `{propertyC: null}`. `FormModelD` could contain `{propertyD: {propertyA: ''}}` or `{propertyD: {propertyB: ''}}` (Note the different sub-properties, `propertyA` vs `propertyB`).
+However in this example we can see that both `UserLocationFormModel` and `ContactFormModel` can hold values of different shapes. `UserLocationFormModel` could contain `{location: {lat: '...', long: '...'}}` or `{location: null}`. `ContactFormModel` could contain `{contact: {email: '...'}}` or `{contact: {phone: '...'}}` (Note the different sub-properties, `email` vs `phone`).
 
 The following sections examine a few common scenarios where models with a dynamic structure might seem appealing, but ultimately prove problematic.
 
@@ -186,6 +190,7 @@ createAccountForm = form<CreateAccountFormModel | null>(signal(/* what goes here
 However, it is important to remember that Signal Forms is _model driven_. If our model is `null` and `null` doesn't have a `name` or `username` property, that means our form won't have those subfields either. Instead what we really want is an instance of `CreateAccountFormModel` with all of its leaf fields set to an empty value.
 
 ```ts
+// Good: Empty initial value with the same shape
 createAccountForm = form<CreateAccountFormModel>(signal({
   name: {
     first: '',
@@ -230,41 +235,10 @@ Name: <input type="text">
 </section>
 ```
 
-A dynamic form model may initially seem like a good fit for this use case. After all, we don't need fields for account and routing number if the user selected "Credit Card". We may be tempted to model this as a discriminated union:
+The best way to handle this is to use a form model with a static structure that includes fields for _all_ potential payment methods. In our schema, we can hide or disable the fields that are not currently available.
 
 ```ts
-// ❌ Dynamic structure model
-interface BillPayFormModel {
-  name: string;
-  method:
-    | {
-        type: 'card',
-        cardNumber: string,
-        securityCode: string,
-        expiration: string
-      }
-    | {
-        type: 'bank',
-        accountNumber: string,
-        routingNumber: string
-      };
-}
-```
-
-However, consider what would happen in the following scenario:
-
-1. User fills out their name and credit card information
-2. They're about to submit, but at the last moment they notice the convenience fee.
-3. They toggle to the bank account option instead, figuring they might as well avoid the fee.
-4. As they're about to enter the bank account info, they have second thoughts, they wouldn't want it to wind up in a leak.
-5. They toggle back to credit card option, but they notice all the info they just entered is gone!
-
-This illustrates another problem with form models that have a dynamic structure: they can be destructive to the user's input. A model like this assumes that once a field becomes hidden, the information in it will never be needed again. It replaces the credit card information with the bank information, and has no way to get the credit card information back.
-
-Instead, we can use a form model with a static structure that includes fields for _all_ potential payment methods. In our schema, we can hide or disable the fields that are not currently available.
-
-```ts
-// ✅ Static structure model
+// Good: Static structure model
 interface BillPayFormModel {
   name: string;
   method: {
@@ -291,6 +265,37 @@ const billPaySchema = schema<BillPayFormModel>((billPay) => {
 
 Using this model, both `card` and `bank` objects are always present in the form's state. When the user switches payment methods, we only update the `type` property. The data they entered into the card fields remains safely stored in the `card` object, ready to be redisplayed if they switch back.
 
+In contrast, a dynamic form model may initially seem like a good fit for this use case. After all, we don't need fields for account and routing number if the user selected "Credit Card". We may be tempted to model this as a discriminated union:
+
+```ts
+// Avoid: Dynamic structure model
+interface BillPayFormModel {
+  name: string;
+  method:
+    | {
+        type: 'card',
+        cardNumber: string,
+        securityCode: string,
+        expiration: string
+      }
+    | {
+        type: 'bank',
+        accountNumber: string,
+        routingNumber: string
+      };
+}
+```
+
+However, consider what would happen in the following scenario:
+
+1. User fills out their name and credit card information
+2. They're about to submit, but at the last moment they notice the convenience fee.
+3. They toggle to the bank account option instead, figuring they might as well avoid the fee.
+4. As they're about to enter the bank account info, they have second thoughts, they wouldn't want it to wind up in a leak.
+5. They toggle back to credit card option, but they notice all the info they just entered is gone!
+
+This illustrates another problem with form models that have a dynamic structure: they can be cause data loss. A model like this assumes that once a field becomes hidden, the information in it will never be needed again. It replaces the credit card information with the bank information, and has no way to get the credit card information back.
+
 #### Exceptions
 
 While static structure is generally preferred, there are specific scenarios where dynamic structure is necessary and supported.
@@ -300,12 +305,13 @@ While static structure is generally preferred, there are specific scenarios wher
 Arrays are the most common exception. Forms often need to collect a variable number of items, such as a list of phone numbers, attendees, or line items in an order.
 
 ```ts
-interface ContactFormModel {
-  phoneNumbers: string[];
+interface SendEmailFormModel {
+  subject: string;
+  recipientEmails: string[]
 }
 ```
 
-In this case, the `phoneNumbers` array grows and shrinks as the user interacts with the form. While the length of the array is dynamic, the structure of the individual items should be consistent (each item should have the same shape).
+In this case, the `recipientEmails` array grows and shrinks as the user interacts with the form. While the length of the array is dynamic, the structure of the individual items should be consistent (each item should have the same shape).
 
 ##### Fields that are treated atomically by the UI control
 
@@ -321,7 +327,7 @@ interface Location {
 
 interface UserProfileFormModel {
   username: string;
-  // ✅ Dynamic structure, but ok because the location picker treats this field as atomic.
+  // Dynamic structure, but ok because the location picker treats this field as atomic.
   location: Location | null;
 }
 ```
