@@ -11,7 +11,7 @@
       "members": [
         {
           "name": "id",
-          "type": "any",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -31,7 +31,7 @@
         },
         {
           "name": "textDirection",
-          "type": "any",
+          "type": "Signal<Direction>",
           "memberType": "property",
           "memberTags": [
             "protected"
@@ -41,7 +41,7 @@
         },
         {
           "name": "items",
-          "type": "any",
+          "type": "Signal<any[]>",
           "memberType": "property",
           "memberTags": [
             "protected"
@@ -51,7 +51,7 @@
         },
         {
           "name": "orientation",
-          "type": "any",
+          "type": "InputSignal<\"vertical\" | \"horizontal\">",
           "memberType": "property",
           "memberTags": [],
           "description": "Whether the list is vertically or horizontally oriented.",
@@ -59,7 +59,7 @@
         },
         {
           "name": "multi",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [],
           "description": "Whether multiple items in the list can be selected at once.",
@@ -67,7 +67,7 @@
         },
         {
           "name": "wrap",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [],
           "description": "Whether focus should wrap when navigating.",
@@ -75,7 +75,7 @@
         },
         {
           "name": "softDisabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [],
           "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",
@@ -83,7 +83,7 @@
         },
         {
           "name": "focusMode",
-          "type": "any",
+          "type": "InputSignal<\"roving\" | \"activedescendant\">",
           "memberType": "property",
           "memberTags": [],
           "description": "The focus strategy used by the list.\n- `roving`: Focus is moved to the active item using `tabindex`.\n- `activedescendant`: Focus remains on the listbox container, and `aria-activedescendant` is used to indicate the active item.",
@@ -91,7 +91,7 @@
         },
         {
           "name": "selectionMode",
-          "type": "any",
+          "type": "InputSignal<\"follow\" | \"explicit\">",
           "memberType": "property",
           "memberTags": [],
           "description": "The selection strategy used by the list.\n- `follow`: The focused item is automatically selected.\n- `explicit`: Items are selected explicitly by the user (e.g., via click or spacebar).",
@@ -99,7 +99,7 @@
         },
         {
           "name": "typeaheadDelay",
-          "type": "any",
+          "type": "InputSignal<number>",
           "memberType": "property",
           "memberTags": [],
           "description": "The amount of time before the typeahead search is reset.",
@@ -107,7 +107,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [],
           "description": "Whether the listbox is disabled.",
@@ -115,7 +115,7 @@
         },
         {
           "name": "readonly",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [],
           "description": "Whether the listbox is readonly.",
@@ -123,7 +123,7 @@
         },
         {
           "name": "values",
-          "type": "any",
+          "type": "ModelSignal<V[]>",
           "memberType": "property",
           "memberTags": [],
           "description": "The values of the currently selected items.",
@@ -249,7 +249,7 @@
         },
         {
           "name": "active",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [],
           "description": "Whether the option is currently active (focused).",
@@ -257,7 +257,7 @@
         },
         {
           "name": "id",
-          "type": "any",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -270,7 +270,7 @@
         },
         {
           "name": "searchTerm",
-          "type": "any",
+          "type": "Signal<string>",
           "memberType": "property",
           "memberTags": [
             "protected"
@@ -280,7 +280,7 @@
         },
         {
           "name": "value",
-          "type": "any",
+          "type": "InputSignal<V>",
           "memberType": "property",
           "memberTags": [
             "input"
@@ -292,7 +292,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "input"
@@ -304,7 +304,7 @@
         },
         {
           "name": "label",
-          "type": "any",
+          "type": "InputSignal<string | undefined>",
           "memberType": "property",
           "memberTags": [
             "input"
@@ -316,7 +316,7 @@
         },
         {
           "name": "selected",
-          "type": "any",
+          "type": "Signal<boolean | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"

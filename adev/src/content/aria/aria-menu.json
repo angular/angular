@@ -21,7 +21,7 @@
         },
         {
           "name": "textDirection",
-          "type": "any",
+          "type": "WritableSignal<Direction>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -31,7 +31,7 @@
         },
         {
           "name": "menu",
-          "type": "any",
+          "type": "InputSignal<Menu<V> | undefined>",
           "memberType": "property",
           "memberTags": [
             "input"
@@ -43,7 +43,7 @@
         },
         {
           "name": "expanded",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -53,7 +53,7 @@
         },
         {
           "name": "hasPopup",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -63,7 +63,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -76,7 +76,7 @@
         },
         {
           "name": "softDisabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -182,7 +182,7 @@
     {
       "name": "Menu",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "element",
@@ -196,7 +196,7 @@
         },
         {
           "name": "textDirection",
-          "type": "any",
+          "type": "WritableSignal<Direction>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -206,47 +206,59 @@
         },
         {
           "name": "id",
-          "type": "any",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The unique ID of the menu.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
         },
         {
           "name": "wrap",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether the menu should wrap its items.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "wrap",
+          "isRequiredInput": false
         },
         {
           "name": "typeaheadDelay",
-          "type": "any",
+          "type": "InputSignal<number>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The delay in milliseconds before the typeahead buffer is cleared.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "typeaheadDelay",
+          "isRequiredInput": false
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether the menu is disabled.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
         },
         {
           "name": "parent",
-          "type": "any",
+          "type": "WritableSignal<MenuTrigger<V> | MenuItem<V> | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -256,7 +268,7 @@
         },
         {
           "name": "visible",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -266,7 +278,7 @@
         },
         {
           "name": "tabIndex",
-          "type": "any",
+          "type": "Signal<0 | -1>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -276,21 +288,27 @@
         },
         {
           "name": "onSelect",
-          "type": "any",
+          "type": "OutputEmitterRef<V>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "output"
+          ],
           "description": "A callback function triggered when a menu item is selected.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "outputAlias": "onSelect"
         },
         {
           "name": "expansionDelay",
-          "type": "any",
+          "type": "InputSignal<number>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The delay in milliseconds before expanding sub-menus on hover.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "expansionDelay",
+          "isRequiredInput": false
         },
         {
           "name": "close",
@@ -340,6 +358,11 @@
       ],
       "rawComment": "/**\n * A list of menu items.\n *\n * A `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\n * within other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\n * and `ngMenuItem` directives.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem>Star</div>\n *   <div ngMenuItem>Edit</div>\n *   <div ngMenuItem [submenu]=\"subMenu\">More</div>\n * </div>\n *\n * <div ngMenu #subMenu=\"ngMenu\">\n *   <div ngMenuItem>Sub Item 1</div>\n *   <div ngMenuItem>Sub Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
+      "isStandalone": true,
+      "selector": "[ngMenu]",
+      "exportAs": [
+        "ngMenu"
+      ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
         "startLine": 143,
@@ -363,7 +386,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -376,7 +399,7 @@
         },
         {
           "name": "softDisabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -389,7 +412,7 @@
         },
         {
           "name": "textDirection",
-          "type": "any",
+          "type": "WritableSignal<Direction>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -399,7 +422,7 @@
         },
         {
           "name": "values",
-          "type": "any",
+          "type": "ModelSignal<V[]>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -414,7 +437,7 @@
         },
         {
           "name": "wrap",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -427,7 +450,7 @@
         },
         {
           "name": "typeaheadDelay",
-          "type": "any",
+          "type": "InputSignal<number>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -440,7 +463,7 @@
         },
         {
           "name": "onSelect",
-          "type": "any",
+          "type": "OutputEmitterRef<V>",
           "memberType": "property",
           "memberTags": [
             "output"
@@ -525,7 +548,7 @@
         },
         {
           "name": "id",
-          "type": "any",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -538,7 +561,7 @@
         },
         {
           "name": "value",
-          "type": "any",
+          "type": "InputSignal<V>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -551,7 +574,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -564,7 +587,7 @@
         },
         {
           "name": "searchTerm",
-          "type": "any",
+          "type": "ModelSignal<string>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -579,7 +602,7 @@
         },
         {
           "name": "parent",
-          "type": "any",
+          "type": "Menu<V> | MenuBar<V> | null",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -589,7 +612,7 @@
         },
         {
           "name": "submenu",
-          "type": "any",
+          "type": "InputSignal<Menu<V> | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -602,7 +625,7 @@
         },
         {
           "name": "active",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -612,7 +635,7 @@
         },
         {
           "name": "expanded",
-          "type": "any",
+          "type": "Signal<boolean | null>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -622,7 +645,7 @@
         },
         {
           "name": "hasPopup",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -725,7 +748,7 @@
     {
       "name": "MenuContent",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [],
       "generics": [],
       "description": "Defers the rendering of the menu content.\n\nThis structural directive should be applied to an `ng-template` within a `ngMenu`\nor `ngMenuBar` to lazily render its content only when the menu is opened.\n\n```html\n<div ngMenu #myMenu=\"ngMenu\">\n  <ng-template ngMenuContent>\n    <div ngMenuItem>Lazy Item 1</div>\n    <div ngMenuItem>Lazy Item 2</div>\n  </ng-template>\n</div>\n```",
@@ -737,6 +760,11 @@
       ],
       "rawComment": "/**\n * Defers the rendering of the menu content.\n *\n * This structural directive should be applied to an `ng-template` within a `ngMenu`\n * or `ngMenuBar` to lazily render its content only when the menu is opened.\n *\n * ```html\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <ng-template ngMenuContent>\n *     <div ngMenuItem>Lazy Item 1</div>\n *     <div ngMenuItem>Lazy Item 2</div>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
+      "isStandalone": true,
+      "selector": "ng-template[ngMenuContent]",
+      "exportAs": [
+        "ngMenuContent"
+      ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
         "startLine": 505,
