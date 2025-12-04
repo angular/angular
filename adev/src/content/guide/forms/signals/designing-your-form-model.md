@@ -25,7 +25,78 @@ Forms should use a form model tailored to the input experience, rather than simp
 
 ## Form model best practices
 
-### 1. Match data types to UI controls
+### Use specific types
+
+Always define interfaces or types for your models as shown in [Using TypeScript types](/guide/forms/signals/models#using-typescript-types). Explicit types provide better IntelliSense, catch errors at compile time, and serve as documentation for what data the form contains.
+
+### Initialize all fields
+
+Provide initial values for every field in your model:
+
+```ts
+// Good: All fields initialized
+const taskModel = signal({
+  title: '',
+  description: '',
+  priority: 'medium',
+  completed: false
+})
+```
+
+```ts
+// Avoid: Partial initialization
+const taskModel = signal({
+  title: ''
+  // Missing description, priority, completed
+})
+```
+
+Missing initial values mean those fields won't exist in the field tree, making them inaccessible for form interactions.
+
+### Keep models focused
+
+Each model should represent a single form or a cohesive set of related data:
+
+```ts
+// Good: Focused on login
+const loginModel = signal({
+  email: '',
+  password: ''
+})
+```
+
+```ts
+// Avoid: Mixing unrelated concerns
+const appModel = signal({
+  // Login data
+  email: '',
+  password: '',
+  // User preferences
+  theme: 'light',
+  language: 'en',
+  // Shopping cart
+  cartItems: []
+})
+```
+
+Separate models for different concerns makes forms easier to understand and reuse. Create multiple forms if you're managing distinct sets of data.
+
+### Consider validation requirements
+
+Design models with validation in mind. Group fields that validate together:
+
+```ts
+// Good: Password fields grouped for comparison
+interface PasswordChangeData {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+}
+```
+
+This structure makes cross-field validation (like checking if `newPassword` matches `confirmPassword`) more natural.
+
+### Match data types to UI controls
 
 Properties on your form model should match the data types expected by your UI controls.
 
@@ -40,7 +111,7 @@ interface BeverageOrderFormModel {
 }
 ```
 
-### 2. Avoid `undefined`
+### Avoid `undefined`
 
 A form model should never contain an `undefined` value (either directly or as the value of a sub-property). In Signal Forms the structure of the form is derived from the structure of the model, and `undefined` signifies the _absence of a field_, rather than a field with an empty value. This means you must also avoid optional fields (e.g., `{property?: string}`), as they implicitly allow `undefined`.
 
@@ -58,7 +129,7 @@ interface UserFormModel {
 form(signal({name: '', birthday: null}));
 ```
 
-### 3. Avoid models with dynamic structure
+### Avoid models with dynamic structure
 
 A form model has a dynamic structure if it changes shape (if the properties on the object change) based on its value. This happens when the model type allows for values with different shapes, such as a union of different object types, or a union of an object and a primitive. Let's look at a few examples to better understand.
 
