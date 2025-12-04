@@ -97,7 +97,7 @@
               @if (data.pathMatch) {
                 <tr ng-route-details-row label="Path Match" dataKey="pathMatch" [data]="data"></tr>
               }
-              @if (route?.data?.data?.length > 0) {
+              @if (data.data) {
                 <tr
                   ng-route-details-row
                   label="Data"
@@ -106,7 +106,7 @@
                   [data]="data"
                 ></tr>
               }
-              @if (data.resolvers && data.resolvers.length > 0) {
+              @if (data.resolvers) {
                 <tr
                   ng-route-details-row
                   label="Resolvers"

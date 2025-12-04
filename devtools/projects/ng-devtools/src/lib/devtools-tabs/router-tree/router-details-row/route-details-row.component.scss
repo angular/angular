@@ -1,3 +1,5 @@
+@use '../../../shared/object-tree-explorer/prop-action-btn';
+
 .tag-active,
 .tag-inactive {
   border-radius: 1rem;
@@ -46,4 +48,8 @@ button {
 
 td {
   width: 100%;
+}
+
+ng-object-tree-explorer {
+  --ote-padding: 0rem;
 }
