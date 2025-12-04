@@ -14,5 +14,5 @@ The following tabs display the example application and the associated translatio
     <docs-code header="app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html"/>
     <docs-code header="app.component.ts" path="adev/src/content/examples/i18n/src/app/app.component.ts"/>
     <docs-code header="src/main.ts" path="adev/src/content/examples/i18n/doc-files/main.1.ts"/>
-    <docs-code header="src/locale/messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html"/>
+    <docs-code header="src/locale/messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf"/>
 </docs-code-multifile>
