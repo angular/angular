@@ -7,31 +7,37 @@
     {
       "name": "AccordionPanel",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "id",
-          "type": "any",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "A global unique identifier for the panel.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
         },
         {
           "name": "panelId",
-          "type": "any",
+          "type": "InputSignal<string>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "A local unique identifier for the panel, used to match with its trigger's `panelId`.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "panelId",
+          "isRequiredInput": true
         },
         {
           "name": "visible",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -149,6 +155,11 @@
       ],
       "rawComment": "/**\n * The content panel of an accordion item that is conditionally visible.\n *\n * This directive is a container for the content that is shown or hidden. It requires\n * a `panelId` that must match the `panelId` of its corresponding `ngAccordionTrigger`.\n * The content within the panel should be provided using an `ng-template` with the\n * `ngAccordionContent` directive so that the content is not rendered on the page until the trigger\n * is expanded. It applies `role=\"region\"` for accessibility and uses the `inert` attribute to hide\n * its content from assistive technologies when not visible.\n *\n * ```html\n * <div ngAccordionPanel panelId=\"unique-id-1\">\n *   <ng-template ngAccordionContent>\n *     <p>This content is lazily rendered and will be shown when the panel is expanded.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
+      "isStandalone": true,
+      "selector": "[ngAccordionPanel]",
+      "exportAs": [
+        "ngAccordionPanel"
+      ],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
         "startLine": 52,
@@ -172,7 +183,7 @@
         },
         {
           "name": "id",
-          "type": "any",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -185,7 +196,7 @@
         },
         {
           "name": "panelId",
-          "type": "any",
+          "type": "InputSignal<string>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -198,7 +209,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -211,7 +222,7 @@
         },
         {
           "name": "expanded",
-          "type": "any",
+          "type": "ModelSignal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -226,7 +237,7 @@
         },
         {
           "name": "active",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -372,7 +383,7 @@
         },
         {
           "name": "textDirection",
-          "type": "any",
+          "type": "WritableSignal<Direction>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -382,7 +393,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -395,7 +406,7 @@
         },
         {
           "name": "multiExpandable",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -408,7 +419,7 @@
         },
         {
           "name": "softDisabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -421,7 +432,7 @@
         },
         {
           "name": "wrap",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -523,7 +534,7 @@
     {
       "name": "AccordionContent",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [],
       "generics": [],
       "description": "A structural directive that provides a mechanism for lazily rendering the content for an\n`ngAccordionPanel`.\n\nThis directive should be applied to an `ng-template` inside an `ngAccordionPanel`.\nIt allows the content of the panel to be lazily rendered, improving performance\nby only creating the content when the panel is first expanded.\n\n```html\n<div ngAccordionPanel panelId=\"unique-id-1\">\n  <ng-template ngAccordionContent>\n    <p>This is the content that will be displayed inside the panel.</p>\n  </ng-template>\n</div>\n```",
@@ -535,6 +546,9 @@
       ],
       "rawComment": "/**\n * A structural directive that provides a mechanism for lazily rendering the content for an\n * `ngAccordionPanel`.\n *\n * This directive should be applied to an `ng-template` inside an `ngAccordionPanel`.\n * It allows the content of the panel to be lazily rendered, improving performance\n * by only creating the content when the panel is first expanded.\n *\n * ```html\n * <div ngAccordionPanel panelId=\"unique-id-1\">\n *   <ng-template ngAccordionContent>\n *     <p>This is the content that will be displayed inside the panel.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
+      "isStandalone": true,
+      "selector": "ng-template[ngAccordionContent]",
+      "exportAs": [],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
         "startLine": 349,
