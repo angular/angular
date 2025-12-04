@@ -47,7 +47,7 @@ yq = use_extension("@yq.bzl//yq:extensions.bzl", "yq")
 use_repo(yq, "yq_toolchains")
 
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
-node.toolchain(node_version = "20.19.0")
+node.toolchain(node_version = "22.21.1")
 use_repo(node, "nodejs_toolchains")
 use_repo(node, "nodejs_darwin_amd64")
 use_repo(node, "nodejs_darwin_arm64")
