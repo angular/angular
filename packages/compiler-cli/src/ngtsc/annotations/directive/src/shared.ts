@@ -1681,6 +1681,8 @@ function parseOutputFields(
   outputsFromMeta: Record<string, string>,
 ): Record<string, string> {
   const outputs = {} as Record<string, string>;
+  // Track which member corresponds to each binding property name for conflict detection
+  const bindingPropertyToMember = new Map<string, {memberName: string; isModel: boolean}>();
 
   for (const member of members) {
     const decoratorOutput = tryParseDecoratorOutput(member, evaluator, isCore);
@@ -1737,6 +1739,28 @@ function parseOutputFields(
         `Output "${member.name}" is unexpectedly declared in @${classDecorator.name} as well.`,
       );
     }
+
+    // Check for conflicts between model implicit outputs and explicit outputs.
+    const existing = bindingPropertyToMember.get(bindingPropertyName);
+    if (existing) {
+      const currentIsModel = modelMapping !== null;
+
+      // Only error if one is a model and the other isn't (model implicit vs explicit output conflict)
+      if (existing.isModel !== currentIsModel) {
+        const errorMessage = `Output "${member.name}" conflicts with an implicit model output.`;
+
+        throw new FatalDiagnosticError(
+          ErrorCode.MODEL_OUTPUT_CONFLICT,
+          member.node ?? clazz,
+          errorMessage,
+        );
+      }
+    }
+
+    bindingPropertyToMember.set(bindingPropertyName, {
+      memberName: member.name,
+      isModel: modelMapping !== null,
+    });
 
     outputs[member.name] = bindingPropertyName;
   }
