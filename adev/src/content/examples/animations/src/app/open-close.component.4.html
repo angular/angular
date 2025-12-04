@@ -4,8 +4,7 @@
 </nav>
 <!-- #docregion toggle-animation -->
 <div [@.disabled]="isDisabled">
-  <div [@childAnimation]="isOpen ? 'open' : 'closed'"
-    class="open-close-container">
+  <div [@childAnimation]="isOpen ? 'open' : 'closed'" class="open-close-container">
     <p>The box is now {{ isOpen ? 'Open' : 'Closed' }}!</p>
   </div>
 </div>

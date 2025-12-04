@@ -4,12 +4,14 @@
 </nav>
 
 <!-- #docregion callbacks -->
-  <div [@openClose]="isOpen ? 'open' : 'closed'"
-    (@openClose.start)="onAnimationEvent($event)"
-    (@openClose.done)="onAnimationEvent($event)"
-    class="open-close-container">
-<!-- #enddocregion callbacks -->
+<div
+  [@openClose]="isOpen ? 'open' : 'closed'"
+  (@openClose.start)="onAnimationEvent($event)"
+  (@openClose.done)="onAnimationEvent($event)"
+  class="open-close-container"
+>
+  <!-- #enddocregion callbacks -->
   <p>The box is now {{ isOpen ? 'Open' : 'Closed' }}!</p>
-<!-- #docregion callbacks -->
+  <!-- #docregion callbacks -->
 </div>
 <!-- #enddocregion callbacks -->

@@ -19,15 +19,15 @@
 
         <ng-template ngComboboxPopupContainer>
           @if (options().length === 0) {
-          <div class="no-results">No results found</div>
+            <div class="no-results">No results found</div>
           }
 
           <div ngListbox [(values)]="selectedCountries">
             @for (option of options(); track option) {
-            <div ngOption [value]="option" [label]="option">
-              <span class="option-label">{{option}}</span>
-              <span class="material-symbols-outlined icon check-icon" translate="no">check</span>
-            </div>
+              <div ngOption [value]="option" [label]="option">
+                <span class="option-label">{{option}}</span>
+                <span class="material-symbols-outlined icon check-icon" translate="no">check</span>
+              </div>
             }
           </div>
         </ng-template>

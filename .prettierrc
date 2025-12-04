@@ -7,5 +7,20 @@
   "semi": true,
   "quoteProps": "preserve",
   "bracketSpacing": false,
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "overrides": [
+    {
+      "files": ["./.prettierrc"],
+      "options": {
+        "parser": "json"
+      }
+    },
+    {
+      "files": ["*.html"],
+      "excludeFiles": ["**/test/**"],
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ]
 }

@@ -2,7 +2,7 @@
   @for (movie of movies; track movie) {
     <div class="example-box" cdkDrag>
       {{movie.title}}
-      <img *cdkDragPreview [src]="movie.poster" [alt]="movie.title">
+      <img *cdkDragPreview [src]="movie.poster" [alt]="movie.title" />
     </div>
   }
 </div>
