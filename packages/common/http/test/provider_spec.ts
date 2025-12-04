@@ -206,10 +206,10 @@ describe('provideHttpClient', () => {
 
     it('should allow injection from an interceptor context', () => {
       const ALPHA = new InjectionToken<string>('alpha', {
-        providedIn: 'root',
+        // Providing a factory implies that the token is provided in root by default
         factory: () => 'alpha',
       });
-      const BETA = new InjectionToken<string>('beta', {providedIn: 'root', factory: () => 'beta'});
+      const BETA = new InjectionToken<string>('beta', {factory: () => 'beta'});
 
       TestBed.configureTestingModule({
         providers: [
@@ -626,7 +626,6 @@ function provideLegacyInterceptor(tag: string): Provider {
   }
 
   const token = new InjectionToken(`LegacyTagInterceptor[${tag}]`, {
-    providedIn: 'root',
     factory: () => new LegacyTagInterceptor(),
   });
 
