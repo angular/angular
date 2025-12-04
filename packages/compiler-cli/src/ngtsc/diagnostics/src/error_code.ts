@@ -53,6 +53,14 @@ export enum ErrorCode {
   INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY = 1053,
 
   /**
+   * Raised when a model's implicit output conflicts with an explicit output.
+   * 
+   * For example, when a component has both `value = model()` (which creates an
+   * implicit output "valueChange") and an explicit `valueChange = output()`.
+   */
+  MODEL_OUTPUT_CONFLICT = 1054,
+
+  /**
    * An Angular feature, like inputs, outputs or queries is incorrectly
    * declared on a static member.
    */

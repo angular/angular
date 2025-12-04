@@ -241,6 +241,106 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should report a diagnostic if a model implicit output conflicts with an explicit output', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, model, output} from '@angular/core';
+
+        @Directive()
+        export class TestDir {
+          value = model('ngAwesome');
+          valueChange = output<string>();
+        }
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(
+        'Output "valueChange" conflicts with an implicit model output.',
+      );
+    });
+
+    it('should report a diagnostic if a model implicit output conflicts with a decorator-based @Output', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, model, Output, EventEmitter} from '@angular/core';
+
+        @Directive()
+        export class TestDir {
+          value = model('ngAwesome');
+          @Output() valueChange = new EventEmitter<string>();
+        }
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(
+        'Output "valueChange" conflicts with an implicit model output.',
+      );
+    });
+
+    it('should report a diagnostic when an implicit model output conflicts with an aliased decorator @Output', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, model, Output, EventEmitter} from '@angular/core';
+
+        @Directive()
+        export class TestDir {
+          value = model('ngAwesome');
+          @Output('valueChange') aliasDecoratorOutput = new EventEmitter<string>();
+        }
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(
+        'Output "aliasDecoratorOutput" conflicts with an implicit model output.',
+      );
+    });
+
+    it('should report a diagnostic if an aliased model implicit output conflicts with an explicit output', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, model, output} from '@angular/core';
+
+        @Directive()
+        export class TestDir {
+          value = model('ngAwesome', {alias: 'myValue'});
+          myValueChange = output<string>();
+        }
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(
+        'Output "myValueChange" conflicts with an implicit model output.',
+      );
+    });
+
+    it('should report a diagnostic if an output with alias conflicts with model implicit output', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, model, output} from '@angular/core';
+
+        @Directive()
+        export class TestDir {
+          value = model<string>();
+          outputAlias = output<string>({ alias: 'valueChange' });
+        }
+      `,
+      );
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(
+        'Output "outputAlias" conflicts with an implicit model output.',
+      );
+    });
+
     it('should report if a signal getter is invoked in a two-way binding', () => {
       env.write(
         'test.ts',
