@@ -35,7 +35,7 @@ import {wrapIntoPromise} from './utils/collection';
  * @publicApi
  */
 export const ROUTES = new InjectionToken<Route[][]>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'ROUTES' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'ROUTES' : '',
 );
 
 @Injectable({providedIn: 'root'})

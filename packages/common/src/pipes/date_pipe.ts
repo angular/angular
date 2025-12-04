@@ -20,7 +20,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * @deprecated use DATE_PIPE_DEFAULT_OPTIONS token to configure DatePipe
  */
 export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'DATE_PIPE_DEFAULT_TIMEZONE' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'DATE_PIPE_DEFAULT_TIMEZONE' : '',
 );
 
 /**
@@ -55,7 +55,7 @@ export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>(
  * ```
  */
 export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'DATE_PIPE_DEFAULT_OPTIONS' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'DATE_PIPE_DEFAULT_OPTIONS' : '',
 );
 
 /**

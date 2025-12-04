@@ -61,7 +61,7 @@ export const IS_INCREMENTAL_HYDRATION_ENABLED = new InjectionToken<boolean>(
  * A map of DOM elements with `jsaction` attributes grouped by action names.
  */
 export const JSACTION_BLOCK_ELEMENT_MAP = new InjectionToken<Map<string, Set<Element>>>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'JSACTION_BLOCK_ELEMENT_MAP' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'JSACTION_BLOCK_ELEMENT_MAP' : '',
   {
     factory: () => new Map<string, Set<Element>>(),
   },

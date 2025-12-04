@@ -71,7 +71,7 @@ export type ImageLoaderInfo = {
  * @publicApi
  */
 export const IMAGE_LOADER = new InjectionToken<ImageLoader>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'ImageLoader' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'ImageLoader' : '',
   {
     factory: () => noopImageLoader,
   },
