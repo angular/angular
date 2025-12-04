@@ -29,7 +29,7 @@ import {DomEventsPlugin} from './dom_events';
  * @publicApi
  */
 export const EVENT_MANAGER_PLUGINS = new InjectionToken<EventManagerPlugin[]>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'EventManagerPlugins' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'EventManagerPlugins' : '',
 );
 
 /**

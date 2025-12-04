@@ -42,7 +42,7 @@ import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../valid
  * Token to provide to turn off the ngModel warning on formControl and formControlName.
  */
 export const NG_MODEL_WITH_FORM_CONTROL_WARNING = new InjectionToken(
-  typeof ngDevMode !== undefined && ngDevMode ? 'NgModelWithFormControlWarning' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'NgModelWithFormControlWarning' : '',
 );
 
 const formControlBinding: Provider = {

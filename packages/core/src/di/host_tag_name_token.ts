@@ -41,7 +41,7 @@ export const HOST_TAG_NAME: InjectionToken<string> = /* @__PURE__ */ (() => {
   // the top level instead, the mutation would look like a side effect,
   // forcing the bundler to keep it even when unused.
   const HOST_TAG_NAME_TOKEN = new InjectionToken<string>(
-    typeof ngDevMode !== undefined && ngDevMode ? 'HOST_TAG_NAME' : '',
+    typeof ngDevMode !== 'undefined' && ngDevMode ? 'HOST_TAG_NAME' : '',
   );
 
   // HOST_TAG_NAME should be resolved at the current node, similar to e.g. ElementRef,
