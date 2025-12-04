@@ -1,4 +1,3 @@
-.prettierrc
 pnpm-lock.yaml
 
 # Do not format d.ts files as they are generated
