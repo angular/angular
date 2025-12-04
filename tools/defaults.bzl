@@ -5,6 +5,7 @@ load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@devinfra//bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@devinfra//bazel/ts_project:index.bzl", "strict_deps_test")
+load("@rules_angular//src/ng_examples_db:index.bzl", _ng_examples_db = "ng_examples_db")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
 load("@rules_angular//src/ts_project:index.bzl", _ts_project = "ts_project")
 load("@rules_sass//src:index.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
@@ -43,6 +44,7 @@ api_golden_test_npm_package = _api_golden_test_npm_package
 copy_to_bin = _copy_to_bin
 tsec_test = _tsec_test
 js_library = _js_library
+ng_examples_db = _ng_examples_db
 
 def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/compiler-cli"):
