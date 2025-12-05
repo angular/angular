@@ -184,7 +184,9 @@ interface CreateAccountFormModel {
 When creating the form we encounter a dilemma, what should the initial value in the model be? It may be tempting to create a `form<CreateAccountFormModel | null>()` since we don't have any input from the user yet.
 
 ```ts
-createAccountForm = form<CreateAccountFormModel | null>(signal(/* what goes here, null? */));
+createAccountForm = form<CreateAccountFormModel | null>(
+  signal(/* what goes here, null? */)
+);
 ```
 
 However, it is important to remember that Signal Forms is _model driven_. If our model is `null` and `null` doesn't have a `name` or `username` property, that means our form won't have those subfields either. Instead what we really want is an instance of `CreateAccountFormModel` with all of its leaf fields set to an empty value.
@@ -425,6 +427,9 @@ class MyForm {
   };
 }
 ```
+
+Alternatively, you could also send the form model directly to the server and do the conversion from
+form model to domain model on the server.
 
 For continuous saving, update the domain model in an `effect`.
 
