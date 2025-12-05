@@ -12,12 +12,12 @@ import {
   ElementRef,
   computed,
   inject,
-  linkedSignal,
   viewChild,
   afterNextRender,
   EnvironmentInjector,
   effect,
   input,
+  signal,
 } from '@angular/core';
 import ApiItemsSection from '../api-items-section/api-items-section.component';
 import {FormsModule} from '@angular/forms';
@@ -31,8 +31,12 @@ import {ApiLabel} from '../pipes/api-label.pipe';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
 import {CdkMenuModule} from '@angular/cdk/menu';
 import {MatChipsModule} from '@angular/material/chips';
+import {Field, form} from '@angular/forms/signals';
 
-export const ALL_TYPES_KEY = 'All';
+const ALL_API_ITEMS = 'all' as const;
+
+export type ApiItemTypeFilter = ApiItemType | typeof ALL_API_ITEMS;
+
 export const STATUSES = {
   stable: 1,
   developerPreview: 2,
@@ -40,6 +44,16 @@ export const STATUSES = {
   deprecated: 8,
 } as const;
 export const DEFAULT_STATUS = STATUSES.stable | STATUSES.developerPreview | STATUSES.experimental;
+
+export type StatusFlag = (typeof STATUSES)[keyof typeof STATUSES];
+
+export type StatusBitmask = number;
+
+interface QueryData {
+  query: string;
+  type: ApiItemTypeFilter;
+  status: StatusBitmask;
+}
 
 @Component({
   selector: 'adev-reference-list',
@@ -52,6 +66,7 @@ export const DEFAULT_STATUS = STATUSES.stable | STATUSES.developerPreview | STAT
     CdkMenuModule,
     MatChipsModule,
     KeyValuePipe,
+    Field,
   ],
   templateUrl: './api-reference-list.component.html',
   styleUrls: ['./api-reference-list.component.scss'],
@@ -66,14 +81,16 @@ export default class ApiReferenceList {
 
   // inputs
   readonly queryInput = input<string | undefined>('', {alias: 'query'});
-  readonly typeInput = input<string | undefined>(ALL_TYPES_KEY, {alias: 'type'});
+  readonly typeInput = input<ApiItemTypeFilter | undefined>(ALL_API_ITEMS, {alias: 'type'});
   readonly statusInput = input<number | undefined>(DEFAULT_STATUS, {alias: 'status'});
 
-  // inputs are route binded, they can reset to undefined
-  // also we want a writable state, so we use a linked signal
-  protected query = linkedSignal(() => this.queryInput() ?? '');
-  public type = linkedSignal(() => this.typeInput() ?? ALL_TYPES_KEY);
-  private status = linkedSignal(() => this.statusInput() ?? DEFAULT_STATUS);
+  readonly searchState = signal<QueryData>({
+    query: this.queryInput() ?? '',
+    type: this.typeInput() ?? ALL_API_ITEMS,
+    status: this.statusInput() ?? DEFAULT_STATUS,
+  });
+
+  protected readonly queryForm = form(this.searchState);
 
   // const state
   protected readonly itemTypes = Object.values(ApiItemType);
@@ -87,9 +104,10 @@ export default class ApiReferenceList {
   };
 
   readonly filteredGroups = computed((): ApiItemsGroup[] => {
-    const query = this.query().toLocaleLowerCase();
-    const status = this.status();
-    const type = this.type();
+    const query = this.queryForm.query().value().toLocaleLowerCase();
+    const status = this.queryForm.status().value();
+    const type = this.queryForm.type().value();
+
     return this.apiReferenceManager
       .apiGroups()
       .map((group) => ({
@@ -98,7 +116,7 @@ export default class ApiReferenceList {
         items: group.items.filter((apiItem) => {
           return (
             (query == '' ? true : apiItem.title.toLocaleLowerCase().includes(query)) &&
-            (type === ALL_TYPES_KEY || apiItem.itemType === type) &&
+            (type === ALL_API_ITEMS || apiItem.itemType === type) &&
             ((status & STATUSES.stable &&
               !apiItem.developerPreview &&
               !apiItem.deprecated &&
@@ -131,10 +149,11 @@ export default class ApiReferenceList {
 
     effect(() => {
       // We'll only set the params if we deviate from the default values
+      const current = this.searchState();
       const params: Params = {
-        'query': this.query() || null,
-        'type': this.type() === ALL_TYPES_KEY ? null : this.type(),
-        'status': this.status() === DEFAULT_STATUS ? null : this.status(),
+        query: current.query || null,
+        type: current.type === ALL_API_ITEMS ? null : current.type,
+        status: current.status === DEFAULT_STATUS ? null : current.status,
       };
 
       this.router.navigate([], {
@@ -149,21 +168,26 @@ export default class ApiReferenceList {
   }
 
   setItemType(itemType: ApiItemType): void {
-    this.type.update((type) => (type === itemType ? ALL_TYPES_KEY : itemType));
+    this.searchState.update((current) => ({
+      ...current,
+      type: current.type === itemType ? ALL_API_ITEMS : itemType,
+    }));
   }
 
   setStatus(status: number): void {
-    this.status.update((previousStatus) => {
-      if (this.isStatusSelected(status)) {
-        return previousStatus & ~status; // Clear the bit
-      } else {
-        return previousStatus | status; // Set the bit
-      }
+    this.searchState.update((current) => {
+      const currentStatus = current.status;
+      return {
+        ...current,
+        status: this.isStatusSelected(status)
+          ? currentStatus & ~status // clear bit
+          : currentStatus | status, // set bit
+      };
     });
   }
 
   isStatusSelected(status: number): boolean {
-    return (this.status() & status) === status;
+    return (this.queryForm.status().value() & status) === status;
   }
 }
 

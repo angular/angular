@@ -60,6 +60,7 @@ APPLICATION_DEPS = [
     ":node_modules/tailwindcss",
     ":node_modules/typescript",
     ":node_modules/@types/dom-navigation",
+    ":node_modules/@angular/forms",
 
     # The imports below are packages that our code does not directly import, but our upstream deps import from
     # these locations directly. By design, rather than hoisting these packages into the "root" node_modules the
