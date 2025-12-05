@@ -12,25 +12,25 @@ In this activity, you'll learn how to use the `output()` function to communicate
 
 To create the communication path from child to parent components, use the `output` function to initialize a class property.
 
-<docs-code header="child.ts" language="ts">
+```ts {header:"child.ts"}
 @Component({...})
 class Child {
   incrementCountEvent = output<number>();
 }
-</docs-code>
+```
 
 Now the component can generate events that can be listened to by the parent component. Trigger events by calling the `emit` method:
 
-<docs-code header="child.ts" language="ts">
+```ts {header:"child.ts"}
 class Child {
   ...
 
-onClick() {
-this.count++;
-this.incrementCountEvent.emit(this.count);
+  onClick() {
+    this.count++;
+    this.incrementCountEvent.emit(this.count);
+  }
 }
-}
-</docs-code>
+```
 
 The emit function will generate an event with the same type as defined by the `output`.
 
@@ -45,11 +45,11 @@ Update `child.ts` by adding an output property called `addItemEvent`, be sure to
 <docs-step title="Complete `addItem` method">
 In `child.ts` update the `addItem` method; use the following code as the logic:
 
-<docs-code header="child.ts" highlight="[2]" language="ts">
+```ts {header:"child.ts", highlight:[2]}
 addItem() {
   this.addItemEvent.emit('🐢');
 }
-</docs-code>
+```
 
 </docs-step>
 

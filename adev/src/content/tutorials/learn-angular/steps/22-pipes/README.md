@@ -10,18 +10,18 @@ In this activity, you will import a pipe and use it in the template.
 
 To use a pipe in a template include it in an interpolated expression. Check out this example:
 
-<docs-code language="angular-ts" highlight="[1,5,6]">
+```angular-ts {highlight:[1,5,6]}
 import {UpperCasePipe} from '@angular/common';
 
 @Component({
-...
-template: `{{ loudMessage | uppercase }}`,
-imports: [UpperCasePipe],
+  ...
+  template: `{{ loudMessage | uppercase }}`,
+  imports: [UpperCasePipe],
 })
 export class App {
-loudMessage = 'we think you are doing great!'
+  loudMessage = 'we think you are doing great!'
 }
-</docs-code>
+```
 
 Now, it's your turn to give this a try:
 
@@ -39,19 +39,19 @@ import { LowerCasePipe } from '@angular/common';
 <docs-step title="Add the pipe to the template imports">
 Next, update `@Component()` decorator `imports` to include a reference to `LowerCasePipe`
 
-<docs-code language="ts" highlight="[3]">
+```ts {highlight:[3]}
 @Component({
   ...
   imports: [LowerCasePipe]
 })
-</docs-code>
+```
 
 </docs-step>
 
 <docs-step title="Add the pipe to the template">
 Finally, in `app.ts` update the template to include the `lowercase` pipe:
 
-```ts
+```angular-html
 template: `{{username | lowercase }}`
 ```
 

@@ -12,24 +12,24 @@ In this activity, you'll learn how to use deferrable views to defer load a secti
 <docs-step title="Add a `@defer` block to a section of a template">
 In your `app.ts`, wrap the `article-comments` component with a `@defer` block to defer load it.
 
-<docs-code language="angular-html">
+```angular-html
 @defer {
   <article-comments />
 }
-</docs-code>
+```
 
 By default, `@defer` loads the `article-comments` component when the browser is idle.
 
 In your browser's developer console, you can see that the `article-comments-component` lazy chunk file is loaded separately (The specific file names may change from run to run):
 
-<docs-code language="markdown">
+```markdown
 Initial chunk files | Names                      |  Raw size
-chunk-NNSQHFIE.js   | -                          | 769.00 kB | 
+chunk-NNSQHFIE.js   | -                          | 769.00 kB |
 main.js             | main                       | 229.25 kB |
 
 Lazy chunk files | Names | Raw size
 chunk-T5UYXUSI.js | article-comments-component | 1.84 kB |
-</docs-code>
+```
 
 </docs-step>
 </docs-workflow>
