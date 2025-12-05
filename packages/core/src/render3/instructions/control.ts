@@ -930,7 +930,9 @@ type ControlBindings = {
 const CONTROL_BINDING_NAMES = {
   disabled: 'disabled',
   disabledReasons: 'disabledReasons',
+  dirty: 'dirty',
   errors: 'errors',
+  hidden: 'hidden',
   invalid: 'invalid',
   max: 'max',
   maxLength: 'maxLength',
@@ -938,6 +940,7 @@ const CONTROL_BINDING_NAMES = {
   minLength: 'minLength',
   name: 'name',
   pattern: 'pattern',
+  pending: 'pending',
   readonly: 'readonly',
   required: 'required',
   touched: 'touched',
