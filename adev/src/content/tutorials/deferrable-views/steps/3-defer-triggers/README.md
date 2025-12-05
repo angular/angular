@@ -41,7 +41,7 @@ In this activity, you'll learn how to use triggers to specify the condition to l
 <docs-step title="Add `on hover` trigger">
 In your `app.ts`,  add an `on hover` trigger to the `@defer` block.
 
-<docs-code language="angular-html" hightlight="[1]">
+```angular-html {highlight:[1]}
 @defer (on hover) {
   <article-comments />
 } @placeholder (minimum 1s) {
@@ -51,7 +51,7 @@ In your `app.ts`,  add an `on hover` trigger to the `@defer` block.
 } @error {
   <p>Failed to load comments</p>
 }
-</docs-code>
+```
 
 Now, the page will not render the comments section until you hover its placeholder.
 </docs-step>
@@ -59,7 +59,7 @@ Now, the page will not render the comments section until you hover its placehold
 <docs-step title="Add a 'Show all comments' button">
 Next, update the template to include a button with the label "Show all comments". Include a template variable called `#showComments` with the button.
 
-<docs-code language="angular-html" hightlight="[1]">
+```angular-html {highlight:[1]}
 <button type="button" #showComments>Show all comments</button>
 
 @defer (on hover) {
@@ -72,7 +72,7 @@ Next, update the template to include a button with the label "Show all comments"
 } @error {
   <p>Failed to load comments</p>
 }
-</docs-code>
+```
 
 NOTE: for more information on [template variables check the documentation](https://angular.dev/guide/templates/reference-variables#).
 
@@ -81,7 +81,7 @@ NOTE: for more information on [template variables check the documentation](https
 <docs-step title="Add `on interaction` trigger">
 Update the `@defer` block in the template to use the `on interaction` trigger. Provide the `showComments` template variable as the parameter to `interaction`.
 
-<docs-code language="angular-html" hightlight="[3]">
+```angular-html {highlight:[3]}
 <button type="button" #showComments>Show all comments</button>
 
 @defer (on hover; on interaction(showComments)) {
@@ -94,7 +94,7 @@ Update the `@defer` block in the template to use the `on interaction` trigger. P
 } @error {
   <p>Failed to load comments</p>
 }
-</docs-code>
+```
 
 With these changes, the page will wait for one of the following conditions before rendering the comments section:
 

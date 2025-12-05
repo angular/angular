@@ -17,7 +17,7 @@ In this example, there are two components `User` and `App`.
 <docs-step title="Add a reference to `User`">
 Update the `App` template to include a reference to the `User` which uses the selector `app-user`. Be sure to add `User` to the imports array of `App`, this makes it available for use in the `App` template.
 
-```ts
+```angular-html
 template: `<app-user />`,
 imports: [User]
 ```
@@ -28,7 +28,7 @@ The component now displays the message `Username: youngTech`. You can update the
 <docs-step title="Add more markup">
 Because you can use any HTML markup that you want in a template, try updating the template for `App` to also include more HTML elements. This example will add a `<section>` element as the parent of the `<app-user>` element.
 
-```ts
+```angular-html
 template: `<section><app-user /></section>`,
 ```
 
