@@ -39,7 +39,6 @@ ng_application(
     ],
     env = {
         "NG_BUILD_PARTIAL_SSR": "1",
-        "NG_FORCE_TTY": "0",
     },
     ng_config = ":ng_config",
     node_modules = ":node_modules",
@@ -59,7 +58,6 @@ ng_application(
     ],
     env = {
         "NG_BUILD_OPTIMIZE_CHUNKS": "1",
-        "NG_FORCE_TTY": "0",
     },
     ng_config = ":ng_config",
     node_modules = ":node_modules",
