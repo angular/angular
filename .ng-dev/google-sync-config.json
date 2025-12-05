@@ -6,7 +6,7 @@
     "packages/bazel/**",
     "packages/compiler-cli/linker/**",
     "packages/compiler-cli/src/ngtsc/sourcemaps/**",
-    "packages/compiler-cli/src/ngtsc/testing/**",
+    "packages/compiler-cli/src/ngtsc/testing/fake_common/**",
     "packages/compiler-cli/private/bazel.ts",
     "packages/compiler-cli/private/localize.ts",
     "packages/compiler-cli/private/tooling.ts",
