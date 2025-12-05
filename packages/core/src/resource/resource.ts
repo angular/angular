@@ -493,11 +493,20 @@ function createDebugNameObject(
 }
 
 export function encapsulateResourceError(error: unknown): Error {
-  if (error instanceof Error) {
+  if (isErrorLike(error)) {
     return error;
   }
 
   return new ResourceWrappedError(error);
+}
+
+export function isErrorLike(error: unknown): error is Error {
+  return (
+    error instanceof Error ||
+    (typeof error === 'object' &&
+      typeof (error as Error).name === 'string' &&
+      typeof (error as Error).message === 'string')
+  );
 }
 
 class ResourceValueError extends Error {
