@@ -10,12 +10,12 @@ In this activity, you'll learn how to inject a service and use it in a component
 
 It is often helpful to initialize class properties with values provided by the DI system. Here's an example:
 
-<docs-code language="ts" highlight="[3]">
+```ts {highlight:[3]}
 @Component({...})
 class PetCareDashboard {
   petRosterService = inject(PetRosterService);
 }
-</docs-code>
+```
 
 <docs-workflow>
 
