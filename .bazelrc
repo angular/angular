@@ -1,3 +1,6 @@
+# Disable NG CLI TTY mode
+build --action_env=NG_FORCE_TTY=false
+
 # Enable debugging tests with --config=debug
 test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results --strategy=TestRunner=standalone
 
