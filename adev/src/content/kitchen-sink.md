@@ -364,3 +364,26 @@ This can be used to separate page sections, like we're about to do below. These 
 <hr/>
 
 The end!
+
+## Prefer / Avoid
+
+```ts {prefer}
+const foo= 'bar';
+```
+
+```ts {avoid}
+const bar = 'foo';
+```
+
+```ts {avoid, header: 'with a header'}
+const baz = 42;
+```
+
+<docs-code
+  path="adev/src/content/examples/hello-world/src/app/app.component-old.ts"
+  header="A styled code example"
+  language='ts'
+  linenums
+  highlight="[[3,7], 9]"
+  prefer>
+</docs-code>
