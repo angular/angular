@@ -73,13 +73,15 @@ const controlInstructions = {
 })
 export class Field<T> implements ɵControl<T> {
   readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
-  private readonly injector = inject(Injector);
+  readonly injector = inject(Injector);
   private config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
+  /** @internal */
   readonly classes = Object.entries(this.config?.classes ?? {}).map(
     ([className, computation]) => [className, computed(() => computation(this.state()))] as const,
   );
   readonly field = input.required<FieldTree<T>>();
   readonly state = computed(() => this.field()());
+  /** @internal */
   readonly [ɵCONTROL] = controlInstructions;
 
   /** Any `ControlValueAccessor` instances provided on the host element. */
@@ -88,7 +90,11 @@ export class Field<T> implements ɵControl<T> {
   /** A lazily instantiated fake `NgControl`. */
   private interopNgControl: InteropNgControl | undefined;
 
-  /** A `ControlValueAccessor`, if configured, for the host component. */
+  /**
+   * A `ControlValueAccessor`, if configured, for the host component.
+   *
+   * @internal
+   */
   get ɵinteropControl(): ɵInteropControl | undefined {
     return this.controlValueAccessors?.[0] ?? this.interopNgControl?.valueAccessor ?? undefined;
   }
@@ -98,7 +104,8 @@ export class Field<T> implements ɵControl<T> {
     return (this.interopNgControl ??= new InteropNgControl(this.state));
   }
 
-  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861631
+  //TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861631
+  /** @internal */
   ɵregister() {
     // Register this control on the field it is currently bound to. We do this at the end of
     // initialization so that it only runs if we are actually syncing with this control

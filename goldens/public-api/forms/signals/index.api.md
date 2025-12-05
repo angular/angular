@@ -26,12 +26,8 @@ import { StandardSchemaV1 } from '@standard-schema/spec';
 import { ValidationErrors } from '@angular/forms';
 import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
-import { ɵCONTROL } from '@angular/core';
 import { ɵControl } from '@angular/core';
-import { ɵcontrolUpdate } from '@angular/core';
 import { ɵFieldState } from '@angular/core';
-import { ɵInteropControl } from '@angular/core';
-import { ɵɵcontrolCreate } from '@angular/core';
 
 // @public
 export function aggregateMetadata<TValue, TMetadataItem, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, key: AggregateMetadataKey<any, TMetadataItem>, logic: NoInfer<LogicFn<TValue, TMetadataItem, TPathKind>>): void;
@@ -147,26 +143,18 @@ export const FIELD: InjectionToken<Field<unknown>>;
 // @public
 export class Field<T> implements ɵControl<T> {
     // (undocumented)
-    readonly [ɵCONTROL]: {
-        readonly create: typeof ɵɵcontrolCreate;
-        readonly update: typeof ɵcontrolUpdate;
-    };
-    // (undocumented)
-    readonly classes: (readonly [string, i0.Signal<boolean>])[];
-    // (undocumented)
     readonly element: HTMLElement;
     // (undocumented)
     readonly field: i0.InputSignal<FieldTree<T>>;
     protected getOrCreateNgControl(): InteropNgControl;
+    // (undocumented)
+    readonly injector: Injector;
     // (undocumented)
     readonly state: i0.Signal<[T] extends [_angular_forms.AbstractControl<any, any, any>] ? CompatFieldState<T, string | number> : FieldState<T, string | number>>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<Field<any>, "[field]", never, { "field": { "alias": "field"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Field<any>, never>;
-    get ɵinteropControl(): ɵInteropControl | undefined;
-    // (undocumented)
-    ɵregister(): void;
 }
 
 // @public
