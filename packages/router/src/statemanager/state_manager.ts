@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {EnvironmentInjector, inject, Injectable} from '@angular/core';
+import {EnvironmentInjector, inject, Injectable, Signal, signal} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
 import {
@@ -39,7 +39,8 @@ export abstract class StateManager {
   protected urlHandlingStrategy = inject(UrlHandlingStrategy);
   protected urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
 
-  protected currentUrlTree = new UrlTree();
+  /** @internal */
+  protected _currentUrlTree = signal(new UrlTree());
   /**
    * Returns the currently activated `UrlTree`.
    *
@@ -49,11 +50,9 @@ export abstract class StateManager {
    * The value is set after finding the route config tree to activate but before activating the
    * route.
    */
-  getCurrentUrlTree(): UrlTree {
-    return this.currentUrlTree;
-  }
+  currentUrlTree: Signal<UrlTree> = this._currentUrlTree.asReadonly();
 
-  protected rawUrlTree = this.currentUrlTree;
+  protected rawUrlTree = this.currentUrlTree();
   /**
    * Returns a `UrlTree` that is represents what the browser is actually showing.
    *
@@ -96,7 +95,7 @@ export abstract class StateManager {
     // all pieces of the state. Otherwise, we likely skipped the transition (due to URL handling strategy)
     // and only want to update the rawUrlTree, which represents the browser URL (and doesn't necessarily match router state).
     if (finalUrl && targetRouterState) {
-      this.currentUrlTree = finalUrl;
+      this._currentUrlTree.set(finalUrl);
       this.rawUrlTree = this.urlHandlingStrategy.merge(finalUrl, initialUrl);
       this.routerState = targetRouterState;
     } else {
@@ -123,7 +122,7 @@ export abstract class StateManager {
   private createStateMemento() {
     return {
       rawUrlTree: this.rawUrlTree,
-      currentUrlTree: this.currentUrlTree,
+      currentUrlTree: this.currentUrlTree(),
       routerState: this.routerState,
     };
   }
@@ -251,7 +250,7 @@ export class HistoryStateManager extends StateManager {
       const targetPagePosition = this.currentPageId - currentBrowserPageId;
       if (targetPagePosition !== 0) {
         this.location.historyGo(targetPagePosition);
-      } else if (this.getCurrentUrlTree() === navigation.finalUrl && targetPagePosition === 0) {
+      } else if (this.currentUrlTree() === navigation.finalUrl && targetPagePosition === 0) {
         // We got to the activation stage (where currentUrlTree is set to the navigation's
         // finalUrl), but we weren't moving anywhere in history (skipLocationChange or replaceUrl).
         // We still need to reset the router state back to what it was when the navigation started.
@@ -275,14 +274,14 @@ export class HistoryStateManager extends StateManager {
 
   private resetInternalState({finalUrl}: Navigation): void {
     this.routerState = this.stateMemento.routerState;
-    this.currentUrlTree = this.stateMemento.currentUrlTree;
+    this._currentUrlTree.set(this.stateMemento.currentUrlTree);
     // Note here that we use the urlHandlingStrategy to get the reset `rawUrlTree` because it may be
     // configured to handle only part of the navigation URL. This means we would only want to reset
     // the part of the navigation handled by the Angular router rather than the whole URL. In
     // addition, the URLHandlingStrategy may be configured to specifically preserve parts of the URL
     // when merging, such as the query params so they are not lost on a refresh.
     this.rawUrlTree = this.urlHandlingStrategy.merge(
-      this.currentUrlTree,
+      this.currentUrlTree(),
       finalUrl ?? this.rawUrlTree,
     );
   }

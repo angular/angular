@@ -19,6 +19,7 @@ import {
   untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
   ɵformatRuntimeError as formatRuntimeError,
+  computed,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
@@ -101,15 +102,6 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  */
 @Injectable({providedIn: 'root'})
 export class Router {
-  private get currentUrlTree() {
-    return this.stateManager.getCurrentUrlTree();
-  }
-  private get rawUrlTree() {
-    return this.stateManager.getRawUrlTree();
-  }
-  private disposed = false;
-  private nonRouterCurrentEntryChangeSubscription?: SubscriptionLike;
-
   private readonly console = inject(Console);
   private readonly stateManager = inject(StateManager);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
@@ -120,6 +112,18 @@ export class Router {
   private readonly location = inject(Location);
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
   private readonly injector = inject(EnvironmentInjector);
+
+  private disposed = false;
+  private nonRouterCurrentEntryChangeSubscription?: SubscriptionLike;
+  private _currentUrlTree = this.stateManager.currentUrlTree;
+  private fragment = computed(() => this._currentUrlTree().fragment);
+  private queryParams = computed(() => this._currentUrlTree().queryParams);
+  private get currentUrlTree() {
+    return untracked(this.stateManager.currentUrlTree);
+  }
+  private get rawUrlTree() {
+    return this.stateManager.getRawUrlTree();
+  }
 
   /**
    * The private `Subject` type for the public events exposed in the getter. This is used internally
@@ -457,53 +461,70 @@ export class Router {
    *
    */
   createUrlTree(commands: readonly any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
-    const {relativeTo, queryParams, fragment, queryParamsHandling, preserveFragment} =
-      navigationExtras;
-    const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
-    let q: Params | null = null;
-    switch (queryParamsHandling ?? this.options.defaultQueryParamsHandling) {
-      case 'merge':
-        q = {...this.currentUrlTree.queryParams, ...queryParams};
-        break;
-      case 'preserve':
-        q = this.currentUrlTree.queryParams;
-        break;
-      default:
-        q = queryParams || null;
-    }
-    if (q !== null) {
-      q = this.removeEmptyProps(q);
-    }
+    return untracked(this.createComputedUrlTree(commands, navigationExtras));
+  }
 
-    let relativeToUrlSegmentGroup: UrlSegmentGroup | undefined;
-    try {
-      const relativeToSnapshot = relativeTo ? relativeTo.snapshot : this.routerState.snapshot.root;
-      relativeToUrlSegmentGroup = createSegmentGroupFromRoute(relativeToSnapshot);
-    } catch (e: unknown) {
-      // This is strictly for backwards compatibility with tests that create
-      // invalid `ActivatedRoute` mocks.
-      // Note: the difference between having this fallback for invalid `ActivatedRoute` setups and
-      // just throwing is ~500 test failures. Fixing all of those tests by hand is not feasible at
-      // the moment.
-      if (typeof commands[0] !== 'string' || commands[0][0] !== '/') {
-        // Navigations that were absolute in the old way of creating UrlTrees
-        // would still work because they wouldn't attempt to match the
-        // segments in the `ActivatedRoute` to the `currentUrlTree` but
-        // instead just replace the root segment with the navigation result.
-        // Non-absolute navigations would fail to apply the commands because
-        // the logic could not find the segment to replace (so they'd act like there were no
-        // commands).
-        commands = [];
+  /**
+   * Creates a computed UrlTree. Because the result may depend on the current fragment and query params
+   * depending on queryParamsHandling and preserveFragment, this returns a computed signal.
+   *
+   * @internal
+   */
+  createComputedUrlTree(
+    commands: readonly any[],
+    navigationExtras: UrlCreationOptions = {},
+  ): Signal<UrlTree> {
+    return computed(() => {
+      const {relativeTo, queryParams, fragment, queryParamsHandling, preserveFragment} =
+        navigationExtras;
+      const f = preserveFragment ? this.fragment() : fragment;
+      let q: Params | null = null;
+      switch (queryParamsHandling ?? this.options.defaultQueryParamsHandling) {
+        case 'merge':
+          q = {...this.queryParams(), ...queryParams};
+          break;
+        case 'preserve':
+          q = this.queryParams();
+          break;
+        default:
+          q = queryParams || null;
       }
-      relativeToUrlSegmentGroup = this.currentUrlTree.root;
-    }
-    return createUrlTreeFromSegmentGroup(
-      relativeToUrlSegmentGroup,
-      commands,
-      q,
-      f ?? null,
-      this.urlSerializer,
-    );
+      if (q !== null) {
+        q = this.removeEmptyProps(q);
+      }
+
+      let relativeToUrlSegmentGroup: UrlSegmentGroup | undefined;
+      try {
+        const relativeToSnapshot = relativeTo
+          ? relativeTo.snapshot
+          : this.routerState.snapshot.root;
+        relativeToUrlSegmentGroup = createSegmentGroupFromRoute(relativeToSnapshot);
+      } catch (e: unknown) {
+        // This is strictly for backwards compatibility with tests that create
+        // invalid `ActivatedRoute` mocks.
+        // Note: the difference between having this fallback for invalid `ActivatedRoute` setups and
+        // just throwing is ~500 test failures. Fixing all of those tests by hand is not feasible at
+        // the moment.
+        if (typeof commands[0] !== 'string' || commands[0][0] !== '/') {
+          // Navigations that were absolute in the old way of creating UrlTrees
+          // would still work because they wouldn't attempt to match the
+          // segments in the `ActivatedRoute` to the `currentUrlTree` but
+          // instead just replace the root segment with the navigation result.
+          // Non-absolute navigations would fail to apply the commands because
+          // the logic could not find the segment to replace (so they'd act like there were no
+          // commands).
+          commands = [];
+        }
+        relativeToUrlSegmentGroup = this.currentUrlTree.root;
+      }
+      return createUrlTreeFromSegmentGroup(
+        relativeToUrlSegmentGroup,
+        commands,
+        q,
+        f ?? null,
+        this.urlSerializer,
+      );
+    });
   }
 
   /**
