@@ -347,6 +347,7 @@ const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {
     preview: false,
     hideCode: false,
     ...value,
+    style: undefined,
   };
 };
 
