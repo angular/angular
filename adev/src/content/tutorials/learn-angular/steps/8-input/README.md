@@ -12,30 +12,30 @@ In this activity, you'll learn how to use the `input()` function to send informa
 
 To create an `input` property, add the `input()` function to initialize a property of a component class:
 
-<docs-code header="user.ts" language="ts">
+```ts {header:"user.ts"}
 class User {
   occupation = input<string>();
 }
-</docs-code>
+```
 
 When you are ready to pass in a value through an `input`, values can be set in templates using the attribute syntax. Here's an example:
 
-<docs-code header="app.ts" language="angular-ts" highlight="[3]">
+```angular-ts {header:"app.ts", highlight:[3]}
 @Component({
   ...
   template: `<app-user occupation="Angular Developer"></app-user>`
 })
 export class App {}
-</docs-code>
+```
 
 The `input` function returns an `InputSignal`. You can read the value by calling the signal.
 
-<docs-code header="user.ts" language="angular-ts">
+```angular-ts {header:"user.ts"}
 @Component({
   ...
   template: `<p>The user's occupation is {{occupation()}}</p>`
 })
-</docs-code>
+```
 
 <docs-workflow>
 

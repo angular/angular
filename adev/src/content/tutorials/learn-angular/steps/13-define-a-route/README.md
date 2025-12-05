@@ -43,18 +43,18 @@ In addition to defining the routes correctly, Angular Router also enables you to
 
 In `app.routes.ts`, add the `title` property to the default route (`path: ''`) and the `user` route. Here's an example:
 
-<docs-code language="ts" highlight="[8]">
+```ts {highlight:[7]}
 import {Routes} from '@angular/router';
 import {Home} from './home/home';
 
 export const routes: Routes = [
-{
-path: '',
-title: 'App Home Page',
-component: Home,
-},
+  {
+    path: '',
+    title: 'App Home Page',
+    component: Home,
+  },
 ];
-</docs-code>
+```
 
 </docs-step>
 

@@ -14,7 +14,7 @@ In this activity, you'll learn how to get the value from your form input.
 
 To display the input value in a template, you can use the interpolation syntax `{{}}` just like any other class property of the component:
 
-<docs-code language="angular-ts" highlight="[5]">
+```angular-ts {highlight:[5]}
 @Component({
   selector: 'app-user',
   template: `
@@ -29,7 +29,7 @@ To display the input value in a template, you can use the interpolation syntax `
 export class User {
   favoriteFramework = '';
 }
-</docs-code>
+```
 
 </docs-step>
 
@@ -37,7 +37,7 @@ export class User {
 
 When you need to reference the input field value in the component class, you can do so by accessing the class property with the `this` syntax.
 
-<docs-code language="angular-ts" highlight="[15]">
+```angular-ts {highlight:[15]}
 ...
 @Component({
   selector: 'app-user',
@@ -51,11 +51,11 @@ export class User {
   favoriteFramework = '';
   ...
 
-showFramework() {
-alert(this.favoriteFramework);
+  showFramework() {
+    alert(this.favoriteFramework);
+  }
 }
-}
-</docs-code>
+```
 
 </docs-step>
 

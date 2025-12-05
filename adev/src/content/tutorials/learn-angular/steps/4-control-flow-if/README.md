@@ -49,7 +49,7 @@ Now Angular supports native template syntax for defining the else case with the 
 
 Here's an example:
 
-```angular-ts
+```angular-html
 template: `
   @if (isServerRunning) { ... }
   @else { ... }

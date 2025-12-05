@@ -39,25 +39,27 @@ In this activity, you'll learn how to use the `@loading`, `@error` and `@placeho
 <docs-step title="Add `@placeholder` block">
 In your `app.ts`, add a `@placeholder` block to the `@defer` block.
 
-<docs-code language="angular-html" highlight="[3,4,5]">
+```angular-html {highlight:[3,4,5]}
 @defer {
   <article-comments />
 } @placeholder {
   <p>Placeholder for comments</p>
 }
-</docs-code>
+```
+
 </docs-step>
 
 <docs-step title="Configure the `@placeholder` block">
 The `@placeholder` block accepts an optional parameter to specify the `minimum` amount of time that this placeholder should be shown. This `minimum` parameter is specified in time increments of milliseconds (ms) or seconds (s). This parameter exists to prevent fast flickering of placeholder content in the case that the deferred dependencies are fetched quickly.
 
-<docs-code language="angular-html" highlight="[3,4,5]">
+```angular-html {highlight:[3,4,5]}
 @defer {
   <article-comments />
 } @placeholder (minimum 1s) {
   <p>Placeholder for comments</p>
 }
-</docs-code>
+```
+
 </docs-step>
 
 <docs-step title="Add `@loading` block">
@@ -72,7 +74,7 @@ Both parameters are specified in time increments of milliseconds (ms) or seconds
 
 Update `app.ts` to include a `@loading` block with a minimum parameter of `1s` as well as an after parameter with the value 500ms to the @loading block.
 
-<docs-code language="angular-html" highlight="[5,6,7]">
+```angular-html {highlight:[5,6,7]}
 @defer {
   <article-comments />
 } @placeholder (minimum 1s) {
@@ -80,7 +82,7 @@ Update `app.ts` to include a `@loading` block with a minimum parameter of `1s` a
 } @loading (minimum 1s; after 500ms) {
   <p>Loading comments...</p>
 }
-</docs-code>
+```
 
 NOTE: this example uses two parameters, separated by the ; character.
 
@@ -89,7 +91,7 @@ NOTE: this example uses two parameters, separated by the ; character.
 <docs-step title="Add `@error` block">
 Finally, add an `@error` block to the `@defer` block.
 
-<docs-code language="angular-html" highlight="[7,8,9]">
+```angular-html {highlight:[7,8,9]}
 @defer {
   <article-comments />
 } @placeholder (minimum 1s) {
@@ -99,7 +101,8 @@ Finally, add an `@error` block to the `@defer` block.
 } @error {
   <p>Failed to load comments</p>
 }
-</docs-code>
+```
+
 </docs-step>
 </docs-workflow>
 
