@@ -7,7 +7,7 @@ This tutorial lesson demonstrates how to add property binding to a template and 
 ## What you'll learn
 
 - Your app has data bindings in the `Home` template.
-- Your app sends data from the `Home` to the `HousingLocation`.
+- Your app sends data from the `Home` to the `HousingLocationCard`.
 
 ## Conceptual preview of Inputs
 
@@ -20,7 +20,7 @@ For a more in depth explanation, please refer to the [Property binding](guide/te
 <docs-workflow>
 
 <docs-step title="Update the `Home` template">
-This step adds property binding to the `<app-housing-location>` tag.
+This step adds property binding to the `<app-housing-location-card>` tag.
 
 In the code editor:
 
@@ -41,7 +41,7 @@ In the code editor:
 
 </docs-workflow>
 
-SUMMARY: In this lesson, you added a new property binding and passed in a reference to a class property. Now, the `HousingLocation` has access to data that it can use to customize the component's display.
+SUMMARY: In this lesson, you added a new property binding and passed in a reference to a class property. Now, the `HousingLocationCard` has access to data that it can use to customize the component's display.
 
 For more information about the topics covered in this lesson, visit:
 

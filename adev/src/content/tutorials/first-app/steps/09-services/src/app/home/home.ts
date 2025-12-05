@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
-import {HousingLocation} from '../housing-location/housing-location';
-import {HousingLocationInfo} from '../housinglocation';
+import {HousingLocationCard} from '../housing-location/housing-location';
+import {HousingLocation} from '../housinglocation';
 
 @Component({
   selector: 'app-home',
-  imports: [HousingLocation],
+  imports: [HousingLocationCard],
   template: `
     <section>
       <form>
@@ -14,7 +14,7 @@ import {HousingLocationInfo} from '../housinglocation';
     </section>
     <section class="results">
       @for(housingLocation of housingLocationList; track $index) {
-        <app-housing-location [housingLocation]="housingLocation" />
+        <app-housing-location-card [housingLocation]="housingLocation" />
       }
     </section>
   `,
@@ -23,7 +23,7 @@ import {HousingLocationInfo} from '../housinglocation';
 export class Home {
   readonly baseUrl = 'https://angular.dev/assets/images/tutorials/common';
 
-  housingLocationList: HousingLocationInfo[] = [
+  housingLocationList: HousingLocation[] = [
     {
       id: 0,
       name: 'Acme Fresh Start Housing',
