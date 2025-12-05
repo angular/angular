@@ -8,8 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {MIN, form, min} from '../../../../public_api';
-import {customError, minError} from '../../../../src/api/rules/validation/validation_errors';
+import {customError, form, min, minError} from '../../../../public_api';
 
 describe('min validator', () => {
   it('returns min error when the value is smaller', () => {
@@ -184,7 +183,7 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().metadata(MIN)()).toBe(5);
+      expect(f.age().min?.()).toBe(5);
     });
 
     it('merges two mins preferring the larger option', () => {
@@ -205,7 +204,7 @@ describe('min validator', () => {
       f.age().value.set(15);
       expect(f.age().errors()).toEqual([]);
 
-      expect(f.age().metadata(MIN)()).toBe(10);
+      expect(f.age().min?.()).toBe(10);
     });
 
     it('merges two mins _dynamically_ preferring the larger option', () => {
@@ -228,7 +227,7 @@ describe('min validator', () => {
       expect(f.age().errors()).toEqual([]);
       minSignal.set(30);
       expect(f.age().errors()).toEqual([minError(30, {field: f.age})]);
-      expect(f.age().metadata(MIN)()).toBe(30);
+      expect(f.age().min?.()).toBe(30);
     });
 
     it('merges two mins _dynamically_ ignores undefined', () => {

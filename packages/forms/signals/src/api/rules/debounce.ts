@@ -36,7 +36,7 @@ export function debounce<TValue, TPathKind extends PathKind = PathKind.Root>(
       : durationOrDebouncer > 0
         ? debounceForDuration(durationOrDebouncer)
         : immediate;
-  pathNode.builder.addAggregateMetadataRule(DEBOUNCER, () => debouncer);
+  pathNode.builder.addMetadataRule(DEBOUNCER, () => debouncer);
 }
 
 function debounceForDuration(durationInMilliseconds: number): Debouncer<unknown> {

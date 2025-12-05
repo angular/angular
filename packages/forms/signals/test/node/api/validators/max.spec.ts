@@ -8,8 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {MAX, form, max} from '../../../../public_api';
-import {customError, maxError} from '../../../../src/api/rules/validation/validation_errors';
+import {customError, form, max, maxError} from '../../../../public_api';
 
 describe('max validator', () => {
   it('returns max error when the value is larger', () => {
@@ -162,7 +161,7 @@ describe('max validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().metadata(MAX)()).toBe(5);
+      expect(f.age().max?.()).toBe(5);
     });
 
     it('merges two maxes preferring the smaller option', () => {
@@ -183,7 +182,7 @@ describe('max validator', () => {
       f.age().value.set(3);
       expect(f.age().errors()).toEqual([]);
 
-      expect(f.age().metadata(MAX)()).toBe(5);
+      expect(f.age().max?.()).toBe(5);
     });
 
     it('merges two maxes _dynamically_ preferring the smaller option', () => {
@@ -205,12 +204,12 @@ describe('max validator', () => {
       f.age().value.set(3);
       expect(f.age().errors()).toEqual([]);
 
-      expect(f.age().metadata(MAX)()).toBe(5);
+      expect(f.age().max?.()).toBe(5);
 
       maxSignal.set(2);
       f.age().value.set(3);
       expect(f.age().errors()).toEqual([maxError(2, {field: f.age})]);
-      expect(f.age().metadata(MAX)()).toBe(2);
+      expect(f.age().max?.()).toBe(2);
     });
 
     it('merges two maxes _dynamically_ ignores undefined', () => {

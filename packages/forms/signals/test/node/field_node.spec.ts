@@ -17,7 +17,6 @@ import {
   hidden,
   readonly,
   required,
-  REQUIRED,
   requiredError,
   Schema,
   schema,
@@ -869,12 +868,12 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f().metadata(REQUIRED)()).toBe(true);
+      expect(f().required()).toBe(true);
       expect(f().valid()).toBe(false);
       expect(f().readonly()).toBe(false);
 
       isReadonly.set(true);
-      expect(f().metadata(REQUIRED)()).toBe(true);
+      expect(f().required()).toBe(true);
       expect(f().valid()).toBe(true);
       expect(f().readonly()).toBe(true);
     });
@@ -944,13 +943,13 @@ describe('FieldNode', () => {
 
       expect(f.first().errors()).toEqual([requiredError({field: f.first})]);
       expect(f.first().valid()).toBe(false);
-      expect(f.first().metadata(REQUIRED)()).toBe(true);
+      expect(f.first().required()).toBe(true);
 
       f.first().value.set('Bob');
 
       expect(f.first().errors()).toEqual([]);
       expect(f.first().valid()).toBe(true);
-      expect(f.first().metadata(REQUIRED)()).toBe(true);
+      expect(f.first().required()).toBe(true);
     });
 
     it('should validate conditionally required field', () => {
@@ -966,19 +965,19 @@ describe('FieldNode', () => {
 
       expect(f.first().errors()).toEqual([]);
       expect(f.first().valid()).toBe(true);
-      expect(f.first().metadata(REQUIRED)()).toBe(false);
+      expect(f.first().required()).toBe(false);
 
       f.last().value.set('Loblaw');
 
       expect(f.first().errors()).toEqual([requiredError({field: f.first})]);
       expect(f.first().valid()).toBe(false);
-      expect(f.first().metadata(REQUIRED)()).toBe(true);
+      expect(f.first().required()).toBe(true);
 
       f.first().value.set('Bob');
 
       expect(f.first().errors()).toEqual([]);
       expect(f.first().valid()).toBe(true);
-      expect(f.first().metadata(REQUIRED)()).toBe(true);
+      expect(f.first().required()).toBe(true);
     });
 
     it('should link required error messages to their predicate', () => {

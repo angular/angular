@@ -6,12 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata} from '../aggregate_metadata';
-import {validate} from './validate';
-import {metadata, MAX_LENGTH} from '../metadata';
-import {SchemaPath, SchemaPathRules, LogicFn, PathKind} from '../../types';
-import {maxLengthError} from './validation_errors';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
+import {createMetadataKey, MAX_LENGTH, metadata} from '../metadata';
 import {
   BaseValidatorConfig,
   getLengthOrSize,
@@ -19,6 +15,8 @@ import {
   isEmpty,
   ValueWithLengthOrSize,
 } from './util';
+import {validate} from './validate';
+import {maxLengthError} from './validation_errors';
 
 /**
  * Binds a validator to the given path that requires the length of the value to be less than or
@@ -45,10 +43,10 @@ export function maxLength<
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MAX_LENGTH_MEMO = metadata(path, (ctx) =>
-    computed(() => (typeof maxLength === 'number' ? maxLength : maxLength(ctx))),
+  const MAX_LENGTH_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) =>
+    typeof maxLength === 'number' ? maxLength : maxLength(ctx),
   );
-  aggregateMetadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
+  metadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

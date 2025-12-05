@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata} from '../aggregate_metadata';
-import {validate} from './validate';
-import {metadata, PATTERN} from '../metadata';
-import {SchemaPath, LogicFn, PathKind, SchemaPathRules} from '../../types';
-import {patternError} from './validation_errors';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
+import {createMetadataKey, metadata, PATTERN} from '../metadata';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
+import {validate} from './validate';
+import {patternError} from './validation_errors';
 
 /**
  * Binds a validator to the given path that requires the value to match a specific regex pattern.
@@ -34,10 +32,10 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
-  const PATTERN_MEMO = metadata(path, (ctx) =>
-    computed(() => (pattern instanceof RegExp ? pattern : pattern(ctx))),
+  const PATTERN_MEMO = metadata(path, createMetadataKey<RegExp | undefined>(), (ctx) =>
+    pattern instanceof RegExp ? pattern : pattern(ctx),
   );
-  aggregateMetadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
+  metadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

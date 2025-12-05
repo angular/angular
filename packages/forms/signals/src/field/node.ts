@@ -9,17 +9,17 @@
 import {computed, linkedSignal, type Signal, untracked, type WritableSignal} from '@angular/core';
 import type {Field} from '../api/field_directive';
 import {
-  AggregateMetadataKey,
   MAX,
   MAX_LENGTH,
-  MetadataKey,
+  type MetadataKey,
   MIN,
   MIN_LENGTH,
   PATTERN,
   REQUIRED,
 } from '../api/rules/metadata';
-import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
+import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
+import {DYNAMIC} from '../schema/logic';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
 import {FieldNodeContext} from './context';
@@ -37,7 +37,6 @@ import {
 } from './structure';
 import {FieldSubmitState} from './submit';
 import {ValidationState} from './validation';
-import {DYNAMIC} from '../schema/logic';
 
 /**
  * Internal node in the form tree for a given field.
@@ -169,40 +168,35 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.name;
   }
 
-  private metadataOrUndefined<M>(key: AggregateMetadataKey<M, any>): Signal<M> | undefined {
-    return this.hasMetadata(key) ? this.metadata(key) : undefined;
-  }
-
   get max(): Signal<number | undefined> | undefined {
-    return this.metadataOrUndefined(MAX);
+    return this.metadata(MAX);
   }
 
   get maxLength(): Signal<number | undefined> | undefined {
-    return this.metadataOrUndefined(MAX_LENGTH);
+    return this.metadata(MAX_LENGTH);
   }
 
   get min(): Signal<number | undefined> | undefined {
-    return this.metadataOrUndefined(MIN);
+    return this.metadata(MIN);
   }
 
   get minLength(): Signal<number | undefined> | undefined {
-    return this.metadataOrUndefined(MIN_LENGTH);
+    return this.metadata(MIN_LENGTH);
   }
 
   get pattern(): Signal<readonly RegExp[]> {
-    return this.metadataOrUndefined(PATTERN) ?? EMPTY;
+    return this.metadata(PATTERN) ?? EMPTY;
   }
 
   get required(): Signal<boolean> {
-    return this.metadataOrUndefined(REQUIRED) ?? FALSE;
+    return this.metadata(REQUIRED) ?? FALSE;
   }
 
-  metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
-  metadata<M>(key: MetadataKey<M>): M | undefined;
-  metadata<M>(key: MetadataKey<M> | AggregateMetadataKey<M, any>): Signal<M> | M | undefined {
+  metadata<M>(key: MetadataKey<M, any, any>): M | undefined {
     return this.metadataState.get(key);
   }
-  hasMetadata(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean {
+
+  hasMetadata(key: MetadataKey<any, any, any>): boolean {
     return this.metadataState.has(key);
   }
 

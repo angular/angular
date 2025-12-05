@@ -15,7 +15,6 @@ import {
   type ValidationErrors,
   type ValidatorFn,
 } from '@angular/forms';
-import {REQUIRED} from '../api/rules/metadata';
 import type {FieldState} from '../api/types';
 
 // TODO: Also consider supporting (if possible):
@@ -132,7 +131,7 @@ export class InteropNgControl
     // This addresses a common case where users look for the presence of `Validators.required` to
     // determine whether or not to show a required "*" indicator in the UI.
     if (validator === Validators.required) {
-      return this.field().metadata(REQUIRED)();
+      return this.field().required();
     }
     return false;
   }

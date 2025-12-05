@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, ResourceRef, Signal} from '@angular/core';
+import {ResourceRef, Signal} from '@angular/core';
 import {FieldNode} from '../../../field/node';
 import {addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
 import {assertPathIsCurrent} from '../../../schema/schema';
-import {metadata} from '../metadata';
 import {
   FieldContext,
-  SchemaPath,
   PathKind,
-  TreeValidationResult,
+  SchemaPath,
   SchemaPathRules,
+  TreeValidationResult,
 } from '../../types';
+import {createManagedMetadataKey, metadata} from '../metadata';
 
 /**
  * A function that takes the result of an async operation and the current field context, and maps it
@@ -116,16 +116,16 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   assertPathIsCurrent(path);
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
-  const RESOURCE = metadata(path, (ctx) => {
-    const params = computed(() => {
-      const node = ctx.stateOf(path) as FieldNode;
-      const validationState = node.validationState;
-      if (validationState.shouldSkipValidation() || !validationState.syncValid()) {
-        return undefined;
-      }
-      return opts.params(ctx);
-    });
-    return opts.factory(params);
+  const RESOURCE = createManagedMetadataKey<ReturnType<typeof opts.factory>, TParams | undefined>(
+    opts.factory,
+  );
+  metadata(path, RESOURCE, (ctx) => {
+    const node = ctx.stateOf(path) as FieldNode;
+    const validationState = node.validationState;
+    if (validationState.shouldSkipValidation() || !validationState.syncValid()) {
+      return undefined;
+    }
+    return opts.params(ctx);
   });
 
   pathNode.builder.addAsyncErrorRule((ctx) => {

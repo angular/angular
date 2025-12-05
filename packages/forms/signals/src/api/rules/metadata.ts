@@ -6,249 +6,297 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {type Signal} from '@angular/core';
 import {FieldPathNode} from '../../schema/path_node';
 import {assertPathIsCurrent} from '../../schema/schema';
-import type {FieldContext, PathKind, SchemaPath, SchemaPathRules} from '../types';
+import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 
 /**
- * Represents metadata that may be defined on a field when it is created using a `metadata` rule
- * in the schema. A particular `MetadataKey` can only be defined on a particular field **once**.
+ * Sets a value for the {@link MetadataKey} for this field.
+ *
+ * This value is combined via a reduce operation defined by the particular key,
+ * since multiple rules in the schema might set values for it.
+ *
+ * @param path The target path to set the metadata for.
+ * @param key The metadata key
+ * @param logic A function that receives the `FieldContext` and returns a value for the metadata.
+ * @template TValue The type of value stored in the field the logic is bound to.
+ * @template TKey The type of metadata key.
+ * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @category logic
  * @experimental 21.0.0
  */
-export class MetadataKey<TValue> {
-  private brand!: TValue;
+export function metadata<
+  TValue,
+  TKey extends MetadataKey<any, any, any>,
+  TPathKind extends PathKind = PathKind.Root,
+>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  key: TKey,
+  logic: NoInfer<LogicFn<TValue, MetadataSetterType<TKey>, TPathKind>>,
+): TKey {
+  assertPathIsCurrent(path);
 
-  /** Use {@link createMetadataKey}. */
-  private constructor() {}
+  const pathNode = FieldPathNode.unwrapFieldPath(path);
+  pathNode.builder.addMetadataRule(key, logic);
+  return key;
 }
 
 /**
- * Creates a {@link MetadataKey}.
+ * A reducer that determines the accumulated value for a metadata key by reducing the individual
+ * values contributed from `metadata()` rules.
  *
- * @experimental 21.0.0
+ * @template TAcc The accumulated type of the reduce operation.
+ * @template TItem The type of the individual items that are reduced over.
+ * @experimental 21.0.2
  */
-export function createMetadataKey<TValue>(): MetadataKey<TValue> {
-  return new (MetadataKey as new () => MetadataKey<TValue>)();
+export interface MetadataReducer<TAcc, TItem> {
+  /** The reduce function. */
+  reduce: (acc: TAcc, item: TItem) => TAcc;
+  /** Gets the initial accumulated value. */
+  getInitial: () => TAcc;
+}
+export const MetadataReducer = {
+  /** Creates a reducer that accumulates a list of its individual item values. */
+  list<TItem>(): MetadataReducer<TItem[], TItem | undefined> {
+    return {
+      reduce: (acc, item) => (item === undefined ? acc : [...acc, item]),
+      getInitial: () => [],
+    };
+  },
+
+  /** Creates a reducer that accumulates the min of its individual item values. */
+  min(): MetadataReducer<number | undefined, number | undefined> {
+    return {
+      reduce: (acc, item) => {
+        if (acc === undefined || item === undefined) {
+          return acc ?? item;
+        }
+        return Math.min(acc, item);
+      },
+      getInitial: () => undefined,
+    };
+  },
+
+  /** Creates a reducer that accumulates a the max of its individual item values. */
+  max(): MetadataReducer<number | undefined, number | undefined> {
+    return {
+      reduce: (prev, next) => {
+        if (prev === undefined || next === undefined) {
+          return prev ?? next;
+        }
+        return Math.max(prev, next);
+      },
+      getInitial: () => undefined,
+    };
+  },
+
+  /** Creates a reducer that logically or's its accumulated value with each individual item value. */
+  or(): MetadataReducer<boolean, boolean> {
+    return {
+      reduce: (prev, next) => prev || next,
+      getInitial: () => false,
+    };
+  },
+
+  /** Creates a reducer that logically and's its accumulated value with each individual item value. */
+  and(): MetadataReducer<boolean, boolean> {
+    return {
+      reduce: (prev, next) => prev && next,
+      getInitial: () => true,
+    };
+  },
+
+  /** Creates a reducer that always takes the next individual item value as the accumulated value. */
+  override,
+} as const;
+
+function override<T>(): MetadataReducer<T | undefined, T>;
+function override<T>(getInitial: () => T): MetadataReducer<T, T>;
+function override<T>(getInitial?: () => T): MetadataReducer<T | undefined, T> {
+  return {
+    reduce: (_, item) => item,
+    getInitial: () => getInitial?.(),
+  };
 }
 
 /**
  * Represents metadata that is aggregated from multiple parts according to the key's reducer
  * function. A value can be contributed to the aggregated value for a field using an
- * `aggregateMetadata` rule in the schema. There may be multiple rules in a schema that contribute
- * values to the same `AggregateMetadataKey` of the same field.
+ * `metadata` rule in the schema. There may be multiple rules in a schema that contribute
+ * values to the same `MetadataKey` of the same field.
+ *
+ * @template TRead The type read from the `FieldState` for this key
+ * @template TWrite The type written to this key using the `metadata()` rule
+ * @template TAcc The type of the reducer's accumulated value.
  *
  * @experimental 21.0.0
  */
-export class AggregateMetadataKey<TAcc, TItem> {
-  private brand!: [TAcc, TItem];
+export class MetadataKey<TRead, TWrite, TAcc> {
+  private brand!: [TRead, TWrite, TAcc];
 
   /** Use {@link reducedMetadataKey}. */
-  private constructor(
-    readonly reduce: (acc: TAcc, item: TItem) => TAcc,
-    readonly getInitial: () => TAcc,
+  protected constructor(
+    readonly reducer: MetadataReducer<TAcc, TWrite>,
+    readonly create: ((s: Signal<TAcc>) => TRead) | undefined,
   ) {}
 }
 
 /**
- * Creates an {@link AggregateMetadataKey} that reduces its individual values into an accumulated
- * value using the given `reduce` and `getInitial` functions.
- * @param reduce The reducer function.
- * @param getInitial A function that gets the initial value for the reduce operation.
+ * Extracts the the type that can be set into the given metadata key type using the `metadata()` rule.
+ *
+ * @template TKey The `MetadataKey` type
  *
  * @experimental 21.0.0
  */
-export function reducedMetadataKey<TAcc, TItem>(
-  reduce: (acc: TAcc, item: TItem) => TAcc,
-  getInitial: NoInfer<() => TAcc>,
-): AggregateMetadataKey<TAcc, TItem> {
-  return new (AggregateMetadataKey as new (
-    reduce: (acc: TAcc, item: TItem) => TAcc,
-    getInitial: () => TAcc,
-  ) => AggregateMetadataKey<TAcc, TItem>)(reduce, getInitial);
-}
+export type MetadataSetterType<TKey> =
+  TKey extends MetadataKey<any, infer TWrite, any> ? TWrite : never;
 
 /**
- * Creates an {@link AggregateMetadataKey} that reduces its individual values into a list.
+ * Creates a metadata key used to contain a computed value.
+ * The last value set on a given field tree node overrides any previously set values.
+ *
+ * @template TWrite The type written to this key using the `metadata()` rule
  *
  * @experimental 21.0.0
  */
-export function listMetadataKey<TItem>(): AggregateMetadataKey<TItem[], TItem | undefined> {
-  return reducedMetadataKey(
-    (acc, item) => (item === undefined ? acc : [...acc, item]),
-    () => [],
-  );
-}
-
+export function createMetadataKey<TWrite>(): MetadataKey<
+  Signal<TWrite | undefined>,
+  TWrite,
+  TWrite | undefined
+>;
 /**
- * Creates {@link AggregateMetadataKey} that reduces its individual values by taking their min.
+ * Creates a metadata key used to contain a computed value.
+ *
+ * @param reducer The reducer used to combine individually set values into the final computed value.
+ * @template TWrite The type written to this key using the `metadata()` rule
+ * @template TAcc The type of the reducer's accumulated value.
  *
  * @experimental 21.0.0
  */
-export function minMetadataKey(): AggregateMetadataKey<number | undefined, number | undefined> {
-  return reducedMetadataKey(
-    (prev, next) => {
-      if (prev === undefined) {
-        return next;
-      }
-      if (next === undefined) {
-        return prev;
-      }
-      return Math.min(prev, next);
-    },
-    () => undefined,
-  );
+export function createMetadataKey<TWrite, TAcc>(
+  reducer: MetadataReducer<TAcc, TWrite>,
+): MetadataKey<Signal<TAcc>, TWrite, TAcc>;
+export function createMetadataKey<TWrite, TAcc>(
+  reducer?: MetadataReducer<TAcc, TWrite>,
+): MetadataKey<Signal<TAcc>, TWrite, TAcc> {
+  return new (MetadataKey as new (
+    reducer: MetadataReducer<TAcc, TWrite>,
+  ) => MetadataKey<Signal<TAcc>, TWrite, TAcc>)(reducer ?? MetadataReducer.override<any>());
 }
 
 /**
- * Creates {@link AggregateMetadataKey} that reduces its individual values by taking their max.
+ * Creates a metadata key that exposes a managed value based on the accumulated result of the values
+ * written to the key. The accumulated value takes the last value set on a given field tree node,
+ * overriding any previously set values.
+ *
+ * @param create A function that receives a signal of the accumulated value and returns the managed
+ *   value based on it. This function runs during the construction of the `FieldTree` node,
+ *   and runs in the injection context of that node.
+ * @template TRead The type read from the `FieldState` for this key
+ * @template TWrite The type written to this key using the `metadata()` rule
  *
  * @experimental 21.0.0
  */
-export function maxMetadataKey(): AggregateMetadataKey<number | undefined, number | undefined> {
-  return reducedMetadataKey(
-    (prev, next) => {
-      if (prev === undefined) {
-        return next;
-      }
-      if (next === undefined) {
-        return prev;
-      }
-      return Math.max(prev, next);
-    },
-    () => undefined,
-  );
-}
-
+export function createManagedMetadataKey<TRead, TWrite>(
+  create: (s: Signal<TWrite | undefined>) => TRead,
+): MetadataKey<TRead, TWrite, TWrite | undefined>;
 /**
- * Creates an {@link AggregateMetadataKey} that reduces its individual values by logically or-ing
- * them.
+ * Creates a metadata key that exposes a managed value based on the accumulated result of the values
+ * written to the key.
+ *
+ * @param create A function that receives a signal of the accumulated value and returns the managed
+ *   value based on it. This function runs during the construction of the `FieldTree` node,
+ *   and runs in the injection context of that node.
+ * @param reducer The reducer used to combine individual value written to the key,
+ *   this will determine the accumulated value that the create function receives.
+ * @template TRead The type read from the `FieldState` for this key
+ * @template TWrite The type written to this key using the `metadata()` rule
+ * @template TAcc The type of the reducer's accumulated value.
  *
  * @experimental 21.0.0
  */
-export function orMetadataKey(): AggregateMetadataKey<boolean, boolean> {
-  return reducedMetadataKey(
-    (prev, next) => prev || next,
-    () => false,
-  );
+export function createManagedMetadataKey<TRead, TWrite, TAcc>(
+  create: (s: Signal<TAcc>) => TRead,
+  reducer: MetadataReducer<TAcc, TWrite>,
+): MetadataKey<TRead, TWrite, TAcc>;
+export function createManagedMetadataKey<TRead, TWrite, TAcc>(
+  create: (s: Signal<TAcc>) => TRead,
+  reducer?: MetadataReducer<TAcc, TWrite>,
+): MetadataKey<TRead, TWrite, TAcc> {
+  return new (MetadataKey as new (
+    reducer: MetadataReducer<TAcc, TWrite>,
+    create: (s: Signal<TAcc>) => TRead,
+  ) => MetadataKey<TRead, TWrite, TAcc>)(reducer ?? MetadataReducer.override<any>(), create);
 }
 
 /**
- * Creates an {@link AggregateMetadataKey} that reduces its individual values by logically and-ing
- * them.
- *
- * @experimental 21.0.0
- */
-export function andMetadataKey(): AggregateMetadataKey<boolean, boolean> {
-  return reducedMetadataKey(
-    (prev, next) => prev && next,
-    () => true,
-  );
-}
-
-/**
- * An {@link AggregateMetadataKey} representing whether the field is required.
+ * A {@link MetadataKey} representing whether the field is required.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const REQUIRED: AggregateMetadataKey<boolean, boolean> = orMetadataKey();
+export const REQUIRED: MetadataKey<Signal<boolean>, boolean, boolean> = createMetadataKey(
+  MetadataReducer.or(),
+);
 
 /**
- * An {@link AggregateMetadataKey} representing the min value of the field.
+ * A {@link MetadataKey} representing the min value of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MIN: AggregateMetadataKey<number | undefined, number | undefined> = maxMetadataKey();
+export const MIN: MetadataKey<
+  Signal<number | undefined>,
+  number | undefined,
+  number | undefined
+> = createMetadataKey(MetadataReducer.max());
 
 /**
- * An {@link AggregateMetadataKey} representing the max value of the field.
+ * A {@link MetadataKey} representing the max value of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MAX: AggregateMetadataKey<number | undefined, number | undefined> = minMetadataKey();
+export const MAX: MetadataKey<
+  Signal<number | undefined>,
+  number | undefined,
+  number | undefined
+> = createMetadataKey(MetadataReducer.min());
 
 /**
- * An {@link AggregateMetadataKey} representing the min length of the field.
+ * A {@link MetadataKey} representing the min length of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MIN_LENGTH: AggregateMetadataKey<number | undefined, number | undefined> =
-  maxMetadataKey();
+export const MIN_LENGTH: MetadataKey<
+  Signal<number | undefined>,
+  number | undefined,
+  number | undefined
+> = createMetadataKey(MetadataReducer.max());
 
 /**
- * An {@link AggregateMetadataKey} representing the max length of the field.
+ * A {@link MetadataKey} representing the max length of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MAX_LENGTH: AggregateMetadataKey<number | undefined, number | undefined> =
-  minMetadataKey();
+export const MAX_LENGTH: MetadataKey<
+  Signal<number | undefined>,
+  number | undefined,
+  number | undefined
+> = createMetadataKey(MetadataReducer.min());
 
 /**
- * An {@link AggregateMetadataKey} representing the patterns the field must match.
+ * A {@link MetadataKey} representing the patterns the field must match.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const PATTERN: AggregateMetadataKey<RegExp[], RegExp | undefined> = listMetadataKey();
-
-/**
- * Creates a new {@link MetadataKey} and defines the value of the new metadata key for the given field.
- *
- * @param path The path to define the metadata for.
- * @param factory A factory function that creates the value for the metadata.
- *   This function is **not** reactive. It is run once when the field is created.
- * @returns The newly created metadata key
- *
- * @category logic
- * @experimental 21.0.0
- */
-export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
-): MetadataKey<TData>;
-
-/**
- * Defines the value of a {@link MetadataKey} for a given field.
- *
- * @param path The path to define the metadata for.
- * @param key  The metadata key to define.
- * @param factory A factory function that creates the value for the metadata.
- *   This function is **not** reactive. It is run once when the field is created.
- * @returns The given metadata key
- *
- * @category logic
- * @experimental 21.0.0
- */
-export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  key: MetadataKey<TData>,
-  factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
-): MetadataKey<TData>;
-
-export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  ...rest:
-    | [(ctx: FieldContext<TValue, TPathKind>) => TData]
-    | [MetadataKey<TData>, (ctx: FieldContext<TValue, TPathKind>) => TData]
-): MetadataKey<TData> {
-  assertPathIsCurrent(path);
-
-  let key: MetadataKey<TData>;
-  let factory: (ctx: FieldContext<TValue, TPathKind>) => TData;
-  if (rest.length === 2) {
-    [key, factory] = rest;
-  } else {
-    [factory] = rest;
-  }
-  key ??= createMetadataKey();
-
-  const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.builder.addMetadataFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
-  return key;
-}
+export const PATTERN: MetadataKey<
+  Signal<RegExp[]>,
+  RegExp | undefined,
+  RegExp[]
+> = createMetadataKey(MetadataReducer.list<RegExp>());

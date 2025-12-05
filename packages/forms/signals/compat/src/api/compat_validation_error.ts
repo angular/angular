@@ -7,8 +7,8 @@
  */
 
 import {AbstractControl} from '@angular/forms';
-import {FieldTree} from '../../../src/api/types';
 import {ValidationError} from '../../../src/api/rules/validation/validation_errors';
+import {FieldTree} from '../../../src/api/types';
 
 /**
  * An error used for compat errors.
