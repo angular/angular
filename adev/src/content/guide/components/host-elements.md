@@ -150,7 +150,7 @@ export class MyComponent {
 
 In this example, the `--my-background` CSS custom property is bound to the `color` signal. The value of the custom property will automatically update whenever the `color` signal changes. This will affect the current component and all its children that rely on this custom property.
 
-### Setting custom properties on children compoents
+### Setting custom properties on children components
 
 Alternatively, it is also possible to set css custom properties on the host element of children components with a [style binding](guide/templates/binding#css-style-properties).
 
