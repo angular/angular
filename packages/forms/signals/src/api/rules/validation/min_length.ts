@@ -6,12 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata} from '../aggregate_metadata';
-import {validate} from './validate';
-import {metadata, MIN_LENGTH} from '../metadata';
-import {SchemaPath, LogicFn, PathKind, SchemaPathRules} from '../../types';
-import {minLengthError} from './validation_errors';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
+import {createMetadataKey, metadata, MIN_LENGTH} from '../metadata';
 import {
   BaseValidatorConfig,
   getLengthOrSize,
@@ -19,6 +15,8 @@ import {
   isEmpty,
   ValueWithLengthOrSize,
 } from './util';
+import {validate} from './validate';
+import {minLengthError} from './validation_errors';
 
 /**
  * Binds a validator to the given path that requires the length of the value to be greater than or
@@ -45,10 +43,10 @@ export function minLength<
   minLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MIN_LENGTH_MEMO = metadata(path, (ctx) =>
-    computed(() => (typeof minLength === 'number' ? minLength : minLength(ctx))),
+  const MIN_LENGTH_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) =>
+    typeof minLength === 'number' ? minLength : minLength(ctx),
   );
-  aggregateMetadata(path, MIN_LENGTH, ({state}) => state.metadata(MIN_LENGTH_MEMO)!());
+  metadata(path, MIN_LENGTH, ({state}) => state.metadata(MIN_LENGTH_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

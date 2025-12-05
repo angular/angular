@@ -17,6 +17,7 @@ import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema/schema';
 import {normalizeFormArgs} from '../util/normalize_form_args';
 import {isArray} from '../util/type_guards';
+import type {ValidationError} from './rules/validation/validation_errors';
 import type {
   FieldTree,
   ItemType,
@@ -29,7 +30,6 @@ import type {
   SchemaPath,
   TreeValidationResult,
 } from './types';
-import type {ValidationError} from './rules/validation/validation_errors';
 
 /**
  * Options that may be specified when creating a form.

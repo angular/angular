@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata} from '../aggregate_metadata';
-import {validate} from './validate';
-import {metadata, MAX} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
-import {maxError} from './validation_errors';
+import {createMetadataKey, MAX, metadata} from '../metadata';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
+import {validate} from './validate';
+import {maxError} from './validation_errors';
 
 /**
  * Binds a validator to the given path that requires the value to be less than or equal to the
@@ -35,10 +33,10 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   maxValue: number | LogicFn<number | string | null, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number | string | null, TPathKind>,
 ) {
-  const MAX_MEMO = metadata(path, (ctx) =>
-    computed(() => (typeof maxValue === 'number' ? maxValue : maxValue(ctx))),
+  const MAX_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) =>
+    typeof maxValue === 'number' ? maxValue : maxValue(ctx),
   );
-  aggregateMetadata(path, MAX, ({state}) => state.metadata(MAX_MEMO)!());
+  metadata(path, MAX, ({state}) => state.metadata(MAX_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;
