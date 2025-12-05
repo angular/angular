@@ -222,22 +222,22 @@ export interface FormOptions {
 
 // @public
 export interface FormUiControl {
-    readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly disabledReasons?: InputSignal<readonly WithOptionalField<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalField<DisabledReason>[], unknown>;
-    readonly errors?: InputSignal<readonly WithOptionalField<ValidationError>[]> | InputSignalWithTransform<readonly WithOptionalField<ValidationError>[], unknown>;
-    readonly hidden?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly invalid?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly max?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly maxLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly min?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly minLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly name?: InputSignal<string> | InputSignalWithTransform<string, unknown>;
-    readonly pattern?: InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], unknown>;
-    readonly pending?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly readonly?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly required?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly touched?: ModelSignal<boolean> | InputSignal<boolean> | InputSignalWithTransform<boolean, unknown> | OutputRef<boolean>;
+    readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<boolean, any>;
+    readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, any>;
+    readonly disabledReasons?: InputSignal<readonly WithOptionalField<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalField<DisabledReason>[], any>;
+    readonly errors?: InputSignal<readonly WithOptionalField<ValidationError>[]> | InputSignalWithTransform<readonly WithOptionalField<ValidationError>[], any>;
+    readonly hidden?: InputSignal<boolean> | InputSignalWithTransform<boolean, any>;
+    readonly invalid?: InputSignal<boolean> | InputSignalWithTransform<boolean, any>;
+    readonly max?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, any>;
+    readonly maxLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, any>;
+    readonly min?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, any>;
+    readonly minLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, any>;
+    readonly name?: InputSignal<string> | InputSignalWithTransform<string, any>;
+    readonly pattern?: InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], any>;
+    readonly pending?: InputSignal<boolean> | InputSignalWithTransform<boolean, any>;
+    readonly readonly?: InputSignal<boolean> | InputSignalWithTransform<boolean, any>;
+    readonly required?: InputSignal<boolean> | InputSignalWithTransform<boolean, any>;
+    readonly touched?: ModelSignal<boolean> | InputSignal<boolean> | InputSignalWithTransform<boolean, any> | OutputRef<boolean>;
 }
 
 // @public
