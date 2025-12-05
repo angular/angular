@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata} from '../aggregate_metadata';
-import {validate} from './validate';
-import {metadata, REQUIRED} from '../metadata';
-import {SchemaPath, LogicFn, PathKind, SchemaPathRules} from '../../types';
-import {requiredError} from './validation_errors';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
+import {createMetadataKey, metadata, REQUIRED} from '../metadata';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
+import {validate} from './validate';
+import {requiredError} from './validation_errors';
 
 /**
  * Binds a validator to the given path that requires the value to be non-empty.
@@ -37,10 +35,10 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
   },
 ): void {
-  const REQUIRED_MEMO = metadata(path, (ctx) =>
-    computed(() => (config?.when ? config.when(ctx) : true)),
+  const REQUIRED_MEMO = metadata(path, createMetadataKey<boolean>(), (ctx) =>
+    config?.when ? config.when(ctx) : true,
   );
-  aggregateMetadata(path, REQUIRED, ({state}) => state.metadata(REQUIRED_MEMO)!());
+  metadata(path, REQUIRED, ({state}) => state.metadata(REQUIRED_MEMO)!()!);
   validate(path, (ctx) => {
     if (ctx.state.metadata(REQUIRED_MEMO)!() && isEmpty(ctx.value())) {
       if (config?.error) {
