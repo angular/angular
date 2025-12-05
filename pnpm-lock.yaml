@@ -395,8 +395,8 @@ importers:
         specifier: ^0.5.10
         version: 0.5.16
       cldr:
-        specifier: 7.9.0
-        version: 7.9.0
+        specifier: 8.0.0
+        version: 8.0.0
       cldrjs:
         specifier: 0.5.5
         version: 0.5.5
@@ -6444,8 +6444,8 @@ packages:
     resolution: {integrity: sha512-yKNcXi/Mvi5kb1uK0sahubYiyfUO2EUgOp4NcY9+8NX5Xmc+4yeNogZuLFkpLBBj7/QI9MjRUIuXrV9XOw5kVg==}
     engines: {node: '>= 0.3.0'}
 
-  cldr@7.9.0:
-    resolution: {integrity: sha512-fnIifk57sudBE5kJTqvAGxhe5hxnYNPl338y6AYd9DhVuleg5QtCgqlKCu7joOqZATK8FsHJmaS6ysV/IlBzjQ==}
+  cldr@8.0.0:
+    resolution: {integrity: sha512-wRq8XBgmVemoq5jJeSWw8Sq1TdsVx02ZZWvfOAio3OEPjkstGprBHTMC3DxI1tmdd7CjS826lIOsdfgJHMu2lg==}
 
   cldrjs@0.5.5:
     resolution: {integrity: sha512-KDwzwbmLIPfCgd8JERVDpQKrUUM1U4KpFJJg2IROv89rF172lLufoJnqJ/Wea6fXL5bO6WjuLMzY8V52UWPvkA==}
@@ -19381,7 +19381,7 @@ snapshots:
     dependencies:
       json-parse-helpfulerror: 1.0.3
 
-  cldr@7.9.0:
+  cldr@8.0.0:
     dependencies:
       '@xmldom/xmldom': 0.8.11
       escodegen: 2.1.0
