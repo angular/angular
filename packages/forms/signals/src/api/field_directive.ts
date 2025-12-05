@@ -74,15 +74,16 @@ const controlInstructions = {
 export class Field<T> implements ɵControl<T> {
   readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   readonly injector = inject(Injector);
+  readonly field = input.required<FieldTree<T>>();
+  readonly state = computed(() => this.field()());
+
+  readonly [ɵCONTROL] = controlInstructions;
+
   private config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
   /** @internal */
   readonly classes = Object.entries(this.config?.classes ?? {}).map(
     ([className, computation]) => [className, computed(() => computation(this.state()))] as const,
   );
-  readonly field = input.required<FieldTree<T>>();
-  readonly state = computed(() => this.field()());
-  /** @internal */
-  readonly [ɵCONTROL] = controlInstructions;
 
   /** Any `ControlValueAccessor` instances provided on the host element. */
   private readonly controlValueAccessors = inject(NG_VALUE_ACCESSOR, {optional: true, self: true});
