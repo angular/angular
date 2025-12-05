@@ -104,7 +104,6 @@ export class Field<T> implements ɵControl<T> {
     return (this.interopNgControl ??= new InteropNgControl(this.state));
   }
 
-  //TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861631
   /** @internal */
   ɵregister() {
     // Register this control on the field it is currently bound to. We do this at the end of
