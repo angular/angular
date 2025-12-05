@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {checkNonTsReferenceAccessesField} from '../../utils/reference_utils';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../utils/tsurge';
 import {ClassFieldDescriptor} from '../signal-migration/src';
 import {
@@ -16,7 +17,7 @@ import {
 } from '../signal-migration/src/passes/reference_resolution/reference_kinds';
 import {KnownQueries} from './known_queries';
 import type {GlobalUnitData} from './migration';
-import {checkNonTsReferenceAccessesField, checkTsReferenceAccessesField} from './property_accesses';
+import {checkTsReferenceAccessesField} from './property_accesses';
 
 const mapping = new Map([
   ['first', 'at(0)!'],

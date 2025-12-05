@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {checkNonTsReferenceAccessesField} from '../../utils/reference_utils';
 import {ClassFieldDescriptor} from '../signal-migration/src';
 import {
   isHostBindingReference,
@@ -14,7 +15,7 @@ import {
   Reference,
 } from '../signal-migration/src/passes/reference_resolution/reference_kinds';
 import type {CompilationUnitData} from './migration';
-import {checkNonTsReferenceAccessesField, checkTsReferenceAccessesField} from './property_accesses';
+import {checkTsReferenceAccessesField} from './property_accesses';
 
 const problematicQueryListMethods = [
   'dirty',
