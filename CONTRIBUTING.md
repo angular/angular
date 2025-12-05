@@ -69,35 +69,52 @@ Unfortunately, we are not able to investigate / fix bugs without a minimal repro
 
 You can file new issues by selecting from our [new issue templates](https://github.com/angular/angular/issues/new/choose) and filling out the issue template.
 
+### <a name="pr-quality"></a> Contribution Quality
+
+We strongly value open source contribution and pull requests from community contributors. Please note that every pull request is reviewed and merged by an actual person on the team, which does take time and effort. That is time and effort that does take away from other valuable work. With that in mind we have an minimum set of expectations that are required of any community contribution pull request that is opened.
+
+1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR that relates to your submission.
+   - You don't want to duplicate existing efforts.
+2. Be sure that an issue or pull request clearly describes the problem you're fixing, or documents the design for the feature you'd like to add. Issues require a _minimal_ reproduction.
+
+3. Discussing the design in an issue upfront helps to ensure that we're ready to accept your work. Pull requests are not the right place to do design work.
+   - When in doubt, open an issue first before doing any sort of speculative implementation work
+
+4. Ideally the PR should be tied to an issue, but this is not required
+
+5. The change should improve code quality (i.e. addressing a TODO) or should impact / improve a feature
+
+6. Micro optimizations will only be accepted if they are validated by an actual benchmark
+
+7. Do not open pull requests that are addressing feature requests that are not labeled as "help wanted" as they usually need additional design work before we could accept pull requests
+
+8. The change should be well tested
+
+If your pull request does not meet these minimum expectations, we may close your PR. Also, if your PR introduces a breaking change, it's possible the level of churn this breaking change causes may block our ability to move forward with it. We may close your PR in that situation, as well. Otherwise, we're excited to see your contributions and enthusiasm for Angular!
+
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
 
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR that relates to your submission.
-   You don't want to duplicate existing efforts.
-
-2. Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
-   Discussing the design upfront helps to ensure that we're ready to accept your work.
-
-3. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
+1. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
    We cannot accept code without a signed CLA.
    Make sure you author all contributed Git commits with email address associated with your CLA signature.
 
-4. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the [angular/angular](https://github.com/angular/angular/fork) repo.
+2. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the [angular/angular](https://github.com/angular/angular/fork) repo.
 
-5. In your forked repository, make your changes in a new git branch:
+3. In your forked repository, make your changes in a new git branch:
 
    ```shell
    git checkout -b my-fix-branch main
    ```
 
-6. Create your patch, **including appropriate test cases**.
+4. Create your patch, **including appropriate test cases**.
 
-7. Follow our [Coding Rules](#rules).
+5. Follow our [Coding Rules](#rules).
 
-8. Run the full Angular test suite, as described in the [developer documentation][dev-doc], and ensure that all tests pass.
+6. Run the full Angular test suite, as described in the [developer documentation][dev-doc], and ensure that all tests pass.
 
-9. Commit your changes using a descriptive commit message that follows our [commit message conventions][commit-message-guidelines].
+7. Commit your changes using a descriptive commit message that follows our [commit message conventions][commit-message-guidelines].
    Adherence to these conventions is necessary because release notes are automatically generated from these messages.
 
    ```shell
@@ -106,13 +123,13 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
    Note: the optional commit `--all` command line option will automatically "add" and "rm" edited files.
 
-10. Push your branch to GitHub:
+8. Push your branch to GitHub:
 
-    ```shell
-    git push origin my-fix-branch
-    ```
+   ```shell
+   git push origin my-fix-branch
+   ```
 
-11. In GitHub, send a pull request to `angular:main`.
+9. In GitHub, send a pull request to `angular:main`.
 
 ### Reviewing a Pull Request
 
