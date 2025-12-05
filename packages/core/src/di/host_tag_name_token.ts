@@ -33,6 +33,9 @@ import {InternalInjectFlags} from './interface/injector';
  * }
  * ```
  * @publicApi
+ *
+ * @see [Inject the host element's tag name](guide/di/di-in-action#inject-the-host-elements-tag-name)
+ *
  */
 export const HOST_TAG_NAME: InjectionToken<string> = /* @__PURE__ */ (() => {
   // Wrapped in a `@__PURE__` IIFE so this token stays tree-shakable.
