@@ -305,7 +305,7 @@ export class NavigationStateManager extends StateManager {
       );
     } else {
       // Replace the current history entry with the state of the last known good URL/state.
-      const internalPath = this.urlSerializer.serialize(this.getCurrentUrlTree());
+      const internalPath = this.urlSerializer.serialize(this.currentUrlTree());
       const pathOrUrl = this.location.prepareExternalUrl(internalPath);
       handleResultRejections(
         this.navigation.navigate(pathOrUrl, {
@@ -319,10 +319,10 @@ export class NavigationStateManager extends StateManager {
 
   private resetInternalState(finalUrl: UrlTree | undefined, traversalReset: boolean): void {
     this.routerState = this.stateMemento.routerState;
-    this.currentUrlTree = this.stateMemento.currentUrlTree;
+    this._currentUrlTree.set(this.stateMemento.currentUrlTree);
     this.rawUrlTree = traversalReset
       ? this.stateMemento.rawUrlTree
-      : this.urlHandlingStrategy.merge(this.currentUrlTree, finalUrl ?? this.rawUrlTree);
+      : this.urlHandlingStrategy.merge(this.currentUrlTree(), finalUrl ?? this.rawUrlTree);
   }
 
   /**
