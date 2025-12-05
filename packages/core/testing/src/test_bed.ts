@@ -880,6 +880,8 @@ export class TestBedImpl implements TestBed {
       // The behavior should be that TestBed.tick, ComponentFixture.detectChanges, and ApplicationRef.tick all result in the test fixtures
       // getting synchronized, regardless of whether they are autoDetect: true.
       // Automatic scheduling (zone or zoneless) will call _tick which will _not_ include fixtures with autoDetect: false
+      // If this does get changed, we will need a new flag for the scheduler to use to omit the microtask scheduling
+      // from a tick initiated by tests.
       (appRef as any).includeAllTestViews = true;
       appRef.tick();
     } finally {
