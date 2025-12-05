@@ -28,7 +28,7 @@ import {
   untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
 } from '@angular/core';
-import {Subject, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {RuntimeErrorCode} from '../errors';
 import {QueryParamsHandling} from '../models';
 import {Router} from '../router';
@@ -262,8 +262,6 @@ export class RouterLink implements OnChanges, OnDestroy {
   /** Whether a host element is an `<a>`/`<area>` tag or a compatible custom element. */
   private readonly isAnchorElement: boolean;
   private subscription?: Subscription;
-  /** @internal */
-  onChanges = new Subject<RouterLink>();
   // This is a hack around not having signal inputs.
   private readonly changes = signal({});
   private readonly applicationErrorHandler = inject(ɵINTERNAL_APPLICATION_ERROR_HANDLER);
@@ -329,9 +327,6 @@ export class RouterLink implements OnChanges, OnDestroy {
   // TODO(atscott): Remove changes parameter in major version as a breaking change.
   ngOnChanges(changes?: SimpleChanges): void {
     this.changes.set({});
-    // This is subscribed to by `RouterLinkActive` so that it knows to update when there are changes
-    // to the RouterLinks it's tracking.
-    this.onChanges.next(this);
   }
 
   private routerLinkInput: readonly any[] | UrlTree | null = null;

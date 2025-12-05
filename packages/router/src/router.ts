@@ -20,6 +20,7 @@ import {
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
   ɵformatRuntimeError as formatRuntimeError,
   computed,
+  signal,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
@@ -152,7 +153,15 @@ export class Router {
    * True if at least one navigation event has occurred,
    * false otherwise.
    */
-  navigated: boolean = false;
+  get navigated() {
+    return untracked(this._navigated);
+  }
+  /** @deprecated */
+  set navigated(v: boolean) {
+    this._navigated.set(v);
+  }
+  /** @internal */
+  _navigated = signal(false);
 
   /**
    * A strategy for re-using routes.
