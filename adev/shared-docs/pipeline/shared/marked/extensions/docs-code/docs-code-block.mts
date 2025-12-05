@@ -39,6 +39,7 @@ export const docsCodeBlockExtension = {
 
       const headerRule = /header\s*:\s*(['"`])([^'"`]+)\1/; // The 2nd capture matters here
       const highlightRule = /highlight\s*:\s*(.*)([^,])/;
+      const linenumsRule = /linenums/;
 
       const token: DocsCodeBlock = {
         raw: match[0],
@@ -47,6 +48,7 @@ export const docsCodeBlockExtension = {
         language: match[1],
         header: headerRule.exec(metadataStr)?.[2],
         highlight: highlightRule.exec(metadataStr)?.[1],
+        linenums: linenumsRule.test(metadataStr),
       };
       return token;
     }
