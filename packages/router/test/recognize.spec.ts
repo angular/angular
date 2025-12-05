@@ -583,12 +583,17 @@ describe('recognize', () => {
   describe('wildcards', () => {
     it('should support simple wildcards', async () => {
       const s = await recognize([{path: '**', component: ComponentA}], 'a/b/c/d;a1=11');
-      checkActivatedRoute(s.root.firstChild!, 'a/b/c/d', {a1: '11'}, ComponentA);
+      checkActivatedRoute(
+        s.root.firstChild!,
+        'a/b/c/d',
+        {a1: '11', _splat: ['a', 'b', 'c', 'd']},
+        ComponentA,
+      );
     });
 
     it(`should match '**' with pathMatch: 'full' to a non-empty path`, async () => {
       const s = await recognize([{path: '**', pathMatch: 'full', component: ComponentA}], 'a/b/c');
-      checkActivatedRoute(s.root.firstChild!, 'a/b/c', {}, ComponentA);
+      checkActivatedRoute(s.root.firstChild!, 'a/b/c', {_splat: ['a', 'b', 'c']}, ComponentA);
     });
 
     it(`should match '**' with pathMatch: 'full' to an empty path`, async () => {
@@ -604,7 +609,7 @@ describe('recognize', () => {
         [{path: '**', pathMatch: 'full', component: ComponentA}],
         'a/(aux:c)',
       );
-      checkActivatedRoute(s.root.firstChild!, 'a', {}, ComponentA);
+      checkActivatedRoute(s.root.firstChild!, 'a', {_splat: ['a']}, ComponentA);
     });
 
     it('should support segments after a wildcard', async () => {
@@ -627,7 +632,7 @@ describe('recognize', () => {
       checkActivatedRoute(a, 'a', {}, ComponentA);
 
       const wildcard = a.firstChild!;
-      checkActivatedRoute(wildcard, '1/2/b', {}, ComponentB);
+      checkActivatedRoute(wildcard, '1/2/b', {_splat: ['1', '2']}, ComponentB);
     });
 
     describe('with segments after', () => {
@@ -643,12 +648,17 @@ describe('recognize', () => {
 
       it('matches a url with one segment for the wildcard', async () => {
         const s = await recognizer('foo/a/bar');
-        checkActivatedRoute(s.root.firstChild!, 'foo/a/bar', {}, ComponentA);
+        checkActivatedRoute(s.root.firstChild!, 'foo/a/bar', {_splat: ['a']}, ComponentA);
       });
 
       it('matches a url with multiple segments for the wildcard', async () => {
-        const s = await recognizer('foo/a/b/c/bar');
-        checkActivatedRoute(s.root.firstChild!, 'foo/a/b/c/bar', {}, ComponentA);
+        const s = await recognizer('foo/a/b;some=123/c/bar');
+        checkActivatedRoute(
+          s.root.firstChild!,
+          'foo/a/b/c/bar',
+          {_splat: ['a', 'b', 'c'], some: '123'},
+          ComponentA,
+        );
       });
       it('matches a url with no segments for the wildcard', async () => {
         const s = await recognizer('foo/bar');
@@ -668,7 +678,7 @@ describe('recognize', () => {
 
       it('matches a url with segments after the prefix', async () => {
         const s = await recognizer('foo/a/b');
-        checkActivatedRoute(s.root.firstChild!, 'foo/a/b', {}, ComponentA);
+        checkActivatedRoute(s.root.firstChild!, 'foo/a/b', {_splat: ['a', 'b']}, ComponentA);
       });
 
       it('matches a url with no segments after the prefix', async () => {
@@ -685,7 +695,7 @@ describe('recognize', () => {
 
       it('matches a url with segments before the suffix', async () => {
         const s = await recognizer('a/b/bar');
-        checkActivatedRoute(s.root.firstChild!, 'a/b/bar', {}, ComponentA);
+        checkActivatedRoute(s.root.firstChild!, 'a/b/bar', {_splat: ['a', 'b']}, ComponentA);
       });
 
       it('matches a url with no segments before the suffix', async () => {
@@ -1046,7 +1056,7 @@ describe('recognize', () => {
       checkActivatedRoute(
         s.root.firstChild!,
         'foo/required/a/bar',
-        {anyRequired: 'required'},
+        {anyRequired: 'required', _splat: ['a']},
         ComponentA,
       );
     });
@@ -1056,7 +1066,7 @@ describe('recognize', () => {
       checkActivatedRoute(
         s.root.firstChild!,
         'foo/required/a/b/c/bar',
-        {anyRequired: 'required'},
+        {anyRequired: 'required', _splat: ['a', 'b', 'c']},
         ComponentA,
       );
     });
