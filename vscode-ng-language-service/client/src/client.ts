@@ -419,13 +419,7 @@ export class AngularLanguageClient implements vscode.Disposable {
       }
     }
 
-    // Pass the earliest Angular version along to the compiler for maximum compatibility.
-    if (angularVersions.length > 0) {
-      args.push('--angularCoreVersion', angularVersions[0].version.toString());
-      this.outputChannel.appendLine(
-        `Using Angular version ${angularVersions[0].version.toString()}.`,
-      );
-    }
+    setAngularVersionAndShowMultipleVersionsWarning(angularVersions, args, this.outputChannel);
 
     const forceStrictTemplates = config.get<boolean>('angular.forceStrictTemplates');
     if (forceStrictTemplates) {
@@ -673,4 +667,36 @@ async function getAngularVersionsInWorkspace(
     angularCoreModules.add(angularCore);
   }
   return Array.from(angularCoreModules);
+}
+
+function setAngularVersionAndShowMultipleVersionsWarning(
+  angularVersions: NodeModule[],
+  args: string[],
+  outputChannel: vscode.OutputChannel,
+) {
+  if (angularVersions.length === 0) {
+    return;
+  }
+  // Pass the earliest Angular version along to the compiler for maximum compatibility.
+  // For example, if we tell the v21 compiler that we're using v21 but there's a v13 project,
+  // the compiler may attempt to import and use APIs from angular core that don't exist in v13.
+  args.push('--angularCoreVersion', angularVersions[0].version.toString());
+  outputChannel.appendLine(`Using Angular version ${angularVersions[0].version.toString()}.`);
+
+  let minorVersions = new Map<string, NodeModule>();
+  for (const v of angularVersions) {
+    minorVersions.set(`${v.version.major}.${v.version.minor}`, v);
+  }
+  if (minorVersions.size > 1) {
+    vscode.window.showWarningMessage(
+      `Multiple versions of Angular detected in the workspace. This can lead to compatibility issues for the language service. ` +
+        `See the output panel for more details.`,
+    );
+    outputChannel.appendLine(`Multiple Angular versions detected in the workspace:`);
+    for (const v of minorVersions.values()) {
+      outputChannel.appendLine(
+        `  Angular version ${v.version.toString()} detected at ${v.resolvedPath}`,
+      );
+    }
+  }
 }
