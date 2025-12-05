@@ -20,7 +20,6 @@ import { ɵCONTROL } from '@angular/core';
 import { ɵControl } from '@angular/core';
 import { ɵcontrolUpdate } from '@angular/core';
 import { ɵFieldState } from '@angular/core';
-import { ɵInteropControl } from '@angular/core';
 import { ɵɵcontrolCreate } from '@angular/core';
 
 // @public
