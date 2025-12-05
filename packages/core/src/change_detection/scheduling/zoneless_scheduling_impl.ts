@@ -82,6 +82,9 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   constructor() {
     this.subscriptions.add(
       this.appRef.afterTick.subscribe(() => {
+        // Prevent stabilization if cleanup causes the last task to be removed
+        // before we can switch to the microtask scheduler.
+        const task = this.taskService.add();
         // If the scheduler isn't running a tick but the application ticked, that means
         // someone called ApplicationRef.tick manually. In this case, we should cancel
         // any change detections that had been scheduled so we don't run an extra one.
@@ -95,10 +98,12 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
           // _ever_ when ZoneJS is enabled because ZoneJS is responsible for rerunning change
           // detection on microtask queue empty. This change breaks some tests
           if (!this.zonelessEnabled || this.appRef.includeAllTestViews) {
+            this.taskService.remove(task);
             return;
           }
         }
         this.switchToMicrotaskScheduler();
+        this.taskService.remove(task);
       }),
     );
     this.subscriptions.add(
