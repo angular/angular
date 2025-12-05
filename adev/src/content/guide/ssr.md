@@ -551,6 +551,41 @@ To disable caching for an individual request, you can specify the [`transferCach
 httpClient.get('/api/sensitive-data', { transferCache: false });
 ```
 
+### Origin mapping for server and client
+
+If your application uses different HTTP origins on the server and client, use `HTTP_TRANSFER_CACHE_ORIGIN_MAP` to map server origins to client origins. This allows the transfer cache to recognize requests as identical and reuse cached data during hydration.
+
+```ts
+import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
+
+const serverConfig = {
+  providers: [
+    {
+      provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+      useValue: {
+        'http://internal-api.com:8080': 'https://external-api.com'
+      }
+    }
+  ]
+};
+```
+
+For dynamic configuration based on environment:
+
+```ts
+{
+  provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+  useFactory: () => {
+    const config = inject(ConfigService);
+    return {
+      [config.internalOrigin]: config.externalOrigin
+    };
+  }
+}
+```
+
+IMPORTANT: Only provide this token in **server** configuration.
+
 ## Configuring a server
 
 ### Node.js

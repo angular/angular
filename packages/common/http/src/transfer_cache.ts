@@ -79,6 +79,9 @@ export type HttpTransferCacheOptions = {
  * ```
  *
  * @publicApi
+ *
+ * @see [Origin mapping for server and client](guide/ssr#origin-mapping-for-server-and-client)
+ *
  */
 export const HTTP_TRANSFER_CACHE_ORIGIN_MAP = new InjectionToken<Record<string, string>>(
   typeof ngDevMode !== undefined && ngDevMode ? 'HTTP_TRANSFER_CACHE_ORIGIN_MAP' : '',
