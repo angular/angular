@@ -251,7 +251,7 @@ describe('ExampleViewer', () => {
     const spy = spyOn(clipboardService, 'copy');
 
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
     const button = fixture.debugElement.query(By.directive(CopySourceCodeButton)).nativeElement;
     button.click();
 
