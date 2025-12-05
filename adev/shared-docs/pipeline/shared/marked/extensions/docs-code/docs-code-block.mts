@@ -16,6 +16,7 @@ export interface DocsCodeBlock extends CodeToken {
   code: string;
   // Code language
   language: string | undefined;
+  style: 'recommended' | 'avoid' | undefined;
 }
 
 /**
@@ -39,6 +40,15 @@ export const docsCodeBlockExtension = {
 
       const headerRule = /header\s*:\s*(['"`])([^'"`]+)\1/; // The 2nd capture matters here
       const highlightRule = /highlight\s*:\s*(.*)([^,])/;
+      const recommendedRule = /recommended/;
+      const avoidRule = /avoid/;
+
+      const hasRecommened = recommendedRule.test(metadataStr);
+      const hasAvoid = avoidRule.test(metadataStr);
+
+      if (hasAvoid && hasRecommened) {
+        throw new Error('This code block cannot be both "Recommended" and "Avoid"');
+      }
 
       const token: DocsCodeBlock = {
         raw: match[0],
@@ -47,6 +57,7 @@ export const docsCodeBlockExtension = {
         language: match[1],
         header: headerRule.exec(metadataStr)?.[2],
         highlight: highlightRule.exec(metadataStr)?.[1],
+        style: hasRecommened ? 'recommended' : hasAvoid ? 'avoid' : undefined,
       };
       return token;
     }
