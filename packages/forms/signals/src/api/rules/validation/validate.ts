@@ -11,9 +11,9 @@ import {FieldPathNode} from '../../../schema/path_node';
 import {assertPathIsCurrent} from '../../../schema/schema';
 import type {
   FieldContext,
-  SchemaPath,
   FieldValidator,
   PathKind,
+  SchemaPath,
   SchemaPathRules,
 } from '../../types';
 import {ensureCustomValidationResult} from './util';

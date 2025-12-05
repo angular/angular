@@ -161,8 +161,8 @@ export class FieldNodeState {
    */
   readonly debouncer: Signal<((signal: AbortSignal) => Promise<void> | void) | undefined> =
     computed(() => {
-      if (this.node.logicNode.logic.hasAggregateMetadata(DEBOUNCER)) {
-        const debouncerLogic = this.node.logicNode.logic.getAggregateMetadata(DEBOUNCER);
+      if (this.node.logicNode.logic.hasMetadata(DEBOUNCER)) {
+        const debouncerLogic = this.node.logicNode.logic.getMetadata(DEBOUNCER);
         const debouncer = debouncerLogic.compute(this.node.context);
 
         // Even if this field has a `debounce()` rule, it could be applied conditionally and currently

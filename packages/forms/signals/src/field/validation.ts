@@ -7,8 +7,8 @@
  */
 
 import {computed, Signal, ɵWritable} from '@angular/core';
-import type {FieldTree, TreeValidationResult, ValidationResult} from '../api/types';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
+import type {FieldTree, TreeValidationResult, ValidationResult} from '../api/types';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 import {shortCircuitFalse} from './util';

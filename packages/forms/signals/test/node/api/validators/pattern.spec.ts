@@ -8,8 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {PATTERN, form, pattern} from '../../../../public_api';
-import {customError, patternError} from '../../../../src/api/rules/validation/validation_errors';
+import {customError, form, pattern, patternError} from '../../../../public_api';
 
 describe('pattern validator', () => {
   it('validates whether a value matches the pattern', () => {
@@ -79,7 +78,7 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().metadata(PATTERN)()).toEqual([/pir.*jok/]);
+      expect(f.name().pattern()).toEqual([/pir.*jok/]);
     });
 
     it('merges the PATTERN property in an array', () => {
@@ -93,7 +92,7 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().metadata(PATTERN)()).toEqual([/pir.*jok/, /pelmeni/]);
+      expect(f.name().pattern()).toEqual([/pir.*jok/, /pelmeni/]);
     });
 
     it('PATTERN property defaults to empty list', () => {
@@ -105,7 +104,7 @@ describe('pattern validator', () => {
         },
         {injector: TestBed.inject(Injector)},
       );
-      expect(f.name().metadata(PATTERN)()).toEqual([]);
+      expect(f.name().pattern()).toEqual([]);
     });
   });
 

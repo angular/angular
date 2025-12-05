@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, resource, Signal, ɵisPromise} from '@angular/core';
+import {resource, ɵisPromise} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../../field/validation';
 import type {FieldTree, SchemaPath, SchemaPathTree} from '../../types';
-import {metadata} from '../metadata';
+import {createMetadataKey, metadata} from '../metadata';
 import {validateAsync} from './validate_async';
 import {validateTree} from './validate_tree';
 import {standardSchemaError, StandardSchemaValidationError} from './validation_errors';
@@ -66,9 +66,13 @@ export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProp
   // We memoize the result of the validation function here, so that it is only run once for both
   // validators, it can then be passed through both sync & async validation.
   type Result = StandardSchemaV1.Result<TSchema> | Promise<StandardSchemaV1.Result<TSchema>>;
-  const VALIDATOR_MEMO = metadata<TModel, Signal<Result>>(path, ({value}) => {
-    return computed(() => schema['~standard'].validate(value()));
-  });
+  const VALIDATOR_MEMO = metadata(
+    path as SchemaPath<TModel>,
+    createMetadataKey<Result>(),
+    ({value}) => {
+      return schema['~standard'].validate(value());
+    },
+  );
 
   validateTree<TModel>(path, ({state, fieldTreeOf}) => {
     // Skip sync validation if the result is a Promise.
@@ -77,7 +81,7 @@ export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProp
       return [];
     }
     return (
-      result.issues?.map((issue) =>
+      result?.issues?.map((issue) =>
         standardIssueToFormTreeError(fieldTreeOf<TModel>(path), issue),
       ) ?? []
     );
