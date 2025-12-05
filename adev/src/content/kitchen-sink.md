@@ -364,3 +364,17 @@ This can be used to separate page sections, like we're about to do below. These 
 <hr/>
 
 The end!
+
+## Recommended / Avoid
+
+```ts {recommended}
+const foo= 'bar';
+```
+
+```ts {avoid}
+const bar = 'foo';
+```
+
+```ts {avoid, header: 'with a header'}
+const baz = 42;
+```
