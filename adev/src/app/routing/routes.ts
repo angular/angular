@@ -45,7 +45,10 @@ const referencePageRoutes = mapNavigationItemsToRoutes(
 const updateGuidePageRoute: Route = {
   path: referenceNavigationItems.find((r) => r.path === DEFAULT_PAGES.UPDATE)!.path,
   loadComponent: () => import('../features/update/update.component'),
-  data: commonReferenceRouteData,
+  data: {
+    ...commonReferenceRouteData,
+    label: 'Update guide',
+  },
 };
 
 const cliReferencePageRoutes = mapNavigationItemsToRoutes(
