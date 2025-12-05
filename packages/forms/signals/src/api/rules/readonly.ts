@@ -8,7 +8,7 @@
 
 import {FieldPathNode} from '../../schema/path_node';
 import {assertPathIsCurrent} from '../../schema/schema';
-import type {SchemaPath, LogicFn, PathKind, SchemaPathRules} from '../types';
+import type {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 
 /**
  * Adds logic to a field to conditionally make it readonly. A readonly field does not contribute to

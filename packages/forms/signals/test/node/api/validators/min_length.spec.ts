@@ -8,8 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {MIN_LENGTH, form, minLength} from '../../../../public_api';
-import {customError, minLengthError} from '../../../../src/api/rules/validation/validation_errors';
+import {customError, form, minLength, minLengthError} from '../../../../public_api';
 
 describe('minLength validator', () => {
   it('returns minLength error when the length is smaller for strings', () => {
@@ -156,7 +155,7 @@ describe('minLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().metadata(MIN_LENGTH)()).toBe(5);
+      expect(f.text().minLength?.()).toBe(5);
     });
 
     it('merges two minLengths preferring the larger option', () => {
@@ -182,7 +181,7 @@ describe('minLength validator', () => {
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([]);
 
-      expect(f.text().metadata(MIN_LENGTH)()).toBe(10);
+      expect(f.text().minLength?.()).toBe(10);
     });
 
     it('merges two minLengths _dynamically_ preferring the larger option', () => {
@@ -212,7 +211,7 @@ describe('minLength validator', () => {
       minLengthSignal.set(20);
 
       expect(f.text().errors()).toEqual([minLengthError(20, {field: f.text})]);
-      expect(f.text().metadata(MIN_LENGTH)()).toBe(20);
+      expect(f.text().minLength?.()).toBe(20);
     });
   });
 

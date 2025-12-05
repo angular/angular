@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata} from '../aggregate_metadata';
-import {validate} from './validate';
-import {metadata, MIN} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../../types';
-import {minError} from './validation_errors';
+import {createMetadataKey, metadata, MIN} from '../metadata';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
+import {validate} from './validate';
+import {minError} from './validation_errors';
 
 /**
  * Binds a validator to the given path that requires the value to be greater than or equal to
@@ -38,10 +36,10 @@ export function min<
   minValue: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MIN_MEMO = metadata(path, (ctx) =>
-    computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx))),
+  const MIN_MEMO = metadata(path, createMetadataKey<number | undefined>(), (ctx) =>
+    typeof minValue === 'number' ? minValue : minValue(ctx),
   );
-  aggregateMetadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
+  metadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

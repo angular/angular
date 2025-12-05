@@ -9,12 +9,12 @@
 import {Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  aggregateMetadata,
   applyEach,
+  createMetadataKey,
   FieldContext,
   form,
+  metadata,
   PathKind,
-  reducedMetadataKey,
   SchemaPath,
   SchemaPathTree,
   validate,
@@ -133,24 +133,24 @@ describe('Field Context', () => {
   });
 
   it('pathKeys', () => {
-    const KEYS = reducedMetadataKey(
-      (_: readonly string[], n: readonly string[]) => n,
-      () => [],
-    );
+    const KEYS = createMetadataKey({
+      reduce: (_: readonly string[], n: readonly string[]) => n,
+      getInitial: () => [],
+    });
     const f = form(
       signal({x: [1]}),
       (p) => {
-        aggregateMetadata(p, KEYS, ({pathKeys}) => pathKeys());
-        aggregateMetadata(p.x, KEYS, ({pathKeys}) => pathKeys());
+        metadata(p, KEYS, ({pathKeys}) => pathKeys());
+        metadata(p.x, KEYS, ({pathKeys}) => pathKeys());
         applyEach(p.x, (it) => {
-          aggregateMetadata(it, KEYS, ({pathKeys}) => pathKeys());
+          metadata(it, KEYS, ({pathKeys}) => pathKeys());
         });
       },
       {injector: TestBed.inject(Injector)},
     );
-    expect(f().metadata(KEYS)()).toEqual([]);
-    expect(f.x().metadata(KEYS)()).toEqual(['x']);
-    expect(f.x[0]().metadata(KEYS)()).toEqual(['x', '0']);
+    expect(f().metadata(KEYS)?.()).toEqual([]);
+    expect(f.x().metadata(KEYS)?.()).toEqual(['x']);
+    expect(f.x[0]().metadata(KEYS)?.()).toEqual(['x', '0']);
   });
 
   it('valueOf', () => {

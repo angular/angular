@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {validate} from './validate';
-import {SchemaPath, SchemaPathRules, PathKind} from '../../types';
-import {emailError} from './validation_errors';
+import {PathKind, SchemaPath, SchemaPathRules} from '../../types';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
+import {validate} from './validate';
+import {emailError} from './validation_errors';
 
 /**
  * A regular expression that matches valid e-mail addresses.

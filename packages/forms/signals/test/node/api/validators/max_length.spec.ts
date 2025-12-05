@@ -8,8 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {MAX_LENGTH, form, maxLength} from '../../../../public_api';
-import {customError, maxLengthError} from '../../../../src/api/rules/validation/validation_errors';
+import {customError, form, maxLength, maxLengthError} from '../../../../public_api';
 
 describe('maxLength validator', () => {
   it('returns maxLength error when the length is larger for strings', () => {
@@ -156,7 +155,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().metadata(MAX_LENGTH)()).toBe(5);
+      expect(f.text().maxLength?.()).toBe(5);
     });
 
     it('merges two maxLengths preferring the smaller option', () => {
@@ -182,7 +181,7 @@ describe('maxLength validator', () => {
       f.text().value.set('abc');
       expect(f.text().errors()).toEqual([]);
 
-      expect(f.text().metadata(MAX_LENGTH)()).toBe(5);
+      expect(f.text().maxLength?.()).toBe(5);
     });
 
     it('merges two maxLengths _dynamically_ preferring the smaller option', () => {
@@ -212,7 +211,7 @@ describe('maxLength validator', () => {
       maxLengthSignal.set(2);
 
       expect(f.text().errors()).toEqual([maxLengthError(2, {field: f.text})]);
-      expect(f.text().metadata(MAX_LENGTH)()).toBe(2);
+      expect(f.text().maxLength?.()).toBe(2);
     });
   });
 

@@ -9,8 +9,7 @@
 import {ApplicationRef, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {compatForm} from '../../../compat/src/api/compat_form';
-import {CompatValidationError} from '../../../compat/src/api/compat_validation_error';
+import {compatForm, CompatValidationError} from '../../../compat/public_api';
 import {
   customError,
   disabled,
@@ -19,7 +18,6 @@ import {
   FieldTree,
   form,
   hidden,
-  metadata,
   readonly,
   required,
   submit,
@@ -718,10 +716,6 @@ describe('Forms compat', () => {
 
           readonly(path.name, ({valueOf}) => {
             return valueOf(path.age) < 8;
-          });
-
-          metadata(path.name, ({valueOf}) => {
-            return valueOf(path.age) < 8 ? '' : '';
           });
 
           email(path.name, {

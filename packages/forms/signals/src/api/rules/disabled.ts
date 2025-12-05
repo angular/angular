@@ -8,7 +8,7 @@
 
 import {FieldPathNode} from '../../schema/path_node';
 import {assertPathIsCurrent} from '../../schema/schema';
-import type {FieldContext, SchemaPath, LogicFn, PathKind, SchemaPathRules} from '../types';
+import type {FieldContext, LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 
 /**
  * Adds logic to a field to conditionally disable it. A disabled field does not contribute to the
