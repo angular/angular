@@ -126,19 +126,15 @@ The `animate()` function \(second argument of the transition function\) accepts 
 
 The `timings` parameter takes either a number or a string defined in three parts.
 
-<docs-code language="typescript">
-
+```ts
 animate (duration)
-
-</docs-code>
+```
 
 or
 
-<docs-code language="typescript">
-
+```ts
 animate ('duration delay easing')
-
-</docs-code>
+```
 
 The first part, `duration`, is required.
 The duration can be expressed in milliseconds as a number without quotes, or in seconds with quotes and a time specifier.
@@ -194,11 +190,9 @@ HELPFUL: Some additional notes on using styles within [`state`](api/animations/s
 - When animations are disabled, `transition()` styles can be skipped, but [`state()`](api/animations/state) styles can't
 - Include multiple state pairs within the same `transition()` argument:
 
-    <docs-code language="typescript">
-
+  ```ts
   transition( 'on => off, off => void' )
-
-    </docs-code>
+  ```
 
 ### Triggering the animation
 
@@ -225,11 +219,9 @@ Put the code that defines your animations under the `animations:` property withi
 When you've defined an animation trigger for a component, attach it to an element in that component's template by wrapping the trigger name in brackets and preceding it with an `@` symbol.
 Then, you can bind the trigger to a template expression using standard Angular property binding syntax as shown below, where `triggerName` is the name of the trigger, and `expression` evaluates to a defined animation state.
 
-<docs-code language="typescript">
-
-<div [@triggerName]="expression">…</div>;
-
-</docs-code>
+```angular-html
+<div [@triggerName]="expression">…</div>
+```
 
 The animation is executed or triggered when the expression value changes to a new state.
 
