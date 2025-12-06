@@ -2,7 +2,7 @@
   [directive]="directive().name"
   (viewSource)="viewSource.emit()"
   (logInstance)="handleLogInstance()"
-></ng-property-view-header>
+/>
 <ng-property-view-body
   [controller]="controller()!"
   [directiveInputControls]="directiveInputControls()!"
@@ -11,4 +11,4 @@
   [directiveStateControls]="directiveStateControls()!"
   (inspect)="inspect.emit($event)"
   (showSignalGraph)="showSignalGraph.emit($event)"
-></ng-property-view-body>
+/>

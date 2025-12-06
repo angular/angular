@@ -88,7 +88,7 @@ import {
   exportAs: 'asSplit',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: [`./split.component.scss`],
-  template: `<ng-content></ng-content>
+  template: `<ng-content />
     @for (_ of displayedAreas; track $index) {
       @if ($last === false) {
         <div
