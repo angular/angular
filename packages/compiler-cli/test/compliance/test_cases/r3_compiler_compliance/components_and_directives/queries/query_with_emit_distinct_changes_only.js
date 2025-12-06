@@ -4,8 +4,7 @@ ContentQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   // ...
   contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
     if (rf & 1) {
-      $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, __QueryFlags.emitDistinctChangesOnly__);
-      $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, __QueryFlags.none__);
+      $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, __QueryFlags.emitDistinctChangesOnly__)(dirIndex, $e0_attrs$, __QueryFlags.none__);
     }
     if (rf & 2) {
       let $tmp$;
@@ -16,8 +15,7 @@ ContentQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   // ...
   viewQuery: function ContentQueryComponent_Query(rf, ctx) {
     if (rf & 1) {
-      $r3$.ɵɵviewQuery(SomeDirective, __QueryFlags.emitDistinctChangesOnly__|__QueryFlags.descendants__);
-      $r3$.ɵɵviewQuery(SomeDirective, __QueryFlags.descendants__);
+      $r3$.ɵɵviewQuery(SomeDirective, __QueryFlags.emitDistinctChangesOnly__|__QueryFlags.descendants__)(SomeDirective, __QueryFlags.descendants__);
     }
     if (rf & 2) {
       let $tmp$;
