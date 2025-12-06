@@ -8,6 +8,7 @@
 
 import {Type} from '../../interface/type';
 import {getComponentDef} from '../def_getters';
+import type {ClassDebugInfo} from '../interfaces/definition';
 
 /**
  * Used for stringify render output in Ivy.
@@ -54,9 +55,7 @@ export function debugStringifyTypeForError(type: Type<any>): string {
   return stringifyForError(type);
 }
 
-// TODO(pmvald): Do some refactoring so that we can use the type ClassDebugInfo for the param
-// debugInfo here without creating circular deps.
-function stringifyTypeFromDebugInfo(debugInfo: any): string {
+function stringifyTypeFromDebugInfo(debugInfo: ClassDebugInfo): string {
   if (!debugInfo.filePath || !debugInfo.lineNumber) {
     return debugInfo.className;
   } else {
