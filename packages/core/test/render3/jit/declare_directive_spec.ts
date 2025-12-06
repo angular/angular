@@ -118,13 +118,11 @@ describe('directive declaration jit compilation', () => {
       contentQueries: functionContaining([
         // "byRef" should use `contentQuery` with `0` (`QueryFlags.descendants|QueryFlags.isStatic`)
         // for query flag without a read token, and bind to the full query result.
-        /contentQuery[^(]*\(dirIndex,_c0,4\)/,
-        '(ctx.byRef = _t)',
-
         // "byToken" should use `viewQuery` with `3` (`QueryFlags.static|QueryFlags.descendants`)
         // for query flag and `ElementRef` as read token, and bind to the first result in the
         // query result.
-        /contentQuery[^(]*\([^,]*dirIndex,[^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        /contentQuery[^(]*\(dirIndex,_c0,4\)\(dirIndex,[^,]*String[^,]*,\s*3,[^)]*ElementRef[^)]*\)/,
+        '(ctx.byRef = _t)',
         '(ctx.byToken = _t.first)',
       ]),
     });
@@ -177,13 +175,11 @@ describe('directive declaration jit compilation', () => {
       viewQuery: functionContaining([
         // "byRef" should use `viewQuery` with`0` (`QueryFlags.none`) for query flag without a read
         // token, and bind to the full query result.
-        /viewQuery[^(]*\(_c0,4\)/,
-        '(ctx.byRef = _t)',
-
         // "byToken" should use `viewQuery` with `3` (`QueryFlags.static|QueryFlags.descendants`)
         // for query flag and `ElementRef` as read token, and bind to the first result in the
         // query result.
-        /viewQuery[^(]*\([^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        /viewQuery[^(]*\(_c0,4\)[^(]*\([^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
+        '(ctx.byRef = _t)',
         '(ctx.byToken = _t.first)',
       ]),
     });

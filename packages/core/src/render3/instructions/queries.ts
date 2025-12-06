@@ -37,8 +37,9 @@ export function ɵɵcontentQuery<T>(
   predicate: ProviderToken<unknown> | string | string[],
   flags: QueryFlags,
   read?: any,
-): void {
+): typeof ɵɵcontentQuery {
   createContentQuery<T>(directiveIndex, predicate, flags, read);
+  return ɵɵcontentQuery;
 }
 
 /**
@@ -54,8 +55,9 @@ export function ɵɵviewQuery<T>(
   predicate: ProviderToken<unknown> | string | string[],
   flags: QueryFlags,
   read?: any,
-): void {
+): typeof ɵɵviewQuery {
   createViewQuery(predicate, flags, read);
+  return ɵɵviewQuery;
 }
 
 /**
