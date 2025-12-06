@@ -373,6 +373,11 @@ $code-font-size: 0.875rem;
       display: none;
     }
 
+    // Hide the last line if it's empty
+    &:last-child:empty {
+      display: none;
+    }
+
     span:last-child {
       margin-inline-end: 4rem;
     }
