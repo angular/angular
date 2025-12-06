@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@angular/animations": "file:../../dist/packages-dist/animations",
-    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/common": "19.2.16",
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/elements": "file:../../dist/packages-dist/elements",
     "@angular/forms": "file:../../dist/packages-dist/forms",
