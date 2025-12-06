@@ -4,7 +4,7 @@
   "license": "MIT",
   "dependencies": {
     "@angular/common": "19.2.16",
-    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/compiler": "19.2.17",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/elements": "file:../../dist/packages-dist/elements",
