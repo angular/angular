@@ -24,7 +24,7 @@ The abstract `ComponentHarness` class is the base class for all component harnes
 
 The `hostSelector` property identifies elements in the DOM that match this harness subclass. In most cases, the `hostSelector` should be the same as the selector of the corresponding `Component` or `Directive`. For example, consider a simple popup component:
 
-<docs-code language="typescript">
+```ts
 @Component({
   selector: 'my-popup',
   template: `
@@ -37,21 +37,21 @@ The `hostSelector` property identifies elements in the DOM that match this harne
 class MyPopup {
   triggerText = input('');
 
-isOpen = signal(false);
+  isOpen = signal(false);
 
-toggle() {
-this.isOpen.update((value) => !value);
+  toggle() {
+    this.isOpen.update((value) => !value);
+  }
 }
-}
-</docs-code>
+```
 
 In this case, a minimal harness for the component would look like the following:
 
-<docs-code language="typescript">
+```ts
 class MyPopupHarness extends ComponentHarness {
   static hostSelector = 'my-popup';
 }
-</docs-code>
+```
 
 While `ComponentHarness` subclasses require only the `hostSelector` property, most harnesses should also implement a static `with` method to generate `HarnessPredicate` instances. The [filtering harnesses section](guide/testing/using-component-harnesses#filtering-harnesses) covers this in more detail.
 
@@ -65,17 +65,17 @@ See the [ComponentHarness API reference page](/api/cdk/testing/ComponentHarness)
 
 For example, the `MyPopupHarness` example discussed above could provide methods to get the trigger and content elements as follows:
 
-<docs-code language="typescript">
+```ts
 class MyPopupHarness extends ComponentHarness {
   static hostSelector = 'my-popup';
 
-// Gets the trigger element
-getTriggerElement = this.locatorFor('button');
+  // Gets the trigger element
+  getTriggerElement = this.locatorFor('button');
 
-// Gets the content element.
-getContentElement = this.locatorForOptional('.my-popup-content');
+  // Gets the content element.
+  getContentElement = this.locatorForOptional('.my-popup-content');
 }
-</docs-code>
+```
 
 ## Working with `TestElement` instances
 
@@ -87,26 +87,26 @@ Do not expose `TestElement` instances to harness users unless it's an element th
 
 Instead, provide more narrow-focused methods for specific actions the end-user may take or particular state they may observe. For example, `MyPopupHarness` from previous sections could provide methods like `toggle` and `isOpen`:
 
-<docs-code language="typescript">
+```ts
 class MyPopupHarness extends ComponentHarness {
   static hostSelector = 'my-popup';
 
-protected getTriggerElement = this.locatorFor('button');
-protected getContentElement = this.locatorForOptional('.my-popup-content');
+  protected getTriggerElement = this.locatorFor('button');
+  protected getContentElement = this.locatorForOptional('.my-popup-content');
 
-/\*_ Toggles the open state of the popup. _/
-async toggle() {
-const trigger = await this.getTriggerElement();
-return trigger.click();
-}
+  /** Toggles the open state of the popup. */
+  async toggle() {
+    const trigger = await this.getTriggerElement();
+    return trigger.click();
+  }
 
-/\*_ Checks if the popup us open. _/
-async isOpen() {
-const content = await this.getContentElement();
-return !!content;
+  /** Checks if the popup us open. */
+  async isOpen() {
+    const content = await this.getContentElement();
+    return !!content;
+  }
 }
-}
-</docs-code>
+```
 
 ## Loading harnesses for subcomponents
 
@@ -116,7 +116,7 @@ See the [ComponentHarness API reference page](/api/cdk/testing/ComponentHarness)
 
 For example, consider a menu build using the popup from above:
 
-<docs-code language="typescript">
+```ts
 @Directive({
   selector: 'my-menu-item'
 })
@@ -124,40 +124,40 @@ class MyMenuItem {}
 
 @Component({
 selector: 'my-menu',
-template: `     <my-popup>
-      <ng-content></ng-content>
+template: `<my-popup>
+      <ng-content />
     </my-popup>
   `
 })
 class MyMenu {
-triggerText = input('');
+  triggerText = input('');
 
-@ContentChildren(MyMenuItem) items: QueryList<MyMenuItem>;
+  @ContentChildren(MyMenuItem) items: QueryList<MyMenuItem>;
 }
-</docs-code>
+```
 
 The harness for `MyMenu` can then take advantage of other harnesses for `MyPopup` and `MyMenuItem`:
 
-<docs-code language="typescript">
+```ts
 class MyMenuHarness extends ComponentHarness {
   static hostSelector = 'my-menu';
 
-protected getPopupHarness = this.locatorFor(MyPopupHarness);
+  protected getPopupHarness = this.locatorFor(MyPopupHarness);
 
-/\*_ Gets the currently shown menu items (empty list if menu is closed). _/
-getItems = this.locatorForAll(MyMenuItemHarness);
+  /** Gets the currently shown menu items (empty list if menu is closed). */
+  getItems = this.locatorForAll(MyMenuItemHarness);
 
-/\*_ Toggles open state of the menu. _/
-async toggle() {
-const popupHarness = await this.getPopupHarness();
-return popupHarness.toggle();
-}
+  /** Toggles open state of the menu. */
+  async toggle() {
+    const popupHarness = await this.getPopupHarness();
+    return popupHarness.toggle();
+  }
 }
 
 class MyMenuItemHarness extends ComponentHarness {
-static hostSelector = 'my-menu-item';
+  static hostSelector = 'my-menu-item';
 }
-</docs-code>
+```
 
 ## Filtering harness instances with `HarnessPredicate`
 
@@ -169,69 +169,68 @@ Harnesses that need to add additional options should extend the `BaseHarnessFilt
 
 For example, when working with a menu it is useful to filter based on trigger text and to filter menu items based on their text:
 
-<docs-code language="typescript">
+```ts
 interface MyMenuHarnessFilters extends BaseHarnessFilters {
   /** Filters based on the trigger text for the menu. */
   triggerText?: string | RegExp;
 }
 
 interface MyMenuItemHarnessFilters extends BaseHarnessFilters {
-/\*_ Filters based on the text of the menu item. _/
-text?: string | RegExp;
+  /** Filters based on the text of the menu item. */
+  text?: string | RegExp;
 }
 
-class MyMenuHarness extends ComponentHarness {
-static hostSelector = 'my-menu';
-
-/\*_ Creates a `HarnessPredicate` used to locate a particular `MyMenuHarness`. _/
-static with(options: MyMenuHarnessFilters): HarnessPredicate<MyMenuHarness> {
-return new HarnessPredicate(MyMenuHarness, options)
-.addOption('trigger text', options.triggerText,
-(harness, text) => HarnessPredicate.stringMatches(harness.getTriggerText(), text));
-}
-
-protected getPopupHarness = this.locatorFor(MyPopupHarness);
-
-/\*_ Gets the text of the menu trigger. _/
-async getTriggerText(): Promise<string> {
-const popupHarness = await this.getPopupHarness();
-return popupHarness.getTriggerText();
-}
-...
-}
-
-class MyMenuItemHarness extends ComponentHarness {
-static hostSelector = 'my-menu-item';
-
-/\*_ Creates a `HarnessPredicate` used to locate a particular `MyMenuItemHarness`. _/
-static with(options: MyMenuItemHarnessFilters): HarnessPredicate<MyMenuItemHarness> {
-return new HarnessPredicate(MyMenuItemHarness, options)
-.addOption('text', options.text,
-(harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
-}
-
-/\*_ Gets the text of the menu item. _/
-async getText(): Promise<string> {
-const host = await this.host();
-return host.text();
-}
-}
-</docs-code>
-
-You can pass a `HarnessPredicate` instead of a `ComponentHarness` class to any of the APIs on `HarnessLoader`, `LocatorFactory`, or `ComponentHarness`. This allows test authors to easily target a particular component instance when creating a harness instance. It also allows the harness author to leverage the same `HarnessPredicate` to enable more powerful APIs on their harness class. For example, consider the `getItems` method on the `MyMenuHarness` shown above. Adding a filtering API allows users of the harness to search for particular menu items:
-
-<docs-code language="typescript">
 class MyMenuHarness extends ComponentHarness {
   static hostSelector = 'my-menu';
 
-/\*_ Gets a list of items in the menu, optionally filtered based on the given criteria. _/
-async getItems(filters: MyMenuItemHarnessFilters = {}): Promise<MyMenuItemHarness[]> {
-const getFilteredItems = this.locatorForAll(MyMenuItemHarness.with(filters));
-return getFilteredItems();
+  /** Creates a `HarnessPredicate` used to locate a particular `MyMenuHarness`. */
+  static with(options: MyMenuHarnessFilters): HarnessPredicate<MyMenuHarness> {
+    return new HarnessPredicate(MyMenuHarness, options)
+      .addOption('trigger text', options.triggerText,
+        (harness, text) => HarnessPredicate.stringMatches(harness.getTriggerText(), text));
+  }
+
+  protected getPopupHarness = this.locatorFor(MyPopupHarness);
+
+  /** Gets the text of the menu trigger. */
+  async getTriggerText(): Promise<string> {
+    const popupHarness = await this.getPopupHarness();
+    return popupHarness.getTriggerText();
+  }
 }
-...
+
+class MyMenuItemHarness extends ComponentHarness {
+  static hostSelector = 'my-menu-item';
+
+  /** Creates a `HarnessPredicate` used to locate a particular `MyMenuItemHarness`. */
+  static with(options: MyMenuItemHarnessFilters): HarnessPredicate<MyMenuItemHarness> {
+    return new HarnessPredicate(MyMenuItemHarness, options)
+      .addOption('text', options.text,
+        (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
+  }
+
+  /** Gets the text of the menu item. */
+  async getText(): Promise<string> {
+    const host = await this.host();
+    return host.text();
+  }
 }
-</docs-code>
+```
+
+You can pass a `HarnessPredicate` instead of a `ComponentHarness` class to any of the APIs on `HarnessLoader`, `LocatorFactory`, or `ComponentHarness`. This allows test authors to easily target a particular component instance when creating a harness instance. It also allows the harness author to leverage the same `HarnessPredicate` to enable more powerful APIs on their harness class. For example, consider the `getItems` method on the `MyMenuHarness` shown above. Adding a filtering API allows users of the harness to search for particular menu items:
+
+```ts
+class MyMenuHarness extends ComponentHarness {
+  static hostSelector = 'my-menu';
+
+  /** Gets a list of items in the menu, optionally filtered based on the given criteria. */
+  async getItems(filters: MyMenuItemHarnessFilters = {}): Promise<MyMenuItemHarness[]> {
+    const getFilteredItems = this.locatorForAll(MyMenuItemHarness.with(filters));
+    return getFilteredItems();
+  }
+  ...
+}
+```
 
 ## Creating `HarnessLoader` for elements that use content projection
 
@@ -241,11 +240,11 @@ Add a `HarnessLoader` instance scoped to the element containing the `<ng-content
 
 For example, the `MyPopupHarness` example from above can extend `ContentContainerComponentHarness` to add support to load harnesses within the `<ng-content>` of the component.
 
-<docs-code language="typescript">
+```ts
 class MyPopupHarness extends ContentContainerComponentHarness<string> {
   static hostSelector = 'my-popup';
 }
-</docs-code>
+```
 
 ## Accessing elements outside of the component's host element
 
@@ -255,17 +254,17 @@ In this case, `ComponentHarness` provides a method that can be used to get a `Lo
 
 Consider if the `MyPopup` component above used the CDK overlay for the popup content, rather than an element in its own template. In this case, `MyPopupHarness` would have to access the content element via `documentRootLocatorFactory()` method that gets a locator factory rooted at the document root.
 
-<docs-code language="typescript">
+```ts
 class MyPopupHarness extends ComponentHarness {
   static hostSelector = 'my-popup';
 
-/\*_ Gets a `HarnessLoader` whose root element is the popup's content element. _/
-async getHarnessLoaderForContent(): Promise<HarnessLoader> {
-const rootLocator = this.documentRootLocatorFactory();
-return rootLocator.harnessLoaderFor('my-popup-content');
-}
-}
-</docs-code>
+  /** Gets a `HarnessLoader` whose root element is the popup's content element. */
+  async getHarnessLoaderForContent(): Promise<HarnessLoader> {
+    const rootLocator = this.documentRootLocatorFactory();
+    return rootLocator.harnessLoaderFor('my-popup-content');
+    }
+  }
+```
 
 ## Waiting for asynchronous tasks
 
