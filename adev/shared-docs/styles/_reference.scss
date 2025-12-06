@@ -73,6 +73,20 @@
     }
   }
 
+  .docs-api {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      // Show copy link button when hovering the heading
+      &:hover docs-copy-link-button {
+        opacity: 1;
+      }
+    }
+  }
+
   .docs-reference-members {
     box-sizing: border-box;
     width: 100%;
