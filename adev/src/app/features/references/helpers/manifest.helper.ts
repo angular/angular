@@ -41,6 +41,11 @@ export function getApiNavigationItems(): NavigationItem[] {
   const apiNavigationItems: NavigationItem[] = [];
 
   for (const packageEntry of manifest) {
+    // Skip packages with no entries
+    if (!packageEntry.entries || packageEntry.entries.length === 0) {
+      continue;
+    }
+
     const packageNavigationItem: NavigationItem = {
       label: packageEntry.moduleLabel,
       children: packageEntry.entries.map((api) => ({
