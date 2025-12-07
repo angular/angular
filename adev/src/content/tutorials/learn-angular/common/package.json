@@ -13,7 +13,7 @@
     "@angular/compiler": "^20.3.12",
     "@angular/core": "^18.0.0",
     "@angular/forms": "^18.0.0",
-    "@angular/platform-browser": "^18.0.0",
+    "@angular/platform-browser": "^20.3.12",
     "@angular/router": "^18.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
