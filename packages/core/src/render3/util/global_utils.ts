@@ -63,6 +63,7 @@ export interface ExternalGlobalUtils {
   ɵgetLoadedRoutes(route: any): any;
   ɵnavigateByUrl(router: any, url: string): any;
   ɵgetRouterInstance(injector: any): any;
+  ɵparseRoutes(router: any): any;
 }
 
 const globalUtilsFunctions = {
