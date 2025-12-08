@@ -9,6 +9,8 @@
 /**
  * @module
  * @description
+ *
+ * @deprecated Use the entry from `@angular/upgrade/static` instead.
  * Entry point for all public APIs of this package. allowing
  * Angular 1 and Angular 2+ to run side by side in the same application.
  */
