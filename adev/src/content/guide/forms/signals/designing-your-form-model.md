@@ -132,40 +132,7 @@ form(signal({name: '', birthday: null}));
 
 ### Avoid models with dynamic structure
 
-A form model has a dynamic structure if it changes shape (if the properties on the object change) based on its value. This happens when the model type allows for values with different shapes, such as a union of different object types, or a union of an object and a primitive. Let's look at a few examples to better understand.
-
-```ts
-// Good: Static structure models
-interface UserProfileFormModel {
-  username: string;
-}
-
-interface AppConfigFormModel {
-  theme: string | null;
-}
-```
-
-In the above example, we can clearly see that `UserProfileFormModel` has a static structure, all of the assignable values have the same shape. Likewise all values that can be assigned to `AppConfigFormModel` have the same _shape_, even if the type of `theme` might differ (`{theme: 'dark'}` has the same properties as `{theme: null}`).
-
-```ts
-
-// Avoid: Dynamic structure models
-interface UserLocationFormModel {
-  location:
-    | {lat: string, long: string}
-    | null;
-}
-
-interface ContactFormModel {
-  contact:
-    | { email: string }
-    | { phone: string };
-}
-```
-
-However in this example we can see that both `UserLocationFormModel` and `ContactFormModel` can hold values of different shapes. `UserLocationFormModel` could contain `{location: {lat: '...', long: '...'}}` or `{location: null}`. `ContactFormModel` could contain `{contact: {email: '...'}}` or `{contact: {phone: '...'}}` (Note the different sub-properties, `email` vs `phone`).
-
-The following sections examine a few common scenarios where models with a dynamic structure might seem appealing, but ultimately prove problematic.
+A form model has a dynamic structure if it changes shape (if the properties on the object change) based on its value. This happens when the model type allows for values with different shapes, such as a union of object types that have different properties, or a union of an object and a primitive. The following sections examine a few common scenarios where models with a dynamic structure might seem appealing, but ultimately prove problematic.
 
 #### Empty value for a complex object
 
@@ -258,10 +225,10 @@ interface BillPayFormModel {
 }
 
 const billPaySchema = schema<BillPayFormModel>((billPay) => {
-  // Hide credit card details when user has selected bank account.
-  hidden(billPay.method.card, ({valueOf}) => valueOf(billPay.method.type) === 'bank');
-  // Hide bank account details when user has selected credit card.
-  hidden(billPay.method.bank, ({valueOf}) => valueOf(billPay.method.type) === 'card');
+  // Hide credit card details when user has selected a method other than credit card.
+  hidden(billPay.method.card, ({valueOf}) => valueOf(billPay.method.type) !== 'card');
+  // Hide bank account details when user has selected a method other than bank account.
+  hidden(billPay.method.bank, ({valueOf}) => valueOf(billPay.method.type) !== 'bank');
 });
 ```
 
@@ -357,9 +324,9 @@ interface MyFormModel { ... }
 // Instance of `MyFormModel` populated with empty input (e.g. `''` for string inputs, etc.)
 const EMPTY_MY_FORM_MODEL: MyFormModel = { ... };
 
-function domainToForm(domainModel: MyDomainModel): MyFormModel { ... }
+function domainModelToFormModel(domainModel: MyDomainModel): MyFormModel { ... }
 
-function formToDomain(formModel: MyFormModel): MyDomainModel { ... }
+function formModelToDomainModel(formModel: MyFormModel): MyDomainModel { ... }
 ```
 
 ### Domain model to form model
@@ -378,7 +345,9 @@ class MyForm {
     // Linked signal based on the domain model
     source: this.domainModel,
     // If domain model is defined convert it to a form model, otherwise use an empty form model.
-    computation: (domainModel) => domainModel ? domainToForm(domainModel) : EMPTY_MY_FORM_MODEL
+    computation: (domainModel) => domainModel
+      ? domainModelToFormModel(domainModel)
+      : EMPTY_MY_FORM_MODEL
   });
 
   protected readonly myForm = form(this.formModel);
@@ -397,7 +366,9 @@ class MyForm {
     // Linked signal based on the domain model resource
     source: this.domainModelResource.value,
     // Convert the domain model once it loads, use an empty form model while loading.
-    computation: (domainModel) => domainModel ? domainToForm(domainModel) : EMPTY_MY_FORM_MODEL
+    computation: (domainModel) => domainModel
+      ? domainModelToFormModel(domainModel)
+      : EMPTY_MY_FORM_MODEL
   });
 
   protected readonly myForm = form(this.formModel, (root) => {
@@ -422,7 +393,7 @@ class MyForm {
 
   handleSubmit() {
     submit(this.myForm, async () => {
-      await this.myDataService.update(formToDomain(this.myForm.value()));
+      await this.myDataService.update(formModelToDomainModel(this.myForm.value()));
     });
   };
 }
@@ -442,8 +413,20 @@ class MyForm {
 
   constructor() {
     effect(() => {
-      this.domainModel.set(formToDomain(this.myForm.value()));
+      this.domainModel.set(formModelToDomainModel(this.myForm.value()));
     });
   };
 }
+```
+
+The examples above show a pure conversion from the form model to the domain model. However, it is perfectly acceptable to consider the full form state in addition to just the form model value. For example, to save bytes me might want to only send partial updates to the server based on what the user changed. In this case our conversion function could be designed to take the entire form state and return a sparse domain model based on the form's values and dirtiness.
+
+```ts
+type Sparse<T> = T extends object ? {
+    [P in keyof T]?: Sparse<T[P]>;
+} : T;
+
+function formStateToPartialDomainModel(
+  formState: FieldState<MyFormModel>
+): Sparse<MyDomainModel> { ... }
 ```
