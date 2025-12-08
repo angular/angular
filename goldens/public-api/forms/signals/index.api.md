@@ -446,6 +446,9 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(pat
 export type ReadonlyArrayLike<T> = Pick<ReadonlyArray<T>, number | 'length' | typeof Symbol.iterator>;
 
 // @public
+export type ReadonlyFieldState<T> = Omit<FieldState<T>, 'markAsDirty' | 'markAsTouched' | 'setControlValue' | 'reset' | 'fieldBindings' | 'value'>;
+
+// @public
 export function reducedMetadataKey<TAcc, TItem>(reduce: (acc: TAcc, item: TItem) => TAcc, getInitial: NoInfer<() => TAcc>): AggregateMetadataKey<TAcc, TItem>;
 
 // @public
@@ -524,7 +527,7 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
 // @public
 export interface SignalFormsConfig {
     classes?: {
-        [className: string]: (state: FieldState<unknown>) => boolean;
+        [className: string]: (state: ReadonlyFieldState<unknown>) => boolean;
     };
 }
 

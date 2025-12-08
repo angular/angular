@@ -26,6 +26,16 @@ declare const ɵɵTYPE: unique symbol;
 export type OneOrMany<T> = T | readonly T[];
 
 /**
+ * A read-only view of the field state, excluding internal mutation methods.
+ *
+ * @experimental 21.0.2
+ */
+export type ReadonlyFieldState<T> = Omit<
+  FieldState<T>,
+  'markAsDirty' | 'markAsTouched' | 'setControlValue' | 'reset' | 'fieldBindings' | 'value'
+>;
+
+/**
  * The kind of `FieldPath` (`Root`, `Child` of another `FieldPath`, or `Item` in a `FieldPath` array)
  *
  * @experimental 21.0.0
