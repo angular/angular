@@ -128,11 +128,11 @@ That's it - `SelectDirective` is up and running. A follow-up step might be to [a
 
 When you write your own structural directives, use the following syntax:
 
-<docs-code hideCopy language="typescript">
+```ts {hideCopy}
 
 _:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )_"
 
-</docs-code>
+```
 
 The following patterns describe each portion of the structural directive grammar:
 

@@ -138,7 +138,7 @@ The Angular service worker exposes debugging information under the `ngsw/` virtu
 Currently, the single exposed URL is `ngsw/state`.
 Here is an example of this debug page's contents:
 
-<docs-code hideCopy language="shell">
+```shell {hideCopy}
 
 NGSW Debug Info:
 
@@ -160,17 +160,17 @@ Task queue:
 
 Debug log:
 
-</docs-code>
+```
 
 #### Driver state
 
 The first line indicates the driver state:
 
-<docs-code hideCopy language="shell">
+```shell {hideCopy}
 
 Driver state: NORMAL ((nominal))
 
-</docs-code>
+```
 
 `NORMAL` indicates that the service worker is operating normally and is not in a degraded state.
 
@@ -190,21 +190,21 @@ The new instance starts in the `NORMAL` mode, regardless of the state of the pre
 
 #### Latest manifest hash
 
-<docs-code hideCopy language="shell">
+```shell {hideCopy}
 
 Latest manifest hash: eea7f5f464f90789b621170af5a569d6be077e5c
 
-</docs-code>
+```
 
 This is the SHA1 hash of the most up-to-date version of the application that the service worker knows about.
 
 #### Last update check
 
-<docs-code hideCopy language="shell">
+```shell {hideCopy}
 
 Last update check: never
 
-</docs-code>
+```
 
 This indicates the last time the service worker checked for a new version, or update, of the application.
 `never` indicates that the service worker has never checked for an update.
@@ -213,13 +213,13 @@ In this example debug file, the update check is currently scheduled, as explaine
 
 #### Version
 
-<docs-code hideCopy language="shell">
+```shell {hideCopy}
 
 === Version eea7f5f464f90789b621170af5a569d6be077e5c ===
 
 Clients: 7b79a015-69af-4d3d-9ae6-95ba90c79486, 5bc08295-aaf2-42f3-a4cc-9e4ef9100f65
 
-</docs-code>
+```
 
 In this example, the service worker has one version of the application cached and being used to serve two different tabs.
 
@@ -227,7 +227,7 @@ HELPFUL: This version hash is the "latest manifest hash" listed above. Both clie
 
 #### Idle task queue
 
-<docs-code hideCopy language="shell">
+```shell {hideCopy}
 
 === Idle Task Queue ===
 Last update tick: 1s496u
@@ -236,7 +236,7 @@ Task queue:
 
 - init post-load (update, cleanup)
 
-</docs-code>
+```
 
 The Idle Task Queue is the queue of all pending tasks that happen in the background in the service worker.
 If there are any tasks in the queue, they are listed with a description.
@@ -248,11 +248,11 @@ The "Last update run" counter shows the last time idle tasks were actually execu
 
 #### Debug log
 
-<docs-code hideCopy language="shell">
+```shell {hideCopy}
 
 Debug log:
 
-</docs-code>
+```
 
 Errors that occur within the service worker are logged here.
 

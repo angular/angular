@@ -37,6 +37,8 @@ export interface CodeToken extends Tokens.Generic {
   hideCode?: boolean;
   /* The lines to display highlighting on */
   highlight?: string;
+  /** Whether to hide the copy button */
+  hideCopy?: boolean;
 
   // additional classes for the element
   classes?: string[];
@@ -116,7 +118,9 @@ function applyContainerAttributesAndClasses(el: Element, token: CodeToken) {
   if (token.hideCode) {
     el.setAttribute('hideCode', 'true');
   }
-
+  if (token.hideCopy) {
+    el.setAttribute('hideCopy', 'true');
+  }
   const language = token.language;
 
   if (language === 'mermaid') {
