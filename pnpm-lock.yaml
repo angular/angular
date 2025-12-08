@@ -347,8 +347,8 @@ importers:
         specifier: 0.2101.0-next.1
         version: 0.2101.0-next.1(chokidar@5.0.0)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#a6bcef88323031f5c157227705792019833c5c08
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/a6bcef88323031f5c157227705792019833c5c08(@modelcontextprotocol/sdk@1.24.0)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#c44b6c8913a6cb08418650f5759f07ddee97f4d3
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c44b6c8913a6cb08418650f5759f07ddee97f4d3(@modelcontextprotocol/sdk@1.24.0)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.5)
@@ -1739,9 +1739,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/a6bcef88323031f5c157227705792019833c5c08':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/a6bcef88323031f5c157227705792019833c5c08}
-    version: 0.0.0-73051ae248ba64911a8e7e66536d8c99ba07ef2a
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c44b6c8913a6cb08418650f5759f07ddee97f4d3':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c44b6c8913a6cb08418650f5759f07ddee97f4d3}
+    version: 0.0.0-e53a3b15d4c80d8a6030992399e753878e21d57a
     hasBin: true
 
   '@angular/ssr@21.1.0-next.1':
@@ -3194,8 +3194,8 @@ packages:
     resolution: {integrity: sha512-IJn+8A3QZJfe7FUtWqHVNo3xJs7KFpurCWGWCiCz3oEh+BkRymKZ1QxfAbU2yGMDzTytLGQ2IV6T2r3cuo75/w==}
     engines: {node: '>=18'}
 
-  '@google/genai@1.30.0':
-    resolution: {integrity: sha512-3MRcgczBFbUat1wIlZoLJ0vCCfXgm7Qxjh59cZi2X08RgWLtm9hKOspzp7TOg1TV2e26/MLxR2GR5yD5GmBV2w==}
+  '@google/genai@1.31.0':
+    resolution: {integrity: sha512-rK0RKXxNkbK35eDl+G651SxtxwHNEOogjyeZJUJe+Ed4yxu3xy5ufCiU0+QLT7xo4M9Spey8OAYfD8LPRlYBKw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.20.1
@@ -9147,9 +9147,6 @@ packages:
   jasmine-core@4.6.1:
     resolution: {integrity: sha512-VYz/BjjmC3klLJlLwA4Kw8ytk0zDSmbbDLNs794VnWmkcCB7I9aAL/D48VNQtmITyPvea2C3jdUMfc3kAoy0PQ==}
 
-  jasmine-core@5.12.1:
-    resolution: {integrity: sha512-P/UbRZ0LKwXe7wEpwDheuhunPwITn4oPALhrJEQJo6756EwNGnsK/TSQrWojBB4cQDQ+VaxWYws9tFNDuiMh2Q==}
-
   jasmine-core@5.13.0:
     resolution: {integrity: sha512-vsYjfh7lyqvZX5QgqKc4YH8phs7g96Z8bsdIFNEU3VqXhlHaq+vov/Fgn/sr6MiUczdZkyXRC3TX369Ll4Nzbw==}
 
@@ -9158,10 +9155,6 @@ packages:
 
   jasmine@2.8.0:
     resolution: {integrity: sha512-KbdGQTf5jbZgltoHs31XGiChAPumMSY64OZMWLNYnEnMfG5uwGBhffePwuskexjT+/Jea/gU3qAU8344hNohSw==}
-    hasBin: true
-
-  jasmine@5.12.0:
-    resolution: {integrity: sha512-KmKeTNuH8rgAuPRL5AUsXWSdJVlDu+pgqi2dLXoZUSH/g3kR+7Ho8B7hEhwDu0fu1PLuiXZtfaxmQ/mB5wqihw==}
     hasBin: true
 
   jasmine@5.13.0:
@@ -13890,11 +13883,11 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/a6bcef88323031f5c157227705792019833c5c08(@modelcontextprotocol/sdk@1.24.0)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c44b6c8913a6cb08418650f5759f07ddee97f4d3(@modelcontextprotocol/sdk@1.24.0)':
     dependencies:
       '@actions/core': 1.11.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
-      '@google/genai': 1.30.0(@modelcontextprotocol/sdk@1.24.0)(bufferutil@4.0.9)(supports-color@10.2.2)(utf-8-validate@6.0.5)
+      '@google/genai': 1.31.0(@modelcontextprotocol/sdk@1.24.0)(bufferutil@4.0.9)(supports-color@10.2.2)(utf-8-validate@6.0.5)
       '@inquirer/prompts': 8.0.2(@types/node@24.10.1)
       '@inquirer/type': 4.0.2(@types/node@24.10.1)
       '@octokit/auth-app': 8.1.2
@@ -15717,7 +15710,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@google/genai@1.30.0(@modelcontextprotocol/sdk@1.24.0)(bufferutil@4.0.9)(supports-color@10.2.2)(utf-8-validate@6.0.5)':
+  '@google/genai@1.31.0(@modelcontextprotocol/sdk@1.24.0)(bufferutil@4.0.9)(supports-color@10.2.2)(utf-8-validate@6.0.5)':
     dependencies:
       google-auth-library: 10.5.0(supports-color@10.2.2)
       ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
@@ -15883,7 +15876,7 @@ snapshots:
     dependencies:
       '@inquirer/ansi': 2.0.1
       '@inquirer/figures': 2.0.1
-      '@inquirer/type': 4.0.1(@types/node@20.19.25)
+      '@inquirer/type': 4.0.2(@types/node@20.19.25)
       cli-width: 4.1.0
       mute-stream: 3.0.0
       signal-exit: 4.1.0
@@ -16258,6 +16251,10 @@ snapshots:
       '@types/node': 24.10.1
 
   '@inquirer/type@4.0.1(@types/node@20.19.25)':
+    optionalDependencies:
+      '@types/node': 20.19.25
+
+  '@inquirer/type@4.0.2(@types/node@20.19.25)':
     optionalDependencies:
       '@types/node': 20.19.25
 
@@ -22619,8 +22616,6 @@ snapshots:
 
   jasmine-core@4.6.1: {}
 
-  jasmine-core@5.12.1: {}
-
   jasmine-core@5.13.0: {}
 
   jasmine-reporters@2.5.2:
@@ -22633,11 +22628,6 @@ snapshots:
       exit: 0.1.2
       glob: 7.2.3
       jasmine-core: 2.8.0
-
-  jasmine@5.12.0:
-    dependencies:
-      glob: 10.5.0
-      jasmine-core: 5.12.1
 
   jasmine@5.13.0:
     dependencies:
