@@ -440,13 +440,13 @@ class LiveCollectionLContainerImpl extends LiveCollection<
       new RepeaterContext(this.lContainer, value, index),
       {dehydratedView},
     );
-    this.operationsCounter?.recordCreate();
+    ngDevMode && this.operationsCounter?.recordCreate();
 
     return embeddedLView;
   }
   override destroy(lView: LView<RepeaterContext<unknown>>): void {
     destroyLView(lView[TVIEW], lView);
-    this.operationsCounter?.recordDestroy();
+    ngDevMode && this.operationsCounter?.recordDestroy();
   }
   override updateValue(index: number, value: unknown): void {
     this.getLView(index)[CONTEXT].$implicit = value;
@@ -454,7 +454,7 @@ class LiveCollectionLContainerImpl extends LiveCollection<
 
   reset(): void {
     this.needsIndexUpdate = false;
-    this.operationsCounter?.reset();
+    ngDevMode && this.operationsCounter?.reset();
   }
 
   updateIndexes(): void {
