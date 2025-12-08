@@ -44,6 +44,8 @@ When you use `@Injectable({ providedIn: 'root' })` in your service, Angular:
 
 This is the recommended approach for most services.
 
+IMPORTANT: `providedIn: 'any'` is deprecated and will be removed in a future version of Angular. Use `providedIn: 'root'` for application-wide singleton services or `providedIn: 'platform'` for platform-level services.
+
 ## Injecting a service
 
 Once you've created a service with `providedIn: 'root'`, you can inject it anywhere in your application using the `inject()` function from `@angular/core`.
