@@ -87,7 +87,6 @@ copy_to_directory(
         "//packages/service-worker:service-worker_docs",
         "//packages/ssr/docs:ssr_docs",
         "//packages/ssr/docs:ssr_node_docs",
-        "//packages/upgrade:upgrade_docs",
         "//packages/upgrade/static:upgrade_static_docs",
         "//packages/upgrade/static/testing:upgrade_static_testing_docs",
         "//tools/manual_api_docs/blocks:blocks_docs",
