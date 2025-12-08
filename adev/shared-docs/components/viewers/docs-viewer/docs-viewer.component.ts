@@ -269,7 +269,9 @@ export class DocViewer {
   private loadCopySourceCodeButtons(): void {
     const staticCodeSnippets = <Element[]>(
       Array.from(
-        this.elementRef.nativeElement.querySelectorAll('.docs-code:not([mermaid],.docs-no-copy)'),
+        this.elementRef.nativeElement.querySelectorAll(
+          '.docs-code:not([mermaid],[hideCopy],.docs-no-copy)',
+        ),
       )
     );
 

@@ -299,8 +299,8 @@ ng generate my-lib:my-service --name my-data
 
 In the console, you see that the schematic was run and the `my-data.service.ts` file was created in your application folder.
 
-<docs-code language="shell" hideCopy>
+```shell {hideCopy}
 
 CREATE src/app/my-data.service.ts (208 bytes)
 
-</docs-code>
+```
