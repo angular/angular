@@ -161,6 +161,85 @@ export abstract class FieldNodeStructure {
     this.injector.destroy();
   }
 
+  /**
+   * Creates a keyInParent signal for a field node.
+   *
+   * For root nodes, returns ROOT_KEY_IN_PARENT which throws when accessed.
+   * For child nodes, creates a computed that tracks the field's current key in its parent,
+   * with special handling for tracked array elements.
+   *
+   * @param options The field node options
+   * @param identityInParent The tracking identity (only for tracked array children)
+   * @param initialKeyInParent The initial key in parent (only for child nodes)
+   * @returns A signal representing the field's key in its parent
+   */
+  protected createKeyInParent(
+    options: FieldNodeOptions,
+    identityInParent: TrackingKey | undefined,
+    initialKeyInParent: string | undefined,
+  ): Signal<string> {
+    if (options.kind === 'root') {
+      return ROOT_KEY_IN_PARENT;
+    }
+
+    if (identityInParent === undefined) {
+      const key = initialKeyInParent!;
+      return computed(() => {
+        if (this.parent!.structure.getChild(key) !== this.node) {
+          throw new Error(
+            `RuntimeError: orphan field, looking for property '${key}' of ${getDebugName(this.parent!)}`,
+          );
+        }
+        return key;
+      });
+    } else {
+      let lastKnownKey = initialKeyInParent!;
+      return computed(() => {
+        // TODO(alxhub): future perf optimization: here we depend on the parent's value, but most
+        // changes to the value aren't structural - they aren't moving around objects and thus
+        // shouldn't affect `keyInParent`. We currently mitigate this issue via `lastKnownKey`
+        // which avoids a search.
+        const parentValue = this.parent!.structure.value();
+        if (!isArray(parentValue)) {
+          // It should not be possible to encounter this error. It would require the parent to
+          // change from an array field to non-array field. However, in the current implementation
+          // a field's parent can never change.
+          throw new Error(
+            `RuntimeError: orphan field, expected ${getDebugName(this.parent!)} to be an array`,
+          );
+        }
+
+        // Check the parent value at the last known key to avoid a scan.
+        // Note: lastKnownKey is a string, but we pretend to typescript like its a number,
+        // since accessing someArray['1'] is the same as accessing someArray[1]
+        const data = parentValue[lastKnownKey as unknown as number];
+        if (
+          isObject(data) &&
+          data.hasOwnProperty(this.parent!.structure.identitySymbol) &&
+          data[this.parent!.structure.identitySymbol] === identityInParent
+        ) {
+          return lastKnownKey;
+        }
+
+        // Otherwise, we need to check all the keys in the parent.
+        for (let i = 0; i < parentValue.length; i++) {
+          const data = parentValue[i];
+          if (
+            isObject(data) &&
+            data.hasOwnProperty(this.parent!.structure.identitySymbol) &&
+            data[this.parent!.structure.identitySymbol] === identityInParent
+          ) {
+            return (lastKnownKey = i.toString());
+          }
+        }
+
+        throw new Error(
+          `RuntimeError: orphan field, can't find element in array ${getDebugName(this.parent!)}`,
+        );
+      });
+    }
+  }
+
   protected createChildrenMap(): Signal<ChildrenData | undefined> {
     return linkedSignal({
       source: this.value,
@@ -363,64 +442,21 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
 
     this.root = this.parent.structure.root;
 
+    this.keyInParent = this.createKeyInParent(
+      {
+        kind: 'child',
+        parent,
+        pathNode: undefined!,
+        logic,
+        initialKeyInParent,
+        identityInParent,
+        fieldAdapter: undefined!,
+      },
+      identityInParent,
+      initialKeyInParent,
+    );
+
     this.pathKeys = computed(() => [...parent.structure.pathKeys(), this.keyInParent()]);
-
-    if (identityInParent === undefined) {
-      const key = initialKeyInParent;
-      this.keyInParent = computed(() => {
-        if (parent.structure.getChild(key) !== node) {
-          throw new Error(
-            `RuntimeError: orphan field, looking for property '${key}' of ${getDebugName(parent)}`,
-          );
-        }
-        return key;
-      });
-    } else {
-      let lastKnownKey = initialKeyInParent;
-      this.keyInParent = computed(() => {
-        // TODO(alxhub): future perf optimization: here we depend on the parent's value, but most
-        // changes to the value aren't structural - they aren't moving around objects and thus
-        // shouldn't affect `keyInParent`. We currently mitigate this issue via `lastKnownKey`
-        // which avoids a search.
-        const parentValue = parent.structure.value();
-        if (!isArray(parentValue)) {
-          // It should not be possible to encounter this error. It would require the parent to
-          // change from an array field to non-array field. However, in the current implementation
-          // a field's parent can never change.
-          throw new Error(
-            `RuntimeError: orphan field, expected ${getDebugName(parent)} to be an array`,
-          );
-        }
-
-        // Check the parent value at the last known key to avoid a scan.
-        // Note: lastKnownKey is a string, but we pretend to typescript like its a number,
-        // since accessing someArray['1'] is the same as accessing someArray[1]
-        const data = parentValue[lastKnownKey as unknown as number];
-        if (
-          isObject(data) &&
-          data.hasOwnProperty(parent.structure.identitySymbol) &&
-          data[parent.structure.identitySymbol] === identityInParent
-        ) {
-          return lastKnownKey;
-        }
-
-        // Otherwise, we need to check all the keys in the parent.
-        for (let i = 0; i < parentValue.length; i++) {
-          const data = parentValue[i];
-          if (
-            isObject(data) &&
-            data.hasOwnProperty(parent.structure.identitySymbol) &&
-            data[parent.structure.identitySymbol] === identityInParent
-          ) {
-            return (lastKnownKey = i.toString());
-          }
-        }
-
-        throw new Error(
-          `RuntimeError: orphan field, can't find element in array ${getDebugName(parent)}`,
-        );
-      });
-    }
 
     this.value = deepSignal(this.parent.structure.value, this.keyInParent);
     this.childrenMap = this.createChildrenMap();
