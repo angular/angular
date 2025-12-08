@@ -884,9 +884,13 @@ export const Injectable: InjectableDecorator;
 // @public
 export interface InjectableDecorator {
     (): TypeDecorator;
+    // @deprecated (undocumented)
+    (options?: {
+        providedIn: Type<any> | 'any';
+    } & InjectableProvider): TypeDecorator;
     // (undocumented)
     (options?: {
-        providedIn: Type<any> | 'root' | 'platform' | 'any' | null;
+        providedIn: 'root' | 'platform' | null;
     } & InjectableProvider): TypeDecorator;
     // (undocumented)
     new (): Injectable;
@@ -916,6 +920,11 @@ export interface InjectDecorator {
 
 // @public
 export class InjectionToken<T> {
+    // @deprecated
+    constructor(_desc: string, options: {
+        providedIn?: Type<any> | 'any';
+        factory: () => T;
+    });
     constructor(_desc: string, options?: {
         providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
         factory: () => T;

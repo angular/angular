@@ -119,7 +119,7 @@ export function setEntryFlags<T extends HasJsDocTags & HasModuleName>(
   const deprecationMessage = getDeprecatedEntry(entry);
   return {
     ...entry,
-    deprecated: getTagSinceVersion(entry, 'deprecated'),
+    deprecated: getTagSinceVersion(entry, 'deprecated', true),
     deprecationMessage: deprecationMessage
       ? getHtmlForJsDocText(deprecationMessage)
       : deprecationMessage,

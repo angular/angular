@@ -9,7 +9,11 @@
 import {initHighlighter} from '../../../../shared/shiki.mjs';
 import {setHighlighterInstance} from '../../shiki/shiki.mjs';
 import {setCurrentSymbol, setSymbols} from '../../symbol-context.mjs';
-import {addHtmlAdditionalLinks, addHtmlDescription} from '../../transforms/jsdoc-transforms.mjs';
+import {
+  addHtmlAdditionalLinks,
+  addHtmlDescription,
+  setEntryFlags,
+} from '../../transforms/jsdoc-transforms.mjs';
 
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
 describe('jsdoc transforms', () => {
@@ -229,5 +233,63 @@ function setupRouter() {
     expect(entry.htmlDescription).toContain('class="docs-code"');
 
     expect(entry.htmlDescription).toContain('/api/angular/router/Router');
+  });
+
+  it('should only mark as deprecated if all overloads are deprecated', () => {
+    const entry = setEntryFlags({
+      name: 'Injectable',
+      jsdocTags: [
+        {'name': 'see', 'comment': '[Introduction to Services and DI](guide/di)'},
+        {
+          'name': 'see',
+          'comment': '[Creating and using services](guide/di/creating-and-using-services)',
+        },
+      ],
+      signatures: [
+        {
+          'parameters': [],
+          'jsdocTags': [{'name': 'see', 'comment': '[Introduction to Services and DI](guide/di)'}],
+        },
+        {
+          'parameters': [],
+          'jsdocTags': [
+            {
+              'name': 'deprecated',
+              'comment':
+                "The `providedIn: NgModule` or `providedIn:'any'` options are deprecated. Please use the other signatures.",
+            },
+          ],
+        },
+      ],
+    } as any);
+
+    expect(entry.deprecated).toEqual(undefined);
+
+    const deprecatedEntry = setEntryFlags({
+      name: 'Injectable',
+      jsdocTags: [
+        {'name': 'see', 'comment': '[Introduction to Services and DI](guide/di)'},
+        {
+          'name': 'see',
+          'comment': '[Creating and using services](guide/di/creating-and-using-services)',
+        },
+      ],
+      signatures: [
+        {
+          'parameters': [],
+          'jsdocTags': [
+            {'name': 'see', 'comment': '[Introduction to Services and DI](guide/di)'},
+            {'name': 'deprecated', 'comment': '19.0 something something'},
+          ],
+        },
+        {
+          'parameters': [],
+          'jsdocTags': [{'name': 'deprecated', 'comment': '19.0 something something'}],
+        },
+      ],
+    } as any);
+
+    // It's deprecated by
+    expect(deprecatedEntry.deprecated).toEqual({version: '19.0'});
   });
 });
