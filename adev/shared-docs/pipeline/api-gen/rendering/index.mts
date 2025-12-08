@@ -28,17 +28,27 @@ interface EntryCollection {
   symbols: Record<string, string>;
 }
 
+/**
+ * Normalizes a module name by removing the '@angular/' prefix if present.
+ */
+function normalizeModuleName(moduleName: string): string {
+  // Remove @angular/ prefix if present
+  if (moduleName.startsWith('@angular/')) {
+    return moduleName.slice(9); // Remove '@angular/' (9 chars)
+  }
+  return moduleName;
+}
+
 /** Parse all JSON data source files into an array of collections. */
 function parseEntryData(srcs: string[]): EntryCollection[] {
   return srcs.flatMap((jsonDataFilePath): EntryCollection | EntryCollection[] => {
     const fileContent = readFileSync(jsonDataFilePath, {encoding: 'utf8'});
     const fileContentJson = JSON.parse(fileContent) as unknown;
     if ((fileContentJson as EntryCollection).entries) {
+      // Normalize module names in symbols
       const symbols = Object.fromEntries(
-        // TODO: refactor that, it's dirty and we can probably do better than this.
-        // We're removing the leading `@angular/` from module names.
         (((fileContentJson as any).symbols ?? []) as [string, string][]).map(
-          ([symbol, moduleName]) => [symbol, moduleName.slice(9)],
+          ([symbol, moduleName]) => [symbol, normalizeModuleName(moduleName)],
         ),
       );
 
