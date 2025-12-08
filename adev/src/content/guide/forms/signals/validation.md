@@ -293,6 +293,30 @@ Common patterns:
 | Alphanumeric     | `/^[a-zA-Z0-9]+$/`      | abc123       |
 | URL-safe         | `/^[a-zA-Z0-9_-]+$/`    | my-url_123   |
 
+### Validating array items
+
+Forms can include arrays of nested objects (for example, a list of order items). To apply validation rules to each item in an array, use `applyEach()` inside your schema function. `applyEach()` iterates the array path and supplies a path for each item where you can apply validators just like top-level fields.
+
+```ts
+orderModel = signal({
+  title: '',
+  description: '',
+  items: [
+    { name: '', quantity: 0 },
+  ]
+})
+
+orderForm = form(this.orderModel, (schemaPath) => {
+  required(schemaPath.title);
+  required(schemaPath.description);
+
+  applyEach(schemaPath.items, (item) => {
+    required(item.name, { message: 'Item name is required' });
+    min(item.quantity, 1, { message: 'Quantity must be at least 1' });
+  });
+});
+```
+
 ## Validation errors
 
 When validation rules fail, they produce error objects that describe what went wrong. Understanding error structure helps you provide clear feedback to users.
