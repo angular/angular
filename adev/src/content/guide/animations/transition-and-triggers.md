@@ -85,12 +85,12 @@ In the preceding code, you applied the `void` state when the HTML element isn't 
 `:enter` and `:leave` are aliases for the `void => *` and `* => void` transitions.
 These aliases are used by several animation functions.
 
-<docs-code hideCopy language="typescript">
+```ts {hideCopy}
 
 transition ( ':enter', [ … ] ); // alias for void => _
 transition ( ':leave', [ … ] ); // alias for _ => void
 
-</docs-code>
+```
 
 It's harder to target an element that is entering a view because it isn't in the DOM yet.
 Use the aliases `:enter` and `:leave` to target HTML elements that are inserted or removed from a view.

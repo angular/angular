@@ -25,28 +25,28 @@ Read the early part of this guide first to get the basics before trying to absor
 
 The module definition passed to `configureTestingModule` is a subset of the `@NgModule` metadata properties.
 
-<docs-code language="javascript">
+```ts
 
 type TestModuleMetadata = {
-providers?: any[];
-declarations?: any[];
-imports?: any[];
-schemas?: Array<SchemaMetadata | any[]>;
+   providers?: any[];
+   declarations?: any[];
+   imports?: any[];
+   schemas?: Array<SchemaMetadata | any[]>;
 };
 
-</docs-code>
+```
 
 Each override method takes a `MetadataOverride<T>` where `T` is the kind of metadata appropriate to the method, that is, the parameter of an `@NgModule`, `@Component`, `@Directive`, or `@Pipe`.
 
-<docs-code language="javascript">
+```ts
 
 type MetadataOverride<T> = {
-add?: Partial<T>;
-remove?: Partial<T>;
-set?: Partial<T>;
+  add?: Partial<T>;
+  remove?: Partial<T>;
+  set?: Partial<T>;
 };
 
-</docs-code>
+```
 
 The `TestBed` API consists of static class methods that either update or reference a _global_ instance of the `TestBed`.
 

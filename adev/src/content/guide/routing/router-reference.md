@@ -71,12 +71,12 @@ If the `app` folder is the application root, as it is for this application, set 
 The guidelines that follow will refer to different parts of a URL.
 This diagram outlines what those parts refer to:
 
-<docs-code hideCopy language="text">
+```text {hideCopy}
 foo://example.com:8042/over/there?name=ferret#nose
 \_/   \______________/\_________/ \_________/ \__/
  |           |            |            |        |
 scheme    authority      path        query   fragment
-</docs-code>
+```
 
 While the router uses the [HTML5 pushState](https://developer.mozilla.org/docs/Web/API/History_API#Adding_and_modifying_history_entries 'Browser history push-state') style by default, you must configure that strategy with a `<base href>`.
 
