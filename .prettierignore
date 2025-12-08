@@ -25,3 +25,8 @@ vscode-ng-language-service/syntaxes/test/data/*.ts
 
 # Ignore goldens MD files
 goldens/**/*.api.md
+
+# adev generated files
+adev/src/content/aria/**/*.json
+adev/src/content/cli/**/*.json
+adev/src/content/cdk/**/*.json
