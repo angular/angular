@@ -1,11 +1,11 @@
 import {Component, inject} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {HousingService} from '../housing.service';
-import {HousingLocationInfo} from '../housinglocation';
+import {HousingAPI} from '../housing.service';
+import {HousingLocation} from '../housinglocation';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 
 @Component({
-  selector: 'app-details',
+  selector: 'app-housing-location-details',
   imports: [ReactiveFormsModule],
   template: `
     <article>
@@ -45,10 +45,10 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
   `,
   styleUrls: ['./details.css'],
 })
-export class Details {
+export class HousingLocationDetails {
   route: ActivatedRoute = inject(ActivatedRoute);
-  housingService = inject(HousingService);
-  housingLocation: HousingLocationInfo | undefined;
+  housingService = inject(HousingAPI);
+  housingLocation: HousingLocation | undefined;
   applyForm = new FormGroup({
     firstName: new FormControl(''),
     lastName: new FormControl(''),

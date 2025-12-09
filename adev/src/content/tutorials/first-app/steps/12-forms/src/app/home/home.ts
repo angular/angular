@@ -1,11 +1,11 @@
 import {Component, inject} from '@angular/core';
-import {HousingLocation} from '../housing-location/housing-location';
-import {HousingLocationInfo} from '../housinglocation';
-import {HousingService} from '../housing.service';
+import {HousingLocationCard} from '../housing-location/housing-location';
+import {HousingLocation} from '../housinglocation';
+import {HousingAPI} from '../housing.service';
 
 @Component({
   selector: 'app-home',
-  imports: [HousingLocation],
+  imports: [HousingLocationCard],
   template: `
     <section>
       <form>
@@ -15,15 +15,15 @@ import {HousingService} from '../housing.service';
     </section>
     <section class="results">
       @for(housingLocation of housingLocationList; track $index) {
-        <app-housing-location [housingLocation]="housingLocation" />
+        <app-housing-location-card [housingLocation]="housingLocation" />
       }
     </section>
   `,
   styleUrls: ['./home.css'],
 })
 export class Home {
-  housingLocationList: HousingLocationInfo[] = [];
-  housingService: HousingService = inject(HousingService);
+  housingLocationList: HousingLocation[] = [];
+  housingService: HousingAPI = inject(HousingAPI);
 
   constructor() {
     this.housingLocationList = this.housingService.getAllHousingLocations();

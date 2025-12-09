@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
-import {HousingLocation} from '../housing-location/housing-location';
-import {HousingLocationInfo} from '../housinglocation';
+import {HousingLocationCard} from '../housing-location/housing-location';
+import {HousingLocation} from '../housinglocation';
 
 @Component({
   selector: 'app-home',
-  imports: [HousingLocation],
+  imports: [HousingLocationCard],
   template: `
     <section>
       <form>
@@ -13,7 +13,7 @@ import {HousingLocationInfo} from '../housinglocation';
       </form>
     </section>
     <section class="results">
-      <app-housing-location [housingLocation]="housingLocation"/>
+      <app-housing-location-card [housingLocation]="housingLocation"/>
     </section>
   `,
   styleUrls: ['./home.css'],
@@ -21,7 +21,7 @@ import {HousingLocationInfo} from '../housinglocation';
 export class Home {
   readonly baseUrl = 'https://angular.dev/assets/images/tutorials/common';
 
-  housingLocation: HousingLocationInfo = {
+  housingLocation: HousingLocation = {
     id: 9999,
     name: 'Test Home',
     city: 'Test city',
