@@ -262,7 +262,7 @@ export class UserProfile {
   private elementHeight = 0;
 
   constructor() {
-    private elementRef = inject(ElementRef);
+    const elementRef = inject(ElementRef);
     const nativeElement = elementRef.nativeElement;
 
     afterNextRender({
