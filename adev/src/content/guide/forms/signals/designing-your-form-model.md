@@ -314,7 +314,7 @@ Here, `<location-picker>` consumes and produces the entire `Location` object (or
 
 Given that the form model and domain model represent the same concept differently, we need to have a way to translate between these different representations. When we want to present some existing data in the system to the user in a form, we need to transform it from the domain model representation to the form model representation. Conversely when we want to save a user's changes, we need to transform the data from the form model representation to the domain model representation.
 
-Let's imagine that we have a domain and form model and we've written some functions to convert between them.
+Let's imagine that we have a domain model and a form model and we've written some functions to convert between them.
 
 ```ts
 interface MyDomainModel { ... }
