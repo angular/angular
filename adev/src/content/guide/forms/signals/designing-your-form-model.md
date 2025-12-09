@@ -263,7 +263,7 @@ However, consider what would happen in the following scenario:
 4. As they're about to enter the bank account info, they have second thoughts, they wouldn't want it to wind up in a leak.
 5. They toggle back to credit card option, but they notice all the info they just entered is gone!
 
-This illustrates another problem with form models that have a dynamic structure: they can be cause data loss. A model like this assumes that once a field becomes hidden, the information in it will never be needed again. It replaces the credit card information with the bank information, and has no way to get the credit card information back.
+This illustrates another problem with form models that have a dynamic structure: they can cause data loss. A model like this assumes that once a field becomes hidden, the information in it will never be needed again. It replaces the credit card information with the bank information, and has no way to get the credit card information back.
 
 #### Exceptions
 
