@@ -12,7 +12,7 @@
     "@angular/common": "^19.2.16",
     "@angular/compiler": "^20.3.12",
     "@angular/core": "^18.0.0",
-    "@angular/forms": "^18.0.0",
+    "@angular/forms": "^18.2.14",
     "@angular/platform-browser": "^20.3.12",
     "@angular/router": "^18.0.0",
     "rxjs": "~7.8.0",
