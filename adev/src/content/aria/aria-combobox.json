@@ -7,11 +7,11 @@
     {
       "name": "Combobox",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "textDirection",
-          "type": "any",
+          "type": "Signal<Direction>",
           "memberType": "property",
           "memberTags": [
             "protected"
@@ -31,7 +31,7 @@
         },
         {
           "name": "popup",
-          "type": "any",
+          "type": "Signal<ComboboxPopup<V> | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -41,45 +41,58 @@
         },
         {
           "name": "filterMode",
-          "type": "any",
+          "type": "InputSignal<\"manual\" | \"auto-select\" | \"highlight\">",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "input"
+          ],
           "description": "The filter mode for the combobox.\n- `manual`: The consumer is responsible for filtering the options.\n- `auto-select`: The combobox automatically selects the first matching option.\n- `highlight`: The combobox highlights matching text in the options without changing selection.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "filterMode",
+          "isRequiredInput": false
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether the combobox is disabled.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
         },
         {
           "name": "readonly",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether the combobox is read-only.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "readonly",
+          "isRequiredInput": false
         },
         {
           "name": "firstMatch",
-          "type": "any",
+          "type": "InputSignal<V | undefined>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "The value of the first matching item in the popup.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "firstMatch",
+          "isRequiredInput": false
         },
         {
           "name": "expanded",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -89,17 +102,20 @@
         },
         {
           "name": "alwaysExpanded",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Whether the combobox popup should always be expanded, regardless of user interaction.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "alwaysExpanded",
+          "isRequiredInput": false
         },
         {
           "name": "inputElement",
-          "type": "any",
+          "type": "Signal<HTMLInputElement | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -188,6 +204,11 @@
       ],
       "rawComment": "/**\n * The container element that wraps a combobox input and popup, and orchestrates its behavior.\n *\n * The `ngCombobox` directive is the main entry point for creating a combobox and customizing its\n * behavior. It coordinates the interactions between the `ngComboboxInput` and the popup, which\n * is defined by a `ng-template` with the `ngComboboxPopupContainer` directive. If using the\n * `CdkOverlay`, the `cdkConnectedOverlay` directive takes the place of `ngComboboxPopupContainer`.\n *\n * ```html\n * <div ngCombobox filterMode=\"highlight\">\n *   <input\n *     ngComboboxInput\n *     placeholder=\"Search for a state...\"\n *     [(value)]=\"searchString\"\n *   />\n *\n *   <ng-template ngComboboxPopupContainer>\n *     <div ngListbox [(value)]=\"selectedValue\">\n *       @for (option of filteredOptions(); track option) {\n *         <div ngOption [value]=\"option\" [label]=\"option\">\n *           <span>{{option}}</span>\n *         </div>\n *       }\n *     </div>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
+      "isStandalone": true,
+      "selector": "[ngCombobox]",
+      "exportAs": [
+        "ngCombobox"
+      ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
         "startLine": 65,
@@ -211,7 +232,7 @@
         },
         {
           "name": "combobox",
-          "type": "any",
+          "type": "Combobox<any>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -221,7 +242,7 @@
         },
         {
           "name": "value",
-          "type": "any",
+          "type": "ModelSignal<string>",
           "memberType": "property",
           "memberTags": [
             "input",
@@ -258,7 +279,7 @@
     {
       "name": "ComboboxPopupContainer",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [],
       "generics": [],
       "description": "A structural directive that marks the `ng-template` to be used as the popup\nfor a combobox. This content is conditionally rendered.\n\nThe content of the popup can be a `ngListbox`, `ngTree`, or `role=\"dialog\"`, allowing for\nflexible and complex combobox implementations. The consumer is responsible for\nimplementing the filtering logic based on the `ngComboboxInput`'s value.\n\n```html\n<ng-template ngComboboxPopupContainer>\n  <div ngListbox [(value)]=\"selectedValue\">\n    <!-- ... options ... -->\n  </div>\n</ng-template>\n```\n\nWhen using CdkOverlay, this directive can be replaced by `cdkConnectedOverlay`.\n\n```html\n<ng-template\n    [cdkConnectedOverlay]=\"{origin: inputElement, usePopover: 'inline' matchWidth: true}\"\n    [cdkConnectedOverlayOpen]=\"combobox.expanded()\">\n  <div ngListbox [(value)]=\"selectedValue\">\n    <!-- ... options ... -->\n  </div>\n</ng-template>\n```",
@@ -270,6 +291,11 @@
       ],
       "rawComment": "/**\n * A structural directive that marks the `ng-template` to be used as the popup\n * for a combobox. This content is conditionally rendered.\n *\n * The content of the popup can be a `ngListbox`, `ngTree`, or `role=\"dialog\"`, allowing for\n * flexible and complex combobox implementations. The consumer is responsible for\n * implementing the filtering logic based on the `ngComboboxInput`'s value.\n *\n * ```html\n * <ng-template ngComboboxPopupContainer>\n *   <div ngListbox [(value)]=\"selectedValue\">\n *     <!-- ... options ... -->\n *   </div>\n * </ng-template>\n * ```\n *\n * When using CdkOverlay, this directive can be replaced by `cdkConnectedOverlay`.\n *\n * ```html\n * <ng-template\n *     [cdkConnectedOverlay]=\"{origin: inputElement, usePopover: 'inline' matchWidth: true}\"\n *     [cdkConnectedOverlayOpen]=\"combobox.expanded()\">\n *   <div ngListbox [(value)]=\"selectedValue\">\n *     <!-- ... options ... -->\n *   </div>\n * </ng-template>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
+      "isStandalone": true,
+      "selector": "ng-template[ngComboboxPopupContainer]",
+      "exportAs": [
+        "ngComboboxPopupContainer"
+      ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
         "startLine": 274,
@@ -283,7 +309,7 @@
       "members": [
         {
           "name": "combobox",
-          "type": "any",
+          "type": "Combobox<V> | null",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -334,7 +360,7 @@
         },
         {
           "name": "combobox",
-          "type": "any",
+          "type": "Combobox<any>",
           "memberType": "property",
           "memberTags": [
             "readonly"
