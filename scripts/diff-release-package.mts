@@ -67,8 +67,10 @@ async function main(packageName: string) {
     git.run(['clone', '--depth=1', `https://github.com/${snapshotRepoName}.git`, tmpDir]);
     console.info(`--> Cloned snapshot repo.`);
 
+    // TODO: Remove --ignore_all_rc_files flag once a repository can be loaded in bazelrc during info
+    // commands again. See https://github.com/bazelbuild/bazel/issues/25145 for more context.
     const bazelBinDir = childProcess
-      .spawnSync(bazel, ['info', 'bazel-bin'], {
+      .spawnSync(bazel, ['--ignore_all_rc_files', 'info', 'bazel-bin'], {
         shell: true,
         encoding: 'utf8',
         stdio: ['pipe', 'pipe', 'inherit'],
