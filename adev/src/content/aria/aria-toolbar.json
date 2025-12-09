@@ -21,7 +21,7 @@
         },
         {
           "name": "textDirection",
-          "type": "any",
+          "type": "WritableSignal<Direction>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -31,7 +31,7 @@
         },
         {
           "name": "orientation",
-          "type": "any",
+          "type": "InputSignal<\"vertical\" | \"horizontal\">",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -44,7 +44,7 @@
         },
         {
           "name": "softDisabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "input"
@@ -56,7 +56,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -69,7 +69,7 @@
         },
         {
           "name": "wrap",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -82,7 +82,7 @@
         },
         {
           "name": "values",
-          "type": "any",
+          "type": "ModelSignal<V[]>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -138,7 +138,7 @@
         },
         {
           "name": "id",
-          "type": "any",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -151,7 +151,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -164,7 +164,7 @@
         },
         {
           "name": "hardDisabled",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -174,7 +174,7 @@
         },
         {
           "name": "value",
-          "type": "any",
+          "type": "InputSignal<V>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -187,7 +187,7 @@
         },
         {
           "name": "active",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -197,7 +197,7 @@
         },
         {
           "name": "selected",
-          "type": "() => any",
+          "type": "() => boolean",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -317,7 +317,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -330,7 +330,7 @@
         },
         {
           "name": "multi",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
