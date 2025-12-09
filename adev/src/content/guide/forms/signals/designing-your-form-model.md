@@ -333,7 +333,7 @@ function formModelToDomainModel(formModel: MyFormModel): MyDomainModel { ... }
 
 When we're creating a form to edit some existing domain model in the system, we'll typically receive that domain model either as an `input()` to our form component or from a backend (e.g. via a resource). In either case, `linkedSignal` provides an excellent way to apply our transform.
 
-In the case where we receive the domain as an `input()`, we can use `linkedSignal` to create a writable form model from the input signal.
+In the case where we receive the domain model as an `input()`, we can use `linkedSignal` to create a writable form model from the input signal.
 
 ```ts
 @Component(...)
