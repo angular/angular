@@ -21,7 +21,7 @@
         },
         {
           "name": "textDirection",
-          "type": "any",
+          "type": "WritableSignal<Direction>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -31,7 +31,7 @@
         },
         {
           "name": "enableSelection",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -44,7 +44,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -57,7 +57,7 @@
         },
         {
           "name": "softDisabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -70,7 +70,7 @@
         },
         {
           "name": "focusMode",
-          "type": "any",
+          "type": "InputSignal<\"roving\" | \"activedescendant\">",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -83,7 +83,7 @@
         },
         {
           "name": "rowWrap",
-          "type": "any",
+          "type": "InputSignal<\"continuous\" | \"loop\" | \"nowrap\">",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -96,7 +96,7 @@
         },
         {
           "name": "colWrap",
-          "type": "any",
+          "type": "InputSignal<\"continuous\" | \"loop\" | \"nowrap\">",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -109,7 +109,7 @@
         },
         {
           "name": "multi",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -122,7 +122,7 @@
         },
         {
           "name": "selectionMode",
-          "type": "any",
+          "type": "InputSignal<\"follow\" | \"explicit\">",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -135,7 +135,7 @@
         },
         {
           "name": "enableRangeSelection",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -185,7 +185,7 @@
         },
         {
           "name": "rowIndex",
-          "type": "any",
+          "type": "InputSignal<number | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -235,7 +235,7 @@
         },
         {
           "name": "active",
-          "type": "any",
+          "type": "Signal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -245,7 +245,7 @@
         },
         {
           "name": "textDirection",
-          "type": "any",
+          "type": "WritableSignal<Direction>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -255,7 +255,7 @@
         },
         {
           "name": "id",
-          "type": "any",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -268,7 +268,7 @@
         },
         {
           "name": "role",
-          "type": "any",
+          "type": "InputSignal<\"gridcell\" | \"columnheader\" | \"rowheader\">",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -281,7 +281,7 @@
         },
         {
           "name": "rowSpan",
-          "type": "any",
+          "type": "InputSignal<number>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -294,7 +294,7 @@
         },
         {
           "name": "colSpan",
-          "type": "any",
+          "type": "InputSignal<number>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -307,7 +307,7 @@
         },
         {
           "name": "rowIndex",
-          "type": "any",
+          "type": "InputSignal<number | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -320,7 +320,7 @@
         },
         {
           "name": "colIndex",
-          "type": "any",
+          "type": "InputSignal<number | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -333,7 +333,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -346,7 +346,7 @@
         },
         {
           "name": "selected",
-          "type": "any",
+          "type": "ModelSignal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -361,7 +361,7 @@
         },
         {
           "name": "selectable",
-          "type": "any",
+          "type": "InputSignal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -374,7 +374,7 @@
         },
         {
           "name": "orientation",
-          "type": "any",
+          "type": "InputSignal<\"vertical\" | \"horizontal\">",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -387,7 +387,7 @@
         },
         {
           "name": "wrap",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -400,7 +400,7 @@
         },
         {
           "name": "tabindex",
-          "type": "any",
+          "type": "InputSignal<number | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -450,7 +450,7 @@
         },
         {
           "name": "active",
-          "type": "any",
+          "type": "Signal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -460,7 +460,7 @@
         },
         {
           "name": "id",
-          "type": "any",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -473,7 +473,7 @@
         },
         {
           "name": "widgetType",
-          "type": "any",
+          "type": "InputSignal<\"simple\" | \"complex\" | \"editable\">",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -486,7 +486,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -499,7 +499,7 @@
         },
         {
           "name": "focusTarget",
-          "type": "any",
+          "type": "InputSignal<HTMLElement | ElementRef<any> | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -512,7 +512,7 @@
         },
         {
           "name": "onActivate",
-          "type": "any",
+          "type": "OutputEmitterRef<KeyboardEvent | FocusEvent | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -524,7 +524,7 @@
         },
         {
           "name": "onDeactivate",
-          "type": "any",
+          "type": "OutputEmitterRef<KeyboardEvent | FocusEvent | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -536,7 +536,7 @@
         },
         {
           "name": "tabindex",
-          "type": "any",
+          "type": "InputSignal<number | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",

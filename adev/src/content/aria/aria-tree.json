@@ -21,7 +21,7 @@
         },
         {
           "name": "id",
-          "type": "any",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -31,7 +31,7 @@
         },
         {
           "name": "orientation",
-          "type": "any",
+          "type": "InputSignal<\"vertical\" | \"horizontal\">",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -41,7 +41,7 @@
         },
         {
           "name": "multi",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -51,7 +51,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -61,7 +61,7 @@
         },
         {
           "name": "selectionMode",
-          "type": "any",
+          "type": "InputSignal<\"explicit\" | \"follow\">",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -71,7 +71,7 @@
         },
         {
           "name": "focusMode",
-          "type": "any",
+          "type": "InputSignal<\"roving\" | \"activedescendant\">",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -81,7 +81,7 @@
         },
         {
           "name": "wrap",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -91,7 +91,7 @@
         },
         {
           "name": "softDisabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -101,7 +101,7 @@
         },
         {
           "name": "typeaheadDelay",
-          "type": "any",
+          "type": "InputSignal<number>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -111,7 +111,7 @@
         },
         {
           "name": "values",
-          "type": "any",
+          "type": "ModelSignal<V[]>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -121,7 +121,7 @@
         },
         {
           "name": "textDirection",
-          "type": "any",
+          "type": "WritableSignal<Direction>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -131,7 +131,7 @@
         },
         {
           "name": "nav",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -141,7 +141,7 @@
         },
         {
           "name": "currentType",
-          "type": "any",
+          "type": "InputSignal<\"page\" | \"step\" | \"location\" | \"date\" | \"time\" | \"true\" | \"false\">",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -236,7 +236,7 @@
         },
         {
           "name": "id",
-          "type": "any",
+          "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -249,7 +249,7 @@
         },
         {
           "name": "value",
-          "type": "any",
+          "type": "InputSignal<V>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -262,7 +262,7 @@
         },
         {
           "name": "parent",
-          "type": "any",
+          "type": "InputSignal<Tree<V> | TreeItemGroup<V>>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -275,7 +275,7 @@
         },
         {
           "name": "disabled",
-          "type": "any",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -288,7 +288,7 @@
         },
         {
           "name": "selectable",
-          "type": "any",
+          "type": "InputSignal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -301,7 +301,7 @@
         },
         {
           "name": "expanded",
-          "type": "any",
+          "type": "ModelSignal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -316,7 +316,7 @@
         },
         {
           "name": "label",
-          "type": "any",
+          "type": "InputSignal<string | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
@@ -329,7 +329,7 @@
         },
         {
           "name": "searchTerm",
-          "type": "any",
+          "type": "Signal<string>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -349,7 +349,7 @@
         },
         {
           "name": "active",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -359,7 +359,7 @@
         },
         {
           "name": "level",
-          "type": "any",
+          "type": "Signal<number>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -369,7 +369,7 @@
         },
         {
           "name": "selected",
-          "type": "any",
+          "type": "Signal<boolean | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -379,7 +379,7 @@
         },
         {
           "name": "visible",
-          "type": "any",
+          "type": "Signal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -452,6 +452,28 @@
           "rawComment": "",
           "memberType": "method",
           "memberTags": []
+        },
+        {
+          "name": "contentVisible",
+          "type": "WritableSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "override"
+          ],
+          "description": "",
+          "jsdocTags": []
+        },
+        {
+          "name": "preserveContent",
+          "type": "ModelSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "override"
+          ],
+          "description": "",
+          "jsdocTags": []
         }
       ],
       "generics": [
@@ -487,7 +509,7 @@
     {
       "name": "TreeItemGroup",
       "isAbstract": false,
-      "entryType": "undecorated_class",
+      "entryType": "directive",
       "members": [
         {
           "name": "element",
@@ -501,13 +523,16 @@
         },
         {
           "name": "ownedBy",
-          "type": "any",
+          "type": "InputSignal<TreeItem<V>>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "Tree item that owns the group.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "ownedBy",
+          "isRequiredInput": true
         },
         {
           "name": "ngOnInit",
@@ -592,6 +617,11 @@
       "implements": [
         "OnInit",
         "OnDestroy"
+      ],
+      "isStandalone": true,
+      "selector": "ng-template[ngTreeItemGroup]",
+      "exportAs": [
+        "ngTreeItemGroup"
       ],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
@@ -827,6 +857,14 @@
     ],
     [
       "TreeItem.ngOnDestroy",
+      "@angular/aria/tree"
+    ],
+    [
+      "TreeItem.contentVisible",
+      "@angular/aria/tree"
+    ],
+    [
+      "TreeItem.preserveContent",
       "@angular/aria/tree"
     ],
     [
