@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SIGNAL} from './graph';
+import {Reactive, SIGNAL} from './graph';
 
 // Only a subset of HTML tags are allowed in the custom formatter JsonML format.
 // See https://firefox-source-docs.mozilla.org/devtools-user/custom_formatters/index.html#html-template-format
@@ -36,7 +36,7 @@ declare global {
  * @see https://firefox-source-docs.mozilla.org/devtools-user/custom_formatters/index.html
  */
 
-const formatter = {
+export const formatter = {
   /**
    *  If the function returns `null`, the formatter is not used for this reference
    */
@@ -142,8 +142,8 @@ function prettifyPreview(
   }
 }
 
-function isSignal(value: any): boolean {
-  return value[SIGNAL] !== undefined;
+function isSignal(value: any): value is Reactive & (() => unknown) {
+  return typeof value === 'function' && value[SIGNAL] !== undefined;
 }
 
 /**
