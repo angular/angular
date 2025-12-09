@@ -30,7 +30,6 @@ import { ɵCONTROL } from '@angular/core';
 import { ɵControl } from '@angular/core';
 import { ɵcontrolUpdate } from '@angular/core';
 import { ɵFieldState } from '@angular/core';
-import { ɵInteropControl } from '@angular/core';
 import { ɵɵcontrolCreate } from '@angular/core';
 
 // @public
@@ -147,19 +146,18 @@ export class Field<T> implements ɵControl<T> {
         readonly update: typeof ɵcontrolUpdate;
     };
     // (undocumented)
-    readonly classes: (readonly [string, i0.Signal<boolean>])[];
+    readonly element: HTMLElement;
     // (undocumented)
     readonly field: i0.InputSignal<FieldTree<T>>;
     protected getOrCreateNgControl(): InteropNgControl;
+    // (undocumented)
+    readonly injector: Injector;
     // (undocumented)
     readonly state: i0.Signal<[T] extends [_angular_forms.AbstractControl<any, any, any>] ? CompatFieldState<T, string | number> : FieldState<T, string | number>>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<Field<any>, "[field]", never, { "field": { "alias": "field"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Field<any>, never>;
-    get ɵinteropControl(): ɵInteropControl | undefined;
-    // (undocumented)
-    ɵregister(): void;
 }
 
 // @public
