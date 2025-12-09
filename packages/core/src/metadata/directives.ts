@@ -1019,6 +1019,9 @@ export interface HostListenerDecorator {
    *
    * @usageNotes
    *
+   * NOTE:  **Always** prefer using the `host` property over `@HostListener`.
+   * This decorator exist exclusively for backwards compatibility.
+   *
    * The following example declares a directive
    * that attaches a click listener to a button and counts clicks.
    *
@@ -1042,13 +1045,15 @@ export interface HostListenerDecorator {
    *
    * The following example registers another DOM event handler that listens for `Enter` key-press
    * events on the global `window`.
-   * ```ts
+   * ```angular-ts
    * import { HostListener, Component } from "@angular/core";
    *
    * @Component({
    *   selector: 'app',
-   *   template: `<h1>Hello, you have pressed enter {{counter}} number of times!</h1> Press enter
-   * key to increment the counter. <button (click)="resetCounter()">Reset Counter</button>`
+   *   template: `
+   *    <h1>Hello, you have pressed enter {{counter}} number of times!</h1>
+   *      Press enter  key to increment the counter.
+   *    <button (click)="resetCounter()">Reset Counter</button>`
    * })
    * class AppComponent {
    *   counter = 0;
@@ -1065,7 +1070,7 @@ export interface HostListenerDecorator {
    * can be found here:
    * https://www.w3.org/TR/DOM-Level-3-Events-key/#named-key-attribute-values
    *
-   * Note that keys can also be combined, e.g. `@HostListener('keydown.shift.a')`.
+   * NOTE: that keys can also be combined, e.g. `@HostListener('keydown.shift.a')`.
    *
    * The global target names that can be used to prefix an event name are
    * `document:`, `window:` and `body:`.
