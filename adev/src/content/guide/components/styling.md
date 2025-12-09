@@ -72,8 +72,6 @@ as `::shadow` or `::part`.
 #### `::ng-deep`
 
 Angular's emulated encapsulation mode supports a custom pseudo class, `::ng-deep`.
-**The Angular team strongly discourages new use of `::ng-deep`**. These APIs remain
-exclusively for backwards compatibility.
 
 When a selector contains `::ng-deep`, Angular stops applying view-encapsulation boundaries after that point in the selector. Any part of the selector that follows `::ng-deep` can match elements outside the component’s template.
 
@@ -93,6 +91,9 @@ For example:
 - With `:host ::ng-deep p a`, both the `<a>` and `<p>` elements must be decendants of the component's host element.
 
   They can come from the component's template or the views of its child components, but not elsewhere in the app.
+
+The only recommended use of `::ng-deep` is when preceded with a component-bound selector as in the last examples above, in order to style elements that are in the component's template or in its projected or child content.
+**The Angular team strongly discourages other uses of `::ng-deep`** applying to the outside of the component. That use case remains exclusively for backwards compatibility.
 
 ### ViewEncapsulation.ShadowDom
 
