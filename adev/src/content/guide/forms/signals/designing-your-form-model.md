@@ -382,7 +382,7 @@ class MyForm {
 
 When we're ready to save the user's input back to the system, we need to convert it to the domain model representation. This would typically happen when the user submits the form, or continuously as the user edits for an auto-saving form.
 
-To save on submit, we can handle the conversion in the submit function.
+To save on submit, we can handle the conversion in the `submit` function.
 
 ```ts
 @Component(...)
