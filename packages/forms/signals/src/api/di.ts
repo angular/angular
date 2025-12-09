@@ -16,8 +16,11 @@ import type {FieldState} from './types';
  * @experimental 21.0.1
  */
 export interface SignalFormsConfig {
-  /** A map of CSS class names to predicate functions that determine when to apply them. */
-  classes?: {[className: string]: (state: FieldState<unknown>) => boolean};
+  /** A map of CSS class names to predicate functions that determine when to apply them.
+   *
+   * The predicate receives the field `state` and optionally the host element.
+   */
+  classes?: {[className: string]: (state: FieldState<unknown>, el?: Element) => boolean};
 }
 
 /**
