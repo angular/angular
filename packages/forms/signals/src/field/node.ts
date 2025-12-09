@@ -228,7 +228,7 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   private _reset(value?: unknown) {
-    if (value) {
+    if (value !== undefined) {
       this.value.set(value);
     }
 
