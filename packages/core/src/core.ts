@@ -105,7 +105,7 @@ export {createComponent, reflectComponentType, ComponentMirror} from './render3/
 export {isStandalone} from './render3/def_getters';
 export {AfterRenderRef} from './render3/after_render/api';
 export {publishExternalGlobalUtil as ɵpublishExternalGlobalUtil} from './render3/util/global_utils';
-export {enableProfiling} from './render3/debug/chrome_dev_tools_performance';
+export {enableProfiling as ɵenableDevToolsProfiling} from './render3/debug/chrome_dev_tools_performance';
 export {
   AfterRenderOptions,
   afterEveryRender,

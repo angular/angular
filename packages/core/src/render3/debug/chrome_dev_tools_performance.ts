@@ -42,6 +42,9 @@ declare global {
       trackName?: string,
       trackGroup?: string,
       color?: DevToolsColor,
+      detail?: {
+        links?: Array<{url: string; title?: string}>;
+      },
     ): void;
   }
 }
@@ -59,6 +62,56 @@ const eventsStack: stackEntry[] = [];
 const enum ProfilerDIEvent {
   InjectorToCreateInstanceEvent = 100,
   InstanceCreatedByInjector = 101,
+}
+
+/**
+ * Maps profiler events and lifecycle hooks to Angular documentation URLs
+ */
+function getDocumentationLink(
+  event: ProfilerEvent | ProfilerDIEvent,
+  entryName: string,
+): string | undefined {
+  // For lifecycle hooks, parse the hook name from the entry
+  if (event === ProfilerEvent.LifecycleHookStart) {
+    // Entry format is "ComponentName:hookName" (e.g., "AppComponent:ngOnInit")
+    const hookMatch = entryName.match(/:(\w+)$/);
+    if (hookMatch) {
+      const hookName = hookMatch[1];
+      const lifecycleHookDocs: Record<string, string> = {
+        ngOnInit: 'https://angular.dev/api/core/OnInit',
+        ngOnDestroy: 'https://angular.dev/api/core/OnDestroy',
+        ngOnChanges: 'https://angular.dev/api/core/OnChanges',
+        ngDoCheck: 'https://angular.dev/api/core/DoCheck',
+        ngAfterContentInit: 'https://angular.dev/api/core/AfterContentInit',
+        ngAfterContentChecked: 'https://angular.dev/api/core/AfterContentChecked',
+        ngAfterViewInit: 'https://angular.dev/api/core/AfterViewInit',
+        ngAfterViewChecked: 'https://angular.dev/api/core/AfterViewChecked',
+      };
+      return lifecycleHookDocs[hookName];
+    }
+  }
+
+  // Map other profiler events to relevant documentation
+  const eventDocs: Partial<Record<ProfilerEvent | ProfilerDIEvent, string>> = {
+    [ProfilerEvent.BootstrapApplicationStart]:
+      'https://angular.dev/api/core/bootstrapApplication',
+    [ProfilerEvent.BootstrapComponentStart]:
+      'https://angular.dev/api/platform-browser-dynamic/bootstrapModule',
+    [ProfilerEvent.ChangeDetectionStart]:
+      'https://angular.dev/best-practices/runtime-performance/zone-pollution',
+    [ProfilerEvent.ChangeDetectionSyncStart]:
+      'https://angular.dev/best-practices/runtime-performance/zone-pollution',
+    [ProfilerEvent.AfterRenderHooksStart]: 'https://angular.dev/api/core/afterRender',
+    [ProfilerEvent.DeferBlockStateStart]: 'https://angular.dev/guide/defer',
+    [ProfilerEvent.DynamicComponentStart]: 'https://angular.dev/api/common/NgComponentOutlet',
+    [ProfilerEvent.HostBindingsUpdateStart]:
+      'https://angular.dev/guide/directives/attribute-directives#responding-to-user-events',
+    [ProfilerEvent.TemplateCreateStart]: 'https://angular.dev/guide/templates',
+    [ProfilerEvent.TemplateUpdateStart]: 'https://angular.dev/guide/templates',
+    [ProfilerEvent.ComponentStart]: 'https://angular.dev/guide/components',
+  };
+
+  return eventDocs[event];
 }
 
 function measureStart(startEvent: ProfilerEvent | ProfilerDIEvent) {
@@ -80,6 +133,9 @@ function measureEnd(
     `Profiling error: expected to see ${startEvent} event but got ${top[0]}`,
   );
 
+  const docLink = getDocumentationLink(startEvent, entryName);
+  const detail = docLink ? {links: [{url: docLink, title: 'View documentation'}]} : undefined;
+
   console.timeStamp(
     entryName,
     'Event_' + top[0] + '_' + top[1],
@@ -87,6 +143,7 @@ function measureEnd(
     '\u{1F170}\uFE0F Angular',
     undefined,
     color,
+    detail,
   );
 }
 
