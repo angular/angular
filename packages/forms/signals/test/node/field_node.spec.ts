@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, effect, Injector, signal} from '@angular/core';
+import {computed, effect, Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   apply,
@@ -120,6 +120,41 @@ describe('FieldNode', () => {
 
       f().reset();
       expect(f.a().value()).toBe(1);
+    });
+
+    it('can reset with empty string', () => {
+      const model = signal('hello');
+      const f = form(model, {injector: TestBed.inject(Injector)});
+      f().reset('');
+      expect(f().value()).toBe('');
+    });
+
+    it('can reset with false', () => {
+      const model = signal(true);
+      const f = form(model, {injector: TestBed.inject(Injector)});
+      f().reset(false);
+      expect(f().value()).toBe(false);
+    });
+
+    it('can reset with null', () => {
+      const model: WritableSignal<string | null> = signal('hello');
+      const f = form(model, {injector: TestBed.inject(Injector)});
+      f().reset(null);
+      expect(f().value()).toBeNull();
+    });
+
+    it('can reset with 0', () => {
+      const model = signal(5);
+      const f = form(model, {injector: TestBed.inject(Injector)});
+      f().reset(0);
+      expect(f().value()).toBe(0);
+    });
+
+    it('can reset with NaN', () => {
+      const model = signal(5);
+      const f = form(model, {injector: TestBed.inject(Injector)});
+      f().reset(NaN);
+      expect(f().value()).toBeNaN();
     });
   });
 
