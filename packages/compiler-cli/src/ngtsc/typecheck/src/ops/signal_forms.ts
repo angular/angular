@@ -157,6 +157,25 @@ export class TcbNativeFieldOp extends TcbOp {
         ]);
     }
 
+    const hasDynamicType =
+      this.inputType === null &&
+      this.node.inputs.some(
+        (input) =>
+          (input.type === BindingType.Property || input.type === BindingType.Attribute) &&
+          input.name === 'type',
+      );
+
+    // If the type is dynamic, check it as if it can be any of the types above.
+    if (hasDynamicType) {
+      return ts.factory.createUnionTypeNode([
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+        ts.factory.createTypeReferenceNode('Date'),
+        ts.factory.createLiteralTypeNode(ts.factory.createNull()),
+      ]);
+    }
+
     // Fall back to string if we couldn't map the type.
     return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
   }
