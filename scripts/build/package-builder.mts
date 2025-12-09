@@ -58,7 +58,9 @@ function buildReleasePackages(
   // List of targets to build. e.g. "packages/core:npm_package", or "packages/forms:npm_package".
   const targets = exec(queryPackagesCmd, true).split(/\r?\n/).concat(additionalTargets);
   const packageNames = getPackageNamesOfTargets(targets);
-  const bazelBinPath = exec(`${bazelCmd} info bazel-bin`, true);
+  // TODO: Remove --ignore_all_rc_files flag once a repository can be loaded in bazelrc during info
+  // commands again. See https://github.com/bazelbuild/bazel/issues/25145 for more context.
+  const bazelBinPath = exec(`${bazelCmd} --ignore_all_rc_files info bazel-bin`, true);
   const getBazelOutputPath = (pkgName: string) => {
     return pkgName === 'language-server'
       ? join(bazelBinPath, 'vscode-ng-language-service/server/npm_package')

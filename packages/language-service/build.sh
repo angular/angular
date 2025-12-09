@@ -5,7 +5,9 @@ set -ex
 # so that it can be consumed by the Angular extension for local development.
 # Usage: ./build.sh /path/to/vscode-ng-language-service
 
-readonly bazel_bin=$(pnpm --silent bazel info bazel-bin)
+# TODO: Remove --ignore_all_rc_files flag once a repository can be loaded in bazelrc during info
+# commands again. See https://github.com/bazelbuild/bazel/issues/25145 for more context.
+readonly bazel_bin=$(pnpm --silent bazel --ignore_all_rc_files info bazel-bin)
 readonly extension_repo="$1"
 
 if [[ -z "${extension_repo}" ]]; then
