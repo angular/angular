@@ -113,8 +113,6 @@ A form model model must not contain `undefined` values or properties. In Signal 
 
 To represent a property with an empty value in your form model, use a value that the UI control understands to mean "empty" (e.g. `""` for a `<input type="text">`). If you're designing a custom UI control, `null` often works as a good value to signify "empty".
 
-<!-- TODO: what should we say about <input type=number>? -->
-
 ```ts {prefer, header: 'Appropriate empty values'}
 interface UserFormModel {
   name: string;           // Bound to <input type="text">
