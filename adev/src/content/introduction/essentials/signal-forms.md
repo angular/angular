@@ -189,7 +189,7 @@ When a user selects a radio button, the form `field` stores the value from that 
 
 Select elements work with both static and dynamic options:
 
-```html
+```angular-html
 <!-- Static options -->
 <select [field]="form.country">
   <option value="">Select a country</option>

@@ -91,19 +91,17 @@ Starting with TypeScript 2.3, TypeScript has a plug-in model that the language s
 
 1. Install the latest version of TypeScript in a local `node_modules` directory:
 
-```shell
-
-npm install --save-dev typescript
-
-```
+   ```shell
+   npm install --save-dev typescript
+   ```
 
 1. Install the Angular Language Service package in the same location:
 
-```shell
+   ```shell
 
-npm install --save-dev @angular/language-service
+   npm install --save-dev @angular/language-service
 
-```
+   ```
 
 1. Once the package is installed, add the following to the `"compilerOptions"` section of your project's `tsconfig.json`.
 
@@ -113,7 +111,7 @@ npm install --save-dev @angular/language-service
    ]
    ```
 
-2. In your editor's user preferences \(`Cmd+,` or `Ctrl+,`\), add the following:
+1. In your editor's user preferences \(`Cmd+,` or `Ctrl+,`\), add the following:
 
    ```json {header:"Sublime Text user preferences"}
 

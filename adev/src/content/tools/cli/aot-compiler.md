@@ -472,7 +472,7 @@ Use the non-null type assertion operator to suppress the `Object is possibly 'un
 In the following example, the `person` and `address` properties are always set together, implying that `address` is always non-null if `person` is non-null.
 There is no convenient way to describe this constraint to TypeScript and the template compiler, but the error is suppressed in the example by using `address!.street`.
 
-```ts
+```angular-ts
 
 @Component({
   selector: 'my-component',
@@ -494,7 +494,7 @@ The non-null assertion operator should be used sparingly as refactoring of the c
 
 In this example it is recommended to include the checking of `address` in the `*ngIf` as shown below:
 
-```ts
+```angular-ts
 
 @Component({
   selector: 'my-component',
