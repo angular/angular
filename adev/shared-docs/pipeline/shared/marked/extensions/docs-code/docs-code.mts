@@ -32,7 +32,7 @@ const visibleLinesRule = /visibleLines="([^"]*)"/;
 const regionRule = /region="([^"]*)"/;
 const previewRule = /preview/;
 const hideCodeRule = /hideCode/;
-const preferRule = /(prefer|avoid)/;
+const preferRule = /\b(prefer|avoid)\b/;
 
 export const docsCodeExtension = {
   name: 'docs-code',

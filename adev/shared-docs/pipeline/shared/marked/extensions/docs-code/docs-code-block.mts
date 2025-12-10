@@ -41,7 +41,7 @@ export const docsCodeBlockExtension = {
       const headerRule = /header\s*:\s*(['"`])([^'"`]+)\1/; // The 2nd capture matters here
       const highlightRule = /highlight\s*:\s*(.*)([^,])/;
       const hideCopyRule = /hideCopy/;
-      const preferRule = /(prefer|avoid)/;
+      const preferRule = /\b(prefer|avoid)\b/;
       const linenumsRule = /linenums/;
 
       const token: DocsCodeBlock = {

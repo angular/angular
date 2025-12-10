@@ -41,26 +41,24 @@ To do this:
 
 1. Add the following code in `src/typings.d.ts`:
 
-```ts
-declare module 'host' {
-  export interface Host {
-    protocol?: string;
-    hostname?: string;
-    pathname?: string;
-  }
-  export function parse(url: string, queryString?: string): Host;
-}
-
-```
+   ```ts
+     declare module 'host' {
+       export interface Host {
+         protocol?: string;
+         hostname?: string;
+         pathname?: string;
+       }
+       export function parse(url: string, queryString?: string): Host;
+     }
+   ```
 
 1. In the component or file that uses the library, add the following code:
 
-```ts
-import * as host from 'host';
-const parsedUrl = host.parse('https://angular.dev');
-console.log(parsedUrl.hostname);
-
-```
+   ```ts
+       import * as host from 'host';
+       const parsedUrl = host.parse('https://angular.dev');
+       console.log(parsedUrl.hostname);
+   ```
 
 Define more typings as needed.
 
@@ -85,33 +83,30 @@ For example, to use the [Bootstrap 4][GetbootstrapDocs40GettingStartedIntroducti
 
 1. Install the library and the associated dependencies using the npm package manager:
 
-```shell
-npm install jquery --save
-npm install popper.js --save
-npm install bootstrap --save
-
-```
+   ```shell
+     npm install jquery --save
+     npm install popper.js --save
+     npm install bootstrap --save
+   ```
 
 1. In the `angular.json` configuration file, add the associated script files to the `scripts` array:
 
-```json
-"scripts": [
-  "node_modules/jquery/dist/jquery.slim.js",
-  "node_modules/popper.js/dist/umd/popper.js",
-  "node_modules/bootstrap/dist/js/bootstrap.js"
-],
-
-```
+   ```json
+     "scripts": [
+         "node_modules/jquery/dist/jquery.slim.js",
+         "node_modules/popper.js/dist/umd/popper.js",
+         "node_modules/bootstrap/dist/js/bootstrap.js"
+       ],
+   ```
 
 1. Add the `bootstrap.css` CSS file to the `styles` array:
 
-```json
-"styles": [
-  "node_modules/bootstrap/dist/css/bootstrap.css",
-  "src/styles.css"
-],
-
-```
+   ```json
+     "styles": [
+         "node_modules/bootstrap/dist/css/bootstrap.css",
+         "src/styles.css"
+     ],
+   ```
 
 1. Run or restart the `ng serve` Angular CLI command to see Bootstrap 4 work in your application.
 
