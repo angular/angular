@@ -12,6 +12,7 @@ function insertDebugNameIntoCallExpression(
   node: ts.CallExpression,
   debugName: string,
 ): ts.CallExpression {
+  const debugNameWithOrigin = createDebugNameWithOrigin(debugName, node.getSourceFile());
   const isRequired = isRequiredSignalFunction(node.expression);
   const hasNoArgs = node.arguments.length === 0;
   const configPosition = hasNoArgs || isSignalWithObjectOnlyDefinition(node) || isRequired ? 0 : 1;
@@ -34,7 +35,7 @@ function insertDebugNameIntoCallExpression(
 
   const debugNameProperty = ts.factory.createPropertyAssignment(
     'debugName',
-    ts.factory.createStringLiteral(debugName),
+    ts.factory.createStringLiteral(debugNameWithOrigin),
   );
 
   let newArgs: ts.Expression[];
@@ -80,6 +81,32 @@ function insertDebugNameIntoCallExpression(
   }
 
   return ts.factory.updateCallExpression(node, node.expression, node.typeArguments, newArgs);
+}
+
+function createDebugNameWithOrigin(debugName: string, sourceFile: ts.SourceFile): string {
+  if (isAngularFrameworkSource(sourceFile)) {
+    const prefixed = `ɵ${debugName}`;
+    return debugName.startsWith('ɵ') ? debugName : prefixed;
+  }
+  return debugName;
+}
+
+function isAngularFrameworkSource(sourceFile: ts.SourceFile): boolean {
+  const normalizedPath = sourceFile.fileName.replace(/\\/g, '/');
+  if (normalizedPath.includes('/node_modules/@angular/')) {
+    return true;
+  }
+
+  if (normalizedPath.includes('/angular/packages/')) {
+    return true;
+  }
+
+  // Bazel outputs in the Angular repo do not have a nearby package.json.
+  if (normalizedPath.includes('/bazel-out/') && normalizedPath.includes('/packages/')) {
+    return true;
+  }
+
+  return false;
 }
 
 /**

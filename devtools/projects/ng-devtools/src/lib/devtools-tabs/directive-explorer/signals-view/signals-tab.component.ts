@@ -54,12 +54,43 @@ export class SignalsTabComponent implements OnDestroy {
   private svgComponent = viewChild.required<ElementRef>('component');
 
   signalsVisualizer?: SignalsGraphVisualizer;
+  protected readonly hideInternalSignals = signal(false);
+
+  protected readonly visibleGraph = computed(() => {
+    const graph = this.signalGraph.graph();
+    if (!graph) {
+      return null;
+    }
+
+    if (!this.hideInternalSignals()) {
+      return graph;
+    }
+
+    const nodesWithIndexes = graph.nodes.map((node, index) => ({node, index}));
+    const filteredNodes = nodesWithIndexes.filter(({node}) => !node.isAngularInternal);
+    if (filteredNodes.length === graph.nodes.length) {
+      return graph;
+    }
+
+    const indexMap = new Map<number, number>();
+    const nodes = filteredNodes.map(({node, index}, mappedIndex) => {
+      indexMap.set(index, mappedIndex);
+      return node;
+    });
+    const edges = graph.edges
+      .filter((edge) => indexMap.has(edge.consumer) && indexMap.has(edge.producer))
+      .map((edge) => ({
+        consumer: indexMap.get(edge.consumer)!,
+        producer: indexMap.get(edge.producer)!,
+      }));
+    return {nodes, edges};
+  });
 
   protected readonly preselectedNodeId = input<string | null>(null);
 
   // selected is automatically reset to null whenever `graph` changes
   private selected = linkedSignal<DebugSignalGraph | null, string | null>({
-    source: this.signalGraph.graph,
+    source: this.visibleGraph,
     computation: () => this.preselectedNodeId(),
   });
 
@@ -73,7 +104,7 @@ export class SignalsTabComponent implements OnDestroy {
   readonly close = output<void>();
 
   protected selectedNode = computed(() => {
-    const signalGraph = this.signalGraph.graph();
+    const signalGraph = this.visibleGraph();
     if (!signalGraph) {
       return undefined;
     }
@@ -123,11 +154,14 @@ export class SignalsTabComponent implements OnDestroy {
     );
   });
 
-  protected empty = computed(() => !(this.signalGraph.graph()?.nodes.length! > 0));
+  protected empty = computed(() => {
+    const graph = this.visibleGraph();
+    return !(graph && graph.nodes.length > 0);
+  });
 
   constructor() {
     const renderGraph = () => {
-      const graph = this.signalGraph.graph();
+      const graph = this.visibleGraph();
       if (graph) {
         this.signalsVisualizer?.render(graph);
       }
