@@ -5,7 +5,10 @@ pnpm-lock.yaml
 
 # Both third_party and .yarn are directories containing copied code which should
 # not be modified.
-third_party/**/*.{js,css,md,json}
+third_party/**/*.js
+third_party/**/*.css
+third_party/**/*.md
+third_party/**/*.json
 
 # Do not format the locale files which are checked-in for Google3, but generated using
 # the `generate-locales-tool` from `packages/common/locales`.
@@ -14,7 +17,8 @@ packages/common/locales/closure-locale.ts
 packages/common/src/i18n/currencies.ts
 
 # Test cases contain non valid code.
-packages/compiler-cli/test/compliance/test_cases/**/*.{js,ts,mjs,mts,cjs,cts}
+packages/compiler-cli/test/compliance/test_cases/**/*.js
+packages/compiler-cli/test/compliance/test_cases/**/*.ts
 
 # Ignore generated javascript file(s)
 .github/actions/deploy-docs-site/main.js
