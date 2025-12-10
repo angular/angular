@@ -310,6 +310,7 @@
       "areAnimationSupported",
       "arrRemove",
       "assertNotDestroyed",
+      "assertTypeDefined",
       "attachPatchData",
       "bind",
       "bindingUpdated",

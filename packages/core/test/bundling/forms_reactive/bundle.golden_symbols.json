@@ -371,6 +371,7 @@
       "assertControlPresent",
       "assertNotDestroyed",
       "assertPlatform",
+      "assertTypeDefined",
       "attachPatchData",
       "baseElement",
       "bind",
