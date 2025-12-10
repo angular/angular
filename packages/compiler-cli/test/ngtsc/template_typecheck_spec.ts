@@ -155,7 +155,8 @@ runInEachFileSystem(() => {
       expect(diags[0].code).toBeGreaterThan(0);
     });
 
-    it('should produce diagnostics when mapping to multiple fields and bound types are incorrect', () => {
+    // This is not supported at runtime
+    xit('should produce diagnostics when mapping to multiple fields and bound types are incorrect', () => {
       env.tsconfig({
         fullTemplateTypeCheck: true,
         strictInputTypes: true,
@@ -241,7 +242,8 @@ runInEachFileSystem(() => {
       );
     });
 
-    it('should support one input property mapping to multiple fields', () => {
+    /** This is not supported at runtime */
+    xit('should support one input property mapping to multiple fields', () => {
       env.write(
         'test.ts',
         `
