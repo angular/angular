@@ -353,10 +353,10 @@ Most state properties use `input()` (read-only from the form). Use `model()` for
 
 Controls sometimes display values differently than the form model stores them - a date picker might display "January 15, 2024" while storing "2024-01-15", or a currency input might show "$1,234.56" while storing 1234.56.
 
-Use `computed()` signals (from `@angular/core`) to transform the model value for display, and handle input events to parse user input back to the storage format:
+Use `linkedSignal()` (from `@angular/core`) to transform the model value for display, and handle input events to parse user input back to the storage format:
 
 ```angular-ts
-import { Component, model, computed, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, linkedSignal, model } from '@angular/core';
 import { FormValueControl } from '@angular/forms/signals';
 
 @Component({
@@ -365,22 +365,33 @@ import { FormValueControl } from '@angular/forms/signals';
     <input
       type="text"
       [value]="displayValue()"
-      (input)="handleInput($event.target.value)"
+      (input)="displayValue.set($event.target.value)"
+      (blur)="updateModel()"
     />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CurrencyInput implements FormValueControl<number> {
-  value = model<number>(0);  // Stores numeric value (1234.56)
+  // Stores numeric value (1234.56)
+  readonly value = model.required<number>();
 
-  displayValue = computed(() => {
-    return this.value().toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Shows "1,234.56"
-  });
+  // Stores display value ("1,234.56")
+  readonly displayValue = linkedSignal(() => formatCurrency(this.value()));
 
-  handleInput(input: string) {
-    const num = parseFloat(input.replace(/[^0-9.]/g, ''));
-    if (!isNaN(num)) this.value.set(num);
+  // Update the model from the display value.
+  updateModel() {
+    this.value.set(parseCurrency(this.displayValue()));
   }
+}
+
+// Converts a number to a currency string (e.g. 1234.56 -> "1,234.56").
+function formatCurrency(value: number) {
+  return value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+// Converts a currency string to a number (e.g. "1,234.56" -> 1234.56).
+function parseCurrency(value: string) {
+  return parseFloat(value.replace(/,/g, ''));
 }
 ```
 
