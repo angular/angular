@@ -53,18 +53,19 @@ The `Home` already contains an input field that you will use to capture input fr
 <docs-step title="Implement the event handler function">
 The template has been updated to bind the `filterResults` function to the `click` event. Next, your task is to implement the `filterResults` function in the `Home` class.
 
-1. Update the `Home` class to include the implementation of the `filterResults` function.
+1.  Update the `Home` class to include the implementation of the `filterResults` function.
 
-   <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[34,43]"/>
+    <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[34,43]"/>
 
-   This function uses the `String` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
+    This function uses the `String` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
 
-1. Save your code.
+1.  Save your code.
 
-1. Refresh the browser and confirm that you can search the housing location data by city when you click the "Search" button after entering text.
+1.  Refresh the browser and confirm that you can search the housing location data by city when you click the "Search" button after entering text.
 
-<img alt="filtered search results based on user input" src="assets/images/tutorials/first-app/homes-app-lesson-13-step-3.png">
-</docs-step>
+       <img alt="filtered search results based on user input" src="assets/images/tutorials/first-app/homes-app-lesson-13-step-3.png">
+
+    </docs-step>
 
 </docs-workflow>
 

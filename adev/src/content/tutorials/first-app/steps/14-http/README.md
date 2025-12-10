@@ -138,9 +138,9 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
 
 1. Time to test your configuration. From the command line, at the root of your project run the following commands.
 
-```bash
-json-server --watch db.json
-```
+   ```bash
+   json-server --watch db.json
+   ```
 
 1. In your web browser, navigate to the `http://localhost:3000/locations` and confirm that the response includes the data stored in `db.json`.
 
@@ -150,51 +150,51 @@ If you have any trouble with your configuration, you can find more details in th
 <docs-step title="Update service to use web server instead of local array">
 The data source has been configured, the next step is to update your web app to connect to it use the data.
 
-1. In `src/app/housing.service.ts`, make the following changes:
+1.  In `src/app/housing.service.ts`, make the following changes:
 
-1. Update the code to remove `housingLocationList` property and the array containing the data, as well as the `baseUrl` property.
+1.  Update the code to remove `housingLocationList` property and the array containing the data, as well as the `baseUrl` property.
 
-1. Add a string property called `url` and set its value to `'http://localhost:3000/locations'`
+1.  Add a string property called `url` and set its value to `'http://localhost:3000/locations'`
 
-   <docs-code header="Add url property to housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[8]"/>
+    <docs-code header="Add url property to housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[8]"/>
 
-   This code will result in errors in the rest of the file because it depends on the `housingLocationList` property. We're going to update the service methods next.
+    This code will result in errors in the rest of the file because it depends on the `housingLocationList` property. We're going to update the service methods next.
 
-1. Update the `getAllHousingLocations` function to make a call to the web server you configured.
+1.  Update the `getAllHousingLocations` function to make a call to the web server you configured.
 
-    <docs-code header="Update the getAllHousingLocations method in housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[10,13]"/>
+     <docs-code header="Update the getAllHousingLocations method in housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[10,13]"/>
 
-   The code now uses asynchronous code to make a **GET** request over HTTP.
+    The code now uses asynchronous code to make a **GET** request over HTTP.
 
-   HELPFUL: For this example, the code uses `fetch`. For more advanced use cases consider using `HttpClient` provided by Angular.
+    HELPFUL: For this example, the code uses `fetch`. For more advanced use cases consider using `HttpClient` provided by Angular.
 
-1. Update the `getHousingLocationsById` function to make a call to the web server you configured.
+1.  Update the `getHousingLocationsById` function to make a call to the web server you configured.
 
-   HELPFUL: Notice the `fetch` method has been updated to _query_ the data for location with a matching `id` property value. See [URL Search Parameter](https://developer.mozilla.org/en-US/docs/Web/API/URL/search) for more information.
+    HELPFUL: Notice the `fetch` method has been updated to _query_ the data for location with a matching `id` property value. See [URL Search Parameter](https://developer.mozilla.org/en-US/docs/Web/API/URL/search) for more information.
 
-    <docs-code header="Update the getHousingLocationById method in housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[15,19]"/>
+     <docs-code header="Update the getHousingLocationById method in housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[15,19]"/>
 
-1. Once all the updates are complete, your updated service should match the following code.
+1.  Once all the updates are complete, your updated service should match the following code.
 
-<docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[1,25]" />
+     <docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[1,25]" />
 
 </docs-step>
 
 <docs-step title="Update the components to use asynchronous calls to the housing service">
 The server is now reading data from the HTTP request but the components that rely on the service now have errors because they were programmed to use the synchronous version of the service.
 
-1. In `src/app/home/home.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method. Because we didn't use signals for our state, you have to notify Angular that a change happened that requires a synchronization. Call `this.changeDetectorRef.markForCheck()` to do this.
+1.  In `src/app/home/home.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method. Because we didn't use signals for our state, you have to notify Angular that a change happened that requires a synchronization. Call `this.changeDetectorRef.markForCheck()` to do this.
 
-<docs-code header="Update constructor in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.ts" visibleLines="[30,38]"/>
+      <docs-code header="Update constructor in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.ts" visibleLines="[30,38]"/>
 
-1. In `src/app/details/details.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method. As before, you must also call `this.changeDetectorRef.markForCheck()` to notify Angular of the changes.
+1.  In `src/app/details/details.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method. As before, you must also call `this.changeDetectorRef.markForCheck()` to notify Angular of the changes.
 
-<docs-code header="Update constructor in details.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/details/details.ts" visibleLines="[60,66]"/>
+      <docs-code header="Update constructor in details.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/details/details.ts" visibleLines="[60,66]"/>
 
-1. Save your code.
+1.  Save your code.
 
-1. Open the application in the browser and confirm that it runs without any errors.
-   </docs-step>
+1.  Open the application in the browser and confirm that it runs without any errors.
+    </docs-step>
 
 </docs-workflow>
 
