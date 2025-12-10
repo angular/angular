@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-
 interface Options {
   selfClosing?: boolean;
   preserveWhitespace?: boolean;
@@ -16,6 +15,7 @@ export class XmlFile {
   private indent = '';
   private elements: string[] = [];
   private preservingWhitespace = false;
+
   toString() {
     return this.output;
   }
@@ -31,9 +31,10 @@ export class XmlFile {
 
     this.output += `<${name}`;
 
+    // Attributes escape uses escapeXmlAttribute (still escapes double quotes)
     for (const [attrName, attrValue] of Object.entries(attributes)) {
       if (attrValue) {
-        this.output += ` ${attrName}="${escapeXml(attrValue)}"`;
+        this.output += ` ${attrName}="${escapeXmlAttribute(attrValue)}"`;
       }
     }
 
@@ -77,7 +78,8 @@ export class XmlFile {
   }
 
   text(str: string): this {
-    this.output += escapeXml(str);
+    // Text escape uses escapeXmlText, does not escape double quotes
+    this.output += escapeXmlText(str);
     return this;
   }
 
@@ -93,18 +95,26 @@ export class XmlFile {
     this.indent = this.indent.slice(0, -2);
   }
 }
-
-const _ESCAPED_CHARS: [RegExp, string][] = [
+// Helper for attributes
+const _ESCAPED_ATTR_CHARS: [RegExp, string][] = [
   [/&/g, '&amp;'],
   [/"/g, '&quot;'],
   [/'/g, '&apos;'],
   [/</g, '&lt;'],
   [/>/g, '&gt;'],
 ];
+// Helper for text nodes
+const _ESCAPED_TEXT_CHARS: [RegExp, string][] = [
+  [/&/g, '&amp;'],
+  [/'/g, '&apos;'],
+  [/</g, '&lt;'],
+  [/>/g, '&gt;'],
+];
 
-function escapeXml(text: string): string {
-  return _ESCAPED_CHARS.reduce(
-    (text: string, entry: [RegExp, string]) => text.replace(entry[0], entry[1]),
-    text,
-  );
+function escapeXmlAttribute(text: string): string {
+  return _ESCAPED_ATTR_CHARS.reduce((t, [re, rep]) => t.replace(re, rep), text);
+}
+
+function escapeXmlText(text: string): string {
+  return _ESCAPED_TEXT_CHARS.reduce((t, [re, rep]) => t.replace(re, rep), text);
 }

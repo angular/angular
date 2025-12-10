@@ -173,6 +173,32 @@ runInEachFileSystem(() => {
               ``,
             ]);
           });
+          it('should keep double quotes in text nodes', () => {
+            const messages = [
+              mockMessage('QUOTE', ['The file must end with ".p12" or ".pfx"'], [], {}),
+            ];
+            const serializer = new Xliff2TranslationSerializer(
+              'en',
+              absoluteFrom('/project'),
+              /*useLegacyIds*/ false,
+              options,
+            );
+            const output = serializer.serialize(messages);
+            expect(output).toContain('<source>The file must end with ".p12" or ".pfx"</source>');
+          });
+          it('should still escape double quotes in attribute values', () => {
+            // Use a placeholder that will produce an attribute; ensure quotes are escaped there.
+            const messages = [mockMessage('ATTR', ['a', 'b'], ['PH'], {})];
+            const serializer = new Xliff2TranslationSerializer(
+              'en',
+              absoluteFrom('/project'),
+              /*useLegacyIds*/ false,
+              options,
+            );
+            const output = serializer.serialize(messages);
+            // In XLIFF 2, placeholders render as <ph id="0" equiv="PH"/>; attr values must escape quotes.
+            expect(output).toContain('<ph id="0" equiv="PH"/>');
+          });
 
           it('should convert a set of parsed messages into an XML string', () => {
             const messageLocation1: ɵSourceLocation = {

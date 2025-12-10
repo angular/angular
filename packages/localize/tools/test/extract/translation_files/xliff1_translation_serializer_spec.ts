@@ -341,6 +341,71 @@ runInEachFileSystem(() => {
               '<source>a<x id="START_TAG_DIV" ctype="x-div"/>b<x id="CLOSE_TAG_DIV" ctype="x-div"/>c</source>',
             );
           });
+
+          it('should keep double quotes in text nodes', () => {
+            const messages = [
+              mockMessage('QUOTE', ['The file must end with ".p12" or ".pfx"'], [], {}),
+            ];
+            const serializer = new Xliff1TranslationSerializer(
+              'en',
+              absoluteFrom('/project'),
+              /*useLegacyIds*/ false,
+              options,
+            );
+            const output = serializer.serialize(messages);
+            expect(output).toContain('<source>The file must end with ".p12" or ".pfx"</source>');
+          });
+          // Quote handling for issue #54565
+          it('should not escape quotes in text content (issue #54565)', () => {
+            const serializer = new Xliff1TranslationSerializer(
+              'en',
+              absoluteFrom('/project'),
+              false,
+              {},
+            );
+
+            const messages = [
+              mockMessage('quote-test', ['The file path must end with ".p12" or ".pfx"'], [], {}),
+            ];
+
+            const output = serializer.serialize(messages);
+
+            // Quotes should NOT be escaped in text content
+            expect(output).toContain(
+              '<source>The file path must end with ".p12" or ".pfx"</source>',
+            );
+            // Should NOT contain escaped quotes in text
+            expect(output).not.toContain('&quot;.p12&quot;');
+          });
+
+          it('should not escape quotes in text content with mixed characters (issue #54565)', () => {
+            const serializer = new Xliff1TranslationSerializer(
+              'en',
+              absoluteFrom('/project'),
+              false,
+              {},
+            );
+
+            const messages = [
+              mockMessage(
+                'quote-test',
+                ['Text with <tags> & "quotes" and \'apostrophes\''],
+                [],
+                {},
+              ),
+            ];
+
+            const output = serializer.serialize(messages);
+
+            // Quotes should NOT be escaped in text content
+            expect(output).toContain('"quotes"');
+            expect(output).not.toContain('&quot;quotes&quot;');
+
+            // Other XML characters SHOULD still be escaped
+            expect(output).toContain('&lt;tags&gt;');
+            expect(output).toContain('&amp;');
+            expect(output).toContain('&apos;apostrophes&apos;');
+          });
         });
       });
     });
