@@ -214,7 +214,8 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Build adev
-        run: pnpm bazel build //adev:build.production --config=release
+        # `snapshot-build` config is used to stamp the exact version with sha in the footer.
+        run: pnpm bazel build //adev:build.production --config=snapshot-build
       - name: Deploy to firebase
         uses: ./.github/actions/deploy-docs-site
         with:
