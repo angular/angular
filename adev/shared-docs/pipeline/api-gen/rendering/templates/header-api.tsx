@@ -21,6 +21,7 @@ import {DocsPillRow} from './docs-pill-row';
 export function HeaderApi(props: {
   entry: DocEntryRenderable | PipeEntryRenderable;
   showFullDescription?: boolean;
+  hideDescription?: boolean;
 }) {
   const entry = props.entry;
 
@@ -60,12 +61,14 @@ export function HeaderApi(props: {
         )}
       </div>
 
-      <section
-        className={'docs-reference-description'}
-        dangerouslySetInnerHTML={{
-          __html: props.showFullDescription ? entry.htmlDescription : entry.shortHtmlDescription,
-        }}
-      ></section>
+      {!props.hideDescription && (
+        <section
+          className={'docs-reference-description'}
+          dangerouslySetInnerHTML={{
+            __html: props.showFullDescription ? entry.htmlDescription : entry.shortHtmlDescription,
+          }}
+        ></section>
+      )}
 
       <DocsPillRow links={entry.additionalLinks} />
     </header>
