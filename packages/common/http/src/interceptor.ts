@@ -215,7 +215,8 @@ export const HTTP_ROOT_INTERCEPTOR_FNS = new InjectionToken<readonly HttpInterce
 // Should HttpClient contribute to stability automatically at all?
 export const REQUESTS_CONTRIBUTE_TO_STABILITY = new InjectionToken<boolean>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'REQUESTS_CONTRIBUTE_TO_STABILITY' : '',
-  {providedIn: 'root', factory: () => true},
+  // Providing a factory implies that the token is provided in root by default
+  {factory: () => true},
 );
 
 /**

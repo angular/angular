@@ -32,7 +32,7 @@ export const XSRF_DEFAULT_COOKIE_NAME = 'XSRF-TOKEN';
 export const XSRF_COOKIE_NAME = new InjectionToken<string>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'XSRF_COOKIE_NAME' : '',
   {
-    providedIn: 'root',
+    // Providing a factory implies that the token is provided in root by default
     factory: () => XSRF_DEFAULT_COOKIE_NAME,
   },
 );
