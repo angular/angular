@@ -2653,7 +2653,7 @@ describe('field directive', () => {
         providers: [
           provideSignalFormsConfig({
             classes: {
-              'my-invalid-class': (state) => state.invalid(),
+              'my-invalid-class': ({state}) => state().invalid(),
             },
           }),
         ],
@@ -2769,6 +2769,35 @@ describe('field directive', () => {
       expect(nativeCtrl.classList.contains('always')).toBe(true);
       expect(customCtrl.classList.contains('always')).toBe(true);
       expect(customSubform.classList.contains('always')).toBe(false);
+    });
+
+    it('should apply classes based on element', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideSignalFormsConfig({
+            classes: {
+              'multiline': ({element}) => element.tagName.toLowerCase() === 'textarea',
+            },
+          }),
+        ],
+      });
+
+      @Component({
+        imports: [Field],
+        template: `
+          <input [field]="f">
+          <textarea [field]="f"></textarea>
+        `,
+      })
+      class TestCmp {
+        readonly f = form(signal(''));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input');
+      const textarea = fixture.nativeElement.querySelector('textarea');
+      expect(input.classList.contains('multiline')).toBe(false);
+      expect(textarea.classList.contains('multiline')).toBe(true);
     });
   });
 
