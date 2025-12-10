@@ -107,7 +107,7 @@ When you add a schematic to the collection, you have to point to it in the colle
 
 1. Edit the `schematics/collection.json` file to point to the new schematic subfolder, and include a pointer to a schema file that specifies inputs for the new schematic.
 
-<docs-code header="projects/my-lib/schematics/collection.json (Schematics Collection)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/collection.json"/>
+   <docs-code header="projects/my-lib/schematics/collection.json (Schematics Collection)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/collection.json"/>
 
 1. Go to the `<lib-root>/schematics/my-service` folder.
 1. Create a `schema.json` file and define the available options for the schematic.
@@ -142,19 +142,20 @@ Schematic templates support special syntax to execute code and variable substitu
 1. Create a file named `__name@dasherize__.service.ts.template` that defines a template to use for generating files.
    This template will generate a service that already has Angular's `HttpClient` injected into an `http` property.
 
-   <docs-code lang="typescript" header="projects/my-lib/schematics/my-service/files/__name@dasherize__.service.ts.template (Schematic Template)">
+   ```ts {header:projects/my-lib/schematics/my-service/files/__name@dasherize__.service.ts.template (Schematic Template)}
 
    import { Injectable } from '@angular/core';
    import { HttpClient } from '@angular/common/http';
 
    @Injectable({
-   providedIn: 'root'
+      providedIn: 'root'
    })
    export class <%= classify(name) %>Service {
-   private http = inject(HttpClient);
+      private http = inject(HttpClient);
    }
 
-   </docs-code>
+   ```
+
    - The `classify` and `dasherize` methods are utility functions that your schematic uses to transform your source template and filename.
    - The `name` is provided as a property from your factory function.
      It is the same `name` you defined in the schema.
@@ -173,15 +174,15 @@ For details of these data structures and syntax, see the [Schematics README](htt
 1. First, import the schematics definitions you will need.
    The Schematics framework offers many utility functions to create and use rules when running a schematic.
 
-<docs-code header="projects/my-lib/schematics/my-service/index.ts (Imports)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" region="schematics-imports"/>
+   <docs-code header="projects/my-lib/schematics/my-service/index.ts (Imports)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" region="schematics-imports"/>
 
 1. Import the defined schema interface that provides the type information for your schematic's options.
 
-<docs-code header="projects/my-lib/schematics/my-service/index.ts (Schema Import)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" region="schema-imports"/>
+   <docs-code header="projects/my-lib/schematics/my-service/index.ts (Schema Import)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" region="schema-imports"/>
 
 1. To build up the generation schematic, start with an empty rule factory.
 
-<docs-code header="projects/my-lib/schematics/my-service/index.ts (Initial Rule)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.1.ts" region="factory"/>
+   <docs-code header="projects/my-lib/schematics/my-service/index.ts (Initial Rule)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.1.ts" region="factory"/>
 
 This rule factory returns the tree without modification.
 The options are the option values passed through from the `ng generate` command.
