@@ -90,12 +90,11 @@ export function getQueryPredicate(
   }
 }
 
-export function createQueryCreateCall(
+function getQueryCreateParameters(
   query: R3QueryMetadata,
   constantPool: ConstantPool,
-  queryTypeFns: {signalBased: o.ExternalReference; nonSignal: o.ExternalReference},
   prependParams?: o.Expression[],
-): o.InvokeFunctionExpr {
+): o.Expression[] {
   const parameters: o.Expression[] = [];
   if (prependParams !== undefined) {
     parameters.push(...prependParams);
@@ -107,9 +106,7 @@ export function createQueryCreateCall(
   if (query.read) {
     parameters.push(query.read);
   }
-
-  const queryCreateFn = query.isSignal ? queryTypeFns.signalBased : queryTypeFns.nonSignal;
-  return o.importExpr(queryCreateFn).callFn(parameters);
+  return parameters;
 }
 
 const queryAdvancePlaceholder = Symbol('queryAdvancePlaceholder');
@@ -177,15 +174,21 @@ export function createViewQueriesFunction(
   const createStatements: o.Statement[] = [];
   const updateStatements: (o.Statement | typeof queryAdvancePlaceholder)[] = [];
   const tempAllocator = temporaryAllocator((st) => updateStatements.push(st), TEMPORARY_NAME);
+  let viewQuerySignalCall: o.Expression | null = null;
+  let viewQueryCall: o.Expression | null = null;
 
   viewQueries.forEach((query: R3QueryMetadata) => {
     // creation call, e.g. r3.viewQuery(somePredicate, true) or
     //                r3.viewQuerySignal(ctx.prop, somePredicate, true);
-    const queryDefinitionCall = createQueryCreateCall(query, constantPool, {
-      signalBased: R3.viewQuerySignal,
-      nonSignal: R3.viewQuery,
-    });
-    createStatements.push(queryDefinitionCall.toStmt());
+    const params = getQueryCreateParameters(query, constantPool);
+
+    if (query.isSignal) {
+      viewQuerySignalCall ??= o.importExpr(R3.viewQuerySignal);
+      viewQuerySignalCall = viewQuerySignalCall.callFn(params);
+    } else {
+      viewQueryCall ??= o.importExpr(R3.viewQuery);
+      viewQueryCall = viewQueryCall.callFn(params);
+    }
 
     // Signal queries update lazily and we just advance the index.
     if (query.isSignal) {
@@ -203,6 +206,14 @@ export function createViewQueriesFunction(
       .set(query.first ? temporary.prop('first') : temporary);
     updateStatements.push(refresh.and(updateDirective).toStmt());
   });
+
+  if (viewQuerySignalCall !== null) {
+    createStatements.push(new o.ExpressionStatement(viewQuerySignalCall));
+  }
+
+  if (viewQueryCall !== null) {
+    createStatements.push(new o.ExpressionStatement(viewQueryCall));
+  }
 
   const viewQueryFnName = name ? `${name}_Query` : null;
   return o.fn(
@@ -226,18 +237,21 @@ export function createContentQueriesFunction(
   const createStatements: o.Statement[] = [];
   const updateStatements: (o.Statement | typeof queryAdvancePlaceholder)[] = [];
   const tempAllocator = temporaryAllocator((st) => updateStatements.push(st), TEMPORARY_NAME);
+  let contentQuerySignalCall: o.Expression | null = null;
+  let contentQueryCall: o.Expression | null = null;
 
   for (const query of queries) {
     // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null) or
     //                r3.contentQuerySignal(dirIndex, propName, somePredicate, <flags>, <read>).
-    createStatements.push(
-      createQueryCreateCall(
-        query,
-        constantPool,
-        {nonSignal: R3.contentQuery, signalBased: R3.contentQuerySignal},
-        /* prependParams */ [o.variable('dirIndex')],
-      ).toStmt(),
-    );
+    const params = getQueryCreateParameters(query, constantPool, [o.variable('dirIndex')]);
+
+    if (query.isSignal) {
+      contentQuerySignalCall ??= o.importExpr(R3.contentQuerySignal);
+      contentQuerySignalCall = contentQuerySignalCall.callFn(params);
+    } else {
+      contentQueryCall ??= o.importExpr(R3.contentQuery);
+      contentQueryCall = contentQueryCall.callFn(params);
+    }
 
     // Signal queries update lazily and we just advance the index.
     if (query.isSignal) {
@@ -254,6 +268,14 @@ export function createContentQueriesFunction(
       .prop(query.propertyName)
       .set(query.first ? temporary.prop('first') : temporary);
     updateStatements.push(refresh.and(updateDirective).toStmt());
+  }
+
+  if (contentQuerySignalCall !== null) {
+    createStatements.push(new o.ExpressionStatement(contentQuerySignalCall));
+  }
+
+  if (contentQueryCall !== null) {
+    createStatements.push(new o.ExpressionStatement(contentQueryCall));
   }
 
   const contentQueriesFnName = name ? `${name}_ContentQueries` : null;

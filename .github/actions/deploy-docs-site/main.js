@@ -31118,6 +31118,9 @@ function assertValidGithubConfig(config) {
     if (config.github.owner === void 0) {
       errors.push(`"github.owner" is not defined`);
     }
+    if (config.github.mergeMode === void 0) {
+      errors.push(`"github.mergeMode" is not defined`);
+    }
   }
   if (errors.length) {
     throw new ConfigValidationError("Invalid `github` configuration", errors);
@@ -35269,6 +35272,7 @@ var GithubClient = class {
     this.rest = this._octokit.rest;
     this.paginate = this._octokit.paginate;
     this.checks = this._octokit.checks;
+    this.users = this._octokit.users;
   }
 };
 var AuthenticatedGithubClient = class extends GithubClient {

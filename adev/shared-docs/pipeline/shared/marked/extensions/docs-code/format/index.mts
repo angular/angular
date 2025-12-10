@@ -37,6 +37,8 @@ export interface CodeToken extends Tokens.Generic {
   hideCode?: boolean;
   /* The lines to display highlighting on */
   highlight?: string;
+  /** Whether to hide the copy button */
+  hideCopy?: boolean;
 
   // additional classes for the element
   classes?: string[];
@@ -51,7 +53,7 @@ export function formatCode(token: CodeToken, context: RendererContext): string {
   highlightCode(context.highlighter, token);
 
   const containerEl = JSDOM.fragment(`
-  <div class="docs-code">
+  <div class="docs-code${token.style ? ' docs-code-' + token.style : ''}">
     ${buildHeaderElement(token)}
     ${token.code}
   </div>
@@ -93,7 +95,18 @@ export function processForApiLinks(fragment: Element, apiEntries: ApiEntries): v
 
 /** Build the header element if a header is provided in the token. */
 function buildHeaderElement(token: CodeToken) {
-  return token.header ? `<div class="docs-code-header"><h3>${token.header}</h3></div>` : '';
+  let header = '';
+  if (token.style) {
+    header += `<span class="docs-code-header-style ">${token.style === 'prefer' ? 'Prefer' : 'Avoid'}</span>`;
+  }
+
+  if (token.header) {
+    header += `<h3>${token.header}</h3>`;
+  }
+
+  if (!header) return '';
+
+  return `<div class="docs-code-header">${header}</div>`;
 }
 
 function applyContainerAttributesAndClasses(el: Element, token: CodeToken) {
@@ -116,7 +129,9 @@ function applyContainerAttributesAndClasses(el: Element, token: CodeToken) {
   if (token.hideCode) {
     el.setAttribute('hideCode', 'true');
   }
-
+  if (token.hideCopy) {
+    el.setAttribute('hideCopy', 'true');
+  }
   const language = token.language;
 
   if (language === 'mermaid') {

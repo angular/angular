@@ -172,16 +172,11 @@
           <ng-template #docsVersionMiniMenu>
             <ul class="adev-mini-menu adev-version-picker" cdkMenu>
               @for (item of versions(); track item) {
-              <li>
-                <a
-                  type="button"
-                  cdkMenuItem
-                  [href]="item.url"
-                  [aria-label]="item.displayName"
-                >
-                  <span>{{ item.displayName }}</span>
-              </a>
-              </li>
+                <li>
+                  <a type="button" cdkMenuItem [href]="item.url" [aria-label]="item.displayName">
+                    <span>{{ item.displayName }}</span>
+                  </a>
+                </li>
               }
             </ul>
           </ng-template>

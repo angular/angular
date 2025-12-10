@@ -1,6 +1,8 @@
 <div ngCombobox filterMode="highlight">
   <div #origin class="autocomplete">
-    <span class="search-icon material-symbols-outlined" translate="no">search</span>
+    <span class="search-icon material-symbols-outlined" translate="no" aria-hidden="true"
+      >search</span
+    >
     <input
       aria-label="Label dropdown"
       placeholder="Select a country"
@@ -23,7 +25,9 @@
           @for (country of countries(); track country) {
             <div ngOption [value]="country" [label]="country">
               <span class="option-label">{{country}}</span>
-              <span class="check-icon material-symbols-outlined" translate="no">check</span>
+              <span class="check-icon material-symbols-outlined" translate="no" aria-hidden="true"
+                >check</span
+              >
             </div>
           }
         </div>

@@ -279,6 +279,9 @@ async function updateManifests(newVersion: string): Promise<void> {
     await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
     console.log(`- Updated version for manifest in: ${manifestPath}`);
   }
+
+  await exec(`pnpm ng-dev format files ${manifestPaths.map((f) => `"${f}"`).join(' ')}`);
+
   console.log(chalk.green('Manifest files updated successfully.'));
 }
 

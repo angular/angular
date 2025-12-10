@@ -183,13 +183,13 @@ The data source has been configured, the next step is to update your web app to 
 <docs-step title="Update the components to use asynchronous calls to the housing service">
 The server is now reading data from the HTTP request but the components that rely on the service now have errors because they were programmed to use the synchronous version of the service.
 
-1. In `src/app/home/home.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method.
+1. In `src/app/home/home.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method. Because we didn't use signals for our state, you have to notify Angular that a change happened that requires a synchronization. Call `this.changeDetectorRef.markForCheck()` to do this.
 
-<docs-code header="Update constructor in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.ts" visibleLines="[29,36]"/>
+<docs-code header="Update constructor in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.ts" visibleLines="[30,38]"/>
 
-1. In `src/app/details/details.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method.
+1. In `src/app/details/details.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method. As before, you must also call `this.changeDetectorRef.markForCheck()` to notify Angular of the changes.
 
-<docs-code header="Update constructor in details.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/details/details.ts" visibleLines="[59,64]"/>
+<docs-code header="Update constructor in details.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/details/details.ts" visibleLines="[60,66]"/>
 
 1. Save your code.
 

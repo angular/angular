@@ -5,11 +5,11 @@
       <input type="email" [field]="loginForm.email" />
     </label>
     @if (loginForm.email().invalid() && loginForm.email().touched()) {
-    <div class="error">
-      @for (error of loginForm.email().errors(); track error.kind) {
-      <span>{{ error.message }}</span>
-      }
-    </div>
+      <div class="error">
+        @for (error of loginForm.email().errors(); track error.kind) {
+          <span>{{ error.message }}</span>
+        }
+      </div>
     }
   </div>
 
@@ -19,11 +19,11 @@
       <input type="password" [field]="loginForm.password" />
     </label>
     @if (loginForm.password().invalid() && loginForm.password().touched()) {
-    <div class="error">
-      @for (error of loginForm.password().errors(); track error.kind) {
-      <span>{{ error.message }}</span>
-      }
-    </div>
+      <div class="error">
+        @for (error of loginForm.password().errors(); track error.kind) {
+          <span>{{ error.message }}</span>
+        }
+      </div>
     }
   </div>
 

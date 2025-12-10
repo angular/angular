@@ -19,28 +19,38 @@
     <div ngMenu #fileMenu="ngMenu">
       <ng-template ngMenuContent>
         <div ngMenuItem value="New">
-          <span class="icon material-symbols-outlined" translate="no">article</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >article</span
+          >
           <span class="label">New</span>
           <span class="shortcut">⌘N</span>
         </div>
 
         <div ngMenuItem value="Open">
-          <span class="icon material-symbols-outlined" translate="no">folder</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >folder</span
+          >
           <span class="label">Open</span>
           <span class="shortcut">⌘O</span>
         </div>
 
         <div ngMenuItem value="Make a copy">
-          <span class="icon material-symbols-outlined" translate="no">file_copy</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >file_copy</span
+          >
           <span class="label">Make a copy</span>
         </div>
 
         <div role="separator" class="example-menu-item-separator"></div>
 
         <div ngMenuItem #shareEl value="Share" [submenu]="shareMenu()">
-          <span class="icon material-symbols-outlined" translate="no">person_add</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >person_add</span
+          >
           <span class="label">Share</span>
-          <span class="icon arrow material-symbols-outlined" translate="no">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined" translate="no" aria-hidden="true"
+            >arrow_right</span
+          >
         </div>
 
         <ng-template
@@ -52,12 +62,16 @@
           <div ngMenu #shareMenu="ngMenu">
             <ng-template ngMenuContent>
               <div ngMenuItem value="Share with others">
-                <span class="icon material-symbols-outlined" translate="no">person_add</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >person_add</span
+                >
                 <span class="label">Share with others</span>
               </div>
 
               <div ngMenuItem value="Publish to web">
-                <span class="icon material-symbols-outlined" translate="no">public</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >public</span
+                >
                 <span class="label">Publish to web</span>
               </div>
             </ng-template>
@@ -65,24 +79,30 @@
         </ng-template>
 
         <div ngMenuItem value="Download">
-          <span class="icon material-symbols-outlined" translate="no">download</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >download</span
+          >
           <span class="label">Download</span>
         </div>
 
         <div ngMenuItem value="Print">
-          <span class="icon material-symbols-outlined" translate="no">print</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >print</span
+          >
           <span class="label">Print</span>
         </div>
 
         <div role="separator" class="example-menu-item-separator"></div>
 
         <div ngMenuItem value="Rename">
-          <span class="icon material-symbols-outlined" translate="no">edit</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">edit</span>
           <span class="label">Rename</span>
         </div>
 
         <div ngMenuItem value="Delete">
-          <span class="icon material-symbols-outlined" translate="no">delete</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >delete</span
+          >
           <span class="label">Move to trash</span>
         </div>
       </ng-template>
@@ -109,13 +129,13 @@
     <div ngMenu #editMenu="ngMenu">
       <ng-template ngMenuContent>
         <div ngMenuItem value="Undo">
-          <span class="icon material-symbols-outlined" translate="no">undo</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">undo</span>
           <span class="label">Undo</span>
           <span class="shortcut">⌘Z</span>
         </div>
 
         <div ngMenuItem value="Redo">
-          <span class="icon material-symbols-outlined" translate="no">redo</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">redo</span>
           <span class="label">Redo</span>
           <span class="shortcut">⌘Y</span>
         </div>
@@ -123,19 +143,25 @@
         <div role="separator" class="example-menu-item-separator"></div>
 
         <div ngMenuItem value="Cut">
-          <span class="icon material-symbols-outlined" translate="no">content_cut</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >content_cut</span
+          >
           <span class="label">Cut</span>
           <span class="shortcut">⌘X</span>
         </div>
 
         <div ngMenuItem value="Copy">
-          <span class="icon material-symbols-outlined" translate="no">content_copy</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >content_copy</span
+          >
           <span class="label">Copy</span>
           <span class="shortcut">⌘C</span>
         </div>
 
         <div ngMenuItem value="Paste">
-          <span class="icon material-symbols-outlined" translate="no">content_paste</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >content_paste</span
+          >
           <span class="label">Paste</span>
           <span class="shortcut">⌘V</span>
         </div>
@@ -143,7 +169,9 @@
         <div role="separator" class="example-menu-item-separator"></div>
 
         <div ngMenuItem value="Find and replace">
-          <span class="icon material-symbols-outlined" translate="no">find_replace</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >find_replace</span
+          >
           <span class="label">Find and replace</span>
           <span class="shortcut">⇧⌘H</span>
         </div>
@@ -171,12 +199,16 @@
     <div ngMenu #viewMenu="ngMenu">
       <ng-template ngMenuContent>
         <div ngMenuItem value="Show print layout" [disabled]="true">
-          <span class="icon material-symbols-outlined" translate="no">check</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >check</span
+          >
           <span class="label">Show print layout</span>
         </div>
 
         <div ngMenuItem value="Show ruler" [disabled]="true">
-          <span class="icon material-symbols-outlined" translate="no">check</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >check</span
+          >
           <span class="label">Show ruler</span>
         </div>
 
@@ -221,9 +253,13 @@
     <div ngMenu #insertMenu="ngMenu">
       <ng-template ngMenuContent>
         <div ngMenuItem #imageEl value="Image" [submenu]="imageMenu()">
-          <span class="icon material-symbols-outlined" translate="no">image</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >image</span
+          >
           <span class="label">Image</span>
-          <span class="icon arrow material-symbols-outlined" translate="no">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined" translate="no" aria-hidden="true"
+            >arrow_right</span
+          >
         </div>
 
         <ng-template
@@ -235,17 +271,23 @@
           <div ngMenu #imageMenu="ngMenu">
             <ng-template ngMenuContent>
               <div ngMenuItem value="Upload from computer">
-                <span class="icon material-symbols-outlined" translate="no">upload</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >upload</span
+                >
                 <span class="label">Upload from computer</span>
               </div>
 
               <div ngMenuItem value="Search the web">
-                <span class="icon material-symbols-outlined" translate="no">search</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >search</span
+                >
                 <span class="label">Search the web</span>
               </div>
 
               <div ngMenuItem value="By URL">
-                <span class="icon material-symbols-outlined" translate="no">link</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >link</span
+                >
                 <span class="label">By URL</span>
               </div>
             </ng-template>
@@ -253,14 +295,20 @@
         </ng-template>
 
         <div ngMenuItem value="Table">
-          <span class="icon material-symbols-outlined" translate="no">table_chart</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >table_chart</span
+          >
           <span class="label">Table</span>
         </div>
 
         <div ngMenuItem #chartEl value="Chart" [submenu]="chartMenu()">
-          <span class="icon material-symbols-outlined" translate="no">insert_chart</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >insert_chart</span
+          >
           <span class="label">Chart</span>
-          <span class="icon arrow material-symbols-outlined" translate="no">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined" translate="no" aria-hidden="true"
+            >arrow_right</span
+          >
         </div>
 
         <ng-template
@@ -272,22 +320,30 @@
           <div ngMenu #chartMenu="ngMenu">
             <ng-template ngMenuContent>
               <div ngMenuItem value="Bar">
-                <span class="icon material-symbols-outlined" translate="no">bar_chart</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >bar_chart</span
+                >
                 <span class="label">Bar</span>
               </div>
 
               <div ngMenuItem value="Column">
-                <span class="icon material-symbols-outlined" translate="no">insert_chart</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >insert_chart</span
+                >
                 <span class="label">Column</span>
               </div>
 
               <div ngMenuItem value="Line">
-                <span class="icon material-symbols-outlined" translate="no">show_chart</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >show_chart</span
+                >
                 <span class="label">Line</span>
               </div>
 
               <div ngMenuItem value="Pie">
-                <span class="icon material-symbols-outlined" translate="no">pie_chart</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >pie_chart</span
+                >
                 <span class="label">Pie</span>
               </div>
             </ng-template>
@@ -295,7 +351,9 @@
         </ng-template>
 
         <div ngMenuItem value="Horizontal line">
-          <span class="icon material-symbols-outlined" translate="no">horizontal_rule</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >horizontal_rule</span
+          >
           <span class="label">Horizontal line</span>
         </div>
       </ng-template>
@@ -322,9 +380,13 @@
     <div ngMenu #formatMenu="ngMenu">
       <ng-template ngMenuContent>
         <div ngMenuItem #textEl #textItem="ngMenuItem" value="Text" [submenu]="textMenu()">
-          <span class="icon material-symbols-outlined" translate="no">format_bold</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >format_bold</span
+          >
           <span class="label">Text</span>
-          <span class="icon arrow material-symbols-outlined" translate="no">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined" translate="no" aria-hidden="true"
+            >arrow_right</span
+          >
         </div>
 
         <ng-template
@@ -336,25 +398,33 @@
           <div ngMenu #textMenu="ngMenu">
             <ng-template ngMenuContent>
               <div ngMenuItem value="Bold">
-                <span class="icon material-symbols-outlined" translate="no">format_bold</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >format_bold</span
+                >
                 <span class="label">Bold</span>
                 <span class="shortcut">⌘B</span>
               </div>
 
               <div ngMenuItem value="Italic">
-                <span class="icon material-symbols-outlined" translate="no">format_italic</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >format_italic</span
+                >
                 <span class="label">Italic</span>
                 <span class="shortcut">⌘I</span>
               </div>
 
               <div ngMenuItem value="Underline">
-                <span class="icon material-symbols-outlined" translate="no">format_underlined</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >format_underlined</span
+                >
                 <span class="label">Underline</span>
                 <span class="shortcut">⌘U</span>
               </div>
 
               <div ngMenuItem value="Strikethrough">
-                <span class="icon material-symbols-outlined" translate="no">strikethrough_s</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >strikethrough_s</span
+                >
                 <span class="label">Strikethrough</span>
                 <span class="shortcut">⇧⌘X</span>
               </div>
@@ -363,7 +433,9 @@
 
               <div ngMenuItem #sizeEl value="Size" [submenu]="sizeMenu()">
                 <span class="label">Size</span>
-                <span class="icon arrow material-symbols-outlined" translate="no">arrow_right</span>
+                <span class="icon arrow material-symbols-outlined" translate="no" aria-hidden="true"
+                  >arrow_right</span
+                >
               </div>
 
               <ng-template
@@ -391,9 +463,13 @@
         </ng-template>
 
         <div ngMenuItem #paragraphEl value="Paragraph styles" [submenu]="paragraphMenu()">
-          <span class="icon material-symbols-outlined" translate="no">format_align_justify</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >format_align_justify</span
+          >
           <span class="label">Paragraph styles</span>
-          <span class="icon arrow material-symbols-outlined" translate="no">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined" translate="no" aria-hidden="true"
+            >arrow_right</span
+          >
         </div>
 
         <ng-template
@@ -412,9 +488,13 @@
         </ng-template>
 
         <div ngMenuItem #alignEl [submenu]="alignMenu()" value="Align & indent">
-          <span class="icon material-symbols-outlined" translate="no">format_indent_increase</span>
+          <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+            >format_indent_increase</span
+          >
           <span class="label">Align & indent</span>
-          <span class="icon arrow material-symbols-outlined" translate="no">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined" translate="no" aria-hidden="true"
+            >arrow_right</span
+          >
         </div>
 
         <ng-template
@@ -426,22 +506,30 @@
           <div ngMenu #alignMenu="ngMenu">
             <ng-template ngMenuContent>
               <div ngMenuItem value="Align left">
-                <span class="icon material-symbols-outlined" translate="no">format_align_left</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >format_align_left</span
+                >
                 <span class="label">Align left</span>
               </div>
 
               <div ngMenuItem value="Align center">
-                <span class="icon material-symbols-outlined" translate="no">format_align_center</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >format_align_center</span
+                >
                 <span class="label">Align center</span>
               </div>
 
               <div ngMenuItem value="Align right">
-                <span class="icon material-symbols-outlined" translate="no">format_align_right</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >format_align_right</span
+                >
                 <span class="label">Align right</span>
               </div>
 
               <div ngMenuItem value="Justify">
-                <span class="icon material-symbols-outlined" translate="no">format_align_justify</span>
+                <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                  >format_align_justify</span
+                >
                 <span class="label">Justify</span>
               </div>
             </ng-template>

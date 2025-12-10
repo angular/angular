@@ -8,17 +8,18 @@
 
 import {
   computed,
+  ɵɵcontrolCreate as createControlBinding,
   Directive,
   effect,
+  ElementRef,
   inject,
   InjectionToken,
   Injector,
   input,
+  ɵcontrolUpdate as updateControlBinding,
   ɵCONTROL,
   ɵControl,
-  ɵcontrolUpdate as updateControlBinding,
   ɵInteropControl,
-  ɵɵcontrolCreate as createControlBinding,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
@@ -33,7 +34,7 @@ import type {FieldTree} from './types';
  * @experimental 21.0.0
  */
 export const FIELD = new InjectionToken<Field<unknown>>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'FIELD' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'FIELD' : '',
 );
 
 /**
@@ -71,14 +72,18 @@ const controlInstructions = {
   ],
 })
 export class Field<T> implements ɵControl<T> {
-  private readonly injector = inject(Injector);
+  readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  readonly injector = inject(Injector);
+  readonly field = input.required<FieldTree<T>>();
+  readonly state = computed(() => this.field()());
+
+  readonly [ɵCONTROL] = controlInstructions;
+
   private config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
+  /** @internal */
   readonly classes = Object.entries(this.config?.classes ?? {}).map(
     ([className, computation]) => [className, computed(() => computation(this.state()))] as const,
   );
-  readonly field = input.required<FieldTree<T>>();
-  readonly state = computed(() => this.field()());
-  readonly [ɵCONTROL] = controlInstructions;
 
   /** Any `ControlValueAccessor` instances provided on the host element. */
   private readonly controlValueAccessors = inject(NG_VALUE_ACCESSOR, {optional: true, self: true});
@@ -86,7 +91,11 @@ export class Field<T> implements ɵControl<T> {
   /** A lazily instantiated fake `NgControl`. */
   private interopNgControl: InteropNgControl | undefined;
 
-  /** A `ControlValueAccessor`, if configured, for the host component. */
+  /**
+   * A `ControlValueAccessor`, if configured, for the host component.
+   *
+   * @internal
+   */
   get ɵinteropControl(): ɵInteropControl | undefined {
     return this.controlValueAccessors?.[0] ?? this.interopNgControl?.valueAccessor ?? undefined;
   }
@@ -96,7 +105,7 @@ export class Field<T> implements ɵControl<T> {
     return (this.interopNgControl ??= new InteropNgControl(this.state));
   }
 
-  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861631
+  /** @internal */
   ɵregister() {
     // Register this control on the field it is currently bound to. We do this at the end of
     // initialization so that it only runs if we are actually syncing with this control

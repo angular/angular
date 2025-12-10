@@ -174,8 +174,9 @@ function getTag<T extends HasJsDocTags | FunctionEntry>(entry: T, tag: string, e
 export function getTagSinceVersion<T extends HasJsDocTags>(
   entry: T,
   tagName: string,
+  every = false,
 ): {version: string | undefined} | undefined {
-  const tag = getTag(entry, tagName);
+  const tag = getTag(entry, tagName, every);
   if (!tag) {
     return undefined;
   }

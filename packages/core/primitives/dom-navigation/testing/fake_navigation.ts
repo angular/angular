@@ -956,10 +956,8 @@ function dispatchNavigateEvent({
       }
     }
     (navigation.transition as InternalNavigationTransition)?.committedResolve();
-    const promisesList = handlers.map((handler) => handler());
-    if (promisesList.length === 0) {
-      promisesList.push(Promise.resolve());
-    }
+    const promisesList: Array<Promise<unknown>> = handlers.map((handler) => handler());
+    promisesList.push(result.committed);
     Promise.all(promisesList)
       .then(() => {
         // Follows steps outlined under "Wait for all of promisesList, with the following success steps:"
@@ -1022,7 +1020,11 @@ function dispatchNavigateEvent({
         );
         return;
       }
-      const transition = new InternalNavigationTransition(navigation.currentEntry, navigationType);
+      const transition = new InternalNavigationTransition(
+        navigation.currentEntry,
+        event.destination,
+        navigationType,
+      );
       navigation.transition = transition;
       // Mark transition.finished as handled (Spec Step 33.4)
       transition.finished.catch(() => {});
@@ -1229,6 +1231,7 @@ class InternalNavigationTransition implements NavigationTransition {
   committedReject!: (reason: Error) => void;
   constructor(
     readonly from: NavigationHistoryEntry,
+    readonly to: NavigationDestination,
     readonly navigationType: NavigationTypeString,
   ) {
     this.finished = new Promise<void>((resolve, reject) => {

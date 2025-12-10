@@ -16,6 +16,7 @@ export interface DocsCodeBlock extends CodeToken {
   code: string;
   // Code language
   language: string | undefined;
+  style: 'prefer' | 'avoid' | undefined;
 }
 
 /**
@@ -39,6 +40,9 @@ export const docsCodeBlockExtension = {
 
       const headerRule = /header\s*:\s*(['"`])([^'"`]+)\1/; // The 2nd capture matters here
       const highlightRule = /highlight\s*:\s*(.*)([^,])/;
+      const hideCopyRule = /hideCopy/;
+      const preferRule = /(prefer|avoid)/;
+      const linenumsRule = /linenums/;
 
       const token: DocsCodeBlock = {
         raw: match[0],
@@ -47,6 +51,9 @@ export const docsCodeBlockExtension = {
         language: match[1],
         header: headerRule.exec(metadataStr)?.[2],
         highlight: highlightRule.exec(metadataStr)?.[1],
+        hideCopy: hideCopyRule.test(metadataStr),
+        style: preferRule.exec(metadataStr)?.[1] as 'prefer' | 'avoid' | undefined,
+        linenums: linenumsRule.test(metadataStr),
       };
       return token;
     }
@@ -65,7 +72,6 @@ export const docsCodeBlockExtension = {
  */
 function deindent(str: string): string {
   const lines = str.split('\n');
-  const nonEmpty = lines.filter((line) => line.trim());
   let minIndent = Infinity;
   for (const line of lines) {
     if (!line.trim()) {

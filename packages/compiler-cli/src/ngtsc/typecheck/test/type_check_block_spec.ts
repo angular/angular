@@ -2603,6 +2603,22 @@ describe('type check blocks', () => {
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
+    it('should generate all possible type for input with a dynamic `type`', () => {
+      const block = tcb('<input [type]="expr" [field]="f"/>', [FieldMock]);
+      expect(block).toContain('var _t1 = null! as string | number | boolean | Date | null;');
+      expect(block).toContain('_t1 = ((this).f)().value();');
+      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('_t2.field = (((this).f));');
+    });
+
+    it('should generate all possible type for input with a dynamic attribute `type` binding', () => {
+      const block = tcb('<input [attr.type]="expr" [field]="f"/>', [FieldMock]);
+      expect(block).toContain('var _t1 = null! as string | number | boolean | Date | null;');
+      expect(block).toContain('_t1 = ((this).f)().value();');
+      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('_t2.field = (((this).f));');
+    });
+
     [
       {inputType: 'text', expectedType: 'string'},
       {inputType: 'radio', expectedType: 'string'},

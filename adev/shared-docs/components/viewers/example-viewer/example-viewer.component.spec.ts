@@ -233,8 +233,7 @@ describe('ExampleViewer', () => {
     expect(component.expanded()).toBeFalse();
   });
 
-  // TODO(josephperrott): enable once the docs-viewer/example-viewer circle is sorted out.
-  xit('should call clipboard service when clicked on copy source code', async () => {
+  it('should call clipboard service when clicked on copy source code', async () => {
     const expectedCodeSnippetContent = 'typescript code';
     componentRef.setInput(
       'metadata',
@@ -252,6 +251,7 @@ describe('ExampleViewer', () => {
     const spy = spyOn(clipboardService, 'copy');
 
     await component.renderExample();
+    await fixture.whenStable();
     const button = fixture.debugElement.query(By.directive(CopySourceCodeButton)).nativeElement;
     button.click();
 
@@ -270,7 +270,8 @@ describe('ExampleViewer', () => {
       By.css('button.docs-example-copy-link'),
     ).nativeElement;
     button.click();
-    expect(spy.calls.argsFor(0)[0].trim()).toBe(`${window.location.href}#example-1`);
+    const expectedUrl = location.origin + location.pathname + location.search + '#example-1';
+    expect(spy.calls.argsFor(0)[0].trim()).toBe(expectedUrl);
   });
 
   it('should hide code content when `hideCode` is true', async () => {
@@ -346,6 +347,7 @@ const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {
     preview: false,
     hideCode: false,
     ...value,
+    style: undefined,
   };
 };
 

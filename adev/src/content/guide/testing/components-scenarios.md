@@ -116,13 +116,13 @@ That's not a problem when you run the CLI `ng test` command because it _compiles
 However, if you run the tests in a **non-CLI environment**, tests of this component might fail.
 For example, if you run the `BannerComponent` tests in a web coding environment such as [plunker](https://plnkr.co), you'll see a message like this one:
 
-<docs-code hideCopy language="shell">
+```shell {hideCopy}
 
 Error: This test module uses the component BannerComponent
 which is using a "templateUrl" or "styleUrls", but they were never compiled.
 Please call "TestBed.compileComponents" before your test.
 
-</docs-code>
+```
 
 You get this test failure message when the runtime environment compiles the source code _during the tests themselves_.
 

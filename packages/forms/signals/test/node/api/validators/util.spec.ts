@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FieldTree} from '../../../../src/api/types';
+import {ensureCustomValidationResult} from '../../../../src/api/rules/validation/util';
 import {
   customError,
   minError,
   ValidationError,
 } from '../../../../src/api/rules/validation/validation_errors';
-import {ensureCustomValidationResult} from '../../../../src/api/rules/validation/util';
+import {FieldTree} from '../../../../src/api/types';
 import {addDefaultField} from '../../../../src/field/validation';
 
 describe('validators utils', () => {

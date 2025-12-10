@@ -12,4 +12,4 @@ Updates the Angular CDK API JSON files in `adev/src/content/cdk`, used for the [
 
 ## CLI Help Pages
 
-Updates the Angular CLI help JSON files in `adev/src/content/cli/help`, used for the [angular.dev CLI](https://angular.dev/cli) pages.
+Updates the Angular CLI help JSON files in `adev/src/content/cli`, used for the [angular.dev CLI](https://angular.dev/cli) pages.

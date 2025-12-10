@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export * from './aggregate_metadata';
 export * from './disabled';
 export * from './hidden';
+export * from './metadata';
 export * from './readonly';
-export * from './validation/validate';
-export * from './validate_tree';
 export * from './validation';

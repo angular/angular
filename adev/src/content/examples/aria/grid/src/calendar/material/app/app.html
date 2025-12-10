@@ -1,11 +1,15 @@
 <div class="calendar material-calendar">
   <div class="calendar-header">
     <button class="month-control" aria-label="previous month" (click)="prevMonth()">
-      <span aria-hidden="true" class="material-symbols-outlined" translate="no">chevron_left</span>
+      <span aria-hidden="true" class="material-symbols-outlined" translate="no" aria-hidden="true"
+        >chevron_left</span
+      >
     </button>
     <h3>{{monthYearLabel()}}</h3>
     <button class="month-control" aria-label="next month" (click)="nextMonth()">
-      <span aria-hidden="true" class="material-symbols-outlined" translate="no">chevron_right</span>
+      <span aria-hidden="true" class="material-symbols-outlined" translate="no" aria-hidden="true"
+        >chevron_right</span
+      >
     </button>
   </div>
 
@@ -21,10 +25,10 @@
     <thead>
       <tr>
         @for (day of weekdays(); track day.long) {
-        <th scope="col">
-          <span class="visually-hidden">{{day.long}}</span>
-          <span aria-hidden="true">{{day.narrow}}</span>
-        </th>
+          <th scope="col">
+            <span class="visually-hidden">{{day.long}}</span>
+            <span aria-hidden="true">{{day.narrow}}</span>
+          </th>
         }
       </tr>
     </thead>
@@ -36,10 +40,12 @@
             <td ngGridCell disabled>{{day}}</td>
           }
         }
-        
+
         @for (day of week; track day) {
           <td ngGridCell [(selected)]="day.selected">
-            <button ngGridCellWidget [attr.aria-label]="day.ariaLabel" [attr.data-day]="day.day">{{day.displayName}}</button>
+            <button ngGridCellWidget [attr.aria-label]="day.ariaLabel" [attr.data-day]="day.day">
+              {{day.displayName}}
+            </button>
           </td>
         }
 

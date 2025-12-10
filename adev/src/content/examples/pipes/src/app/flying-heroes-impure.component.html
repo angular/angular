@@ -3,14 +3,20 @@
 <h2>{{ title }}</h2>
 
 <label for="hero-name">New hero: </label>
-<input type="text" id="hero-name" #box (keyup.enter)="addHero(box.value); box.value=''" placeholder="hero name">
+<input
+  type="text"
+  id="hero-name"
+  #box
+  (keyup.enter)="addHero(box.value); box.value=''"
+  placeholder="hero name"
+/>
 <div>
-  <input id="can-fly" type="checkbox" [(ngModel)]="canFly">
+  <input id="can-fly" type="checkbox" [(ngModel)]="canFly" />
   <label for="can-fly">can fly</label>
 </div>
 
 <div>
-  <input id="mutate" type="checkbox" [(ngModel)]="mutate">Mutate array
+  <input id="mutate" type="checkbox" [(ngModel)]="mutate" />Mutate array
   <button type="button" (click)="reset()">Reset</button>
 </div>
 

@@ -76,7 +76,7 @@ export abstract class LocationStrategy {
  * @publicApi
  */
 export const APP_BASE_HREF = new InjectionToken<string>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'appBaseHref' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'appBaseHref' : '',
 );
 
 /**
