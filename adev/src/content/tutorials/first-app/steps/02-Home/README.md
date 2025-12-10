@@ -95,6 +95,26 @@ In this step, you add a search filter and button that is used in a later lesson.
 For now, that's all that `Home` has.
 Note that, this step just adds the search elements to the layout without any functionality, yet.
 
+If you started from a fresh Angular project instead of downloading the starter
+(ng new): add these globals to `src/styles.css` so the search button and input border are visible:
+
+```
+:root {
+  --primary-color: #605DC8;
+  --secondary-color: #8B89E6;
+  --accent-color: #e8e7fa;
+  --shadow-color: #E8E8E8;
+}
+
+button.primary {
+  padding: 10px;
+  border: solid 1px var(--primary-color);
+  background: var(--primary-color);
+  color: white;
+  border-radius: 8px;
+}
+```
+
 In the **Edit** pane of your IDE:
 
 1.  In the `first-app` directory, open `home.ts` in the editor.
