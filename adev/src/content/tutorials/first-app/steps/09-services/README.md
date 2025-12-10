@@ -35,9 +35,9 @@ In the **Terminal** pane of your IDE:
 1. In your project directory, navigate to the `first-app` directory.
 1. In the `first-app` directory, run this command to create the new service.
 
-```shell
-ng generate service housing --skip-tests
-```
+   ```shell
+   ng generate service housing --skip-tests
+   ```
 
 1. Run `ng serve` to build the app and serve it to `http://localhost:4200`.
 1. Confirm that the app builds without error.
@@ -63,7 +63,7 @@ In the **Edit** pane of your IDE:
 
    1. Add a file level import for the `HousingLocation`.
 
-   <docs-code header="Import HousingLocation type in  src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/housing.service.ts" visibleLines="[2]"/>
+      <docs-code header="Import HousingLocation type in  src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/housing.service.ts" visibleLines="[2]"/>
 
 1. Confirm that the app builds without error.
    Correct any errors before you continue to the next step.
@@ -75,23 +75,23 @@ In a later lesson, you'll replace the static data with a live data source to get
 
 In the **Edit** pane of your IDE, in `src/app/home/home.ts`:
 
-1. At the top of `src/app/home/home.ts`, add the `inject` to the items imported from `@angular/core`. This will import the `inject` function into the `Home` class.
+1.  At the top of `src/app/home/home.ts`, add the `inject` to the items imported from `@angular/core`. This will import the `inject` function into the `Home` class.
 
-<docs-code language="angular-ts" header="Update to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[1]"/>
+      <docs-code language="angular-ts" header="Update to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[1]"/>
 
-1. Add a new file level import for the `HousingService`:
+1.  Add a new file level import for the `HousingService`:
 
-<docs-code language="angular-ts" header="Add import to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[4]"/>
+      <docs-code language="angular-ts" header="Add import to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[4]"/>
 
-1. From `Home`, delete the `housingLocationList` array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingService`.
+1.  From `Home`, delete the `housingLocationList` array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingService`.
 
-1. In `Home`, add the following code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
+1.  In `Home`, add the following code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
 
-<docs-code language="angular-ts" header="Initialize data from service in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[23,30]"/>
+      <docs-code language="angular-ts" header="Initialize data from service in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[23,30]"/>
 
-1. Save the changes to `src/app/home/home.ts` and confirm your app builds without error.
-   Correct any errors before you continue to the next step.
-   </docs-step>
+1.  Save the changes to `src/app/home/home.ts` and confirm your app builds without error.
+    Correct any errors before you continue to the next step.
+    </docs-step>
 
 </docs-workflow>
 

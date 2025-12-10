@@ -23,42 +23,42 @@ In this example, the method writes the data from the form to the browser's conso
 
 In the **Edit** pane of your IDE:
 
-1. In `src/app/housing.service.ts`, inside the `HousingService` class, paste this method at the bottom of the class definition.
+1.  In `src/app/housing.service.ts`, inside the `HousingService` class, paste this method at the bottom of the class definition.
 
-<docs-code header="Submit method in src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/housing.service.ts" visibleLines="[120,124]"/>
+       <docs-code header="Submit method in src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/housing.service.ts" visibleLines="[120,124]"/>
 
-1. Confirm that the app builds without error.
-   Correct any errors before you continue to the next step.
-   </docs-step>
+1.  Confirm that the app builds without error.
+    Correct any errors before you continue to the next step.
+    </docs-step>
 
 <docs-step title="Add the form functions to the details page">
 This step adds the code to the details page that handles the form's interactions.
 
 In the **Edit** pane of your IDE, in `src/app/details/details.ts`:
 
-1. After the `import` statements at the top of the file, add the following code to import the Angular form classes.
+1.  After the `import` statements at the top of the file, add the following code to import the Angular form classes.
 
-<docs-code header="Forms imports in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[5]"/>
+      <docs-code header="Forms imports in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[5]"/>
 
-1. In the `Details` decorator metadata, update the `imports` property with the following code:
+1.  In the `Details` decorator metadata, update the `imports` property with the following code:
 
-<docs-code header="imports directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[9]"/>
+      <docs-code header="imports directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[9]"/>
 
-1. In the `Details` class, before the `constructor()` method, add the following code to create the form object.
+1.  In the `Details` class, before the `constructor()` method, add the following code to create the form object.
 
-   <docs-code header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[52,56]"/>
+      <docs-code header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[52,56]"/>
 
-   In Angular, `FormGroup` and `FormControl` are types that enable you to build forms. The `FormControl` type can provide a default value and shape the form data. In this example `firstName` is a `string` and the default value is empty string.
+    In Angular, `FormGroup` and `FormControl` are types that enable you to build forms. The `FormControl` type can provide a default value and shape the form data. In this example `firstName` is a `string` and the default value is empty string.
 
-1. In the `Details` class, after the `constructor()` method, add the following code to handle the **Apply now** click.
+1.  In the `Details` class, after the `constructor()` method, add the following code to handle the **Apply now** click.
 
-   <docs-code header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[62,68]"/>
+      <docs-code header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[62,68]"/>
 
-   This button does not exist yet - you will add it in the next step. In the above code, the `FormControl`s may return `null`. This code uses the nullish coalescing operator to default to empty string if the value is `null`.
+    This button does not exist yet - you will add it in the next step. In the above code, the `FormControl`s may return `null`. This code uses the nullish coalescing operator to default to empty string if the value is `null`.
 
-1. Confirm that the app builds without error.
-   Correct any errors before you continue to the next step.
-   </docs-step>
+1.  Confirm that the app builds without error.
+    Correct any errors before you continue to the next step.
+    </docs-step>
 
 <docs-step title="Add the form's markup to the details page">
 This step adds the markup to the details page that displays the form.
@@ -74,7 +74,7 @@ In the **Edit** pane of your IDE, in `src/app/details/details.ts`:
 1. Confirm that the app builds without error.
    Correct any errors before you continue to the next step.
 
-<img alt="details page with a form for applying to live at this location" src="assets/images/tutorials/first-app/homes-app-lesson-12-step-3.png">
+   <img alt="details page with a form for applying to live at this location" src="assets/images/tutorials/first-app/homes-app-lesson-12-step-3.png">
 
 </docs-step>
 

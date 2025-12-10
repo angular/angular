@@ -34,24 +34,27 @@ In this lesson, you will enable routing in your application to navigate to the d
 <docs-step title="Add routing to the application">
 1.  In the `src/app` directory, create a file called `routes.ts`. This file is where we will define the routes in the application.
 
-2. In `main.ts`, make the following updates to enable routing in the application:
-   1. Import the routes file and the `provideRouter` function:
+2.  In `main.ts`, make the following updates to enable routing in the application:
+    1.  Import the routes file and the `provideRouter` function:
 
-   <docs-code header="Import routing details in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[7,8]"/>
-   2. Update the call to `bootstrapApplication` to include the routing configuration:
+          <docs-code header="Import routing details in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[7,8]"/>
 
-   <docs-code header="Add router configuration in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[10,17]"/>
+    1.  Update the call to `bootstrapApplication` to include the routing configuration:
 
-3. In `src/app/app.ts`, update the component to use routing:
-   1. Add file level imports for the router directives `RouterOutlet` and `RouterLink`:
+          <docs-code header="Add router configuration in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[10,17]"/>
 
-   <docs-code language="angular-ts" header="Import router directives in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[3]"/>
-   2. Add `RouterOutlet` and `RouterLink` to the `@Component` metadata imports
+3.  In `src/app/app.ts`, update the component to use routing:
+    1.  Add file level imports for the router directives `RouterOutlet` and `RouterLink`:
 
-   <docs-code language="angular-ts" header="Add router directives to component imports in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[6]"/>
-   3. In the `template` property, replace the `<app-home />` tag with the `<router-outlet>` directive and add a link back to the home page. Your code should match this code:
+          <docs-code language="angular-ts" header="Import router directives in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[3]"/>
 
-   <docs-code language="angular-ts" header="Add router-outlet in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[7,18]"/>
+    1.  Add `RouterOutlet` and `RouterLink` to the `@Component` metadata imports
+
+          <docs-code language="angular-ts" header="Add router directives to component imports in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[6]"/>
+
+    1.  In the `template` property, replace the `<app-home />` tag with the `<router-outlet>` directive and add a link back to the home page. Your code should match this code:
+
+          <docs-code language="angular-ts" header="Add router-outlet in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[7,18]"/>
 
 </docs-step>
 
@@ -61,11 +64,12 @@ In the previous step you removed the reference to the `<app-home>` component in 
 1. In `routes.ts`, perform the following updates to create a route.
    1. Add a file level imports for the `Home`, `Details` and the `Routes` type that you'll use in the route definitions.
 
-   <docs-code header="Import components and Routes" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/routes.ts" visibleLines="[1,3]"/>
+      <docs-code header="Import components and Routes" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/routes.ts" visibleLines="[1,3]"/>
+
    1. Define a variable called `routeConfig` of type `Routes` and define two routes for the app:
       <docs-code header="Add routes to the app" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/routes.ts" visibleLines="[5,18]"/>
 
-   The entries in the `routeConfig` array represent the routes in the application. The first entry navigates to the `Home` whenever the url matches `''`. The second entry uses some special formatting that will be revisited in a future lesson.
+      The entries in the `routeConfig` array represent the routes in the application. The first entry navigates to the `Home` whenever the url matches `''`. The second entry uses some special formatting that will be revisited in a future lesson.
 
 1. Save all changes and confirm that the application works in the browser. The application should still display the list of housing locations.
    </docs-step>

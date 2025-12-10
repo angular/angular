@@ -63,26 +63,26 @@ In this step, you add the new component, `Home` to your app's root component, `A
 
 In the **Edit** pane of your IDE:
 
-1. Open `app.ts` in the editor.
-1. In `app.ts`, import `Home` by adding this line to the file level imports.
+1.  Open `app.ts` in the editor.
+1.  In `app.ts`, import `Home` by adding this line to the file level imports.
 
-<docs-code header="Import Home in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.ts" visibleLines="[2]"/>
+      <docs-code header="Import Home in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.ts" visibleLines="[2]"/>
 
-1. In `app.ts`, in `@Component`, update the `imports` array property and add `Home`.
+1.  In `app.ts`, in `@Component`, update the `imports` array property and add `Home`.
 
-<docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.ts" visibleLines="[6]"/>
+      <docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.ts" visibleLines="[6]"/>
 
-1. In `app.ts`, in `@Component`, update the `template` property to include the following HTML code.
+1.  In `app.ts`, in `@Component`, update the `template` property to include the following HTML code.
 
-<docs-code language="angular-ts" header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.ts" visibleLines="[7,16]"/>
+      <docs-code language="angular-ts" header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.ts" visibleLines="[7,16]"/>
 
-1. Save your changes to `app.ts`.
-1. If `ng serve` is running, the app should update.
-   If `ng serve` is not running, start it again.
-   _Hello world_ in your app should change to _home works!_ from the `Home`.
-1. Check the running app in the browser and confirm that the app has been updated.
+1.  Save your changes to `app.ts`.
+1.  If `ng serve` is running, the app should update.
+    If `ng serve` is not running, start it again.
+    _Hello world_ in your app should change to _home works!_ from the `Home`.
+1.  Check the running app in the browser and confirm that the app has been updated.
 
-<img alt="browser frame of page displaying the text 'home works!'" src="assets/images/tutorials/first-app/homes-app-lesson-02-step-2.png">
+  <img alt="browser frame of page displaying the text 'home works!'" src="assets/images/tutorials/first-app/homes-app-lesson-02-step-2.png">
 
 </docs-step>
 
@@ -97,22 +97,20 @@ Note that, this step just adds the search elements to the layout without any fun
 
 In the **Edit** pane of your IDE:
 
-1. In the `first-app` directory, open `home.ts` in the editor.
-1. In `home.ts`, in `@Component`, update the `template` property with this code.
+1.  In the `first-app` directory, open `home.ts` in the editor.
+1.  In `home.ts`, in `@Component`, update the `template` property with this code.
 
-<docs-code language="angular-ts" header="Replace in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.ts" visibleLines="[5,12]"/>
+      <docs-code language="angular-ts" header="Replace in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.ts" visibleLines="[5,12]"/>
 
-1. Next, open `home.css` in the editor and update the content with these styles.
+1.  Next, open `home.css` in the editor and update the content with these styles.
 
-   NOTE: In the browser, these can go in `src/app/home/home.ts` in the `styles` array.
+    NOTE: In the browser, these can go in `src/app/home/home.ts` in the `styles` array.
 
-   <docs-code header="Replace in src/app/home/home.css" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.css"/>
+       <docs-code header="Replace in src/app/home/home.css" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.css"/>
 
-1. Confirm that the app builds without error.
-   You should find the filter query box and button in your app and they should be styled.
-   Correct any errors before you continue to the next step.
+1.  Confirm that the app builds without error. You should find the filter query box and button in your app and they should be styled. Correct any errors before you continue to the next step.
 
-<img alt="browser frame of homes-app displaying logo, filter text input box and search button" src="assets/images/tutorials/first-app/homes-app-lesson-02-step-3.png">
+   <img alt="browser frame of homes-app displaying logo, filter text input box and search button" src="assets/images/tutorials/first-app/homes-app-lesson-02-step-3.png">
 </docs-step>
 
 </docs-workflow>
