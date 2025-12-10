@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {MetadataKey} from '../api/rules/metadata';
-import type {ValidationError} from '../api/rules/validation/validation_errors';
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
+import {SignalFormsErrorCode} from '../errors';
+
+import type {ValidationError, MetadataKey} from '../api/rules';
 import type {AsyncValidationResult, DisabledReason, LogicFn, ValidationResult} from '../api/types';
 import {setBoundPathDepthForResolution} from '../field/resolution';
 import {type BoundPredicate, DYNAMIC, LogicContainer, type Predicate} from './logic';
@@ -433,7 +435,10 @@ function getAllChildBuilders(
       ...(builder.children.has(key) ? [{builder: builder.getChild(key), predicates: []}] : []),
     ];
   } else {
-    throw new Error('Unknown LogicNodeBuilder type');
+    throw new RuntimeError(
+      SignalFormsErrorCode.UNKNOWN_BUILDER_TYPE,
+      ngDevMode && 'Unknown LogicNodeBuilder type',
+    );
   }
 }
 
@@ -467,7 +472,10 @@ function createLogic(
   } else if (builder instanceof NonMergeableLogicNodeBuilder) {
     logic.mergeIn(builder.logic);
   } else {
-    throw new Error('Unknown LogicNodeBuilder type');
+    throw new RuntimeError(
+      SignalFormsErrorCode.UNKNOWN_BUILDER_TYPE,
+      ngDevMode && 'Unknown LogicNodeBuilder type',
+    );
   }
   return logic;
 }
