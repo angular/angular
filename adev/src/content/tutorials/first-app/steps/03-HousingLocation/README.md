@@ -44,18 +44,18 @@ In this step, you add the new component, `HousingLocation` to your app's `Home`,
 
 In the **Edit** pane of your IDE:
 
-1. Open `home.ts` in the editor.
-1. In `home.ts`, import `HousingLocation` by adding this line to the file level imports.
+1.  Open `home.ts` in the editor.
+1.  In `home.ts`, import `HousingLocation` by adding this line to the file level imports.
 
-<docs-code header="Import HousingLocation in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[2]"/>
+      <docs-code header="Import HousingLocation in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[2]"/>
 
-1. Next update the `imports` property of the `@Component` metadata by adding `HousingLocation` to the array.
+1.  Next update the `imports` property of the `@Component` metadata by adding `HousingLocation` to the array.
 
-<docs-code  header="Add HousingLocation to imports array in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[6]"/>
+      <docs-code  header="Add HousingLocation to imports array in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[6]"/>
 
-1. Now the component is ready for use in the template for the `Home`. Update the `template` property of the `@Component` metadata to include a reference to the `<app-housing-location>` tag.
+1.  Now the component is ready for use in the template for the `Home`. Update the `template` property of the `@Component` metadata to include a reference to the `<app-housing-location>` tag.
 
-<docs-code language="angular-ts" header="Add housing location to the component template in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[7,17]"/>
+      <docs-code language="angular-ts" header="Add housing location to the component template in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[7,17]"/>
 
 </docs-step>
 
@@ -70,7 +70,7 @@ In this step, you will copy over the pre-written styles for the `HousingLocation
 
 1. Save your code, return to the browser and confirm that the app builds without error. You should find the message "housing-location works!" rendered to the screen.Correct any errors before you continue to the next step.
 
-<img alt="browser frame of homes-app displaying logo, filter text input box and search button and the message 'housing-location works!" src="assets/images/tutorials/first-app/homes-app-lesson-03-step-2.png">
+   <img alt="browser frame of homes-app displaying logo, filter text input box and search button and the message 'housing-location works!" src="assets/images/tutorials/first-app/homes-app-lesson-03-step-2.png">
 
 </docs-step>
 
