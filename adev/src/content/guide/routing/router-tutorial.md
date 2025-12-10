@@ -244,7 +244,7 @@ ng generate component page-not-found
 
 1. From your code editor, open the `page-not-found.component.html` file and replace its contents with the following HTML.
 
-<docs-code header="page-not-found/page-not-found.component.html" path="adev/src/content/examples/router-tutorial/src/app/page-not-found/page-not-found.component.html"/>
+<docs-code header="page-not-found.component.html" path="adev/src/content/examples/router-tutorial/src/app/page-not-found/page-not-found.component.html"/>
 
 1. Open the `app.routes.ts` file and add the following route to the routes list:
 

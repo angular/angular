@@ -341,7 +341,7 @@ For example:
 
 HELPFUL: In order to make the `<canvas>` element Zone.js-aware in your app, you need to import the `zone-patch-canvas` patch \(either in `polyfills.ts` or in the specific file that uses `<canvas>`\):
 
-<docs-code header="src/polyfills.ts or src/app/shared/canvas.component.ts" path="adev/src/content/examples/testing/src/app/shared/canvas.component.ts" region="import-canvas-patch"/>
+<docs-code header="polyfills.ts or canvas.component.ts" path="adev/src/content/examples/testing/src/app/shared/canvas.component.ts" region="import-canvas-patch"/>
 
 ### Async observables
 
@@ -360,7 +360,7 @@ Your tests will reflect the real world more faithfully if you return an _asynchr
 The async observable was produced by an `asyncData` helper.
 The `asyncData` helper is a utility function that you'll have to write yourself, or copy this one from the sample code.
 
-<docs-code header="testing/async-observable-helpers.ts" path="adev/src/content/examples/testing/src/testing/async-observable-helpers.ts" region="async-data"/>
+<docs-code header="async-observable-helpers.ts" path="adev/src/content/examples/testing/src/testing/async-observable-helpers.ts" region="async-data"/>
 
 This helper's observable emits the `data` value in the next turn of the JavaScript engine.
 
@@ -496,7 +496,7 @@ Clicking a button, an anchor, or an arbitrary HTML element is a common test task
 
 Make that consistent and straightforward by encapsulating the _click-triggering_ process in a helper such as the following `click()` function:
 
-<docs-code header="testing/index.ts (click helper)" path="adev/src/content/examples/testing/src/testing/index.ts" region="click-event"/>
+<docs-code header="index.ts (click helper)" path="adev/src/content/examples/testing/src/testing/index.ts" region="click-event"/>
 
 The first parameter is the _element-to-click_.
 If you want, pass a custom event object as the second parameter.
