@@ -53,6 +53,11 @@ export enum ErrorCode {
   INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY = 1053,
 
   /**
+   * Raised whenever there are duplicate binding property names for outputs, inputs & models.
+   */
+  DUPLICATE_BINDING_NAME = 1054,
+
+  /**
    * An Angular feature, like inputs, outputs or queries is incorrectly
    * declared on a static member.
    */

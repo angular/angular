@@ -11,5 +11,5 @@ export class TestDir {
 
   @Output() clickDecorator1 = new EventEmitter();
   @Output() clickDecorator2 = new EventEmitter<boolean>();
-  @Output('decoratorPublicName') _blaDecorator = new EventEmitter<void>();
+  @Output('decoratorPublicName3') _blaDecorator = new EventEmitter<void>();
 }
