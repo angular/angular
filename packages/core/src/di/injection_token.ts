@@ -74,7 +74,7 @@ export class InjectionToken<T> {
   constructor(
     _desc: string,
     options: {
-      providedIn?: Type<any> | 'any';
+      providedIn: Type<any> | 'any';
       factory: () => T;
     },
   );
