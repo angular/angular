@@ -114,7 +114,7 @@ interface BeverageOrderFormModel {
 
 ### Avoid `undefined`
 
-A form model should never contain an `undefined` value (either directly or as the value of a sub-property). In Signal Forms the structure of the form is derived from the structure of the model, and `undefined` signifies the _absence of a field_, rather than a field with an empty value. This means you must also avoid optional fields (e.g., `{property?: string}`), as they implicitly allow `undefined`.
+A form model model must not contain `undefined` values or properties. In Signal Forms the structure of the form is derived from the structure of the model, and `undefined` signifies the _absence of a field_, rather than a field with an empty value. This means you must also avoid optional fields (e.g., `{property?: string}`), as they implicitly allow `undefined`.
 
 To represent a property with an empty value in your form model, use a value that the UI control understands to mean "empty" (e.g. `""` for a `<input type="text">`). If you're designing a custom UI control, `null` often works as a good value to signify "empty".
 
@@ -378,6 +378,8 @@ class MyForm {
 }
 ```
 
+The examples above show a pure derivation of the form model, directly from the domain model. However, in some cases you may wish to do a more advanced diff operation between the new domain model value and the previous domain model and form model values. This can be implemented based on the `linkedSignal` [previous state](/guide/signals/linked-signal#accounting-for-previous-state).
+
 ### Form model to domain model
 
 When we're ready to save the user's input back to the system, we need to convert it to the domain model representation. This would typically happen when the user submits the form, or continuously as the user edits for an auto-saving form.
@@ -413,7 +415,10 @@ class MyForm {
 
   constructor() {
     effect(() => {
-      this.domainModel.set(formModelToDomainModel(this.myForm.value()));
+      // When the form model changes to a valid value, update the domain model.
+      if (this.myForm().valid()) {
+        this.domainModel.set(formModelToDomainModel(this.myForm.value()));
+      }
     });
   };
 }
