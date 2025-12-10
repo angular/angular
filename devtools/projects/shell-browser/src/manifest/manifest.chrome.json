@@ -3,7 +3,7 @@
   "short_name": "Angular DevTools",
   "name": "Angular DevTools",
   "description": "Angular DevTools extends Chrome DevTools adding Angular specific debugging and profiling capabilities.",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "minimum_chrome_version": "102",
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
@@ -25,45 +25,26 @@
   "devtools_page": "devtools.html",
   "web_accessible_resources": [
     {
-      "resources": [
-        "app/backend_bundle.js",
-        "app/detect_angular_for_extension_icon_bundle.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ],
+      "resources": ["app/backend_bundle.js", "app/detect_angular_for_extension_icon_bundle.js"],
+      "matches": ["<all_urls>"],
       "extension_ids": []
     }
   ],
   "background": {
     "service_worker": "app/background_bundle.js"
   },
-  "permissions": [
-    "scripting",
-    "activeTab",
-    "storage"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "permissions": ["scripting", "activeTab", "storage"],
+  "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "app/ng_validate_bundle.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["app/ng_validate_bundle.js"],
       "run_at": "document_idle",
       "all_frames": true
     },
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "app/content_script_bundle.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["app/content_script_bundle.js"],
       "run_at": "document_idle",
       "all_frames": true
     }
