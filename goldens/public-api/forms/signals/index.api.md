@@ -520,7 +520,7 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
 // @public
 export interface SignalFormsConfig {
     classes?: {
-        [className: string]: (state: FieldState<unknown>) => boolean;
+        [className: string]: (state: Field<unknown>) => boolean;
     };
 }
 
