@@ -33,8 +33,7 @@ Always define interfaces or types for your models as shown in [Using TypeScript 
 
 Provide initial values for every field in your model:
 
-```ts
-// Good: All fields initialized
+```ts {prefer, header: 'All fields initialized'}
 const taskModel = signal({
   title: '',
   description: '',
@@ -43,8 +42,7 @@ const taskModel = signal({
 })
 ```
 
-```ts
-// Avoid: Partial initialization
+```ts {avoid, header: 'Partial initialization'}
 const taskModel = signal({
   title: ''
   // Missing description, priority, completed
@@ -57,16 +55,14 @@ Missing initial values mean those fields won't exist in the field tree, making t
 
 Each model should represent a single form or a cohesive set of related data:
 
-```ts
-// Good: Focused on login
+```ts {prefer, header: 'Focused on a single purpose'}
 const loginModel = signal({
   email: '',
   password: ''
 })
 ```
 
-```ts
-// Avoid: Mixing unrelated concerns
+```ts {avoid, header: 'Mixing unrelated concerns'}
 const appModel = signal({
   // Login data
   email: '',
@@ -85,8 +81,8 @@ Separate models for different concerns makes forms easier to understand and reus
 
 Design models with validation in mind. Group fields that validate together:
 
-```ts
-// Good: Password fields grouped for comparison
+```ts {prefer, header: 'Related fields grouped for comparison'}
+// Password fields grouped for comparison
 interface PasswordChangeData {
   currentPassword: string
   newPassword: string
@@ -104,8 +100,7 @@ For example, consider a beverage order form with a `size` field (6, 12, or 24 pa
 
 Although the size options look numeric, `<select>` elements work with string values, so `size` should be modeled as a string. An `<input type="number">` on the other hand, does work with numbers, so `quantity` can be modeled as a number.
 
-```ts
-// Good: Appropriate data types for the bound UI controls
+```ts {prefer, header: 'Appropriate data types for the bound UI controls'}
 interface BeverageOrderFormModel {
   size: string;      // Bound to: <select> (option values: "6", "12", "24")
   quantity: number;  // Bound to: <input type="number">
@@ -120,7 +115,7 @@ To represent a property with an empty value in your form model, use a value that
 
 <!-- TODO: what should we say about <input type=number>? -->
 
-```ts
+```ts {prefer, header: 'Appropriate empty values'}
 interface UserFormModel {
   name: string;           // Bound to <input type="text">
   birthday: Date | null;  // Bound to <input type="date">
@@ -150,7 +145,7 @@ interface CreateAccountFormModel {
 
 When creating the form we encounter a dilemma, what should the initial value in the model be? It may be tempting to create a `form<CreateAccountFormModel | null>()` since we don't have any input from the user yet.
 
-```ts
+```ts {avoid, header: 'Using null as empty value for complex object'}
 createAccountForm = form<CreateAccountFormModel | null>(
   signal(/* what goes here, null? */)
 );
@@ -158,8 +153,7 @@ createAccountForm = form<CreateAccountFormModel | null>(
 
 However, it is important to remember that Signal Forms is _model driven_. If our model is `null` and `null` doesn't have a `name` or `username` property, that means our form won't have those subfields either. Instead what we really want is an instance of `CreateAccountFormModel` with all of its leaf fields set to an empty value.
 
-```ts
-// Good: Empty initial value with the same shape
+```ts {prefer, header: 'Same shape value with empty values for properties'}
 createAccountForm = form<CreateAccountFormModel>(signal({
   name: {
     first: '',
@@ -206,8 +200,7 @@ Name: <input type="text">
 
 The best way to handle this is to use a form model with a static structure that includes fields for _all_ potential payment methods. In our schema, we can hide or disable the fields that are not currently available.
 
-```ts
-// Good: Static structure model
+```ts {prefer, header: 'Static structure model'}
 interface BillPayFormModel {
   name: string;
   method: {
@@ -236,8 +229,7 @@ Using this model, both `card` and `bank` objects are always present in the form'
 
 In contrast, a dynamic form model may initially seem like a good fit for this use case. After all, we don't need fields for account and routing number if the user selected "Credit Card". We may be tempted to model this as a discriminated union:
 
-```ts
-// Avoid: Dynamic structure model
+```ts {avoid, header: 'Dynamic structure model'}
 interface BillPayFormModel {
   name: string;
   method:
@@ -288,7 +280,7 @@ Another case where dynamic structure is acceptable is when a complex object is t
 
 For example, consider a user profile form that includes a `location` field. The location is selected using a complex "location picker" widget (perhaps a map or a search-ahead dropdown) that returns a coordinate object. In the case where the location is not yet selected, or the user chooses not to share their location, the picker indicates the location as `null`.
 
-```ts
+```ts {prefer, header: 'Dynamic structure is ok when field is treated as atomic'}
 interface Location {
   lat: number;
   lng: number;
@@ -296,7 +288,8 @@ interface Location {
 
 interface UserProfileFormModel {
   username: string;
-  // Dynamic structure, but ok because the location picker treats this field as atomic.
+  // This property has dynamic structure,
+  // but that's ok because the location picker treats this field as atomic.
   location: Location | null;
 }
 ```
@@ -335,7 +328,7 @@ When we're creating a form to edit some existing domain model in the system, we'
 
 In the case where we receive the domain model as an `input()`, we can use `linkedSignal` to create a writable form model from the input signal.
 
-```ts
+```ts {prefer, header: 'Use linkedSignal to convert domain model to form model'}
 @Component(...)
 class MyForm {
   // The domain model to initialize the form with, if not given we start with an empty form.
@@ -356,7 +349,7 @@ class MyForm {
 
 Similarly, when we receive the domain model from the backend via a resource, we can create a `linkedSignal` based on its value to create our `formModel`. In this scenario, the domain model may take some time to fetch, and we should disable the form until the data is loaded.
 
-```ts
+```ts {prefer, header: 'Disable or hide the form when data is unavailable'}
 @Component(...)
 class MyForm {
   // Fetch the domain model from the backend.
@@ -386,7 +379,7 @@ When we're ready to save the user's input back to the system, we need to convert
 
 To save on submit, we can handle the conversion in the `submit` function.
 
-```ts
+```ts {prefer, header: 'Convert form model to domain model on submit'}
 @Component(...)
 class MyForm {
   private readonly myDataService = inject(MyDataService);
@@ -406,7 +399,7 @@ form model to domain model on the server.
 
 For continuous saving, update the domain model in an `effect`.
 
-```ts
+```ts {prefer, header: 'Convert form model to domain model in an effect for auto-saving'}
 @Component(...)
 class MyForm {
   readonly domainModel = model.required<MyDomainModel>()
