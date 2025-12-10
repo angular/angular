@@ -30,7 +30,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build adev
         run: pnpm bazel build //adev:build.production --config=snapshot-build
-      - uses: angular/dev-infra/github-actions/previews/pack-and-upload-artifact@54e407015de8767d4245e1b8b779f058dbcc97c7
+      - uses: angular/dev-infra/github-actions/previews/pack-and-upload-artifact@d4f17986de97f198b59da03bf1b5fc4c78497a40
         with:
           workflow-artifact-name: 'adev-preview'
           pull-number: '${{github.event.pull_request.number}}'
