@@ -265,6 +265,7 @@
       "areAnimationSupported",
       "arrRemove",
       "assertNotDestroyed",
+      "assertTypeDefined",
       "attachPatchData",
       "baseElement",
       "bind",
