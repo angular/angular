@@ -161,6 +161,9 @@ export type FunctionEntry = FunctionDefinitionEntry &
     implementation: FunctionSignatureMetadata;
   };
 
+/** Documentation entity for a block. */
+export interface BlockEntry extends DocEntry {}
+
 /** Interface describing a function with overload signatures. */
 export interface FunctionDefinitionEntry {
   name: string;
