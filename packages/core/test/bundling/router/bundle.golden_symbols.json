@@ -415,6 +415,7 @@
       "arrRemove",
       "arrayEquals",
       "assertNotDestroyed",
+      "assertTypeDefined",
       "attachPatchData",
       "baseElement",
       "bind",
