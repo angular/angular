@@ -210,8 +210,7 @@ const BUILT_IN_NAMES_TO_DOC_MAP: {
   'hydrate': {
     docString:
       "Keyword that indicates when the block's content will be hydrated. You can use `on` and `when` conditions as hydration triggers, or `hydrate never` to disable hydration for this block.",
-    // TODO(crisbeto): add link to partial hydration guide
-    links: [],
+    links: ['[Reference](https://angular.dev/guide/incremental-hydration)'],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
   'when': {
