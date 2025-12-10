@@ -82,7 +82,8 @@ export class Field<T> implements ɵControl<T> {
   private config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
   /** @internal */
   readonly classes = Object.entries(this.config?.classes ?? {}).map(
-    ([className, computation]) => [className, computed(() => computation(this.state()))] as const,
+    ([className, computation]) =>
+      [className, computed(() => computation(this as Field<unknown>))] as const,
   );
 
   /** Any `ControlValueAccessor` instances provided on the host element. */
