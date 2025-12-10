@@ -1319,7 +1319,7 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(() => f().disabled()).toThrowError('Path is not part of this field tree.');
+      expect(() => f().disabled()).toThrowError(/Path is not part of this field tree\./);
     });
   });
 

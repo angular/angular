@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal, signal, WritableSignal} from '@angular/core';
+import {
+  computed,
+  Signal,
+  signal,
+  WritableSignal,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
+import {SignalFormsErrorCode} from '../../src/errors';
 import {FormFieldManager} from '../../src/field/manager';
 import {FieldNode, ParentFieldNode} from '../../src/field/node';
 import {
@@ -111,7 +118,10 @@ export class CompatStructure extends FieldNodeStructure {
 
   constructor(node: FieldNode, options: CompatFieldNodeOptions) {
     super(options.logic, node, () => {
-      throw new Error(`Compat nodes don't have children.`);
+      throw new RuntimeError(
+        SignalFormsErrorCode.COMPAT_NO_CHILDREN,
+        ngDevMode && `Compat nodes don't have children.`,
+      );
     });
     this.value = getControlValueSignal(options);
     this.parent = getParentFromOptions(options);

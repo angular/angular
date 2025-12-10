@@ -14,7 +14,10 @@ import {
   Signal,
   untracked,
   WritableSignal,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
+
+import {SignalFormsErrorCode} from '../errors';
 
 import {LogicNode} from '../schema/logic_node';
 import type {FieldPathNode} from '../schema/path_node';
@@ -186,8 +189,10 @@ export abstract class FieldNodeStructure {
       const key = initialKeyInParent!;
       return computed(() => {
         if (this.parent!.structure.getChild(key) !== this.node) {
-          throw new Error(
-            `RuntimeError: orphan field, looking for property '${key}' of ${getDebugName(this.parent!)}`,
+          throw new RuntimeError(
+            SignalFormsErrorCode.ORPHAN_FIELD_PROPERTY,
+            ngDevMode &&
+              `Orphan field, looking for property '${key}' of ${getDebugName(this.parent!)}`,
           );
         }
         return key;
@@ -204,8 +209,9 @@ export abstract class FieldNodeStructure {
           // It should not be possible to encounter this error. It would require the parent to
           // change from an array field to non-array field. However, in the current implementation
           // a field's parent can never change.
-          throw new Error(
-            `RuntimeError: orphan field, expected ${getDebugName(this.parent!)} to be an array`,
+          throw new RuntimeError(
+            SignalFormsErrorCode.ORPHAN_FIELD_ARRAY,
+            ngDevMode && `Orphan field, expected ${getDebugName(this.parent!)} to be an array`,
           );
         }
 
@@ -233,8 +239,9 @@ export abstract class FieldNodeStructure {
           }
         }
 
-        throw new Error(
-          `RuntimeError: orphan field, can't find element in array ${getDebugName(this.parent!)}`,
+        throw new RuntimeError(
+          SignalFormsErrorCode.ORPHAN_FIELD_NOT_FOUND,
+          ngDevMode && `Orphan field, can't find element in array ${getDebugName(this.parent!)}`,
         );
       });
     }
@@ -512,7 +519,10 @@ const ROOT_PATH_KEYS = computed<readonly string[]>(() => []);
  * do not have a parent. This signal will throw if it is read.
  */
 const ROOT_KEY_IN_PARENT = computed(() => {
-  throw new Error(`RuntimeError: the top-level field in the form has no parent`);
+  throw new RuntimeError(
+    SignalFormsErrorCode.ROOT_FIELD_NO_PARENT,
+    ngDevMode && 'The top-level field in the form has no parent.',
+  );
 });
 
 /** Gets a human readable name for a field node for use in error messages. */
