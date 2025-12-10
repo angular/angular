@@ -1343,6 +1343,7 @@ function parseInputFields(
   emitDeclarationOnly: boolean,
 ): Record<string, InputMapping> {
   const inputs = {} as Record<string, InputMapping>;
+  const bindings = new Map<string, ClassMember>();
 
   for (const member of members) {
     const classPropertyName = member.name;
@@ -1360,6 +1361,18 @@ function parseInputFields(
     if (inputMapping === null) {
       continue;
     }
+
+    const bindingPropertyName = inputMapping.bindingPropertyName;
+    if (bindings.has(bindingPropertyName)) {
+      const firstMember = bindings.get(bindingPropertyName)!;
+      throw new FatalDiagnosticError(
+        ErrorCode.DUPLICATE_BINDING_NAME,
+        member.node ?? clazz,
+        `Input '${bindingPropertyName}' is bound to both '${firstMember.name}' and '${member.name}'.`,
+        [makeRelatedInformation(firstMember.node ?? clazz, `The first binding is declared here.`)],
+      );
+    }
+    bindings.set(bindingPropertyName, member);
 
     if (member.isStatic) {
       throw new FatalDiagnosticError(
@@ -1681,6 +1694,7 @@ function parseOutputFields(
   outputsFromMeta: Record<string, string>,
 ): Record<string, string> {
   const outputs = {} as Record<string, string>;
+  const bindings = new Map<string, ClassMember>();
 
   for (const member of members) {
     const decoratorOutput = tryParseDecoratorOutput(member, evaluator, isCore);
@@ -1724,6 +1738,17 @@ function parseOutputFields(
     } else {
       continue;
     }
+
+    if (bindings.has(bindingPropertyName)) {
+      const firstMember = bindings.get(bindingPropertyName)!;
+      throw new FatalDiagnosticError(
+        ErrorCode.DUPLICATE_BINDING_NAME,
+        member.node ?? clazz,
+        `Output '${bindingPropertyName}' is bound to both '${firstMember.name}' and '${member.name}'.`,
+        [makeRelatedInformation(firstMember.node ?? clazz, `The first binding is declared here.`)],
+      );
+    }
+    bindings.set(bindingPropertyName, member);
 
     // Validate that initializer-based outputs are not accidentally declared
     // in the `outputs` class metadata.
