@@ -23,6 +23,7 @@ import {
   DocEntryWithSourceInfo,
   EntryType,
   MemberType,
+  type DirectiveEntry,
   type InterfaceEntry,
   type MemberEntry,
   type NamespaceEntry,
@@ -82,7 +83,7 @@ export class DocsExtractor {
         continue;
       }
 
-      const entry = this.extractDeclarations(exportName, declarations);
+      const entry = this.extractDeclarations(declarations);
       if (entry && !isIgnoredDocEntry(entry)) {
         // The source file parameter is the package entry: the index.ts
         // We want the real source file of the declaration.
@@ -125,6 +126,11 @@ export class DocsExtractor {
             ts.getLineAndCharacterOfPosition(realSourceFile, declarations[0].getEnd()).line + 1,
         };
 
+        const aliases = getAliasesFromEntry(entry);
+        if (aliases.length > 0) {
+          entry.aliases = aliases;
+        }
+
         // The exported name of an API may be different from its declaration name, so
         // use the declaration name.
         entries.push({...entry, name: exportName});
@@ -139,7 +145,7 @@ export class DocsExtractor {
    * the same name. This is used to combine entries, e.g. for a type and a namespace that are
    * exported under the same name.
    */
-  private extractDeclarations(exportName: string, nodes: ts.Declaration[]): DocEntry | null {
+  private extractDeclarations(nodes: ts.Declaration[]): DocEntry | null {
     const entries = nodes.map((node) => this.extractDeclaration(node));
     const decorator = entries.find((e) => e?.entryType === EntryType.Decorator);
     if (decorator) {
@@ -298,4 +304,54 @@ function isNamespaceEntry(e: DocEntry | null): e is NamespaceEntry {
 
 function isInterfaceEntry(e: DocEntry | null): e is InterfaceEntry {
   return e?.entryType === EntryType.Interface;
+}
+
+/**
+ * Extracts aliases from a selector string.
+ *
+ * Parses selectors like:
+ * - `[ngTabs]` => `['ngTabs']`
+ * - `input[ngComboboxInput]` => `['ngComboboxInput']`
+ * - `ng-template[ngComboboxPopupContainer]` => `['ngComboboxPopupContainer']`
+ * - `[attr1][attr2]` => `['attr1', 'attr2']`
+ * - `.class-name` => `[]` (classes are not extracted)
+ *
+ * @param selector The CSS selector string from directive/component metadata
+ * @returns Array of attribute names that can be used as aliases
+ */
+function extractAliasesFromSelector(selector: string): string[] {
+  if (!selector) {
+    return [];
+  }
+
+  const aliases: string[] = [];
+  // Match attribute selectors: [attributeName] or element[attributeName]
+  // This regex captures the attribute name inside square brackets
+  const attributeRegex = /\[([^\]=]+)(?:=[^\]]+)?\]/g;
+
+  let match: RegExpExecArray | null;
+  while ((match = attributeRegex.exec(selector)) !== null) {
+    const attributeName = match[1].trim();
+    // Skip empty attributes
+    if (attributeName) {
+      aliases.push(attributeName);
+    }
+  }
+
+  return aliases;
+}
+
+/**
+ * Extracts alias names from selector (for directives/components).
+ */
+function getAliasesFromEntry(entry: DocEntry): string[] {
+  if (isDirectiveEntry(entry)) {
+    return extractAliasesFromSelector(entry.selector);
+  }
+
+  return [];
+}
+
+function isDirectiveEntry(entry: DocEntry): entry is DirectiveEntry {
+  return entry.entryType === EntryType.Directive || entry.entryType === EntryType.Component;
 }
