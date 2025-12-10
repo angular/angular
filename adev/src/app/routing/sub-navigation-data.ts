@@ -94,6 +94,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
     children: [
       {
         label: 'Signals',
+        status: 'updated',
         children: [
           {
             label: 'Overview',
@@ -114,6 +115,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Side effects for non-reactives APIs',
             path: 'guide/signals/effect',
             contentPath: 'guide/signals/effect',
+            status: 'new',
           },
         ],
       },
