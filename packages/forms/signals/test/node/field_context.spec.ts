@@ -59,8 +59,8 @@ describe('Field Context', () => {
   it('field', () => {
     const cat = signal({name: 'pirojok-the-cat', age: 5});
     testContext(cat, (ctx) => {
-      expect(ctx.field.name().value()).toEqual('pirojok-the-cat');
-      expect(ctx.field.age().value()).toEqual(5);
+      expect(ctx.fieldTree.name().value()).toEqual('pirojok-the-cat');
+      expect(ctx.fieldTree.age().value()).toEqual(5);
     });
   });
 

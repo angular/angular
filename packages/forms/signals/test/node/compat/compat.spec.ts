@@ -457,7 +457,7 @@ describe('Forms compat', () => {
         },
       );
 
-      expect(f().errors()).toEqual([customError({kind: 'too small', field: f})]);
+      expect(f().errors()).toEqual([customError({kind: 'too small', fieldTree: f})]);
     });
 
     it('supports getting control from fieldTreeOf', () => {
@@ -484,7 +484,7 @@ describe('Forms compat', () => {
         },
       );
 
-      expect(f().errors()).toEqual([customError({kind: 'too small', field: f})]);
+      expect(f().errors()).toEqual([customError({kind: 'too small', fieldTree: f})]);
     });
 
     it('fails for regular values', () => {
@@ -550,7 +550,7 @@ describe('Forms compat', () => {
     expect(f.name().errors()).toEqual([
       customError({
         kind: 'too small',
-        field: f.name,
+        fieldTree: f.name,
       }),
     ]);
 

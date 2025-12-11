@@ -31,6 +31,6 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.builder.addSyncTreeErrorRule((ctx) =>
-    addDefaultField(logic(ctx as FieldContext<TValue, TPathKind>), ctx.field),
+    addDefaultField(logic(ctx as FieldContext<TValue, TPathKind>), ctx.fieldTree),
   );
 }
