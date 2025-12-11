@@ -47,7 +47,7 @@ enum AngularStatus {
   EXISTS,
 }
 
-export const LAST_SUPPORTED_VERSION = 9;
+export const LAST_SUPPORTED_VERSION = 12;
 
 @Component({
   selector: 'ng-devtools',
@@ -65,6 +65,8 @@ export class DevToolsComponent implements OnDestroy {
   readonly angularIsInDevMode = signal(true);
   readonly hydration = signal(false);
   readonly ivy = signal<boolean | undefined>(undefined);
+
+  readonly LAST_SUPPORTED_VERSION = LAST_SUPPORTED_VERSION;
 
   readonly supportedVersion = computed(() => {
     const version = this.angularVersion();
