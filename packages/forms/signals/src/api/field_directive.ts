@@ -129,6 +129,8 @@ export class Field<T> {
       {injector: this.injector},
     );
   }
+
+  focus?(): void;
 }
 
 // We can't add `implements ɵControl<T>` to `Field` even though it should conform to the interface.

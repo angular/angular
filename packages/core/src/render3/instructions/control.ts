@@ -10,7 +10,7 @@ import {performanceMarkFeature} from '../../util/performance';
 import {getClosureSafeProperty} from '../../util/property';
 import {assertFirstCreatePass} from '../assert';
 import {bindingUpdated} from '../bindings';
-import {ɵCONTROL, ɵControl, ɵFieldState} from '../interfaces/control';
+import {ɵCONTROL, ɵFieldDirective, ɵFieldState, type ɵCustomControl} from '../interfaces/control';
 import {DirectiveDef} from '../interfaces/definition';
 import {InputFlags} from '../interfaces/input_flags';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
@@ -38,9 +38,9 @@ import {setPropertyAndInputs, storePropertyBindingMetadata} from './shared';
 import {writeToDirectiveInput} from './write_to_directive_input';
 
 /**
- * Possibly sets up a {@link ɵControl} to manage a native or custom form control.
+ * Possibly sets up a {@link ɵFieldDirective} to manage a native or custom form control.
  *
- * Setup occurs if a `field` input is bound to a {@link ɵControl} directive on the current node,
+ * Setup occurs if a `field` input is bound to a {@link ɵFieldDirective} directive on the current node,
  * but not to a component. If a `field` input is bound to a component, we assume the component
  * will manage the control in its own template.
  *
@@ -55,24 +55,33 @@ export function ɵɵcontrolCreate(): void {
     initializeControlFirstCreatePass(tView, tNode, lView);
   }
 
-  const control = getControlDirective(tNode, lView);
-  if (!control) {
+  const fieldDirective = getFieldDirective(tNode, lView);
+  if (!fieldDirective) {
     return;
   }
 
   performanceMarkFeature('NgSignalForms');
 
   if (tNode.flags & TNodeFlags.isFormValueControl) {
-    listenToCustomControl(lView, tNode, control, 'value');
+    listenToCustomControl(lView, tNode, fieldDirective, 'value');
+    const customControl = getCustomControl(tNode, lView)!;
+    fieldDirective.focus = () =>
+      customControl.focus ? customControl.focus() : fieldDirective.element.focus();
   } else if (tNode.flags & TNodeFlags.isFormCheckboxControl) {
-    listenToCustomControl(lView, tNode, control, 'checked');
+    listenToCustomControl(lView, tNode, fieldDirective, 'checked');
+    const customControl = getCustomControl(tNode, lView)!;
+    fieldDirective.focus = () =>
+      customControl.focus ? customControl.focus() : fieldDirective.element.focus();
   } else if (tNode.flags & TNodeFlags.isInteropControl) {
-    listenToInteropControl(control);
+    listenToInteropControl(fieldDirective);
+    // TODO: what do we focus here?
   } else {
-    listenToNativeControl(lView, tNode, control);
+    listenToNativeControl(lView, tNode, fieldDirective);
+    const nativeControl = getNativeByTNode(tNode, lView) as NativeControlElement;
+    fieldDirective.focus = () => nativeControl.focus();
   }
 
-  control.ɵregister();
+  fieldDirective.ɵregister();
 }
 
 /**
@@ -122,7 +131,7 @@ export function ɵcontrolUpdate(): void {
  * @param tNode The `TNode` of the control.
  */
 function updateControl<T>(lView: LView, tNode: TNode): void {
-  const control = getControlDirective(tNode, lView);
+  const control = getFieldDirective(tNode, lView);
   if (control) {
     updateControlClasses(lView, tNode, control);
 
@@ -171,7 +180,7 @@ function initializeControlFirstCreatePass<T>(tView: TView, tNode: TNode, lView: 
   const isCustomControl = isCustomControlFirstCreatePass(tView, tNode);
 
   // Only check for an interop control if we haven't already found a custom one.
-  if (!isCustomControl && (lView[controlIndex] as ɵControl<T>).ɵinteropControl) {
+  if (!isCustomControl && (lView[controlIndex] as ɵFieldDirective<T>).ɵinteropControl) {
     tNode.flags |= TNodeFlags.isInteropControl;
     return;
   }
@@ -263,7 +272,7 @@ function isNativeControlFirstCreatePass(tView: TView, tNode: TNode): boolean {
 }
 
 /**
- * Returns the {@link ɵControl} directive on the specified node, if one is present and a `field`
+ * Returns the {@link ɵFieldDirective} directive on the specified node, if one is present and a `field`
  * input is bound to it, but not to a component. If a `field` input is bound to a component, we
  * assume the component will manage the control in its own template and return nothing to indicate
  * that the directive should not be set up.
@@ -271,8 +280,13 @@ function isNativeControlFirstCreatePass(tView: TView, tNode: TNode): boolean {
  * @param tNode The `TNode` of the element to check.
  * @param lView The `LView` that contains the element.
  */
-function getControlDirective<T>(tNode: TNode, lView: LView): ɵControl<T> | null {
+function getFieldDirective<T>(tNode: TNode, lView: LView): ɵFieldDirective<T> | null {
   const index = tNode.fieldIndex;
+  return index === -1 ? null : lView[index];
+}
+
+function getCustomControl(tNode: TNode, lView: LView): ɵCustomControl | null {
+  const index = tNode.customControlIndex;
   return index === -1 ? null : lView[index];
 }
 
@@ -304,7 +318,7 @@ function hasOutput(directiveDef: DirectiveDef<unknown>, name: string): boolean {
 function listenToCustomControl(
   lView: LView<{} | null>,
   tNode: TNode,
-  control: ɵControl<unknown>,
+  control: ɵFieldDirective<unknown>,
   modelName: string,
 ) {
   const tView = getTView();
@@ -338,7 +352,7 @@ function listenToCustomControl(
  *
  * @param control The `ɵControl` directive instance.
  */
-function listenToInteropControl(control: ɵControl<unknown>): void {
+function listenToInteropControl(control: ɵFieldDirective<unknown>): void {
   const interopControl = control.ɵinteropControl!;
   interopControl.registerOnChange((value: unknown) => control.state().setControlValue(value));
   interopControl.registerOnTouched(() => control.state().markAsTouched());
@@ -376,7 +390,11 @@ function isNativeControl(tNode: TNode): tNode is TElementNode {
  * @param tNode The `TNode` of the native form control.
  * @param control The `ɵControl` directive instance.
  */
-function listenToNativeControl(lView: LView<{} | null>, tNode: TNode, control: ɵControl<unknown>) {
+function listenToNativeControl(
+  lView: LView<{} | null>,
+  tNode: TNode,
+  control: ɵFieldDirective<unknown>,
+) {
   const tView = getTView();
   const renderer = lView[RENDERER];
   const element = getNativeByTNode(tNode, lView) as NativeControlElement;
@@ -424,7 +442,7 @@ function listenToNativeControl(lView: LView<{} | null>, tNode: TNode, control: �
   ) {
     const observer = observeSelectMutations(
       element as HTMLSelectElement,
-      control as ɵControl<string>,
+      control as ɵFieldDirective<string>,
     );
 
     storeCleanupWithContext(tView, lView, observer, observer.disconnect);
@@ -441,7 +459,7 @@ function listenToNativeControl(lView: LView<{} | null>, tNode: TNode, control: �
  */
 function observeSelectMutations(
   select: HTMLSelectElement,
-  controlDirective: ɵControl<string>,
+  controlDirective: ɵFieldDirective<string>,
 ): MutationObserver {
   const observer = new MutationObserver((mutations) => {
     if (mutations.some((m) => isRelevantSelectMutation(m))) {
@@ -503,7 +521,7 @@ function isRelevantSelectMutation(mutation: MutationRecord) {
  * @param tNode The `TNode` of the control.
  * @param control The `ɵControl` directive instance.
  */
-function updateControlClasses(lView: LView, tNode: TNode, control: ɵControl<unknown>) {
+function updateControlClasses(lView: LView, tNode: TNode, control: ɵFieldDirective<unknown>) {
   if (control.classes) {
     const bindings = getControlBindings(lView);
     bindings.classes ??= {};
@@ -535,7 +553,7 @@ function updateControlClasses(lView: LView, tNode: TNode, control: ɵControl<unk
 function updateCustomControl(
   tNode: TNode,
   lView: LView,
-  control: ɵControl<unknown>,
+  control: ɵFieldDirective<unknown>,
   modelName: string,
 ) {
   const tView = getTView();
@@ -594,7 +612,7 @@ function maybeUpdateInput(
  * @param lView The `LView` that contains the native form control.
  * @param control The `ɵControl` directive instance.
  */
-function updateInteropControl(lView: LView, control: ɵControl<unknown>): void {
+function updateInteropControl(lView: LView, control: ɵFieldDirective<unknown>): void {
   const interopControl = control.ɵinteropControl!;
   const bindings = getControlBindings(lView);
   const state = control.state();
@@ -622,7 +640,7 @@ function updateInteropControl(lView: LView, control: ɵControl<unknown>): void {
  * @param lView The `LView` that contains the native form control.
  * @param control The `ɵControl` directive instance.
  */
-function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unknown>): void {
+function updateNativeControl(tNode: TNode, lView: LView, control: ɵFieldDirective<unknown>): void {
   const element = getNativeByTNode(tNode, lView) as NativeControlElement;
   const renderer = lView[RENDERER];
   const state = control.state();
