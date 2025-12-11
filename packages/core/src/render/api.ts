@@ -270,6 +270,9 @@ export abstract class Renderer2 {
     options?: ListenerOptions,
   ): () => void;
 
+  /** The component's internal shadow root if one is used. */
+  shadowRoot?: ShadowRoot;
+
   /**
    * @internal
    * @nocollapse

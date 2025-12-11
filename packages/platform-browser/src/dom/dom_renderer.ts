@@ -491,7 +491,7 @@ function isTemplateNode(node: any): node is HTMLTemplateElement {
 }
 
 class ShadowDomRenderer extends DefaultDomRenderer2 {
-  private shadowRoot: any;
+  shadowRoot: ShadowRoot;
 
   constructor(
     eventManager: EventManager,
