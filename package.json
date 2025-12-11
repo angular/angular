@@ -135,7 +135,7 @@
     "selenium-webdriver": "4.0.0",
     "selenium-webdriver4": "npm:selenium-webdriver@4.22.0",
     "semver-dsl": "^1.0.1",
-    "shelljs": "^0.8.5",
+    "shelljs": "^0.9.0",
     "source-map": "0.7.4",
     "source-map-support": "0.5.21",
     "systemjs": "0.18.10",
