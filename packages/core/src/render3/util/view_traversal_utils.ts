@@ -87,6 +87,13 @@ function* walkChildren(parent: LView | LContainer): Generator<LView | LContainer
   }
 }
 
+/** Combine multiple iterables into a single stream with the same ordering. */
+export function* concat<T>(...iterables: Array<Iterable<T>>): Iterable<T> {
+  for (const iterable of iterables) {
+    yield* iterable;
+  }
+}
+
 /** Returns the {@link StyleRoot} where styles for the component should be applied. */
 export function getStyleRoot(lView: LView): StyleRoot | undefined {
   // DOM emulation does not support shadow DOM and `Node.prototype.getRootNode`, so we
@@ -94,9 +101,14 @@ export function getStyleRoot(lView: LView): StyleRoot | undefined {
   // Available. In theory, we could do this only on SSR, but Jest, Vitest, and other
   // Node testing solutions lack DOM emulation as well.
   if (!Node.prototype.getRootNode) {
-    const injector = lView[INJECTOR];
-    const doc = injector.get(DOCUMENT);
-    return doc;
+    // TODO: Can't use injector during destroy because it is destroyed before the
+    // component. Is it ok to depend on the `document` global? If not, might need to
+    // change the contract of `getStyleRoot` and inject `DOCUMENT` prior to
+    // destruction.
+    // const injector = lView[INJECTOR];
+    // const doc = injector.get(DOCUMENT);
+
+    return document;
   }
 
   const renderer = lView[RENDERER];

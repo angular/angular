@@ -1412,6 +1412,7 @@ describe('ViewContainerRef', () => {
           {provide: ErrorHandler, useValue: TestBed.inject(ErrorHandler)},
           {provide: RendererFactory2, useValue: TestBed.inject(RendererFactory2)},
           {provide: ANIMATION_QUEUE, useValue: TestBed.inject(ANIMATION_QUEUE)},
+          {provide: DOCUMENT, useValue: TestBed.inject(DOCUMENT)},
         ],
       })
       class MyAppModule {}

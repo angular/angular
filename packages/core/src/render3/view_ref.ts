@@ -31,7 +31,9 @@ import {
   LView,
   LViewFlags,
   PARENT,
+  RENDERER,
   TVIEW,
+  TViewType,
 } from './interfaces/view';
 import {destroyLView, detachMovedView, detachViewFromDOM} from './node_manipulation';
 import {
@@ -41,6 +43,7 @@ import {
   requiresRefreshOrTraversal,
 } from './util/view_utils';
 import {detachView, trackMovedView} from './view/container';
+import {concat, getStyleRoot, walkDescendants} from './util/view_traversal_utils';
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
 // multiple @extends in Closure annotations, which is illegal. This workaround fixes
@@ -107,9 +110,8 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
   }
 
   destroy(): void {
-    if (this._appRef) {
-      this._appRef.detachView(this);
-    } else if (this._attachedToViewContainer) {
+    let attached = true;
+    if (!this._appRef && this._attachedToViewContainer) {
       const parent = this._lView[PARENT];
       if (isLContainer(parent)) {
         const viewRefs = parent[VIEW_REFS] as ViewRef<unknown>[] | null;
@@ -121,12 +123,33 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
               parent.indexOf(this._lView) - CONTAINER_HEADER_OFFSET,
               'An attached view should be in the same position within its container as its ViewRef in the VIEW_REFS array.',
             );
+          // Implicitly removes styles as part of detaching the view.
           detachView(parent, index);
           removeFromArray(viewRefs!, index);
+          attached = false;
         }
       }
       this._attachedToViewContainer = false;
     }
+
+    if (attached) {
+      for (const view of concat([this._lView], walkDescendants(this._lView))) {
+        if (isLContainer(view) || view[TVIEW].type !== TViewType.Component) continue;
+
+        // Component might already be destroyed in cases like `NgModuleRef.prototype.destroy`
+        // being called before `ComponentRef.prototype.destroy`.
+        if (isDestroyed(view)) continue;
+
+        const renderer = view[RENDERER];
+        const styleRoot = getStyleRoot(view);
+
+        // Component might already be detached prior to destroy and have had its styles removed previously.
+        if (styleRoot) renderer.removeStyles?.(styleRoot!);
+      }
+    }
+
+    if (this._appRef) this._appRef.detachView(this);
+
     destroyLView(this._lView[TVIEW], this._lView);
   }
 
