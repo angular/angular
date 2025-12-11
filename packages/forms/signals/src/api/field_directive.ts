@@ -18,8 +18,8 @@ import {
   input,
   ɵcontrolUpdate as updateControlBinding,
   ɵCONTROL,
-  ɵControl,
   ɵInteropControl,
+  type ɵControl,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
@@ -71,7 +71,10 @@ const controlInstructions = {
     {provide: NgControl, useFactory: () => inject(Field).getOrCreateNgControl()},
   ],
 })
-export class Field<T> implements ɵControl<T> {
+// This directive should `implements ɵControl<T>`, but actually adding that breaks people's
+// builds because part of the public API is marked `@internal` and stripped.
+// Instead we have an type check below that enforces this in a non-breaking way.
+export class Field<T> {
   readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   readonly injector = inject(Injector);
   readonly field = input.required<FieldTree<T>>();
@@ -127,3 +130,8 @@ export class Field<T> implements ɵControl<T> {
     );
   }
 }
+
+// We can't add `implements ɵControl<T>` to `Field` even though it should conform to the interface.
+// Instead we enforce it here through some utility types.
+type Check<T extends true> = T;
+type FieldImplementsɵControl = Check<Field<any> extends ɵControl<any> ? true : false>;
