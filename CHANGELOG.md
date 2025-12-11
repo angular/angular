@@ -1,3 +1,44 @@
+<a name="21.1.0-next.2"></a>
+
+# 21.1.0-next.2 (2025-12-10)
+
+## Deprecations
+
+### upgrade
+
+- `VERSION` from `@angular/upgrade` is deprecated. Please use the entry from `@angular/upgrade/static` instead.
+
+### compiler
+
+| Commit                                                                                            | Type | Description                       |
+| ------------------------------------------------------------------------------------------------- | ---- | --------------------------------- |
+| [ae1c0dc4900](https://github.com/angular/angular/commit/ae1c0dc49002665c10d4e44f530f4cb8d1e35b8d) | perf | chain query creation instructions |
+
+### compiler-cli
+
+| Commit                                                                                            | Type | Description                                         |
+| ------------------------------------------------------------------------------------------------- | ---- | --------------------------------------------------- |
+| [8a3f3a91cf6](https://github.com/angular/angular/commit/8a3f3a91cf6919f11c1583afeb71b65488f8cba4) | fix  | expand type for native controls with a dynamic type |
+
+### forms
+
+| Commit                                                                                            | Type | Description                                                                                             |
+| ------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------------- |
+| [aff8b248b35](https://github.com/angular/angular/commit/aff8b248b35931cbe7d644ad2594144b75064ca6) | feat | expose element on signal forms `Field` directive                                                        |
+| [ebc5c2b083a](https://github.com/angular/angular/commit/ebc5c2b083a90fde6fced3521be434a414ef29dd) | feat | redo the signal forms metadata API                                                                      |
+| [9fe95665813](https://github.com/angular/angular/commit/9fe95665813e24544d00dcf463658067da745ac2) | fix  | add signals for dirty, hidden, and pending states in custom controls                                    |
+| [14713d09923](https://github.com/angular/angular/commit/14713d09923b5315ac7c6f20acc06fc69ff0ed79) | fix  | allow resetting with empty string                                                                       |
+| [b96f65a963f](https://github.com/angular/angular/commit/b96f65a963febab376f2a783cf4313a8b8140efe) | fix  | memoize reads of child fields in signal forms ([#65802](https://github.com/angular/angular/pull/65802)) |
+| [179b4cba67b](https://github.com/angular/angular/commit/179b4cba67b95563da27fd5f12dd2acc910a1a52) | fix  | Reuse key in parent in compat structure                                                                 |
+
+### upgrade
+
+| Commit                                                                                            | Type     | Description                |
+| ------------------------------------------------------------------------------------------------- | -------- | -------------------------- |
+| [75fe8f8af94](https://github.com/angular/angular/commit/75fe8f8af9488bae6f7068b64d44500643c5d63f) | refactor | deprecate `VERSION` export |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.4"></a>
 
 # 21.0.4 (2025-12-10)
