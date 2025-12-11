@@ -310,6 +310,12 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * @param value Optional value to set to the form. If not passed, the value will not be changed.
    */
   reset(value?: TValue): void;
+
+  /**
+   * Focuses the first UI control in the DOM that is bound to this field state.
+   * If no UI control is bound, does nothing.
+   */
+  focusBoundControl(): void;
 }
 
 /**
