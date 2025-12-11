@@ -1,3 +1,32 @@
+<a name="21.0.4"></a>
+
+# 21.0.4 (2025-12-10)
+
+### compiler
+
+| Commit                                                                                            | Type | Description                       |
+| ------------------------------------------------------------------------------------------------- | ---- | --------------------------------- |
+| [f901cc9eb32](https://github.com/angular/angular/commit/f901cc9eb328bed74fd7f09607e54154254d4a97) | perf | chain query creation instructions |
+
+### compiler-cli
+
+| Commit                                                                                            | Type | Description                                         |
+| ------------------------------------------------------------------------------------------------- | ---- | --------------------------------------------------- |
+| [65297c62011](https://github.com/angular/angular/commit/65297c62011ae353f8555738688a83a5fba5ea4e) | fix  | expand type for native controls with a dynamic type |
+
+### forms
+
+| Commit                                                                                            | Type | Description                                                                                             |
+| ------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------------- |
+| [f254ff4f2e0](https://github.com/angular/angular/commit/f254ff4f2e014064b4d6073341dec0c5a7a754bf) | feat | expose element on signal forms `Field` directive                                                        |
+| [5880fbc73c6](https://github.com/angular/angular/commit/5880fbc73c6ac42976b3ada9803965bc20d047db) | feat | redo the signal forms metadata API                                                                      |
+| [55fc677cef4](https://github.com/angular/angular/commit/55fc677cef4409302bc474ff316d392097a034e7) | fix  | add signals for dirty, hidden, and pending states in custom controls                                    |
+| [cbb10179c80](https://github.com/angular/angular/commit/cbb10179c8098f6a20b0bc365a492f14e4d2a51a) | fix  | allow resetting with empty string                                                                       |
+| [bf1c12cd932](https://github.com/angular/angular/commit/bf1c12cd932028dc4bb50914c64bbb6d882b6ec1) | fix  | memoize reads of child fields in signal forms ([#65802](https://github.com/angular/angular/pull/65802)) |
+| [6d7475582f9](https://github.com/angular/angular/commit/6d7475582f95720b4487f663d339a18a25374481) | fix  | Reuse key in parent in compat structure                                                                 |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.3"></a>
 
 # 21.0.3 (2025-12-03)
