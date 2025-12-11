@@ -25,6 +25,7 @@
 | `NG0750`  | [@defer dependencies failed to load](errors/NG0750)                                  |
 | `NG0910`  | [Unsafe bindings on an iframe element](errors/NG0910)                                |
 | `NG0912`  | [Component ID generation collision](errors/NG0912)                                   |
+| `NG0919`  | [Circular Dependency Detected](errors/NG0919)                                        |
 | `NG0955`  | [Track expression resulted in duplicated keys for a given collection](errors/NG0955) |
 | `NG0956`  | [Tracking expression caused re-creation of the DOM structure](errors/NG0956)         |
 | `NG01101` | [Wrong Async Validator Return Type](errors/NG01101)                                  |
