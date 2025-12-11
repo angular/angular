@@ -38,6 +38,10 @@ export class BaseAnimationRenderer implements Renderer2 {
     return this.delegate.data;
   }
 
+  get shadowRoot() {
+    return this.delegate.shadowRoot;
+  }
+
   destroyNode(node: any): void {
     this.delegate.destroyNode?.(node);
   }

@@ -77,6 +77,9 @@ export interface Renderer {
     callback: (event: any) => boolean | void,
     options?: ListenerOptions,
   ): () => void;
+
+  /** The component's internal shadow root if one is used. */
+  shadowRoot?: ShadowRoot;
 }
 
 export interface RendererFactory {
