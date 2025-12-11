@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FrameManager} from './application-services/frame_manager';
-import {DevToolsComponent} from './devtools.component';
+import {DevToolsComponent, LAST_SUPPORTED_VERSION} from './devtools.component';
 import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
 import {MessageBus} from '../../../protocol';
 import {SETTINGS_MOCK} from './application-services/test-utils/settings_mock';
@@ -54,8 +54,8 @@ describe('DevtoolsComponent', () => {
     component.angularStatus.set(component.AngularStatus.EXISTS);
     component.angularIsInDevMode.set(false);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.devtools').textContent).toContain(
-      'We detected an application built with production configuration. Angular DevTools only supports development builds.',
+    expect(fixture.nativeElement.querySelector('.devtools-state-screen').textContent).toContain(
+      'We detected an application built with a production configuration. Angular DevTools only supports development builds.',
     );
   });
 
@@ -64,8 +64,8 @@ describe('DevtoolsComponent', () => {
     component.angularIsInDevMode.set(true);
     component.angularVersion.set('1.0.0');
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.devtools').textContent).toContain(
-      'Angular Devtools only supports Angular versions 12 and above',
+    expect(fixture.nativeElement.querySelector('.devtools-state-screen').textContent).toContain(
+      `Angular DevTools only supports Angular versions ${LAST_SUPPORTED_VERSION} and above`,
     );
   });
 
@@ -73,7 +73,7 @@ describe('DevtoolsComponent', () => {
     component.angularStatus.set(component.AngularStatus.DOES_NOT_EXIST);
     fixture.detectChanges();
     // expect the text to be "Angular application not detected"
-    expect(fixture.nativeElement.querySelector('.not-detected').textContent).toContain(
+    expect(fixture.nativeElement.querySelector('.devtools-state-screen').textContent).toContain(
       'Angular application not detected',
     );
   });
