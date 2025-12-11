@@ -21,7 +21,7 @@ describe('pattern validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.name().errors()).toEqual([patternError(/pir.*jok/, {field: f.name})]);
+    expect(f.name().errors()).toEqual([patternError(/pir.*jok/, {fieldTree: f.name})]);
   });
 
   it('supports custom error', () => {
@@ -34,7 +34,7 @@ describe('pattern validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.name().errors()).toEqual([customError({field: f.name})]);
+    expect(f.name().errors()).toEqual([customError({fieldTree: f.name})]);
   });
 
   it('supports custom error message', () => {
@@ -48,7 +48,7 @@ describe('pattern validator', () => {
     );
 
     expect(f.name().errors()).toEqual([
-      patternError(/pir.*jok/, {message: 'pattern error', field: f.name}),
+      patternError(/pir.*jok/, {message: 'pattern error', fieldTree: f.name}),
     ]);
   });
 
@@ -120,12 +120,12 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().errors()).toEqual([patternError(/pir.*jok/, {field: f.name})]);
+      expect(f.name().errors()).toEqual([patternError(/pir.*jok/, {fieldTree: f.name})]);
 
       patternSignal.set(/p.*/);
       expect(f.name().errors()).toEqual([]);
       patternSignal.set(/meow/);
-      expect(f.name().errors()).toEqual([patternError(/meow/, {field: f.name})]);
+      expect(f.name().errors()).toEqual([patternError(/meow/, {fieldTree: f.name})]);
 
       patternSignal.set(undefined);
 

@@ -24,7 +24,7 @@ describe('required validator', () => {
       },
     );
 
-    expect(f.name().errors()).toEqual([requiredError({field: f.name})]);
+    expect(f.name().errors()).toEqual([requiredError({fieldTree: f.name})]);
     f.name().value.set('pirojok-the-cat');
     expect(f.name().errors()).toEqual([]);
   });
@@ -43,7 +43,7 @@ describe('required validator', () => {
       },
     );
 
-    expect(f.name().errors()).toEqual([customError({kind: 'required-5', field: f.name})]);
+    expect(f.name().errors()).toEqual([customError({kind: 'required-5', fieldTree: f.name})]);
     f.name().value.set('pirojok-the-cat');
     expect(f.name().errors()).toEqual([]);
   });
@@ -62,7 +62,9 @@ describe('required validator', () => {
       },
     );
 
-    expect(f.name().errors()).toEqual([requiredError({message: 'required error', field: f.name})]);
+    expect(f.name().errors()).toEqual([
+      requiredError({message: 'required error', fieldTree: f.name}),
+    ]);
     f.name().value.set('pirojok-the-cat');
     expect(f.name().errors()).toEqual([]);
   });
@@ -85,7 +87,7 @@ describe('required validator', () => {
 
     expect(f.name().errors()).toEqual([]);
     f.age().value.set(15);
-    expect(f.name().errors()).toEqual([requiredError({field: f.name})]);
+    expect(f.name().errors()).toEqual([requiredError({fieldTree: f.name})]);
   });
 
   it('supports returning custom plain error, and wraps it as custom', () => {
@@ -106,6 +108,8 @@ describe('required validator', () => {
 
     expect(f.name().errors()).toEqual([]);
     f.name().value.set('');
-    expect(f.name().errors()).toEqual([customError({kind: 'pirojok-the-error', field: f.name})]);
+    expect(f.name().errors()).toEqual([
+      customError({kind: 'pirojok-the-error', fieldTree: f.name}),
+    ]);
   });
 });

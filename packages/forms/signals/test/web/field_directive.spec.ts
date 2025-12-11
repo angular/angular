@@ -1854,7 +1854,7 @@ describe('field directive', () => {
     const comp = act(() => TestBed.createComponent(ReadonlyTestCmp)).componentInstance;
 
     expect(comp.myInput().disabledReasons()).toEqual([
-      {message: 'Currently unavailable', field: comp.f},
+      {message: 'Currently unavailable', fieldTree: comp.f},
     ]);
   });
 

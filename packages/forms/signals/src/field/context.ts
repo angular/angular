@@ -103,7 +103,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
     return this.cache.get(target)!() as FieldTree<U>;
   }
 
-  get field(): FieldTree<unknown> {
+  get fieldTree(): FieldTree<unknown> {
     return this.node.fieldProxy;
   }
 
