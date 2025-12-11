@@ -32,6 +32,7 @@ import {
   RENDERER,
   T_HOST,
   TVIEW,
+  TViewType,
 } from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {destroyLView, removeViewFromDOM} from './node_manipulation';
@@ -44,6 +45,7 @@ import {
   getInitialLViewFlagsFromDef,
   getOrCreateComponentTView,
 } from './view/construction';
+import {getStyleRoot, walkDescendants} from './util/view_traversal_utils';
 
 /** Represents `import.meta` plus some information that's not in the built-in types. */
 type ImportMetaExtended = ImportMeta & {
@@ -241,6 +243,16 @@ function recreateLView(
   ngDevMode && assertNotEqual(newDef, oldDef, 'Expected different component definition');
   const zone = lView[INJECTOR].get(NgZone, null);
   const recreate = () => {
+    // Remove old styles to make sure we drop internal references and track usage
+    // counts correctly. We might be an `Emulated` or `None` component inside a
+    // shadow root.
+    const oldRenderer = lView[RENDERER];
+    if (oldRenderer.removeStyles) {
+      const oldStyleRoot = getStyleRoot(lView);
+      ngDevMode && assertDefined(oldStyleRoot, 'oldStyleRoot');
+      oldRenderer.removeStyles(oldStyleRoot!);
+    }
+
     // If we're recreating a component with shadow DOM encapsulation, it will have attached a
     // shadow root. The browser will throw if we attempt to attach another one and there's no way
     // to detach it. Our only option is to make a clone only of the root node, replace the node
@@ -249,6 +261,17 @@ function recreateLView(
       oldDef.encapsulation === ViewEncapsulation.ShadowDom ||
       oldDef.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom
     ) {
+      // Remove all descendants' styles because they will be destroyed with this
+      // shadow root.
+      for (const view of walkDescendants(lView)) {
+        if (isLContainer(view) || view[TVIEW].type !== TViewType.Component) continue;
+
+        const styleRoot = getStyleRoot(view);
+        ngDevMode && assertDefined(styleRoot, 'styleRoot');
+        const renderer = view[RENDERER];
+        renderer.removeStyles?.(styleRoot!);
+      }
+
       const newHost = host.cloneNode(false) as HTMLElement;
       host.replaceWith(newHost);
       host = newHost;
@@ -286,7 +309,18 @@ function recreateLView(
 
     // Patch a brand-new renderer onto the new view only after the old
     // view is destroyed so that the runtime doesn't try to reuse it.
-    newLView[RENDERER] = rendererFactory.createRenderer(host, newDef);
+    const newRenderer = rendererFactory.createRenderer(host, newDef);
+    newLView[RENDERER] = newRenderer;
+
+    // Reapply styles potentially with a newly created shadow root.
+    if (newRenderer.applyStyles) {
+      const newStyleRoot = getStyleRoot(newLView);
+      ngDevMode && assertDefined(newStyleRoot, 'newStyleRoot');
+      newRenderer.applyStyles(newStyleRoot!);
+
+      // Don't need to reapply styles for descendent components because
+      // that will be handled as part of rendering the view.
+    }
 
     // Remove the nodes associated with the destroyed LView. This removes the
     // descendants, but not the host which we want to stay in place.

@@ -27,12 +27,21 @@ export class BaseAnimationRenderer implements Renderer2 {
   // See https://github.com/microsoft/rushstack/issues/4390
   readonly ɵtype: AnimationRendererType.Regular = AnimationRendererType.Regular;
 
+  applyStyles: Renderer2['applyStyles'];
+  removeStyles: Renderer2['removeStyles'];
+
   constructor(
     protected namespaceId: string,
     public delegate: Renderer2,
     public engine: AnimationEngine,
     private _onDestroy?: () => void,
-  ) {}
+  ) {
+    // Conditionally define styling functionality based on the delegate, so we don't
+    // always implement `applyStyles` / `removeStyles` but then no-op if the delegate
+    // doesn't support it.
+    this.applyStyles = delegate.applyStyles?.bind(delegate);
+    this.removeStyles = delegate.removeStyles?.bind(delegate);
+  }
 
   get data() {
     return this.delegate.data;

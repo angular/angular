@@ -273,8 +273,19 @@ export abstract class Renderer2 {
   /** The component's internal shadow root if one is used. */
   shadowRoot?: ShadowRoot;
 
-  /** Attach any required stylesheets to the DOM. */
-  abstract applyStyles?(): void;
+  /**
+   * Attach any required stylesheets for the associated component to the provided
+   * {@link StyleRoot}. This is called when the component is initially rendered
+   * xor attached to a view.
+   */
+  abstract applyStyles?(styleRoot: StyleRoot): void;
+
+  /**
+   * Detach any required stylesheets for the associated component from the
+   * provided {@link StyleRoot}. This is called when the component is destroyed
+   * xor detached from a view.
+   */
+  abstract removeStyles?(styleRoot: StyleRoot): void;
 
   /**
    * @internal
