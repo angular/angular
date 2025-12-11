@@ -19,11 +19,11 @@ import {addModuleName} from './module-name.mjs';
 import {addRepo} from './repo.mjs';
 
 /** Given an unprocessed block entry, get the fully renderable block entry. */
-export async function getBlockRenderable(
+export function getBlockRenderable(
   blockEntry: DocEntry,
   moduleName: string,
   repo: string,
-): Promise<BlockEntryRenderable> {
+): BlockEntryRenderable {
   return setEntryFlags(
     addHtmlAdditionalLinks(
       addHtmlDescription(
