@@ -22,6 +22,8 @@ const detectAngularMessageBus = new SamePageMessageBus(
   CONTENT_SCRIPT_URI,
 );
 
+let detectAngularTimeout: ReturnType<typeof setTimeout>;
+
 function detectAngular(win: Window): void {
   const isAngular = appIsAngular();
   const isSupportedAngularVersion = appIsSupportedAngularVersion();
@@ -50,7 +52,11 @@ function detectAngular(win: Window): void {
     },
   ]);
 
-  setTimeout(() => detectAngular(win), 1000);
+  detectAngularTimeout = setTimeout(() => detectAngular(win), 1000);
 }
+
+detectAngularMessageBus.on('backendInstalled', () => {
+  clearTimeout(detectAngularTimeout);
+});
 
 detectAngular(window);
