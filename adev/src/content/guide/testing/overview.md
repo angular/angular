@@ -8,7 +8,7 @@ NOTE: This guide covers the default testing setup for new Angular CLI projects, 
 
 The Angular CLI downloads and installs everything you need to test an Angular application with the [Vitest testing framework](https://vitest.dev). New projects include `vitest` and `jsdom` by default.
 
-Vitest runs your unit tests in a Node.js environment. To simulate the browser's DOM, Vitest uses a library called `jsdom`. This allows for faster test execution by avoiding the overhead of launching a browser. You can swap `jsdom` for an alternative like `happy-dom` by installing it and uninstalling `jsdom`.
+Vitest runs your unit tests in a Node.js environment. To simulate the browser's DOM, Vitest uses a library called `jsdom`. This allows for faster test execution by avoiding the overhead of launching a browser. You can swap `jsdom` for an alternative like `happy-dom` by installing it and uninstalling `jsdom`. Currently, `jsdom` and `happy-dom` are the supported DOM emulation libraries.
 
 The project you create with the CLI is immediately ready to test. Run the [`ng test`](cli/test) command:
 
@@ -52,8 +52,7 @@ The `setupFiles` and `providersFile` options are particularly useful for managin
 
 For example, you could create a `src/test-providers.ts` file to provide `provideHttpClientTesting` to all your tests:
 
-```typescript
-// src/test-providers.ts
+```typescript {header: "src/test-providers.ts"}
 import { Provider } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -132,9 +131,23 @@ For more detailed information, see the [Code coverage guide](guide/testing/code-
 
 While the default Node.js environment is faster for most unit tests, you can also run your tests in a real browser. This is useful for tests that rely on browser-specific APIs (like rendering) or for debugging.
 
-To run tests in a browser, you must first install a browser provider. Beyond installing the provider and specifying the `browsers` option in `angular.json` or as a CLI flag, no further configuration is required.
+To run tests in a browser, you must first install a browser provider. Read more about Vitest's browser mode in the [official documentation](https://vitest.dev/guide/browser).
 
-Read more about Vitest's browser mode in the [official documentation](https://vitest.dev/guide/browser).
+Once the provider is installed, you can run your tests in the browser by configuring the `browsers` option in `angular.json` or by using the `--browsers` CLI flag. Tests run in a headed browser by default. If the `CI` environment variable is set, headless mode is used instead. To explicitly control headless mode, you can suffix the browser name with `Headless` (e.g., `chromiumHeadless`).
+
+```bash
+# Example for Playwright (headed)
+ng test --browsers=chromium
+
+# Example for Playwright (headless)
+ng test --browsers=chromiumHeadless
+
+# Example for WebdriverIO (headed)
+ng test --browsers=chrome
+
+# Example for WebdriverIO (headless)
+ng test --browsers=chromeHeadless
+```
 
 Choose one of the following browser providers based on your needs:
 
@@ -195,23 +208,7 @@ The `@vitest/browser-preview` provider is designed for Webcontainer environments
   </docs-code>
 </docs-code-multifile>
 
-Once the provider is installed, you can run your tests in the browser using the `--browsers` flag. Tests run in a headed browser by default. If the `CI` environment variable is set, headless mode is used instead. To explicitly control headless mode, you can suffix the browser name with `Headless` (e.g., `chromiumHeadless`).
-
-```bash
-# Example for Playwright (headed)
-ng test --browsers=chromium
-
-# Example for Playwright (headless)
-ng test --browsers=chromiumHeadless
-
-# Example for WebdriverIO (headed)
-ng test --browsers=chrome
-
-# Example for WebdriverIO (headless)
-ng test --browsers=chromeHeadless
-```
-
-For more advanced browser-specific configuration, see the [Advanced Vitest configuration](#advanced-vitest-configuration) section.
+HELPFUL: For more advanced browser-specific configuration, see the [Advanced Vitest configuration](#advanced-vitest-configuration) section.
 
 ## Other test frameworks
 
