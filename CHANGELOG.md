@@ -1,3 +1,21 @@
+<a name="21.1.0-next.3"></a>
+
+# 21.1.0-next.3 (2025-12-11)
+
+### core
+
+| Commit                                                                                            | Type | Description                                                                    |
+| ------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------ |
+| [4f6014a756a](https://github.com/angular/angular/commit/4f6014a756a95ff9cb55e91deb27039b7eb079ee) | fix  | avoid false-positive deprecation when using `InjectionToken` with factory only |
+
+### forms
+
+| Commit                                                                                            | Type | Description                 |
+| ------------------------------------------------------------------------------------------------- | ---- | --------------------------- |
+| [d0097f7d0c2](https://github.com/angular/angular/commit/d0097f7d0c214c5c3d715e7f1dfa3723b31f4065) | fix  | fix signal forms type error |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.5"></a>
 
 # 21.0.5 (2025-12-11)
