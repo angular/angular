@@ -109,4 +109,68 @@ describe('implicit signal debug name transform', () => {
     );
     expect(output).toContain('debugName: "\\u0275mySignal"');
   });
+
+  it('prefixes private class properties', () => {
+    const output = emitWithTransform(
+      '/workspace/node_modules/@angular/forms/src/model.ts',
+      `
+        import {signal} from '@angular/core';
+        class Control {
+          private readonly _status = signal('VALID');
+        }
+      `,
+    );
+    expect(output).toContain('debugName: "\\u0275_status"');
+  });
+
+  it('prefixes fields marked with @internal', () => {
+    const output = emitWithTransform(
+      '/workspace/node_modules/@angular/forms/src/model.ts',
+      `
+        import {signal} from '@angular/core';
+        class Control {
+          /** @internal */
+          statusSignal = signal('VALID');
+        }
+      `,
+    );
+    expect(output).toContain('debugName: "\\u0275statusSignal"');
+  });
+
+  it('does not prefix public class fields', () => {
+    const output = emitWithTransform(
+      '/workspace/node_modules/@angular/forms/src/model.ts',
+      `
+        import {signal} from '@angular/core';
+        class Control {
+          statusSignal = signal('VALID');
+        }
+      `,
+    );
+    expect(output).toContain('debugName: "statusSignal"');
+    expect(output).not.toContain('\\u0275statusSignal');
+  });
+
+  it('prefixes non-exported module-level signals', () => {
+    const output = emitWithTransform(
+      '/workspace/node_modules/@angular/forms/src/model.ts',
+      `
+        import {signal} from '@angular/core';
+        const internalSignal = signal(true);
+      `,
+    );
+    expect(output).toContain('debugName: "\\u0275internalSignal"');
+  });
+
+  it('does not prefix exported module-level signals', () => {
+    const output = emitWithTransform(
+      '/workspace/node_modules/@angular/forms/src/model.ts',
+      `
+        import {signal} from '@angular/core';
+        export const READY = signal(true);
+      `,
+    );
+    expect(output).toContain('debugName: "READY"');
+    expect(output).not.toContain('\\u0275READY');
+  });
 });

@@ -11,8 +11,13 @@ import ts from 'typescript';
 function insertDebugNameIntoCallExpression(
   node: ts.CallExpression,
   debugName: string,
+  declarationNode: ts.Node | null,
 ): ts.CallExpression {
-  const debugNameWithOrigin = createDebugNameWithOrigin(debugName, node.getSourceFile());
+  const debugNameWithOrigin = createDebugNameWithOrigin(
+    debugName,
+    node.getSourceFile(),
+    declarationNode,
+  );
   const isRequired = isRequiredSignalFunction(node.expression);
   const hasNoArgs = node.arguments.length === 0;
   const configPosition = hasNoArgs || isSignalWithObjectOnlyDefinition(node) || isRequired ? 0 : 1;
@@ -83,10 +88,13 @@ function insertDebugNameIntoCallExpression(
   return ts.factory.updateCallExpression(node, node.expression, node.typeArguments, newArgs);
 }
 
-function createDebugNameWithOrigin(debugName: string, sourceFile: ts.SourceFile): string {
-  if (isAngularFrameworkSource(sourceFile)) {
-    const prefixed = `ɵ${debugName}`;
-    return debugName.startsWith('ɵ') ? debugName : prefixed;
+function createDebugNameWithOrigin(
+  debugName: string,
+  sourceFile: ts.SourceFile,
+  declarationNode: ts.Node | null,
+): string {
+  if (shouldPrefixDebugName(sourceFile, declarationNode, debugName)) {
+    return debugName.startsWith('ɵ') ? debugName : `ɵ${debugName}`;
   }
   return debugName;
 }
@@ -107,6 +115,110 @@ function isAngularFrameworkSource(sourceFile: ts.SourceFile): boolean {
   }
 
   return false;
+}
+
+function shouldPrefixDebugName(
+  sourceFile: ts.SourceFile,
+  declarationNode: ts.Node | null,
+  debugName: string,
+): boolean {
+  if (!isAngularFrameworkSource(sourceFile)) {
+    return false;
+  }
+
+  if (declarationNode) {
+    if (hasInternalJsDocTag(declarationNode)) {
+      return true;
+    }
+
+    if (hasRestrictedModifier(declarationNode)) {
+      return true;
+    }
+
+    if (isInternalDeclarationName(declarationNode)) {
+      return true;
+    }
+
+    if (
+      ts.isVariableDeclaration(declarationNode) &&
+      isTopLevelVariableDeclaration(declarationNode) &&
+      !isExportedVariableDeclaration(declarationNode)
+    ) {
+      return true;
+    }
+  }
+
+  return debugName.startsWith('_');
+}
+
+function hasInternalJsDocTag(node: ts.Node): boolean {
+  const tags = ts.getJSDocTags(node);
+  return tags.some((tag) => tag.tagName.text === 'internal');
+}
+
+function hasRestrictedModifier(node: ts.Node): boolean {
+  const modifiers = (node as ts.HasModifiers).modifiers;
+  if (!modifiers) {
+    return false;
+  }
+  return modifiers.some((modifier) => modifier.kind === ts.SyntaxKind.PrivateKeyword);
+}
+
+function isInternalDeclarationName(node: ts.Node): boolean {
+  if (
+    ts.isPropertyDeclaration(node) ||
+    ts.isGetAccessorDeclaration(node) ||
+    ts.isSetAccessor(node)
+  ) {
+    return isInternalPropertyName(node.name);
+  }
+
+  if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
+    return node.name.text.startsWith('_');
+  }
+
+  if (ts.isPropertyAccessExpression(node)) {
+    return ts.isPrivateIdentifier(node.name) || node.name.text.startsWith('_');
+  }
+
+  return false;
+}
+
+function isInternalPropertyName(name: ts.PropertyName): boolean {
+  if (ts.isPrivateIdentifier(name)) {
+    return true;
+  }
+  if (ts.isIdentifier(name) || ts.isStringLiteral(name) || ts.isNumericLiteral(name)) {
+    return name.text.startsWith('_');
+  }
+  if (ts.isComputedPropertyName(name) && ts.isStringLiteral(name.expression)) {
+    return name.expression.text.startsWith('_');
+  }
+  return false;
+}
+
+function isTopLevelVariableDeclaration(node: ts.VariableDeclaration): boolean {
+  if (!ts.isVariableDeclarationList(node.parent)) {
+    return false;
+  }
+  const statement = node.parent.parent;
+  return ts.isVariableStatement(statement) && ts.isSourceFile(statement.parent);
+}
+
+function isExportedVariableDeclaration(node: ts.VariableDeclaration): boolean {
+  if (!ts.isVariableDeclarationList(node.parent)) {
+    return false;
+  }
+  const statement = node.parent.parent;
+  if (!ts.isVariableStatement(statement) || !statement.modifiers) {
+    return false;
+  }
+
+  return statement.modifiers.some(
+    (modifier) =>
+      modifier.kind === ts.SyntaxKind.ExportKeyword ||
+      modifier.kind === ts.SyntaxKind.DefaultKeyword,
+  );
 }
 
 /**
@@ -349,7 +461,7 @@ function transformVariableDeclaration(
       node.name,
       node.exclamationToken,
       node.type,
-      insertDebugNameIntoCallExpression(node.initializer, nodeText),
+      insertDebugNameIntoCallExpression(node.initializer, nodeText, node),
     );
   } catch {
     return node;
@@ -379,7 +491,11 @@ function transformPropertyAssignment(
     ts.factory.createBinaryExpression(
       node.expression.left,
       node.expression.operatorToken,
-      insertDebugNameIntoCallExpression(node.expression.right, node.expression.left.name.text),
+      insertDebugNameIntoCallExpression(
+        node.expression.right,
+        node.expression.left.name.text,
+        node.expression.left,
+      ),
     ),
   );
 }
@@ -408,7 +524,7 @@ function transformPropertyDeclaration(
       node.name,
       node.questionToken,
       node.type,
-      insertDebugNameIntoCallExpression(node.initializer, nodeText),
+      insertDebugNameIntoCallExpression(node.initializer, nodeText, node),
     );
   } catch {
     return node;
