@@ -16,11 +16,38 @@ import {
   TmplAstInteractionDeferredTrigger,
   TmplAstTimerDeferredTrigger,
   TmplAstViewportDeferredTrigger,
+  LiteralMap,
 } from '@angular/compiler';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
 import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+
+function areLiteralMapsEqual(a: LiteralMap | null, b: LiteralMap | null): boolean {
+  // Treat null and empty LiteralMaps as equivalent
+  const aIsEmpty = a === null || a.keys.length === 0;
+  const bIsEmpty = b === null || b.keys.length === 0;
+
+  if (aIsEmpty && bIsEmpty) return true;
+  if (aIsEmpty || bIsEmpty) return false;
+  if (a.keys.length !== b.keys.length) return false;
+
+  const bMap = new Map<string, unknown>();
+
+  for (let i = 0; i < b.keys.length; i++) {
+    bMap.set(b.keys[i].key, b.values[i].value);
+  }
+
+  for (let i = 0; i < a.keys.length; i++) {
+    const key = a.keys[i].key;
+    const aValue = a.values[i].value;
+
+    if (!bMap.has(key)) return false;
+    if (bMap.get(key) !== aValue) return false;
+  }
+
+  return true;
+}
 
 /**
  * This check implements warnings for unreachable or redundant @defer triggers.
@@ -83,10 +110,9 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
           }
         }
 
-        // Reference-based triggers (hover/interaction/viewport): only warn if both
-        // have a reference and the references are identical. If references differ
-        // (or one is missing), the prefetch targets a different element and
-        // provides potential value.
+        // Reference-based triggers (hover/interaction/viewport): warn if both
+        // have identical configurations - same reference (or both null) and
+        // same options (for viewport triggers).
 
         const isHoverTrigger =
           main instanceof TmplAstHoverDeferredTrigger && pre instanceof TmplAstHoverDeferredTrigger;
@@ -100,9 +126,12 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
           pre instanceof TmplAstViewportDeferredTrigger;
 
         if (isHoverTrigger || isInteractionTrigger || isViewportTrigger) {
-          const mainRef = main.reference;
-          const preRef = pre.reference;
-          if (mainRef && preRef && mainRef === preRef) {
+          const referencesMatch = main.reference === pre.reference;
+          const optionsMatch = isViewportTrigger
+            ? areLiteralMapsEqual(main.options, pre.options)
+            : true;
+
+          if (referencesMatch && optionsMatch) {
             const kindName = main.constructor.name.replace('DeferredTrigger', '').toLowerCase();
             const msg = `Prefetch '${kindName}' matches the main trigger and provides no benefit. Remove the prefetch modifier.`;
             diags.push(ctx.makeTemplateDiagnostic(pre.sourceSpan ?? node.sourceSpan, msg));
