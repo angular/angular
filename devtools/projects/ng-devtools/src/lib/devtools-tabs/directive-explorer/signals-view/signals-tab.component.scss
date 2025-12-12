@@ -128,4 +128,22 @@
       font-size: 18px;
     }
   }
+
+  .filter-toggle {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.45rem;
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.35);
+    color: var(--gray-100);
+    user-select: none;
+
+    input {
+      margin: 0;
+    }
+  }
 }

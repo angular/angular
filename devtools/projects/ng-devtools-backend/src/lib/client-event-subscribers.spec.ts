@@ -7,7 +7,11 @@
  */
 
 import {Events, MessageBus} from '../../../protocol';
-import {subscribeToClientEvents} from './client-event-subscribers';
+import {
+  isAngularInternalSignal,
+  RawSignalGraphNode,
+  subscribeToClientEvents,
+} from './client-event-subscribers';
 import {appIsAngular, appIsAngularIvy, appIsSupportedAngularVersion} from '../../../shared-utils';
 import {DirectiveForestHooks} from './hooks/hooks';
 import {of} from 'rxjs';
@@ -51,6 +55,27 @@ describe('ClientEventSubscriber', () => {
     expect(messageBusMock.on).toHaveBeenCalledWith('removeHighlightOverlay', jasmine.any(Function));
     expect(messageBusMock.on).toHaveBeenCalledWith('createHydrationOverlay', jasmine.any(Function));
     expect(messageBusMock.on).toHaveBeenCalledWith('removeHydrationOverlay', jasmine.any(Function));
+  });
+
+  describe('isAngularInternalSignal', () => {
+    const baseNode: RawSignalGraphNode = {
+      id: '1',
+      kind: 'signal',
+      epoch: 1,
+    };
+
+    it('returns true for ɵ-prefixed labels', () => {
+      expect(isAngularInternalSignal({...baseNode, label: 'ɵfoo'})).toBeTrue();
+      expect(isAngularInternalSignal({...baseNode, label: 'ɵanything'})).toBeTrue();
+    });
+
+    it('returns false for non-prefixed labels', () => {
+      expect(isAngularInternalSignal({...baseNode, label: 'user'})).toBeFalse();
+      expect(isAngularInternalSignal({...baseNode, label: 'reactiveTest'})).toBeFalse();
+      expect(isAngularInternalSignal({...baseNode, label: 'touched'})).toBeFalse();
+      expect(isAngularInternalSignal({...baseNode, label: 'pristine'})).toBeFalse();
+      expect(isAngularInternalSignal({...baseNode, kind: 'unknown'})).toBeFalse();
+    });
   });
 });
 

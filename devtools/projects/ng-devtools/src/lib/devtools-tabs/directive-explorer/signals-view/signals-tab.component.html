@@ -1,5 +1,14 @@
 <svg #component></svg>
 
+<label class="filter-toggle">
+  <input
+    type="checkbox"
+    [checked]="hideInternalSignals()"
+    (change)="hideInternalSignals.set($any($event.target)?.checked)"
+  />
+  Hide internal signals
+</label>
+
 @let node = selectedNode();
 @let dataSource = this.dataSource();
 @if (node && dataSource && detailsVisible()) {

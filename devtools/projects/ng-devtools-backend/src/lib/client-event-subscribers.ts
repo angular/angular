@@ -65,6 +65,15 @@ import {sanitizeObject} from './serialization-utils';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
+export type RawSignalGraphNode = {
+  id: string;
+  kind: DebugSignalGraphNode['kind'];
+  label?: string;
+  value?: unknown;
+  epoch: number;
+  debuggableFn?: () => unknown;
+};
+
 export const subscribeToClientEvents = (
   messageBus: MessageBus<Events>,
   depsForTestOnly?: {
@@ -636,6 +645,11 @@ const getInjectorInstance = (
   return null;
 };
 
+export function isAngularInternalSignal(node: RawSignalGraphNode): boolean {
+  const label = node.label ?? '';
+  return label.startsWith('ɵ');
+}
+
 const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: ElementPosition) => {
   const ng = ngDebugClient();
 
@@ -658,14 +672,18 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
 
   const graph = ng.ɵgetSignalGraph?.(injector);
   if (graph) {
-    const nodes = graph.nodes.map<DebugSignalGraphNode>((node) => {
+    const nodes = graph.nodes.map<DebugSignalGraphNode>((node: RawSignalGraphNode) => {
+      const isMarkedInternal = isAngularInternalSignal(node);
+      const sanitizedLabel = isMarkedInternal ? node.label!.slice('ɵ'.length) : node.label;
+
       return {
         id: node.id,
         kind: node.kind,
-        label: node.label,
+        label: sanitizedLabel,
         epoch: node.epoch,
         preview: serializeValue(node.value),
         debuggable: !!node.debuggableFn,
+        isAngularInternal: isMarkedInternal,
       };
     });
     messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);

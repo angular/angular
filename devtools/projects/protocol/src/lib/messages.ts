@@ -30,6 +30,8 @@ export interface DebugSignalGraphNode {
   label?: string;
   preview: Descriptor;
   debuggable: boolean;
+  /** True when the node is produced by Angular runtime infrastructure rather than app code. */
+  isAngularInternal?: boolean;
 }
 
 export interface DebugSignalGraphEdge {
