@@ -12,12 +12,16 @@ import {
   computed,
   Directive,
   ElementRef,
+  EventEmitter,
   inject,
   Injector,
   input,
   inputBinding,
+  Input,
   model,
   numberAttribute,
+  output,
+  Output,
   resource,
   signal,
   viewChild,
@@ -1495,6 +1499,80 @@ describe('field directive', () => {
     expect(cmp.f().value()).toBe('typing');
   });
 
+  it('synchronizes with a custom value control with separate input and output properties', () => {
+    @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value()" (input)="valueChange.emit(i.value)" />',
+    })
+    class CustomInput {
+      readonly value = input.required<string>();
+      readonly valueChange = output<string>();
+    }
+
+    @Component({
+      imports: [Field, CustomInput],
+      template: `<my-input [field]="f" />`,
+    })
+    class TestCmp {
+      f = form<string>(signal('test'));
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const element = fix.nativeElement.firstChild.firstChild as HTMLInputElement;
+    const cmp = fix.componentInstance as TestCmp;
+
+    // Initial state
+    expect(element.value).toBe('test');
+
+    // Model -> View
+    act(() => cmp.f().value.set('testing'));
+    expect(element.value).toBe('testing');
+
+    // View -> Model
+    act(() => {
+      element.value = 'typing';
+      element.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toBe('typing');
+  });
+
+  it('synchronizes with a custom value control with separate @Input and @Output properties', () => {
+    @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value" (input)="valueChange.emit(i.value)" />',
+    })
+    class CustomInput {
+      @Input({required: true}) value!: string;
+      @Output() valueChange = new EventEmitter<string>();
+    }
+
+    @Component({
+      imports: [Field, CustomInput],
+      template: `<my-input [field]="f" />`,
+    })
+    class TestCmp {
+      f = form<string>(signal('test'));
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const element = fix.nativeElement.firstChild.firstChild as HTMLInputElement;
+    const cmp = fix.componentInstance as TestCmp;
+
+    // Initial state
+    expect(element.value).toBe('test');
+
+    // Model -> View
+    act(() => cmp.f().value.set('testing'));
+    expect(element.value).toBe('testing');
+
+    // View -> Model
+    act(() => {
+      element.value = 'typing';
+      element.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toBe('typing');
+  });
+
   it('synchronizes with a custom checkbox control', () => {
     @Component({
       selector: 'my-checkbox',
@@ -1528,6 +1606,82 @@ describe('field directive', () => {
     act(() => {
       input.checked = true;
       input.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toBe(true);
+  });
+
+  it('synchronizes with a custom checkbox control with separate input and output properties', () => {
+    @Component({
+      selector: 'my-checkbox',
+      template:
+        '<input type="checkbox" #i [checked]="checked()" (input)="checkedChange.emit(i.checked)" />',
+    })
+    class CustomCheckbox {
+      readonly checked = input.required<boolean>();
+      readonly checkedChange = output<boolean>();
+    }
+
+    @Component({
+      imports: [Field, CustomCheckbox],
+      template: `<my-checkbox [field]="f" />`,
+    })
+    class TestCmp {
+      f = form<boolean>(signal(true));
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const element = fix.nativeElement.querySelector('input') as HTMLInputElement;
+    const cmp = fix.componentInstance as TestCmp;
+
+    // Initial state
+    expect(element.checked).toBe(true);
+
+    // Model -> View
+    act(() => cmp.f().value.set(false));
+    expect(element.checked).toBe(false);
+
+    // View -> Model
+    act(() => {
+      element.checked = true;
+      element.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toBe(true);
+  });
+
+  it('synchronizes with a custom checkbox control with separate @Input and @Output properties', () => {
+    @Component({
+      selector: 'my-checkbox',
+      template:
+        '<input type="checkbox" #i [checked]="checked" (input)="checkedChange.emit(i.checked)" />',
+    })
+    class CustomCheckbox {
+      @Input({required: true}) checked!: boolean;
+      @Output() checkedChange = new EventEmitter<boolean>();
+    }
+
+    @Component({
+      imports: [Field, CustomCheckbox],
+      template: `<my-checkbox [field]="f" />`,
+    })
+    class TestCmp {
+      f = form<boolean>(signal(true));
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const element = fix.nativeElement.querySelector('input') as HTMLInputElement;
+    const cmp = fix.componentInstance as TestCmp;
+
+    // Initial state
+    expect(element.checked).toBe(true);
+
+    // Model -> View
+    act(() => cmp.f().value.set(false));
+    expect(element.checked).toBe(false);
+
+    // View -> Model
+    act(() => {
+      element.checked = true;
+      element.dispatchEvent(new Event('input'));
     });
     expect(cmp.f().value()).toBe(true);
   });
