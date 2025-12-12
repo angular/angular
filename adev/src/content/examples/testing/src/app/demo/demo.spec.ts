@@ -1,5 +1,6 @@
 // #docplaster
 import {LightswitchComponent, MasterService, ValueService, ReversePipe} from './demo';
+import {vi} from 'vitest';
 
 ///////// Fakes /////////
 export class FakeValueService extends ValueService {
@@ -8,7 +9,7 @@ export class FakeValueService extends ValueService {
 ////////////////////////
 describe('demo (no TestBed):', () => {
   // #docregion ValueService
-  // Straight Jasmine testing without Angular's testing support
+  // Vitest testing without Angular's testing support
   describe('ValueService', () => {
     let service: ValueService;
     beforeEach(() => {
@@ -19,18 +20,18 @@ describe('demo (no TestBed):', () => {
       expect(service.getValue()).toBe('real value');
     });
 
-    it('#getObservableValue should return value from observable', (done: DoneFn) => {
-      service.getObservableValue().subscribe((value) => {
-        expect(value).toBe('observable value');
-        done();
+    it('#getObservableValue should return value from observable', async () => {
+      const value = await new Promise((resolve) => {
+        service.getObservableValue().subscribe((val) => {
+          resolve(val);
+        });
       });
+      expect(value).toBe('observable value');
     });
 
-    it('#getPromiseValue should return value from a promise', (done: DoneFn) => {
-      service.getPromiseValue().then((value) => {
-        expect(value).toBe('promise value');
-        done();
-      });
+    it('#getPromiseValue should return value from a promise', async () => {
+      const value = await service.getPromiseValue();
+      expect(value).toBe('promise value');
     });
   });
   // #enddocregion ValueService
@@ -58,19 +59,16 @@ describe('demo (no TestBed):', () => {
 
     it('#getValue should return stubbed value from a spy', () => {
       // create `getValue` spy on an object representing the ValueService
-      const valueServiceSpy = jasmine.createSpyObj('ValueService', ['getValue']);
-
-      // set the value to return when the `getValue` spy is called.
       const stubValue = 'stub value';
-      valueServiceSpy.getValue.and.returnValue(stubValue);
+      const valueServiceSpy = {
+        getValue: vi.fn().mockReturnValue(stubValue),
+      };
 
-      masterService = new MasterService(valueServiceSpy);
+      masterService = new MasterService(valueServiceSpy as any);
 
-      expect(masterService.getValue()).withContext('service returned stub value').toBe(stubValue);
-      expect(valueServiceSpy.getValue.calls.count())
-        .withContext('spy method was called once')
-        .toBe(1);
-      expect(valueServiceSpy.getValue.calls.mostRecent().returnValue).toBe(stubValue);
+      expect(masterService.getValue()).toBe(stubValue);
+      expect(valueServiceSpy.getValue).toHaveBeenCalledTimes(1);
+      expect(valueServiceSpy.getValue.mock.results[0].value).toBe(stubValue);
     });
   });
   // #enddocregion MasterService
@@ -81,21 +79,20 @@ describe('demo (no TestBed):', () => {
       // #docregion no-before-each-setup-call
       const {masterService, stubValue, valueServiceSpy} = setup();
       // #enddocregion no-before-each-setup-call
-      expect(masterService.getValue()).withContext('service returned stub value').toBe(stubValue);
-      expect(valueServiceSpy.getValue.calls.count())
-        .withContext('spy method was called once')
-        .toBe(1);
-      expect(valueServiceSpy.getValue.calls.mostRecent().returnValue).toBe(stubValue);
+      expect(masterService.getValue()).toBe(stubValue);
+      expect(valueServiceSpy.getValue).toHaveBeenCalledTimes(1);
+      expect(valueServiceSpy.getValue.mock.results[0].value).toBe(stubValue);
     });
     // #enddocregion no-before-each-test
 
     // #docregion no-before-each-setup
     function setup() {
-      const valueServiceSpy = jasmine.createSpyObj('ValueService', ['getValue']);
       const stubValue = 'stub value';
-      const masterService = new MasterService(valueServiceSpy);
+      const valueServiceSpy = {
+        getValue: vi.fn().mockReturnValue(stubValue),
+      };
+      const masterService = new MasterService(valueServiceSpy as any);
 
-      valueServiceSpy.getValue.and.returnValue(stubValue);
       return {masterService, stubValue, valueServiceSpy};
     }
     // #enddocregion no-before-each-setup
@@ -122,20 +119,18 @@ describe('demo (no TestBed):', () => {
   describe('LightswitchComp', () => {
     it('#clicked() should toggle #isOn', () => {
       const comp = new LightswitchComponent();
-      expect(comp.isOn).withContext('off at first').toBe(false);
+      expect(comp.isOn, 'off at first').toBe(false);
       comp.clicked();
-      expect(comp.isOn).withContext('on after click').toBe(true);
+      expect(comp.isOn, 'on after click').toBe(true);
       comp.clicked();
-      expect(comp.isOn).withContext('off after second click').toBe(false);
+      expect(comp.isOn, 'off after second click').toBe(false);
     });
 
     it('#clicked() should set #message to "is on"', () => {
       const comp = new LightswitchComponent();
-      expect(comp.message)
-        .withContext('off at first')
-        .toMatch(/is off/i);
+      expect(comp.message, 'off at first').toMatch(/is off/i);
       comp.clicked();
-      expect(comp.message).withContext('on after clicked').toMatch(/is on/i);
+      expect(comp.message, 'on after clicked').toMatch(/is on/i);
     });
   });
   // #enddocregion Lightswitch
