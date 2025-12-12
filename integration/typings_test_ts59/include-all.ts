@@ -18,6 +18,7 @@ import * as core from '@angular/core';
 import * as coreTesting from '@angular/core/testing';
 import * as elements from '@angular/elements';
 import * as forms from '@angular/forms';
+import * as formsSignals from '@angular/forms/signals';
 import * as localize from '@angular/localize';
 import * as platformBrowser from '@angular/platform-browser';
 import * as platformBrowserDynamic from '@angular/platform-browser-dynamic';
@@ -48,6 +49,7 @@ export default {
   coreTesting,
   elements,
   forms,
+  formsSignals,
   localize,
   platformBrowser,
   platformBrowserTesting,
