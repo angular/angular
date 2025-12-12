@@ -84,7 +84,7 @@ export function createComputed<T>(
   (computed as ComputedGetter<T>)[SIGNAL] = node;
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     const debugName = node.debugName ? ' (' + node.debugName + ')' : '';
-    computed.toString = () => `[Computed${debugName}: ${node.value}]`;
+    computed.toString = () => `[Computed${debugName}: ${String(node.value)}]`;
   }
 
   runPostProducerCreatedFn(node);
