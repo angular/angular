@@ -97,7 +97,10 @@ export default class ApiReferenceList {
         id: group.id,
         items: group.items.filter((apiItem) => {
           return (
-            (query == '' ? true : apiItem.title.toLocaleLowerCase().includes(query)) &&
+            (query == ''
+              ? true
+              : apiItem.title.toLocaleLowerCase().includes(query) ||
+                group.title.toLocaleLowerCase().includes(query)) &&
             (type === ALL_TYPES_KEY || apiItem.itemType === type) &&
             ((status & STATUSES.stable &&
               !apiItem.developerPreview &&
