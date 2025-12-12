@@ -905,11 +905,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 export class HostBindingImageDir {
     constructor() {
         this.evil = 'evil';
-        this.nonEvil = 'nonEvil';
     }
 }
 HostBindingImageDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingImageDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-HostBindingImageDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingImageDir, isStandalone: true, selector: "img[hostBindingImgDir]", host: { properties: { "innerHtml": "evil", "attr.style": "evil", "src": "nonEvil" } }, ngImport: i0 });
+HostBindingImageDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingImageDir, isStandalone: true, selector: "img[hostBindingImgDir]", host: { properties: { "innerHtml": "evil", "attr.style": "evil", "src": "evil" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingImageDir, decorators: [{
             type: Directive,
             args: [{
@@ -917,7 +916,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     host: {
                         '[innerHtml]': 'evil',
                         '[attr.style]': 'evil',
-                        '[src]': 'nonEvil',
+                        '[src]': 'evil',
                     },
                 }]
         }] });
@@ -970,7 +969,6 @@ export declare class HostBindingLinkDir {
 }
 export declare class HostBindingImageDir {
     evil: string;
-    nonEvil: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingImageDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingImageDir, "img[hostBindingImgDir]", never, {}, {}, never, never, true, never>;
 }
