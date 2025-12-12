@@ -12,7 +12,6 @@ import {assertFirstCreatePass} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {ɵCONTROL, ɵControl, ɵFieldState} from '../interfaces/control';
 import {DirectiveDef} from '../interfaces/definition';
-import {InputFlags} from '../interfaces/input_flags';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
@@ -296,15 +295,19 @@ function getControlDirective<T>(tNode: TNode, lView: LView): ɵControl<T> | null
   return index === -1 ? null : lView[index];
 }
 
-/** Returns whether the specified `directiveDef` has a model input named `name`. */
+/**
+ * Returns whether the specified `directiveDef` has a model-like input named `name`.
+ *
+ * A model-like input is an input-output pair where the input is named `name` and the output is
+ * named `name + 'Change'`.
+ */
 function hasModelInput(directiveDef: DirectiveDef<unknown>, name: string): boolean {
-  return hasSignalInput(directiveDef, name) && hasOutput(directiveDef, name + 'Change');
+  return hasInput(directiveDef, name) && hasOutput(directiveDef, name + 'Change');
 }
 
-/** Returns whether the specified `directiveDef` has a signal-based input named `name`.*/
-function hasSignalInput(directiveDef: DirectiveDef<unknown>, name: string): boolean {
-  const input = directiveDef.inputs[name];
-  return input && (input[1] & InputFlags.SignalBased) !== 0;
+/** Returns whether the specified `directiveDef` has an input named `name`.*/
+function hasInput(directiveDef: DirectiveDef<unknown>, name: string): boolean {
+  return name in directiveDef.inputs;
 }
 
 /** Returns whether the specified `directiveDef` has an output named `name`. */

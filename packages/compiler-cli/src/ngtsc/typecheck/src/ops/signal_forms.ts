@@ -440,10 +440,9 @@ function extractFieldValue(expression: AST, tcb: Context, scope: Scope): ts.Expr
   );
 }
 
-/** Checks whether a directive has a model input with a specific name. */
+/** Checks whether a directive has a model-like input with a specific name. */
 function hasModelInput(name: string, meta: TypeCheckableDirectiveMeta): boolean {
   return (
-    !!meta.inputs.getByBindingPropertyName(name)?.some((v) => v.isSignal) &&
-    meta.outputs.hasBindingPropertyName(name + 'Change')
+    meta.inputs.hasBindingPropertyName(name) && meta.outputs.hasBindingPropertyName(name + 'Change')
   );
 }
