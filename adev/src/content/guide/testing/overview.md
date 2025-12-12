@@ -2,15 +2,15 @@
 
 Testing your Angular application helps you check that it is working as you expect. Unit tests are crucial for catching bugs early, ensuring code quality, and facilitating safe refactoring.
 
-NOTE: This guide focuses on the default testing setup for new Angular CLI projects. If you are migrating an existing project from Karma to Vitest, see the [Migrating from Karma to Vitest guide](guide/testing/migrating-to-vitest). While Vitest is the default test runner, Karma is still fully supported. For information on testing with Karma, see the [Karma testing guide](guide/testing/karma).
+NOTE: This guide covers the default testing setup for new Angular CLI projects, which uses Vitest. If you are migrating an existing project from Karma, see the [Migrating from Karma to Vitest guide](guide/testing/migrating-to-vitest). Karma is still supported; for more information, see the [Karma testing guide](guide/testing/karma).
 
 ## Set up for testing
 
-The Angular CLI downloads and installs everything you need to test an Angular application with the [Vitest testing framework](https://vitest.dev). By default, new projects include `vitest` and `jsdom`.
+The Angular CLI downloads and installs everything you need to test an Angular application with the [Vitest testing framework](https://vitest.dev). New projects include `vitest` and `jsdom` by default.
 
-Vitest runs your unit tests in a Node.js environment, using `jsdom` to emulate the DOM. This allows for faster test execution by avoiding the overhead of launching a browser. You can also use `happy-dom` as an alternative by installing it and removing `jsdom`. The CLI will automatically detect and use `happy-dom` if it is present.
+Vitest runs your unit tests in a Node.js environment. To simulate the browser's DOM, Vitest uses a library called `jsdom`. This allows for faster test execution by avoiding the overhead of launching a browser. You can swap `jsdom` for an alternative like `happy-dom` by installing it and uninstalling `jsdom`. Currently, `jsdom` and `happy-dom` are the supported DOM emulation libraries.
 
-The project you create with the CLI is immediately ready to test. Just run the [`ng test`](cli/test) CLI command:
+The project you create with the CLI is immediately ready to test. Run the [`ng test`](cli/test) command:
 
 ```shell
 ng test
@@ -31,26 +31,28 @@ The console output looks like this:
    Duration  2.46s (transform 615ms, setup 2ms, collect 2.21s, tests 5ms)
 ```
 
-The `ng test` command also watches for changes. To see this in action, make a small change to `app.ts` and save it. The tests run again, and the new results appear in the console.
+The `ng test` command also watches your files for changes. If you modify a file and save it, the tests will run again.
 
 ## Configuration
 
-The Angular CLI handles most of the Vitest configuration for you. For many common use cases, you can adjust the test behavior by modifying options directly in your `angular.json` file.
+The Angular CLI handles most of the Vitest configuration for you. You can customize the test behavior by modifying the `test` target options in your `angular.json` file.
 
-### Built-in configuration options
-
-You can change the following options in the `test` target of your `angular.json` file:
+### Angular.json options
 
 - `include`: Glob patterns for files to include for testing. Defaults to `['**/*.spec.ts', '**/*.test.ts']`.
 - `exclude`: Glob patterns for files to exclude from testing.
 - `setupFiles`: A list of paths to global setup files (e.g., polyfills or global mocks) that are executed before your tests.
 - `providersFile`: The path to a file that exports a default array of Angular providers for the test environment. This is useful for setting up global test providers which are injected into your tests.
 - `coverage`: A boolean to enable or disable code coverage reporting. Defaults to `false`.
-- `browsers`: An array of browser names to run tests in (e.g., `["chromium"]`). Requires a browser provider to be installed.
+- `browsers`: An array of browser names to run tests in a real browser (e.g., `["chromium"]`). Requires a browser provider to be installed. See the [Running tests in a browser](#running-tests-in-a-browser) section for more details.
+
+### Global test setup and providers
+
+The `setupFiles` and `providersFile` options are particularly useful for managing global test configuration.
 
 For example, you could create a `src/test-providers.ts` file to provide `provideHttpClientTesting` to all your tests:
 
-```typescript
+```typescript {header: "src/test-providers.ts"}
 import { Provider } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -73,11 +75,7 @@ You would then reference this file in your `angular.json`:
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "include": ["src/**/*.spec.ts"],
-            "setupFiles": ["src/test-setup.ts"],
-            "providersFile": "src/test-providers.ts",
-            "coverage": true,
-            "browsers": ["chromium"]
+            "providersFile": "src/test-providers.ts"
           }
         }
       }
@@ -86,13 +84,15 @@ You would then reference this file in your `angular.json`:
 }
 ```
 
-### Advanced: Custom Vitest configuration
+HELPFUL: When creating new TypeScript files for test setup or providers, like `src/test-providers.ts`, ensure they are included in your project's test TypeScript configuration file (typically `tsconfig.spec.json`). This allows the TypeScript compiler to properly process these files during testing.
 
-For advanced use cases, you can provide a custom Vitest configuration file.
+### Advanced Vitest configuration
 
-IMPORTANT: While using a custom configuration enables advanced options, the Angular team does not provide direct support for the specific contents of the configuration file or for any third-party plugins used within it. The CLI will also override certain properties (`test.projects`, `test.include`) to ensure proper operation.
+For advanced use cases, you can provide a custom Vitest configuration file using the `configFile` option in `angular.json`.
 
-You can create a Vitest configuration file (e.g., `vitest-base.config.ts`) and reference it in your `angular.json` using the `runnerConfig` option.
+IMPORTANT: While using a custom configuration enables advanced options, the Angular team does not provide support for the contents of the configuration file or for any third-party plugins. The CLI will also override certain properties (`test.projects`, `test.include`) to ensure proper integration.
+
+You can create a Vitest configuration file (e.g., `vitest-base.config.ts`) and reference it in your `angular.json`:
 
 ```json
 {
@@ -119,24 +119,41 @@ ng generate config vitest
 
 This creates a `vitest-base.config.ts` file that you can customize.
 
-HELPFUL: Read more about Vitest configuration in the [Vitest configuration guide](https://vitest.dev/config/).
+HELPFUL: Read more about Vitest configuration in the [official Vitest documentation](https://vitest.dev/config/).
 
 ## Code coverage
 
-You can generate code coverage reports by adding the `--coverage` flag to the `ng test` command. The report is generated in the `coverage/` directory.
+You can generate a code coverage report by adding the `--coverage` flag to the `ng test` command. The report is generated in the `coverage/` directory.
 
-For more detailed information on prerequisites, enforcing coverage thresholds, and advanced configuration, see the [Code coverage guide](guide/testing/code-coverage).
+For more detailed information, see the [Code coverage guide](guide/testing/code-coverage).
 
 ## Running tests in a browser
 
 While the default Node.js environment is faster for most unit tests, you can also run your tests in a real browser. This is useful for tests that rely on browser-specific APIs (like rendering) or for debugging.
 
-To run tests in a browser, you must first install a browser provider.
+To run tests in a browser, you must first install a browser provider. Read more about Vitest's browser mode in the [official documentation](https://vitest.dev/guide/browser).
+
+Once the provider is installed, you can run your tests in the browser by configuring the `browsers` option in `angular.json` or by using the `--browsers` CLI flag. Tests run in a headed browser by default. If the `CI` environment variable is set, headless mode is used instead. To explicitly control headless mode, you can suffix the browser name with `Headless` (e.g., `chromiumHeadless`).
+
+```bash
+# Example for Playwright (headed)
+ng test --browsers=chromium
+
+# Example for Playwright (headless)
+ng test --browsers=chromiumHeadless
+
+# Example for WebdriverIO (headed)
+ng test --browsers=chrome
+
+# Example for WebdriverIO (headless)
+ng test --browsers=chromeHeadless
+```
+
 Choose one of the following browser providers based on your needs:
 
-- **Playwright**: `@vitest/browser-playwright` for Chromium, Firefox, and WebKit.
-- **WebdriverIO**: `@vitest/browser-webdriverio` for Chrome, Firefox, Safari, and Edge.
-- **Preview**: `@vitest/browser-preview` for Webcontainer environments (like StackBlitz).
+### Playwright
+
+[Playwright](https://playwright.dev/) is a browser automation library that supports Chromium, Firefox, and WebKit.
 
 <docs-code-multifile>
   <docs-code header="npm" language="shell">
@@ -153,33 +170,61 @@ Choose one of the following browser providers based on your needs:
   </docs-code>
 </docs-code-multifile>
 
-Once the provider is installed, you can run your tests in the browser using the `--browsers` flag:
+### WebdriverIO
 
-```bash
-# Example for Playwright
-ng test --browsers=chromium
+[WebdriverIO](https://webdriver.io/) is a browser and mobile automation test framework that supports Chrome, Firefox, Safari, and Edge.
 
-# Example for WebdriverIO
-ng test --browsers=chrome
-```
+<docs-code-multifile>
+  <docs-code header="npm" language="shell">
+    npm install --save-dev @vitest/browser-webdriverio webdriverio
+  </docs-code>
+  <docs-code header="yarn" language="shell">
+    yarn add --dev @vitest/browser-webdriverio webdriverio
+  </docs-code>
+  <docs-code header="pnpm" language="shell">
+    pnpm add -D @vitest/browser-webdriverio webdriverio
+  </docs-code>
+  <docs-code header="bun" language="shell">
+    bun add --dev @vitest/browser-webdriverio webdriverio
+  </docs-code>
+</docs-code-multifile>
 
-Headless mode is enabled automatically if the `CI` environment variable is set. Otherwise, tests will run in a headed browser.
+### Preview
+
+The `@vitest/browser-preview` provider is designed for Webcontainer environments like StackBlitz and is not intended for use in CI/CD.
+
+<docs-code-multifile>
+  <docs-code header="npm" language="shell">
+    npm install --save-dev @vitest/browser-preview
+  </docs-code>
+  <docs-code header="yarn" language="shell">
+    yarn add --dev @vitest/browser-preview
+  </docs-code>
+  <docs-code header="pnpm" language="shell">
+    pnpm add -D @vitest/browser-preview
+  </docs-code>
+  <docs-code header="bun" language="shell">
+    bun add --dev @vitest/browser-preview
+  </docs-code>
+</docs-code-multifile>
+
+HELPFUL: For more advanced browser-specific configuration, see the [Advanced Vitest configuration](#advanced-vitest-configuration) section.
 
 ## Other test frameworks
 
-You can also unit test an Angular application with other testing libraries and test runners. Each library and runner has its own distinctive installation procedures, configuration, and syntax.
+You can also unit test an Angular application with other testing libraries and test runners. Each library and runner has its own installation procedures, configuration, and syntax.
 
 ## Testing in continuous integration
 
-A robust test suite is a key part of a continuous integration (CI) pipeline. CI servers let you set up your project repository so that your tests run on every commit and pull request.
+A robust test suite is a key part of a continuous integration (CI) pipeline. CI servers let you automate your tests to run on every commit and pull request.
 
-To test your Angular application in a continuous integration (CI) server, you can typically run the standard test command:
+To test your Angular application in a CI server, run the standard test command:
 
 ```shell
 ng test
 ```
 
-Most CI servers set a `CI=true` environment variable, which `ng test` detects. This automatically runs your tests in the appropriate non-interactive, single-run mode.
+Most CI servers set a `CI=true` environment variable, which `ng test` detects. This automatically configures your tests to run in a non-interactive, single-run mode.
 
 If your CI server does not set this variable, or if you need to force single-run mode manually, you can use the `--no-watch` and `--no-progress` flags:
 
