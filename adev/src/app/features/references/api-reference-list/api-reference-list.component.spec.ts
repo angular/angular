@@ -16,7 +16,7 @@ import {RouterTestingHarness} from '@angular/router/testing';
 import {provideRouter} from '@angular/router';
 import {Location} from '@angular/common';
 import {By} from '@angular/platform-browser';
-import {NavigationItem, TextField} from '@angular/docs';
+import {TextField} from '@angular/docs';
 import {ApiItem} from '../interfaces/api-item';
 
 describe('ApiReferenceList', () => {
@@ -115,6 +115,15 @@ describe('ApiReferenceList', () => {
     fixture.detectChanges();
 
     expect(component.filteredGroups()![0].items).toEqual([fakeItem1]);
+  });
+
+  it('should display items which match the query by group title', () => {
+    fixture.componentRef.setInput('query', 'Fake Group');
+    fixture.detectChanges();
+
+    // Should find all items whose group title contains the query
+    expect(component.filteredGroups()![0].items.length).toBeGreaterThan(0);
+    expect(component.filteredGroups()![0].items).toContain(fakeItem1);
   });
 
   it('should display only class items when user selects Class in the Type select', () => {
