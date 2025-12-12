@@ -14,6 +14,7 @@ import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import type {ComponentDef, DirectiveDef, PipeDef} from './interfaces/definition';
 
 export function getNgModuleDef<T>(type: any): NgModuleDef<T> | null {
+  assertTypeDefined(type, '@NgModule');
   return type[NG_MOD_DEF] || null;
 }
 
@@ -36,6 +37,7 @@ export function getNgModuleDefOrThrow<T>(type: any): NgModuleDef<T> | never {
  */
 
 export function getComponentDef<T>(type: any): ComponentDef<T> | null {
+  assertTypeDefined(type, '@Component');
   return type[NG_COMP_DEF] || null;
 }
 
@@ -52,11 +54,24 @@ export function getDirectiveDefOrThrow<T>(type: any): DirectiveDef<T> | never {
 }
 
 export function getDirectiveDef<T>(type: any): DirectiveDef<T> | null {
+  assertTypeDefined(type, '@Directive');
   return type[NG_DIR_DEF] || null;
 }
 
 export function getPipeDef<T>(type: any): PipeDef<T> | null {
+  assertTypeDefined(type, '@Pipe');
   return type[NG_PIPE_DEF] || null;
+}
+
+function assertTypeDefined(type: any, symbolType: string): void {
+  if (type == null) {
+    throw new RuntimeError(
+      RuntimeErrorCode.DEF_TYPE_UNDEFINED,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        `Cannot read ${symbolType} metadata. This can indicate a runtime ` +
+          `circular dependency in your app that needs to be resolved.`,
+    );
+  }
 }
 
 /**

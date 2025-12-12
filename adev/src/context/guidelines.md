@@ -78,8 +78,14 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 - Do NOT set `standalone: true` inside the `@Component`, `@Directive` and `@Pipe` decorators
 - Use signals for state management
 - Implement lazy loading for feature routes
-- Use `NgOptimizedImage` for all static images.
 - Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
+- Use `NgOptimizedImage` for all static images.
+  - `NgOptimizedImage` does not work for inline base64 images.
+
+### Accessibility Requirements
+
+- It MUST pass all AXE checks.
+- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
 
 ### Components
 
@@ -104,8 +110,11 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 
 - Keep templates simple and avoid complex logic
 - Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
+- Do not assume globals like (`new Date()`) are available.
+- Do not write arrow functions in templates (they are not supported).
 - Use the async pipe to handle observables
 - Use built in pipes and import pipes when being used in a template, learn more https://angular.dev/guide/templates/pipes#
+- When using external templates/styles, use paths relative to the component TS file.
 
 ### Services
 

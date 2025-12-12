@@ -5,6 +5,35 @@
   "normalizedModuleName": "angular_aria_menu",
   "entries": [
     {
+      "name": "MenuContent",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [],
+      "generics": [],
+      "description": "Defers the rendering of the menu content.\n\nThis structural directive should be applied to an `ng-template` within a `ngMenu`\nor `ngMenuBar` to lazily render its content only when the menu is opened.\n\n```html\n<div ngMenu #myMenu=\"ngMenu\">\n  <ng-template ngMenuContent>\n    <div ngMenuItem>Lazy Item 1</div>\n    <div ngMenuItem>Lazy Item 2</div>\n  </ng-template>\n</div>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Menu](guide/aria/menu)"
+        },
+        {
+          "name": "see",
+          "comment": "[MenuBar](guide/aria/menubar)"
+        }
+      ],
+      "rawComment": "/**\n * Defers the rendering of the menu content.\n *\n * This structural directive should be applied to an `ng-template` within a `ngMenu`\n * or `ngMenuBar` to lazily render its content only when the menu is opened.\n *\n * ```html\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <ng-template ngMenuContent>\n *     <div ngMenuItem>Lazy Item 1</div>\n *     <div ngMenuItem>Lazy Item 2</div>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
+      "implements": [],
+      "source": {
+        "filePath": "/src/aria/menu/menu-content.ts",
+        "startLine": 32,
+        "endLine": 37
+      }
+    },
+    {
       "name": "MenuTrigger",
       "isAbstract": false,
       "entryType": "directive",
@@ -43,7 +72,7 @@
         },
         {
           "name": "expanded",
-          "type": "Signal<boolean>",
+          "type": "Signal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -53,7 +82,7 @@
         },
         {
           "name": "hasPopup",
-          "type": "Signal<boolean>",
+          "type": "Signal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly"
@@ -164,9 +193,17 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Menu](guide/aria/menu)"
+        },
+        {
+          "name": "see",
+          "comment": "[MenuBar](guide/aria/menubar)"
         }
       ],
-      "rawComment": "/**\n * A trigger for a menu.\n *\n * The `ngMenuTrigger` directive is used to open and close menus. It can be applied to\n * any interactive element (e.g., a button) to associate it with a `ngMenu` instance.\n * It also supports linking to sub-menus when applied to a `ngMenuItem`.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Open Menu</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem>Item 1</div>\n *   <div ngMenuItem>Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A trigger for a menu.\n *\n * The `ngMenuTrigger` directive is used to open and close menus. It can be applied to\n * any interactive element (e.g., a button) to associate it with a `ngMenu` instance.\n * It also supports linking to sub-menus when applied to a `ngMenuItem`.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Open Menu</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem>Item 1</div>\n *   <div ngMenuItem>Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "button[ngMenuTrigger]",
@@ -174,13 +211,13 @@
         "ngMenuTrigger"
       ],
       "source": {
-        "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 55,
-        "endLine": 117
+        "filePath": "/src/aria/menu/menu-trigger.ts",
+        "startLine": 43,
+        "endLine": 105
       }
     },
     {
-      "name": "Menu",
+      "name": "MenuItem",
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -195,16 +232,6 @@
           "jsdocTags": []
         },
         {
-          "name": "textDirection",
-          "type": "WritableSignal<Direction>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The directionality (LTR / RTL) context for the application (or a subtree of it).",
-          "jsdocTags": []
-        },
-        {
           "name": "id",
           "type": "InputSignal<any>",
           "memberType": "property",
@@ -212,103 +239,137 @@
             "readonly",
             "input"
           ],
-          "description": "The unique ID of the menu.",
+          "description": "The unique ID of the menu item.",
           "jsdocTags": [],
           "inputAlias": "id",
           "isRequiredInput": false
         },
         {
-          "name": "wrap",
-          "type": "InputSignalWithTransform<boolean, unknown>",
+          "name": "value",
+          "type": "InputSignal<V>",
           "memberType": "property",
           "memberTags": [
             "readonly",
             "input"
           ],
-          "description": "Whether the menu should wrap its items.",
+          "description": "The value of the menu item.",
           "jsdocTags": [],
-          "inputAlias": "wrap",
-          "isRequiredInput": false
-        },
-        {
-          "name": "typeaheadDelay",
-          "type": "InputSignal<number>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "The delay in milliseconds before the typeahead buffer is cleared.",
-          "jsdocTags": [],
-          "inputAlias": "typeaheadDelay",
-          "isRequiredInput": false
+          "inputAlias": "value",
+          "isRequiredInput": true
         },
         {
           "name": "disabled",
-          "type": "InputSignalWithTransform<boolean, unknown>",
+          "type": "InputSignal<boolean>",
           "memberType": "property",
           "memberTags": [
             "readonly",
             "input"
           ],
-          "description": "Whether the menu is disabled.",
+          "description": "Whether the menu item is disabled.",
           "jsdocTags": [],
           "inputAlias": "disabled",
           "isRequiredInput": false
         },
         {
-          "name": "parent",
-          "type": "WritableSignal<MenuTrigger<V> | MenuItem<V> | undefined>",
+          "name": "searchTerm",
+          "type": "ModelSignal<string>",
           "memberType": "property",
           "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the parent menu item or menu trigger.",
-          "jsdocTags": []
-        },
-        {
-          "name": "visible",
-          "type": "Signal<boolean>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether the menu is visible.",
-          "jsdocTags": []
-        },
-        {
-          "name": "tabIndex",
-          "type": "Signal<0 | -1>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The tab index of the menu.",
-          "jsdocTags": []
-        },
-        {
-          "name": "onSelect",
-          "type": "OutputEmitterRef<V>",
-          "memberType": "property",
-          "memberTags": [
+            "readonly",
+            "input",
             "output"
           ],
-          "description": "A callback function triggered when a menu item is selected.",
+          "description": "The search term associated with the menu item.",
           "jsdocTags": [],
-          "outputAlias": "onSelect"
+          "inputAlias": "searchTerm",
+          "isRequiredInput": false,
+          "outputAlias": "searchTermChange"
         },
         {
-          "name": "expansionDelay",
-          "type": "InputSignal<number>",
+          "name": "parent",
+          "type": "Menu<V> | MenuBar<V> | null",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the parent menu or menubar.",
+          "jsdocTags": []
+        },
+        {
+          "name": "submenu",
+          "type": "InputSignal<Menu<V> | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly",
             "input"
           ],
-          "description": "The delay in milliseconds before expanding sub-menus on hover.",
+          "description": "The submenu associated with the menu item.",
           "jsdocTags": [],
-          "inputAlias": "expansionDelay",
+          "inputAlias": "submenu",
           "isRequiredInput": false
+        },
+        {
+          "name": "active",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the menu item is active.",
+          "jsdocTags": []
+        },
+        {
+          "name": "expanded",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the menu is expanded.",
+          "jsdocTags": []
+        },
+        {
+          "name": "hasPopup",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the menu item has a popup.",
+          "jsdocTags": []
+        },
+        {
+          "name": "open",
+          "signatures": [
+            {
+              "name": "open",
+              "entryType": "function",
+              "description": "Opens the submenu focusing on the first menu item.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Opens the submenu focusing on the first menu item. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "open",
+            "description": "Opens the submenu focusing on the first menu item.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Opens the submenu focusing on the first menu item. */"
+          },
+          "entryType": "function",
+          "description": "Opens the submenu focusing on the first menu item.",
+          "jsdocTags": [],
+          "rawComment": "/** Opens the submenu focusing on the first menu item. */",
+          "memberType": "method",
+          "memberTags": []
         },
         {
           "name": "close",
@@ -316,12 +377,12 @@
             {
               "name": "close",
               "entryType": "function",
-              "description": "Closes the menu.",
+              "description": "Closes the submenu.",
               "generics": [],
               "isNewType": false,
               "jsdocTags": [],
               "params": [],
-              "rawComment": "/** Closes the menu. */",
+              "rawComment": "/** Closes the submenu. */",
               "returnType": "void"
             }
           ],
@@ -331,15 +392,15 @@
             "returnType": "void",
             "generics": [],
             "name": "close",
-            "description": "Closes the menu.",
+            "description": "Closes the submenu.",
             "entryType": "function",
             "jsdocTags": [],
-            "rawComment": "/** Closes the menu. */"
+            "rawComment": "/** Closes the submenu. */"
           },
           "entryType": "function",
-          "description": "Closes the menu.",
+          "description": "Closes the submenu.",
           "jsdocTags": [],
-          "rawComment": "/** Closes the menu. */",
+          "rawComment": "/** Closes the submenu. */",
           "memberType": "method",
           "memberTags": []
         }
@@ -349,24 +410,32 @@
           "name": "V"
         }
       ],
-      "description": "A list of menu items.\n\nA `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\nwithin other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\nand `ngMenuItem` directives.\n\n```html\n<button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n\n<div ngMenu #myMenu=\"ngMenu\">\n  <div ngMenuItem>Star</div>\n  <div ngMenuItem>Edit</div>\n  <div ngMenuItem [submenu]=\"subMenu\">More</div>\n</div>\n\n<div ngMenu #subMenu=\"ngMenu\">\n  <div ngMenuItem>Sub Item 1</div>\n  <div ngMenuItem>Sub Item 2</div>\n</div>\n```",
+      "description": "An item in a Menu.\n\n`ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\nor action a user can take. They can also act as triggers for sub-menus.\n\n```html\n<div ngMenuItem (onSelect)=\"doAction()\">Action Item</div>\n\n<div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Menu](guide/aria/menu)"
+        },
+        {
+          "name": "see",
+          "comment": "[MenuBar](guide/aria/menubar)"
         }
       ],
-      "rawComment": "/**\n * A list of menu items.\n *\n * A `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\n * within other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\n * and `ngMenuItem` directives.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem>Star</div>\n *   <div ngMenuItem>Edit</div>\n *   <div ngMenuItem [submenu]=\"subMenu\">More</div>\n * </div>\n *\n * <div ngMenu #subMenu=\"ngMenu\">\n *   <div ngMenuItem>Sub Item 1</div>\n *   <div ngMenuItem>Sub Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * An item in a Menu.\n *\n * `ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\n * or action a user can take. They can also act as triggers for sub-menus.\n *\n * ```html\n * <div ngMenuItem (onSelect)=\"doAction()\">Action Item</div>\n *\n * <div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
       "implements": [],
       "isStandalone": true,
-      "selector": "[ngMenu]",
+      "selector": "[ngMenuItem]",
       "exportAs": [
-        "ngMenu"
+        "ngMenuItem"
       ],
       "source": {
-        "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 143,
-        "endLine": 278
+        "filePath": "/src/aria/menu/menu-item.ts",
+        "startLine": 33,
+        "endLine": 107
       }
     },
     {
@@ -516,9 +585,17 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Menu](guide/aria/menu)"
+        },
+        {
+          "name": "see",
+          "comment": "[MenuBar](guide/aria/menubar)"
         }
       ],
-      "rawComment": "/**\n * A menu bar of menu items.\n *\n * Like the `ngMenu`, a `ngMenuBar` is used to offer a list of menu item choices to users.\n * However, a menubar is used to display a persistent, top-level, always-visible set of\n * menu item choices, typically found at the top of an application window.\n *\n * ```html\n * <div ngMenuBar>\n *   <button ngMenuTrigger [menu]=\"fileMenu\">File</button>\n *   <button ngMenuTrigger [menu]=\"editMenu\">Edit</button>\n * </div>\n *\n * <div ngMenu #fileMenu=\"ngMenu\">\n *   <div ngMenuItem>New</div>\n *   <div ngMenuItem>Open</div>\n * </div>\n *\n * <div ngMenu #editMenu=\"ngMenu\">\n *   <div ngMenuItem>Cut</div>\n *   <div ngMenuItem>Copy</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A menu bar of menu items.\n *\n * Like the `ngMenu`, a `ngMenuBar` is used to offer a list of menu item choices to users.\n * However, a menubar is used to display a persistent, top-level, always-visible set of\n * menu item choices, typically found at the top of an application window.\n *\n * ```html\n * <div ngMenuBar>\n *   <button ngMenuTrigger [menu]=\"fileMenu\">File</button>\n *   <button ngMenuTrigger [menu]=\"editMenu\">Edit</button>\n * </div>\n *\n * <div ngMenu #fileMenu=\"ngMenu\">\n *   <div ngMenuItem>New</div>\n *   <div ngMenuItem>Open</div>\n * </div>\n *\n * <div ngMenu #editMenu=\"ngMenu\">\n *   <div ngMenuItem>Cut</div>\n *   <div ngMenuItem>Copy</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngMenuBar]",
@@ -526,15 +603,15 @@
         "ngMenuBar"
       ],
       "source": {
-        "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 306,
-        "endLine": 390
+        "filePath": "/src/aria/menu/menu-bar.ts",
+        "startLine": 56,
+        "endLine": 141
       }
     },
     {
-      "name": "MenuItem",
+      "name": "Menu",
       "isAbstract": false,
-      "entryType": "directive",
+      "entryType": "undecorated_class",
       "members": [
         {
           "name": "element",
@@ -547,144 +624,102 @@
           "jsdocTags": []
         },
         {
+          "name": "textDirection",
+          "type": "WritableSignal<Direction>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The directionality (LTR / RTL) context for the application (or a subtree of it).",
+          "jsdocTags": []
+        },
+        {
           "name": "id",
           "type": "InputSignal<any>",
           "memberType": "property",
           "memberTags": [
-            "readonly",
-            "input"
+            "readonly"
           ],
-          "description": "The unique ID of the menu item.",
-          "jsdocTags": [],
-          "inputAlias": "id",
-          "isRequiredInput": false
+          "description": "The unique ID of the menu.",
+          "jsdocTags": []
         },
         {
-          "name": "value",
-          "type": "InputSignal<V>",
+          "name": "wrap",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly",
-            "input"
+            "readonly"
           ],
-          "description": "The value of the menu item.",
-          "jsdocTags": [],
-          "inputAlias": "value",
-          "isRequiredInput": true
+          "description": "Whether the menu should wrap its items.",
+          "jsdocTags": []
+        },
+        {
+          "name": "typeaheadDelay",
+          "type": "InputSignal<number>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The delay in milliseconds before the typeahead buffer is cleared.",
+          "jsdocTags": []
         },
         {
           "name": "disabled",
-          "type": "InputSignal<boolean>",
+          "type": "InputSignalWithTransform<boolean, unknown>",
           "memberType": "property",
           "memberTags": [
-            "readonly",
-            "input"
+            "readonly"
           ],
-          "description": "Whether the menu item is disabled.",
-          "jsdocTags": [],
-          "inputAlias": "disabled",
-          "isRequiredInput": false
-        },
-        {
-          "name": "searchTerm",
-          "type": "ModelSignal<string>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input",
-            "output"
-          ],
-          "description": "The search term associated with the menu item.",
-          "jsdocTags": [],
-          "inputAlias": "searchTerm",
-          "isRequiredInput": false,
-          "outputAlias": "searchTermChange"
+          "description": "Whether the menu is disabled.",
+          "jsdocTags": []
         },
         {
           "name": "parent",
-          "type": "Menu<V> | MenuBar<V> | null",
+          "type": "WritableSignal<MenuTrigger<V> | MenuItem<V> | undefined>",
           "memberType": "property",
           "memberTags": [
             "readonly"
           ],
-          "description": "A reference to the parent menu or menubar.",
+          "description": "A reference to the parent menu item or menu trigger.",
           "jsdocTags": []
         },
         {
-          "name": "submenu",
-          "type": "InputSignal<Menu<V> | undefined>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "The submenu associated with the menu item.",
-          "jsdocTags": [],
-          "inputAlias": "submenu",
-          "isRequiredInput": false
-        },
-        {
-          "name": "active",
-          "type": "Signal<boolean>",
+          "name": "visible",
+          "type": "Signal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly"
           ],
-          "description": "Whether the menu item is active.",
+          "description": "Whether the menu is visible.",
           "jsdocTags": []
         },
         {
-          "name": "expanded",
-          "type": "Signal<boolean | null>",
+          "name": "tabIndex",
+          "type": "Signal<any>",
           "memberType": "property",
           "memberTags": [
             "readonly"
           ],
-          "description": "Whether the menu is expanded.",
+          "description": "The tab index of the menu.",
           "jsdocTags": []
         },
         {
-          "name": "hasPopup",
-          "type": "Signal<boolean>",
+          "name": "onSelect",
+          "type": "OutputEmitterRef<V>",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "A callback function triggered when a menu item is selected.",
+          "jsdocTags": []
+        },
+        {
+          "name": "expansionDelay",
+          "type": "InputSignal<number>",
           "memberType": "property",
           "memberTags": [
             "readonly"
           ],
-          "description": "Whether the menu item has a popup.",
+          "description": "The delay in milliseconds before expanding sub-menus on hover.",
           "jsdocTags": []
-        },
-        {
-          "name": "open",
-          "signatures": [
-            {
-              "name": "open",
-              "entryType": "function",
-              "description": "Opens the submenu focusing on the first menu item.",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "/** Opens the submenu focusing on the first menu item. */",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "open",
-            "description": "Opens the submenu focusing on the first menu item.",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": "/** Opens the submenu focusing on the first menu item. */"
-          },
-          "entryType": "function",
-          "description": "Opens the submenu focusing on the first menu item.",
-          "jsdocTags": [],
-          "rawComment": "/** Opens the submenu focusing on the first menu item. */",
-          "memberType": "method",
-          "memberTags": []
         },
         {
           "name": "close",
@@ -692,12 +727,12 @@
             {
               "name": "close",
               "entryType": "function",
-              "description": "Closes the submenu.",
+              "description": "Closes the menu.",
               "generics": [],
               "isNewType": false,
               "jsdocTags": [],
               "params": [],
-              "rawComment": "/** Closes the submenu. */",
+              "rawComment": "/** Closes the menu. */",
               "returnType": "void"
             }
           ],
@@ -707,15 +742,15 @@
             "returnType": "void",
             "generics": [],
             "name": "close",
-            "description": "Closes the submenu.",
+            "description": "Closes the menu.",
             "entryType": "function",
             "jsdocTags": [],
-            "rawComment": "/** Closes the submenu. */"
+            "rawComment": "/** Closes the menu. */"
           },
           "entryType": "function",
-          "description": "Closes the submenu.",
+          "description": "Closes the menu.",
           "jsdocTags": [],
-          "rawComment": "/** Closes the submenu. */",
+          "rawComment": "/** Closes the menu. */",
           "memberType": "method",
           "memberTags": []
         }
@@ -725,56 +760,33 @@
           "name": "V"
         }
       ],
-      "description": "An item in a Menu.\n\n`ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\nor action a user can take. They can also act as triggers for sub-menus.\n\n```html\n<div ngMenuItem (onSelect)=\"doAction()\">Action Item</div>\n\n<div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n```",
+      "description": "A list of menu items.\n\nA `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\nwithin other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\nand `ngMenuItem` directives.\n\n```html\n<button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n\n<div ngMenu #myMenu=\"ngMenu\">\n  <div ngMenuItem>Star</div>\n  <div ngMenuItem>Edit</div>\n  <div ngMenuItem [submenu]=\"subMenu\">More</div>\n</div>\n\n<div ngMenu #subMenu=\"ngMenu\">\n  <div ngMenuItem>Sub Item 1</div>\n  <div ngMenuItem>Sub Item 2</div>\n</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
-        }
-      ],
-      "rawComment": "/**\n * An item in a Menu.\n *\n * `ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\n * or action a user can take. They can also act as triggers for sub-menus.\n *\n * ```html\n * <div ngMenuItem (onSelect)=\"doAction()\">Action Item</div>\n *\n * <div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n * ```\n *\n * @developerPreview 21.0\n */",
-      "implements": [],
-      "isStandalone": true,
-      "selector": "[ngMenuItem]",
-      "exportAs": [
-        "ngMenuItem"
-      ],
-      "source": {
-        "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 406,
-        "endLine": 486
-      }
-    },
-    {
-      "name": "MenuContent",
-      "isAbstract": false,
-      "entryType": "directive",
-      "members": [],
-      "generics": [],
-      "description": "Defers the rendering of the menu content.\n\nThis structural directive should be applied to an `ng-template` within a `ngMenu`\nor `ngMenuBar` to lazily render its content only when the menu is opened.\n\n```html\n<div ngMenu #myMenu=\"ngMenu\">\n  <ng-template ngMenuContent>\n    <div ngMenuItem>Lazy Item 1</div>\n    <div ngMenuItem>Lazy Item 2</div>\n  </ng-template>\n</div>\n```",
-      "jsdocTags": [
+        },
         {
-          "name": "developerPreview",
-          "comment": "21.0"
+          "name": "see",
+          "comment": "[Menu](guide/aria/menu)"
+        },
+        {
+          "name": "see",
+          "comment": "[MenuBar](guide/aria/menubar)"
         }
       ],
-      "rawComment": "/**\n * Defers the rendering of the menu content.\n *\n * This structural directive should be applied to an `ng-template` within a `ngMenu`\n * or `ngMenuBar` to lazily render its content only when the menu is opened.\n *\n * ```html\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <ng-template ngMenuContent>\n *     <div ngMenuItem>Lazy Item 1</div>\n *     <div ngMenuItem>Lazy Item 2</div>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A list of menu items.\n *\n * A `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\n * within other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\n * and `ngMenuItem` directives.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem>Star</div>\n *   <div ngMenuItem>Edit</div>\n *   <div ngMenuItem [submenu]=\"subMenu\">More</div>\n * </div>\n *\n * <div ngMenu #subMenu=\"ngMenu\">\n *   <div ngMenuItem>Sub Item 1</div>\n *   <div ngMenuItem>Sub Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
       "implements": [],
-      "isStandalone": true,
-      "selector": "ng-template[ngMenuContent]",
-      "exportAs": [
-        "ngMenuContent"
-      ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 505,
-        "endLine": 510
+        "startLine": 58,
+        "endLine": 194
       }
     }
   ],
   "symbols": [
     [
-      "afterRenderEffect",
+      "Directive",
       "@angular/core"
     ],
     [
@@ -783,14 +795,6 @@
     ],
     [
       "computed",
-      "@angular/core"
-    ],
-    [
-      "contentChildren",
-      "@angular/core"
-    ],
-    [
-      "Directive",
       "@angular/core"
     ],
     [
@@ -810,7 +814,23 @@
       "@angular/core"
     ],
     [
+      "Directionality",
+      "@angular/cdk/bidi"
+    ],
+    [
       "model",
+      "@angular/core"
+    ],
+    [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
+    ],
+    [
+      "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
+      "contentChildren",
       "@angular/core"
     ],
     [
@@ -818,11 +838,11 @@
       "@angular/core"
     ],
     [
-      "Signal",
+      "signal",
       "@angular/core"
     ],
     [
-      "signal",
+      "Signal",
       "@angular/core"
     ],
     [
@@ -830,47 +850,15 @@
       "@angular/core"
     ],
     [
-      "SignalLike",
-      "@angular/aria/private"
-    ],
-    [
-      "MenuBarPattern",
-      "@angular/aria/private"
-    ],
-    [
-      "MenuItemPattern",
-      "@angular/aria/private"
-    ],
-    [
-      "MenuPattern",
-      "@angular/aria/private"
-    ],
-    [
-      "MenuTriggerPattern",
-      "@angular/aria/private"
-    ],
-    [
-      "DeferredContent",
-      "@angular/aria/private"
-    ],
-    [
-      "DeferredContentAware",
-      "@angular/aria/private"
-    ],
-    [
-      "_IdGenerator",
-      "@angular/cdk/a11y"
-    ],
-    [
-      "Directionality",
-      "@angular/cdk/bidi"
+      "MenuContent",
+      "@angular/aria/menu"
     ],
     [
       "MenuTrigger",
       "@angular/aria/menu"
     ],
     [
-      "Menu",
+      "MenuItem",
       "@angular/aria/menu"
     ],
     [
@@ -878,7 +866,7 @@
       "@angular/aria/menu"
     ],
     [
-      "MenuItem",
+      "Menu",
       "@angular/aria/menu"
     ],
     [
@@ -923,98 +911,6 @@
     ],
     [
       "MenuTrigger.close",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.element",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.textDirection",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.id",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.wrap",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.typeaheadDelay",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.disabled",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.parent",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.visible",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.tabIndex",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.onSelect",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.expansionDelay",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.close",
-      "@angular/aria/menu"
-    ],
-    [
-      "MenuBar",
-      "@angular/aria/menu"
-    ],
-    [
-      "MenuBar.element",
-      "@angular/aria/menu"
-    ],
-    [
-      "MenuBar.disabled",
-      "@angular/aria/menu"
-    ],
-    [
-      "MenuBar.softDisabled",
-      "@angular/aria/menu"
-    ],
-    [
-      "MenuBar.textDirection",
-      "@angular/aria/menu"
-    ],
-    [
-      "MenuBar.values",
-      "@angular/aria/menu"
-    ],
-    [
-      "MenuBar.wrap",
-      "@angular/aria/menu"
-    ],
-    [
-      "MenuBar.typeaheadDelay",
-      "@angular/aria/menu"
-    ],
-    [
-      "MenuBar.onSelect",
-      "@angular/aria/menu"
-    ],
-    [
-      "MenuBar.close",
       "@angular/aria/menu"
     ],
     [
@@ -1070,7 +966,95 @@
       "@angular/aria/menu"
     ],
     [
-      "MenuContent",
+      "MenuBar",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.element",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.disabled",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.softDisabled",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.textDirection",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.values",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.wrap",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.typeaheadDelay",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.onSelect",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.close",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.element",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.textDirection",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.id",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.wrap",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.typeaheadDelay",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.disabled",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.parent",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.visible",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.tabIndex",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.onSelect",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.expansionDelay",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.close",
       "@angular/aria/menu"
     ]
   ]

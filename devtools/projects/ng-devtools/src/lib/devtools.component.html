@@ -11,71 +11,83 @@
             ></ng-devtools-tabs>
           </div>
         } @else {
-          <p class="text-message">Angular Devtools only supports Angular versions 12 and above</p>
+          <div class="devtools-state-screen">
+            <mat-icon>upgrade</mat-icon>
+            <p class="text-message">
+              Angular DevTools only supports Angular versions {{ LAST_SUPPORTED_VERSION }} and
+              above.
+            </p>
+          </div>
         }
       } @else {
-        <p
-          class="text-message"
-          matTooltip="A dev build is when the `optimization` flag is set to `false` in the angular.json config file."
-        >
-          We detected an application built with production configuration. Angular DevTools only
-          supports development builds.
-        </p>
+        <div class="devtools-state-screen">
+          <mat-icon>code_off</mat-icon>
+          <p
+            class="text-message"
+            matTooltip="A dev build is when the `optimization` flag is set to `false` in the angular.json config file."
+          >
+            We detected an application built with a production configuration. Angular DevTools only
+            supports development builds.
+          </p>
 
-        <div class="ng-dev-mode-causes">
-          <p>
-            If this application was built in development mode, please check if the
-            <code>window.ng</code> global object is available in your application. If it is missing,
-            then something is preventing Angular from running in development mode properly.
-          </p>
-          <ul>
-            <li>
-              Are you calling <code>enableProdMode()</code> in your application? Read more about
-              <a target="_blank" href="https://angular.dev/api/core/enableProdMode"
-                >enableProdMode()</a
-              >
-              on angular.dev.
-            </li>
-            <li>
-              Is <code>"optimization": true</code> set in your angular.json? Read more about
+          <div class="ng-dev-mode-causes">
+            <p>
+              If this application was built in development mode, please check if the
+              <code>window.ng</code> global object is available in your application. If it is
+              missing, then something is preventing Angular from running in development mode
+              properly.
+            </p>
+            <ul>
+              <li>
+                Are you calling <code>enableProdMode()</code> in your application? Read more about
+                <a target="_blank" href="https://angular.dev/api/core/enableProdMode"
+                  >enableProdMode()</a
+                >
+                on angular.dev.
+              </li>
+              <li>
+                Is <code>"optimization": true</code> set in your angular.json? Read more about
+                <a
+                  target="_blank"
+                  href="https://angular.dev/reference/configs/workspace-config#optimization-configuration"
+                  >optimization configuration</a
+                >
+                on angular.dev.
+              </li>
+              <li>
+                Is <code>"defaultConfiguration": "production"</code> set in your angular.json? Read
+                more about
+                <a
+                  target="_blank"
+                  href="https://angular.dev/tools/cli/environments#using-environment-specific-variables-in-your-app"
+                  >default configurations</a
+                >
+                on angular.dev.
+              </li>
+            </ul>
+            <p>
+              If you are still experiencing problems, you can open an issue with a reproduction on
+              our
               <a
                 target="_blank"
-                href="https://angular.dev/reference/configs/workspace-config#optimization-configuration"
-                >optimization configuration</a
-              >
-              on angular.dev.
-            </li>
-            <li>
-              Is <code>"defaultConfiguration": "production"</code> set in your angular.json? Read
-              more about
-              <a
-                target="_blank"
-                href="https://angular.dev/tools/cli/environments#using-environment-specific-variables-in-your-app"
-                >default configurations</a
-              >
-              on angular.dev.
-            </li>
-          </ul>
-          <p>
-            If you are still experiencing problems, you can open an issue with a reproduction on our
-            <a
-              target="_blank"
-              href="https://github.com/angular/angular/issues/new?assignees=&labels=&projects=&template=4-devtools.yaml"
-              >issue tracker</a
-            >.
-          </p>
+                href="https://github.com/angular/angular/issues/new?assignees=&labels=&projects=&template=4-devtools.yaml"
+                >issue tracker</a
+              >.
+            </p>
+          </div>
         </div>
       }
     }
     @case (AngularStatus.DOES_NOT_EXIST) {
-      <p class="text-message not-detected">
-        <span
-          class="info-icon"
+      <div class="devtools-state-screen">
+        <mat-icon>error</mat-icon>
+        <p
+          class="text-message"
           matTooltip="You see this message because the app is still loading, or this is not an Angular application"
-          >i</span
         >
-        Angular application not detected.
-      </p>
+          Angular application not detected.
+        </p>
+      </div>
     }
     @case (AngularStatus.UNKNOWN) {
       <div class="initializing">
