@@ -143,12 +143,19 @@ describe('HttpClient TestRequest', () => {
 
       it('should allow creating HttpErrorResponse with any status code', () => {
         const error = new ProgressEvent('error');
-        request.error(error, {status: 404, statusText: 'Not Found'});
+        request.error(error, {
+          status: 404,
+          statusText: 'Not Found',
+          responseType: 'cors',
+          redirected: true,
+        });
 
         expect(lastError).toBeDefined();
         expect(lastError).toBeInstanceOf(HttpErrorResponse);
         expect(lastError.status).toBe(404);
         expect(lastError.statusText).toBe('Not Found');
+        expect(lastError.responseType).toBe('cors');
+        expect(lastError.redirected).toBeTrue();
       });
     } else {
       it('dummy test for node tests', () => {
