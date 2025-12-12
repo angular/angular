@@ -11,7 +11,12 @@ import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+  formatExtendedError,
+} from '../../api';
 
 const STYLE_SUFFIXES = ['px', '%', 'em'];
 
@@ -38,9 +43,12 @@ class SuffixNotSupportedCheck extends TemplateCheckWithVisitor<ErrorCode.SUFFIX_
 
     const diagnostic = ctx.makeTemplateDiagnostic(
       node.keySpan,
-      `The ${STYLE_SUFFIXES.map((suffix) => `'.${suffix}'`).join(
-        ', ',
-      )} suffixes are only supported on style bindings.`,
+      formatExtendedError(
+        ErrorCode.SUFFIX_NOT_SUPPORTED,
+        `The ${STYLE_SUFFIXES.map((suffix) => `'.${suffix}'`).join(
+          ', ',
+        )} suffixes are only supported on style bindings`,
+      ),
     );
     return [diagnostic];
   }
