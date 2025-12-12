@@ -7,6 +7,7 @@
  */
 
 import {XSS_SECURITY_URL} from '../error_details_base_url';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {TrustedHTML} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString} from '../util/security/trusted_types';
 
@@ -262,8 +263,10 @@ export function getNodeName(node: Node): string {
 }
 
 function clobberedElementError(node: Node) {
-  return new Error(
-    `Failed to sanitize html because the element is clobbered: ${(node as Element).outerHTML}`,
+  return new RuntimeError(
+    RuntimeErrorCode.HTML_SANITIZATION_CLOBBERED,
+    ngDevMode &&
+      `Failed to sanitize html because the element is clobbered: ${(node as Element).outerHTML}`,
   );
 }
 
@@ -314,7 +317,10 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
 
     do {
       if (mXSSAttempts === 0) {
-        throw new Error('Failed to sanitize html because the input is unstable');
+        throw new RuntimeError(
+          RuntimeErrorCode.HTML_SANITIZATION_UNSTABLE,
+          ngDevMode && 'Failed to sanitize html because the input is unstable',
+        );
       }
       mXSSAttempts--;
 
