@@ -6,13 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, HostAttributeToken, inject, Inject} from '../../src/core';
+import {Component, HostAttributeToken, inject, Inject, OnInit} from '../../src/core';
 import {enableProfiling} from '../../src/render3/debug/chrome_dev_tools_performance';
 import {profiler} from '../../src/render3/profiler';
 import {ProfilerEvent} from '../../primitives/devtools';
 import {TestBed} from '../../testing';
 
 describe('Chrome DevTools Performance integration', () => {
+  let markSpy: jasmine.Spy;
+  let measureSpy: jasmine.Spy;
+
+  beforeEach(() => {
+    markSpy = spyOn(performance, 'mark');
+    measureSpy = spyOn(performance, 'measure');
+  });
+
   describe('DI perf events', () => {
     it('should not crash when a HostAttributeToken is injected', () => {
       @Component({
@@ -22,14 +30,13 @@ describe('Chrome DevTools Performance integration', () => {
         attr = inject(new HostAttributeToken('someAttr'), {optional: true});
       }
 
-      spyOn(console, 'timeStamp');
       const stopProfiling = enableProfiling();
 
       try {
         const fixture = TestBed.createComponent(MyCmp);
         fixture.detectChanges();
 
-        expect((console.timeStamp as any).calls.all().length).not.toBe(0);
+        expect(measureSpy).toHaveBeenCalled();
       } finally {
         stopProfiling();
       }
@@ -49,21 +56,19 @@ describe('Chrome DevTools Performance integration', () => {
         constructor(@Inject('foo') foo: string) {}
       }
 
-      spyOn(console, 'timeStamp');
       const stopProfiling = enableProfiling();
 
       try {
         const fixture = TestBed.createComponent(MyCmp);
         fixture.detectChanges();
 
-        expect((console.timeStamp as any).calls.all().length).not.toBe(0);
+        expect(measureSpy).toHaveBeenCalled();
       } finally {
         stopProfiling();
       }
     });
 
     it('should not crash when asymmetric events are processed', () => {
-      const timeStampSpy = spyOn(console, 'timeStamp');
       const stopProfiling = enableProfiling();
 
       try {
@@ -71,13 +76,41 @@ describe('Chrome DevTools Performance integration', () => {
         profiler(ProfilerEvent.ChangeDetectionStart);
         profiler(ProfilerEvent.ChangeDetectionSyncEnd);
 
-        const calls = timeStampSpy.calls.all();
-        expect(calls.length).toBe(3);
+        expect(markSpy).toHaveBeenCalledTimes(2);
+        expect(measureSpy).toHaveBeenCalledTimes(1);
+        expect(measureSpy.calls.first().args[0]).toMatch(/^Synchronization /);
+      } finally {
+        stopProfiling();
+      }
+    });
+  });
 
-        const [syncStart, cdStart, syncEnd] = calls;
-        expect(syncStart.args[0]).toMatch(/^Event_/);
-        expect(cdStart.args[0]).toMatch(/^Event_/);
-        expect(syncEnd.args[0]).toMatch(/^Synchronization /);
+  describe('lifecycle hooks', () => {
+    it('should include documentation URL for lifecycle hooks', () => {
+      @Component({
+        template: ``,
+      })
+      class MyCmp implements OnInit {
+        ngOnInit() {}
+      }
+
+      const stopProfiling = enableProfiling();
+
+      try {
+        const fixture = TestBed.createComponent(MyCmp);
+        fixture.detectChanges();
+
+        const lifecycleCall = measureSpy.calls
+          .all()
+          .find((call) => call.args[0].includes(':ngOnInit'));
+
+        expect(lifecycleCall).toBeDefined();
+        const options = lifecycleCall!.args[1] as PerformanceMeasureOptions;
+        const detail = options?.detail;
+        expect(detail?.devtools?.properties).toContain([
+          'Documentation',
+          jasmine.stringMatching(/guide\/components\/lifecycle#ngoninit/),
+        ]);
       } finally {
         stopProfiling();
       }

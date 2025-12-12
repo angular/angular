@@ -7,11 +7,12 @@
  */
 
 import {isTypeProvider} from '../../di/provider_collection';
-import {assertDefined, assertEqual} from '../../util/assert';
+import {assertDefined} from '../../util/assert';
 import {performanceMarkFeature} from '../../util/performance';
 import {setProfiler} from '../profiler';
 import {Profiler, ProfilerEvent} from '../../../primitives/devtools';
 import {stringifyForError} from '../util/stringify_utils';
+import {VERSION} from '../../version';
 import {
   InjectorProfiler,
   InjectorProfilerEvent,
@@ -19,7 +20,6 @@ import {
   setInjectorProfiler,
 } from './injector_profiler';
 
-type TimeStampName = string;
 type DevToolsColor =
   | 'primary'
   | 'primary-light'
@@ -32,19 +32,7 @@ type DevToolsColor =
   | 'tertiary-dark'
   | 'error';
 
-declare global {
-  // Providing custom console.timeStamp overload as the performance-tracking signature it is not standardized yet
-  interface Console {
-    timeStamp(
-      label: string,
-      start: TimeStampName,
-      end?: TimeStampName,
-      trackName?: string,
-      trackGroup?: string,
-      color?: DevToolsColor,
-    ): void;
-  }
-}
+const TRACK_NAME = '\u{1F170}\uFE0F Angular';
 
 let changeDetectionRuns = 0;
 let changeDetectionSyncRuns = 0;
@@ -52,6 +40,54 @@ let changeDetectionSyncRuns = 0;
 let counter = 0;
 type stackEntry = [ProfilerEvent | ProfilerDIEvent, number];
 const eventsStack: stackEntry[] = [];
+
+function getBaseDocUrl() {
+  const full = VERSION['full'];
+  const isPreRelease =
+    full.includes('-next') || full.includes('-rc') || full === '0.0.0-PLACEHOLDER';
+  const prefix = isPreRelease ? 'next' : `v${VERSION['major']}`;
+  return `https://${prefix}.angular.dev`;
+}
+
+/**
+ * Returns documentation URL for lifecycle hooks.
+ * Extracts lifecycle hook name from the component method string and maps to Angular docs.
+ */
+function getLifecycleHookDocUrl(hookName: string): string | undefined {
+  // Extract lifecycle hook name (e.g., "MyComponent:ngOnInit" -> "ngOnInit")
+  const match = hookName.match(/:(ng\w+)$/);
+  if (!match) return undefined;
+
+  const lifecycleHook = match[1].toLowerCase();
+  const baseUrl = getBaseDocUrl();
+
+  return `${baseUrl}/guide/components/lifecycle#${lifecycleHook}`;
+}
+
+/**
+ * Returns documentation URL for profiler events.
+ */
+function getProfilerEventDocUrl(event: ProfilerEvent | ProfilerDIEvent, entryName: string) {
+  const baseUrl = getBaseDocUrl();
+
+  switch (event) {
+    case ProfilerEvent.ChangeDetectionStart:
+    case ProfilerEvent.ChangeDetectionEnd:
+    case ProfilerEvent.ChangeDetectionSyncStart:
+    case ProfilerEvent.ChangeDetectionSyncEnd:
+      return ` ${baseUrl}/best-practices/runtime-performance`;
+    case ProfilerEvent.AfterRenderHooksStart:
+    case ProfilerEvent.AfterRenderHooksEnd:
+      return `${baseUrl}/guide/components/lifecycle#aftereveryrender-and-afternextrender`;
+    case ProfilerEvent.DeferBlockStateStart:
+    case ProfilerEvent.DeferBlockStateEnd:
+      return `${baseUrl}/guide/defer`;
+    case ProfilerEvent.LifecycleHookStart:
+      return getLifecycleHookDocUrl(entryName);
+    default:
+      return undefined;
+  }
+}
 
 /**
  * Enum mimicking ProfilerEvent. The idea is to have unique event identifiers for both DI and other profiling events.
@@ -63,7 +99,8 @@ const enum ProfilerDIEvent {
 
 function measureStart(startEvent: ProfilerEvent | ProfilerDIEvent) {
   eventsStack.push([startEvent, counter]);
-  console.timeStamp('Event_' + startEvent + '_' + counter++);
+  // tslint:disable:ban
+  performance?.mark?.('Event_' + startEvent + '_' + counter++);
 }
 
 function measureEnd(
@@ -80,14 +117,20 @@ function measureEnd(
     assertDefined(top, 'Profiling error: could not find start event entry ' + startEvent);
   } while (top[0] !== startEvent);
 
-  console.timeStamp(
-    entryName,
-    'Event_' + top[0] + '_' + top[1],
-    undefined,
-    '\u{1F170}\uFE0F Angular',
-    undefined,
-    color,
-  );
+  const docUrl = getProfilerEventDocUrl(startEvent, entryName);
+
+  // tslint:disable:ban
+  performance?.measure?.(entryName, {
+    start: 'Event_' + top[0] + '_' + top[1],
+    detail: {
+      devtools: {
+        dataType: 'track-entry',
+        track: TRACK_NAME,
+        color,
+        ...(docUrl && {properties: [['Documentation', docUrl]]}),
+      },
+    },
+  });
 }
 
 const chromeDevToolsInjectorProfiler: InjectorProfiler = (event: InjectorProfilerEvent) => {
@@ -192,11 +235,8 @@ const devToolsProfiler: Profiler = (
     }
     case ProfilerEvent.LifecycleHookEnd: {
       const typeName = getComponentMeasureName(instance!);
-      measureEnd(
-        ProfilerEvent.LifecycleHookStart,
-        `${typeName}:${stringifyForError(eventFn)}`,
-        'tertiary',
-      );
+      const hookName = `${typeName}:${stringifyForError(eventFn)}`;
+      measureEnd(ProfilerEvent.LifecycleHookStart, hookName, 'tertiary');
       break;
     }
     case ProfilerEvent.OutputEnd: {
