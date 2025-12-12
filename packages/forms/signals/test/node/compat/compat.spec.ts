@@ -8,7 +8,7 @@
 
 import {ApplicationRef, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, UntypedFormControl, Validators} from '@angular/forms';
 import {compatForm, CompatValidationError} from '../../../compat/public_api';
 import {
   customError,
@@ -81,8 +81,34 @@ describe('Forms compat', () => {
     expect(f().valid()).toBe(true);
   });
 
+  it('should support FormControlState', () => {
+    const control = new FormControl({disabled: false, value: 5}, {nonNullable: true});
+    const cat = signal({
+      name: 'pirojok-the-cat',
+      age: control,
+    });
+    const f = compatForm(cat, {
+      injector: TestBed.inject(Injector),
+    });
+
+    expect(f.age().value()).toBe(5);
+    control.setValue(2);
+    expect(f.age().value()).toBe(2);
+  });
+
   it('can be in root', () => {
     const catControl = new FormControl('meow', Validators.minLength(3));
+    const cat = signal(catControl);
+    const f = compatForm(cat, {
+      injector: TestBed.inject(Injector),
+    });
+
+    expect(f().value()).toBe('meow');
+    expect(f().valid()).toBe(true);
+  });
+
+  it('works with untyped form control', () => {
+    const catControl = new UntypedFormControl('meow', Validators.minLength(3));
     const cat = signal(catControl);
     const f = compatForm(cat, {
       injector: TestBed.inject(Injector),
@@ -739,6 +765,31 @@ describe('Forms compat', () => {
           name: 'pirojok-the-cat',
           age: control,
         });
+        const f = form(
+          cat,
+          (p) => {
+            validate(p.name, ({valueOf}) => {
+              valueOf(p.age);
+            });
+          },
+          {
+            injector: TestBed.inject(Injector),
+          },
+        );
+
+        expect(() => f().valid()).toThrowError(/Tried to read an 'AbstractControl' value/);
+      });
+
+      it('throws when using valueOf on FormGroup', () => {
+        const group = new FormGroup({
+          a: new FormControl('meow'),
+        });
+
+        const cat = signal({
+          name: 'pirojok-the-cat',
+          age: group,
+        });
+
         const f = form(
           cat,
           (p) => {
