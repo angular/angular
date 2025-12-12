@@ -184,7 +184,7 @@ resetForm() {
 
 This approach works well when loading data from an API or resetting the entire form.
 
-### Update a single field directly with `set()`
+### Update a single field directly with `set()` or `update()`
 
 Use `set()` on individual field values to directly update the field state:
 
@@ -194,8 +194,7 @@ clearEmail() {
 }
 
 incrementAge() {
-  const currentAge = this.userForm.age().value();
-  this.userForm.age().value.set(currentAge + 1);
+  this.userForm.age().value.update(currentAge => currentAge + 1);
 }
 ```
 
