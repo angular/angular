@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal, untracked, WritableSignal} from '@angular/core';
+import {
+  computed,
+  Signal,
+  untracked,
+  WritableSignal,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
+import {SignalFormsErrorCode} from '../errors';
 import {AbstractControl} from '@angular/forms';
 import {
   FieldContext,
@@ -65,7 +72,10 @@ export class FieldNodeContext implements FieldContext<unknown> {
           stepsRemaining--;
           field = field.structure.parent;
           if (field === undefined) {
-            throw new Error('Path is not part of this field tree.');
+            throw new RuntimeError(
+              SignalFormsErrorCode.PATH_NOT_IN_FIELD_TREE,
+              ngDevMode && 'Path is not part of this field tree.',
+            );
           }
         }
 
@@ -74,11 +84,13 @@ export class FieldNodeContext implements FieldContext<unknown> {
         for (let key of targetPathNode.keys) {
           field = field.structure.getChild(key);
           if (field === undefined) {
-            throw new Error(
-              `Cannot resolve path .${targetPathNode.keys.join('.')} relative to field ${[
-                '<root>',
-                ...this.node.structure.pathKeys(),
-              ].join('.')}.`,
+            throw new RuntimeError(
+              SignalFormsErrorCode.PATH_RESOLUTION_FAILED,
+              ngDevMode &&
+                `Cannot resolve path .${targetPathNode.keys.join('.')} relative to field ${[
+                  '<root>',
+                  ...this.node.structure.pathKeys(),
+                ].join('.')}.`,
             );
           }
         }
@@ -116,7 +128,10 @@ export class FieldNodeContext implements FieldContext<unknown> {
     const key = this.key();
     // Assert that the parent is actually an array.
     if (!isArray(untracked(this.node.structure.parent!.value))) {
-      throw new Error(`RuntimeError: cannot access index, parent field is not an array`);
+      throw new RuntimeError(
+        SignalFormsErrorCode.PARENT_NOT_ARRAY,
+        ngDevMode && 'Cannot access index, parent field is not an array.',
+      );
     }
     // Return the key as a number if we are indeed inside an array field.
     return Number(key);
@@ -128,8 +143,10 @@ export class FieldNodeContext implements FieldContext<unknown> {
     const result = this.resolve(p)().value();
 
     if (result instanceof AbstractControl) {
-      throw new Error(
-        `Tried to read an 'AbstractControl' value form a 'form()'. Did you mean to use 'compatForm()' instead?`,
+      throw new RuntimeError(
+        SignalFormsErrorCode.ABSTRACT_CONTROL_IN_FORM,
+        ngDevMode &&
+          `Tried to read an 'AbstractControl' value from a 'form()'. Did you mean to use 'compatForm()' instead?`,
       );
     }
     return result;

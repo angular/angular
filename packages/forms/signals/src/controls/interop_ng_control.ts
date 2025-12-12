@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ɵRuntimeError as RuntimeError} from '@angular/core';
+import {SignalFormsErrorCode} from '../errors';
+
 import {
   ControlValueAccessor,
   Validators,
@@ -122,7 +125,10 @@ export class InteropNgControl
     if (this.field().pending()) {
       return 'PENDING';
     }
-    throw Error('AssertionError: unknown form control status');
+    throw new RuntimeError(
+      SignalFormsErrorCode.UNKNOWN_STATUS,
+      ngDevMode && 'Unknown form control status',
+    );
   }
 
   valueAccessor: ControlValueAccessor | null = null;
