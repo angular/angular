@@ -296,3 +296,51 @@ export function d3InjectorTreeNodeModifier(d3Node: SvgD3Node<InjectorTreeNode>) 
       return -1;
     });
 }
+
+/** Returns whether InjectorTreeNodes are equal (excl. children comparison). */
+export function areInjectorTreeNodesEqual(a: InjectorTreeNode, b: InjectorTreeNode): boolean {
+  const isSameInjector = equalInjector(a?.injector, b?.injector);
+  const isSameLabel = a?.label === b?.label;
+  const isSameSubLabel = a?.subLabel === b?.subLabel;
+
+  return isSameInjector && isSameLabel && isSameSubLabel;
+}
+
+/** Returns whether injector trees (InjectorTreeNodes with children) are equal. */
+export function areInjectorTreesEqual(
+  a: InjectorTreeNode | null,
+  b: InjectorTreeNode | null,
+): boolean {
+  if (!a && !b) {
+    return true;
+  }
+  if ((a && !b) || (!a && b)) {
+    return false;
+  }
+
+  const stackA: InjectorTreeNode[] = [a!];
+  const stackB: InjectorTreeNode[] = [b!];
+
+  while (stackA.length && stackB.length) {
+    const aNode = stackA.pop()!;
+    const bNode = stackB.pop()!;
+
+    const isDiffChildrenLength = aNode?.children.length !== bNode?.children.length;
+
+    if (!areInjectorTreeNodesEqual(aNode, bNode) || isDiffChildrenLength) {
+      return false;
+    }
+
+    if (aNode?.children && bNode?.children) {
+      for (let i = 0; i < aNode.children.length; i++) {
+        const aChild = aNode.children[i];
+        const bChild = bNode.children[i];
+
+        stackA.push(aChild);
+        stackB.push(bChild);
+      }
+    }
+  }
+
+  return true;
+}
