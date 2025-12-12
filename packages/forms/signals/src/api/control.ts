@@ -136,11 +136,21 @@ export interface FormUiControl {
  */
 export interface FormValueControl<TValue> extends FormUiControl {
   /**
-   * The value is the only required property in this contract. A component that wants to integrate
-   * with the `Field` directive via this contract, *must* provide a `model()` that will be kept in
-   * sync with the value of the bound `FieldTree`.
+   * A model signal or input signal for the value of the control.
+   *
+   * The `Field` directive will bind the field value to this input. If this is a `ModelSignal`, the
+   * `Field` directive will also update the field value when the signal changes.
    */
-  readonly value: ModelSignal<TValue>;
+  readonly value: ModelSignal<TValue> | InputSignal<TValue>;
+
+  /**
+   * An output that emits when the value of the control changes.
+   *
+   * The `Field` directive will listen to this output to update the field value. This allows for
+   * two-way binding when `value` is implemented as an `InputSignal` rather than a `ModelSignal`.
+   */
+  readonly valueChange?: OutputRef<TValue>;
+
   // TODO: We currently require that a `checked` input not be present, as we may want to introduce a
   // third kind of form control for radio buttons that defines both a `value` and `checked` input.
   // We are still evaluating whether this makes sense, but if we decide not to pursue this we can
@@ -165,11 +175,21 @@ export interface FormValueControl<TValue> extends FormUiControl {
  */
 export interface FormCheckboxControl extends FormUiControl {
   /**
-   * The checked is the only required property in this contract. A component that wants to integrate
-   * with the `Field` directive, *must* provide a `model()` that will be kept in sync with the
-   * value of the bound `FieldTree`.
+   * A model signal or input signal for the checked state of the control.
+   *
+   * The `Field` directive will bind the field value to this input. If this is a `ModelSignal`, the
+   * `Field` directive will also update the field value when the signal changes.
    */
-  readonly checked: ModelSignal<boolean>;
+  readonly checked: ModelSignal<boolean> | InputSignal<boolean>;
+
+  /**
+   * An output that emits when the checked state of the control changes.
+   *
+   * The `Field` directive will listen to this output to update the field value. This allows for
+   * two-way binding when `checked` is implemented as an `InputSignal` rather than a `ModelSignal`.
+   */
+  readonly checkedChange?: OutputRef<boolean>;
+
   // TODO: maybe this doesn't have to be strictly `undefined`? It just can't be a model signal.
   // Typescript doesn't really have a way to do any-but, but we could maybe introduce an optional
   // generic for it?

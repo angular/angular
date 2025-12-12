@@ -198,7 +198,8 @@ export function form<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSche
 
 // @public
 export interface FormCheckboxControl extends FormUiControl {
-    readonly checked: ModelSignal<boolean>;
+    readonly checked: ModelSignal<boolean> | InputSignal<boolean>;
+    readonly checkedChange?: OutputRef<boolean>;
     readonly value?: undefined;
 }
 
@@ -233,7 +234,8 @@ export interface FormUiControl {
 // @public
 export interface FormValueControl<TValue> extends FormUiControl {
     readonly checked?: undefined;
-    readonly value: ModelSignal<TValue>;
+    readonly value: ModelSignal<TValue> | InputSignal<TValue>;
+    readonly valueChange?: OutputRef<TValue>;
 }
 
 // @public
