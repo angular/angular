@@ -18,6 +18,7 @@ import {
   inputBinding,
   model,
   numberAttribute,
+  output,
   resource,
   signal,
   viewChild,
@@ -1497,6 +1498,43 @@ describe('field directive', () => {
     expect(cmp.f().value()).toBe('typing');
   });
 
+  it('synchronizes with a custom value control with separate input and output properties', () => {
+    @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value()" (input)="valueChange.emit(i.value)" />',
+    })
+    class CustomInput implements FormValueControl<string> {
+      readonly value = input.required<string>();
+      readonly valueChange = output<string>();
+    }
+
+    @Component({
+      imports: [Field, CustomInput],
+      template: `<my-input [field]="f" />`,
+    })
+    class TestCmp {
+      f = form<string>(signal('test'));
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const element = fix.nativeElement.firstChild.firstChild as HTMLInputElement;
+    const cmp = fix.componentInstance as TestCmp;
+
+    // Initial state
+    expect(element.value).toBe('test');
+
+    // Model -> View
+    act(() => cmp.f().value.set('testing'));
+    expect(element.value).toBe('testing');
+
+    // View -> Model
+    act(() => {
+      element.value = 'typing';
+      element.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toBe('typing');
+  });
+
   it('synchronizes with a custom checkbox control', () => {
     @Component({
       selector: 'my-checkbox',
@@ -1530,6 +1568,44 @@ describe('field directive', () => {
     act(() => {
       input.checked = true;
       input.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toBe(true);
+  });
+
+  it('synchronizes with a custom checkbox control with separate input and output properties', () => {
+    @Component({
+      selector: 'my-checkbox',
+      template:
+        '<input type="checkbox" #i [checked]="checked()" (input)="checkedChange.emit(i.checked)" />',
+    })
+    class CustomCheckbox implements FormCheckboxControl {
+      readonly checked = input.required<boolean>();
+      readonly checkedChange = output<boolean>();
+    }
+
+    @Component({
+      imports: [Field, CustomCheckbox],
+      template: `<my-checkbox [field]="f" />`,
+    })
+    class TestCmp {
+      f = form<boolean>(signal(true));
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const element = fix.nativeElement.querySelector('input') as HTMLInputElement;
+    const cmp = fix.componentInstance as TestCmp;
+
+    // Initial state
+    expect(element.checked).toBe(true);
+
+    // Model -> View
+    act(() => cmp.f().value.set(false));
+    expect(element.checked).toBe(false);
+
+    // View -> Model
+    act(() => {
+      element.checked = true;
+      element.dispatchEvent(new Event('input'));
     });
     expect(cmp.f().value()).toBe(true);
   });
