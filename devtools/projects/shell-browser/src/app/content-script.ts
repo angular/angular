@@ -13,7 +13,6 @@ import {BACKEND_URI, CONTENT_SCRIPT_URI, DETECT_ANGULAR_SCRIPT_URI} from './comm
 import {SamePageMessageBus} from './same-page-message-bus';
 
 let backgroundDisconnected = false;
-let backendInstalled = false;
 let backendInitialized = false;
 
 const port = chrome.runtime.connect({
@@ -21,12 +20,27 @@ const port = chrome.runtime.connect({
 });
 
 const handleDisconnect = (): void => {
-  // console.log('Background disconnected', new Date());
   localMessageBus.emit('shutdown');
   localMessageBus.destroy();
   chromeMessageBus.destroy();
   backgroundDisconnected = true;
 };
+
+function attemptBackendHandshake() {
+  if (!backendInitialized) {
+    // tslint:disable-next-line:no-console
+    console.log('Attempting handshake with backend', new Date());
+
+    const retry = () => {
+      if (backendInitialized || backgroundDisconnected) {
+        return;
+      }
+      handshakeWithBackend();
+      setTimeout(retry, 500);
+    };
+    retry();
+  }
+}
 
 port.onDisconnect.addListener(handleDisconnect);
 
@@ -36,11 +50,6 @@ const detectAngularMessageBus = new SamePageMessageBus(
 );
 
 detectAngularMessageBus.on('detectAngular', (detectionResult) => {
-  // only install backend once
-  if (backendInstalled) {
-    return;
-  }
-
   if (detectionResult.isAngularDevTools !== true) {
     return;
   }
@@ -61,7 +70,10 @@ detectAngularMessageBus.on('detectAngular', (detectionResult) => {
   script.src = chrome.runtime.getURL('app/backend_bundle.js');
   document.documentElement.appendChild(script);
   document.documentElement.removeChild(script);
-  backendInstalled = true;
+
+  detectAngularMessageBus.emit('backendInstalled');
+
+  attemptBackendHandshake();
 });
 
 const localMessageBus = new SamePageMessageBus(CONTENT_SCRIPT_URI, BACKEND_URI);
@@ -71,28 +83,19 @@ const handshakeWithBackend = (): void => {
   localMessageBus.emit('handshake');
 };
 
+// Relaying messages from FE to BE
 chromeMessageBus.onAny((topic, args) => {
   localMessageBus.emit(topic, args);
 });
 
+// Relaying messages from BE to FE
 localMessageBus.onAny((topic, args) => {
-  backendInitialized = true;
   chromeMessageBus.emit(topic, args);
 });
 
-if (!backendInitialized) {
-  // tslint:disable-next-line:no-console
-  console.log('Attempting initialization', new Date());
-
-  const retry = () => {
-    if (backendInitialized || backgroundDisconnected) {
-      return;
-    }
-    handshakeWithBackend();
-    setTimeout(retry, 500);
-  };
-  retry();
-}
+localMessageBus.on('backendReady', () => {
+  backendInitialized = true;
+});
 
 const proxyEventFromWindowToDevToolsExtension = (event: MessageEvent) => {
   if (event.source === window && event.data && event.data.__NG_DEVTOOLS_EVENT__) {
