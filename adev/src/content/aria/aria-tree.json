@@ -5,6 +5,386 @@
   "normalizedModuleName": "angular_aria_tree",
   "entries": [
     {
+      "name": "TreeItemGroup",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "ownedBy",
+          "type": "InputSignal<TreeItem<V>>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Tree item that owns the group.",
+          "jsdocTags": []
+        },
+        {
+          "name": "ngOnInit",
+          "signatures": [
+            {
+              "name": "ngOnInit",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "Group that contains children tree items.\n\nThe `ngTreeItemGroup` structural directive should be applied to an `ng-template` that\nwraps the child `ngTreeItem` elements. It is used to define a group of children for an\nexpandable `ngTreeItem`. The `ownedBy` input links the group to its parent `ngTreeItem`.\n\n```html\n<li ngTreeItem [value]=\"'parent-id'\">\n  Parent Item\n  <ul role=\"group\">\n    <ng-template ngTreeItemGroup [ownedBy]=\"parentTreeItemRef\">\n      <li ngTreeItem [value]=\"'child-id'\">Child Item</li>\n    </ng-template>\n  </ul>\n</li>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * Group that contains children tree items.\n *\n * The `ngTreeItemGroup` structural directive should be applied to an `ng-template` that\n * wraps the child `ngTreeItem` elements. It is used to define a group of children for an\n * expandable `ngTreeItem`. The `ownedBy` input links the group to its parent `ngTreeItem`.\n *\n * ```html\n * <li ngTreeItem [value]=\"'parent-id'\">\n *   Parent Item\n *   <ul role=\"group\">\n *     <ng-template ngTreeItemGroup [ownedBy]=\"parentTreeItemRef\">\n *       <li ngTreeItem [value]=\"'child-id'\">Child Item</li>\n *     </ng-template>\n *   </ul>\n * </li>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "implements": [
+        "OnInit",
+        "OnDestroy"
+      ],
+      "source": {
+        "filePath": "/src/aria/tree/tree-item-group.ts",
+        "startLine": 43,
+        "endLine": 87
+      }
+    },
+    {
+      "name": "TreeItem",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "id",
+          "type": "InputSignal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "A unique identifier for the tree item.",
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
+        },
+        {
+          "name": "value",
+          "type": "InputSignal<V>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The value of the tree item.",
+          "jsdocTags": [],
+          "inputAlias": "value",
+          "isRequiredInput": true
+        },
+        {
+          "name": "parent",
+          "type": "InputSignal<Tree<V> | TreeItemGroup<V>>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The parent tree root or tree item group.",
+          "jsdocTags": [],
+          "inputAlias": "parent",
+          "isRequiredInput": true
+        },
+        {
+          "name": "disabled",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the tree item is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "selectable",
+          "type": "InputSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the tree item is selectable.",
+          "jsdocTags": [],
+          "inputAlias": "selectable",
+          "isRequiredInput": false
+        },
+        {
+          "name": "expanded",
+          "type": "ModelSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "Whether the tree item is expanded.",
+          "jsdocTags": [],
+          "inputAlias": "expanded",
+          "isRequiredInput": false,
+          "outputAlias": "expandedChange"
+        },
+        {
+          "name": "label",
+          "type": "InputSignal<string | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Optional label for typeahead. Defaults to the element's textContent.",
+          "jsdocTags": [],
+          "inputAlias": "label",
+          "isRequiredInput": false
+        },
+        {
+          "name": "searchTerm",
+          "type": "Signal<string>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Search term for typeahead.",
+          "jsdocTags": []
+        },
+        {
+          "name": "tree",
+          "type": "Signal<Tree<V>>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The tree root.",
+          "jsdocTags": []
+        },
+        {
+          "name": "active",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the item is active.",
+          "jsdocTags": []
+        },
+        {
+          "name": "level",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The level of the current item in a tree.",
+          "jsdocTags": []
+        },
+        {
+          "name": "selected",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the item is selected.",
+          "jsdocTags": []
+        },
+        {
+          "name": "visible",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether this item is visible due to all of its parents being expanded.",
+          "jsdocTags": []
+        },
+        {
+          "name": "ngOnInit",
+          "signatures": [
+            {
+              "name": "ngOnInit",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "A selectable and expandable item in an `ngTree`.\n\nThe `ngTreeItem` directive represents an individual node within an `ngTree`. It can be\nselected, expanded (if it has children), and disabled. The `parent` input establishes\nthe hierarchical relationship within the tree.\n\n```html\n<li ngTreeItem [parent]=\"parentTreeOrGroup\" value=\"item-id\" label=\"Item Label\">\n  Item Label\n</li>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A selectable and expandable item in an `ngTree`.\n *\n * The `ngTreeItem` directive represents an individual node within an `ngTree`. It can be\n * selected, expanded (if it has children), and disabled. The `parent` input establishes\n * the hierarchical relationship within the tree.\n *\n * ```html\n * <li ngTreeItem [parent]=\"parentTreeOrGroup\" value=\"item-id\" label=\"Item Label\">\n *   Item Label\n * </li>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "extends": "DeferredContentAware",
+      "implements": [
+        "OnInit",
+        "OnDestroy",
+        "HasElement"
+      ],
+      "isStandalone": true,
+      "selector": "[ngTreeItem]",
+      "exportAs": [
+        "ngTreeItem"
+      ],
+      "source": {
+        "filePath": "/src/aria/tree/tree-item.ts",
+        "startLine": 45,
+        "endLine": 173
+      }
+    },
+    {
       "name": "Tree",
       "isAbstract": false,
       "entryType": "undecorated_class",
@@ -215,418 +595,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 83,
-        "endLine": 240
-      }
-    },
-    {
-      "name": "TreeItem",
-      "isAbstract": false,
-      "entryType": "directive",
-      "members": [
-        {
-          "name": "element",
-          "type": "HTMLElement",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the host element.",
-          "jsdocTags": []
-        },
-        {
-          "name": "id",
-          "type": "InputSignal<any>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "A unique identifier for the tree item.",
-          "jsdocTags": [],
-          "inputAlias": "id",
-          "isRequiredInput": false
-        },
-        {
-          "name": "value",
-          "type": "InputSignal<V>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "The value of the tree item.",
-          "jsdocTags": [],
-          "inputAlias": "value",
-          "isRequiredInput": true
-        },
-        {
-          "name": "parent",
-          "type": "InputSignal<Tree<V> | TreeItemGroup<V>>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "The parent tree root or tree item group.",
-          "jsdocTags": [],
-          "inputAlias": "parent",
-          "isRequiredInput": true
-        },
-        {
-          "name": "disabled",
-          "type": "InputSignalWithTransform<boolean, unknown>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "Whether the tree item is disabled.",
-          "jsdocTags": [],
-          "inputAlias": "disabled",
-          "isRequiredInput": false
-        },
-        {
-          "name": "selectable",
-          "type": "InputSignal<boolean>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "Whether the tree item is selectable.",
-          "jsdocTags": [],
-          "inputAlias": "selectable",
-          "isRequiredInput": false
-        },
-        {
-          "name": "expanded",
-          "type": "ModelSignal<boolean>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input",
-            "output"
-          ],
-          "description": "Whether the tree item is expanded.",
-          "jsdocTags": [],
-          "inputAlias": "expanded",
-          "isRequiredInput": false,
-          "outputAlias": "expandedChange"
-        },
-        {
-          "name": "label",
-          "type": "InputSignal<string | undefined>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "Optional label for typeahead. Defaults to the element's textContent.",
-          "jsdocTags": [],
-          "inputAlias": "label",
-          "isRequiredInput": false
-        },
-        {
-          "name": "searchTerm",
-          "type": "Signal<string>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Search term for typeahead.",
-          "jsdocTags": []
-        },
-        {
-          "name": "tree",
-          "type": "Signal<Tree<V>>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The tree root.",
-          "jsdocTags": []
-        },
-        {
-          "name": "active",
-          "type": "Signal<boolean>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether the item is active.",
-          "jsdocTags": []
-        },
-        {
-          "name": "level",
-          "type": "Signal<number>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The level of the current item in a tree.",
-          "jsdocTags": []
-        },
-        {
-          "name": "selected",
-          "type": "Signal<boolean | undefined>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether the item is selected.",
-          "jsdocTags": []
-        },
-        {
-          "name": "visible",
-          "type": "Signal<boolean>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether this item is visible due to all of its parents being expanded.",
-          "jsdocTags": []
-        },
-        {
-          "name": "ngOnInit",
-          "signatures": [
-            {
-              "name": "ngOnInit",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnInit",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "ngOnDestroy",
-          "signatures": [
-            {
-              "name": "ngOnDestroy",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnDestroy",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "contentVisible",
-          "type": "WritableSignal<boolean>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "override"
-          ],
-          "description": "",
-          "jsdocTags": []
-        },
-        {
-          "name": "preserveContent",
-          "type": "ModelSignal<boolean>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "override"
-          ],
-          "description": "",
-          "jsdocTags": []
-        }
-      ],
-      "generics": [
-        {
-          "name": "V"
-        }
-      ],
-      "description": "A selectable and expandable item in an `ngTree`.\n\nThe `ngTreeItem` directive represents an individual node within an `ngTree`. It can be\nselected, expanded (if it has children), and disabled. The `parent` input establishes\nthe hierarchical relationship within the tree.\n\n```html\n<li ngTreeItem [parent]=\"parentTreeOrGroup\" value=\"item-id\" label=\"Item Label\">\n  Item Label\n</li>\n```",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        }
-      ],
-      "rawComment": "/**\n * A selectable and expandable item in an `ngTree`.\n *\n * The `ngTreeItem` directive represents an individual node within an `ngTree`. It can be\n * selected, expanded (if it has children), and disabled. The `parent` input establishes\n * the hierarchical relationship within the tree.\n *\n * ```html\n * <li ngTreeItem [parent]=\"parentTreeOrGroup\" value=\"item-id\" label=\"Item Label\">\n *   Item Label\n * </li>\n * ```\n *\n * @developerPreview 21.0\n */",
-      "extends": "DeferredContentAware",
-      "implements": [
-        "OnInit",
-        "OnDestroy",
-        "HasElement"
-      ],
-      "isStandalone": true,
-      "selector": "[ngTreeItem]",
-      "exportAs": [
-        "ngTreeItem"
-      ],
-      "source": {
-        "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 257,
-        "endLine": 385
-      }
-    },
-    {
-      "name": "TreeItemGroup",
-      "isAbstract": false,
-      "entryType": "directive",
-      "members": [
-        {
-          "name": "element",
-          "type": "HTMLElement",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the host element.",
-          "jsdocTags": []
-        },
-        {
-          "name": "ownedBy",
-          "type": "InputSignal<TreeItem<V>>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "Tree item that owns the group.",
-          "jsdocTags": [],
-          "inputAlias": "ownedBy",
-          "isRequiredInput": true
-        },
-        {
-          "name": "ngOnInit",
-          "signatures": [
-            {
-              "name": "ngOnInit",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnInit",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "ngOnDestroy",
-          "signatures": [
-            {
-              "name": "ngOnDestroy",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnDestroy",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        }
-      ],
-      "generics": [
-        {
-          "name": "V"
-        }
-      ],
-      "description": "Group that contains children tree items.\n\nThe `ngTreeItemGroup` structural directive should be applied to an `ng-template` that\nwraps the child `ngTreeItem` elements. It is used to define a group of children for an\nexpandable `ngTreeItem`. The `ownedBy` input links the group to its parent `ngTreeItem`.\n\n```html\n<li ngTreeItem [value]=\"'parent-id'\">\n  Parent Item\n  <ul role=\"group\">\n    <ng-template ngTreeItemGroup [ownedBy]=\"parentTreeItemRef\">\n      <li ngTreeItem [value]=\"'child-id'\">Child Item</li>\n    </ng-template>\n  </ul>\n</li>\n```",
-      "jsdocTags": [
-        {
-          "name": "developerPreview",
-          "comment": "21.0"
-        }
-      ],
-      "rawComment": "/**\n * Group that contains children tree items.\n *\n * The `ngTreeItemGroup` structural directive should be applied to an `ng-template` that\n * wraps the child `ngTreeItem` elements. It is used to define a group of children for an\n * expandable `ngTreeItem`. The `ownedBy` input links the group to its parent `ngTreeItem`.\n *\n * ```html\n * <li ngTreeItem [value]=\"'parent-id'\">\n *   Parent Item\n *   <ul role=\"group\">\n *     <ng-template ngTreeItemGroup [ownedBy]=\"parentTreeItemRef\">\n *       <li ngTreeItem [value]=\"'child-id'\">Child Item</li>\n *     </ng-template>\n *   </ul>\n * </li>\n * ```\n *\n * @developerPreview 21.0\n */",
-      "implements": [
-        "OnInit",
-        "OnDestroy"
-      ],
-      "isStandalone": true,
-      "selector": "ng-template[ngTreeItemGroup]",
-      "exportAs": [
-        "ngTreeItemGroup"
-      ],
-      "source": {
-        "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 407,
-        "endLine": 451
+        "startLine": 62,
+        "endLine": 219
       }
     }
   ],
@@ -637,14 +607,6 @@
     ],
     [
       "ElementRef",
-      "@angular/core"
-    ],
-    [
-      "afterRenderEffect",
-      "@angular/core"
-    ],
-    [
-      "booleanAttribute",
       "@angular/core"
     ],
     [
@@ -660,15 +622,7 @@
       "@angular/core"
     ],
     [
-      "model",
-      "@angular/core"
-    ],
-    [
       "signal",
-      "@angular/core"
-    ],
-    [
-      "Signal",
       "@angular/core"
     ],
     [
@@ -680,7 +634,19 @@
       "@angular/core"
     ],
     [
-      "untracked",
+      "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
+      "booleanAttribute",
+      "@angular/core"
+    ],
+    [
+      "model",
+      "@angular/core"
+    ],
+    [
+      "Signal",
       "@angular/core"
     ],
     [
@@ -692,31 +658,15 @@
       "@angular/cdk/a11y"
     ],
     [
+      "untracked",
+      "@angular/core"
+    ],
+    [
       "Directionality",
       "@angular/cdk/bidi"
     ],
     [
-      "ComboboxTreePattern",
-      "@angular/aria/private"
-    ],
-    [
-      "TreeItemPattern",
-      "@angular/aria/private"
-    ],
-    [
-      "TreePattern",
-      "@angular/aria/private"
-    ],
-    [
-      "DeferredContent",
-      "@angular/aria/private"
-    ],
-    [
-      "DeferredContentAware",
-      "@angular/aria/private"
-    ],
-    [
-      "Tree",
+      "TreeItemGroup",
       "@angular/aria/tree"
     ],
     [
@@ -724,71 +674,27 @@
       "@angular/aria/tree"
     ],
     [
-      "TreeItemGroup",
-      "@angular/aria/tree"
-    ],
-    [
       "Tree",
       "@angular/aria/tree"
     ],
     [
-      "Tree.element",
+      "TreeItemGroup",
       "@angular/aria/tree"
     ],
     [
-      "Tree.id",
+      "TreeItemGroup.element",
       "@angular/aria/tree"
     ],
     [
-      "Tree.orientation",
+      "TreeItemGroup.ownedBy",
       "@angular/aria/tree"
     ],
     [
-      "Tree.multi",
+      "TreeItemGroup.ngOnInit",
       "@angular/aria/tree"
     ],
     [
-      "Tree.disabled",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.selectionMode",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.focusMode",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.wrap",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.softDisabled",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.typeaheadDelay",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.values",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.textDirection",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.nav",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.currentType",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.scrollActiveItemIntoView",
+      "TreeItemGroup.ngOnDestroy",
       "@angular/aria/tree"
     ],
     [
@@ -860,31 +766,67 @@
       "@angular/aria/tree"
     ],
     [
-      "TreeItem.contentVisible",
+      "Tree",
       "@angular/aria/tree"
     ],
     [
-      "TreeItem.preserveContent",
+      "Tree.element",
       "@angular/aria/tree"
     ],
     [
-      "TreeItemGroup",
+      "Tree.id",
       "@angular/aria/tree"
     ],
     [
-      "TreeItemGroup.element",
+      "Tree.orientation",
       "@angular/aria/tree"
     ],
     [
-      "TreeItemGroup.ownedBy",
+      "Tree.multi",
       "@angular/aria/tree"
     ],
     [
-      "TreeItemGroup.ngOnInit",
+      "Tree.disabled",
       "@angular/aria/tree"
     ],
     [
-      "TreeItemGroup.ngOnDestroy",
+      "Tree.selectionMode",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.focusMode",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.wrap",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.softDisabled",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.typeaheadDelay",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.values",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.textDirection",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.nav",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.currentType",
+      "@angular/aria/tree"
+    ],
+    [
+      "Tree.scrollActiveItemIntoView",
       "@angular/aria/tree"
     ]
   ]
