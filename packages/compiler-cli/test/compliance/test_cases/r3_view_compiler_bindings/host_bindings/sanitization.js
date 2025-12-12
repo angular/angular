@@ -7,14 +7,14 @@ hostBindings: function HostBindingLinkDir_HostBindings(rf, ctx) {
 …
 hostBindings: function HostBindingImageDir_HostBindings(rf, ctx) {
   if (rf & 2) {
-    $r3$.ɵɵdomProperty("innerHTML", ctx.evil, $r3$.ɵɵsanitizeHtml)("src", ctx.evil, $r3$.ɵɵsanitizeUrl);
+    $r3$.ɵɵdomProperty("innerHTML", ctx.evil, $r3$.ɵɵsanitizeHtml)("src", ctx.nonEvil);
     $r3$.ɵɵattribute("style", ctx.evil, $r3$.ɵɵsanitizeStyle);
   }
 }
 …
 hostBindings: function HostBindingIframeDir_HostBindings(rf, ctx) {
   if (rf & 2) {
-    $r3$.ɵɵdomProperty("innerHTML", ctx.evil, $r3$.ɵɵsanitizeHtml)("src", ctx.evil, $r3$.ɵɵsanitizeResourceUrl)("sandbox", ctx.evil, $r3$.ɵɵvalidateAttribute);
+    $r3$.ɵɵdomProperty("innerHTML", ctx.evil, $r3$.ɵɵsanitizeHtml)("src", ctx.evil, i0.ɵɵsanitizeResourceUrl)("sandbox", ctx.evil, $r3$.ɵɵvalidateAttribute);
     $r3$.ɵɵattribute("style", ctx.evil, $r3$.ɵɵsanitizeStyle)("attributeName", ctx.nonEvil);
   }
 }
