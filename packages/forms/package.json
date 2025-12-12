@@ -8,13 +8,13 @@
     "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
   },
   "dependencies": {
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "@standard-schema/spec": "^1.0.0"
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "@standard-schema/spec": "^1.0.0",
     "rxjs": "^6.5.3 || ^7.4.0"
   },
   "repository": {
