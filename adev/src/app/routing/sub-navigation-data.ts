@@ -1,4 +1,4 @@
-/*!
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -9,7 +9,7 @@
 import {isDevMode} from '@angular/core';
 import {NavigationItem} from '@angular/docs';
 
-// These 2 imports are expected to be red because they are generated a build time
+// These imports are expected to be red because they are generated a build time
 import FIRST_APP_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/first-app/routes.json';
 import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/learn-angular/routes.json';
 import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/deferrable-views/routes.json';
@@ -449,6 +449,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                 label: 'Form models',
                 path: 'guide/forms/signals/models',
                 contentPath: 'guide/forms/signals/models',
+              },
+              {
+                label: 'Form model design',
+                path: 'guide/forms/signals/model-design',
+                contentPath: 'guide/forms/signals/designing-your-form-model',
               },
               {
                 label: 'Field state management',
