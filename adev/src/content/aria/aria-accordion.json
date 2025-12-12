@@ -15,14 +15,18 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Accordion](guide/aria/accordion)"
         }
       ],
-      "rawComment": "/**\n * A structural directive that provides a mechanism for lazily rendering the content for an\n * `ngAccordionPanel`.\n *\n * This directive should be applied to an `ng-template` inside an `ngAccordionPanel`.\n * It allows the content of the panel to be lazily rendered, improving performance\n * by only creating the content when the panel is first expanded.\n *\n * ```html\n * <div ngAccordionPanel panelId=\"unique-id-1\">\n *   <ng-template ngAccordionContent>\n *     <p>This is the content that will be displayed inside the panel.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A structural directive that provides a mechanism for lazily rendering the content for an\n * `ngAccordionPanel`.\n *\n * This directive should be applied to an `ng-template` inside an `ngAccordionPanel`.\n * It allows the content of the panel to be lazily rendered, improving performance\n * by only creating the content when the panel is first expanded.\n *\n * ```html\n * <div ngAccordionPanel panelId=\"unique-id-1\">\n *   <ng-template ngAccordionContent>\n *     <p>This is the content that will be displayed inside the panel.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n * @see [Accordion](guide/aria/accordion)\n */",
       "implements": [],
       "source": {
         "filePath": "src/aria/accordion/accordion-content.ts",
-        "startLine": 30,
-        "endLine": 34
+        "startLine": 31,
+        "endLine": 35
       }
     },
     {
@@ -166,14 +170,18 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Accordion](guide/aria/accordion)"
         }
       ],
-      "rawComment": "/**\n * The content panel of an accordion item that is conditionally visible.\n *\n * This directive is a container for the content that is shown or hidden. It requires\n * a `panelId` that must match the `panelId` of its corresponding `ngAccordionTrigger`.\n * The content within the panel should be provided using an `ng-template` with the\n * `ngAccordionContent` directive so that the content is not rendered on the page until the trigger\n * is expanded. It applies `role=\"region\"` for accessibility and uses the `inert` attribute to hide\n * its content from assistive technologies when not visible.\n *\n * ```html\n * <div ngAccordionPanel panelId=\"unique-id-1\">\n *   <ng-template ngAccordionContent>\n *     <p>This content is lazily rendered and will be shown when the panel is expanded.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * The content panel of an accordion item that is conditionally visible.\n *\n * This directive is a container for the content that is shown or hidden. It requires\n * a `panelId` that must match the `panelId` of its corresponding `ngAccordionTrigger`.\n * The content within the panel should be provided using an `ng-template` with the\n * `ngAccordionContent` directive so that the content is not rendered on the page until the trigger\n * is expanded. It applies `role=\"region\"` for accessibility and uses the `inert` attribute to hide\n * its content from assistive technologies when not visible.\n *\n * ```html\n * <div ngAccordionPanel panelId=\"unique-id-1\">\n *   <ng-template ngAccordionContent>\n *     <p>This content is lazily rendered and will be shown when the panel is expanded.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n * @see [Accordion](guide/aria/accordion)\n */",
       "implements": [],
       "source": {
         "filePath": "/src/aria/accordion/accordion-panel.ts",
-        "startLine": 41,
-        "endLine": 102
+        "startLine": 42,
+        "endLine": 103
       }
     },
     {
@@ -361,9 +369,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Accordion](guide/aria/accordion)"
         }
       ],
-      "rawComment": "/**\n * The trigger that toggles the visibility of its associated `ngAccordionPanel`.\n *\n * This directive requires a `panelId` that must match the `panelId` of the `ngAccordionPanel` it\n * controls. When clicked, it will expand or collapse the panel. It also handles keyboard\n * interactions for navigation within the `ngAccordionGroup`. It applies `role=\"button\"` and manages\n * `aria-expanded`, `aria-controls`, and `aria-disabled` attributes for accessibility.\n * The `disabled` input can be used to disable the trigger.\n *\n * ```html\n * <button ngAccordionTrigger panelId=\"unique-id-1\">\n *   Accordion Trigger Text\n * </button>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * The trigger that toggles the visibility of its associated `ngAccordionPanel`.\n *\n * This directive requires a `panelId` that must match the `panelId` of the `ngAccordionPanel` it\n * controls. When clicked, it will expand or collapse the panel. It also handles keyboard\n * interactions for navigation within the `ngAccordionGroup`. It applies `role=\"button\"` and manages\n * `aria-expanded`, `aria-controls`, and `aria-disabled` attributes for accessibility.\n * The `disabled` input can be used to disable the trigger.\n *\n * ```html\n * <button ngAccordionTrigger panelId=\"unique-id-1\">\n *   Accordion Trigger Text\n * </button>\n * ```\n *\n * @developerPreview 21.0\n * @see [Accordion](guide/aria/accordion)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngAccordionTrigger]",
@@ -372,8 +384,8 @@
       ],
       "source": {
         "filePath": "/src/aria/accordion/accordion-trigger.ts",
-        "startLine": 41,
-        "endLine": 106
+        "startLine": 42,
+        "endLine": 107
       }
     },
     {
@@ -526,9 +538,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Accordion](guide/aria/accordion)"
         }
       ],
-      "rawComment": "/**\n * A container for a group of accordion items. It manages the overall state and\n * interactions of the accordion, such as keyboard navigation and expansion mode.\n *\n * The `ngAccordionGroup` serves as the root of a group of accordion triggers and panels,\n * coordinating the behavior of the `ngAccordionTrigger` and `ngAccordionPanel` elements within it.\n * It supports both single and multiple expansion modes.\n *\n * ```html\n * <div ngAccordionGroup [multiExpandable]=\"true\" [(expandedPanels)]=\"expandedItems\">\n *   <div class=\"accordion-item\">\n *     <h3>\n *       <button ngAccordionTrigger panelId=\"item-1\">Item 1</button>\n *     </h3>\n *     <div ngAccordionPanel panelId=\"item-1\">\n *       <ng-template ngAccordionContent>\n *         <p>Content for Item 1.</p>\n *       </ng-template>\n *     </div>\n *   </div>\n *   <div class=\"accordion-item\">\n *     <h3>\n *       <button ngAccordionTrigger panelId=\"item-2\">Item 2</button>\n *     </h3>\n *     <div ngAccordionPanel panelId=\"item-2\">\n *       <ng-template ngAccordionContent>\n *         <p>Content for Item 2.</p>\n *       </ng-template>\n *     </div>\n *   </div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A container for a group of accordion items. It manages the overall state and\n * interactions of the accordion, such as keyboard navigation and expansion mode.\n *\n * The `ngAccordionGroup` serves as the root of a group of accordion triggers and panels,\n * coordinating the behavior of the `ngAccordionTrigger` and `ngAccordionPanel` elements within it.\n * It supports both single and multiple expansion modes.\n *\n * ```html\n * <div ngAccordionGroup [multiExpandable]=\"true\" [(expandedPanels)]=\"expandedItems\">\n *   <div class=\"accordion-item\">\n *     <h3>\n *       <button ngAccordionTrigger panelId=\"item-1\">Item 1</button>\n *     </h3>\n *     <div ngAccordionPanel panelId=\"item-1\">\n *       <ng-template ngAccordionContent>\n *         <p>Content for Item 1.</p>\n *       </ng-template>\n *     </div>\n *   </div>\n *   <div class=\"accordion-item\">\n *     <h3>\n *       <button ngAccordionTrigger panelId=\"item-2\">Item 2</button>\n *     </h3>\n *     <div ngAccordionPanel panelId=\"item-2\">\n *       <ng-template ngAccordionContent>\n *         <p>Content for Item 2.</p>\n *       </ng-template>\n *     </div>\n *   </div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n * @see [Accordion](guide/aria/accordion)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngAccordionGroup]",
@@ -537,8 +553,8 @@
       ],
       "source": {
         "filePath": "src/aria/accordion/accordion-group.ts",
-        "startLine": 61,
-        "endLine": 157
+        "startLine": 62,
+        "endLine": 158
       }
     }
   ],

@@ -15,14 +15,18 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Tabs](guide/aria/tabs)"
         }
       ],
-      "rawComment": "/**\n * A TabContent container for the lazy-loaded content.\n *\n * This structural directive should be applied to an `ng-template` within an `ngTabPanel`.\n * It enables lazy loading of the tab's content, meaning the content is only rendered\n * when the tab is activated for the first time.\n *\n * ```html\n * <div ngTabPanel value=\"myTabId\">\n *   <ng-template ngTabContent>\n *     <p>This content will be loaded when 'myTabId' is selected.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A TabContent container for the lazy-loaded content.\n *\n * This structural directive should be applied to an `ng-template` within an `ngTabPanel`.\n * It enables lazy loading of the tab's content, meaning the content is only rendered\n * when the tab is activated for the first time.\n *\n * ```html\n * <div ngTabPanel value=\"myTabId\">\n *   <ng-template ngTabContent>\n *     <p>This content will be loaded when 'myTabId' is selected.</p>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tabs](guide/aria/tabs)\n */",
       "implements": [],
       "source": {
         "filePath": "/src/aria/tabs/tab-content.ts",
-        "startLine": 29,
-        "endLine": 34
+        "startLine": 31,
+        "endLine": 36
       }
     },
     {
@@ -47,9 +51,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Tabs](guide/aria/tabs)"
         }
       ],
-      "rawComment": "/**\n * A Tabs container.\n *\n * The `ngTabs` directive represents a set of layered sections of content. It acts as the\n * overarching container for a tabbed interface, coordinating the behavior of `ngTabList`,\n * `ngTab`, and `ngTabPanel` directives.\n *\n * ```html\n * <div ngTabs>\n *   <ul ngTabList [(selectedTab)]=\"selectedTabValue\">\n *     <li ngTab value=\"tab1\">Tab 1</li>\n *     <li ngTab value=\"tab2\">Tab 2</li>\n *     <li ngTab value=\"tab3\">Tab 3</li>\n *   </ul>\n *\n *   <div ngTabPanel value=\"tab1\">\n *      <ng-template ngTabContent>Content for Tab 1</ng-template>\n *   </div>\n *   <div ngTabPanel value=\"tab2\">\n *      <ng-template ngTabContent>Content for Tab 2</ng-template>\n *   </div>\n *   <div ngTabPanel value=\"tab3\">\n *      <ng-template ngTabContent>Content for Tab 3</ng-template>\n *   </div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A Tabs container.\n *\n * The `ngTabs` directive represents a set of layered sections of content. It acts as the\n * overarching container for a tabbed interface, coordinating the behavior of `ngTabList`,\n * `ngTab`, and `ngTabPanel` directives.\n *\n * ```html\n * <div ngTabs>\n *   <ul ngTabList [(selectedTab)]=\"selectedTabValue\">\n *     <li ngTab value=\"tab1\">Tab 1</li>\n *     <li ngTab value=\"tab2\">Tab 2</li>\n *     <li ngTab value=\"tab3\">Tab 3</li>\n *   </ul>\n *\n *   <div ngTabPanel value=\"tab1\">\n *      <ng-template ngTabContent>Content for Tab 1</ng-template>\n *   </div>\n *   <div ngTabPanel value=\"tab2\">\n *      <ng-template ngTabContent>Content for Tab 2</ng-template>\n *   </div>\n *   <div ngTabPanel value=\"tab3\">\n *      <ng-template ngTabContent>Content for Tab 3</ng-template>\n *   </div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tabs](guide/aria/tabs)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngTabs]",
@@ -58,8 +66,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 43,
-        "endLine": 90
+        "startLine": 45,
+        "endLine": 92
       }
     },
     {
@@ -180,17 +188,21 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Tabs](guide/aria/tabs)"
         }
       ],
-      "rawComment": "/**\n * A TabPanel container for the resources of layered content associated with a tab.\n *\n * The `ngTabPanel` directive holds the content for a specific tab. It is linked to an\n * `ngTab` by a matching `value`. If a tab panel is hidden, the `inert` attribute will be\n * applied to remove it from the accessibility tree. Proper styling is required for visual hiding.\n *\n * ```html\n * <div ngTabPanel value=\"myTabId\">\n *   <ng-template ngTabContent>\n *     <!-- Content for the tab panel -->\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A TabPanel container for the resources of layered content associated with a tab.\n *\n * The `ngTabPanel` directive holds the content for a specific tab. It is linked to an\n * `ngTab` by a matching `value`. If a tab panel is hidden, the `inert` attribute will be\n * applied to remove it from the accessibility tree. Proper styling is required for visual hiding.\n *\n * ```html\n * <div ngTabPanel value=\"myTabId\">\n *   <ng-template ngTabContent>\n *     <!-- Content for the tab panel -->\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tabs](guide/aria/tabs)\n */",
       "implements": [
         "OnInit",
         "OnDestroy"
       ],
       "source": {
         "filePath": "/src/aria/tabs/tab-panel.ts",
-        "startLine": 40,
-        "endLine": 101
+        "startLine": 42,
+        "endLine": 103
       }
     },
     {
@@ -373,9 +385,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Tabs](guide/aria/tabs)"
         }
       ],
-      "rawComment": "/**\n * A selectable tab in a TabList.\n *\n * The `ngTab` directive represents an individual tab control within an `ngTabList`. It\n * requires a `value` that uniquely identifies it and links it to a corresponding `ngTabPanel`.\n *\n * ```html\n * <li ngTab value=\"myTabId\" [disabled]=\"isTabDisabled\">\n *   My Tab Label\n * </li>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A selectable tab in a TabList.\n *\n * The `ngTab` directive represents an individual tab control within an `ngTabList`. It\n * requires a `value` that uniquely identifies it and links it to a corresponding `ngTabPanel`.\n *\n * ```html\n * <li ngTab value=\"myTabId\" [disabled]=\"isTabDisabled\">\n *   My Tab Label\n * </li>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tabs](guide/aria/tabs)\n */",
       "implements": [
         "HasElement",
         "OnInit",
@@ -388,8 +404,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tab.ts",
-        "startLine": 39,
-        "endLine": 109
+        "startLine": 41,
+        "endLine": 111
       }
     },
     {
@@ -632,9 +648,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Tabs](guide/aria/tabs)"
         }
       ],
-      "rawComment": "/**\n * A TabList container.\n *\n * The `ngTabList` directive controls a list of `ngTab` elements. It manages keyboard\n * navigation, selection, and the overall orientation of the tabs. It should be placed\n * within an `ngTabs` container.\n *\n * ```html\n * <ul ngTabList [(selectedTab)]=\"mySelectedTab\" orientation=\"horizontal\" selectionMode=\"explicit\">\n *   <li ngTab value=\"first\">First Tab</li>\n *   <li ngTab value=\"second\">Second Tab</li>\n * </ul>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A TabList container.\n *\n * The `ngTabList` directive controls a list of `ngTab` elements. It manages keyboard\n * navigation, selection, and the overall orientation of the tabs. It should be placed\n * within an `ngTabs` container.\n *\n * ```html\n * <ul ngTabList [(selectedTab)]=\"mySelectedTab\" orientation=\"horizontal\" selectionMode=\"explicit\">\n *   <li ngTab value=\"first\">First Tab</li>\n *   <li ngTab value=\"second\">Second Tab</li>\n * </ul>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Tabs](guide/aria/tabs)\n */",
       "implements": [
         "OnInit",
         "OnDestroy"
@@ -646,8 +666,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tab-list.ts",
-        "startLine": 43,
-        "endLine": 172
+        "startLine": 45,
+        "endLine": 174
       }
     }
   ],
