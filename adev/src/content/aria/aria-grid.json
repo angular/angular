@@ -39,9 +39,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Grid](guide/aria/grid)"
         }
       ],
-      "rawComment": "/**\n * Represents a row within a grid. It is a container for `ngGridCell` directives.\n *\n * ```html\n * <tr ngGridRow>\n *   <!-- ... cells ... -->\n * </tr>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * Represents a row within a grid. It is a container for `ngGridCell` directives.\n *\n * ```html\n * <tr ngGridRow>\n *   <!-- ... cells ... -->\n * </tr>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Grid](guide/aria/grid)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGridRow]",
@@ -50,8 +54,8 @@
       ],
       "source": {
         "filePath": "/src/aria/grid/grid-row.ts",
-        "startLine": 33,
-        "endLine": 72
+        "startLine": 35,
+        "endLine": 74
       }
     },
     {
@@ -249,9 +253,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Grid](guide/aria/grid)"
         }
       ],
-      "rawComment": "/**\n * Represents an interactive element inside a `GridCell`. It allows for pausing grid navigation to\n * interact with the widget.\n *\n * When the user interacts with the widget (e.g., by typing in an input or opening a menu), grid\n * navigation is temporarily suspended to allow the widget to handle keyboard\n * events.\n *\n * ```html\n * <td ngGridCell>\n *   <button ngGridCellWidget>Click Me</button>\n * </td>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * Represents an interactive element inside a `GridCell`. It allows for pausing grid navigation to\n * interact with the widget.\n *\n * When the user interacts with the widget (e.g., by typing in an input or opening a menu), grid\n * navigation is temporarily suspended to allow the widget to handle keyboard\n * events.\n *\n * ```html\n * <td ngGridCell>\n *   <button ngGridCellWidget>Click Me</button>\n * </td>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Grid](guide/aria/grid)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGridCellWidget]",
@@ -260,8 +268,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid-cell-widget.ts",
-        "startLine": 40,
-        "endLine": 134
+        "startLine": 42,
+        "endLine": 136
       }
     },
     {
@@ -413,9 +421,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Grid](guide/aria/grid)"
         }
       ],
-      "rawComment": "/**\n * The container for a grid. It provides keyboard navigation and focus management for the grid's\n * rows and cells. It manages the overall behavior of the grid, including focus\n * wrapping, selection, and disabled states.\n *\n * ```html\n * <table ngGrid [multi]=\"true\" [enableSelection]=\"true\">\n *   @for (row of gridData; track row) {\n *     <tr ngGridRow>\n *       @for (cell of row; track cell) {\n *         <td ngGridCell [disabled]=\"cell.disabled\">\n *           {{cell.value}}\n *         </td>\n *       }\n *     </tr>\n *   }\n * </table>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * The container for a grid. It provides keyboard navigation and focus management for the grid's\n * rows and cells. It manages the overall behavior of the grid, including focus\n * wrapping, selection, and disabled states.\n *\n * ```html\n * <table ngGrid [multi]=\"true\" [enableSelection]=\"true\">\n *   @for (row of gridData; track row) {\n *     <tr ngGridRow>\n *       @for (cell of row; track cell) {\n *         <td ngGridCell [disabled]=\"cell.disabled\">\n *           {{cell.value}}\n *         </td>\n *       }\n *     </tr>\n *   }\n * </table>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Grid](guide/aria/grid)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGrid]",
@@ -424,8 +436,8 @@
       ],
       "source": {
         "filePath": "/src/aria/grid/grid.ts",
-        "startLine": 45,
-        "endLine": 159
+        "startLine": 47,
+        "endLine": 161
       }
     },
     {
@@ -628,9 +640,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Grid](guide/aria/grid)"
         }
       ],
-      "rawComment": "/**\n * Represents a cell within a grid row. It is the primary focusable element\n * within the grid. It can be disabled and can have its selection state managed\n * through the `selected` input.\n *\n * ```html\n * <td ngGridCell [disabled]=\"isDisabled\" [(selected)]=\"isSelected\">\n *   Cell Content\n * </td>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * Represents a cell within a grid row. It is the primary focusable element\n * within the grid. It can be disabled and can have its selection state managed\n * through the `selected` input.\n *\n * ```html\n * <td ngGridCell [disabled]=\"isDisabled\" [(selected)]=\"isSelected\">\n *   Cell Content\n * </td>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Grid](guide/aria/grid)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGridCell]",
@@ -639,8 +655,8 @@
       ],
       "source": {
         "filePath": "/src/aria/grid/grid-cell.ts",
-        "startLine": 39,
-        "endLine": 154
+        "startLine": 41,
+        "endLine": 156
       }
     }
   ],

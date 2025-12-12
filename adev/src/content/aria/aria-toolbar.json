@@ -56,9 +56,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Toolbar](guide/aria/toolbar)"
         }
       ],
-      "rawComment": "/**\n * A directive that groups toolbar widgets, used for more complex widgets like radio groups\n * that have their own internal navigation.\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A directive that groups toolbar widgets, used for more complex widgets like radio groups\n * that have their own internal navigation.\n *\n * @developerPreview 21.0\n *\n * @see [Toolbar](guide/aria/toolbar)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngToolbarWidgetGroup]",
@@ -67,8 +71,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar-widget-group.ts",
-        "startLine": 29,
-        "endLine": 65
+        "startLine": 31,
+        "endLine": 67
       }
     },
     {
@@ -173,9 +177,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Toolbar](guide/aria/toolbar)"
         }
       ],
-      "rawComment": "/**\n * A toolbar widget container for a group of interactive widgets, such as\n * buttons or radio groups. It provides a single point of reference for keyboard navigation\n * and focus management. It supports various orientations and disabled states.\n *\n * ```html\n * <div ngToolbar orientation=\"horizontal\" [wrap]=\"true\">\n *   <button ngToolbarWidget value=\"save\">Save</button>\n *   <button ngToolbarWidget value=\"print\">Print</button>\n *\n *   <div ngToolbarWidgetGroup [(value)]=\"selectedAlignment\">\n *     <button ngToolbarWidget value=\"left\">Left</button>\n *     <button ngToolbarWidget value=\"center\">Center</button>\n *     <button ngToolbarWidget value=\"right\">Right</button>\n *   </div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A toolbar widget container for a group of interactive widgets, such as\n * buttons or radio groups. It provides a single point of reference for keyboard navigation\n * and focus management. It supports various orientations and disabled states.\n *\n * ```html\n * <div ngToolbar orientation=\"horizontal\" [wrap]=\"true\">\n *   <button ngToolbarWidget value=\"save\">Save</button>\n *   <button ngToolbarWidget value=\"print\">Print</button>\n *\n *   <div ngToolbarWidgetGroup [(value)]=\"selectedAlignment\">\n *     <button ngToolbarWidget value=\"left\">Left</button>\n *     <button ngToolbarWidget value=\"center\">Center</button>\n *     <button ngToolbarWidget value=\"right\">Right</button>\n *   </div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Toolbar](guide/aria/toolbar)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngToolbar]",
@@ -184,8 +192,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 45,
-        "endLine": 149
+        "startLine": 47,
+        "endLine": 151
       }
     },
     {
@@ -349,9 +357,13 @@
         {
           "name": "developerPreview",
           "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Toolbar](guide/aria/toolbar)"
         }
       ],
-      "rawComment": "/**\n * A widget within a toolbar.\n *\n * The `ngToolbarWidget` directive should be applied to any native HTML element that acts\n * as an interactive widget within an `ngToolbar` or `ngToolbarWidgetGroup`. It enables\n * keyboard navigation and selection within the toolbar.\n *\n * ```html\n * <button ngToolbarWidget value=\"action-id\" [disabled]=\"isDisabled\">\n *   Perform Action\n * </button>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A widget within a toolbar.\n *\n * The `ngToolbarWidget` directive should be applied to any native HTML element that acts\n * as an interactive widget within an `ngToolbar` or `ngToolbarWidgetGroup`. It enables\n * keyboard navigation and selection within the toolbar.\n *\n * ```html\n * <button ngToolbarWidget value=\"action-id\" [disabled]=\"isDisabled\">\n *   Perform Action\n * </button>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Toolbar](guide/aria/toolbar)\n */",
       "implements": [
         "OnInit",
         "OnDestroy"
@@ -363,8 +375,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar-widget.ts",
-        "startLine": 40,
-        "endLine": 107
+        "startLine": 42,
+        "endLine": 109
       }
     }
   ],
