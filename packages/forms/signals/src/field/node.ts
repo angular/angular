@@ -80,6 +80,23 @@ export class FieldNode implements FieldState<unknown> {
     this.submitState = new FieldSubmitState(this);
   }
 
+  focusBoundControl(): boolean {
+    // First try to focus one of our own bindings.
+    for (const binding of this.fieldBindings()) {
+      if (binding.focus) {
+        binding.focus();
+        return true;
+      }
+    }
+    // Fallback to focusing the bound control for one of our children.
+    for (const child of this.structure.children()) {
+      if (child.focusBoundControl()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * The `AbortController` for the currently debounced sync, or `undefined` if there is none.
    *

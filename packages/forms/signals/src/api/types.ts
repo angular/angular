@@ -311,6 +311,8 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * @param value Optional value to set to the form. If not passed, the value will not be changed.
    */
   reset(value?: TValue): void;
+
+  focusBoundControl(): void;
 }
 
 /**
