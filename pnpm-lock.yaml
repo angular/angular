@@ -359,8 +359,8 @@ importers:
         specifier: 0.2100.3
         version: 0.2100.3(chokidar@4.0.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#8ea341007f989fa129daaa29d24c2e196ffcb1bc
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/8ea341007f989fa129daaa29d24c2e196ffcb1bc(@modelcontextprotocol/sdk@1.24.3(zod@4.1.13))
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#d01dccf28bf240ced7828fe93c65eda247b24dec
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d01dccf28bf240ced7828fe93c65eda247b24dec(@modelcontextprotocol/sdk@1.24.3(zod@4.1.13))
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.4)
@@ -940,7 +940,7 @@ importers:
     dependencies:
       '@angular/core':
         specifier: ^21.0.0-next
-        version: 21.0.3(@angular/compiler@21.0.3)
+        version: 21.0.3(@angular/compiler@packages+compiler)
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
@@ -1375,24 +1375,24 @@ importers:
   vscode-ng-language-service/integration/project:
     dependencies:
       '@angular/common':
-        specifier: 21.0.3
-        version: 21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3))(rxjs@7.8.2)
+        specifier: 21.0.5
+        version: 21.0.5(@angular/core@21.0.5(@angular/compiler@21.0.5)(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/compiler':
-        specifier: 21.0.3
-        version: 21.0.3
+        specifier: 21.0.5
+        version: 21.0.5
       '@angular/compiler-cli':
-        specifier: 21.0.3
-        version: 21.0.3(@angular/compiler@21.0.3)(typescript@5.9.3)
+        specifier: 21.0.5
+        version: 21.0.5(@angular/compiler@21.0.5)(typescript@5.9.3)
       '@angular/core':
-        specifier: 21.0.3
-        version: 21.0.3(@angular/compiler@21.0.3)
+        specifier: 21.0.5
+        version: 21.0.5(@angular/compiler@21.0.5)(rxjs@7.8.2)
       rxjs:
         specifier: 7.8.2
         version: 7.8.2
     devDependencies:
       ng-packagr:
         specifier: 21.0.0
-        version: 21.0.0(@angular/compiler-cli@21.0.3(@angular/compiler@21.0.3)(typescript@5.9.3))(tailwindcss@3.4.18(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3)
+        version: 21.0.0(@angular/compiler-cli@21.0.5(@angular/compiler@21.0.5)(typescript@5.9.3))(tailwindcss@3.4.18(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3)
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -1713,26 +1713,26 @@ packages:
     peerDependencies:
       '@angular/core': 18.2.10
 
-  '@angular/common@21.0.3':
-    resolution: {integrity: sha512-y8U5jlaK5x3fhI7WOsuiwwNYghC5TBDfmqJdQ2YT4RFG0vB4b22RW5RY5GDbQ5La4AAcpcjoqb4zca8auLCe+g==}
+  '@angular/common@21.0.5':
+    resolution: {integrity: sha512-/ZI11F6Wxr8TZRVO4O7pmhBJ9YxDg9mvA76e0PiivmqZggM02HY0y3XPMP3hAOe4K+PfaVBgMAu3P9t32klzfA==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/core': 21.0.3
+      '@angular/core': 21.0.5
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/compiler-cli@21.0.3':
-    resolution: {integrity: sha512-zb8Wl8Knsdp0nDvIljR9Y0T79OgzaJm45MvtTBTl7T9lw9kpJvVf09RfTLNtk7VS8ieDPZgDb2c6gpQRODIjjw==}
+  '@angular/compiler-cli@21.0.5':
+    resolution: {integrity: sha512-45sFKqt+badXl6Ab2XsxuOsdi0BbIZgcc9TdwmFPdXMNfcSUYDcPiOA0l1iPwDIZiu4VyqzepMfnHB9IwCatgA==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     hasBin: true
     peerDependencies:
-      '@angular/compiler': 21.0.3
+      '@angular/compiler': 21.0.5
       typescript: '>=5.9 <6.0'
     peerDependenciesMeta:
       typescript:
         optional: true
 
-  '@angular/compiler@21.0.3':
-    resolution: {integrity: sha512-s9IN4Won1lTmO2vUIIMc4zZHQ2A68pYr/BiieM6frYBhRAwtdyqZW0C5TTeRlFhHe+jMlOdbaJwF8OJrFT7drQ==}
+  '@angular/compiler@21.0.5':
+    resolution: {integrity: sha512-92sv9pVm9o/8KfPM7T8j5VQmTaSOqmIajrJF8evXE2dNJcwkBpVtzZUqDzr23AV3vg94C7eYU64i8qrsmJ+cYQ==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   '@angular/core@18.2.10':
@@ -1746,6 +1746,16 @@ packages:
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
       '@angular/compiler': 21.0.3
+    peerDependenciesMeta:
+      '@angular/compiler':
+        optional: true
+
+  '@angular/core@21.0.5':
+    resolution: {integrity: sha512-HFXfO5YsBVM+IEaU8h3DZSxO98yDZM2v49NlSVNDzFD3fhnkpTmcgT2NKz9ulIiuV9N376itt+x+NG12sg/+Fw==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
+    peerDependencies:
+      '@angular/compiler': 21.0.5
+      rxjs: ^6.5.3 || ^7.4.0
     peerDependenciesMeta:
       '@angular/compiler':
         optional: true
@@ -1764,9 +1774,9 @@ packages:
       '@angular/platform-browser': ^21.0.0 || ^22.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/8ea341007f989fa129daaa29d24c2e196ffcb1bc':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/8ea341007f989fa129daaa29d24c2e196ffcb1bc}
-    version: 0.0.0-90bba8b673b749ce67760b4d993b9b421adac30f
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d01dccf28bf240ced7828fe93c65eda247b24dec':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d01dccf28bf240ced7828fe93c65eda247b24dec}
+    version: 0.0.0-2562f2bd84bf2b992d4742d2f36895fd904d696a
     hasBin: true
 
   '@angular/ssr@21.0.3':
@@ -14022,15 +14032,15 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/common@21.0.3(@angular/core@21.0.3(@angular/compiler@21.0.3))(rxjs@7.8.2)':
+  '@angular/common@21.0.5(@angular/core@21.0.5(@angular/compiler@21.0.5)(rxjs@7.8.2))(rxjs@7.8.2)':
     dependencies:
-      '@angular/core': 21.0.3(@angular/compiler@21.0.3)
+      '@angular/core': 21.0.5(@angular/compiler@21.0.5)(rxjs@7.8.2)
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/compiler-cli@21.0.3(@angular/compiler@21.0.3)(typescript@5.9.3)':
+  '@angular/compiler-cli@21.0.5(@angular/compiler@21.0.5)(typescript@5.9.3)':
     dependencies:
-      '@angular/compiler': 21.0.3
+      '@angular/compiler': 21.0.5
       '@babel/core': 7.28.4
       '@jridgewell/sourcemap-codec': 1.5.5
       chokidar: 4.0.3
@@ -14044,7 +14054,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@angular/compiler@21.0.3':
+  '@angular/compiler@21.0.5':
     dependencies:
       tslib: 2.8.1
 
@@ -14054,13 +14064,21 @@ snapshots:
       tslib: 2.8.1
       zone.js: 0.15.0
 
-  '@angular/core@21.0.3(@angular/compiler@21.0.3)':
+  '@angular/core@21.0.3(@angular/compiler@packages+compiler)':
     dependencies:
       rxjs: 7.8.2
       tslib: 2.8.1
       zone.js: 0.15.1
     optionalDependencies:
-      '@angular/compiler': 21.0.3
+      '@angular/compiler': link:packages/compiler
+
+  '@angular/core@21.0.5(@angular/compiler@21.0.5)(rxjs@7.8.2)':
+    dependencies:
+      rxjs: 7.8.2
+      tslib: 2.8.1
+      zone.js: 0.15.1
+    optionalDependencies:
+      '@angular/compiler': 21.0.5
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b': {}
 
@@ -14074,7 +14092,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/8ea341007f989fa129daaa29d24c2e196ffcb1bc(@modelcontextprotocol/sdk@1.24.3(zod@4.1.13))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d01dccf28bf240ced7828fe93c65eda247b24dec(@modelcontextprotocol/sdk@1.24.3(zod@4.1.13))':
     dependencies:
       '@actions/core': 1.11.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
@@ -24309,10 +24327,10 @@ snapshots:
 
   netmask@2.0.2: {}
 
-  ng-packagr@21.0.0(@angular/compiler-cli@21.0.3(@angular/compiler@21.0.3)(typescript@5.9.3))(tailwindcss@3.4.18(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3):
+  ng-packagr@21.0.0(@angular/compiler-cli@21.0.5(@angular/compiler@21.0.5)(typescript@5.9.3))(tailwindcss@3.4.18(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3):
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular/compiler-cli': 21.0.3(@angular/compiler@21.0.3)(typescript@5.9.3)
+      '@angular/compiler-cli': 21.0.5(@angular/compiler@21.0.5)(typescript@5.9.3)
       '@rollup/plugin-json': 6.1.0(rollup@4.52.5)
       '@rollup/wasm-node': 4.53.3
       ajv: 8.17.1

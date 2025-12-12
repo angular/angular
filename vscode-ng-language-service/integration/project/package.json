@@ -2,10 +2,10 @@
   "name": "angular-ls-integration-test-project",
   "private": true,
   "dependencies": {
-    "@angular/common": "21.0.3",
-    "@angular/compiler": "21.0.3",
-    "@angular/compiler-cli": "21.0.3",
-    "@angular/core": "21.0.3",
+    "@angular/common": "21.0.5",
+    "@angular/compiler": "21.0.5",
+    "@angular/compiler-cli": "21.0.5",
+    "@angular/core": "21.0.5",
     "rxjs": "7.8.2"
   },
   "devDependencies": {
