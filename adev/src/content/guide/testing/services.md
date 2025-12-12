@@ -2,6 +2,27 @@
 
 NOTE: While this guide is being updated for Vitest, some code examples currently use Karma/Jasmine syntax and APIs. We are actively working to provide Vitest equivalents where applicable.
 
+> **Vitest note:** Some examples on this page use Jasmine/Karma test APIs such as the `DoneFn` callback. Vitest does **not** expose a `DoneFn` type.  
+> If you're running tests with **Vitest**, prefer using **async/await** or **returning a Promise** in your test function.  
+> Example (Vitest-compatible):
+>
+> ```ts
+> // Vitest-friendly async/await example
+> it('should do something async (Vitest)', async () => {
+>   const service = setupService(); // example setup
+>   await service.doAsync();
+>   expect(service.value).toBe(true);
+> });
+>
+> // Alternative: returning a Promise
+> it('should do something async (Vitest)', () => {
+>   const service = setupService(); // example setup
+>   return service.doAsync().then(() => {
+>     expect(service.value).toBe(true);
+>   });
+> });
+> ```
+
 To check that your services are working as you intend, you can write tests specifically for them.
 
 Services are often the smoothest files to unit test.
