@@ -1092,6 +1092,9 @@ importers:
       '@angular/platform-browser':
         specifier: 'workspace: *'
         version: link:../platform-browser
+      '@standard-schema/spec':
+        specifier: ^1.0.0
+        version: 1.0.0
       rxjs:
         specifier: ^6.5.3 || ^7.4.0
         version: 7.8.2
