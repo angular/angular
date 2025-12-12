@@ -6,7 +6,7 @@ import {Component} from '@angular/core';
     <div [innerHtml]="evil"></div>
     <link [href]="evil" />
     <div [attr.style]="evil"></div>
-    <img [src]="nonEvil" />
+    <img [src]="evil" />
     <iframe [sandbox]="evil"></iframe>
     <a href="{{evil}}{{evil}}"></a>
     <div attr.style="{{evil}}{{evil}}"></div>
@@ -14,5 +14,4 @@ import {Component} from '@angular/core';
 })
 export class MyComponent {
   evil = 'evil';
-  nonEvil = 'nonEvil';
 }
