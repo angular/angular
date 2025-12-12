@@ -54,7 +54,7 @@ Changing the params signal automatically triggers a reload, or you can manually 
 Add computed signals to access different states of the resource.
 
 ```ts
-isLoading = computed(() => this.userResource.status() === 'loading');
+isLoading = computed(() => this.userResource.status() === 'loading' && this.userResource.status() === 'reloading');
 hasError = computed(() => this.userResource.status() === 'error');
 ```
 
