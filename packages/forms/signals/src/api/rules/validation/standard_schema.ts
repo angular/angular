@@ -113,15 +113,15 @@ export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProp
 /**
  * Converts a `StandardSchemaV1.Issue` to a `FormTreeError`.
  *
- * @param field The root field to which the issue's path is relative.
+ * @param fieldTree The root field to which the issue's path is relative.
  * @param issue The `StandardSchemaV1.Issue` to convert.
  * @returns A `ValidationError` representing the issue.
  */
 function standardIssueToFormTreeError(
-  field: FieldTree<unknown>,
+  fieldTree: FieldTree<unknown>,
   issue: StandardSchemaV1.Issue,
 ): StandardSchemaValidationError {
-  let target = field as FieldTree<Record<PropertyKey, unknown>>;
+  let target = fieldTree as FieldTree<Record<PropertyKey, unknown>>;
   for (const pathPart of issue.path ?? []) {
     const pathKey = typeof pathPart === 'object' ? pathPart.key : pathPart;
     target = target[pathKey] as FieldTree<Record<PropertyKey, unknown>>;

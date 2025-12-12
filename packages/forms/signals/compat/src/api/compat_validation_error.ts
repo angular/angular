@@ -19,7 +19,7 @@ import {FieldTree} from '../../../src/api/types';
 export class CompatValidationError<T = unknown> implements ValidationError {
   readonly kind: string = 'compat';
   readonly control: AbstractControl;
-  readonly field!: FieldTree<unknown>;
+  readonly fieldTree!: FieldTree<unknown>;
   readonly context: T;
   readonly message?: string;
 

@@ -26,7 +26,7 @@ describe('email validator', () => {
 
     expect(f.email().errors()).toEqual([]);
     f.email().value.set('not-real-email');
-    expect(f.email().errors()).toEqual([emailError({field: f.email})]);
+    expect(f.email().errors()).toEqual([emailError({fieldTree: f.email})]);
   });
 
   it('supports custom errors', () => {
@@ -46,7 +46,7 @@ describe('email validator', () => {
     expect(f.email().errors()).toEqual([
       customError({
         kind: 'special-email-pirojok-the-cat',
-        field: f.email,
+        fieldTree: f.email,
       }),
     ]);
   });
@@ -68,7 +68,7 @@ describe('email validator', () => {
     expect(f.email().errors()).toEqual([
       emailError({
         message: 'email error',
-        field: f.email,
+        fieldTree: f.email,
       }),
     ]);
   });

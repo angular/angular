@@ -203,7 +203,7 @@ export class FieldValidationState implements ValidationState {
    * rather than a descendant.
    */
   readonly syncTreeErrors: Signal<ValidationError.WithField[]> = computed(() =>
-    this.rawSyncTreeErrors().filter((err) => err.field === this.node.fieldProxy),
+    this.rawSyncTreeErrors().filter((err) => err.fieldTree === this.node.fieldProxy),
   );
 
   /**
@@ -235,7 +235,7 @@ export class FieldValidationState implements ValidationState {
       return [];
     }
     return this.rawAsyncErrors().filter(
-      (err) => err === 'pending' || err.field === this.node.fieldProxy,
+      (err) => err === 'pending' || err.fieldTree === this.node.fieldProxy,
     );
   });
 
@@ -351,27 +351,27 @@ function normalizeErrors<T extends ValidationResult>(error: T | readonly T[]): r
 /**
  * Sets the given field on the given error(s) if it does not already have a field.
  * @param error The error(s) to add the field to
- * @param field The default field to add
+ * @param fieldTree The default field to add
  * @returns The passed in error(s), with its field set.
  */
 export function addDefaultField<E extends ValidationError.WithOptionalField>(
   error: E,
-  field: FieldTree<unknown>,
-): E & {field: FieldTree<unknown>};
+  fieldTree: FieldTree<unknown>,
+): E & {fieldTree: FieldTree<unknown>};
 export function addDefaultField<E extends ValidationError>(
   errors: TreeValidationResult<E>,
-  field: FieldTree<unknown>,
-): ValidationResult<E & {field: FieldTree<unknown>}>;
+  fieldTree: FieldTree<unknown>,
+): ValidationResult<E & {fieldTree: FieldTree<unknown>}>;
 export function addDefaultField<E extends ValidationError>(
   errors: TreeValidationResult<E>,
-  field: FieldTree<unknown>,
-): ValidationResult<E & {field: FieldTree<unknown>}> {
+  fieldTree: FieldTree<unknown>,
+): ValidationResult<E & {fieldTree: FieldTree<unknown>}> {
   if (isArray(errors)) {
     for (const error of errors) {
-      (error as ɵWritable<ValidationError.WithOptionalField>).field ??= field;
+      (error as ɵWritable<ValidationError.WithOptionalField>).fieldTree ??= fieldTree;
     }
   } else if (errors) {
-    (errors as ɵWritable<ValidationError.WithOptionalField>).field ??= field;
+    (errors as ɵWritable<ValidationError.WithOptionalField>).fieldTree ??= fieldTree;
   }
-  return errors as ValidationResult<E & {field: FieldTree<unknown>}>;
+  return errors as ValidationResult<E & {fieldTree: FieldTree<unknown>}>;
 }

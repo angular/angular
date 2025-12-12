@@ -38,7 +38,7 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.builder.addSyncErrorRule((ctx) => {
     return ensureCustomValidationResult(
-      addDefaultField(logic(ctx as FieldContext<TValue, TPathKind>), ctx.field),
+      addDefaultField(logic(ctx as FieldContext<TValue, TPathKind>), ctx.fieldTree),
     );
   });
 }

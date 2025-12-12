@@ -143,10 +143,10 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
           return undefined;
         }
         errors = opts.onSuccess(res.value()!, ctx as FieldContext<TValue, TPathKind>);
-        return addDefaultField(errors, ctx.field);
+        return addDefaultField(errors, ctx.fieldTree);
       case 'error':
         errors = opts.onError(res.error(), ctx as FieldContext<TValue, TPathKind>);
-        return addDefaultField(errors, ctx.field);
+        return addDefaultField(errors, ctx.fieldTree);
     }
   });
 }

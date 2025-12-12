@@ -21,7 +21,7 @@ describe('maxLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.text().errors()).toEqual([maxLengthError(3, {field: f.text})]);
+    expect(f.text().errors()).toEqual([maxLengthError(3, {fieldTree: f.text})]);
   });
 
   it('returns maxLength error when the length is larger for arrays', () => {
@@ -34,7 +34,7 @@ describe('maxLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.list().errors()).toEqual([maxLengthError(3, {field: f.list})]);
+    expect(f.list().errors()).toEqual([maxLengthError(3, {fieldTree: f.list})]);
   });
 
   it('is inclusive (no error if length equals maxLength)', () => {
@@ -84,7 +84,7 @@ describe('maxLength validator', () => {
       customError({
         kind: 'special-maxLength',
         message: 'Length is 6',
-        field: f.text,
+        fieldTree: f.text,
       }),
     ]);
   });
@@ -104,7 +104,7 @@ describe('maxLength validator', () => {
     expect(f.text().errors()).toEqual([
       maxLengthError(5, {
         message: 'abcdef is an error!',
-        field: f.text,
+        fieldTree: f.text,
       }),
     ]);
   });
@@ -119,7 +119,7 @@ describe('maxLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f().errors()).toEqual([maxLengthError(3, {field: f})]);
+    expect(f().errors()).toEqual([maxLengthError(3, {fieldTree: f})]);
   });
 
   it('should treat empty value as valid', () => {
@@ -171,12 +171,12 @@ describe('maxLength validator', () => {
 
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([
-        maxLengthError(10, {field: f.text}),
-        maxLengthError(5, {field: f.text}),
+        maxLengthError(10, {fieldTree: f.text}),
+        maxLengthError(5, {fieldTree: f.text}),
       ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([maxLengthError(5, {field: f.text})]);
+      expect(f.text().errors()).toEqual([maxLengthError(5, {fieldTree: f.text})]);
 
       f.text().value.set('abc');
       expect(f.text().errors()).toEqual([]);
@@ -198,19 +198,19 @@ describe('maxLength validator', () => {
 
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([
-        maxLengthError(10, {field: f.text}),
-        maxLengthError(5, {field: f.text}),
+        maxLengthError(10, {fieldTree: f.text}),
+        maxLengthError(5, {fieldTree: f.text}),
       ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([maxLengthError(5, {field: f.text})]);
+      expect(f.text().errors()).toEqual([maxLengthError(5, {fieldTree: f.text})]);
 
       f.text().value.set('abc');
       expect(f.text().errors()).toEqual([]);
 
       maxLengthSignal.set(2);
 
-      expect(f.text().errors()).toEqual([maxLengthError(2, {field: f.text})]);
+      expect(f.text().errors()).toEqual([maxLengthError(2, {fieldTree: f.text})]);
       expect(f.text().maxLength?.()).toBe(2);
     });
   });
@@ -227,7 +227,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([maxLengthError(5, {field: f.text})]);
+      expect(f.text().errors()).toEqual([maxLengthError(5, {fieldTree: f.text})]);
       dynamicMaxLength.set(7);
       expect(f.text().errors()).toEqual([]);
     });
@@ -242,7 +242,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([maxLengthError(5, {field: f.text})]);
+      expect(f.text().errors()).toEqual([maxLengthError(5, {fieldTree: f.text})]);
       dynamicMaxLength.set(undefined);
       expect(f.text().errors()).toEqual([]);
     });
@@ -259,7 +259,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([maxLengthError(8, {field: f.text})]);
+      expect(f.text().errors()).toEqual([maxLengthError(8, {fieldTree: f.text})]);
 
       f.category().value.set('B');
       expect(f.text().errors()).toEqual([]);
