@@ -8,7 +8,7 @@ TestDir.ɵdir = /* @__PURE__ */ $r3$.ɵɵdefineDirective({
     _bla2: "decoratorPublicName2",
     clickDecorator1: "clickDecorator1",
     clickDecorator2: "clickDecorator2",
-    _blaDecorator: "decoratorPublicName"
+    _blaDecorator: "decoratorPublicName3"
   }
   …
 });
