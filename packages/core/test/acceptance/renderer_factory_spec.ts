@@ -23,6 +23,7 @@ import {
   ɵDomRendererFactory2 as DomRendererFactory2,
   EventManager,
   ɵSharedStylesHost,
+  ɵStyleScopeService as StyleScopeService,
 } from '@angular/platform-browser';
 import {isBrowser, isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
@@ -396,6 +397,7 @@ function getRendererFactory2(document: Document): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([], fakeNgZone);
   const appId = 'app-id';
+  const styleScopeService = new StyleScopeService();
   const rendererFactory = new DomRendererFactory2(
     eventManager,
     new ɵSharedStylesHost(document, appId),
@@ -404,6 +406,8 @@ function getRendererFactory2(document: Document): RendererFactory2 {
     document,
     fakeNgZone,
     null,
+    null, // tracingService
+    styleScopeService,
   );
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function (element: any, type: RendererType2 | null) {
