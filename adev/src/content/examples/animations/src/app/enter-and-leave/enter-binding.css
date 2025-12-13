@@ -26,3 +26,11 @@
     transform: translateY(0);
   }
 }
+
+.btn-in-dark-mode {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 8px;
+}

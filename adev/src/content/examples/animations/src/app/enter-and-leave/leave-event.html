@@ -1,7 +1,9 @@
 <!-- #docplaster -->
 <h2><code>animate.leave</code> Function Example</h2>
 
-<button type="button" (click)="toggle()">Toggle Element</button>
+<button type="button"
+        [class]="{ 'btn-in-dark-mode': isDarkMode() }"
+        (click)="toggle()">Toggle Element</button>
 
 @if (isShown()) {
   <div class="leave-container" (animate.leave)="leavingFn($event)">
