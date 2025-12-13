@@ -1560,6 +1560,7 @@ export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C> 
 export abstract class Renderer2 {
     abstract addClass(el: any, name: string): void;
     abstract appendChild(parent: any, newChild: any): void;
+    abstract applyStyles?(styleRoot: StyleRoot): void;
     abstract createComment(value: string): any;
     abstract createElement(name: string, namespace?: string | null): any;
     abstract createText(value: string): any;
@@ -1576,11 +1577,13 @@ export abstract class Renderer2 {
     abstract removeChild(parent: any, oldChild: any, isHostElement?: boolean, requireSynchronousElementRemoval?: boolean): void;
     abstract removeClass(el: any, name: string): void;
     abstract removeStyle(el: any, style: string, flags?: RendererStyleFlags2): void;
+    abstract removeStyles?(styleRoot: StyleRoot): void;
     abstract selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): any;
     abstract setAttribute(el: any, name: string, value: string, namespace?: string | null): void;
     abstract setProperty(el: any, name: string, value: any): void;
     abstract setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2): void;
     abstract setValue(node: any, value: string): void;
+    shadowRoot?: ShadowRoot;
 }
 
 // @public
@@ -1800,6 +1803,9 @@ export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R
     loader?: never;
     stream: ResourceStreamingLoader<T, R>;
 }
+
+// @public
+export type StyleRoot = Document | ShadowRoot;
 
 // @public
 export class TemplateRef<C> {

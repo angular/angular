@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DOCUMENT} from '../../document';
+import {StyleRoot} from '../../render';
+import {asStyleRoot} from '../../render/api';
 import {assertDefined} from '../../util/assert';
 import {assertLView} from '../assert';
 import {readPatchedLView} from '../context_discovery';
-import {LContainer} from '../interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {isLContainer, isLView, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CONTEXT, LView, NEXT} from '../interfaces/view';
+import {CHILD_HEAD, CONTEXT, HOST, INJECTOR, LView, NEXT, RENDERER} from '../interfaces/view';
 
 import {getLViewParent} from './view_utils';
 
@@ -64,4 +67,50 @@ function getNearestLContainer(viewOrContainer: LContainer | LView | null) {
     viewOrContainer = viewOrContainer[NEXT];
   }
   return viewOrContainer as LContainer | null;
+}
+
+/** Generates all the {@link LView} and {@link LContainer} descendants of the given input. */
+export function* walkDescendants(
+  parent: LView | LContainer,
+): Generator<LView | LContainer, void, void> {
+  for (const child of walkChildren(parent)) {
+    yield child;
+    yield* walkDescendants(child);
+  }
+}
+
+function* walkChildren(parent: LView | LContainer): Generator<LView | LContainer, void, void> {
+  let child = isLContainer(parent) ? parent[CONTAINER_HEADER_OFFSET] : parent[CHILD_HEAD];
+  while (child) {
+    yield child;
+    child = child[NEXT];
+  }
+}
+
+/** Combine multiple iterables into a single stream with the same ordering. */
+export function* concat<T>(...iterables: Array<Iterable<T>>): Iterable<T> {
+  for (const iterable of iterables) {
+    yield* iterable;
+  }
+}
+
+/** Returns the {@link StyleRoot} where styles for the component should be applied. */
+export function getStyleRoot(lView: LView): StyleRoot | undefined {
+  // DOM emulation does not support shadow DOM and `Node.prototype.getRootNode`, so we
+  // need to feature detect and fallback even though it is already Baseline Widely
+  // Available. In theory, we could do this only on SSR, but Jest, Vitest, and other
+  // Node testing solutions lack DOM emulation as well.
+  if (!Node.prototype.getRootNode) {
+    const injector = lView![INJECTOR];
+    const doc = injector.get(DOCUMENT);
+    return doc;
+  }
+
+  const renderer = lView![RENDERER];
+  if (renderer?.shadowRoot) return renderer.shadowRoot;
+
+  const hostRNode = lView![HOST];
+  ngDevMode && assertDefined(hostRNode, 'hostRNode');
+
+  return asStyleRoot(hostRNode!.getRootNode());
 }
