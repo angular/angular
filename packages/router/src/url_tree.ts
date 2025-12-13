@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {computed, Injectable, ɵRuntimeError as RuntimeError, Signal} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 import {equalArraysOrString, shallowEqual} from './utils/collection';
+import type {Router} from './router';
 
 /**
  * A set of options which specify how to determine if a `UrlTree` is active, given the `UrlTree`
@@ -78,6 +79,27 @@ const paramCompareMap: Record<ParamMatchOptions, ParamCompareFn> = {
   'subset': containsParams,
   'ignored': () => true,
 };
+
+/**
+ * Returns a computed signal of whether the given url is activated in the Router.
+ *
+ * As the router state changes, the signal will update to reflect whether the url is active.
+ * @publicApi 21.1
+ */
+export function isActive(
+  url: string | UrlTree,
+  router: Router,
+  matchOptions: IsActiveMatchOptions,
+): Signal<boolean> {
+  const urlTree = url instanceof UrlTree ? url : router.parseUrl(url);
+  return computed(() =>
+    containsTree(
+      router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(),
+      urlTree,
+      matchOptions,
+    ),
+  );
+}
 
 export function containsTree(
   container: UrlTree,
