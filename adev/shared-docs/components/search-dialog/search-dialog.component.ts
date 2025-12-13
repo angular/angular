@@ -25,7 +25,6 @@ import {ClickOutside, SearchItem} from '../../directives';
 import {Search, SearchHistory} from '../../services';
 
 import {TextField} from '../text-field/text-field.component';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Router, RouterLink} from '@angular/router';
@@ -33,6 +32,7 @@ import {fromEvent} from 'rxjs';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {RelativeLink} from '../../pipes';
 import {SearchHistoryComponent} from '../search-history/search-history.component';
+import {Field} from '@angular/forms/signals';
 
 @Component({
   selector: 'docs-search-dialog',
@@ -40,12 +40,12 @@ import {SearchHistoryComponent} from '../search-history/search-history.component
   imports: [
     ClickOutside,
     TextField,
-    ReactiveFormsModule,
     SearchItem,
     AlgoliaIcon,
     RelativeLink,
     RouterLink,
     SearchHistoryComponent,
+    Field,
   ],
   templateUrl: './search-dialog.component.html',
   styleUrls: ['./search-dialog.component.scss'],
@@ -57,7 +57,7 @@ export class SearchDialog {
   readonly textField = viewChild(TextField);
 
   readonly history = inject(SearchHistory);
-  private readonly search = inject(Search);
+  protected readonly search = inject(Search);
   private readonly relativeLink = new RelativeLink();
   private readonly router = inject(Router);
   private readonly window = inject(WINDOW);
@@ -67,21 +67,11 @@ export class SearchDialog {
     this.injector,
   ).withWrap();
 
-  readonly searchQuery = this.search.searchQuery;
   readonly resultsResource = this.search.resultsResource;
   readonly searchResults = this.search.searchResults;
 
-  // We use a FormControl instead of relying on NgModel+signal to avoid
-  // the issue https://github.com/angular/angular/issues/13568
-  // TODO: Use signal forms when available
-  searchControl = new FormControl(this.searchQuery(), {nonNullable: true});
-
   constructor() {
     inject(DestroyRef).onDestroy(() => this.keyManager.destroy());
-
-    this.searchControl.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
-      this.searchQuery.set(value);
-    });
 
     // Thinking about refactoring this to a single afterRenderEffect ?
     // Answer: It won't have the same behavior

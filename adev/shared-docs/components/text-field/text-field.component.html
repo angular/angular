@@ -5,9 +5,8 @@
   #inputRef
   type="text"
   [attr.placeholder]="placeholder()"
-  [attr.name]="name()"
   [value]="value()"
-  (input)="setValue(inputRef.value)"
+  (input)="value.set($event.target.value)"
   class="docs-text-field"
 />
 
