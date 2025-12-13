@@ -11,7 +11,7 @@ import type {
   DocEntryWithSourceInfo,
   EntryType,
   EntryCollection,
-} from '@angular/compiler-cli/src/ngtsc/docs';
+} from '@angular/compiler-cli/private/docs';
 import {readFileSync, writeFileSync} from 'fs';
 import {basename, join} from 'path';
 

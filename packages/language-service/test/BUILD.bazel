@@ -7,12 +7,8 @@ ts_project(
     deps = [
         "//:node_modules/typescript",
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/core:api",
-        "//packages/compiler-cli/src/ngtsc/diagnostics",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/compiler-cli/src/ngtsc/testing",
-        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/private",
         "//packages/language-service/src",
         "//packages/language-service/src/utils",
         "//packages/language-service/testing",
@@ -24,6 +20,7 @@ jasmine_test(
     data = [
         ":test_lib",
         "//:node_modules/rxjs",
+        "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
         "//packages/core:npm_package",
     ],
