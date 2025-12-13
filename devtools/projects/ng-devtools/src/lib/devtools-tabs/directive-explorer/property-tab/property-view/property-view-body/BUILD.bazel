@@ -26,7 +26,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/application-providers:supported_apis",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view/property-view-body/dependency-viewer",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph:signal-graph-manager",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
         "//devtools/projects/ng-devtools/src/lib/shared/docs-ref-button",
         "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer",
         "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",

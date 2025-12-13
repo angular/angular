@@ -32,6 +32,7 @@ import {SUPPORTED_APIS} from '../../../../../application-providers/supported_api
 
 import {SignalGraphManager} from '../../../signal-graph/signal-graph-manager';
 import {FlatNode} from '../../../../../shared/object-tree-explorer/object-tree-types';
+import {DevtoolsSignalGraphNode} from '../../../signal-graph';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -60,7 +61,7 @@ export class PropertyViewBodyComponent {
   readonly directiveStateControls = input.required<DirectiveTreeData>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
-  readonly showSignalGraph = output<DebugSignalGraphNode>();
+  readonly showSignalGraph = output<DevtoolsSignalGraphNode>();
 
   protected readonly dependencies = computed(() => {
     const metadata = this.controller().directiveMetadata;
@@ -113,7 +114,7 @@ export class PropertyViewBodyComponent {
     });
   }
 
-  getSignalNode(node: FlatNode): DebugSignalGraphNode | null {
+  getSignalNode(node: FlatNode): DevtoolsSignalGraphNode | null {
     if (node.prop.descriptor.containerType?.includes('Signal')) {
       return this.signalGraph.graph()?.nodes.find((sn) => sn.label === node.prop.name) ?? null;
     }
