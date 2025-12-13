@@ -1,5 +1,9 @@
 // #docplaster
-import {AnimationCallbackEvent, Component, signal} from '@angular/core';
+import {AnimationCallbackEvent, Component, computed, inject, signal} from '@angular/core';
+import {
+  PREFERS_COLOR_SCHEME_DARK,
+  ThemeManager,
+} from '../../../../../../app/core/services/theme-manager.service';
 
 @Component({
   selector: 'app-leave-binding',
@@ -7,6 +11,16 @@ import {AnimationCallbackEvent, Component, signal} from '@angular/core';
   styleUrls: ['leave-event.css'],
 })
 export class LeaveEvent {
+  private readonly themeManager = inject(ThemeManager);
+
+  public isDarkMode = computed(() => {
+    if (this.themeManager.theme() === 'auto') {
+      return window.matchMedia(PREFERS_COLOR_SCHEME_DARK).matches;
+    } else {
+      return this.themeManager.theme() === 'dark';
+    }
+  });
+
   isShown = signal(false);
 
   toggle() {

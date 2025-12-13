@@ -22,3 +22,11 @@
   transform: translateY(20px);
   transition: opacity 500ms ease-out, transform 500ms ease-out;
 }
+
+.btn-in-dark-mode {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 8px;
+}
