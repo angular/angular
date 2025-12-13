@@ -35,6 +35,20 @@ export function redirectsIntegrationSuite(browserAPI: 'history' | 'navigation') 
       expect(location.path()).toEqual('/team/22');
     });
 
+    it('should redirect with splat', async () => {
+      const router = TestBed.inject(Router);
+      const location = TestBed.inject(Location);
+
+      router.resetConfig([
+        {path: '**/old', redirectTo: ':_splat'},
+        {path: '**', component: TeamCmp},
+      ]);
+
+      await router.navigateByUrl('team/22/old');
+
+      expect(location.path()).toEqual('/team/22');
+    });
+
     it('empty path child redirecting to no match', async () => {
       const router = TestBed.inject(Router);
       router.resetConfig([
