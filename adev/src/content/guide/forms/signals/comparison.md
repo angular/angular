@@ -22,7 +22,7 @@ NOTE: Signal Forms are [experimental](reference/releases#experimental) as of Ang
 The best way to understand the differences is to see the same form implemented in all three approaches.
 
 <docs-code-multifile>
-  <docs-code header="Signal forms" path="adev/src/content/examples/signal-forms/src/comparison/app/signal-forms.ts"/>
+  <docs-code language="angular-ts" header="Signal forms" path="adev/src/content/examples/signal-forms/src/comparison/app/signal-forms.ts"/>
   <docs-code header="Reactive forms" path="adev/src/content/examples/signal-forms/src/comparison/app/reactive-forms.ts"/>
   <docs-code header="Template-driven forms" path="adev/src/content/examples/signal-forms/src/comparison/app/template-driven-forms.ts"/>
 </docs-code-multifile>

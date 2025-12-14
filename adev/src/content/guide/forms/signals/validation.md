@@ -652,7 +652,7 @@ The `validateHttp()` validation rule:
 
 While async validation runs, the field's `pending()` signal returns `true`. Use this to show loading indicators:
 
-```ts
+```angular-html
 @if (form.username().pending()) {
   <span class="spinner">Checking...</span>
 }

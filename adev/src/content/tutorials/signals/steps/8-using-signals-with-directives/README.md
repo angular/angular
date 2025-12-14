@@ -76,7 +76,7 @@ The host bindings automatically re-evaluate when the signals change - just like 
 <docs-step title="Use the directive in your template">
 Update the app template to demonstrate the reactive directive:
 
-```angular-ts
+```angular-html
 template: `
   <div>
     <h1>Directive with Signals</h1>

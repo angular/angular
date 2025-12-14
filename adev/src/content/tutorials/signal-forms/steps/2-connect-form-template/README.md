@@ -63,7 +63,7 @@ Add the `[field]` directive to the checkbox input:
 <docs-step title="Display the form values">
 Below the form, there's a debug section to show current form values. Display each field value using `.value()`:
 
-```html
+```angular-html
 <p>Email: {{ loginForm.email().value() }}</p>
 <p>Password: {{ loginForm.password().value() ? '••••••••' : '(empty)' }}</p>
 <p>Remember me: {{ loginForm.rememberMe().value() ? 'Yes' : 'No' }}</p>
