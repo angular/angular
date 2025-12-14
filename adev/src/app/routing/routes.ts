@@ -158,7 +158,7 @@ export const routes: Route[] = [
   // Error page
   {
     path: '**',
-    loadComponent: () => import('../features/docs/docs.component'),
-    resolve: {'docContent': contentResolver('error')},
+    loadComponent: () => import('../features/not-found/not-found').then((m) => m.NotFound),
+    data: {label: 'Page not found'},
   },
 ];
