@@ -34,7 +34,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
     // (undocumented)
-    DEF_TYPE_UNDEFINED = 919,
+    DEF_TYPE_UNDEFINED = -919,
     // (undocumented)
     DEFER_IN_HMR_MODE = -751,
     // (undocumented)
