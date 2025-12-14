@@ -66,31 +66,31 @@ This demonstrates how computed signals can perform calculations and combine mult
 <docs-step title="Display the computed values in the template">
 The template already has placeholders showing "Loading...". Replace them with your computed signals:
 
-1. For notifications, replace `Loading...` with an @if block:
+1. For notifications, replace `Loading...` with an `@if` block:
 
-```angular-html
-@if (notificationsEnabled()) {
-  Enabled
-} @else {
-  Disabled
-}
-```
+   ```angular-html
+   @if (notificationsEnabled()) {
+     Enabled
+   } @else {
+     Disabled
+   }
+   ```
 
-2. For the message, replace `Loading...` with:
+1. For the message, replace `Loading...` with:
 
-```angular-html
-{{ statusMessage() }}
-```
+   ```angular-html
+   {{ statusMessage() }}
+   ```
 
-3. For working hours, replace `Loading...` with an @if block:
+1. For working hours, replace `Loading...` with an `@if` block:
 
-```angular-html
-@if (isWithinWorkingHours()) {
-  Yes
-} @else {
-  No
-}
-```
+   ```angular-html
+   @if (isWithinWorkingHours()) {
+     Yes
+   } @else {
+     No
+   }
+   ```
 
 Notice how computed signals are called just like regular signals - with parentheses!
 </docs-step>
