@@ -89,6 +89,68 @@ If you set `showCount` to `true` and then read `conditionalCount` again, the der
 
 Note that dependencies can be removed during a derivation as well as added. If you later set `showCount` back to `false`, then `count` will no longer be considered a dependency of `conditionalCount`.
 
+## Reactive contexts
+
+A **reactive context** is a runtime state where Angular monitors signal reads to establish a dependency. The code reading the signal is the _consumer_, and the signal being read is the _producer_.
+
+Angular automatically enters a reactive context when:
+
+- Executing an `effect`, `afterRenderEffect` callback.
+- Evaluating a `computed` signal.
+- Evaluating a `linkedSignal`.
+- Evaluating a `resource`'s params or loader function.
+- Rendering a component template (including bindings in the [host property](guide/components/host-elements#binding-to-the-host-element)).
+
+During these operations, Angular creates a _live_ connection. If a tracked signal changes, Angular will _eventually_ re-run the consumer.
+
+### Asserts the reactive context
+
+Angular provides the `assertNotInReactiveContext` helper function to assert that code is not executing within a reactive context. Pass a reference to the calling function so the error message points to the correct API entry point if the assertion fails. This produces a clearer, more actionable error message than a generic reactive context error.
+
+```ts
+import { assertNotInReactiveContext } from '@angular/core';
+
+function subscribeToEvents() {
+  assertNotInReactiveContext(subscribeToEvents);
+  // Safe to proceed - subscription logic here
+}
+```
+
+### Reading without tracking dependencies
+
+Rarely, you may want to execute code which may read signals within a reactive function such as `computed` or `effect` _without_ creating a dependency.
+
+For example, suppose that when `currentUser` changes, the value of a `counter` should be logged. You could create an `effect` which reads both signals:
+
+```ts
+effect(() => {
+  console.log(`User set to ${currentUser()} and the counter is ${counter()}`);
+});
+```
+
+This example will log a message when _either_ `currentUser` or `counter` changes. However, if the effect should only run when `currentUser` changes, then the read of `counter` is only incidental and changes to `counter` shouldn't log a new message.
+
+You can prevent a signal read from being tracked by calling its getter with `untracked`:
+
+```ts
+effect(() => {
+  console.log(`User set to ${currentUser()} and the counter is ${untracked(counter)}`);
+});
+```
+
+`untracked` is also useful when an effect needs to invoke some external code which shouldn't be treated as a dependency:
+
+```ts
+effect(() => {
+  const user = currentUser();
+  untracked(() => {
+    // If the `loggingService` reads signals, they won't be counted as
+    // dependencies of this effect.
+    this.loggingService.log(`User set to ${user}`);
+  });
+});
+```
+
 ## Advanced derivations
 
 While `computed` handles simple readonly derivations, you might find youself needing a writable state that is dependant on other signals.
@@ -146,41 +208,6 @@ const doubled = computed(() => count() * 2);
 
 isWritableSignal(count); // true
 isWritableSignal(doubled); // false
-```
-
-### Reading without tracking dependencies
-
-Rarely, you may want to execute code which may read signals within a reactive function such as `computed` or `effect` _without_ creating a dependency.
-
-For example, suppose that when `currentUser` changes, the value of a `counter` should be logged. You could create an `effect` which reads both signals:
-
-```ts
-effect(() => {
-  console.log(`User set to ${currentUser()} and the counter is ${counter()}`);
-});
-```
-
-This example will log a message when _either_ `currentUser` or `counter` changes. However, if the effect should only run when `currentUser` changes, then the read of `counter` is only incidental and changes to `counter` shouldn't log a new message.
-
-You can prevent a signal read from being tracked by calling its getter with `untracked`:
-
-```ts
-effect(() => {
-  console.log(`User set to ${currentUser()} and the counter is ${untracked(counter)}`);
-});
-```
-
-`untracked` is also useful when an effect needs to invoke some external code which shouldn't be treated as a dependency:
-
-```ts
-effect(() => {
-  const user = currentUser();
-  untracked(() => {
-    // If the `loggingService` reads signals, they won't be counted as
-    // dependencies of this effect.
-    this.loggingService.log(`User set to ${user}`);
-  });
-});
 ```
 
 ## Using signals with RxJS
