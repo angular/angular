@@ -7,7 +7,7 @@ A component can define **queries** that find child elements and read values from
 Developers most commonly use queries to retrieve references to child components, directives, DOM elements, and more.
 
 All query functions return signals that reflect the most up-to-date results. You can read the
-result by calling the signal function, including in reactive contexts like `computed` and `effect`.
+result by calling the signal function, including in [reactive contexts](guide/signals#reactive-contexts) like `computed` and `effect`.
 
 There are two categories of query: **view queries** and **content queries.**
 
