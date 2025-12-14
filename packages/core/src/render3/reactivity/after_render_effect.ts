@@ -43,7 +43,10 @@ import {
   setInjectorProfilerContext,
 } from '../debug/injector_profiler';
 
-const NOT_SET = /* @__PURE__ */ Symbol('NOT_SET');
+const NOT_SET = /* @__PURE__ */ Symbol(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'NOT_SET' : '',
+);
+
 const EMPTY_CLEANUP_SET = /* @__PURE__ */ new Set<() => void>();
 
 /** Callback type for an `afterRenderEffect` phase effect */

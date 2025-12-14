@@ -6,11 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+// Required as the signals library is in a separate package, so we need to explicitly ensure the
+// global `ngDevMode` type is defined.
+declare const ngDevMode: boolean | undefined;
+
 /**
  * Value returned if the key-value pair couldn't be found in the context
  * hierarchy.
  */
-export const NOT_FOUND: unique symbol = Symbol('NotFound');
+export const NOT_FOUND: unique symbol = Symbol(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'NotFound' : '',
+);
 
 /**
  * Error thrown when the key-value pair couldn't be found in the context

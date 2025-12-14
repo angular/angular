@@ -11,7 +11,9 @@ import {createSignal, SIGNAL, SignalGetter, SignalNode} from '../../../primitive
 import {Signal, ValueEqualityFn} from './api';
 
 /** Symbol used distinguish `WritableSignal` from other non-writable signals and functions. */
-export const ɵWRITABLE_SIGNAL: unique symbol = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
+export const ɵWRITABLE_SIGNAL: unique symbol = /* @__PURE__ */ Symbol(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'WRITABLE_SIGNAL' : '',
+);
 
 /**
  * A `Signal` with a value that can be mutated via a setter interface.

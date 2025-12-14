@@ -23,7 +23,9 @@ import {getComponentLViewByIndex} from './util/view_utils';
 import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 
 /** Symbol used to store and retrieve metadata about a binding. */
-export const BINDING: unique symbol = /* @__PURE__ */ Symbol('BINDING');
+export const BINDING: unique symbol = /* @__PURE__ */ Symbol(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'BINDING' : '',
+);
 
 /**
  * A dynamically-defined binding targeting.

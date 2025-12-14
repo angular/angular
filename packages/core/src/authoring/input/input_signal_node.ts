@@ -8,7 +8,9 @@
 
 import {SIGNAL_NODE, SignalNode, signalSetFn} from '../../../primitives/signals';
 
-export const REQUIRED_UNSET_VALUE: unique symbol = /* @__PURE__ */ Symbol('InputSignalNode#UNSET');
+export const REQUIRED_UNSET_VALUE: unique symbol = /* @__PURE__ */ Symbol(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'InputSignalNode#UNSET' : '',
+);
 
 /**
  * Reactive node type for an input signal. An input signal extends a signal.
