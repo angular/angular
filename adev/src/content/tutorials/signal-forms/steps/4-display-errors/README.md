@@ -18,7 +18,7 @@ Let's display validation feedback!
 <docs-step title="Add error display for email field">
 Below the email input, add conditional error display. This will only show errors when the field is both invalid and touched:
 
-```html
+```angular-html
 <label>
   Email
   <input type="email" [field]="loginForm.email" />
@@ -38,7 +38,7 @@ The `loginForm.email()` call accesses the field's state signal. The `invalid()` 
 <docs-step title="Add error display for password field">
 Below the password input, add the same pattern for password errors:
 
-```html
+```angular-html
 <label>
   Password
   <input type="password" [field]="loginForm.password" />

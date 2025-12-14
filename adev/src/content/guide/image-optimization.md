@@ -42,7 +42,6 @@ imports: [
 ],
 ```
 
-</docs-code>
 </docs-step>
 <docs-step title="(Optional) Set up a Loader">
 An image loader is not **required** in order to use NgOptimizedImage, but using one with an image CDN enables powerful performance features, including automatic `srcset`s for your images.

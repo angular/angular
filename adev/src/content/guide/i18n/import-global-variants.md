@@ -2,8 +2,6 @@
 
 The [Angular CLI][CliMain] automatically includes locale data if you run the [`ng build`][CliBuild] command with the `--localize` option.
 
-<!--todo: replace with docs-code -->
-
 ```shell
 ng build --localize
 ```
