@@ -53,47 +53,7 @@ export class Search {
     loader: async ({params: query, abortSignal}) => {
       // Until we have a better alternative we debounce by awaiting for a short delay.
       await wait(SEARCH_DELAY, abortSignal);
-
-      return this.client
-        .search([
-          {
-            indexName: this.config.algolia.indexName,
-            params: {
-              query: query,
-              maxValuesPerFacet: MAX_VALUE_PER_FACET,
-              attributesToRetrieve: [
-                'hierarchy.lvl0',
-                'hierarchy.lvl1',
-                'hierarchy.lvl2',
-                'hierarchy.lvl3',
-                'hierarchy.lvl4',
-                'hierarchy.lvl5',
-                'hierarchy.lvl6',
-                'content',
-                'type',
-                'url',
-              ],
-              hitsPerPage: 20,
-              snippetEllipsisText: '…',
-              highlightPreTag: '<ɵ>',
-              highlightPostTag: '</ɵ>',
-              attributesToHighlight: [],
-              attributesToSnippet: [
-                'hierarchy.lvl1:10',
-                'hierarchy.lvl2:10',
-                'hierarchy.lvl3:10',
-                'hierarchy.lvl4:10',
-                'hierarchy.lvl5:10',
-                'hierarchy.lvl6:10',
-                'content:10',
-              ],
-            },
-            type: 'default',
-          },
-        ])
-        .then((response: SearchResponses<unknown>) => {
-          return this.parseResult(response);
-        });
+      return this.searchWithQuery(query);
     },
   });
 
@@ -207,6 +167,49 @@ export class Search {
         return part.highlight ? `<mark>${part.text}</mark>` : `<span>${part.text}</span>`;
       })
       .join('');
+  }
+
+  public searchWithQuery(query: string): Promise<SearchResultItem[] | undefined> {
+    return this.client
+      .search([
+        {
+          indexName: this.config.algolia.indexName,
+          params: {
+            query: query,
+            maxValuesPerFacet: MAX_VALUE_PER_FACET,
+            attributesToRetrieve: [
+              'hierarchy.lvl0',
+              'hierarchy.lvl1',
+              'hierarchy.lvl2',
+              'hierarchy.lvl3',
+              'hierarchy.lvl4',
+              'hierarchy.lvl5',
+              'hierarchy.lvl6',
+              'content',
+              'type',
+              'url',
+            ],
+            hitsPerPage: 20,
+            snippetEllipsisText: '…',
+            highlightPreTag: '<ɵ>',
+            highlightPostTag: '</ɵ>',
+            attributesToHighlight: [],
+            attributesToSnippet: [
+              'hierarchy.lvl1:10',
+              'hierarchy.lvl2:10',
+              'hierarchy.lvl3:10',
+              'hierarchy.lvl4:10',
+              'hierarchy.lvl5:10',
+              'hierarchy.lvl6:10',
+              'content:10',
+            ],
+          },
+          type: 'default',
+        },
+      ])
+      .then((response: SearchResponses<unknown>) => {
+        return this.parseResult(response);
+      });
   }
 }
 
