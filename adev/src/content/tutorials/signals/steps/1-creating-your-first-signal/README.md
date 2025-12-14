@@ -42,7 +42,7 @@ Update the status indicator to display the current user status by:
 1. Binding the signal to the class attribute with `[class]="userStatus()"`
 2. Displaying the status text by replacing `???` with `{{ userStatus() }}`
 
-```html
+```angular-html
 <!-- Update from: -->
 <div class="status-indicator offline">
   <span class="status-dot"></span>
