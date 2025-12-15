@@ -86,7 +86,7 @@ jobs:
           ASPECT_RULES_JS_FROZEN_PNPM_LOCK: '1'
       - name: Upload GRPC logs (for debugging of RBE issues)
         if: always()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           path: /tmp/rbe-grpc.log
           retention-days: 1
