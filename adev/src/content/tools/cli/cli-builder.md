@@ -302,27 +302,24 @@ This target tells the builder to copy the `package.json` file.
   - `source` - The existing file you are copying.
   - `destination` - The path you want to copy to.
 
-< header="angular.json" language="json">
-
+```json {header: "angular.json"}
 {
-"projects": {
-"builder-test": {
-"architect": {
-"copy-package": {
-"builder": "@example/copy-file:copy",
-"options": {
-"source": "package.json",
-"destination": "package-copy.json"
-}
-},
-
+  "projects": {
+    "builder-test": {
+      "architect": {
+        "copy-package": {
+          "builder": "@example/copy-file:copy",
+          "options": {
+            "source": "package.json",
+            "destination": "package-copy.json"
+          }
+        },
         // Existing targets...
       }
     }
-
+  }
 }
-}
-</docs-code>
+```
 
 ### Running the builder
 
