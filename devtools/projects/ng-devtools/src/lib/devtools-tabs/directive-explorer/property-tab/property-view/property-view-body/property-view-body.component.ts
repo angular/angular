@@ -19,6 +19,7 @@ import {
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 
 import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../../../protocol';
 import {
@@ -41,6 +42,7 @@ import {FlatNode} from '../../../../../shared/object-tree-explorer/object-tree-t
     MatIcon,
     MatTooltip,
     MatExpansionModule,
+    MatSnackBarModule,
     DocsRefButtonComponent,
     DependencyViewerComponent,
     ObjectTreeExplorerComponent,
@@ -48,6 +50,7 @@ import {FlatNode} from '../../../../../shared/object-tree-explorer/object-tree-t
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyViewBodyComponent {
+  private readonly _snackBar = inject(MatSnackBar);
   private readonly signalGraph = inject(SignalGraphManager);
   protected readonly supportedApis = inject(SUPPORTED_APIS);
 
@@ -104,6 +107,9 @@ export class PropertyViewBodyComponent {
   logValue(e: Event, node: FlatNode): void {
     e.stopPropagation();
     this.controller().logValue(node);
+    this._snackBar.open(`Logged value of '${node.prop.name}' to the console`, 'Dismiss', {
+      duration: 2000,
+    });
   }
 
   handleInspect(node: FlatNode): void {
