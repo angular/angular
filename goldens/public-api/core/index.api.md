@@ -1485,7 +1485,7 @@ export function provideEnvironmentInitializer(initializerFn: () => void): Enviro
 export function provideNgReflectAttributes(): EnvironmentProviders;
 
 // @public
-export function providePlatformInitializer(initializerFn: () => void): EnvironmentProviders;
+export function providePlatformInitializer(initializerFn: () => void): StaticProvider;
 
 // @public
 export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];
