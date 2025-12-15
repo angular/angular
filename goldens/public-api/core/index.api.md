@@ -1494,6 +1494,9 @@ export type Provider = TypeProvider | ValueProvider | ClassProvider | Constructo
 export type ProviderToken<T> = Type<T> | AbstractType<T> | InjectionToken<T>;
 
 // @public
+export function provideStabilityDebugging(): EnvironmentProviders;
+
+// @public
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders;
 
 // @public

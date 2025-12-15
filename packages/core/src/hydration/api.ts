@@ -83,7 +83,7 @@ let isIncrementalHydrationRuntimeSupportEnabled = false;
  * Defines a period of time that Angular waits for the `ApplicationRef.isStable` to emit `true`.
  * If there was no event with the `true` value during this time, Angular reports a warning.
  */
-const APPLICATION_IS_STABLE_TIMEOUT = 10_000;
+export const APPLICATION_IS_STABLE_TIMEOUT = 10_000;
 
 /**
  * Brings the necessary hydration code in tree-shakable manner.
