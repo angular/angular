@@ -378,8 +378,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 54,
-        "endLine": 217
+        "startLine": 53,
+        "endLine": 211
       }
     }
   ],
@@ -435,10 +435,6 @@
     [
       "Directionality",
       "@angular/cdk/bidi"
-    ],
-    [
-      "toSignal",
-      "@angular/core/rxjs-interop"
     ],
     [
       "Option",
