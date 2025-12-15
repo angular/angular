@@ -473,8 +473,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/combobox/combobox.ts",
-        "startLine": 61,
-        "endLine": 168
+        "startLine": 60,
+        "endLine": 162
       }
     }
   ],
@@ -530,10 +530,6 @@
     [
       "Directionality",
       "@angular/cdk/bidi"
-    ],
-    [
-      "toSignal",
-      "@angular/core/rxjs-interop"
     ],
     [
       "ComboboxPopupContainer",
