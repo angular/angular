@@ -433,14 +433,13 @@ export type MaybeSchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Ro
   | SchemaPathTree<Exclude<TModel, undefined>, TPathKind>;
 
 /**
- * A precompiled, reusable schema that defines behavior and rules for a form.
+ * A reusable schema that defines behavior and rules for a form.
  *
  * A `Schema` encapsulates form logic such as validation rules, disabled states, readonly states,
  * and other field-level behaviors.
  *
- * Unlike a raw {@link SchemaFn}, a `Schema` is created using
- * the {@link schema} function and is compiled only once, even when applied to multiple fields
- * or forms.
+ * Unlike raw {@link SchemaFn}, a `Schema` is created using
+ * the {@link schema} function and is cached per-form, even when applied to multiple fields.
  *
  * ### Creating a reusable schema
  *
@@ -482,7 +481,7 @@ export type Schema<in TModel> = {
  * A function that receives a {@link SchemaPathTree} and applies rules to fields.
  *
  * A `SchemaFn` can be passed directly to {@link form} or to the {@link schema} function to create a
- * precompile {@link Schema}.
+ * cached {@link Schema}.
  *
  * ```typescript
  * const userFormSchema: SchemaFn<User> = (p) => {
