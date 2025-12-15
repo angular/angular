@@ -433,9 +433,42 @@ export type MaybeSchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Ro
   | SchemaPathTree<Exclude<TModel, undefined>, TPathKind>;
 
 /**
- * Defines logic for a form.
+ * A reusable schema that defines behavior and rules for a form.
  *
- * @template TValue The type of data stored in the form that this schema is attached to.
+ * A `Schema` encapsulates form logic such as validation rules, disabled states, readonly states,
+ * and other field-level behaviors.
+ *
+ * Unlike raw {@link SchemaFn}, a `Schema` is created using
+ * the {@link schema} function and is cached per-form, even when applied to multiple fields.
+ *
+ * ### Creating a reusable schema
+ *
+ * ```typescript
+ * interface Address {
+ *   street: string;
+ *   city: string;
+ * }
+ *
+ * // Create a reusable schema for address fields
+ * const addressSchema = schema<Address>((p) => {
+ *   required(p.street);
+ *   required(p.city);
+ * });
+ *
+ * // Apply the schema to multiple forms
+ * const shippingForm = form(shippingModel, addressSchema, {injector});
+ * const billingForm = form(billingModel, addressSchema, {injector});
+ * ```
+ *
+ * ### Passing a schema to a form
+ *
+ * A schema can also be passed as a second argument to the {@link form} function.
+ *
+ * ```typescript
+ * readonly userForm = form(addressModel, addressSchema);
+ * ```
+ *
+ * @template TModel Data type.
  *
  * @category types
  * @experimental 21.0.0
@@ -445,9 +478,21 @@ export type Schema<in TModel> = {
 };
 
 /**
- * Function that defines rules for a schema.
+ * A function that receives a {@link SchemaPathTree} and applies rules to fields.
  *
- * @template TModel The type of data stored in the form that this schema function is attached to.
+ * A `SchemaFn` can be passed directly to {@link form} or to the {@link schema} function to create a
+ * cached {@link Schema}.
+ *
+ * ```typescript
+ * const userFormSchema: SchemaFn<User> = (p) => {
+ *   required(p.name);
+ *   disabled(p.email, ({valueOf}) => valueOf(p.name) === '');
+ * };
+ *
+ * const f = form(userModel, userFormSchema, {injector});
+ * ```
+ *
+ * @template TModel Data type.
  * @template TPathKind The kind of path this schema function can be bound to.
  *
  * @category types
@@ -458,7 +503,7 @@ export type SchemaFn<TModel, TPathKind extends PathKind = PathKind.Root> = (
 ) => void;
 
 /**
- * A schema or schema definition function.
+ * A {@link Schema} or {@link SchemaFn}.
  *
  * @template TModel The type of data stored in the form that this schema function is attached to.
  * @template TPathKind The kind of path this schema function can be bound to.
