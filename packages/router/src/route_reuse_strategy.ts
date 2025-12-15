@@ -142,7 +142,7 @@ export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
    * This method is called by the router when the `RouteReuseStrategy` is destroyed.
    * If this method returns `true`, the router will destroy the injector for the given route.
    *
-   * @see withExperimentalAutoCleanupInjectors
+   * @see {@link withExperimentalAutoCleanupInjectors}
    * @xperimental 21.1
    */
   shouldDestroyInjector(route: Route): boolean {

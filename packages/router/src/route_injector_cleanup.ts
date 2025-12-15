@@ -50,7 +50,6 @@ export function routeInjectorCleanup(
     }
   }
 
-  // 2. Traverse the config tree and destroy unused injectors
   destroyUnusedInjectors(config, activeRoutes, routeReuseStrategy, false);
 }
 

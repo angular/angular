@@ -484,8 +484,9 @@ export class Recognizer {
     if (route.loadChildren) {
       // lazy children belong to the loaded module
       if (route._loadedRoutes !== undefined) {
-        if (route._loadedNgModuleFactory && !route._loadedInjector) {
-          route._loadedInjector = route._loadedNgModuleFactory.create(injector).injector;
+        const ngModuleFactory = route._loadedNgModuleFactory;
+        if (ngModuleFactory && !route._loadedInjector) {
+          route._loadedInjector = ngModuleFactory.create(injector).injector;
         }
         return {routes: route._loadedRoutes, injector: route._loadedInjector};
       }

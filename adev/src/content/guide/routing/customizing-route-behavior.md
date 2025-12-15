@@ -147,7 +147,7 @@ Angular's `RouteReuseStrategy` class allows you to customize navigation behavior
 
 "Detached route handles" are Angular's way of storing component instances and their entire view hierarchy. When a route is detached, Angular preserves the component instance, its child components, and all associated state in memory. This preserved state can later be reattached when navigating back to the route.
 
-The `RouteReuseStrategy` class provides five methods that control the lifecycle of route components:
+The `RouteReuseStrategy` class provides the following methods that control the lifecycle of route components:
 
 | Method                                                                         | Description                                                                                                         |
 | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
@@ -243,7 +243,9 @@ export const appConfig: ApplicationConfig = {
 
 If you do not provide a custom `RouteReuseStrategy` or your custom strategy extends `BaseRouteReuseStrategy`, injectors will now be destroyed when the route is inactive.
 
-Otherwise, your strategy should implement `shouldDestroyInjector` to tell the router which routes should have their injectors destroyed:
+#### Cleanup with a custom `RouteReuseStrategy`
+
+If your application uses a custom `RouteReuseStrategy` _and_ the strategy does not extend `BaseRouteReuseStrategy`, you must implement `shouldDestroyInjector` to tell the router which routes should have their injectors destroyed:
 
 ```ts
 @Injectable()

@@ -755,7 +755,7 @@ export function withNavigationErrorHandler(
  * @see {@link withExperimentalAutoCleanupInjectors}
  * @see {@link provideRouter}
  *
- * @publicApi
+ * @experimental 21.1
  */
 export type ExperimentalAutoCleanupInjectorsFeature =
   RouterFeature<RouterFeatureKind.ExperimentalAutoCleanupInjectorsFeature>;
@@ -772,7 +772,6 @@ export type ExperimentalAutoCleanupInjectorsFeature =
  * for the routes that should be destroyed. If the `RouteReuseStrategy` uses stored handles, it
  * should also implement `retrieveStoredHandle` to ensure we don't destroy injectors for handles that will be reattached.
  *
- * @publicApi
  * @experimental 21.1
  */
 export function withExperimentalAutoCleanupInjectors(): ExperimentalAutoCleanupInjectorsFeature {
