@@ -10,7 +10,7 @@ import {GrammarDefinition} from './types';
 
 export const Template: GrammarDefinition = {
   scopeName: 'template.ng',
-  injectionSelector: 'L:text.html -comment -control.block.ng',
+  injectionSelector: 'L:text.html -comment -control.block.ng -meta.definition.variable.ng',
   patterns: [{include: '#interpolation'}],
   repository: {
     interpolation: {
