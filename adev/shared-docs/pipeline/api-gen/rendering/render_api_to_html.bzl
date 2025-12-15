@@ -24,6 +24,7 @@ def _render_api_to_html(ctx):
         executable = ctx.executable._render_api_to_html,
         outputs = outputs,
         arguments = [args],
+        mnemonic = "RenderApiToHtml",
         env = {
             "BAZEL_BINDIR": ".",
         },
