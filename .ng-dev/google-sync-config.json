@@ -32,6 +32,7 @@
     "**/rollup.config.js",
     "**/BUILD.bazel",
     "**/*.md",
+    "**/package.json",
     "packages/**/integrationtest/**",
     "packages/**/test/**",
     "packages/zone.js/*",
