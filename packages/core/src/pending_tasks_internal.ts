@@ -10,6 +10,8 @@ import {BehaviorSubject, Observable} from 'rxjs';
 
 import {ɵɵdefineInjectable} from './di/interface/defs';
 import {OnDestroy} from './change_detection/lifecycle_hooks';
+import {DEBUG_TASK_TRACKER} from './application/stability_debug';
+import {inject} from './di';
 
 /**
  * Internal implementation of the pending tasks service.
@@ -19,8 +21,8 @@ export class PendingTasksInternal implements OnDestroy {
   private taskId = 0;
   private pendingTasks = new Set<number>();
   private destroyed = false;
-
   private pendingTask = new BehaviorSubject<boolean>(false);
+  private debugTaskTracker = inject(DEBUG_TASK_TRACKER, {optional: true});
 
   get hasPendingTasks(): boolean {
     // Accessing the value of a closed `BehaviorSubject` throws an error.
@@ -50,6 +52,7 @@ export class PendingTasksInternal implements OnDestroy {
     }
     const taskId = this.taskId++;
     this.pendingTasks.add(taskId);
+    this.debugTaskTracker?.add(taskId);
     return taskId;
   }
 
@@ -59,6 +62,7 @@ export class PendingTasksInternal implements OnDestroy {
 
   remove(taskId: number): void {
     this.pendingTasks.delete(taskId);
+    this.debugTaskTracker?.remove(taskId);
     if (this.pendingTasks.size === 0 && this.hasPendingTasks) {
       this.pendingTask.next(false);
     }

@@ -54,6 +54,7 @@ export {
   ANIMATION_MODULE_TYPE,
   CSP_NONCE,
 } from './application/application_tokens';
+export {provideStabilityDebugging} from './application/stability_debug_impl';
 export {
   APP_INITIALIZER,
   ApplicationInitStatus,
