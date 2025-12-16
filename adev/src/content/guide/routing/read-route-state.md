@@ -192,18 +192,18 @@ Matrix parameters are useful when you need to pass auxiliary data to a specific 
 // Multiple parameters: /path;key1=value1;key2=value2
 
 // Navigate with matrix parameters
-this.router.navigate(['/awesome-products', { view: 'grid', filter: 'new' }]);
+this.router.navigate(['/awesome-products', {view: 'grid', filter: 'new'}]);
 // Results in URL: /awesome-products;view=grid;filter=new
 ```
 
 **Using ActivatedRoute**
 
 ```ts
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component, inject} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Component(/* ... */)
-export class AwesomeProducts  {
+export class AwesomeProducts {
   private route = inject(ActivatedRoute);
 
   constructor() {

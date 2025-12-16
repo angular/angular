@@ -24,7 +24,6 @@ export class HighlightDirective {
     this.element.nativeElement.style.color = 'red';
   }
 }
-
 ```
 
 ## Inject the host element's tag name

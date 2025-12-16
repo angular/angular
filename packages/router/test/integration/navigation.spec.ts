@@ -470,10 +470,10 @@ export function navigationIntegrationTestSuite() {
 
       @Component({
         template: `
-         <router-outlet (deactivate)="logDeactivate('primary')"></router-outlet>
-         <router-outlet name="first" (deactivate)="logDeactivate('first')"></router-outlet>
-         <router-outlet name="second" (deactivate)="logDeactivate('second')"></router-outlet>
-         `,
+          <router-outlet (deactivate)="logDeactivate('primary')"></router-outlet>
+          <router-outlet name="first" (deactivate)="logDeactivate('first')"></router-outlet>
+          <router-outlet name="second" (deactivate)="logDeactivate('second')"></router-outlet>
+        `,
         standalone: false,
       })
       class NamedOutletHost {

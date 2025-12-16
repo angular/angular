@@ -93,7 +93,7 @@ $localize`string_to_translate`;
 The i18n metadata is surrounded by colon \(`:`\) characters and prepends the translation source text.
 
 ```ts
-$localize`:{i18n_metadata}:string_to_translate`
+$localize`:{i18n_metadata}:string_to_translate`;
 ```
 
 ### Include interpolated text
@@ -195,7 +195,6 @@ ICU expressions help you mark alternate text in component templates to meet cond
 An ICU expression includes a component property, an ICU clause, and the case statements surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
 ```html
-
 { component_property, icu_clause, case_statements }
 ```
 
@@ -220,7 +219,6 @@ Use the `plural` clause to mark expressions that may not be meaningful if transl
 <!--todo: replace with docs-code -->
 
 ```html
-
 { component_property, plural, pluralization_categories }
 ```
 
@@ -229,7 +227,6 @@ After the pluralization category, enter the default text \(English\) surrounded 
 <!--todo: replace with docs-code -->
 
 ```html
-
 pluralization_category { }
 ```
 
@@ -249,7 +246,6 @@ If none of the pluralization categories match, Angular uses `other` to match the
 <!--todo: replace with docs-code -->
 
 ```html
-
 other { default_quantity }
 ```
 
@@ -276,7 +272,6 @@ If you want to display the following phrase in English, where `x` is a number.
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 updated x minutes ago
 ```
 
@@ -285,14 +280,12 @@ And you also want to display the following phrases based on the cardinality of `
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 updated just now
 ```
 
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 updated one minute ago
 ```
 
@@ -320,7 +313,6 @@ The `select` clause marks choices for alternate text based on your defined strin
 <!--todo: replace with docs-code -->
 
 ```html
-
 { component_property, select, selection_categories }
 ```
 
@@ -331,7 +323,6 @@ After the selection category, enter the text \(English\) surrounded by open curl
 <!--todo: replace with docs-code -->
 
 ```html
-
 selection_category { text }
 ```
 
@@ -342,7 +333,6 @@ If none of the selection categories match, Angular uses `other` to match the sta
 <!--todo: replace with docs-code -->
 
 ```html
-
 other { default_value }
 ```
 
@@ -353,7 +343,6 @@ If you want to display the following phrase in English.
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 The author is other
 ```
 
@@ -362,14 +351,12 @@ And you also want to display the following phrases based on the `gender` propert
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 The author is female
 ```
 
 <!--todo: replace output docs-code with screen capture image --->
 
 ```html
-
 The author is male
 ```
 

@@ -437,7 +437,7 @@ Each item emitted by `events` is an instance of a specific event class:
 All event classes extend `ControlEvent` and include a `source` reference to the `AbstractControl` that originated the change, which is useful in large forms.
 
 ```ts
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {
   FormControl,
   ValueChangeEvent,
@@ -450,7 +450,9 @@ import {
   FormGroup,
 } from '@angular/forms';
 
-@Component({/* ... */ })
+@Component({
+  /* ... */
+})
 export class UnifiedEventsBasicComponent {
   form = new FormGroup({
     username: new FormControl(''),
@@ -491,8 +493,8 @@ export class UnifiedEventsBasicComponent {
 Prefer RxJS operators when you only need a subset of event types.
 
 ```ts
-import { filter } from 'rxjs/operators';
-import { StatusChangeEvent } from '@angular/forms';
+import {filter} from 'rxjs/operators';
+import {StatusChangeEvent} from '@angular/forms';
 
 control.events
   .pipe(filter((e) => e instanceof StatusChangeEvent))
@@ -504,10 +506,11 @@ control.events
 **Before**
 
 ```ts
-import { combineLatest } from 'rxjs/operators';
+import {combineLatest} from 'rxjs/operators';
 
-combineLatest([control.valueChanges, control.statusChanges])
-  .subscribe(([value, status]) => { /* ... */ });
+combineLatest([control.valueChanges, control.statusChanges]).subscribe(([value, status]) => {
+  /* ... */
+});
 ```
 
 **After**
@@ -534,16 +537,16 @@ Angular provides four utility functions that help determine the concrete type of
 These helpers are particularly useful in **custom validators**, where the function signature receives an `AbstractControl`, but the logic is intended for a specific control kind.
 
 ```ts
-import { AbstractControl, isFormArray } from '@angular/forms';
+import {AbstractControl, isFormArray} from '@angular/forms';
 
 export function positiveValues(control: AbstractControl) {
-    if (!isFormArray(control)) {
-        return null; // Not a FormArray: validator is not applicable.
-    }
+  if (!isFormArray(control)) {
+    return null; // Not a FormArray: validator is not applicable.
+  }
 
-    // Safe to access FormArray-specific API after narrowing.
-    const hasNegative = control.controls.some(c => c.value < 0);
-    return hasNegative ? { positiveValues: true } : null;
+  // Safe to access FormArray-specific API after narrowing.
+  const hasNegative = control.controls.some((c) => c.value < 0);
+  return hasNegative ? {positiveValues: true} : null;
 }
 ```
 

@@ -41,7 +41,6 @@ Each diagnostic can be configured as either:
 Check severity can be configured as an [Angular compiler option](reference/configs/angular-compiler-options):
 
 ```json
-
 {
   "angularCompilerOptions": {
     "extendedDiagnostics": {

@@ -69,9 +69,7 @@ When an application is rendered on the server, it is visible in a browser as soo
 import {provideClientHydration, withEventReplay} from '@angular/platform-browser';
 
 bootstrapApplication(App, {
-  providers: [
-    provideClientHydration(withEventReplay())
-  ]
+  providers: [provideClientHydration(withEventReplay())],
 });
 ```
 

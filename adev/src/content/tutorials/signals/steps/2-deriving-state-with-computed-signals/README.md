@@ -37,10 +37,14 @@ Add a computed signal that creates a descriptive message based on the user statu
 statusMessage = computed(() => {
   const status = this.userStatus();
   switch (status) {
-    case 'online': return 'Available for meetings and messages';
-    case 'away': return 'Temporarily away, will respond soon';
-    case 'offline': return 'Not available, check back later';
-    default: return 'Status unknown';
+    case 'online':
+      return 'Available for meetings and messages';
+    case 'away':
+      return 'Temporarily away, will respond soon';
+    case 'offline':
+      return 'Not available, check back later';
+    default:
+      return 'Status unknown';
   }
 });
 ```

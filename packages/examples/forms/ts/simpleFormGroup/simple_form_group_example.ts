@@ -15,7 +15,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
   selector: 'example-app',
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      @if(first.invalid) {
+      @if (first.invalid) {
         <div>Name is too short.</div>
       }
       <input formControlName="first" placeholder="First name" />

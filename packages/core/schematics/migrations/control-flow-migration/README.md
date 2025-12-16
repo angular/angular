@@ -14,7 +14,7 @@ the template. It has the following option:
 import {Component} from '@angular/core';
 
 @Component({
-  template: `<div><span *ngIf="show">Content here</span></div>`
+  template: `<div><span *ngIf="show">Content here</span></div>`,
 })
 export class MyComp {
   show = false;
@@ -27,9 +27,13 @@ export class MyComp {
 import {Component} from '@angular/core';
 
 @Component({
-  template: `<div>@if (show) {<span>Content here</span>}</div>`
+  template: `<div>
+    @if (show) {
+      <span>Content here</span>
+    }
+  </div>`,
 })
 export class MyComp {
-  show = false
+  show = false;
 }
 ```

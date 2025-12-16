@@ -33,12 +33,18 @@ describe('control flow - switch', () => {
   it('should show a template based on a matching case', () => {
     @Component({
       template: `
-          @switch (case) {
-            @case (0) {case 0}
-            @case (1) {case 1}
-            @default {default}
+        @switch (case) {
+          @case (0) {
+            case 0
           }
-        `,
+          @case (1) {
+            case 1
+          }
+          @default {
+            default
+          }
+        }
+      `,
     })
     class TestComponent {
       case = 0;
@@ -47,27 +53,33 @@ describe('control flow - switch', () => {
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toBe('case 0');
+    expect(fixture.nativeElement.textContent).toBe(' case 0 ');
 
     fixture.componentInstance.case = 1;
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('case 1');
+    expect(fixture.nativeElement.textContent).toBe(' case 1 ');
 
     fixture.componentInstance.case = 5;
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('default');
+    expect(fixture.nativeElement.textContent).toBe(' default ');
   });
 
   it('should be able to use a pipe in the switch expression', () => {
     @Component({
       imports: [MultiplyPipe],
       template: `
-          @switch (case | multiply:2) {
-            @case (0) {case 0}
-            @case (2) {case 2}
-            @default {default}
+        @switch (case | multiply: 2) {
+          @case (0) {
+            case 0
           }
-        `,
+          @case (2) {
+            case 2
+          }
+          @default {
+            default
+          }
+        }
+      `,
     })
     class TestComponent {
       case = 0;
@@ -76,27 +88,33 @@ describe('control flow - switch', () => {
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toBe('case 0');
+    expect(fixture.nativeElement.textContent).toBe(' case 0 ');
 
     fixture.componentInstance.case = 1;
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('case 2');
+    expect(fixture.nativeElement.textContent).toBe(' case 2 ');
 
     fixture.componentInstance.case = 5;
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('default');
+    expect(fixture.nativeElement.textContent).toBe(' default ');
   });
 
   it('should be able to use a pipe in the case expression', () => {
     @Component({
       imports: [MultiplyPipe],
       template: `
-          @switch (case) {
-            @case (1 | multiply:2) {case 2}
-            @case (2 | multiply:2) {case 4}
-            @default {default}
+        @switch (case) {
+          @case (1 | multiply: 2) {
+            case 2
           }
-        `,
+          @case (2 | multiply: 2) {
+            case 4
+          }
+          @default {
+            default
+          }
+        }
+      `,
     })
     class TestComponent {
       case = 0;
@@ -105,15 +123,15 @@ describe('control flow - switch', () => {
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toBe('default');
+    expect(fixture.nativeElement.textContent).toBe(' default ');
 
     fixture.componentInstance.case = 4;
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('case 4');
+    expect(fixture.nativeElement.textContent).toBe(' case 4 ');
 
     fixture.componentInstance.case = 2;
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('case 2');
+    expect(fixture.nativeElement.textContent).toBe(' case 2 ');
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in switch blocks', () => {
@@ -129,8 +147,12 @@ describe('control flow - switch', () => {
     @Component({
       template: `
         @switch (case | test) {
-          @case (0 | test) {Zero}
-          @case (1 | test) {One}
+          @case (0 | test) {
+            Zero
+          }
+          @case (1 | test) {
+            One
+          }
         }
       `,
       imports: [TestPipe],
@@ -141,7 +163,7 @@ describe('control flow - switch', () => {
 
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('One');
+    expect(fixture.nativeElement.textContent).toBe(' One ');
   });
 
   it('should project @switch cases into appropriate slots when selectors are used for all cases', () => {
@@ -155,20 +177,20 @@ describe('control flow - switch', () => {
     @Component({
       imports: [TestComponent],
       template: `
-            <test>
-              @switch (value) {
-                @case (1) {
-                  <span case_1>value 1</span>
-                }
-                @case (2) {
-                  <span case_2>value 2</span>
-                }
-                @case (3) {
-                  <span case_3>value 3</span>
-                }
-              }
-            </test>
-          `,
+        <test>
+          @switch (value) {
+            @case (1) {
+              <span case_1>value 1</span>
+            }
+            @case (2) {
+              <span case_2>value 2</span>
+            }
+            @case (3) {
+              <span case_3>value 3</span>
+            }
+          }
+        </test>
+      `,
     })
     class App {
       value = 1;
@@ -198,20 +220,20 @@ describe('control flow - switch', () => {
     @Component({
       imports: [TestComponent],
       template: `
-          <test>
-            @switch (value) {
-              @case (1) {
-                <span case_1>value 1</span>
-              }
-              @case (2) {
-                <span>value 2</span>
-              }
-              @case (3) {
-                <span case_3>value 3</span>
-              }
+        <test>
+          @switch (value) {
+            @case (1) {
+              <span case_1>value 1</span>
             }
-          </test>
-        `,
+            @case (2) {
+              <span>value 2</span>
+            }
+            @case (3) {
+              <span case_3>value 3</span>
+            }
+          }
+        </test>
+      `,
     })
     class App {
       value = 1;

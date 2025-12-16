@@ -2286,7 +2286,7 @@ describe('integration tests', function () {
 
 @Component({
   selector: 'cmp-with-default-interpolation',
-  template: `{{text}}`,
+  template: `{{ text }}`,
   standalone: false,
 })
 class ComponentWithDefaultInterpolation {
@@ -3097,7 +3097,8 @@ class DirectiveThrowingAnError {
 
 @Component({
   selector: 'component-with-template',
-  template: `No View Decorator: <div *ngFor="let item of items">{{item}}</div>`,
+  template: `No View Decorator:
+    <div *ngFor="let item of items">{{ item }}</div>`,
   standalone: false,
 })
 class ComponentWithTemplate {

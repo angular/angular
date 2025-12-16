@@ -31,7 +31,7 @@ Now, it's your turn to give this a try:
 First, update `app.ts` by adding the file level import for `LowerCasePipe` from `@angular/common`.
 
 ```ts
-import { LowerCasePipe } from '@angular/common';
+import {LowerCasePipe} from '@angular/common';
 ```
 
 </docs-step>

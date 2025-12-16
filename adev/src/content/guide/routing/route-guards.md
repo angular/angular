@@ -51,7 +51,10 @@ It has access to the following default arguments:
 It can return the [standard return guard types](#route-guard-return-types).
 
 ```ts
-export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const authGuard: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
   const authService = inject(AuthService);
   return authService.isAuthenticated();
 };
@@ -73,7 +76,10 @@ It has access to the following default arguments:
 It can return the [standard return guard types](#route-guard-return-types).
 
 ```ts
-export const adminChildGuard: CanActivateChildFn = (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const adminChildGuard: CanActivateChildFn = (
+  childRoute: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
   const authService = inject(AuthService);
   return authService.hasRole('admin');
 };
@@ -95,7 +101,12 @@ It has access to the following default arguments:
 It can return the [standard return guard types](#route-guard-return-types).
 
 ```ts
-export const unsavedChangesGuard: CanDeactivateFn<FormComponent> = (component: FormComponent, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => {
+export const unsavedChangesGuard: CanDeactivateFn<FormComponent> = (
+  component: FormComponent,
+  currentRoute: ActivatedRouteSnapshot,
+  currentState: RouterStateSnapshot,
+  nextState: RouterStateSnapshot,
+) => {
   return component.hasUnsavedChanges()
     ? confirm('You have unsaved changes. Are you sure you want to leave?')
     : true;
@@ -130,14 +141,14 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: AdminDashboard,
-    canMatch: [adminGuard]
+    canMatch: [adminGuard],
   },
   {
     path: 'dashboard',
     component: UserDashboard,
-    canMatch: [userGuard]
-  }
-]
+    canMatch: [userGuard],
+  },
+];
 ```
 
 In this example, when the user visits `/dashboard`, the first one that matches the correct guard will be used.
@@ -151,25 +162,25 @@ Once you've created your route guards, you need to configure them in your route 
 Guards are specified as arrays in the route configuration in order to allow you to apply multiple guards to a single route. They are executed in the order they appear in the array.
 
 ```ts
-import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard';
-import { adminGuard } from './guards/admin.guard';
-import { canDeactivateGuard } from './guards/can-deactivate.guard';
-import { featureToggleGuard } from './guards/feature-toggle.guard';
+import {Routes} from '@angular/router';
+import {authGuard} from './guards/auth.guard';
+import {adminGuard} from './guards/admin.guard';
+import {canDeactivateGuard} from './guards/can-deactivate.guard';
+import {featureToggleGuard} from './guards/feature-toggle.guard';
 
 const routes: Routes = [
   // Basic CanActivate - requires authentication
   {
     path: 'dashboard',
     component: DashboardComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
   },
 
   // Multiple CanActivate guards - requires authentication AND admin role
   {
     path: 'admin',
     component: AdminComponent,
-    canActivate: [authGuard, adminGuard]
+    canActivate: [authGuard, adminGuard],
   },
 
   // CanActivate + CanDeactivate - protected route with unsaved changes check
@@ -177,7 +188,7 @@ const routes: Routes = [
     path: 'profile',
     component: ProfileComponent,
     canActivate: [authGuard],
-    canDeactivate: [canDeactivateGuard]
+    canDeactivate: [canDeactivateGuard],
   },
 
   // CanActivateChild - protects all child routes
@@ -186,23 +197,23 @@ const routes: Routes = [
     canActivateChild: [authGuard],
     children: [
       // /users/list - PROTECTED
-      { path: 'list', component: UserListComponent },
+      {path: 'list', component: UserListComponent},
       // /users/detail/:id - PROTECTED
-      { path: 'detail/:id', component: UserDetailComponent }
-    ]
+      {path: 'detail/:id', component: UserDetailComponent},
+    ],
   },
 
   // CanMatch - conditionally matches route based on feature flag
   {
     path: 'beta-feature',
     component: BetaFeatureComponent,
-    canMatch: [featureToggleGuard]
+    canMatch: [featureToggleGuard],
   },
 
   // Fallback route if beta feature is disabled
   {
     path: 'beta-feature',
-    component: ComingSoonComponent
-  }
+    component: ComingSoonComponent,
+  },
 ];
 ```

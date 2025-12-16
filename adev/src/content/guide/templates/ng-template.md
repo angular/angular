@@ -137,7 +137,7 @@ The `NgTemplateOutlet` directive from `@angular/common` accepts a `TemplateRef` 
 First, import `NgTemplateOutlet`:
 
 ```typescript
-import { NgTemplateOutlet } from '@angular/common';
+import {NgTemplateOutlet} from '@angular/common';
 ```
 
 The following example declares a template fragment and renders that fragment to a `<ng-container>` element with `NgTemplateOutlet`:

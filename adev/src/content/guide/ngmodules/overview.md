@@ -10,7 +10,7 @@ import {NgModule} from '@angular/core';
 @NgModule({
   // Metadata goes here
 })
-export class CustomMenuModule { }
+export class CustomMenuModule {}
 ```
 
 An NgModule has two main responsibilities:
@@ -28,7 +28,7 @@ The `declarations` property of the `@NgModule` metadata declares the components,
   // CustomMenu and CustomMenuItem are components.
   declarations: [CustomMenu, CustomMenuItem],
 })
-export class CustomMenuModule { }
+export class CustomMenuModule {}
 ```
 
 In the example above, the components `CustomMenu` and `CustomMenuItem` belong to `CustomMenuModule`.
@@ -45,7 +45,7 @@ const WIDGETS = [MENU_COMPONENTS, CustomSlider];
   // CustomSlider, and CustomCheckbox.
   declarations: [WIDGETS, CustomCheckbox],
 })
-export class CustomMenuModule { }
+export class CustomMenuModule {}
 ```
 
 If Angular discovers any components, directives, or pipes declared in more than one NgModule, it reports an error.
@@ -58,7 +58,9 @@ Any components, directives, or pipes must be explicitly marked as `standalone: f
   standalone: false,
   /* ... */
 })
-export class CustomMenu { /* ... */ }
+export class CustomMenu {
+  /* ... */
+}
 ```
 
 ### imports
@@ -72,7 +74,7 @@ Components declared in an NgModule may depend on other components, directives, a
   imports: [PopupTrigger, SelectionIndicator],
   declarations: [CustomMenu, CustomMenuItem],
 })
-export class CustomMenuModule { }
+export class CustomMenuModule {}
 ```
 
 The `imports` array accepts other NgModules, as well as standalone components, directives, and pipes.
@@ -83,27 +85,27 @@ An NgModule can _export_ its declared components, directives, and pipes such tha
 
 ```typescript
 @NgModule({
- imports: [PopupTrigger, SelectionIndicator],
- declarations: [CustomMenu, CustomMenuItem],
+  imports: [PopupTrigger, SelectionIndicator],
+  declarations: [CustomMenu, CustomMenuItem],
 
- // Make CustomMenu and CustomMenuItem available to
- // components and NgModules that import CustomMenuModule.
- exports: [CustomMenu, CustomMenuItem],
+  // Make CustomMenu and CustomMenuItem available to
+  // components and NgModules that import CustomMenuModule.
+  exports: [CustomMenu, CustomMenuItem],
 })
-export class CustomMenuModule { }
+export class CustomMenuModule {}
 ```
 
 The `exports` property is not limited to declarations, however. An NgModule can also export any other components, directives, pipes, and NgModules that it imports.
 
 ```typescript
 @NgModule({
- imports: [PopupTrigger, SelectionIndicator],
- declarations: [CustomMenu, CustomMenuItem],
+  imports: [PopupTrigger, SelectionIndicator],
+  declarations: [CustomMenu, CustomMenuItem],
 
- // Also make PopupTrigger available to any component or NgModule that imports CustomMenuModule.
- exports: [CustomMenu, CustomMenuItem, PopupTrigger],
+  // Also make PopupTrigger available to any component or NgModule that imports CustomMenuModule.
+  exports: [CustomMenu, CustomMenuItem, PopupTrigger],
 })
-export class CustomMenuModule { }
+export class CustomMenuModule {}
 ```
 
 ## `NgModule` providers
@@ -124,14 +126,14 @@ An `NgModule` can specify `providers` for injected dependencies. These providers
   providers: [OverlayManager],
   /* ... */
 })
-export class CustomMenuModule { }
+export class CustomMenuModule {}
 
 @NgModule({
   imports: [CustomMenuModule],
   declarations: [UserProfile],
   providers: [UserDataClient],
 })
-export class UserProfileModule { }
+export class UserProfileModule {}
 ```
 
 In the example above:
@@ -149,9 +151,7 @@ Any providers included in this way are eagerly loaded, increasing the JavaScript
 
 ```typescript
 bootstrapApplication(MyApplicationRoot, {
-  providers: [
-    CustomMenuModule.forRoot(/* some config */),
-  ],
+  providers: [CustomMenuModule.forRoot(/* some config */)],
 });
 ```
 
@@ -160,11 +160,11 @@ Similarly, some NgModules may define a static `forChild` that indicates the prov
 ```typescript
 @Component({
   /* ... */
-  providers: [
-    CustomMenuModule.forChild(/* some config */),
-  ],
+  providers: [CustomMenuModule.forChild(/* some config */)],
 })
-export class UserProfile { /* ... */ }
+export class UserProfile {
+  /* ... */
+}
 ```
 
 ## Bootstrapping an application
@@ -181,7 +181,7 @@ import {platformBrowser} from '@angular/platform-browser';
 @NgModule({
   bootstrap: [MyApplication],
 })
-export class MyApplicationModule { }
+export class MyApplicationModule {}
 
 platformBrowser().bootstrapModule(MyApplicationModule);
 ```

@@ -85,7 +85,6 @@ export class SelectDirective {
   private templateRef = inject(TemplateRef);
   private viewContainerRef = inject(ViewContainerRef);
 }
-
 ```
 
 </docs-step>
@@ -129,9 +128,7 @@ That's it - `SelectDirective` is up and running. A follow-up step might be to [a
 When you write your own structural directives, use the following syntax:
 
 ```ts {hideCopy}
-
-_:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )_"
-
+_: prefix = "( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )_";
 ```
 
 The following patterns describe each portion of the structural directive grammar:

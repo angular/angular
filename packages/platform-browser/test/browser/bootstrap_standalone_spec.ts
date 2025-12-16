@@ -47,7 +47,7 @@ describe('bootstrapApplication for standalone components', () => {
 
       @Component({
         selector: 'test-app',
-        template: `({{testToken}})`,
+        template: `({{ testToken }})`,
         imports: [AmbientModule],
       })
       class StandaloneCmp {
@@ -112,7 +112,7 @@ describe('bootstrapApplication for standalone components', () => {
 
       @Component({
         selector: 'test-app',
-        template: `({{service.ambientToken}})`,
+        template: `({{ service.ambientToken }})`,
         imports: [AmbientModule],
       })
       class StandaloneCmp {

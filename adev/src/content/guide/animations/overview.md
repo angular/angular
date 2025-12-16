@@ -34,9 +34,7 @@ Import `provideAnimationsAsync` from `@angular/platform-browser/animations/async
 
 ```ts {header: "Enabling Animations", linenums}
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideAnimationsAsync(),
-  ]
+  providers: [provideAnimationsAsync()],
 });
 ```
 
@@ -127,13 +125,13 @@ The `animate()` function \(second argument of the transition function\) accepts 
 The `timings` parameter takes either a number or a string defined in three parts.
 
 ```ts
-animate (duration)
+animate(duration);
 ```
 
 or
 
 ```ts
-animate ('duration delay easing')
+animate('duration delay easing');
 ```
 
 The first part, `duration`, is required.
@@ -191,7 +189,7 @@ HELPFUL: Some additional notes on using styles within [`state`](api/animations/s
 - Include multiple state pairs within the same `transition()` argument:
 
   ```ts
-  transition( 'on => off, off => void' )
+  transition('on => off, off => void');
   ```
 
 ### Triggering the animation

@@ -30,9 +30,7 @@ import {form, Field, required, email, minLength} from '@angular/forms/signals';
         }
       </div>
 
-      <button type="submit" [disabled]="loginForm().invalid()">
-        Sign In
-      </button>
+      <button type="submit" [disabled]="loginForm().invalid()">Sign In</button>
     </form>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

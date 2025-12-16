@@ -8,9 +8,7 @@ Before you can use `HttpClient` in your app, you must configure it using [depend
 
 ```ts
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideHttpClient(),
-  ]
+  providers: [provideHttpClient()],
 };
 ```
 
@@ -18,9 +16,7 @@ If your app is using NgModule-based bootstrap instead, you can include `provideH
 
 ```ts
 @NgModule({
-  providers: [
-    provideHttpClient(),
-  ],
+  providers: [provideHttpClient()],
   // ... other application configuration
 })
 export class AppModule {}
@@ -44,11 +40,7 @@ export class ConfigService {
 
 ```ts
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideHttpClient(
-      withFetch(),
-    ),
-  ]
+  providers: [provideHttpClient(withFetch())],
 };
 ```
 

@@ -41,7 +41,7 @@ import {isBrowser} from '@angular/private/testing';
 
 @Component({
   selector: 'child-comp',
-  template: `<span>Original {{childBinding}}</span>`,
+  template: `<span>Original {{ childBinding }}</span>`,
   standalone: false,
 })
 @Injectable()
@@ -103,7 +103,7 @@ class MockFancyService extends FancyService {
 @Component({
   selector: 'my-service-comp',
   providers: [FancyService],
-  template: `injected value: {{fancyService.value}}`,
+  template: `injected value: {{ fancyService.value }}`,
   standalone: false,
 })
 class TestProvidersComp {
@@ -113,7 +113,7 @@ class TestProvidersComp {
 @Component({
   selector: 'my-service-comp',
   viewProviders: [FancyService],
-  template: `injected value: {{fancyService.value}}`,
+  template: `injected value: {{ fancyService.value }}`,
   standalone: false,
 })
 class TestViewProvidersComp {
@@ -141,7 +141,7 @@ class SomePipe {
 
 @Component({
   selector: 'comp',
-  template: `<div  [someDir]="'someValue' | somePipe"></div>`,
+  template: `<div [someDir]="'someValue' | somePipe"></div>`,
   standalone: false,
 })
 class CompUsingModuleDirectiveAndPipe {}

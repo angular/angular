@@ -3,10 +3,7 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-  template: `
-    <div [bla]="{myInput}">
-    </div>
-  `,
+  template: `<div [bla]="{myInput}"></div>`,
   host: {
     '[style]': '{myInput}',
   },

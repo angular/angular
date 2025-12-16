@@ -32,7 +32,7 @@ export class SlicePipeStringComponent {
   selector: 'slice-list-pipe',
   imports: [SlicePipe],
   template: `<ul>
-    @for(i of collection | slice: 1 : 3; track $index) {
+    @for (i of collection | slice: 1 : 3; track $index) {
       <li>{{ i }}</li>
     }
   </ul>`,

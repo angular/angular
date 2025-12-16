@@ -55,15 +55,14 @@ Rules can make use of utilities provided with the `@schematics/angular` package.
 Look for helper functions for working with modules, dependencies, TypeScript, AST, JSON, Angular CLI workspaces and projects, and more.
 
 ```ts {header: "index.ts"}
-
 import {
-JsonAstObject,
-JsonObject,
-JsonValue,
-Path,
-normalize,
-parseJsonAst,
-strings,
+  JsonAstObject,
+  JsonObject,
+  JsonValue,
+  Path,
+  normalize,
+  parseJsonAst,
+  strings,
 } from '@angular-devkit/core';
 ```
 
@@ -154,19 +153,12 @@ In the short form, the type is inferred from the property's type and constraints
 In the following example, the property takes an enumerated value, so the schematic automatically chooses the list type, and creates a menu from the possible values.
 
 ```json {header: "schema.json"}
-
 {
   "style": {
     "description": "The file extension or preprocessor to use for style files.",
     "type": "string",
     "default": "css",
-    "enum": [
-      "css",
-      "scss",
-      "sass",
-      "less",
-      "styl"
-    ],
+    "enum": ["css", "scss", "sass", "less", "styl"],
     "x-prompt": "Which stylesheet format would you like to use?"
   }
 }
@@ -192,26 +184,23 @@ It defines the prompt that lets users choose which style preprocessor they want 
 By using the long form, the schematic can provide more explicit formatting of the menu choices.
 
 ```json {header: "schema.json"}
-
 {
   "style": {
     "description": "The file extension or preprocessor to use for style files.",
     "type": "string",
     "default": "css",
-    "enum": [
-      "css",
-      "scss",
-      "sass",
-      "less"
-    ],
+    "enum": ["css", "scss", "sass", "less"],
     "x-prompt": {
       "message": "Which stylesheet format would you like to use?",
       "type": "list",
       "items": [
-        { "value": "css", "label": "CSS" },
-        { "value": "scss", "label": "SCSS [ https://sass-lang.com/documentation/syntax#scss ]" },
-        { "value": "sass", "label": "Sass [ https://sass-lang.com/documentation/syntax#the-indented-syntax ]" },
-        { "value": "less", "label": "Less [ https://lesscss.org/ ]" }
+        {"value": "css", "label": "CSS"},
+        {"value": "scss", "label": "SCSS [ https://sass-lang.com/documentation/syntax#scss ]"},
+        {
+          "value": "sass",
+          "label": "Sass [ https://sass-lang.com/documentation/syntax#the-indented-syntax ]"
+        },
+        {"value": "less", "label": "Less [ https://lesscss.org/ ]"}
       ]
     }
   }
@@ -225,7 +214,6 @@ No additional logic or changes are required to the code of a schematic to suppor
 The following JSON schema is a complete description of the long-form syntax for the `x-prompt` field.
 
 ```json {header: "x-prompt schema"}
-
 {
   "oneOf": [
     {
@@ -255,17 +243,13 @@ The following JSON schema is a complete description of the long-form syntax for 
                   },
                   "value": {}
                 },
-                "required": [
-                  "value"
-                ]
+                "required": ["value"]
               }
             ]
           }
         }
       },
-      "required": [
-        "message"
-      ]
+      "required": ["message"]
     }
   ]
 }
@@ -360,10 +344,8 @@ The `src/` folder contains subfolders for named schematics in the collection, an
 Each schematic is created with a name, description, and factory function.
 
 ```json
-
 {
-  "$schema":
-     "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
     "hello-world": {
       "description": "A blank schematic.",
@@ -371,7 +353,6 @@ Each schematic is created with a name, description, and factory function.
     }
   }
 }
-
 ```
 
 - The `$schema` property specifies the schema that the CLI uses for validation.

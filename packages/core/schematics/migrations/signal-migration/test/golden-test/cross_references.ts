@@ -3,9 +3,7 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-  template: `
-    {{label}}
-  `,
+  template: ` {{ label }} `,
 })
 class Group {
   @Input() label!: string;
@@ -14,10 +12,10 @@ class Group {
 @Component({
   template: `
     @if (true) {
-      {{group.label}}
+      {{ group.label }}
     }
 
-    {{group.label}}
+    {{ group.label }}
   `,
 })
 class Option {

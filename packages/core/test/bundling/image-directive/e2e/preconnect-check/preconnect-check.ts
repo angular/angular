@@ -13,9 +13,9 @@ import {Component, Inject} from '../../../../../src/core';
   selector: 'preconnect-check',
   imports: [NgOptimizedImage],
   template: `
-    <img ngSrc="/e2e/a.png" width="50" height="50" priority>
-    <img ngSrc="/e2e/b.png" width="50" height="50" priority>
-    <img ngSrc="/e2e/c.png" width="50" height="50">
+    <img ngSrc="/e2e/a.png" width="50" height="50" priority />
+    <img ngSrc="/e2e/b.png" width="50" height="50" priority />
+    <img ngSrc="/e2e/c.png" width="50" height="50" />
   `,
   providers: [
     {

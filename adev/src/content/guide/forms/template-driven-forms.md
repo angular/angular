@@ -197,8 +197,7 @@ To see how the classes are added and removed by the framework, open the browser'
 1. When you first bring it up, the classes indicate that it has a valid value, that the value has not been changed since initialization or reset, and that the control has not been visited since initialization or reset.
 
    ```html
-
-   <input class="form-control ng-untouched ng-pristine ng-valid">;
+   <input class="form-control ng-untouched ng-pristine ng-valid" />;
    ```
 
 1. Take the following actions on the **Name** `<input>` box, and observe which classes appear.

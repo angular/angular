@@ -88,7 +88,7 @@ describe('template-driven forms integration tests', () => {
       // https://github.com/angular/angular/issues/33695
       @Component({
         selector: 'app-root',
-        template: `<input type="radio" value="one" [(ngModel)]="active"/>`,
+        template: `<input type="radio" value="one" [(ngModel)]="active" />`,
         standalone: false,
       })
       class AppComponent {
@@ -351,12 +351,12 @@ describe('template-driven forms integration tests', () => {
     it('should keep track of the ngModel value when together used with an ngFor inside a form', fakeAsync(() => {
       @Component({
         template: `
-              <form>
-                <div *ngFor="let item of items; index as i">
-                  <input [(ngModel)]="item.value" name="name-{{i}}">
-                </div>
-              </form>
-            `,
+          <form>
+            <div *ngFor="let item of items; index as i">
+              <input [(ngModel)]="item.value" name="name-{{ i }}" />
+            </div>
+          </form>
+        `,
         standalone: false,
       })
       class App {
@@ -406,14 +406,14 @@ describe('template-driven forms integration tests', () => {
     it('should keep track of the ngModel value when together used with an ngFor inside an ngModelGroup', fakeAsync(() => {
       @Component({
         template: `
-              <form>
-                <ng-container ngModelGroup="group">
-                  <div *ngFor="let item of items; index as i">
-                    <input [(ngModel)]="item.value" name="name-{{i}}">
-                  </div>
-                </ng-container>
-              </form>
-            `,
+          <form>
+            <ng-container ngModelGroup="group">
+              <div *ngFor="let item of items; index as i">
+                <input [(ngModel)]="item.value" name="name-{{ i }}" />
+              </div>
+            </ng-container>
+          </form>
+        `,
         standalone: false,
       })
       class App {
@@ -2089,10 +2089,10 @@ describe('template-driven forms integration tests', () => {
 
       @Component({
         template: `
-              <!-- no min/max validators should be matched on these elements -->
-              <my-custom-component name="min" ngModel [min]="min"></my-custom-component>
-              <my-custom-component name="max" ngModel [max]="max"></my-custom-component>
-            `,
+          <!-- no min/max validators should be matched on these elements -->
+          <my-custom-component name="min" ngModel [min]="min"></my-custom-component>
+          <my-custom-component name="max" ngModel [max]="max"></my-custom-component>
+        `,
         standalone: false,
       })
       class AppComponent {}
@@ -2574,12 +2574,17 @@ describe('template-driven forms integration tests', () => {
       @Component({
         selector: 'ng-model-noop-validation',
         template: `
-              <form>
-                <div ngModelGroup="emptyGroup" ng-noop-validator ng-noop-async-validator [validatorInput]="validatorInput">
-                  <input name="fgInput" ngModel>
-                </div>
-              </form>
-            `,
+          <form>
+            <div
+              ngModelGroup="emptyGroup"
+              ng-noop-validator
+              ng-noop-async-validator
+              [validatorInput]="validatorInput"
+            >
+              <input name="fgInput" ngModel />
+            </div>
+          </form>
+        `,
         standalone: false,
       })
       class NgModelNoOpValidation {
@@ -2730,9 +2735,7 @@ describe('template-driven forms integration tests', () => {
 
 @Component({
   selector: 'standalone-ng-model',
-  template: `
-    <input type="text" [(ngModel)]="name">
-  `,
+  template: ` <input type="text" [(ngModel)]="name" /> `,
   standalone: false,
 })
 class StandaloneNgModel {
@@ -2742,8 +2745,8 @@ class StandaloneNgModel {
 @Component({
   selector: 'ng-model-form',
   template: `
-    <form (ngSubmit)="event=$event" (reset)="onReset()">
-      <input name="name" [(ngModel)]="name" minlength="10" [ngModelOptions]="options">
+    <form (ngSubmit)="event = $event" (reset)="onReset()">
+      <input name="name" [(ngModel)]="name" minlength="10" [ngModelOptions]="options" />
     </form>
   `,
   standalone: false,
@@ -2768,10 +2771,10 @@ class NgModelNativeValidateForm {}
   template: `
     <form>
       <div ngModelGroup="name">
-        <input name="first" [(ngModel)]="first" required [disabled]="isDisabled">
-        <input name="last" [(ngModel)]="last">
+        <input name="first" [(ngModel)]="first" required [disabled]="isDisabled" />
+        <input name="last" [(ngModel)]="last" />
       </div>
-      <input name="email" [(ngModel)]="email" [ngModelOptions]="options">
+      <input name="email" [(ngModel)]="email" [ngModelOptions]="options" />
     </form>
   `,
   standalone: false,
@@ -2789,7 +2792,7 @@ class NgModelGroupForm {
   template: `
     <form>
       <div ngModelGroup="name" #group="ngModelGroup">
-        <input name="first" [(ngModel)]="first" required>
+        <input name="first" [(ngModel)]="first" required />
         {{ group.valid }}
       </div>
     </form>
@@ -2805,9 +2808,9 @@ class NgModelValidBinding {
   template: `
     <form>
       <div ngModelGroup="name" *ngIf="groupShowing">
-        <input name="first" [(ngModel)]="first">
+        <input name="first" [(ngModel)]="first" />
       </div>
-      <input name="email" [(ngModel)]="email" *ngIf="emailShowing">
+      <input name="email" [(ngModel)]="email" *ngIf="emailShowing" />
     </form>
   `,
   standalone: false,
@@ -2824,9 +2827,9 @@ class NgModelNgIfForm {
   template: `
     <form>
       <div ngModelGroup="contact-info">
-        <input name="first" [(ngModel)]="first">
+        <input name="first" [(ngModel)]="first" />
         <div ngModelGroup="other-names">
-          <input name="other-names" [(ngModel)]="other">
+          <input name="other-names" [(ngModel)]="other" />
         </div>
       </div>
     </form>
@@ -2842,7 +2845,7 @@ class NgModelNestedForm {
   selector: 'ng-no-form',
   template: `
     <form ngNoForm>
-      <input name="name">
+      <input name="name" />
     </form>
   `,
   standalone: false,
@@ -2853,7 +2856,7 @@ class NgNoFormComp {}
   selector: 'invalid-ng-model-noname',
   template: `
     <form>
-      <input [(ngModel)]="name">
+      <input [(ngModel)]="name" />
     </form>
   `,
   standalone: false,
@@ -2864,8 +2867,8 @@ class InvalidNgModelNoName {}
   selector: 'ng-model-options-standalone',
   template: `
     <form [ngFormOptions]="formOptions">
-      <input name="one" [(ngModel)]="one">
-      <input [(ngModel)]="two" [ngModelOptions]="options">
+      <input name="one" [(ngModel)]="one" />
+      <input [(ngModel)]="two" [ngModelOptions]="options" />
     </form>
   `,
   standalone: false,
@@ -2881,10 +2884,10 @@ class NgModelOptionsStandalone {
   selector: 'ng-model-validation-bindings',
   template: `
     <form>
-      <input name="required" ngModel  [required]="required">
-      <input name="minlength" ngModel  [minlength]="minLen">
-      <input name="maxlength" ngModel [maxlength]="maxLen">
-      <input name="pattern" ngModel  [pattern]="pattern">
+      <input name="required" ngModel [required]="required" />
+      <input name="minlength" ngModel [minlength]="minLen" />
+      <input name="maxlength" ngModel [maxlength]="maxLen" />
+      <input name="pattern" ngModel [pattern]="pattern" />
     </form>
   `,
   standalone: false,
@@ -2900,7 +2903,13 @@ class NgModelValidationBindings {
   selector: 'ng-model-multiple-validators',
   template: `
     <form>
-      <input name="tovalidate" ngModel  [required]="required" [minlength]="minLen" [pattern]="pattern">
+      <input
+        name="tovalidate"
+        ngModel
+        [required]="required"
+        [minlength]="minLen"
+        [pattern]="pattern"
+      />
     </form>
   `,
   standalone: false,
@@ -2913,7 +2922,9 @@ class NgModelMultipleValidators {
 
 @Component({
   selector: 'ng-model-checkbox-validator',
-  template: `<form><input type="checkbox" [(ngModel)]="accepted" [required]="required" name="checkbox"></form>`,
+  template: `<form>
+    <input type="checkbox" [(ngModel)]="accepted" [required]="required" name="checkbox" />
+  </form>`,
   standalone: false,
 })
 class NgModelCheckboxRequiredValidator {
@@ -2923,7 +2934,7 @@ class NgModelCheckboxRequiredValidator {
 
 @Component({
   selector: 'ng-model-email',
-  template: `<form><input type="email" ngModel [email]="validatorEnabled" name="email"></form>`,
+  template: `<form><input type="email" ngModel [email]="validatorEnabled" name="email" /></form>`,
   standalone: false,
 })
 class NgModelEmailValidator {
@@ -2945,7 +2956,7 @@ class NgAsyncValidator implements AsyncValidator {
 
 @Component({
   selector: 'ng-model-async-validation',
-  template: `<input name="async" ngModel ng-async-validator>`,
+  template: `<input name="async" ngModel ng-async-validator />`,
   standalone: false,
 })
 class NgModelAsyncValidation {}
@@ -2954,8 +2965,7 @@ class NgModelAsyncValidation {}
   selector: 'ng-model-changes-form',
   template: `
     <form>
-      <input name="async" [ngModel]="name" (ngModelChange)="log()"
-             [ngModelOptions]="options">
+      <input name="async" [ngModel]="name" (ngModelChange)="log()" [ngModelOptions]="options" />
     </form>
   `,
   standalone: false,
@@ -2973,8 +2983,7 @@ class NgModelChangesForm {
 @Component({
   selector: 'ng-model-change-state',
   template: `
-    <input #ngModel="ngModel" ngModel [maxlength]="4"
-           (ngModelChange)="onNgModelChange(ngModel)">
+    <input #ngModel="ngModel" ngModel [maxlength]="4" (ngModelChange)="onNgModelChange(ngModel)" />
   `,
   standalone: false,
 })
@@ -2984,7 +2993,7 @@ class NgModelChangeState {
 
 @Component({
   selector: 'ng-model-max',
-  template: `<form><input name="max" type="number" ngModel [max]="max"></form>`,
+  template: `<form><input name="max" type="number" ngModel [max]="max" /></form>`,
   standalone: false,
 })
 class NgModelMaxValidator {
@@ -2993,7 +3002,7 @@ class NgModelMaxValidator {
 
 @Component({
   selector: 'ng-model-min',
-  template: `<form><input name="min" type="number" ngModel [min]="min"></form>`,
+  template: `<form><input name="min" type="number" ngModel [min]="min" /></form>`,
   standalone: false,
 })
 class NgModelMinValidator {
@@ -3002,8 +3011,7 @@ class NgModelMinValidator {
 
 @Component({
   selector: 'ng-model-min-max',
-  template: `
-    <form><input name="min_max" type="number" ngModel [min]="min" [max]="max"></form>`,
+  template: ` <form><input name="min_max" type="number" ngModel [min]="min" [max]="max" /></form>`,
   standalone: false,
 })
 class NgModelMinMaxValidator {
@@ -3024,8 +3032,8 @@ class CustomDirective {
   selector: 'ng-model-no-min-max',
   template: `
     <form>
-      <input name="min" type="text" ngModel [min]="min" myDir>
-      <input name="max" type="text" ngModel [max]="max" myDir>
+      <input name="min" type="text" ngModel [min]="min" myDir />
+      <input name="max" type="text" ngModel [max]="max" myDir />
     </form>
   `,
   standalone: false,

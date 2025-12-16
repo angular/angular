@@ -8,7 +8,10 @@ import {HeroListEnterLeaveComponent} from './hero-list-enter-leave.component';
     <section>
       <h2>Enter/Leave</h2>
 
-      <app-hero-list-enter-leave [heroes]="heroes" (remove)="onRemove($event)"></app-hero-list-enter-leave>
+      <app-hero-list-enter-leave
+        [heroes]="heroes"
+        (remove)="onRemove($event)"
+      ></app-hero-list-enter-leave>
     </section>
   `,
   imports: [HeroListEnterLeaveComponent],

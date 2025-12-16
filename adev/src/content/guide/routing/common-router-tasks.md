@@ -22,9 +22,7 @@ To get information from a route:
 Add the `withComponentInputBinding` feature to the `provideRouter` method.
 
 ```ts
-providers: [
-  provideRouter(appRoutes, withComponentInputBinding()),
-]
+providers: [provideRouter(appRoutes, withComponentInputBinding())];
 ```
 
 </docs-step>
@@ -34,7 +32,7 @@ providers: [
 Update the component to have an `input()` property matching the name of the parameter.
 
 ```ts
-id = input.required<string>()
+id = input.required<string>();
 hero = computed(() => this.service.getHero(id()));
 ```
 
@@ -51,7 +49,7 @@ id = input.required({
   transform: (maybeUndefined: string | undefined) => maybeUndefined ?? '0',
 });
 // or
-id = input<string|undefined>();
+id = input<string | undefined>();
 internalId = linkedSignal(() => this.id() ?? getDefaultId());
 ```
 
@@ -68,9 +66,9 @@ To display a 404 page, set up a [wildcard route](guide/routing/common-router-tas
 
 ```ts
 const routes: Routes = [
-  { path: 'first-component', component: FirstComponent },
-  { path: 'second-component', component: SecondComponent },
-  { path: '**', component: PageNotFoundComponent },  // Wildcard route for a 404 page
+  {path: 'first-component', component: FirstComponent},
+  {path: 'second-component', component: SecondComponent},
+  {path: '**', component: PageNotFoundComponent}, // Wildcard route for a 404 page
 ];
 ```
 

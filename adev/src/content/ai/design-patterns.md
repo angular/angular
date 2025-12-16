@@ -27,11 +27,14 @@ storyResource = resource({
   loader: ({params}): Promise<StoryData> => {
     // The params value is the current value of the storyInput signal
     const url = this.endpoint();
-    return runFlow({ url, input: {
-      userInput: params,
-      sessionId: this.storyService.sessionId() // Read from another signal
-    }});
-  }
+    return runFlow({
+      url,
+      input: {
+        userInput: params,
+        sessionId: this.storyService.sessionId(), // Read from another signal
+      },
+    });
+  },
 });
 ```
 
@@ -56,7 +59,7 @@ storyParts = linkedSignal<string[], string[]>({
     const existingStoryParts = previous?.value || [];
     // Return a new array with the old and new parts
     return [...existingStoryParts, ...newStoryParts];
-  }
+  },
 });
 ```
 
@@ -101,23 +104,23 @@ characters = resource({
     // exposed by the Genkit client SDK
     const response = streamFlow({
       url: '/streamCharacters',
-      input: 10
+      input: 10,
     });
 
     (async () => {
       for await (const chunk of response.stream) {
         data.update((prev) => {
           if ('value' in prev) {
-            return { value: `${prev.value} ${chunk}` };
+            return {value: `${prev.value} ${chunk}`};
           } else {
-            return { error: chunk as unknown as Error };
+            return {error: chunk as unknown as Error};
           }
         });
       }
     })();
 
     return data;
-  }
+  },
 });
 ```
 
@@ -136,38 +139,39 @@ The `characters` member is updated asynchronously and can be displayed in the te
 On the server side, in `server.ts` for example, the defined endpoint sends the data to be streamed to the client. The following code uses Gemini with the Genkit framework but this technique is applicable to other APIs that support streaming responses from LLMs:
 
 ```ts
-import { startFlowServer } from '@genkit-ai/express';
-import { genkit } from "genkit/beta";
-import { googleAI, gemini20Flash } from "@genkit-ai/googleai";
+import {startFlowServer} from '@genkit-ai/express';
+import {genkit} from 'genkit/beta';
+import {googleAI, gemini20Flash} from '@genkit-ai/googleai';
 
-const ai = genkit({ plugins: [googleAI()] });
+const ai = genkit({plugins: [googleAI()]});
 
-export const streamCharacters = ai.defineFlow({
+export const streamCharacters = ai.defineFlow(
+  {
     name: 'streamCharacters',
     inputSchema: z.number(),
     outputSchema: z.string(),
     streamSchema: z.string(),
   },
-  async (count, { sendChunk }) => {
-    const { response, stream } = ai.generateStream({
-    model: gemini20Flash,
-    config: {
-      temperature: 1,
-    },
-    prompt: `Generate ${count} different RPG game characters.`,
-  });
+  async (count, {sendChunk}) => {
+    const {response, stream} = ai.generateStream({
+      model: gemini20Flash,
+      config: {
+        temperature: 1,
+      },
+      prompt: `Generate ${count} different RPG game characters.`,
+    });
 
-  (async () => {
-    for await (const chunk of stream) {
-      sendChunk(chunk.content[0].text!);
-    }
-  })();
+    (async () => {
+      for await (const chunk of stream) {
+        sendChunk(chunk.content[0].text!);
+      }
+    })();
 
-  return (await response).text;
-});
+    return (await response).text;
+  },
+);
 
 startFlowServer({
   flows: [streamCharacters],
 });
-
 ```

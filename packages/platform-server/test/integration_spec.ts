@@ -371,11 +371,10 @@ function createMyAnimationApp(standalone: boolean) {
   @Component({
     standalone,
     selector: 'app',
-    template: `
-      <div [@myAnimation]="state">
-        <svg *ngIf="true"></svg>
-        {{text}}
-      </div>`,
+    template: ` <div [@myAnimation]="state">
+      <svg *ngIf="true"></svg>
+      {{ text }}
+    </div>`,
     animations: [
       trigger('myAnimation', [
         state('void', style({'opacity': '0'})),
@@ -418,8 +417,7 @@ function createMyStylesApp(standalone: boolean) {
   @Component({
     standalone,
     selector: 'app',
-    template: `
-      <div>Works!</div>`,
+    template: ` <div>Works!</div>`,
     styles: ['div {color: blue; } :host { color: red; }'],
   })
   class MyStylesApp {}
@@ -441,8 +439,7 @@ function createMyTransferStateApp(standalone: boolean) {
   @Component({
     standalone,
     selector: 'app',
-    template: `
-      <div>Works!</div>`,
+    template: ` <div>Works!</div>`,
   })
   class MyStylesApp {
     state = coreInject(TransferState);
@@ -503,7 +500,7 @@ export class HttpInterceptorExampleModule {}
 
 @Component({
   selector: 'app',
-  template: `<img [src]="'link'">`,
+  template: `<img [src]="'link'" />`,
   standalone: false,
 })
 class ImageApp {}
@@ -1292,7 +1289,7 @@ class HiddenModule {}
           selector: 'app',
           template: `
             Works!
-            <router-outlet/>
+            <router-outlet />
           `,
         })
         class MyServerApp {}

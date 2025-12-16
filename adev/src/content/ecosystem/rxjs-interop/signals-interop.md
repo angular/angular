@@ -62,20 +62,20 @@ Some observables may emit values that are **equals** even though they differ by 
 When two emitted values are considered equal, the resulting signal **does not update**. This prevents redundant computations, DOM updates, or effects from re-running unnecessarily.
 
 ```ts
-import { Component } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { interval, map } from 'rxjs';
+import {Component} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {interval, map} from 'rxjs';
 
 @Component(/* ... */)
 export class EqualExample {
   temperature$ = interval(1000).pipe(
-    map(() => ({ temperature: Math.floor(Math.random() * 3) + 20 }) ) // 20, 21, or 22 randomly
+    map(() => ({temperature: Math.floor(Math.random() * 3) + 20})), // 20, 21, or 22 randomly
   );
 
   // Only update if the temperature changes
   temperature = toSignal(this.temperature$, {
-    initialValue: { temperature : 20  },
-    equal: (prev, curr) => prev.temperature === curr.temperature
+    initialValue: {temperature: 20},
+    equal: (prev, curr) => prev.temperature === curr.temperature,
   });
 }
 ```
@@ -91,17 +91,15 @@ If an Observable used in `toSignal` completes, the signal continues to return th
 Use the `toObservable` utility to create an `Observable` which tracks the value of a signal. The signal's value is monitored with an `effect` which emits the value to the Observable when it changes.
 
 ```ts
-import { Component, signal } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
+import {Component, signal} from '@angular/core';
+import {toObservable} from '@angular/core/rxjs-interop';
 
 @Component(/* ... */)
 export class SearchResults {
   query: Signal<string> = inject(QueryService).query;
   query$ = toObservable(this.query);
 
-  results$ = this.query$.pipe(
-    switchMap(query => this.http.get('/search?q=' + query ))
-  );
+  results$ = this.query$.pipe(switchMap((query) => this.http.get('/search?q=' + query)));
 }
 ```
 
@@ -119,7 +117,7 @@ Unlike Observables, signals never provide a synchronous notification of changes.
 
 ```ts
 const obs$ = toObservable(mySignal);
-obs$.subscribe(value => console.log(value));
+obs$.subscribe((value) => console.log(value));
 
 mySignal.set(1);
 mySignal.set(2);
@@ -146,7 +144,7 @@ export class UserProfile {
   protected userId = input<string>();
 
   private userResource = rxResource({
-    params: () => ({ userId: this.userId() }),
+    params: () => ({userId: this.userId()}),
 
     // The `stream` property expects a factory function that returns
     // a data stream as an RxJS Observable.

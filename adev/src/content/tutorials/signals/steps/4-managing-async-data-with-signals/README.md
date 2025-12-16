@@ -27,8 +27,8 @@ Add a property in the component class that creates a resource to load user data 
 userId = signal(1);
 
 userResource = resource({
-  params: () => ({ id: this.userId() }),
-  loader: (params) => loadUser(params.params.id)
+  params: () => ({id: this.userId()}),
+  loader: (params) => loadUser(params.params.id),
 });
 ```
 
