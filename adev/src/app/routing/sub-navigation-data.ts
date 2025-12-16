@@ -475,6 +475,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                 path: 'guide/forms/signals/comparison',
                 contentPath: 'guide/forms/signals/comparison',
               },
+              {
+                label: 'Migrating from Legacy Forms',
+                path: 'guide/forms/signals/migration',
+                contentPath: 'guide/forms/signals/migration',
+              },
             ],
           },
           {

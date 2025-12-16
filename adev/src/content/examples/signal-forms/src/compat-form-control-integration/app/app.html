@@ -1,0 +1,31 @@
+<form>
+  <div>
+    <label>
+      Email:
+      <input [field]="f.email">
+    </label>
+
+    @if (f.email().touched() && f.email().invalid()) {
+      <div class="error-list">
+        <p>Email is required.</p>
+      </div>
+    }
+  </div>
+
+  <div>
+    <label>
+      Password:
+      <input [field]="f.password" type="password">
+    </label>
+
+    @if (f.password().touched() && f.password().invalid(); as invalid) {
+      <div class="error-list">
+        @for (error of f.password().errors(); track error) {
+          <p>{{ error.message || error.kind }}</p>
+        }
+      </div>
+    }
+  </div>
+  <h3>Value</h3>
+  <pre>{{ formValue() | json }}</pre>
+</form>
