@@ -21,7 +21,7 @@ describe('min validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age().errors()).toEqual([minError(5, {field: f.age})]);
+    expect(f.age().errors()).toEqual([minError(5, {fieldTree: f.age})]);
   });
 
   it('is inclusive', () => {
@@ -69,7 +69,7 @@ describe('min validator', () => {
         customError({
           kind: 'special-min',
           message: '3',
-          field: f.age,
+          fieldTree: f.age,
         }),
       ]);
     });
@@ -95,7 +95,7 @@ describe('min validator', () => {
         customError({
           kind: 'special-min',
           message: '3',
-          field: f.age,
+          fieldTree: f.age,
         }),
       ]);
     });
@@ -115,7 +115,7 @@ describe('min validator', () => {
       expect(f.age().errors()).toEqual([
         minError(5, {
           message: 'min error!!',
-          field: f.age,
+          fieldTree: f.age,
         }),
       ]);
     });
@@ -137,7 +137,7 @@ describe('min validator', () => {
       );
 
       expect(f.age().errors()).toEqual([
-        customError({kind: 'special-min', message: '3', field: f.age}),
+        customError({kind: 'special-min', message: '3', fieldTree: f.age}),
       ]);
       f.name().value.set('disabled');
       expect(f.age().errors()).toEqual([]);
@@ -198,9 +198,12 @@ describe('min validator', () => {
       );
 
       f.age().value.set(3);
-      expect(f.age().errors()).toEqual([minError(5, {field: f.age}), minError(10, {field: f.age})]);
+      expect(f.age().errors()).toEqual([
+        minError(5, {fieldTree: f.age}),
+        minError(10, {fieldTree: f.age}),
+      ]);
       f.age().value.set(7);
-      expect(f.age().errors()).toEqual([minError(10, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(10, {fieldTree: f.age})]);
       f.age().value.set(15);
       expect(f.age().errors()).toEqual([]);
 
@@ -220,13 +223,16 @@ describe('min validator', () => {
       );
 
       f.age().value.set(3);
-      expect(f.age().errors()).toEqual([minError(5, {field: f.age}), minError(10, {field: f.age})]);
+      expect(f.age().errors()).toEqual([
+        minError(5, {fieldTree: f.age}),
+        minError(10, {fieldTree: f.age}),
+      ]);
       f.age().value.set(7);
-      expect(f.age().errors()).toEqual([minError(10, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(10, {fieldTree: f.age})]);
       f.age().value.set(15);
       expect(f.age().errors()).toEqual([]);
       minSignal.set(30);
-      expect(f.age().errors()).toEqual([minError(30, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(30, {fieldTree: f.age})]);
       expect(f.age().min?.()).toBe(30);
     });
 
@@ -244,11 +250,11 @@ describe('min validator', () => {
       );
 
       expect(f.age().errors()).toEqual([
-        minError(15, {field: f.age}),
-        minError(10, {field: f.age}),
+        minError(15, {fieldTree: f.age}),
+        minError(10, {fieldTree: f.age}),
       ]);
       minSignal.set(undefined);
-      expect(f.age().errors()).toEqual([minError(10, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(10, {fieldTree: f.age})]);
       minSignal2.set(undefined);
       expect(f.age().errors()).toEqual([]);
     });
@@ -266,11 +272,11 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([minError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(5, {fieldTree: f.age})]);
       minValue.set(undefined);
       expect(f.age().errors()).toEqual([]);
       minValue.set(5);
-      expect(f.age().errors()).toEqual([minError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(5, {fieldTree: f.age})]);
     });
 
     it('handles dynamic value', () => {
@@ -284,7 +290,7 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([minError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(5, {fieldTree: f.age})]);
       minValue.set(2);
       expect(f.age().errors()).toEqual([]);
     });
@@ -302,7 +308,7 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([minError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(5, {fieldTree: f.age})]);
       f.name().value.set('other cat');
       expect(f.age().errors()).toEqual([]);
     });

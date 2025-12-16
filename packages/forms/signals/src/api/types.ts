@@ -75,7 +75,7 @@ export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
  */
 export interface DisabledReason {
   /** The field that is disabled. */
-  readonly field: FieldTree<unknown>;
+  readonly fieldTree: FieldTree<unknown>;
   /** A user-facing message describing the reason for the disablement. */
   readonly message?: string;
 }
@@ -606,7 +606,7 @@ export interface RootFieldContext<TValue> {
   /** The state of the current field. */
   readonly state: FieldState<TValue>;
   /** The current field. */
-  readonly field: FieldTree<TValue>;
+  readonly fieldTree: FieldTree<TValue>;
 
   /** Gets the value of the field represented by the given path. */
   valueOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): PValue;

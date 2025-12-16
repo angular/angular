@@ -51,7 +51,7 @@ import {
 
 @Component({
   selector: 'string-control',
-  template: `<input [field]="field()"/>`,
+  template: `<input [field]="field()" />`,
   imports: [Field],
 })
 class TestStringControl {
@@ -64,7 +64,7 @@ describe('field directive', () => {
     it('should bind new field to control when changed', () => {
       @Component({
         imports: [Field],
-        template: `<input [field]="field()">`,
+        template: `<input [field]="field()" />`,
       })
       class TestCmp {
         readonly model = signal({x: 'a', y: 'b'});
@@ -84,7 +84,7 @@ describe('field directive', () => {
     it('should update new field when change value changes', () => {
       @Component({
         imports: [Field],
-        template: `<input [field]="field()">`,
+        template: `<input [field]="field()" />`,
       })
       class TestCmp {
         readonly model = signal({x: 'a', y: 'b'});
@@ -112,7 +112,7 @@ describe('field directive', () => {
       it('should bind to native control', () => {
         @Component({
           imports: [Field],
-          template: `<input [field]="f">`,
+          template: `<input [field]="f" />`,
         })
         class TestCmp {
           readonly disabled = signal(false);
@@ -186,7 +186,7 @@ describe('field directive', () => {
       it('should be reset when field changes on native control', () => {
         @Component({
           imports: [Field],
-          template: `<input [field]="field()">`,
+          template: `<input [field]="field()" />`,
         })
         class TestCmp {
           readonly f = form(signal({x: 'a', y: 'b'}), (p) => {
@@ -238,8 +238,8 @@ describe('field directive', () => {
           imports: [Field],
           template: `
             @for (item of f; track item) {
-              <input #control [field]="item">
-              <span>{{item().value()}}</span>
+              <input #control [field]="item" />
+              <span>{{ item().value() }}</span>
             }
           `,
         })
@@ -257,7 +257,7 @@ describe('field directive', () => {
       });
 
       it('should bind to custom control', () => {
-        @Component({selector: 'custom-control', template: `{{value()}}`})
+        @Component({selector: 'custom-control', template: `{{ value() }}`})
         class CustomControl implements FormValueControl<string> {
           readonly value = model('');
           readonly name = input('');
@@ -314,7 +314,7 @@ describe('field directive', () => {
       it('should bind to native control', () => {
         @Component({
           imports: [Field],
-          template: `<input [field]="f">`,
+          template: `<input [field]="f" />`,
         })
         class TestCmp {
           readonly readonly = signal(true);
@@ -387,7 +387,7 @@ describe('field directive', () => {
       it('should be reset when field changes on native control', () => {
         @Component({
           imports: [Field],
-          template: `<input [field]="field()">`,
+          template: `<input [field]="field()" />`,
         })
         class TestCmp {
           readonly f = form(signal({x: 'a', y: 'b'}), (p) => {
@@ -437,7 +437,7 @@ describe('field directive', () => {
       it('should bind to native control', () => {
         @Component({
           imports: [Field],
-          template: `<input [field]="f">`,
+          template: `<input [field]="f" />`,
         })
         class TestCmp {
           readonly required = signal(false);
@@ -510,7 +510,7 @@ describe('field directive', () => {
       it('should be reset when field changes on native control', () => {
         @Component({
           imports: [Field],
-          template: `<input [field]="field()">`,
+          template: `<input [field]="field()" />`,
         })
         class TestCmp {
           readonly f = form(signal({x: 'a', y: 'b'}), (p) => {
@@ -560,7 +560,7 @@ describe('field directive', () => {
       it('should bind to native control', () => {
         @Component({
           imports: [Field],
-          template: `<input type="number" [field]="f">`,
+          template: `<input type="number" [field]="f" />`,
         })
         class TestCmp {
           readonly max = signal(10);
@@ -633,7 +633,7 @@ describe('field directive', () => {
       it('should be reset when field changes on native control', () => {
         @Component({
           imports: [Field],
-          template: `<input type="number" [field]="field()">`,
+          template: `<input type="number" [field]="field()" />`,
         })
         class TestCmp {
           readonly f = form(signal({x: 1, y: 2}), (p) => {
@@ -683,7 +683,7 @@ describe('field directive', () => {
       it('should bind to native control', () => {
         @Component({
           imports: [Field],
-          template: `<input type="number" [field]="f">`,
+          template: `<input type="number" [field]="f" />`,
         })
         class TestCmp {
           readonly min = signal(10);
@@ -756,7 +756,7 @@ describe('field directive', () => {
       it('should be reset when field changes on native control', () => {
         @Component({
           imports: [Field],
-          template: `<input type="number" [field]="field()">`,
+          template: `<input type="number" [field]="field()" />`,
         })
         class TestCmp {
           readonly f = form(signal({x: 1, y: 2}), (p) => {
@@ -1277,9 +1277,7 @@ describe('field directive', () => {
   it('synchronizes with a value control', () => {
     @Component({
       imports: [Field],
-      template: `
-        <input [field]="f">
-      `,
+      template: ` <input [field]="f" /> `,
     })
     class TestCmp {
       f = form(signal('test'));
@@ -1307,7 +1305,7 @@ describe('field directive', () => {
   it('synchronizes with a checkbox control', () => {
     @Component({
       imports: [Field],
-      template: `<input type="checkbox" [field]="f">`,
+      template: `<input type="checkbox" [field]="f" />`,
     })
     class TestCmp {
       f = form(signal(false));
@@ -1583,8 +1581,8 @@ describe('field directive', () => {
       template: `
         @if (!f().hidden()) {
           <select #select [field]="f">
-            @for(opt of options; track opt) {
-              <option [value]="opt">{{opt}}</option>
+            @for (opt of options; track opt) {
+              <option [value]="opt">{{ opt }}</option>
             }
           </select>
         }
@@ -1614,8 +1612,8 @@ describe('field directive', () => {
       template: `
         @if (!f().hidden()) {
           <select #select [field]="f">
-            @for(opt of options; track opt) {
-              <option>{{opt}}</option>
+            @for (opt of options; track opt) {
+              <option>{{ opt }}</option>
             }
           </select>
         }
@@ -1644,8 +1642,8 @@ describe('field directive', () => {
       imports: [Field],
       template: `
         <select #select [field]="f">
-          @for(opt of options(); track opt) {
-            <option>{{opt}}</option>
+          @for (opt of options(); track opt) {
+            <option>{{ opt }}</option>
           }
         </select>
       `,
@@ -1838,9 +1836,7 @@ describe('field directive', () => {
     }
 
     @Component({
-      template: `
-        <my-input [field]="f" />
-      `,
+      template: ` <my-input [field]="f" /> `,
       imports: [CustomInput, Field],
     })
     class ReadonlyTestCmp {
@@ -1854,7 +1850,7 @@ describe('field directive', () => {
     const comp = act(() => TestBed.createComponent(ReadonlyTestCmp)).componentInstance;
 
     expect(comp.myInput().disabledReasons()).toEqual([
-      {message: 'Currently unavailable', field: comp.f},
+      {message: 'Currently unavailable', fieldTree: comp.f},
     ]);
   });
 
@@ -1869,9 +1865,7 @@ describe('field directive', () => {
     }
 
     @Component({
-      template: `
-        <my-input [field]="f" />
-      `,
+      template: ` <my-input [field]="f" /> `,
       imports: [CustomInput, Field],
     })
     class ReadonlyTestCmp {
@@ -1899,9 +1893,7 @@ describe('field directive', () => {
     }
 
     @Component({
-      template: `
-        <my-input [field]="f" />
-      `,
+      template: ` <my-input [field]="f" /> `,
       imports: [CustomInput, Field],
     })
     class HiddenTestCmp {
@@ -1929,9 +1921,7 @@ describe('field directive', () => {
     }
 
     @Component({
-      template: `
-        <my-input [field]="f" />
-      `,
+      template: ` <my-input [field]="f" /> `,
       imports: [CustomInput, Field],
     })
     class DirtyTestCmp {
@@ -1959,9 +1949,7 @@ describe('field directive', () => {
     }
 
     @Component({
-      template: `
-        <my-input [field]="f" />
-      `,
+      template: ` <my-input [field]="f" /> `,
       imports: [CustomInput, Field],
     })
     class PendingTestCmp {
@@ -1994,7 +1982,7 @@ describe('field directive', () => {
   it(`should mark field as touched on native control 'blur' event`, () => {
     @Component({
       imports: [Field],
-      template: `<input [field]="f">`,
+      template: `<input [field]="f" />`,
     })
     class TestCmp {
       f = form(signal(''));
@@ -2060,10 +2048,10 @@ describe('field directive', () => {
       template: `
         <input #i [value]="value()" (input)="value.set(i.value)" />
         @for (reason of disabledReasons(); track $index) {
-          <p class="disabled-reason">{{reason.message}}</p>
+          <p class="disabled-reason">{{ reason.message }}</p>
         }
         @for (error of errors(); track $index) {
-          <p class="error">{{error.message}}</p>
+          <p class="error">{{ error.message }}</p>
         }
       `,
     })
@@ -2109,7 +2097,7 @@ describe('field directive', () => {
 
     @Component({
       imports: [Field, InputDirective],
-      template: `<input [field]="f">`,
+      template: `<input [field]="f" />`,
     })
     class TestCmp {
       f = form(signal('test'));
@@ -2138,7 +2126,7 @@ describe('field directive', () => {
     it('should sync string field with number type input', () => {
       @Component({
         imports: [Field],
-        template: `<input type="number" [field]="f">`,
+        template: `<input type="number" [field]="f" />`,
       })
       class TestCmp {
         f = form(signal('123'));
@@ -2166,7 +2154,7 @@ describe('field directive', () => {
     it('should sync number field with number type input', () => {
       @Component({
         imports: [Field],
-        template: `<input type="number" [field]="f">`,
+        template: `<input type="number" [field]="f" />`,
       })
       class TestCmp {
         f = form(signal(123));
@@ -2194,7 +2182,7 @@ describe('field directive', () => {
     it('should sync string field with date type input', () => {
       @Component({
         imports: [Field],
-        template: `<input type="date" [field]="f">`,
+        template: `<input type="date" [field]="f" />`,
       })
       class TestCmp {
         f = form(signal('2024-01-01'));
@@ -2222,7 +2210,7 @@ describe('field directive', () => {
     it('should sync date field with date type input', () => {
       @Component({
         imports: [Field],
-        template: `<input type="date" [field]="f">`,
+        template: `<input type="date" [field]="f" />`,
       })
       class TestCmp {
         f = form(signal(new Date('2024-01-01T12:00:00Z')));
@@ -2250,7 +2238,7 @@ describe('field directive', () => {
     it('should sync number field with date type input', () => {
       @Component({
         imports: [Field],
-        template: `<input type="date" [field]="f">`,
+        template: `<input type="date" [field]="f" />`,
       })
       class TestCmp {
         f = form(signal(new Date('2024-01-01T12:00:00Z').valueOf()));
@@ -2278,7 +2266,7 @@ describe('field directive', () => {
     it('should sync number field with datetime-local type input', () => {
       @Component({
         imports: [Field],
-        template: `<input type="datetime-local" [field]="f">`,
+        template: `<input type="datetime-local" [field]="f" />`,
       })
       class TestCmp {
         f = form(signal(new Date('2024-01-01T12:30:00Z').valueOf()));
@@ -2308,7 +2296,7 @@ describe('field directive', () => {
     it('should sync string field with color type input', () => {
       @Component({
         imports: [Field],
-        template: `<input type="color" [field]="f">`,
+        template: `<input type="color" [field]="f" />`,
       })
       class TestCmp {
         f = form(signal('#ff0000'));
@@ -2336,7 +2324,7 @@ describe('field directive', () => {
     it('should sync string field with dynamically typed input', () => {
       @Component({
         imports: [Field],
-        template: `<input [type]="type()" [field]="f">`,
+        template: `<input [type]="type()" [field]="f" />`,
       })
       class TestCmp {
         readonly passwordVisible = signal(false);
@@ -2383,7 +2371,7 @@ describe('field directive', () => {
     it('native control', () => {
       @Component({
         imports: [Field],
-        template: `<input [field]="f">`,
+        template: `<input [field]="f" />`,
       })
       class TestCmp {
         f = form(signal(''));
@@ -2454,10 +2442,10 @@ describe('field directive', () => {
       @Component({
         imports: [Field],
         template: `
-            @for (item of f; track item) {
-              <input #control [field]="item">
-            }
-          `,
+          @for (item of f; track item) {
+            <input #control [field]="item" />
+          }
+        `,
       })
       class TestCmp {
         readonly f = form(signal(['a', 'b']), {name: 'root'});
@@ -2499,10 +2487,10 @@ describe('field directive', () => {
       @Component({
         imports: [Field],
         template: `
-            @for (item of f; track item) {
-              <input #control [field]="item.x">
-            }
-          `,
+          @for (item of f; track item) {
+            <input #control [field]="item.x" />
+          }
+        `,
       })
       class TestCmp {
         readonly f = form(signal([{x: 'a'}, {x: 'b'}]), {name: 'root'});
@@ -2544,10 +2532,10 @@ describe('field directive', () => {
       @Component({
         imports: [Field],
         template: `
-            @for (item of f; track item) {
-              <input #control [field]="item[0]">
-            }
-          `,
+          @for (item of f; track item) {
+            <input #control [field]="item[0]" />
+          }
+        `,
       })
       class TestCmp {
         readonly f = form(signal([['a'], ['b']]), {name: 'root'});
@@ -2661,7 +2649,7 @@ describe('field directive', () => {
 
       @Component({
         imports: [Field],
-        template: `<input [field]="f">`,
+        template: `<input [field]="f" />`,
       })
       class TestCmp {
         readonly f = form(signal(''), (p) => {
@@ -2688,7 +2676,7 @@ describe('field directive', () => {
 
       @Component({
         imports: [Field],
-        template: `<input [field]="f">`,
+        template: `<input [field]="f" />`,
       })
       class TestCmp {
         readonly f = form(signal(''), (p) => {
@@ -2785,7 +2773,7 @@ describe('field directive', () => {
       @Component({
         imports: [Field],
         template: `
-          <input [field]="f">
+          <input [field]="f" />
           <textarea [field]="f"></textarea>
         `,
       })
@@ -2814,7 +2802,7 @@ describe('field directive', () => {
             <option value="ca">Canada</option>
           </select>
         </form>
-  `,
+      `,
     })
     class FormComponent {
       form = form(signal('us'));
@@ -2848,9 +2836,9 @@ function setupRadioGroup() {
     imports: [Field],
     template: `
       <form>
-        <input type="radio" value="a" [field]="f">
-        <input type="radio" value="b" [field]="f">
-        <input type="radio" value="c" [field]="f">
+        <input type="radio" value="a" [field]="f" />
+        <input type="radio" value="b" [field]="f" />
+        <input type="radio" value="c" [field]="f" />
       </form>
     `,
   })

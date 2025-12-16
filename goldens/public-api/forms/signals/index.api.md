@@ -99,7 +99,7 @@ export function customError<E extends Partial<ValidationError.WithField>>(obj?: 
 export class CustomValidationError implements ValidationError {
     constructor(options?: ValidationErrorOptions);
     [key: PropertyKey]: unknown;
-    readonly field: FieldTree<unknown>;
+    readonly fieldTree: FieldTree<unknown>;
     readonly kind: string;
     readonly message?: string;
 }
@@ -115,7 +115,7 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(pat
 
 // @public
 export interface DisabledReason {
-    readonly field: FieldTree<unknown>;
+    readonly fieldTree: FieldTree<unknown>;
     readonly message?: string;
 }
 
@@ -469,7 +469,7 @@ export class RequiredValidationError extends _NgValidationError {
 
 // @public
 export interface RootFieldContext<TValue> {
-    readonly field: FieldTree<TValue>;
+    readonly fieldTree: FieldTree<TValue>;
     fieldTreeOf<PModel>(p: SchemaPathTree<PModel>): FieldTree<PModel>;
     readonly pathKeys: Signal<readonly string[]>;
     readonly state: FieldState<TValue>;
@@ -582,10 +582,10 @@ export interface ValidationError {
 // @public (undocumented)
 export namespace ValidationError {
     export interface WithField extends ValidationError {
-        readonly field: FieldTree<unknown>;
+        readonly fieldTree: FieldTree<unknown>;
     }
     export interface WithOptionalField extends ValidationError {
-        readonly field?: FieldTree<unknown>;
+        readonly fieldTree?: FieldTree<unknown>;
     }
     export interface WithoutField extends ValidationError {
         readonly field?: never;
@@ -603,17 +603,17 @@ export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = Logi
 
 // @public
 export type WithField<T> = T & {
-    field: FieldTree<unknown>;
+    fieldTree: FieldTree<unknown>;
 };
 
 // @public
-export type WithOptionalField<T> = Omit<T, 'field'> & {
-    field?: FieldTree<unknown>;
+export type WithOptionalField<T> = Omit<T, 'fieldTree'> & {
+    fieldTree?: FieldTree<unknown>;
 };
 
 // @public
 export type WithoutField<T> = T & {
-    field: never;
+    fieldTree: never;
 };
 
 // (No @packageDocumentation comment for this package)

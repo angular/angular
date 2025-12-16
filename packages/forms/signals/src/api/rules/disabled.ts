@@ -38,8 +38,8 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
       result = logic(ctx as FieldContext<TValue, TPathKind>);
     }
     if (typeof result === 'string') {
-      return {field: ctx.field, message: result};
+      return {fieldTree: ctx.fieldTree, message: result};
     }
-    return result ? {field: ctx.field} : undefined;
+    return result ? {fieldTree: ctx.fieldTree} : undefined;
   });
 }
