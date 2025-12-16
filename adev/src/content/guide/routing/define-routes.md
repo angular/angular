@@ -325,7 +325,7 @@ For advanced scenarios where you need centralized control over how the document 
 `TitleStrategy` is a token you can provide to override the default title strategy used by Angular. You can supply a custom `TitleStrategy` to implement conventions such as adding an application suffix, formatting titles from breadcrumbs, or generating titles dynamically from route data.
 
 ```ts
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 import {TitleStrategy, RouterStateSnapshot} from '@angular/router';
 
