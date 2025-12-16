@@ -90,7 +90,7 @@ In the template, use standard reactive syntax by binding the underlying control:
   <docs-code header="app.html" path="adev/src/content/examples/signal-forms/src/compat-form-control-integration/app/app.html"/>
 </docs-code-multifile>
 
-## Integrating a `FormGroup` into a signal form
+### Integrating a `FormGroup` into a signal form
 
 You can also wrap an entire `FormGroup`. This is common when a reusable sub-section of a form—such as an **Address Block
 **—is still managed by legacy Reactive Forms.
@@ -182,10 +182,37 @@ template by accessing the underlying legacy controls via `.control()`:
   </fieldset>
 </form>
 ```
+
 <docs-code-multifile preview path="adev/src/content/examples/signal-forms/src/compat-form-group-integration/app/app.ts">
   <docs-code header="app.ts" path="adev/src/content/examples/signal-forms/src/compat-form-group-integration/app/app.ts"/>
   <docs-code header="app.html" path="adev/src/content/examples/signal-forms/src/compat-form-group-integration/app/app.html"/>
 </docs-code-multifile>
 
+### Accessing values
+
+While `compatForm` proxies value access on the `FormControl` level, full form value would preserve the control:
+```typescript
+const passwordControl = new FormControl('password' /** ... */);
+
+const user = signal({
+  email: '',
+  password: passwordControl, // Nest the legacy control directly
+});
+
+user.password().value() // 'password'
+user().value() // { email: '', password: FormControl}
+
+```
+
+If you need the whole form value, you'd have to build it manually:
+
+```typescript
+const formValue = computed(() => ({
+  email: f.email().value(),
+  password: f.password().value,
+})); // {email: '', password: ''}
+```
+
 ## Bottom-up migration
+
 This is coming soon.
