@@ -658,6 +658,26 @@ While async validation runs, the field's `pending()` signal returns `true`. Use 
 
 The `valid()` signal returns `false` while validation is pending, even if there are no errors yet. The `invalid()` signal only returns `true` if errors exist.
 
+## Integration with schema validation libraries
+
+Signal Forms have built-in support for libraries that conform to [Standard Schema](https://standardschema.dev/) like [Zod](https://zod.dev/) or [Valibot](https://www.validbot.com/). The integration is provided via the `validateStandardSchema` function. This allows you to use existing schemas while maintaining Signal Forms' reactive validation benefits.
+
+```ts
+import {form, validateStandardSchema} from '@angular/forms/signals';
+import * as z from 'zod';
+
+// Define your schema
+const userSchema = z.object({
+  email: z.email(),
+  password: z.string().min(8),
+});
+
+// Use with Signal Forms
+const userForm = form(signal({email: '', password: ''}), (schemaPath) => {
+  validateStandardSchema(schemaPath, userSchema);
+});
+```
+
 ## Next steps
 
 This guide covered creating and applying validation rules. Related guides explore other aspects of Signal Forms:
