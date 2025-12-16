@@ -112,6 +112,61 @@ describe('field directive', () => {
   });
 
   describe('properties', () => {
+    describe('dirty', () => {
+      it('should bind to custom control', () => {
+        @Component({
+          selector: 'custom-control',
+          template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+        })
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model.required<string>();
+          readonly dirty = input.required<boolean>();
+        }
+
+        @Component({
+          template: ` <custom-control [field]="f" /> `,
+          imports: [CustomControl, Field],
+        })
+        class TestCmp {
+          readonly data = signal('');
+          readonly f = form(this.data);
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const comp = act(() => TestBed.createComponent(TestCmp)).componentInstance;
+        expect(comp.customControl().dirty()).toBe(false);
+        act(() => comp.f().markAsDirty());
+        expect(comp.customControl().dirty()).toBe(true);
+      });
+
+      it('should be reset when field changes on custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model.required<string>();
+          readonly dirty = input.required<boolean>();
+        }
+
+        @Component({
+          imports: [Field, CustomControl],
+          template: `<custom-control [field]="field()" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal({x: '', y: ''}));
+          readonly field = signal(this.f.x);
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+
+        act(() => component.f.x().markAsDirty());
+        expect(component.customControl().dirty()).toBe(true);
+
+        act(() => component.field.set(component.f.y));
+        expect(component.customControl().dirty()).toBe(false);
+      });
+    });
+
     describe('disabled', () => {
       it('should bind to native control', () => {
         @Component({
@@ -2121,32 +2176,6 @@ describe('field directive', () => {
     expect(comp.myInput().disabledReasons()).toEqual([
       {message: 'Currently unavailable', fieldTree: comp.f},
     ]);
-  });
-
-  it('should synchronize dirty status', () => {
-    @Component({
-      selector: 'my-input',
-      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
-    })
-    class CustomInput implements FormValueControl<string> {
-      value = model('');
-      dirty = input(false);
-    }
-
-    @Component({
-      template: ` <my-input [field]="f" /> `,
-      imports: [CustomInput, Field],
-    })
-    class DirtyTestCmp {
-      myInput = viewChild.required<CustomInput>(CustomInput);
-      data = signal('');
-      f = form(this.data);
-    }
-
-    const comp = act(() => TestBed.createComponent(DirtyTestCmp)).componentInstance;
-    expect(comp.myInput().dirty()).toBe(false);
-    act(() => comp.f().markAsDirty());
-    expect(comp.myInput().dirty()).toBe(true);
   });
 
   it('should synchronize pending status', async () => {

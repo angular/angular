@@ -40,10 +40,11 @@ const formControlInputFields = [
   // Should be kept in sync with the `FormUiControl` bindings,
   // defined in `packages/forms/signals/src/api/control.ts`.
   'errors',
-  'hidden',
-  'invalid',
+  'dirty',
   'disabled',
   'disabledReasons',
+  'hidden',
+  'invalid',
   'name',
   'readonly',
   'touched',
