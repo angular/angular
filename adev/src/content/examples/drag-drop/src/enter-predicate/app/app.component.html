@@ -11,7 +11,7 @@
     [cdkDropListEnterPredicate]="noReturnPredicate"
   >
     @for (number of all; track number) {
-      <div class="example-box" [cdkDragData]="number" cdkDrag>{{number}}</div>
+      <div class="example-box" [cdkDragData]="number" cdkDrag>{{ number }}</div>
     }
   </div>
 </div>
@@ -29,7 +29,7 @@
     [cdkDropListEnterPredicate]="evenPredicate"
   >
     @for (number of even; track number) {
-      <div class="example-box" cdkDrag [cdkDragData]="number">{{number}}</div>
+      <div class="example-box" cdkDrag [cdkDragData]="number">{{ number }}</div>
     }
   </div>
 </div>

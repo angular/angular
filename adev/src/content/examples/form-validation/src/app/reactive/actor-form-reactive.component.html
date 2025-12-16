@@ -6,7 +6,9 @@
     <div [hidden]="formDir.submitted">
       <div
         class="cross-validation"
-        [class.cross-validation-error]="actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)"
+        [class.cross-validation-error]="
+          actorForm.hasError('unambiguousRole') && (actorForm.touched || actorForm.dirty)
+        "
       >
         <div class="form-group">
           <label for="name">Name</label>

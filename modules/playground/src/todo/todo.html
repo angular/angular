@@ -1,5 +1,5 @@
 <style>
-  @import "css/base.css";
+  @import 'css/base.css';
 </style>
 
 <section id="todoapp">
@@ -28,7 +28,7 @@
             [checked]="todo.completed"
           />
 
-          <label (dblclick)="editTodo(todo)">{{todo.title}}</label>
+          <label (dblclick)="editTodo(todo)">{{ todo.title }}</label>
           <button class="destroy" (click)="deleteMe(todo)"></button>
         </div>
 

@@ -25,7 +25,7 @@
           <div ngListbox [(values)]="selectedCountries">
             @for (option of options(); track option) {
               <div ngOption [value]="option" [label]="option">
-                <span>{{option}}</span>
+                <span>{{ option }}</span>
                 <span
                   class="material-symbols-outlined icon selected-icon"
                   translate="no"

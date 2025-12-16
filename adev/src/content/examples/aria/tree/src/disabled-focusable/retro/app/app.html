@@ -32,7 +32,7 @@
   </div>
 
   <div class="status-bar">
-    <div class="status-panel status-panel-grow">{{selectedCount()}} object(s) selected</div>
+    <div class="status-panel status-panel-grow">{{ selectedCount() }} object(s) selected</div>
     <div class="status-panel status-panel-right">4.5MB</div>
   </div>
 </div>
@@ -50,7 +50,7 @@
     >
       <span aria-hidden="true">
         @if (node.children) {
-          {{treeItem.expanded() ? '📂' : '📁'}}
+          {{ treeItem.expanded() ? '📂' : '📁' }}
         } @else {
           📄
         }

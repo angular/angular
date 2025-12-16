@@ -35,7 +35,9 @@
       <ng-template
         [cdkConnectedOverlayOpen]="hasInteracted()"
         [cdkConnectedOverlay]="{origin: resetItem, usePopover: 'inline'}"
-        [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: 6}]"
+        [cdkConnectedOverlayPositions]="[
+          {originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: 6},
+        ]"
         cdkAttachPopoverAsChild
       >
         <div ngMenu #updateMenu="ngMenu">
