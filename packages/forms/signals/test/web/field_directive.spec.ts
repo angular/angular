@@ -291,6 +291,67 @@ describe('field directive', () => {
       });
     });
 
+    describe('disabledReasons', () => {
+      it('should bind to custom control', () => {
+        @Component({
+          selector: 'custom-control',
+          template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+        })
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model.required<string>();
+          readonly disabledReasons = input.required<readonly WithOptionalField<DisabledReason>[]>();
+        }
+
+        @Component({
+          template: ` <custom-control [field]="f" /> `,
+          imports: [CustomControl, Field],
+        })
+        class TestCmp {
+          readonly data = signal('');
+          readonly f = form(this.data, (p) => {
+            disabled(p, () => 'Currently unavailable');
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const comp = act(() => TestBed.createComponent(TestCmp)).componentInstance;
+
+        expect(comp.customControl().disabledReasons()).toEqual([
+          {message: 'Currently unavailable', fieldTree: comp.f},
+        ]);
+      });
+
+      it('should be reset when field changes on custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model.required<string>();
+          readonly disabledReasons = input.required<readonly WithOptionalField<DisabledReason>[]>();
+        }
+
+        @Component({
+          imports: [Field, CustomControl],
+          template: `<custom-control [field]="field()" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal({x: '', y: ''}), (p) => {
+            disabled(p.x, () => 'Currently unavailable');
+          });
+          readonly field = signal(this.f.x);
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+
+        expect(component.customControl().disabledReasons()).toEqual([
+          {message: 'Currently unavailable', fieldTree: component.f.x},
+        ]);
+
+        act(() => component.field.set(component.f.y));
+        expect(component.customControl().disabledReasons()).toEqual([]);
+      });
+    });
+
     describe('hidden', () => {
       it('should bind to a custom control', () => {
         @Component({selector: 'custom-control', template: ``})
@@ -2147,35 +2208,6 @@ describe('field directive', () => {
       const fixture = act(() => TestBed.createComponent(TestCmp));
       expect(fixture.componentInstance.f().fieldBindings()).toHaveSize(0);
     });
-  });
-
-  it('should synchronize disabled reasons', () => {
-    @Component({
-      selector: 'my-input',
-      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
-    })
-    class CustomInput implements FormValueControl<string> {
-      value = model('');
-      disabledReasons = input<readonly WithOptionalField<DisabledReason>[]>([]);
-    }
-
-    @Component({
-      template: ` <my-input [field]="f" /> `,
-      imports: [CustomInput, Field],
-    })
-    class ReadonlyTestCmp {
-      myInput = viewChild.required<CustomInput>(CustomInput);
-      data = signal('');
-      f = form(this.data, (p) => {
-        disabled(p, () => 'Currently unavailable');
-      });
-    }
-
-    const comp = act(() => TestBed.createComponent(ReadonlyTestCmp)).componentInstance;
-
-    expect(comp.myInput().disabledReasons()).toEqual([
-      {message: 'Currently unavailable', fieldTree: comp.f},
-    ]);
   });
 
   it('should synchronize pending status', async () => {
