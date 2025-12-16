@@ -5,7 +5,9 @@
 <ng-template
   [cdkConnectedOverlayOpen]="trigger.expanded()"
   [cdkConnectedOverlay]="{origin, usePopover: 'inline'}"
-  [cdkConnectedOverlayPositions]="[{originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4}]"
+  [cdkConnectedOverlayPositions]="[
+    {originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4},
+  ]"
   cdkAttachPopoverAsChild
 >
   <div ngMenu class="menu" #formatMenu="ngMenu">
@@ -43,7 +45,9 @@
       <ng-template
         [cdkConnectedOverlayOpen]="formatMenu.visible()"
         [cdkConnectedOverlay]="{origin: categorizeItem, usePopover: 'inline'}"
-        [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: 6}]"
+        [cdkConnectedOverlayPositions]="[
+          {originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: 6},
+        ]"
         cdkAttachPopoverAsChild
       >
         <div ngMenu class="menu" #categorizeMenu="ngMenu">

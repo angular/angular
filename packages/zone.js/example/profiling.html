@@ -30,14 +30,13 @@
        * For this demo, we're going to sort an array using an async
        * algorithm when a button is pressed.
        */
-      function sortAndPrintArray (unsortedArray) {
+      function sortAndPrintArray(unsortedArray) {
         profilingZoneSpec.reset();
         asyncBogosort(unsortedArray, function (sortedArray) {
           console.log(sortedArray);
           console.log('sorting took ' + profilingZoneSpec.time() + ' of CPU time');
         });
       }
-
 
       /*
        * This is a really efficient algorithm.
@@ -48,7 +47,7 @@
        *
        * This implementation is async because JavaScript
        */
-      function asyncBogosort (arr, cb) {
+      function asyncBogosort(arr, cb) {
         setTimeout(function () {
           if (isSorted(arr)) {
             cb(arr);
@@ -62,7 +61,7 @@
         }, 0);
       }
 
-      function isSorted (things) {
+      function isSorted(things) {
         for (var i = 1; i < things.length; i += 1) {
           if (things[i] < things[i - 1]) {
             return false;
@@ -71,17 +70,15 @@
         return true;
       }
 
-
       /*
        * Bind button
        */
-      function main () {
-        var unsortedArray = [3,4,1,2,7];
+      function main() {
+        var unsortedArray = [3, 4, 1, 2, 7];
         b1.addEventListener('click', function () {
           sortAndPrintArray(unsortedArray);
         });
       }
-
 
       /*
        * This zone starts a timer at the start of each taskEnv,
@@ -94,10 +91,8 @@
        */
       var profilingZoneSpec = (function () {
         var time = 0,
-            // use the high-res timer if available
-            timer = performance ?
-                        performance.now.bind(performance) :
-                        Date.now.bind(Date);
+          // use the high-res timer if available
+          timer = performance ? performance.now.bind(performance) : Date.now.bind(Date);
         return {
           onInvokeTask: function (delegate, current, target, task, applyThis, applyArgs) {
             this.start = timer();
@@ -105,14 +100,13 @@
             time += timer() - this.start;
           },
           time: function () {
-            return Math.floor(time*100) / 100 + 'ms';
+            return Math.floor(time * 100) / 100 + 'ms';
           },
           reset: function () {
             time = 0;
-          }
+          },
         };
-      }());
-
+      })();
 
       /*
        * Bootstrap the app

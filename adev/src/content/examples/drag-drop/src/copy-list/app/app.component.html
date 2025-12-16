@@ -10,7 +10,7 @@
     class="example-list"
   >
     @for (product of products; track $index) {
-      <div class="example-box" cdkDrag [cdkDragData]="product">{{product}}</div>
+      <div class="example-box" cdkDrag [cdkDragData]="product">{{ product }}</div>
     }
   </div>
 </div>
@@ -26,7 +26,7 @@
     (cdkDropListDropped)="drop($event)"
   >
     @for (product of cart; track $index) {
-      <div class="example-box" cdkDrag>{{product}}</div>
+      <div class="example-box" cdkDrag>{{ product }}</div>
     }
   </div>
 </div>

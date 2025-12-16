@@ -30,7 +30,7 @@
     <div #editor class="docs-tutorial-editor" [class.adev-split-tutorial]="shouldRenderContent()">
       @if (embeddedEditorComponent) {
         <ng-container
-          *ngComponentOutlet="embeddedEditorComponent; inputs:{restrictedMode:restrictedMode()}"
+          *ngComponentOutlet="embeddedEditorComponent; inputs: {restrictedMode: restrictedMode()}"
         />
       }
     </div>
