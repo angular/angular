@@ -1,0 +1,14 @@
+load("//devtools/tools:defaults.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "forms",
+    srcs = [
+        "forms.component.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/forms",
+    ],
+)

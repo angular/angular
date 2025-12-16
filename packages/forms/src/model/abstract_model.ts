@@ -617,8 +617,14 @@ export abstract class AbstractControl<
     untracked(() => this.statusReactive.set(v));
   }
   /** @internal */
-  readonly _status = computed(() => this.statusReactive());
-  private readonly statusReactive = signal<FormControlStatus | undefined>(undefined);
+  readonly _status = computed(
+    () => this.statusReactive(),
+    ...(ngDevMode ? [{isInternal: true} as any] : []),
+  );
+  private readonly statusReactive = signal<FormControlStatus | undefined>(
+    undefined,
+    ...(ngDevMode ? [{isInternal: true} as any] : []),
+  );
 
   /**
    * A control is `valid` when its `status` is `VALID`.
@@ -704,8 +710,14 @@ export abstract class AbstractControl<
     untracked(() => this.pristineReactive.set(v));
   }
   /** @internal */
-  readonly _pristine = computed(() => this.pristineReactive());
-  private readonly pristineReactive = signal(true);
+  readonly _pristine = computed(
+    () => this.pristineReactive(),
+    ...(ngDevMode ? [{isInternal: true} as any] : []),
+  );
+  private readonly pristineReactive = signal(
+    true,
+    ...(ngDevMode ? [{isInternal: true} as any] : []),
+  );
 
   /**
    * A control is `dirty` if the user has changed the value
@@ -731,8 +743,14 @@ export abstract class AbstractControl<
     untracked(() => this.touchedReactive.set(v));
   }
   /** @internal */
-  readonly _touched = computed(() => this.touchedReactive());
-  private readonly touchedReactive = signal(false);
+  readonly _touched = computed(
+    () => this.touchedReactive(),
+    ...(ngDevMode ? [{isInternal: true} as any] : []),
+  );
+  private readonly touchedReactive = signal(
+    false,
+    ...(ngDevMode ? [{isInternal: true} as any] : []),
+  );
 
   /**
    * True if the control has not been marked as touched

@@ -70,8 +70,14 @@ export abstract class AbstractFormDirective
     this._submittedReactive.set(value);
   }
   /** @internal */
-  readonly _submitted = computed(() => this._submittedReactive());
-  private readonly _submittedReactive = signal(false);
+  readonly _submitted = computed(
+    () => this._submittedReactive(),
+    ...(ngDevMode ? [{isInternal: true} as any] : []),
+  );
+  private readonly _submittedReactive = signal(
+    false,
+    ...(ngDevMode ? [{isInternal: true} as any] : []),
+  );
 
   /**
    * Reference to an old form group input value, which is needed to cleanup

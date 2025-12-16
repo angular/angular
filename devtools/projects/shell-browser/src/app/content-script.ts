@@ -28,8 +28,7 @@ const handleDisconnect = (): void => {
 
 function attemptBackendHandshake() {
   if (!backendInitialized) {
-    // tslint:disable-next-line:no-console
-    console.log('Attempting handshake with backend', new Date());
+    console.debug('Attempting handshake with backend', new Date());
 
     const retry = () => {
       if (backendInitialized || backgroundDisconnected) {

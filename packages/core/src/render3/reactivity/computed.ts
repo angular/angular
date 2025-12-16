@@ -23,6 +23,11 @@ export interface CreateComputedOptions<T> {
    * A debug name for the computed signal. Used in Angular DevTools to identify the signal.
    */
   debugName?: string;
+
+  /**
+   * @internal
+   */
+  isInternal?: boolean;
 }
 
 /**
@@ -35,6 +40,7 @@ export function computed<T>(computation: () => T, options?: CreateComputedOption
   if (ngDevMode) {
     getter.toString = () => `[Computed: ${getter()}]`;
     getter[SIGNAL].debugName = options?.debugName;
+    (getter[SIGNAL] as any).isInternal = options?.isInternal ?? false;
   }
 
   return getter;
