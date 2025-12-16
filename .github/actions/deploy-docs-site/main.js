@@ -26522,8 +26522,8 @@ function processAsyncCmd(command2, options, childProcess) {
     });
     childProcess.on("close", (exitCode, signal) => {
       const exitDescription = exitCode !== null ? `exit code "${exitCode}"` : `signal "${signal}"`;
-      const printFn = options.mode === "on-error" ? Log.error : Log.debug;
       const status = statusFromExitCodeAndSignal(exitCode, signal);
+      const printFn = status !== 0 && options.mode === "on-error" ? Log.error : Log.debug;
       printFn(`Command "${command2}" completed with ${exitDescription}.`);
       printFn(`Process output: 
 ${logOutput}`);
