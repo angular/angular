@@ -1,4 +1,4 @@
-import {signal, Injector, inject, Component, computed} from '@angular/core';
+import {signal, Component, computed} from '@angular/core';
 import {FormControl, Validators, AbstractControl} from '@angular/forms';
 import {Field} from '@angular/forms/signals';
 import {compatForm} from '@angular/forms/signals/compat';
@@ -34,9 +34,7 @@ export class App {
   });
 
   // 3. Create the form
-  readonly f = compatForm(this.user, {
-    injector: inject(Injector),
-  });
+  readonly f = compatForm(this.user);
 
   // We have to manually extract values, because JSON pipe can't serialize FormControl
   readonly formValue = computed(() => ({

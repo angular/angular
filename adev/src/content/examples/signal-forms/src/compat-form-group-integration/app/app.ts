@@ -1,4 +1,4 @@
-import {signal, Injector, inject, Component, computed} from '@angular/core';
+import {signal, Component, computed} from '@angular/core';
 import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import {Field} from '@angular/forms/signals';
 import {compatForm} from '@angular/forms/signals/compat';
@@ -18,10 +18,10 @@ export class App {
     zip: new FormControl('94043', Validators.required),
   });
 
-  // 2. Wrap it inside a new Signal Form state
+  // 2. Include it in the state like it's a value
   readonly checkoutModel = signal({
     customerName: '',
-    shippingAddress: this.addressGroup, // The bridge handles the nesting
+    shippingAddress: this.addressGroup,
   });
 
   // 3. Create the form
