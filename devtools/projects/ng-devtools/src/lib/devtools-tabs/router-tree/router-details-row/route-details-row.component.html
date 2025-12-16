@@ -1,5 +1,5 @@
 <!-- TODO: Reconsider the existence of this component. -->
-<th>{{label()}}</th>
+<th>{{ label() }}</th>
 <td>
   @switch (type()) {
     @case ('flag') {
@@ -13,7 +13,7 @@
           <span>{{ provider || '[empty string] ' }}</span
           ><ng-container
             [ngTemplateOutlet]="actionBtn"
-            [ngTemplateOutletContext]="{ value: provider }"
+            [ngTemplateOutletContext]="{value: provider}"
           />
         </div>
       }
@@ -29,7 +29,7 @@
             @if (!node.expandable) {
               <ng-container
                 [ngTemplateOutlet]="actionBtn"
-                [ngTemplateOutletContext]="{ value: node.prop.descriptor.preview }"
+                [ngTemplateOutletContext]="{value: node.prop.descriptor.preview}"
               />
             }
           </ng-template>
@@ -39,7 +39,7 @@
           <span> {{ rowValue() || '[empty string] ' }} </span
           ><ng-container
             [ngTemplateOutlet]="actionBtn"
-            [ngTemplateOutletContext]="{ value: rowValue() }"
+            [ngTemplateOutletContext]="{value: rowValue()}"
           />
         </div>
       }

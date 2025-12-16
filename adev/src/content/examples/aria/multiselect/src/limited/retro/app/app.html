@@ -18,7 +18,7 @@
         <div ngListbox multi>
           @for (label of labels; track label.value) {
             <div ngOption [value]="label.value" [label]="label.value" [disabled]="label.disabled()">
-              <span class="example-option-text">{{label.value}}</span>
+              <span class="example-option-text">{{ label.value }}</span>
               <span
                 class="example-option-check material-symbols-outlined"
                 translate="no"

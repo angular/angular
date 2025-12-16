@@ -1,6 +1,6 @@
 @switch (currentPropertyState()) {
   @case (readState) {
-    <span class="editable">{{ property().descriptor.preview}}</span>
+    <span class="editable">{{ property().descriptor.preview }}</span>
   }
   @case (writeState) {
     <div class="value-input">
@@ -16,7 +16,7 @@
         (blur)="onBlur()"
         placeholder="Property value"
       />
-      <span class="text-span">{{valueToSubmit()}}</span>
+      <span class="text-span">{{ valueToSubmit() }}</span>
     </div>
   }
 }

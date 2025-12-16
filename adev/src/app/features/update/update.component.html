@@ -19,7 +19,7 @@
             <ul class="adev-template-dropdown" cdkMenu>
               @for (version of versions; track $index) {
                 <li>
-                  <button cdkMenuItem type="button" (click)="from=version; showUpdatePath()">
+                  <button cdkMenuItem type="button" (click)="from = version; showUpdatePath()">
                     <span>{{ version.name }}</span>
                   </button>
                 </li>
@@ -40,7 +40,7 @@
               <ul class="adev-template-dropdown" cdkMenu>
                 @for (version of versions; track $index) {
                   <li>
-                    <button cdkMenuItem type="button" (click)="to=version; showUpdatePath()">
+                    <button cdkMenuItem type="button" (click)="to = version; showUpdatePath()">
                       <span>{{ version.name }}</span>
                     </button>
                   </li>
@@ -70,7 +70,7 @@
         </div>
       }
 
-      @if ((to.number - from.number > 150) && from.number > 240) {
+      @if (to.number - from.number > 150 && from.number > 240) {
         <div class="docs-alert docs-alert-critical">
           <p>
             <strong>Warning:</strong>
@@ -86,7 +86,7 @@
       <mat-button-toggle-group
         (change)="level = $event.value; showUpdatePath()"
         [value]="level"
-        style="margin-bottom:16px;"
+        style="margin-bottom: 16px"
       >
         <mat-button-toggle [value]="1">Basic</mat-button-toggle>
         <mat-button-toggle [value]="2">Medium</mat-button-toggle>
@@ -106,7 +106,7 @@
           <mat-checkbox
             (change)="options[option.id] = $event.checked; showUpdatePath()"
             [checked]="options[option.id]"
-            >I use {{option.name}} {{option.description}}</mat-checkbox
+            >I use {{ option.name }} {{ option.description }}</mat-checkbox
           >
         </div>
       }
@@ -137,19 +137,21 @@
   <!-- RECOMMENDATIONS SECTION -->
 
   @if (
-    beforeRecommendations.length > 0 || duringRecommendations.length > 0 || afterRecommendations.length > 0
+    beforeRecommendations.length > 0 ||
+    duringRecommendations.length > 0 ||
+    afterRecommendations.length > 0
   ) {
     <div class="recommendations">
-      <h2>{{title()}}</h2>
+      <h2>{{ title() }}</h2>
 
       <h3>Before you update</h3>
-      @for (r  of beforeRecommendations; track $index) {
+      @for (r of beforeRecommendations; track $index) {
         <div class="adev-recommendation-item">
           <mat-checkbox />
           <div class="adev-recommendation-content">
             <div [innerHTML]="r.renderedStep"></div>
             <span class="adev-complexity-badge" [class]="'adev-complexity-' + r.level">
-              {{getComplexityLevelName(r.level)}}
+              {{ getComplexityLevelName(r.level) }}
             </span>
           </div>
         </div>
@@ -173,7 +175,7 @@
           <div class="adev-recommendation-content">
             <div [innerHTML]="r.renderedStep"></div>
             <span class="adev-complexity-badge" [class]="'adev-complexity-' + r.level">
-              {{getComplexityLevelName(r.level)}}
+              {{ getComplexityLevelName(r.level) }}
             </span>
           </div>
         </div>
@@ -191,7 +193,7 @@
           <div class="adev-recommendation-content">
             <div [innerHTML]="r.renderedStep"></div>
             <span class="adev-complexity-badge" [class]="'adev-complexity-' + r.level">
-              {{getComplexityLevelName(r.level)}}
+              {{ getComplexityLevelName(r.level) }}
             </span>
           </div>
         </div>

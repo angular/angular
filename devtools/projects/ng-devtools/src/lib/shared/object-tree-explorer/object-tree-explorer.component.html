@@ -21,13 +21,13 @@
         <ng-property-editor
           class="value"
           [property]="node.prop"
-          (updateValue)="propValueUpdate.emit({ node, newValue: $event })"
+          (updateValue)="propValueUpdate.emit({node, newValue: $event})"
         />
       }
       @if (contentTemplateRef(); as contentTemplateRef) {
         <ng-container
           [ngTemplateOutlet]="contentTemplateRef"
-          [ngTemplateOutletContext]="{ $implicit: node }"
+          [ngTemplateOutletContext]="{$implicit: node}"
         />
       }
     </div>
@@ -50,7 +50,7 @@
       @if (contentTemplateRef(); as contentTemplateRef) {
         <ng-container
           [ngTemplateOutlet]="contentTemplateRef"
-          [ngTemplateOutletContext]="{ $implicit: node }"
+          [ngTemplateOutletContext]="{$implicit: node}"
         />
       }
     </button>

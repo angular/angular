@@ -7,7 +7,7 @@
       @let groupLabel = itemGroup[0];
       @let items = itemGroup[1];
       @if (groupLabel) {
-        <li class="docs-navigation-group">{{groupLabel | titlecase}}</li>
+        <li class="docs-navigation-group">{{ groupLabel | titlecase }}</li>
       }
       @for (item of items; track $index) {
         <li class="docs-faceted-list-item">
@@ -39,7 +39,12 @@
               <a
                 [routerLink]="'/' + item.path"
                 routerLinkActive="docs-faceted-list-item-active"
-                [routerLinkActiveOptions]="{ paths: 'exact', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' }"
+                [routerLinkActiveOptions]="{
+                  paths: 'exact',
+                  queryParams: 'ignored',
+                  matrixParams: 'ignored',
+                  fragment: 'ignored',
+                }"
                 (click)="emitClickOnLink()"
                 [matTooltip]="item.label"
                 [matTooltipDisabled]="itemLabel.length < 27"
@@ -48,7 +53,7 @@
                 [matTooltipClass]="'API-tooltip'"
               >
                 <span class="docs-faceted-list-item-text">
-                  {{item.label}}
+                  {{ item.label }}
                   <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
                 </span>
 
@@ -69,7 +74,7 @@
                 [matTooltipClass]="'API-tooltip'"
               >
                 <span class="docs-faceted-list-item-text">
-                  {{item.label}}
+                  {{ item.label }}
                   <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
                 </span>
               </div>
@@ -77,7 +82,8 @@
 
             <!-- Nav Button Expand/Collapse -->
             @if (
-              (item.children && item.level === expandableLevel()) || item.level === collapsableLevel()
+              (item.children && item.level === expandableLevel()) ||
+              item.level === collapsableLevel()
             ) {
               <button
                 type="button"
@@ -89,7 +95,8 @@
                 [class.docs-expanded-button]="item.children && item.level == collapsableLevel()"
                 [class.docs-not-expanded-button]="item.children && item.level === expandableLevel()"
                 [class.docs-nav-item-has-icon]="
-              item.children && item.level === expandableLevel() && !item.isExpanded"
+                  item.children && item.level === expandableLevel() && !item.isExpanded
+                "
                 [matTooltip]="item.label"
                 [matTooltipDisabled]="itemLabel.length < 27"
                 matTooltipPosition="after"
@@ -107,10 +114,16 @@
             }
           }
           @if (
-            item.level && displayItemsToLevel() > item.level && item.children && item.children.length > 0
+            item.level &&
+            displayItemsToLevel() > item.level &&
+            item.children &&
+            item.children.length > 0
           ) {
             <ng-container
-              *ngTemplateOutlet="navigationList; context: {$implicit: item.children, level: item.level}"
+              *ngTemplateOutlet="
+                navigationList;
+                context: {$implicit: item.children, level: item.level}
+              "
             />
           }
         </li>

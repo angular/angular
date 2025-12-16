@@ -25,14 +25,14 @@
 <dl>
   @if (node.label) {
     <dt>Name:</dt>
-    <dd class="node-name">{{node.label}}</dd>
+    <dd class="node-name">{{ node.label }}</dd>
   }
   <dt>Type:</dt>
   <dd>
-    <span [class]="TYPE_CLASS_MAP[node.kind]" [class.type]="true">{{node.kind}}</span>
+    <span [class]="TYPE_CLASS_MAP[node.kind]" [class.type]="true">{{ node.kind }}</span>
   </dd>
   <dt>Epoch:</dt>
-  <dd>{{node.epoch}}</dd>
+  <dd>{{ node.epoch }}</dd>
 </dl>
 
 @if (node.kind === 'signal' || node.kind === 'computed') {

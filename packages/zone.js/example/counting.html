@@ -43,11 +43,11 @@
         },
         onHasTask(parent, current, target, hasTask) {
           if (hasTask.macroTask) {
-            console.log("There are outstanding MacroTasks.");
+            console.log('There are outstanding MacroTasks.');
           } else {
-            console.log("All MacroTasks have been completed.");
+            console.log('All MacroTasks have been completed.');
           }
-        }
+        },
       });
 
       /*
@@ -59,36 +59,34 @@
         myCountingZone.run(main);
       });
 
-
       /*
        * Spawns a bunch of setTimeouts which in turn spawn more setTimeouts!
        * This is a boring way to simulate HTTP requests and other async actions.
        */
 
-      function main () {
+      function main() {
         for (var i = 0; i < 10; i++) {
           recur(i, 800);
         }
       }
 
-      function recur (x, t) {
+      function recur(x, t) {
         if (x > 0) {
           setTimeout(function () {
             for (var i = x; i < 8; i++) {
-              recur(x - 1, Math.random()*t);
+              recur(x - 1, Math.random() * t);
             }
           }, t);
         }
       }
-
 
       /*
        * There may be other async actions going on in the background.
        * Because this is not in the zone, our profiling ignores it.
        * Nice.
        */
-      function noop () {
-        setTimeout(noop, 10*Math.random());
+      function noop() {
+        setTimeout(noop, 10 * Math.random());
       }
       noop();
     </script>

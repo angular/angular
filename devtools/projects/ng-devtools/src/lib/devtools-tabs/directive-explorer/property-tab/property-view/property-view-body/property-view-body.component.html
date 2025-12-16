@@ -34,7 +34,9 @@
             >
               <ng-template let-node>
                 @if (
-                  supportedApis().signalPropertiesInspection && signalGraphEnabled() && getSignalNode(node);
+                  supportedApis().signalPropertiesInspection &&
+                    signalGraphEnabled() &&
+                    getSignalNode(node);
                   as signalNode
                 ) {
                   @let graphBtnTooltip = `Show '${node.prop.name}' signal graph`;
@@ -43,14 +45,14 @@
                     type="button"
                     [matTooltip]="graphBtnTooltip"
                     [aria-label]="graphBtnTooltip"
-                    (click)="$event.stopPropagation();showSignalGraph.emit(signalNode)"
+                    (click)="$event.stopPropagation(); showSignalGraph.emit(signalNode)"
                   >
                     <mat-icon>graph_2</mat-icon>
                   </button>
                 }
 
                 @if (node.level === 0) {
-                  @let tooltip = 'Log \'' + node.prop.name + '\' to console';
+                  @let tooltip = "Log '" + node.prop.name + "' to console";
                   <button
                     class="prop-action-btn log-value"
                     type="button"

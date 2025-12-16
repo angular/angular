@@ -197,7 +197,9 @@
                   [data]="data"
                   actionBtnTooltip="View source"
                   [actionBtnType]="hasStaticOptionRunGuardsAndResolvers() ? 'none' : 'view-source'"
-                  (actionBtnClick)="viewFunctionSource(data.runGuardsAndResolvers, 'runGuardsAndResolvers')"
+                  (actionBtnClick)="
+                    viewFunctionSource(data.runGuardsAndResolvers, 'runGuardsAndResolvers')
+                  "
                 ></tr>
               }
 
