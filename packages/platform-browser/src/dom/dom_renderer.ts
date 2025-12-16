@@ -134,7 +134,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     EmulatedEncapsulationDomRenderer2 | NoneEncapsulationDomRenderer
   >();
   private readonly defaultRenderer: Renderer2;
-  private readonly platformIsServer: boolean;
 
   constructor(
     private readonly eventManager: EventManager,
@@ -148,14 +147,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Optional()
     private readonly tracingService: TracingService<TracingSnapshot> | null = null,
   ) {
-    this.platformIsServer = typeof ngServerMode !== 'undefined' && ngServerMode;
-    this.defaultRenderer = new DefaultDomRenderer2(
-      eventManager,
-      doc,
-      ngZone,
-      this.platformIsServer,
-      this.tracingService,
-    );
+    this.defaultRenderer = new DefaultDomRenderer2(eventManager, doc, ngZone, this.tracingService);
   }
 
   createRenderer(element: any, type: RendererType2 | null): Renderer2 {
@@ -195,7 +187,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       const eventManager = this.eventManager;
       const sharedStylesHost = this.sharedStylesHost;
       const removeStylesOnCompDestroy = this.removeStylesOnCompDestroy;
-      const platformIsServer = this.platformIsServer;
       const tracingService = this.tracingService;
 
       switch (type.encapsulation) {
@@ -208,7 +199,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             removeStylesOnCompDestroy,
             doc,
             ngZone,
-            platformIsServer,
             tracingService,
           );
           break;
@@ -220,7 +210,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             doc,
             ngZone,
             this.nonce,
-            platformIsServer,
             tracingService,
             sharedStylesHost,
           );
@@ -232,7 +221,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             doc,
             ngZone,
             this.nonce,
-            platformIsServer,
             tracingService,
           );
 
@@ -244,7 +232,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             removeStylesOnCompDestroy,
             doc,
             ngZone,
-            platformIsServer,
             tracingService,
           );
           break;
@@ -282,7 +269,6 @@ class DefaultDomRenderer2 implements Renderer2 {
     private readonly eventManager: EventManager,
     private readonly doc: Document,
     protected readonly ngZone: NgZone,
-    private readonly platformIsServer: boolean,
     private readonly tracingService: TracingService<TracingSnapshot> | null,
   ) {}
 
@@ -514,11 +500,10 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     doc: Document,
     ngZone: NgZone,
     nonce: string | null,
-    platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
     private sharedStylesHost?: SharedStylesHost,
   ) {
-    super(eventManager, doc, ngZone, platformIsServer, tracingService);
+    super(eventManager, doc, ngZone, tracingService);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
     // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
@@ -602,11 +587,10 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     private removeStylesOnCompDestroy: boolean,
     doc: Document,
     ngZone: NgZone,
-    platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
     compId?: string,
   ) {
-    super(eventManager, doc, ngZone, platformIsServer, tracingService);
+    super(eventManager, doc, ngZone, tracingService);
     let styles = component.styles;
     if (ngDevMode) {
       // We only do this in development, as for production users should not add CSS sourcemaps to components.
@@ -644,7 +628,6 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     removeStylesOnCompDestroy: boolean,
     doc: Document,
     ngZone: NgZone,
-    platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
   ) {
     const compId = appId + '-' + component.id;
@@ -655,7 +638,6 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
       removeStylesOnCompDestroy,
       doc,
       ngZone,
-      platformIsServer,
       tracingService,
       compId,
     );
