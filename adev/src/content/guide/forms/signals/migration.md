@@ -8,19 +8,19 @@ legacy Reactive Forms.
 Sometimes you may want to use existing reactive `FormControl` instances within a Signal Form. This is useful for
 controls that involve:
 
-* Complex asynchronous logic.
-* Intricate RxJS operators that are not yet ported.
-* Integration with legacy third-party libraries.
+- Complex asynchronous logic.
+- Intricate RxJS operators that are not yet ported.
+- Integration with legacy third-party libraries.
 
 ### Integrating a `FormControl` into a signal form
 
 Consider an existing `passwordControl` that uses a specialized `enterprisePasswordValidator`. Instead of rewriting the
 validator, you can bridge the control into your signal state.
 
-First, define your legacy control:
+We can do it using `compatForm`
 
 ```typescript
-import {signal, Injector, inject} from '@angular/core';
+import {signal} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 import {compatForm} from '@angular/forms/signals/compat';
 
@@ -37,10 +37,7 @@ const user = signal({
 });
 
 // 3. Create the form
-const f = compatForm(user, {
-  injector: inject(Injector),
-});
-
+const f = compatForm(user);
 
 // Access values via the signal tree
 console.log(f.email().value()); // Current email value
@@ -90,13 +87,13 @@ In the template, use standard reactive syntax by binding the underlying control:
   <docs-code header="app.html" path="adev/src/content/examples/signal-forms/src/compat-form-control-integration/app/app.html"/>
 </docs-code-multifile>
 
-## Integrating a `FormGroup` into a signal form
+### Integrating a `FormGroup` into a signal form
 
 You can also wrap an entire `FormGroup`. This is common when a reusable sub-section of a form—such as an **Address Block
 **—is still managed by legacy Reactive Forms.
 
 ```typescript
-import {signal, Injector, inject} from '@angular/core';
+import {signal} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {compatForm} from '@angular/forms/signals/compat';
 
@@ -104,18 +101,16 @@ import {compatForm} from '@angular/forms/signals/compat';
 const addressGroup = new FormGroup({
   street: new FormControl('123 Angular Way', Validators.required),
   city: new FormControl('Mountain View', Validators.required),
-  zip: new FormControl('94043', Validators.required)
+  zip: new FormControl('94043', Validators.required),
 });
 
-// 2. Wrap it inside a new Signal Form state
+// 2. Include it in the state like it's a value
 const checkoutModel = signal({
   customerName: 'Pirojok the Cat',
-  shippingAddress: addressGroup // The bridge handles the nesting
+  shippingAddress: addressGroup,
 });
 
-const f = compatForm(checkoutModel, {
-  injector: inject(Injector)
-});
+const f = compatForm(checkoutModel);
 ```
 
 The `shippingAddress` field acts as a branch in your Signal Form tree. You can bind these nested controls in your
@@ -182,10 +177,38 @@ template by accessing the underlying legacy controls via `.control()`:
   </fieldset>
 </form>
 ```
+
 <docs-code-multifile preview path="adev/src/content/examples/signal-forms/src/compat-form-group-integration/app/app.ts">
   <docs-code header="app.ts" path="adev/src/content/examples/signal-forms/src/compat-form-group-integration/app/app.ts"/>
   <docs-code header="app.html" path="adev/src/content/examples/signal-forms/src/compat-form-group-integration/app/app.html"/>
 </docs-code-multifile>
 
+### Accessing values
+
+While `compatForm` proxies value access on the `FormControl` level, full form value would preserve the control:
+
+```typescript
+const passwordControl = new FormControl('password' /** ... */);
+
+const user = signal({
+  email: '',
+  password: passwordControl, // Nest the legacy control directly
+});
+
+const form = compatForm(user);
+form.password().value(); // 'password'
+form().value(); // { email: '', password: FormControl}
+```
+
+If you need the whole form value, you'd have to build it manually:
+
+```typescript
+const formValue = computed(() => ({
+  email: form.email().value(),
+  password: form.password().value(),
+})); // {email: '', password: ''}
+```
+
 ## Bottom-up migration
+
 This is coming soon.
