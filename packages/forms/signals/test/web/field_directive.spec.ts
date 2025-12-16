@@ -236,6 +236,64 @@ describe('field directive', () => {
       });
     });
 
+    describe('hidden', () => {
+      it('should bind to a custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model.required<string>();
+          readonly hidden = input.required<boolean>();
+        }
+
+        const visible = signal(false);
+
+        @Component({
+          imports: [Field, CustomControl],
+          template: `<custom-control [field]="field()" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(''), (p) => {
+            hidden(p, () => !visible());
+          });
+          readonly field = signal(this.f);
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().hidden()).toBe(true);
+
+        act(() => visible.set(true));
+        expect(component.customControl().hidden()).toBe(false);
+      });
+
+      it('should be reset when field changes on custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model.required<string>();
+          readonly hidden = input.required<boolean>();
+        }
+
+        @Component({
+          imports: [Field, CustomControl],
+          template: `<custom-control [field]="field()" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal({x: 'a', y: 'b'}), (p) => {
+            hidden(p.x, () => true);
+          });
+          readonly field = signal(this.f.x);
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().hidden()).toBe(true);
+
+        act(() => component.field.set(component.f.y));
+        expect(component.customControl().hidden()).toBe(false);
+      });
+    });
+
     describe('name', () => {
       it('should bind to native control', () => {
         @Component({
@@ -2034,34 +2092,6 @@ describe('field directive', () => {
     expect(comp.myInput().invalid()).toBe(true);
     act(() => comp.f().value.set('valid'));
     expect(comp.myInput().invalid()).toBe(false);
-  });
-
-  it('should synchronize hidden status', () => {
-    @Component({
-      selector: 'my-input',
-      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
-    })
-    class CustomInput implements FormValueControl<string> {
-      value = model('');
-      hidden = input(false);
-    }
-
-    @Component({
-      template: ` <my-input [field]="f" /> `,
-      imports: [CustomInput, Field],
-    })
-    class HiddenTestCmp {
-      myInput = viewChild.required<CustomInput>(CustomInput);
-      data = signal('');
-      f = form(this.data, (p) => {
-        hidden(p, ({value}) => value() === '');
-      });
-    }
-
-    const comp = act(() => TestBed.createComponent(HiddenTestCmp)).componentInstance;
-    expect(comp.myInput().hidden()).toBe(true);
-    act(() => comp.f().value.set('visible'));
-    expect(comp.myInput().hidden()).toBe(false);
   });
 
   it('should synchronize dirty status', () => {
