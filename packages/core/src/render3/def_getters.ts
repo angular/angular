@@ -14,7 +14,7 @@ import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import type {ComponentDef, DirectiveDef, PipeDef} from './interfaces/definition';
 
 export function getNgModuleDef<T>(type: any): NgModuleDef<T> | null {
-  assertTypeDefined(type, '@NgModule');
+  assertTypeDefined(type, typeof ngDevMode !== 'undefined' && ngDevMode ? '@NgModule' : '');
   return type[NG_MOD_DEF] || null;
 }
 
@@ -37,7 +37,7 @@ export function getNgModuleDefOrThrow<T>(type: any): NgModuleDef<T> | never {
  */
 
 export function getComponentDef<T>(type: any): ComponentDef<T> | null {
-  assertTypeDefined(type, '@Component');
+  assertTypeDefined(type, typeof ngDevMode !== 'undefined' && ngDevMode ? '@Component' : '');
   return type[NG_COMP_DEF] || null;
 }
 
@@ -54,12 +54,12 @@ export function getDirectiveDefOrThrow<T>(type: any): DirectiveDef<T> | never {
 }
 
 export function getDirectiveDef<T>(type: any): DirectiveDef<T> | null {
-  assertTypeDefined(type, '@Directive');
+  assertTypeDefined(type, typeof ngDevMode !== 'undefined' && ngDevMode ? '@Directive' : '');
   return type[NG_DIR_DEF] || null;
 }
 
 export function getPipeDef<T>(type: any): PipeDef<T> | null {
-  assertTypeDefined(type, '@Pipe');
+  assertTypeDefined(type, typeof ngDevMode !== 'undefined' && ngDevMode ? '@Pipe' : '');
   return type[NG_PIPE_DEF] || null;
 }
 
