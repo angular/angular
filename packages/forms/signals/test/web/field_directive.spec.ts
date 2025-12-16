@@ -44,6 +44,7 @@ import {
   provideSignalFormsConfig,
   readonly,
   required,
+  requiredError,
   validateAsync,
   type DisabledReason,
   type FieldTree,
@@ -349,6 +350,67 @@ describe('field directive', () => {
 
         act(() => component.field.set(component.f.y));
         expect(component.customControl().disabledReasons()).toEqual([]);
+      });
+    });
+
+    describe('errors', () => {
+      it('should bind to custom control', () => {
+        @Component({
+          selector: 'custom-control',
+          template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+        })
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model.required<string>();
+          readonly errors = input.required<readonly WithOptionalField<ValidationError>[]>();
+        }
+
+        @Component({
+          template: ` <custom-control [field]="f" /> `,
+          imports: [CustomControl, Field],
+        })
+        class TestCmp {
+          readonly data = signal('');
+          readonly f = form(this.data, (p) => {
+            required(p);
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const comp = act(() => TestBed.createComponent(TestCmp)).componentInstance;
+        expect(comp.customControl().errors()).toEqual([requiredError({fieldTree: comp.f})]);
+
+        act(() => comp.f().value.set('valid'));
+        expect(comp.customControl().errors()).toEqual([]);
+      });
+
+      it('should be reset when field changes on custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model.required<string>();
+          readonly errors = input.required<readonly WithOptionalField<ValidationError>[]>();
+        }
+
+        @Component({
+          imports: [Field, CustomControl],
+          template: `<custom-control [field]="field()" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal({x: '', y: ''}), (p) => {
+            required(p.x);
+          });
+          readonly field = signal(this.f.x);
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+
+        expect(component.customControl().errors()).toEqual([
+          requiredError({fieldTree: component.f.x}),
+        ]);
+
+        act(() => component.field.set(component.f.y));
+        expect(component.customControl().errors()).toEqual([]);
       });
     });
 
