@@ -9,6 +9,7 @@
 import {type Provider} from '@angular/core';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {Field} from './field_directive';
+import type {FormField} from './form_field_directive';
 
 /**
  * Configuration options for signal forms.
@@ -17,7 +18,7 @@ import type {Field} from './field_directive';
  */
 export interface SignalFormsConfig {
   /** A map of CSS class names to predicate functions that determine when to apply them. */
-  classes?: {[className: string]: (state: Field<unknown>) => boolean};
+  classes?: {[className: string]: (state: Field<unknown> | FormField<unknown>) => boolean};
 }
 
 /**

@@ -28,17 +28,17 @@ import type {FieldNode} from '../field/node';
 import type {FieldTree} from './types';
 
 /**
- * Lightweight DI token provided by the {@link Field} directive.
+ * Lightweight DI token provided by the {@link FormField} directive.
  *
  * @category control
  * @experimental 21.0.0
  */
-export const FIELD = new InjectionToken<Field<unknown>>(
-  typeof ngDevMode !== 'undefined' && ngDevMode ? 'FIELD' : '',
+export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'FORM_FIELD' : '',
 );
 
 /**
- * Instructions for dynamically binding a {@link Field} to a form control.
+ * Instructions for dynamically binding a {@link FormField} to a form control.
  */
 const controlInstructions = {
   create: createControlBinding,
@@ -53,9 +53,9 @@ const controlInstructions = {
  *    compatibility with reactive forms. Prefer options (1) and (2).
  *
  * This directive has several responsibilities:
- * 1. Two-way binds the field's value with the UI control's value
- * 2. Binds additional forms related state on the field to the UI control (disabled, required, etc.)
- * 3. Relays relevant events on the control to the field (e.g. marks field touched on blur)
+ * 1. Two-way binds the field state's value with the UI control's value
+ * 2. Binds additional forms related state on the field state to the UI control (disabled, required, etc.)
+ * 3. Relays relevant events on the control to the field state (e.g. marks touched on blur)
  * 4. Provides a fake `NgControl` that implements a subset of the features available on the
  *    reactive forms `NgControl`. This is provided to improve interoperability with controls
  *    designed to work with reactive forms. It should not be used by controls written for signal
@@ -65,20 +65,20 @@ const controlInstructions = {
  * @experimental 21.0.0
  */
 @Directive({
-  selector: '[field]',
+  selector: '[formField]',
   providers: [
-    {provide: FIELD, useExisting: Field},
-    {provide: NgControl, useFactory: () => inject(Field).getOrCreateNgControl()},
+    {provide: FORM_FIELD, useExisting: FormField},
+    {provide: NgControl, useFactory: () => inject(FormField).getOrCreateNgControl()},
   ],
 })
 // This directive should `implements ɵControl<T>`, but actually adding that breaks people's
 // builds because part of the public API is marked `@internal` and stripped.
 // Instead we have an type check below that enforces this in a non-breaking way.
-export class Field<T> {
+export class FormField<T> {
   readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   readonly injector = inject(Injector);
-  readonly field = input.required<FieldTree<T>>();
-  readonly state = computed(() => this.field()());
+  readonly formField = input.required<FieldTree<T>>();
+  readonly state = computed(() => this.formField()());
 
   readonly [ɵCONTROL] = controlInstructions;
 
@@ -86,7 +86,7 @@ export class Field<T> {
   /** @internal */
   readonly classes = Object.entries(this.config?.classes ?? {}).map(
     ([className, computation]) =>
-      [className, computed(() => computation(this as Field<unknown>))] as const,
+      [className, computed(() => computation(this as FormField<unknown>))] as const,
   );
 
   /** Any `ControlValueAccessor` instances provided on the host element. */
@@ -104,22 +104,22 @@ export class Field<T> {
     return this.controlValueAccessors?.[0] ?? this.interopNgControl?.valueAccessor ?? undefined;
   }
 
-  /** Lazily instantiates a fake `NgControl` for this field. */
+  /** Lazily instantiates a fake `NgControl` for this form field. */
   protected getOrCreateNgControl(): InteropNgControl {
     return (this.interopNgControl ??= new InteropNgControl(this.state));
   }
 
   /** @internal */
   ɵregister() {
-    // Register this control on the field it is currently bound to. We do this at the end of
+    // Register this control on the field state it is currently bound to. We do this at the end of
     // initialization so that it only runs if we are actually syncing with this control
-    // (as opposed to just passing the field through to its `field` input).
+    // (as opposed to just passing the field state through to its `formField` input).
     effect(
       (onCleanup) => {
         const fieldNode = this.state() as unknown as FieldNode;
         fieldNode.nodeState.formFieldBindings.update((controls) => [
           ...controls,
-          this as Field<unknown>,
+          this as FormField<unknown>,
         ]);
         onCleanup(() => {
           fieldNode.nodeState.formFieldBindings.update((controls) =>
@@ -135,4 +135,4 @@ export class Field<T> {
 // We can't add `implements ɵControl<T>` to `Field` even though it should conform to the interface.
 // Instead we enforce it here through some utility types.
 type Check<T extends true> = T;
-type FieldImplementsɵControl = Check<Field<any> extends ɵControl<any> ? true : false>;
+type FieldImplementsɵControl = Check<FormField<any> extends ɵControl<any> ? true : false>;

@@ -1067,7 +1067,8 @@ export function createStoreLetOp(
 /**
  * A specialized {@link PropertyOp} that may bind a form field to a control.
  */
-export interface ControlOp extends Omit<PropertyOp, 'kind' | 'name'> {
+// TODO: Omit name when we remove the `Field` directive.
+export interface ControlOp extends Omit<PropertyOp, 'kind'> {
   kind: OpKind.Control;
 }
 
@@ -1076,6 +1077,7 @@ export function createControlOp(op: BindingOp): ControlOp {
   return {
     kind: OpKind.Control,
     target: op.target,
+    name: op.name,
     expression: op.expression,
     bindingKind: op.bindingKind,
     securityContext: op.securityContext,

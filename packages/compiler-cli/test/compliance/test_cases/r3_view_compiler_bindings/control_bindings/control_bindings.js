@@ -19,7 +19,7 @@ export class MyComponent {
         i0.ɵɵadvance();
         i0.ɵɵattribute("field", ctx.value);
         i0.ɵɵadvance(2);
-        i0.ɵɵcontrol(ctx.value);
+        i0.ɵɵcontrol(ctx.value, "field");
       }
     },
     dependencies: [Field],

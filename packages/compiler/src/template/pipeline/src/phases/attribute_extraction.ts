@@ -62,7 +62,7 @@ export function extractAttributes(job: CompilationJob): void {
               op.target,
               ir.BindingKind.Property,
               null,
-              'field',
+              op.name,
               /* expression */ null,
               /* i18nContext */ null,
               /* i18nMessage */ null,

@@ -48,7 +48,7 @@ describe('createComponent', () => {
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.value()).toBe('initial value');
 
       // Model --> View
@@ -88,7 +88,7 @@ describe('createComponent', () => {
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.disabled()).toBe(false);
 
       disabledSignal.set(true);
@@ -118,7 +118,7 @@ describe('createComponent', () => {
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.checked()).toBe(true);
 
       // Model --> View
@@ -158,7 +158,7 @@ describe('createComponent', () => {
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.required()).toBe(false);
 
       requiredSignal.set(true);
@@ -190,7 +190,7 @@ describe('createComponent', () => {
     });
     fixture.changeDetectorRef.detectChanges();
 
-    expect(control().fieldBindings()).toHaveSize(0);
+    expect(control().formFieldBindings()).toHaveSize(0);
   });
 
   it(`should throw for invalid '[field]' binding host`, () => {

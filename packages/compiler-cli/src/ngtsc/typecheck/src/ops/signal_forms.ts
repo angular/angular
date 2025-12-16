@@ -22,15 +22,15 @@ import {
   TmplAstTemplate,
 } from '@angular/compiler';
 import ts from 'typescript';
-import {TcbOp} from './base';
-import type {Context} from './context';
-import type {Scope} from './scope';
+import {TypeCheckableDirectiveMeta} from '../../api';
+import {markIgnoreDiagnostics} from '../comments';
 import {addParseSpanInfo} from '../diagnostics';
 import {tsDeclareVariable} from '../ts_util';
-import {TypeCheckableDirectiveMeta} from '../../api';
-import {tcbExpression} from './expression';
-import {markIgnoreDiagnostics} from '../comments';
+import {TcbOp} from './base';
 import {TcbBoundAttribute} from './bindings';
+import type {Context} from './context';
+import {tcbExpression} from './expression';
+import type {Scope} from './scope';
 
 /** Possible types of custom form control directives. */
 export type CustomFormControlType = 'value' | 'checkbox';
@@ -103,7 +103,11 @@ export class TcbNativeFieldOp extends TcbOp {
   override execute(): null {
     const inputs = this.node instanceof TmplAstHostElement ? this.node.bindings : this.node.inputs;
     const fieldBinding =
-      inputs.find((input) => input.type === BindingType.Property && input.name === 'field') ?? null;
+      inputs.find(
+        (input) =>
+          input.type === BindingType.Property &&
+          (input.name === 'field' || input.name === 'formField'),
+      ) ?? null;
 
     // This should only happen if there's something like `<input field="static"/>`
     // which will be caught by the input type checking of the `Field` directive.
@@ -227,7 +231,8 @@ export function expandBoundAttributesForField(
   customFormControlType: CustomFormControlType | null,
 ): TcbBoundAttribute[] | null {
   const fieldBinding = node.inputs.find(
-    (input) => input.type === BindingType.Property && input.name === 'field',
+    (input) =>
+      input.type === BindingType.Property && (input.name === 'field' || input.name === 'formField'),
   );
 
   if (!fieldBinding) {
@@ -281,7 +286,7 @@ export function expandBoundAttributesForField(
 }
 
 export function isFieldDirective(meta: TypeCheckableDirectiveMeta): boolean {
-  if (meta.name !== 'Field') {
+  if (meta.name !== 'Field' && meta.name !== 'FormField') {
     return false;
   }
 

@@ -318,7 +318,9 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
 
   // We want to ensure that the controlCreateOp is after the ops that create the element
   const fieldInput = element.inputs.find(
-    (input) => input.name === 'field' && input.type === e.BindingType.Property,
+    (input) =>
+      (input.name === 'field' || input.name === 'formField') &&
+      input.type === e.BindingType.Property,
   );
   if (fieldInput) {
     // If the input name is 'field', this could be a form control binding which requires a

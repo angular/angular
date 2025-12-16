@@ -85,15 +85,15 @@ export function ɵɵcontrolCreate(): void {
  *
  * @codeGenApi
  */
-export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
+export function ɵɵcontrol<T>(value: T, name: string, sanitizer?: SanitizerFn | null): void {
   const lView = getLView();
   const tNode = getSelectedTNode();
   const bindingIndex = nextBindingIndex();
 
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
-    setPropertyAndInputs(tNode, lView, 'field', value, lView[RENDERER], sanitizer);
-    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'field', bindingIndex);
+    setPropertyAndInputs(tNode, lView, name, value, lView[RENDERER], sanitizer);
+    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, name, bindingIndex);
   }
 
   updateControl(lView, tNode);
@@ -146,7 +146,7 @@ function updateControl<T>(lView: LView, tNode: TNode): void {
 function initializeControlFirstCreatePass<T>(tView: TView, tNode: TNode, lView: LView): void {
   ngDevMode && assertFirstCreatePass(tView);
 
-  const directiveIndices = tNode.inputs?.['field'];
+  const directiveIndices = tNode.inputs?.['field'] ?? tNode.inputs?.['formField'];
   if (!directiveIndices) {
     return; // There are no matching inputs for the `[field]` property binding.
   }
