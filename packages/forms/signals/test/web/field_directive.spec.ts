@@ -541,6 +541,97 @@ describe('field directive', () => {
       });
     });
 
+    describe('pending', () => {
+      it('should bind to custom control', async () => {
+        const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+
+        @Component({
+          selector: 'custom-control',
+          template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+        })
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model.required<string>();
+          readonly pending = input.required<boolean>();
+        }
+
+        @Component({
+          template: ` <custom-control [field]="f" /> `,
+          imports: [CustomControl, Field],
+        })
+        class TestCmp {
+          readonly data = signal('test');
+          readonly f = form(this.data, (p) => {
+            validateAsync(p, {
+              params: () => [],
+              factory: (params) =>
+                resource({
+                  params,
+                  loader: () => promise,
+                }),
+              onSuccess: (results) => results,
+              onError: () => null,
+            });
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const comp = fixture.componentInstance;
+
+        expect(comp.customControl().pending()).toBe(true);
+
+        resolve([]);
+        await promise;
+        await fixture.whenStable();
+
+        expect(comp.customControl().pending()).toBe(false);
+      });
+
+      it('should be reset when field changes on custom control', async () => {
+        const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model.required<string>();
+          readonly pending = input.required<boolean>();
+        }
+
+        @Component({
+          imports: [Field, CustomControl],
+          template: `<custom-control [field]="field()" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal({x: '', y: ''}), (p) => {
+            validateAsync(p.x, {
+              params: () => [],
+              factory: (params) =>
+                resource({
+                  params,
+                  loader: () => promise,
+                }),
+              onSuccess: (results) => results,
+              onError: () => null,
+            });
+          });
+          readonly field = signal(this.f.x);
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+
+        expect(component.customControl().pending()).toBe(true);
+
+        act(() => component.field.set(component.f.y));
+        expect(component.customControl().pending()).toBe(false);
+
+        resolve([]);
+        await promise;
+        await fixture.whenStable();
+        expect(component.customControl().pending()).toBe(false);
+      });
+    });
+
     describe('readonly', () => {
       it('should bind to native control', () => {
         @Component({
@@ -2028,49 +2119,6 @@ describe('field directive', () => {
       const fixture = act(() => TestBed.createComponent(TestCmp));
       expect(fixture.componentInstance.f().fieldBindings()).toHaveSize(0);
     });
-  });
-
-  it('should synchronize pending status', async () => {
-    const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
-
-    @Component({
-      selector: 'my-input',
-      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
-    })
-    class CustomInput implements FormValueControl<string> {
-      value = model('');
-      pending = input(false);
-    }
-
-    @Component({
-      template: ` <my-input [field]="f" /> `,
-      imports: [CustomInput, Field],
-    })
-    class PendingTestCmp {
-      myInput = viewChild.required<CustomInput>(CustomInput);
-      data = signal('test');
-      f = form(this.data, (p) => {
-        validateAsync(p, {
-          params: () => [],
-          factory: (params) =>
-            resource({
-              params,
-              loader: () => promise,
-            }),
-          onSuccess: (results) => results,
-          onError: () => null,
-        });
-      });
-    }
-
-    const fix = act(() => TestBed.createComponent(PendingTestCmp));
-
-    expect(fix.componentInstance.myInput().pending()).toBe(true);
-
-    resolve([]);
-    await promise;
-    await fix.whenStable();
-    expect(fix.componentInstance.myInput().pending()).toBe(false);
   });
 
   it(`should mark field as touched on native control 'blur' event`, () => {

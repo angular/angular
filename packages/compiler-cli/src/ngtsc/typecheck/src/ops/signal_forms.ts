@@ -46,6 +46,7 @@ const formControlInputFields = [
   'hidden',
   'invalid',
   'name',
+  'pending',
   'readonly',
   'touched',
   'max',
