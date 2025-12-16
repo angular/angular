@@ -33,7 +33,7 @@ describe('submit', () => {
       fail('Submit action should run not on invalid form');
     });
 
-    expect(f.first().errors()).toEqual([requiredError({field: f.first})]);
+    expect(f.first().errors()).toEqual([requiredError({fieldTree: f.first})]);
   });
 
   it('should not block on pending async validators', async () => {
@@ -80,12 +80,12 @@ describe('submit', () => {
       return Promise.resolve(
         customError({
           kind: 'lastName',
-          field: form.last,
+          fieldTree: form.last,
         }),
       );
     });
 
-    expect(f.last().errors()).toEqual([customError({kind: 'lastName', field: f.last})]);
+    expect(f.last().errors()).toEqual([customError({kind: 'lastName', fieldTree: f.last})]);
   });
 
   it('maps errors to multiple fields', async () => {
@@ -96,23 +96,23 @@ describe('submit', () => {
       return Promise.resolve([
         customError({
           kind: 'firstName',
-          field: form.first,
+          fieldTree: form.first,
         }),
         customError({
           kind: 'lastName',
-          field: form.last,
+          fieldTree: form.last,
         }),
         customError({
           kind: 'lastName2',
-          field: form.last,
+          fieldTree: form.last,
         }),
       ]);
     });
 
-    expect(f.first().errors()).toEqual([customError({kind: 'firstName', field: f.first})]);
+    expect(f.first().errors()).toEqual([customError({kind: 'firstName', fieldTree: f.first})]);
     expect(f.last().errors()).toEqual([
-      customError({kind: 'lastName', field: f.last}),
-      customError({kind: 'lastName2', field: f.last}),
+      customError({kind: 'lastName', fieldTree: f.last}),
+      customError({kind: 'lastName2', fieldTree: f.last}),
     ]);
   });
 
@@ -153,7 +153,7 @@ describe('submit', () => {
       return Promise.resolve(customError());
     });
 
-    expect(f().errors()).toEqual([customError({field: f})]);
+    expect(f().errors()).toEqual([customError({fieldTree: f})]);
   });
 
   it('marks the form as submitting', async () => {
@@ -259,18 +259,18 @@ describe('submit', () => {
 
     await submit(f, async (form) => {
       return [
-        customError({kind: 'submit', field: f.first}),
-        customError({kind: 'submit', field: f.last}),
+        customError({kind: 'submit', fieldTree: f.first}),
+        customError({kind: 'submit', fieldTree: f.last}),
       ];
     });
 
-    expect(f.first().errors()).toEqual([customError({kind: 'submit', field: f.first})]);
-    expect(f.last().errors()).toEqual([customError({kind: 'submit', field: f.last})]);
+    expect(f.first().errors()).toEqual([customError({kind: 'submit', fieldTree: f.first})]);
+    expect(f.last().errors()).toEqual([customError({kind: 'submit', fieldTree: f.last})]);
 
     f.first().value.set('Hello');
 
     expect(f.first().errors()).toEqual([]);
-    expect(f.last().errors()).toEqual([customError({kind: 'submit', field: f.last})]);
+    expect(f.last().errors()).toEqual([customError({kind: 'submit', fieldTree: f.last})]);
   });
 });
 

@@ -21,7 +21,7 @@ describe('max validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age().errors()).toEqual([maxError(5, {field: f.age})]);
+    expect(f.age().errors()).toEqual([maxError(5, {fieldTree: f.age})]);
   });
 
   it('is inclusive', () => {
@@ -69,7 +69,7 @@ describe('max validator', () => {
         customError({
           kind: 'special-max',
           message: '6',
-          field: f.age,
+          fieldTree: f.age,
         }),
       ]);
     });
@@ -89,7 +89,7 @@ describe('max validator', () => {
       expect(f.age().errors()).toEqual([
         maxError(5, {
           message: 'max error',
-          field: f.age,
+          fieldTree: f.age,
         }),
       ]);
     });
@@ -111,7 +111,7 @@ describe('max validator', () => {
       );
 
       expect(f.age().errors()).toEqual([
-        customError({kind: 'special-max', message: '6', field: f.age}),
+        customError({kind: 'special-max', message: '6', fieldTree: f.age}),
       ]);
       f.name().value.set('disabled');
       expect(f.age().errors()).toEqual([]);
@@ -176,9 +176,12 @@ describe('max validator', () => {
       );
 
       f.age().value.set(12);
-      expect(f.age().errors()).toEqual([maxError(10, {field: f.age}), maxError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([
+        maxError(10, {fieldTree: f.age}),
+        maxError(5, {fieldTree: f.age}),
+      ]);
       f.age().value.set(7);
-      expect(f.age().errors()).toEqual([maxError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([maxError(5, {fieldTree: f.age})]);
       f.age().value.set(3);
       expect(f.age().errors()).toEqual([]);
 
@@ -198,9 +201,12 @@ describe('max validator', () => {
       );
 
       f.age().value.set(12);
-      expect(f.age().errors()).toEqual([maxError(10, {field: f.age}), maxError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([
+        maxError(10, {fieldTree: f.age}),
+        maxError(5, {fieldTree: f.age}),
+      ]);
       f.age().value.set(7);
-      expect(f.age().errors()).toEqual([maxError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([maxError(5, {fieldTree: f.age})]);
       f.age().value.set(3);
       expect(f.age().errors()).toEqual([]);
 
@@ -208,7 +214,7 @@ describe('max validator', () => {
 
       maxSignal.set(2);
       f.age().value.set(3);
-      expect(f.age().errors()).toEqual([maxError(2, {field: f.age})]);
+      expect(f.age().errors()).toEqual([maxError(2, {fieldTree: f.age})]);
       expect(f.age().max?.()).toBe(2);
     });
 
@@ -227,14 +233,14 @@ describe('max validator', () => {
 
       // Initially, age 20 is greater than both 10 and 15
       expect(f.age().errors()).toEqual([
-        maxError(10, {field: f.age}),
-        maxError(15, {field: f.age}),
+        maxError(10, {fieldTree: f.age}),
+        maxError(15, {fieldTree: f.age}),
       ]);
 
       // Set the first max threshold to undefined
       maxSignal.set(undefined);
       // Now, age 20 is only greater than 15
-      expect(f.age().errors()).toEqual([maxError(15, {field: f.age})]);
+      expect(f.age().errors()).toEqual([maxError(15, {fieldTree: f.age})]);
 
       // Set the second max threshold to undefined
       maxSignal2.set(undefined);
@@ -255,7 +261,7 @@ describe('max validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([maxError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([maxError(5, {fieldTree: f.age})]);
       maxValue.set(7);
       expect(f.age().errors()).toEqual([]);
     });
@@ -271,11 +277,11 @@ describe('max validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([maxError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([maxError(5, {fieldTree: f.age})]);
       maxValue.set(undefined);
       expect(f.age().errors()).toEqual([]);
       maxValue.set(5);
-      expect(f.age().errors()).toEqual([maxError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([maxError(5, {fieldTree: f.age})]);
     });
 
     it('handles dynamic value based on other field', () => {
@@ -291,7 +297,7 @@ describe('max validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([maxError(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([maxError(5, {fieldTree: f.age})]);
 
       f.name().value.set('other cat');
 

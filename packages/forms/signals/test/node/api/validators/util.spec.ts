@@ -26,7 +26,7 @@ describe('validators utils', () => {
     });
 
     it('should wrap a plain error object with customError', () => {
-      const error: ValidationError.WithField = {kind: 'meow', field: {} as FieldTree<unknown>};
+      const error: ValidationError.WithField = {kind: 'meow', fieldTree: {} as FieldTree<unknown>};
       const result = ensureCustomValidationResult(error);
       expect(result).toEqual(customError(error));
     });
@@ -69,7 +69,7 @@ describe('validators utils', () => {
       it('should process a mixed array of validation errors', () => {
         const plainError: ValidationError.WithField = {
           kind: 'plain',
-          field: {} as FieldTree<unknown>,
+          fieldTree: {} as FieldTree<unknown>,
         };
         const custom = customError({kind: 'custom'});
 

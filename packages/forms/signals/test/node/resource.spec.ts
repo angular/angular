@@ -84,7 +84,7 @@ describe('resources', () => {
     expect(f.name().errors()).toEqual([
       customError({
         message: 'got: cat',
-        field: f.name,
+        fieldTree: f.name,
       }),
     ]);
 
@@ -93,7 +93,7 @@ describe('resources', () => {
     expect(f.name().errors()).toEqual([
       customError({
         message: 'got: dog',
-        field: f.name,
+        fieldTree: f.name,
       }),
     ]);
   });
@@ -128,13 +128,13 @@ describe('resources', () => {
     expect(f[0].name().errors()).toEqual([
       customError({
         message: 'got: cat',
-        field: f[0].name,
+        fieldTree: f[0].name,
       }),
     ]);
     expect(f[1].name().errors()).toEqual([
       customError({
         message: 'got: dog',
-        field: f[1].name,
+        fieldTree: f[1].name,
       }),
     ]);
 
@@ -143,13 +143,13 @@ describe('resources', () => {
     expect(f[0].name().errors()).toEqual([
       customError({
         message: 'got: bunny',
-        field: f[0].name,
+        fieldTree: f[0].name,
       }),
     ]);
     expect(f[1].name().errors()).toEqual([
       customError({
         message: 'got: dog',
-        field: f[1].name,
+        fieldTree: f[1].name,
       }),
     ]);
   });
@@ -170,7 +170,7 @@ describe('resources', () => {
             customError({
               kind: 'meows_too_much',
               name: cat.name,
-              field: fieldTreeOf(p)[index],
+              fieldTree: fieldTreeOf(p)[index],
             }),
           );
         },
@@ -183,10 +183,10 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      customError({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
+      customError({kind: 'meows_too_much', name: 'Fluffy', fieldTree: f[0]}),
     ]);
     expect(f[1]().errors()).toEqual([
-      customError({kind: 'meows_too_much', name: 'Ziggy', field: f[1]}),
+      customError({kind: 'meows_too_much', name: 'Ziggy', fieldTree: f[1]}),
     ]);
   });
 
@@ -205,7 +205,7 @@ describe('resources', () => {
           return customError({
             kind: 'meows_too_much',
             name: cats[0].name,
-            field: fieldTreeOf(p)[0],
+            fieldTree: fieldTreeOf(p)[0],
           });
         },
         onError: () => null,
@@ -217,7 +217,7 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      customError({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
+      customError({kind: 'meows_too_much', name: 'Fluffy', fieldTree: f[0]}),
     ]);
     expect(f[1]().errors()).toEqual([]);
   });
@@ -274,7 +274,7 @@ describe('resources', () => {
       validateHttp(address, {
         request: ({value}) => ({url: '/checkaddress', params: {...value()}}),
         onSuccess: (message: string, {fieldTreeOf}) =>
-          customError({message, field: fieldTreeOf(address.street)}),
+          customError({message, fieldTree: fieldTreeOf(address.street)}),
         onError: () => null,
       });
     });
@@ -291,7 +291,7 @@ describe('resources', () => {
     await appRef.whenStable();
 
     expect(addressForm.street().errors()).toEqual([
-      customError({message: 'Invalid!', field: addressForm.street}),
+      customError({message: 'Invalid!', fieldTree: addressForm.street}),
     ]);
   });
 
@@ -303,7 +303,7 @@ describe('resources', () => {
         request: ({value}) => ({url: '/checkaddress', params: {...value()}}),
         onSuccess: () => undefined,
         onError: () => [
-          customError({kind: 'address-api-failed', message: 'API is down', field: addressForm}),
+          customError({kind: 'address-api-failed', message: 'API is down', fieldTree: addressForm}),
         ],
       });
     });
@@ -322,7 +322,7 @@ describe('resources', () => {
       customError({
         kind: 'address-api-failed',
         message: 'API is down',
-        field: addressForm,
+        fieldTree: addressForm,
       }),
     ]);
   });

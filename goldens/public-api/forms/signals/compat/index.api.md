@@ -45,7 +45,7 @@ export class CompatValidationError<T = unknown> implements ValidationError {
     // (undocumented)
     readonly control: AbstractControl;
     // (undocumented)
-    readonly field: FieldTree<unknown>;
+    readonly fieldTree: FieldTree<unknown>;
     // (undocumented)
     readonly kind: string;
     // (undocumented)

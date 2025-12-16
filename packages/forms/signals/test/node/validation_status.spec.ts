@@ -27,9 +27,9 @@ function validateValue(value: string): ValidationError[] {
 
 function validateValueForChild(
   value: string,
-  field: FieldTree<unknown> | undefined,
+  fieldTree: FieldTree<unknown> | undefined,
 ): ValidationError.WithField[] {
-  return value === 'INVALID' ? [customError({field})] : [];
+  return value === 'INVALID' ? [customError({fieldTree})] : [];
 }
 
 describe('validation status', () => {
@@ -236,7 +236,7 @@ describe('validation status', () => {
             onSuccess: (results, {fieldTreeOf}) =>
               results.map((e) => ({
                 ...e,
-                field: fieldTreeOf(p.child),
+                fieldTree: fieldTreeOf(p.child),
               })),
             onError: () => null,
           });

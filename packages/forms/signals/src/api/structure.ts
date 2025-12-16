@@ -400,7 +400,7 @@ function setServerErrors(
   const errorsByField = new Map<FieldNode, ValidationError.WithField[]>();
   for (const error of errors) {
     const errorWithField = addDefaultField(error, submittedField.fieldProxy);
-    const field = errorWithField.field() as FieldNode;
+    const field = errorWithField.fieldTree() as FieldNode;
     let fieldErrors = errorsByField.get(field);
     if (!fieldErrors) {
       fieldErrors = [];
