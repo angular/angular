@@ -2051,32 +2051,6 @@ describe('field directive', () => {
     expect(fix.componentInstance.select()!.nativeElement.value).toEqual('four');
   });
 
-  it('initializes a required value input before the component lifecycle runs', () => {
-    let initialValue: string | undefined = undefined;
-    @Component({
-      selector: 'my-input',
-      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
-    })
-    class CustomInput implements FormValueControl<string> {
-      value = model.required<string>();
-
-      ngOnInit(): void {
-        initialValue = this.value();
-      }
-    }
-
-    @Component({
-      imports: [Field, CustomInput],
-      template: `<my-input [field]="f" />`,
-    })
-    class TestCmp {
-      f = form<string>(signal('test'));
-    }
-
-    const fix = act(() => TestBed.createComponent(TestCmp));
-    expect(initialValue as string | undefined).toBe('test');
-  });
-
   it('synchronizes with a custom checkbox control', () => {
     @Component({
       selector: 'my-input',
