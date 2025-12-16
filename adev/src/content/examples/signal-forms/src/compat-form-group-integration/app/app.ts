@@ -6,7 +6,6 @@ import {JsonPipe} from '@angular/common';
 
 @Component({
   selector: 'app',
-  standalone: true,
   imports: [ReactiveFormsModule, Field, JsonPipe],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -15,8 +14,8 @@ export class App {
   // 1. A legacy address group with its own validation logic
   readonly addressGroup = new FormGroup({
     street: new FormControl('123 Angular Way', Validators.required),
-    city: new FormControl('Mountain View'),
-    zip: new FormControl('94043'),
+    city: new FormControl('Mountain View', Validators.required),
+    zip: new FormControl('94043', Validators.required),
   });
 
   // 2. Wrap it inside a new Signal Form state

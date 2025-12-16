@@ -22,7 +22,7 @@ First, define your legacy control:
 ```typescript
 import {signal, Injector, inject} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
-import {compatForm} from '@angular/forms/signals';
+import {compatForm} from '@angular/forms/signals/compat';
 
 // 1. Existing legacy control with a specialized validator
 const passwordControl = new FormControl('', {
@@ -53,8 +53,7 @@ const passwordErrors = f.password().errors(); // Returns CompatValidationError i
 
 In the template, use standard reactive syntax by binding the underlying control:
 
-```html
-
+```angular-html
 <form>
   <div>
     <label>
@@ -99,13 +98,13 @@ You can also wrap an entire `FormGroup`. This is common when a reusable sub-sect
 ```typescript
 import {signal, Injector, inject} from '@angular/core';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
-import {compatForm} from '@angular/forms/signals';
+import {compatForm} from '@angular/forms/signals/compat';
 
 // 1. A legacy address group with its own validation logic
 const addressGroup = new FormGroup({
   street: new FormControl('123 Angular Way', Validators.required),
-  city: new FormControl('Mountain View'),
-  zip: new FormControl('94043')
+  city: new FormControl('Mountain View', Validators.required),
+  zip: new FormControl('94043', Validators.required)
 });
 
 // 2. Wrap it inside a new Signal Form state
@@ -122,7 +121,7 @@ const f = compatForm(checkoutModel, {
 The `shippingAddress` field acts as a branch in your Signal Form tree. You can bind these nested controls in your
 template by accessing the underlying legacy controls via `.control()`:
 
-```html
+```angular-html
 <form>
   <h3>Shipping Details</h3>
 

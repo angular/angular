@@ -1,5 +1,5 @@
 import {signal, Injector, inject, Component, computed} from '@angular/core';
-import {FormControl, Validators, ReactiveFormsModule, AbstractControl} from '@angular/forms';
+import {FormControl, Validators, AbstractControl} from '@angular/forms';
 import {Field} from '@angular/forms/signals';
 import {compatForm} from '@angular/forms/signals/compat';
 import {JsonPipe} from '@angular/common';
@@ -16,12 +16,12 @@ function enterprisePasswordValidator() {
 
 @Component({
   selector: 'app',
-  standalone: true,
   imports: [Field, JsonPipe],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
+  // 1. Existing legacy control with a specialized validator
   readonly passwordControl = new FormControl('', {
     validators: [Validators.required, enterprisePasswordValidator()],
     nonNullable: true,
@@ -33,7 +33,7 @@ export class App {
     password: this.passwordControl, // Nest the legacy control directly
   });
 
-  // 3. Initialize the bridge
+  // 3. Create the form
   readonly f = compatForm(this.user, {
     injector: inject(Injector),
   });
