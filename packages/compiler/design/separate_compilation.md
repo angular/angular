@@ -150,7 +150,7 @@ _my.component.ts_
 ```ts
 @Component({
   selector: 'my-comp',
-  template: `<h1>Hello, {{name}}!</h1>`
+  template: `<h1>Hello, {{ name }}!</h1>`,
 })
 export class MyComponent {
   @Input() name: string;
@@ -327,9 +327,12 @@ _my.module.ts_
   imports: [CommonModule, UtilityModule],
   declarations: [MyComponent, MyDirective, MyPipe],
   exports: [MyComponent, MyDirective, MyPipe, UtilityModule],
-  providers: [{
-    provide: Service, useClass: ServiceImpl
-  }]
+  providers: [
+    {
+      provide: Service,
+      useClass: ServiceImpl,
+    },
+  ],
 })
 export class MyModule {}
 ```
@@ -400,24 +403,32 @@ manually written as:
 ```ts
 export class MyModule {
   static ɵinj = ɵɵdefineInjector({
-    providers: [{
-      provide: Service, useClass: ServiceImpl
-    }],
-    imports: [CommonModule, UtilityModule]
+    providers: [
+      {
+        provide: Service,
+        useClass: ServiceImpl,
+      },
+    ],
+    imports: [CommonModule, UtilityModule],
   });
-  static ngModuleScope = [{
-    type: MyComponent,
-    selector: 'my-comp'
-  }, {
-    type: MyDirective,
-    selector: '[my-dir]'
-  }, {
-    type: MyPipe,
-    name: 'myPipe'
-  }, {
-    type: UtilityModule,
-    isModule: true
-  }];
+  static ngModuleScope = [
+    {
+      type: MyComponent,
+      selector: 'my-comp',
+    },
+    {
+      type: MyDirective,
+      selector: '[my-dir]',
+    },
+    {
+      type: MyPipe,
+      name: 'myPipe',
+    },
+    {
+      type: UtilityModule,
+      isModule: true,
+    },
+  ];
 }
 ```
 

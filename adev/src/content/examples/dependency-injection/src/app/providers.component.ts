@@ -259,17 +259,17 @@ export class Provider10Component implements OnInit {
 @Component({
   selector: 'app-providers',
   template: `
-  <h2>Provider variations</h2>
-  <div id="p1"><provider-1></provider-1></div>
-  <div id="p3"><provider-3></provider-3></div>
-  <div id="p4"><provider-4></provider-4></div>
-  <div id="p5"><provider-5></provider-5></div>
-  <div id="p6a"><provider-6a></provider-6a></div>
-  <div id="p6b"><provider-6b></provider-6b></div>
-  <div id="p7"><provider-7></provider-7></div>
-  <div id="p8"><provider-8></provider-8></div>
-  <div id="p9"><provider-9></provider-9></div>
-  <div id="p10"><provider-10></provider-10></div>
+    <h2>Provider variations</h2>
+    <div id="p1"><provider-1></provider-1></div>
+    <div id="p3"><provider-3></provider-3></div>
+    <div id="p4"><provider-4></provider-4></div>
+    <div id="p5"><provider-5></provider-5></div>
+    <div id="p6a"><provider-6a></provider-6a></div>
+    <div id="p6b"><provider-6b></provider-6b></div>
+    <div id="p7"><provider-7></provider-7></div>
+    <div id="p8"><provider-8></provider-8></div>
+    <div id="p9"><provider-9></provider-9></div>
+    <div id="p10"><provider-10></provider-10></div>
   `,
   imports: [
     Provider1Component,

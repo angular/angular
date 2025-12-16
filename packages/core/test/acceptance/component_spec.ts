@@ -102,10 +102,10 @@ describe('component', () => {
 
     @Component({
       template: `
-            <wrapper>
-              <div #insertionPoint></div>
-            </wrapper>
-          `,
+        <wrapper>
+          <div #insertionPoint></div>
+        </wrapper>
+      `,
       standalone: false,
     })
     class App {
@@ -164,7 +164,11 @@ describe('component', () => {
       selector: 'encapsulated',
       encapsulation: ViewEncapsulation.Emulated,
       // styles must be non-empty to trigger `ViewEncapsulation.Emulated`
-      styles: `:host {display: block}`,
+      styles: `
+        :host {
+          display: block;
+        }
+      `,
       template: `foo<leaf></leaf>`,
       standalone: false,
     })
@@ -295,10 +299,10 @@ describe('component', () => {
     @Component({
       selector: 'button',
       template: `
-           <div class="wrapper"></div>
-           <div id="app-root"></div>
-           <div class="wrapper"></div>
-         `,
+        <div class="wrapper"></div>
+        <div id="app-root"></div>
+        <div class="wrapper"></div>
+      `,
       standalone: false,
     })
     class App {
@@ -748,9 +752,7 @@ describe('component', () => {
           Existing content in slot A, which <b><i>includes</i> some HTML elements</b>.
         </div>
         <div id="dynamic-comp-root-b">
-          <p>
-            Existing content in slot B, which includes some HTML elements.
-          </p>
+          <p>Existing content in slot B, which includes some HTML elements.</p>
         </div>
       `,
       standalone: false,

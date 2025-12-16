@@ -16,7 +16,7 @@ OnPush change detection instructs Angular to run change detection for a componen
 You can set the change detection strategy of a component to `OnPush` in the `@Component` decorator:
 
 ```ts
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

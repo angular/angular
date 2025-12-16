@@ -8,10 +8,7 @@ import {NgFor} from '@angular/common';
   selector: 'app-hero-list',
   template: `
     @for (hero of heroes; track hero) {
-      <div>
-        {{hero.id}} - {{hero.name}}
-        ({{hero.isSecret ? 'secret' : 'public'}})
-      </div>
+      <div>{{ hero.id }} - {{ hero.name }} ({{ hero.isSecret ? 'secret' : 'public' }})</div>
     }
   `,
 })

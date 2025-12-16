@@ -30,10 +30,7 @@ Build the checkbox template that responds to clicks and updates its own model.
 
 ```html
 <label class="custom-checkbox">
-  <input
-    type="checkbox"
-    [checked]="checked()"
-    (change)="toggle()">
+  <input type="checkbox" [checked]="checked()" (change)="toggle()" />
   <span class="checkmark"></span>
   {{ label() }}
 </label>

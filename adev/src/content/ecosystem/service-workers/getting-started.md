@@ -166,9 +166,8 @@ Angular service workers support comprehensive configuration options through the 
 The `enabled` option controls whether the service worker will be registered and related services will attempt to communicate with it.
 
 ```ts
-
-import { ApplicationConfig, isDevMode } from '@angular/core';
-import { provideServiceWorker } from '@angular/service-worker';
+import {ApplicationConfig, isDevMode} from '@angular/core';
+import {provideServiceWorker} from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -177,7 +176,6 @@ export const appConfig: ApplicationConfig = {
     }),
   ],
 };
-
 ```
 
 ### Cache control with updateViaCache
@@ -185,7 +183,6 @@ export const appConfig: ApplicationConfig = {
 The `updateViaCache` option controls how the browser consults the HTTP cache during service worker updates. This provides fine-grained control over when the browser fetches updated service worker scripts and imported modules.
 
 ```ts
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideServiceWorker('ngsw-worker.js', {
@@ -194,7 +191,6 @@ export const appConfig: ApplicationConfig = {
     }),
   ],
 };
-
 ```
 
 The `updateViaCache` option accepts the following values:
@@ -208,7 +204,6 @@ The `updateViaCache` option accepts the following values:
 The `type` option enables specifying the script type when registering service workers, providing support for ES module features in your service worker scripts.
 
 ```ts
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideServiceWorker('ngsw-worker.js', {
@@ -217,7 +212,6 @@ export const appConfig: ApplicationConfig = {
     }),
   ],
 };
-
 ```
 
 The `type` option accepts the following values:
@@ -230,7 +224,6 @@ The `type` option accepts the following values:
 The `scope` option defines the service worker's registration scope, determining what range of URLs it can control.
 
 ```ts
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideServiceWorker('ngsw-worker.js', {
@@ -239,7 +232,6 @@ export const appConfig: ApplicationConfig = {
     }),
   ],
 };
-
 ```
 
 - Controls which URLs the service worker can intercept and manage
@@ -251,7 +243,6 @@ export const appConfig: ApplicationConfig = {
 The `registrationStrategy` option defines when the service worker will be registered with the browser, providing control over the timing of registration.
 
 ```ts
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideServiceWorker('ngsw-worker.js', {
@@ -260,7 +251,6 @@ export const appConfig: ApplicationConfig = {
     }),
   ],
 };
-
 ```
 
 Available registration strategies:
@@ -270,7 +260,6 @@ Available registration strategies:
 - **`'registerWithDelay:timeout'`** - Register with a delay of the specified timeout in milliseconds
 
 ```ts
-
 // Register immediately
 export const immediateConfig: ApplicationConfig = {
   providers: [
@@ -290,13 +279,12 @@ export const delayedConfig: ApplicationConfig = {
     }),
   ],
 };
-
 ```
 
 You can also provide an Observable factory function for custom registration timing:
 
 ```ts
-import { timer } from 'rxjs';
+import {timer} from 'rxjs';
 
 export const customConfig: ApplicationConfig = {
   providers: [
@@ -306,7 +294,6 @@ export const customConfig: ApplicationConfig = {
     }),
   ],
 };
-
 ```
 
 ## More on Angular service workers

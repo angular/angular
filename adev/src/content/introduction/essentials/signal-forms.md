@@ -32,8 +32,8 @@ Then, you pass your form model into the `form()` function to create a **field tr
 const loginForm = form(loginModel);
 
 // Access fields directly by property name
-loginForm.email
-loginForm.password
+loginForm.email;
+loginForm.password;
 ```
 
 ### 3. Bind HTML inputs with `[field]` directive
@@ -54,7 +54,7 @@ NOTE: The `[field]` directive also syncs field state for attributes like `requir
 You can access field state by calling the field as a function. This returns a `FieldState` object containing reactive signals for the field's value, validation status, and interaction state:
 
 ```ts
-loginForm.email() // Returns FieldState with value(), valid(), touched(), etc.
+loginForm.email(); // Returns FieldState with value(), valid(), touched(), etc.
 ```
 
 To read the field's current value, access the `value()` signal:
@@ -233,8 +233,8 @@ Common validators include:
 You can also customize error messages by passing an options object as the second argument to the validator:
 
 ```ts
-required(schemaPath.email, { message: 'Email is required' });
-email(schemaPath.email, { message: 'Please enter a valid email address' });
+required(schemaPath.email, {message: 'Email is required'});
+email(schemaPath.email, {message: 'Please enter a valid email address'});
 ```
 
 Each form field exposes its validation state through signals. For example, you can check `field().valid()` to see if validation passes, `field().touched()` to see if the user has interacted with it, and `field().errors()` to get the list of validation errors.

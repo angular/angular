@@ -12,14 +12,15 @@ import {Component} from '@angular/core';
     ]),
   ],
   template: `<nav>
-    <button type="button" (click)="toggle()">Toggle Open/Close</button>
-  </nav>
-  
-  <div [@openClose]="isOpen ? 'open' : 'closed'" class="open-close-container">
-    <p>The box is now {{ isOpen ? 'Open' : 'Closed' }}!</p>
-  </div>`,
+      <button type="button" (click)="toggle()">Toggle Open/Close</button>
+    </nav>
+
+    <div [@openClose]="isOpen ? 'open' : 'closed'" class="open-close-container">
+      <p>The box is now {{ isOpen ? 'Open' : 'Closed' }}!</p>
+    </div>`,
   styles: [
-    `:host {
+    `
+      :host {
         display: block;
         margin-top: 1rem;
       }
@@ -31,7 +32,8 @@ import {Component} from '@angular/core';
         color: #000000;
         font-weight: bold;
         font-size: 20px;
-      }`,
+      }
+    `,
   ],
 })
 export class OpenCloseComponent {

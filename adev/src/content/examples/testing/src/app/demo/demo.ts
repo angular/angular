@@ -290,25 +290,25 @@ export class ShellComponent {}
   template: `
     <h1>Specs Demo</h1>
     <my-if-parent-comp></my-if-parent-comp>
-    <hr>
+    <hr />
     <h3>Input/Output Component</h3>
     <io-parent-comp></io-parent-comp>
-    <hr>
+    <hr />
     <h3>External Template Component</h3>
     <external-template-comp></external-template-comp>
-    <hr>
+    <hr />
     <h3>Component With External Template Component</h3>
     <comp-w-ext-comp></comp-w-ext-comp>
-    <hr>
+    <hr />
     <h3>Reverse Pipe</h3>
     <reverse-pipe-comp></reverse-pipe-comp>
-    <hr>
+    <hr />
     <h3>InputValueBinder Directive</h3>
     <input-value-comp></input-value-comp>
-    <hr>
+    <hr />
     <h3>Button Component</h3>
     <lightswitch-comp></lightswitch-comp>
-    <hr>
+    <hr />
     <h3>Needs Content</h3>
     <needs-content #nc>
       <child-1 #content text="My"></child-1>

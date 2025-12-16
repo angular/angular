@@ -7,18 +7,18 @@ Route redirects allow you to automatically navigate users from one route to anot
 You can define redirects in your route configuration with the `redirectTo` property. This property accepts a string.
 
 ```ts
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
 const routes: Routes = [
   // Simple redirect
-  { path: 'marketing', redirectTo: 'newsletter' },
+  {path: 'marketing', redirectTo: 'newsletter'},
 
   // Redirect with path parameters
-  { path: 'legacy-user/:id', redirectTo: 'users/:id' },
+  {path: 'legacy-user/:id', redirectTo: 'users/:id'},
 
   // Redirect any other URLs that don’t match
   // (also known as a "wildcard" redirect)
-  { path: '**', redirectTo: '/login' }
+  {path: '**', redirectTo: '/login'},
 ];
 ```
 
@@ -66,9 +66,7 @@ In this example, all routes that are prefixed with `news` are redirected to thei
 On the other hand, `pathMatch: 'full'` is useful when you want Angular Router to only redirect a specific path.
 
 ```ts
-export const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-];
+export const routes: Routes = [{path: '', redirectTo: '/dashboard', pathMatch: 'full'}];
 ```
 
 In this example, any time the user visits the root URL (i.e., `''`), the router redirects that user to the `'/dashboard'` page.
@@ -80,9 +78,7 @@ TIP: Be careful when configuring a redirect on the root page (i.e., `"/"` or `""
 To further illustrate this, if the `news` example from the previous section used `pathMatch: 'full'` instead:
 
 ```ts
-export const routes: Routes = [
-  { path: 'news', redirectTo: '/blog', pathMatch: 'full' },
-];
+export const routes: Routes = [{path: 'news', redirectTo: '/blog', pathMatch: 'full'}];
 ```
 
 This means that:
@@ -101,8 +97,8 @@ It typically returns a string or [`URLTree`](api/router/UrlTree), but it can als
 Here is an example where the user is redirected to different menu based on the time of the day:
 
 ```ts
-import { Routes } from '@angular/router';
-import { MenuComponent } from './menu/menu.component';
+import {Routes} from '@angular/router';
+import {MenuComponent} from './menu/menu.component';
 
 export const routes: Routes = [
   {
@@ -124,16 +120,16 @@ export const routes: Routes = [
       } else {
         return `/restaurant/${location}/menu/dinner`;
       }
-    }
+    },
   },
 
   // Destination routes
-  { path: 'restaurant/:location/menu/breakfast', component: MenuComponent },
-  { path: 'restaurant/:location/menu/lunch', component: MenuComponent },
-  { path: 'restaurant/:location/menu/dinner', component: MenuComponent },
+  {path: 'restaurant/:location/menu/breakfast', component: MenuComponent},
+  {path: 'restaurant/:location/menu/lunch', component: MenuComponent},
+  {path: 'restaurant/:location/menu/dinner', component: MenuComponent},
 
   // Default redirect
-  { path: '', redirectTo: '/restaurant/downtown/menu', pathMatch: 'full' }
+  {path: '', redirectTo: '/restaurant/downtown/menu', pathMatch: 'full'},
 ];
 ```
 

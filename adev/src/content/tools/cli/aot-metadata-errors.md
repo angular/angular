@@ -62,9 +62,7 @@ let foo = 42; // initialized
 The compiler will [fold](tools/cli/aot-compiler#code-folding) the expression into the provider as if you had written this.
 
 ```ts
-providers: [
-  { provide: Foo, useValue: 42 }
-]
+providers: [{provide: Foo, useValue: 42}];
 ```
 
 Alternatively, you can fix it by exporting `foo` with the expectation that `foo` will be assigned at runtime when you actually know its value.
@@ -95,7 +93,7 @@ export let someTemplate: string; // exported but not initialized
 
 @Component({
   selector: 'my-component',
-  template: someTemplate
+  template: someTemplate,
 })
 export class MyComponent {}
 ```
@@ -119,7 +117,7 @@ export let someTemplate: string;
 
 @Component({
   selector: 'my-component',
-  template: someTemplate
+  template: someTemplate,
 })
 export class MyComponent {}
 ```
@@ -128,11 +126,11 @@ You'd also get this error if you imported `someTemplate` from some other module 
 
 ```ts
 // ERROR - not initialized there either
-import { someTemplate } from './config';
+import {someTemplate} from './config';
 
 @Component({
   selector: 'my-component',
-  template: someTemplate
+  template: someTemplate,
 })
 export class MyComponent {}
 ```
@@ -148,7 +146,7 @@ export let someTemplate = '<h1>Greetings from Angular</h1>';
 
 @Component({
   selector: 'my-component',
-  template: someTemplate
+  template: someTemplate,
 })
 export class MyComponent {}
 ```
@@ -378,14 +376,14 @@ This can happen if you use a number as a property name as in the following examp
 
 ```ts
 // ERROR
-provider: [{ provide: Foo, useValue: { 0: 'test' } }]
+provider: [{provide: Foo, useValue: {0: 'test'}}];
 ```
 
 Change the name of the property to something non-numeric.
 
 ```ts
 // CORRECTED
-provider: [{ provide: Foo, useValue: { '0': 'test' } }]
+provider: [{provide: Foo, useValue: {'0': 'test'}}];
 ```
 
 ## Unsupported enum member name

@@ -12,15 +12,15 @@ import {Component} from '../../../../../src/core';
   selector: 'image-perf-warnings-lazy',
   template: `
     <!-- 'a.png' should be treated as an LCP element -->
-    <img src="/e2e/a.png" width="2500" height="2500" loading="lazy">
+    <img src="/e2e/a.png" width="2500" height="2500" loading="lazy" />
 
-    <br>
+    <br />
 
     <!--
       'b.png' should *not* be treated as an LCP element here
       as well, since it's below the fold
     -->
-    <img src="/e2e/b.png" width="10" height="10">
+    <img src="/e2e/b.png" width="10" height="10" />
   `,
 })
 export class ImagePerfWarningsLazyComponent {}

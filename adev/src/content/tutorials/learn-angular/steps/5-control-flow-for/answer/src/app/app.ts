@@ -3,8 +3,8 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'app-root',
   template: `
-    @for(user of users; track user.id) {
-    <p>{{ user.name }}</p>
+    @for (user of users; track user.id) {
+      <p>{{ user.name }}</p>
     }
   `,
 })

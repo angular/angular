@@ -23,9 +23,9 @@ By default, `@defer` loads the `article-comments` component when the browser is 
 In your browser's developer console, you can see that the `article-comments-component` lazy chunk file is loaded separately (The specific file names may change from run to run):
 
 ```markdown
-Initial chunk files | Names                      |  Raw size
-chunk-NNSQHFIE.js   | -                          | 769.00 kB |
-main.js             | main                       | 229.25 kB |
+Initial chunk files | Names | Raw size
+chunk-NNSQHFIE.js | - | 769.00 kB |
+main.js | main | 229.25 kB |
 
 Lazy chunk files | Names | Raw size
 chunk-T5UYXUSI.js | article-comments-component | 1.84 kB |

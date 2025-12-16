@@ -36,7 +36,7 @@ The migration will check all the components in the routes, check if they are sta
 
 ```typescript
 // app.module.ts
-import { HomeComponent } from './home/home.component';
+import {HomeComponent} from './home/home.component';
 
 @NgModule({
   imports: [
@@ -61,7 +61,7 @@ export class AppModule {}
       {
         path: 'home',
         // ↓ HomeComponent is now lazy loaded
-        loadComponent: () => import('./home/home.component').then(m => m.HomeComponent),
+        loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
       },
     ]),
   ],

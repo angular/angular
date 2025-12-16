@@ -60,7 +60,7 @@ export class AppModule {}
       {
         path: 'home',
         // ↓ HomeComponent is now lazy loaded
-        loadComponent: () => import('./home/home.component').then(m => m.HomeComponent),
+        loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
       },
     ]),
   ],

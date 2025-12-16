@@ -196,7 +196,7 @@ To use your own library in an application:
 - In your applications, import from the library by name:
 
 ```ts
-  import { myExport } from 'my-lib';
+import {myExport} from 'my-lib';
 ```
 
 ### Building and rebuilding your library
@@ -277,9 +277,7 @@ To use linked libraries, you need to configure your application's `angular.json`
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "prebundle": {
-              "exclude": [
-                "my-lib"
-              ]
+              "exclude": ["my-lib"]
             }
           }
         }

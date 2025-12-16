@@ -29,13 +29,13 @@ node_modules/@angular/core
 ├── README.md
 ├── package.json
 ├── fesm2022
-│   ├── core.mjs
-│   ├── core.mjs.map
-│   ├── testing.mjs
-│   └── testing.mjs.map
+│ ├── core.mjs
+│ ├── core.mjs.map
+│ ├── testing.mjs
+│ └── testing.mjs.map
 └── types
-│   ├── core.d.ts
-│   ├── testing.d.ts
+│ ├── core.d.ts
+│ ├── testing.d.ts
 ```
 
 This table describes the file layout under `node_modules/@angular/core` annotated to describe the purpose of files and directories:
@@ -169,14 +169,9 @@ The README file in the Markdown format that is used to display description of a 
 Example README content of @angular/core package:
 
 ```html
-
-Angular
-&equals;&equals;&equals;&equals;&equals;&equals;&equals;
-
-The sources for this package are in the main [Angular](https://github.com/angular/angular) repo.Please file issues and pull requests against that repo.
-
-License: MIT
-
+Angular &equals;&equals;&equals;&equals;&equals;&equals;&equals; The sources for this package are in
+the main [Angular](https://github.com/angular/angular) repo.Please file issues and pull requests
+against that repo. License: MIT
 ```
 
 ## Partial compilation

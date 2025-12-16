@@ -95,7 +95,16 @@ class ShadowComponent {}
   selector: 'styled-shadow-comp',
   template: '<div class="red"></div>',
   encapsulation: ViewEncapsulation.ShadowDom,
-  styles: [`:host { background: black; } .red { background: red; }`],
+  styles: [
+    `
+      :host {
+        background: black;
+      }
+      .red {
+        background: red;
+      }
+    `,
+  ],
   standalone: false,
 })
 class StyledShadowComponent {}

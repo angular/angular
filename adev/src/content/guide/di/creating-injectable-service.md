@@ -23,9 +23,15 @@ Here's an example of a service class that logs to the browser console:
 
 ```ts {header: "logger.service.ts (class)"}
 export class Logger {
-  log(msg: unknown) { console.log(msg); }
-  error(msg: unknown) { console.error(msg); }
-  warn(msg: unknown) { console.warn(msg); }
+  log(msg: unknown) {
+    console.log(msg);
+  }
+  error(msg: unknown) {
+    console.error(msg);
+  }
+  warn(msg: unknown) {
+    console.warn(msg);
+  }
 }
 ```
 
@@ -34,21 +40,21 @@ For example, here's a `HeroService` that depends on the `Logger` service, and al
 That service in turn might depend on the `HttpClient` service to fetch heroes asynchronously from a server:
 
 ```ts {header: "hero.service.ts", highlight="[7,8,12,13]"}
-import { inject } from "@angular/core";
+import {inject} from '@angular/core';
 
 export class HeroService {
-private heroes: Hero[] = [];
+  private heroes: Hero[] = [];
 
-private backend = inject(BackendService);
-private logger = inject(Logger);
+  private backend = inject(BackendService);
+  private logger = inject(Logger);
 
-async getHeroes() {
-// Fetch
-this.heroes = await this.backend.getAll(Hero);
-// Log
-this.logger.log(`Fetched ${this.heroes.length} heroes.`);
-return this.heroes;
-}
+  async getHeroes() {
+    // Fetch
+    this.heroes = await this.backend.getAll(Hero);
+    // Log
+    this.logger.log(`Fetched ${this.heroes.length} heroes.`);
+    return this.heroes;
+  }
 }
 ```
 

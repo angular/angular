@@ -20,7 +20,7 @@ works similarly to applying the `MenuBehavior` to the `<admin-menu>` element in 
   template: 'admin-menu.html',
   hostDirectives: [MenuBehavior],
 })
-export class AdminMenu { }
+export class AdminMenu {}
 ```
 
 When the framework renders a component, Angular also creates an instance of each host directive. The
@@ -45,13 +45,15 @@ in your component's API by expanding the entry in `hostDirectives`:
 @Component({
   selector: 'admin-menu',
   template: 'admin-menu.html',
-  hostDirectives: [{
-    directive: MenuBehavior,
-    inputs: ['menuId'],
-    outputs: ['menuClosed'],
-  }],
+  hostDirectives: [
+    {
+      directive: MenuBehavior,
+      inputs: ['menuId'],
+      outputs: ['menuClosed'],
+    },
+  ],
 })
-export class AdminMenu { }
+export class AdminMenu {}
 ```
 
 By explicitly specifying the inputs and outputs, consumers of the component with `hostDirective` can
@@ -69,13 +71,15 @@ component:
 @Component({
   selector: 'admin-menu',
   template: 'admin-menu.html',
-  hostDirectives: [{
-    directive: MenuBehavior,
-    inputs: ['menuId: id'],
-    outputs: ['menuClosed: closed'],
-  }],
+  hostDirectives: [
+    {
+      directive: MenuBehavior,
+      inputs: ['menuId: id'],
+      outputs: ['menuClosed: closed'],
+    },
+  ],
 })
-export class AdminMenu { }
+export class AdminMenu {}
 ```
 
 ```angular-html
@@ -131,7 +135,7 @@ The following example shows minimal use of a host directive:
   template: 'admin-menu.html',
   hostDirectives: [MenuBehavior],
 })
-export class AdminMenu { }
+export class AdminMenu {}
 ```
 
 The order of execution here is:

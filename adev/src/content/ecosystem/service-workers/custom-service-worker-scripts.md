@@ -73,8 +73,8 @@ importScripts('./ngsw-worker.js');
 3. Configure the service worker registration to use your custom script:
 
 ```ts
-import { ApplicationConfig, isDevMode } from '@angular/core';
-import { provideServiceWorker } from '@angular/service-worker';
+import {ApplicationConfig, isDevMode} from '@angular/core';
+import {provideServiceWorker} from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [

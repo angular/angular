@@ -23,10 +23,12 @@ Some APIs are designed to be run in an injection context. This is the case, for 
 Here is an example for `CanActivateFn`
 
 ```ts {highlight: [3]}
-const canActivateTeam: CanActivateFn =
-  (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-    return inject(PermissionsService).canActivate(inject(UserToken), route.params.id);
-  };
+const canActivateTeam: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
+  return inject(PermissionsService).canActivate(inject(UserToken), route.params.id);
+};
 ```
 
 ## Run within an injection context
@@ -36,7 +38,7 @@ This requires access to a given injector, like the `EnvironmentInjector`, for ex
 
 ```ts {highlight: [9], header"hero.service.ts"}
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HeroService {
   private environmentInjector = inject(EnvironmentInjector);
@@ -56,21 +58,23 @@ Note that [`inject`](/api/core/inject) will return an instance only if the injec
 Angular provides the `assertInInjectionContext` helper function to assert that the current context is an injection context and throws a clear error if not. Pass a reference to the calling function so the error message points to the correct API entry point. This produces a clearer, more actionable message than the default generic injection error.
 
 ```ts
-import { ElementRef, assertInInjectionContext, inject } from '@angular/core';
+import {ElementRef, assertInInjectionContext, inject} from '@angular/core';
 
 export function injectNativeElement<T extends Element>(): T {
-    assertInInjectionContext(injectNativeElement);
-    return inject(ElementRef).nativeElement;
+  assertInInjectionContext(injectNativeElement);
+  return inject(ElementRef).nativeElement;
 }
 ```
 
 You can then call this helper **from an injection context** (constructor, field initializer, provider factory, or code executed via `runInInjectionContext`):
 
 ```ts
-import { Component, inject } from '@angular/core';
-import { injectNativeElement } from './dom-helpers';
+import {Component, inject} from '@angular/core';
+import {injectNativeElement} from './dom-helpers';
 
-@Component({ /* … */ })
+@Component({
+  /* … */
+})
 export class PreviewCard {
   readonly hostEl = injectNativeElement<HTMLElement>(); // Field initializer runs in an injection context.
 

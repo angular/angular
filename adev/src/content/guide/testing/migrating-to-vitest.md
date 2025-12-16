@@ -212,7 +212,7 @@ Provide a direct path to a Vitest configuration file in your `angular.json`:
       "architect": {
         "test": {
           "builder": "@angular/build:unit-test",
-          "options": { "runnerConfig": "vitest.config.ts" }
+          "options": {"runnerConfig": "vitest.config.ts"}
         }
       }
     }

@@ -25,7 +25,7 @@ Example:
 ```html
 <!-- Before -->
 <div [ngStyle]="{'background-color': 'red'}">
-
-<!-- After -->
-<div [style]="{'background-color': 'red'}">
+  <!-- After -->
+  <div [style]="{'background-color': 'red'}"></div>
+</div>
 ```

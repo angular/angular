@@ -13,14 +13,12 @@ The main advantages to removing ZoneJS as a dependency are:
 
 ```typescript
 // standalone bootstrap
-bootstrapApplication(MyApp, {providers: [
-  provideZonelessChangeDetection(),
-]});
+bootstrapApplication(MyApp, {providers: [provideZonelessChangeDetection()]});
 
 // NgModule bootstrap
 platformBrowser().bootstrapModule(AppModule);
 @NgModule({
-  providers: [provideZonelessChangeDetection()]
+  providers: [provideZonelessChangeDetection()],
 })
 export class AppModule {}
 ```
@@ -130,7 +128,7 @@ Angular application.
 
 ```typescript
 TestBed.configureTestingModule({
-  providers: [provideZonelessChangeDetection()]
+  providers: [provideZonelessChangeDetection()],
 });
 
 const fixture = TestBed.createComponent(MyComponent);

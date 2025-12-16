@@ -13,10 +13,17 @@ import {HEROES} from './heroes';
   imports: [CommonModule, FormsModule, FlyingHeroesPipe],
   styles: [
     `
-    #flyers, #all {font-style: italic}
-    button {display: block}
-    input {margin: .25rem .25rem .5rem 0;}
-  `,
+      #flyers,
+      #all {
+        font-style: italic;
+      }
+      button {
+        display: block;
+      }
+      input {
+        margin: 0.25rem 0.25rem 0.5rem 0;
+      }
+    `,
   ],
 })
 // #docregion v1

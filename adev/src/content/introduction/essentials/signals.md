@@ -20,7 +20,7 @@ firstName.set('Jaime');
 
 // You can also use the `update` method to change the value
 // based on the previous value.
-firstName.update(name => name.toUpperCase());
+firstName.update((name) => name.toUpperCase());
 ```
 
 Angular tracks where signals are read and when they're updated. The framework uses this information to do additional work, such as updating the DOM with new state. This ability to respond to changing signal values over time is known as _reactivity_.
@@ -56,7 +56,9 @@ console.log(firstNameCapitalized()); // JAIME
 Use `signal` and `computed` inside your components to create and manage state:
 
 ```typescript
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class UserProfile {
   isTrial = signal(false);
   isTrialExpired = signal(false);

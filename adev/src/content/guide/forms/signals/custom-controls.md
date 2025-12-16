@@ -419,14 +419,16 @@ IMPORTANT: Don't implement validation logic in your control. Define validation r
 ```typescript
 // Avoid: Validation in control
 export class BadControl implements FormValueControl<string> {
-  value = model<string>('')
-  isValid() { return this.value().length >= 8 } // Don't do this!
+  value = model<string>('');
+  isValid() {
+    return this.value().length >= 8;
+  } // Don't do this!
 }
 
 // Good: Validation in schema, control displays results
-accountForm = form(this.accountModel, schemaPath => {
-  minLength(schemaPath.password, 8, { message: 'Password must be at least 8 characters' })
-})
+accountForm = form(this.accountModel, (schemaPath) => {
+  minLength(schemaPath.password, 8, {message: 'Password must be at least 8 characters'});
+});
 ```
 
 ## Next steps

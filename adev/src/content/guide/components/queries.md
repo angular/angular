@@ -149,7 +149,9 @@ If a child query (`viewChild` or `contentChild`) does not find a result, its val
 In some cases, especially with `viewChild`, you know with certainty that a specific child is always available. In other cases, you may want to strictly enforce that a specific child is present. For these cases, you can use a _required query_.
 
 ```ts
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class CustomCard {
   header = viewChild.required(CustomCardHeader);
   body = contentChild.required(CustomCardBody);
@@ -216,8 +218,9 @@ All query functions accept an options object as a second parameter. These option
 By default, the query locator indicates both the element you're searching for and the value retrieved. You can alternatively specify the `read` option to retrieve a different value from the element matched by the locator.
 
 ```ts
-
-@Component({/*...*/})
+@Component({
+  /*...*/
+})
 export class CustomExpando {
   toggle = contentChild(ExpandoContent, {read: TemplateRef});
 }

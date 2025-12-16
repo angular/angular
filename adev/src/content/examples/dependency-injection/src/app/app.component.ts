@@ -12,25 +12,28 @@ import {TestComponent} from './test.component';
 @Component({
   selector: 'app-root',
   template: `
-    <h1>{{title}}</h1>
+    <h1>{{ title }}</h1>
     <app-car />
     <app-injectors />
     <app-tests />
     <h2>User</h2>
     <p id="user">
-      {{userInfo}}
+      {{ userInfo }}
       <button type="button" (click)="nextUser()">Next User</button>
+    </p>
+
     <p>
-    @if (isAuthorized) {
-      <app-heroes id="authorized" />
-    }
-    @if (!isAuthorized) {
-      <app-heroes id="unauthorized" />
-    }
-    @if (isAuthorized) {
-      <app-heroes-tsp id="tspAuthorized" />
-    }
-    <app-providers />
+      @if (isAuthorized) {
+        <app-heroes id="authorized" />
+      }
+      @if (!isAuthorized) {
+        <app-heroes id="unauthorized" />
+      }
+      @if (isAuthorized) {
+        <app-heroes-tsp id="tspAuthorized" />
+      }
+      <app-providers />
+    </p>
   `,
   imports: [
     HeroesComponent,

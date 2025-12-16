@@ -64,16 +64,12 @@ Debugging router navigation issues can be challenging without visibility into th
 When you need to inspect a Router event sequence, you can enable logging for internal navigation events for debugging. You can configure this by passing a configuration option (`withDebugTracing()`) that enables detailed console logging of all routing events.
 
 ```ts
-import { provideRouter, withDebugTracing } from '@angular/router';
+import {provideRouter, withDebugTracing} from '@angular/router';
 
 const appRoutes: Routes = [];
-bootstrapApplication(AppComponent,
-  {
-    providers: [
-      provideRouter(appRoutes, withDebugTracing())
-    ]
-  }
-);
+bootstrapApplication(AppComponent, {
+  providers: [provideRouter(appRoutes, withDebugTracing())],
+});
 ```
 
 For more information, check out the official docs on [`withDebugTracing`](api/router/withDebugTracing).
@@ -117,30 +113,29 @@ export class AppComponent {
 Track page views for analytics:
 
 ```ts
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { inject, Injectable, DestroyRef } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {inject, Injectable, DestroyRef} from '@angular/core';
+import {Router, NavigationEnd} from '@angular/router';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class AnalyticsService {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
   startTracking() {
-    this.router.events.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(event => {
-        // Track page views when URL changes
-        if (event instanceof NavigationEnd) {
-           // Send page view to analytics
-          this.analytics.trackPageView(event.url);
-        }
-      });
+    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+      // Track page views when URL changes
+      if (event instanceof NavigationEnd) {
+        // Send page view to analytics
+        this.analytics.trackPageView(event.url);
+      }
+    });
   }
 
   private analytics = {
     trackPageView: (url: string) => {
       console.log('Page view tracked:', url);
-    }
+    },
   };
 }
 ```

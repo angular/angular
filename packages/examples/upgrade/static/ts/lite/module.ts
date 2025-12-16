@@ -70,10 +70,10 @@ class HeroesService {
       <header><ng-content selector="h1"></ng-content></header>
       <ng-content selector=".extra"></ng-content>
       <div *ngFor="let hero of this.heroesService.heroes">
-          <ng1-hero [hero]="hero" (onRemove)="onRemoveHero(hero)">
-            <strong>Super Hero</strong>
-          </ng1-hero>
-        </div>
+        <ng1-hero [hero]="hero" (onRemove)="onRemoveHero(hero)">
+          <strong>Super Hero</strong>
+        </ng1-hero>
+      </div>
       <button (click)="onAddHero()">Add Hero</button>
     </div>
   `,

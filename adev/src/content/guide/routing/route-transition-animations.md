@@ -41,25 +41,23 @@ Enable view transitions by adding the `withViewTransitions` feature to your [rou
 ### Standalone bootstrap
 
 ```ts
-import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter, withViewTransitions } from '@angular/router';
-import { routes } from './app.routes';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {provideRouter, withViewTransitions} from '@angular/router';
+import {routes} from './app.routes';
 
 bootstrapApplication(MyApp, {
-  providers: [
-    provideRouter(routes, withViewTransitions()),
-  ]
+  providers: [provideRouter(routes, withViewTransitions())],
 });
 ```
 
 ### NgModule bootstrap
 
 ```ts
-import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {enableViewTransitions: true})]
+  imports: [RouterModule.forRoot(routes, {enableViewTransitions: true})],
 })
 export class AppRouting {}
 ```
@@ -123,8 +121,8 @@ The `withViewTransitions` feature accepts an options object with an `onViewTrans
 Use this callback to customize transition behavior based on navigation context. For example, you can skip transitions for specific navigation types:
 
 ```ts
-import { inject } from '@angular/core';
-import { Router, withViewTransitions } from '@angular/router';
+import {inject} from '@angular/core';
+import {Router, withViewTransitions} from '@angular/router';
 
 withViewTransitions({
   onViewTransitionCreated: ({transition}) => {
@@ -143,7 +141,7 @@ withViewTransitions({
       transition.skipTransition();
     }
   },
-})
+});
 ```
 
 This example skips the view transition when navigation only changes the [URL fragment or query parameters](/guide/routing/read-route-state#query-parameters) (such as anchor links within the same page). The `skipTransition()` method prevents the animation while still allowing the navigation to complete.

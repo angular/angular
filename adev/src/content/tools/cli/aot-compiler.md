@@ -308,11 +308,9 @@ The compiler, however, only supports macros in the form of functions or static m
 For example, consider the following function:
 
 ```ts
-
 export function wrapInArray<T>(value: T): T[] {
   return [value];
 }
-
 ```
 
 You can call the `wrapInArray` in a metadata definition because it returns the value of an expression that conforms to the compiler's restrictive JavaScript subset.
@@ -320,23 +318,19 @@ You can call the `wrapInArray` in a metadata definition because it returns the v
 You might use `wrapInArray()` like this:
 
 ```ts
-
 @NgModule({
-  declarations: wrapInArray(TypicalComponent)
+  declarations: wrapInArray(TypicalComponent),
 })
 export class TypicalModule {}
-
 ```
 
 The compiler treats this usage as if you had written:
 
 ```ts
-
 @NgModule({
-  declarations: [TypicalComponent]
+  declarations: [TypicalComponent],
 })
 export class TypicalModule {}
-
 ```
 
 The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
@@ -352,34 +346,26 @@ the compiler doesn't need to know the expression's value — it just needs to be
 You might write something like:
 
 ```ts
-
-class TypicalServer {
-
-}
+class TypicalServer {}
 
 @NgModule({
-  providers: [{provide: SERVER, useFactory: () => TypicalServer}]
+  providers: [{provide: SERVER, useFactory: () => TypicalServer}],
 })
 export class TypicalModule {}
-
 ```
 
 Without rewriting, this would be invalid because lambdas are not supported and `TypicalServer` is not exported.
 To allow this, the compiler automatically rewrites this to something like:
 
 ```ts
-
-class TypicalServer {
-
-}
+class TypicalServer {}
 
 export const θ0 = () => new TypicalServer();
 
 @NgModule({
-  providers: [{provide: SERVER, useFactory: θ0}]
+  providers: [{provide: SERVER, useFactory: θ0}],
 })
 export class TypicalModule {}
-
 ```
 
 This allows the compiler to generate a reference to `θ0` in the factory without having to know what the value of `θ0` contains.

@@ -299,7 +299,7 @@ describe('output() function', () => {
       @Component({
         template: `
           <div dir></div>
-          <div dir (onBla)="true"></div>
+          <div dir (onBla)="(true)"></div>
         `,
         imports: [Dir],
       })
@@ -324,9 +324,7 @@ describe('output() function', () => {
       }
 
       @Component({
-        template: `
-          <div dir (onBla)="true"></div>
-        `,
+        template: ` <div dir (onBla)="(true)"></div> `,
         imports: [Dir],
       })
       class App {}

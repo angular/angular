@@ -1342,10 +1342,8 @@ describe('acceptance integration tests', () => {
 
         @Component({
           template: `
-                <div DirWithInitialStyling
-                  class="big"
-                  style="color:black; font-size:200px"></div>
-             `,
+            <div DirWithInitialStyling class="big" style="color:black; font-size:200px"></div>
+          `,
           standalone: false,
         })
         class App {}
@@ -1382,9 +1380,7 @@ describe('acceptance integration tests', () => {
         }
 
         @Component({
-          template: `
-              <div DirWithSingleStylingBindings class="abc" style="width:100px;"></div>
-            `,
+          template: ` <div DirWithSingleStylingBindings class="abc" style="width:100px;"></div> `,
           standalone: false,
         })
         class App {
@@ -2243,8 +2239,7 @@ describe('acceptance integration tests', () => {
     @Component({
       template: `
         <span [title]="'Your last name is ' + (lastName ?? lastNameFallback ?? 'unknown')">
-          Hello, {{ firstName ?? 'Frodo' }}!
-          You are a Balrog: {{ falsyValue ?? true }}
+          Hello, {{ firstName ?? 'Frodo' }}! You are a Balrog: {{ falsyValue ?? true }}
         </span>
       `,
       standalone: false,
@@ -2269,13 +2264,12 @@ describe('acceptance integration tests', () => {
   it('should handle safe keyed reads inside templates', () => {
     @Component({
       template: `
-      <span [title]="'Your last name is ' + (unknownNames?.[0] || 'unknown')">
-        Hello, {{ knownNames?.[0]?.[1] }}!
-        You are a Balrog: {{ species?.[0]?.[1]?.[2]?.[3]?.[4]?.[5] || 'unknown' }}
-        You are an Elf: {{ speciesMap?.[keys?.[0] ?? 'key'] }}
-        You are an Orc: {{ speciesMap?.['key'] }}
-      </span>
-    `,
+        <span [title]="'Your last name is ' + (unknownNames?.[0] || 'unknown')">
+          Hello, {{ knownNames?.[0]?.[1] }}! You are a Balrog:
+          {{ species?.[0]?.[1]?.[2]?.[3]?.[4]?.[5] || 'unknown' }} You are an Elf:
+          {{ speciesMap?.[keys?.[0] ?? 'key'] }} You are an Orc: {{ speciesMap?.['key'] }}
+        </span>
+      `,
       standalone: false,
     })
     class App {
@@ -2301,8 +2295,8 @@ describe('acceptance integration tests', () => {
     @Component({
       template: `
         <span [title]="'Your last name is ' + (person.getLastName?.() ?? 'unknown')">
-          Hello, {{ person.getName?.() }}!
-          You are a Balrog: {{ person.getSpecies?.()?.()?.()?.()?.() || 'unknown' }}
+          Hello, {{ person.getName?.() }}! You are a Balrog:
+          {{ person.getSpecies?.()?.()?.()?.()?.() || 'unknown' }}
         </span>
       `,
       standalone: false,
@@ -2458,9 +2452,7 @@ describe('acceptance integration tests', () => {
 
   it('should handle calls to a safe access in templates', () => {
     @Component({
-      template: `
-      <span>Hello, {{ (person?.getName() || 'unknown') }}!</span>
-    `,
+      template: ` <span>Hello, {{ person?.getName() || 'unknown' }}!</span> `,
       standalone: false,
     })
     class App {
@@ -2491,8 +2483,14 @@ describe('acceptance integration tests', () => {
 
     @Component({
       template: `
-      <span>Hello, {{ (person?.getName(getConfig('showTitle')?.enabled ?? getDefaultShowTitle()) ?? getFallbackName()) }}!</span>
-    `,
+        <span
+          >Hello,
+          {{
+            person?.getName(getConfig('showTitle')?.enabled ?? getDefaultShowTitle()) ??
+              getFallbackName()
+          }}!</span
+        >
+      `,
       standalone: false,
     })
     class App {
@@ -2662,6 +2660,8 @@ describe('acceptance integration tests', () => {
   });
 
   it('should not throw for a non-null assertion after a safe access', () => {
+    // prettier will add parentheses which will change the meaning of the test
+    // prettier-ignore
     @Component({
       template: `
         {{ val?.foo!.bar }}
@@ -2982,7 +2982,7 @@ describe('acceptance integration tests', () => {
   it('should support tagged template literals with no interpolations in expressions', () => {
     @Component({
       template: `
-        <p>:{{ caps\`Hello, World!\` }}:{{ excited?.caps(3)\`Uncomfortably excited\` }}:</p>
+        <p>:{{ caps\`Hello, World!\` }}:{{ (excited?.caps(3))\`Uncomfortably excited\` }}:</p>
         <p>{{ greet\`Hi, I'm \${name}, and I'm \${age}\` }}</p>
       `,
     })
@@ -3027,7 +3027,7 @@ describe('acceptance integration tests', () => {
 
   it('should support "in" expressions', () => {
     @Component({
-      template: `{{'foo' in obj ? 'OK' : 'KO'}}`,
+      template: `{{ 'foo' in obj ? 'OK' : 'KO' }}`,
     })
     class TestComponent {
       obj: any = {foo: 'bar'};
@@ -3103,11 +3103,7 @@ describe('acceptance integration tests', () => {
       }
 
       @Component({
-        template: `
-          <div *ngFor="let item of items" dir [attr.data-comp]="text">
-            ...
-          </div>
-        `,
+        template: ` <div *ngFor="let item of items" dir [attr.data-comp]="text">...</div> `,
         standalone: false,
       })
       class Cmp {
@@ -3144,9 +3140,7 @@ describe('acceptance integration tests', () => {
 
       @Component({
         template: `
-          <div *ngIf="showWarningMessage; else listOfItems">
-            Nooo!
-          </div>
+          <div *ngIf="showWarningMessage; else listOfItems">Nooo!</div>
 
           <ng-template #listOfItems>
             <animation-comp *ngFor="let item of items; trackBy: itemTrackFn">
@@ -3180,9 +3174,7 @@ describe('acceptance integration tests', () => {
             transition('* => *', [animate('1s')]),
           ]),
         ],
-        template: `
-                  <ng-content></ng-content>
-                `,
+        template: ` <ng-content></ng-content> `,
         standalone: false,
       })
       class AnimationComp {
@@ -3242,12 +3234,20 @@ describe('acceptance integration tests', () => {
         ],
         template: `
           <div *ngIf="showRoot" (@root.start)="track('root', $event)" @root>
-            <div *ngIf="showIfContents; else innerCompList" (@outer.start)="track('outer', $event)" @outer>
+            <div
+              *ngIf="showIfContents; else innerCompList"
+              (@outer.start)="track('outer', $event)"
+              @outer
+            >
               Nooo!
             </div>
 
             <ng-template #innerCompList>
-              <inner-comp *ngFor="let item of items; trackBy: itemTrackFn" (@inner.start)="track('inner', $event)" @inner>
+              <inner-comp
+                *ngFor="let item of items; trackBy: itemTrackFn"
+                (@inner.start)="track('inner', $event)"
+                @inner
+              >
                 {{ item.value }}
               </inner-comp>
             </ng-template>
@@ -3269,9 +3269,7 @@ describe('acceptance integration tests', () => {
       @Component({
         selector: 'inner-comp',
         animations: [trigger('host', [transition('* => *', [])])],
-        template: `
-                  <ng-content></ng-content>
-                `,
+        template: ` <ng-content></ng-content> `,
         standalone: false,
       })
       class InnerComp {

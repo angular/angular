@@ -354,14 +354,12 @@ The URL query is ignored when matching.
 If the field is omitted, it defaults to:
 
 ```ts
-
 [
-'/**', // Include all URLs.
-'!/**/*.*', // Exclude URLs to files (containing a file extension in the last segment).
-'!/**/*__*', // Exclude URLs containing `__` in the last segment.
-'!/**/*__*/**', // Exclude URLs containing `__` in any other segment.
-]
-
+  '/**', // Include all URLs.
+  '!/**/*.*', // Exclude URLs to files (containing a file extension in the last segment).
+  '!/**/*__*', // Exclude URLs containing `__` in the last segment.
+  '!/**/*__*/**', // Exclude URLs containing `__` in any other segment.
+];
 ```
 
 ### `navigationRequestStrategy`
@@ -369,7 +367,6 @@ If the field is omitted, it defaults to:
 This optional property enables you to configure how the service worker handles navigation requests:
 
 ```json
-
 {
   "navigationRequestStrategy": "freshness"
 }

@@ -113,14 +113,14 @@ You import this provider function from `@angular/router`.
 1. Add the following import statements:
 
    ```ts
-   import { provideRouter } from '@angular/router';
-   import { routes } from './app.routes';
+   import {provideRouter} from '@angular/router';
+   import {routes} from './app.routes';
    ```
 
 1. Update the providers in the `appConfig`:
 
    ```ts
-   providers: [provideRouter(routes)]
+   providers: [provideRouter(routes)];
    ```
 
 For `NgModule` based applications, put the `provideRouter` in the `providers` list of the `AppModule`, or whichever module is passed to `bootstrapModule` in the application.

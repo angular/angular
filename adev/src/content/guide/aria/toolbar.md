@@ -135,22 +135,14 @@ The `multi` input controls whether multiple widgets within a group can be select
 
 ```html {highlight: [15]}
 <!-- Single selection (radio group) -->
-<div
-  ngToolbarWidgetGroup
-  role="radiogroup"
-  aria-label="Alignment"
->
+<div ngToolbarWidgetGroup role="radiogroup" aria-label="Alignment">
   <button ngToolbarWidget value="left">Left</button>
   <button ngToolbarWidget value="center">Center</button>
   <button ngToolbarWidget value="right">Right</button>
 </div>
 
 <!-- Multiple selection (toggle group) -->
-<div
-  ngToolbarWidgetGroup
-  [multi]="true"
-  aria-label="Formatting"
->
+<div ngToolbarWidgetGroup [multi]="true" aria-label="Formatting">
   <button ngToolbarWidget value="bold">Bold</button>
   <button ngToolbarWidget value="italic">Italic</button>
   <button ngToolbarWidget value="underline">Underline</button>
