@@ -596,6 +596,7 @@ export function property(
 }
 
 export function control(
+  name: string,
   expression: o.Expression | ir.Interpolation,
   sanitizer: o.Expression | null,
   sourceSpan: ParseSourceSpan,
@@ -606,6 +607,7 @@ export function control(
   } else {
     args.push(expression);
   }
+  args.push(o.literal(name));
   if (sanitizer !== null) {
     args.push(sanitizer);
   }

@@ -170,7 +170,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     // (undocumented)
     readonly errors: Signal<ValidationError.WithField[]>;
     readonly errorSummary: Signal<ValidationError.WithField[]>;
-    readonly fieldBindings: Signal<readonly Field<unknown>[]>;
+    readonly formFieldBindings: Signal<readonly (Field<unknown> | FormField<unknown>)[]>;
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
     readonly keyInParent: Signal<TKey>;
@@ -197,9 +197,34 @@ export function form<TModel>(model: WritableSignal<TModel>, schemaOrOptions: Sch
 export function form<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: FormOptions): FieldTree<TModel>;
 
 // @public
+export const FORM_FIELD: InjectionToken<FormField<unknown>>;
+
+// @public
 export interface FormCheckboxControl extends FormUiControl {
     readonly checked: ModelSignal<boolean>;
     readonly value?: undefined;
+}
+
+// @public
+export class FormField<T> {
+    // (undocumented)
+    readonly [ɵCONTROL]: {
+        readonly create: typeof ɵɵcontrolCreate;
+        readonly update: typeof ɵcontrolUpdate;
+    };
+    // (undocumented)
+    readonly element: HTMLElement;
+    // (undocumented)
+    readonly formField: i0.InputSignal<FieldTree<T>>;
+    protected getOrCreateNgControl(): InteropNgControl;
+    // (undocumented)
+    readonly injector: Injector;
+    // (undocumented)
+    readonly state: i0.Signal<[T] extends [_angular_forms.AbstractControl<any, any, any>] ? CompatFieldState<T, string | number> : FieldState<T, string | number>>;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormField<any>, "[formField]", never, { "formField": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormField<any>, never>;
 }
 
 // @public
@@ -520,7 +545,7 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
 // @public
 export interface SignalFormsConfig {
     classes?: {
-        [className: string]: (state: Field<unknown>) => boolean;
+        [className: string]: (state: Field<unknown> | FormField<unknown>) => boolean;
     };
 }
 
