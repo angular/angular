@@ -375,7 +375,7 @@ The end!
 ## Prefer / Avoid
 
 ```ts {prefer}
-const foo= 'bar';
+const foo = 'bar';
 ```
 
 ```ts {avoid}

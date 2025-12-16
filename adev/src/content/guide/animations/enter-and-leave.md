@@ -86,7 +86,7 @@ TestBed provides built-in support for enabling or disabling animations in your t
 If you want to test that the animations are animating in a browser test, for example an end-to-end test, you can configure TestBed to enable animations by specifying `animationsEnabled: true` in your test configuration.
 
 ```typescript
-  TestBed.configureTestingModule({animationsEnabled: true});
+TestBed.configureTestingModule({animationsEnabled: true});
 ```
 
 This will configure animations in your test environment to behave normally.

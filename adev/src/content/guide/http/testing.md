@@ -32,11 +32,7 @@ For example, you can write a test that expects a GET request to occur and provid
 
 ```ts
 TestBed.configureTestingModule({
-  providers: [
-    ConfigService,
-    provideHttpClient(),
-    provideHttpClientTesting(),
-  ],
+  providers: [ConfigService, provideHttpClient(), provideHttpClientTesting()],
 });
 
 const httpTesting = TestBed.inject(HttpTestingController);
@@ -71,10 +67,13 @@ NOTE: `expectOne` will fail if the test has made more than one request which mat
 As an alternative to asserting on `req.method`, you could instead use an expanded form of `expectOne` to also match the request method:
 
 ```ts
-const req = httpTesting.expectOne({
-  method: 'GET',
-  url: '/api/config',
-}, 'Request to load the configuration');
+const req = httpTesting.expectOne(
+  {
+    method: 'GET',
+    url: '/api/config',
+  },
+  'Request to load the configuration',
+);
 ```
 
 HELPFUL: The expectation APIs match against the full URL of requests, including any query parameters.
@@ -105,14 +104,14 @@ All matching functions accept a predicate function for custom matching logic:
 
 ```ts
 // Look for one request that has a request body.
-const requestsWithBody = httpTesting.expectOne(req => req.body !== null);
+const requestsWithBody = httpTesting.expectOne((req) => req.body !== null);
 ```
 
 The `expectNone` function asserts that no requests match the given criteria.
 
 ```ts
 // Assert that no mutation requests have been issued.
-httpTesting.expectNone(req => req.method !== 'GET');
+httpTesting.expectNone((req) => req.method !== 'GET');
 ```
 
 ## Testing error handling
@@ -149,7 +148,10 @@ For example, an application may be required to add an authentication token gener
 This behavior can be enforced with the use of an interceptor:
 
 ```ts
-export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+export function authInterceptor(
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> {
   const authService = inject(AuthService);
 
   const clonedRequest = request.clone({
@@ -206,7 +208,7 @@ TestBed.configureTestingModule({
     provideHttpClient(withInterceptorsFromDi()),
     provideHttpClientTesting(),
     // We rely on the HTTP_INTERCEPTORS token to register the AuthInterceptor as an HttpInterceptor
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
   ],
 });
 ```

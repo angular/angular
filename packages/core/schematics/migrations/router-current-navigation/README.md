@@ -5,7 +5,7 @@ Replaces the usages of the deprecated `Router.getCurrentNavigation` method with 
 ### Before
 
 ```typescript
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
 export class MyService {
   router = inject(Router);
@@ -19,7 +19,7 @@ export class MyService {
 ### After
 
 ```typescript
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
 export class MyService {
   router = inject(Router);

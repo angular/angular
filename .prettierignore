@@ -33,3 +33,6 @@ goldens/**/*.api.md
 adev/src/content/aria/**/*.json
 adev/src/content/cli/**/*.json
 adev/src/content/cdk/**/*.json
+
+CHANGELOG.md
+CHANGELOG_ARCHIVE.md

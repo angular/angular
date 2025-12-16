@@ -6,7 +6,7 @@ import {OpenCloseComponent} from './open-close.component';
   template: `
     <section>
       <h2>Open Close Component</h2>
-      <input type="checkbox" id="log-checkbox" [checked]="logging" (click)="toggleLogging()"/>
+      <input type="checkbox" id="log-checkbox" [checked]="logging" (click)="toggleLogging()" />
       <label for="log-checkbox">Console Log Animation Events</label>
 
       <app-open-close [logging]="logging"></app-open-close>

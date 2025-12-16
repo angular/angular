@@ -11,7 +11,7 @@ import {HeroListComponent} from './heroes/hero-list.component';
   selector: 'app-tests',
   template: `
     <h2>Tests</h2>
-    <p id="tests">Tests {{results.pass}}: {{results.message}}</p>
+    <p id="tests">Tests {{ results.pass }}: {{ results.message }}</p>
   `,
 })
 export class TestComponent {

@@ -18,7 +18,7 @@ export class UserProfile {
     // This subscription the 'notifications' Observable is automatically
     // unsubscribed when the 'UserProfile' component is destroyed.
     const messages: Observable<string> = this.dispatcher.notifications;
-    messages.pipe(takeUntilDestroyed()).subscribe(message => {
+    messages.pipe(takeUntilDestroyed()).subscribe((message) => {
       this.popup.show(message);
     });
   }
@@ -38,7 +38,7 @@ export class UserProfile {
     // Always pass a `DestroyRef` if you call `takeUntilDestroyed` outside
     // of an injection context.
     const messages: Observable<string> = this.dispatcher.notifications;
-    messages.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(message => {
+    messages.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((message) => {
       this.popup.show(message);
     });
   }

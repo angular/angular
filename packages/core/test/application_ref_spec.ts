@@ -260,9 +260,7 @@ describe('bootstrap', () => {
       it('runs in `NgZone`', inject([ApplicationRef], async (ref: ApplicationRef) => {
         @Component({
           selector: 'zone-comp',
-          template: `
-            <div>{{ name }}</div>
-          `,
+          template: ` <div>{{ name }}</div> `,
         })
         class ZoneComp {
           readonly inNgZone = NgZone.isInAngularZone();
@@ -856,7 +854,7 @@ describe('AppRef', () => {
   describe('stability', () => {
     @Component({
       selector: 'sync-comp',
-      template: `<span>{{text}}</span>`,
+      template: `<span>{{ text }}</span>`,
       standalone: false,
     })
     class SyncComp {
@@ -865,7 +863,7 @@ describe('AppRef', () => {
 
     @Component({
       selector: 'click-comp',
-      template: `<span (click)="onClick()">{{text}}</span>`,
+      template: `<span (click)="onClick()">{{ text }}</span>`,
       standalone: false,
     })
     class ClickComp {
@@ -878,7 +876,7 @@ describe('AppRef', () => {
 
     @Component({
       selector: 'micro-task-comp',
-      template: `<span>{{text}}</span>`,
+      template: `<span>{{ text }}</span>`,
       standalone: false,
     })
     class MicroTaskComp {
@@ -893,7 +891,7 @@ describe('AppRef', () => {
 
     @Component({
       selector: 'macro-task-comp',
-      template: `<span>{{text}}</span>`,
+      template: `<span>{{ text }}</span>`,
       standalone: false,
     })
     class MacroTaskComp {
@@ -908,7 +906,7 @@ describe('AppRef', () => {
 
     @Component({
       selector: 'micro-macro-task-comp',
-      template: `<span>{{text}}</span>`,
+      template: `<span>{{ text }}</span>`,
       standalone: false,
     })
     class MicroMacroTaskComp {
@@ -926,7 +924,7 @@ describe('AppRef', () => {
 
     @Component({
       selector: 'macro-micro-task-comp',
-      template: `<span>{{text}}</span>`,
+      template: `<span>{{ text }}</span>`,
       standalone: false,
     })
     class MacroMicroTaskComp {

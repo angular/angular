@@ -100,7 +100,7 @@ describe('discovery utils', () => {
   @Component({
     selector: 'my-app',
     template: `
-      <span (click)="log($event)" *ngIf="spanVisible">{{text}}</span>
+      <span (click)="log($event)" *ngIf="spanVisible">{{ text }}</span>
       <div dirA #div #foo="dirA"></div>
       <child></child>
       <child dirA #child></child>

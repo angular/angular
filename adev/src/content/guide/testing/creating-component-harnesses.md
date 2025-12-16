@@ -28,11 +28,11 @@ The `hostSelector` property identifies elements in the DOM that match this harne
 @Component({
   selector: 'my-popup',
   template: `
-    <button (click)="toggle()">{{triggerText()}}</button>
+    <button (click)="toggle()">{{ triggerText() }}</button>
     @if (isOpen()) {
       <div class="my-popup-content"><ng-content></ng-content></div>
     }
-  `
+  `,
 })
 class MyPopup {
   triggerText = input('');
@@ -118,16 +118,15 @@ For example, consider a menu build using the popup from above:
 
 ```ts
 @Directive({
-  selector: 'my-menu-item'
+  selector: 'my-menu-item',
 })
 class MyMenuItem {}
 
 @Component({
-selector: 'my-menu',
-template: `<my-popup>
-      <ng-content />
-    </my-popup>
-  `
+  selector: 'my-menu',
+  template: `<my-popup>
+    <ng-content />
+  </my-popup> `,
 })
 class MyMenu {
   triggerText = input('');
@@ -185,9 +184,11 @@ class MyMenuHarness extends ComponentHarness {
 
   /** Creates a `HarnessPredicate` used to locate a particular `MyMenuHarness`. */
   static with(options: MyMenuHarnessFilters): HarnessPredicate<MyMenuHarness> {
-    return new HarnessPredicate(MyMenuHarness, options)
-      .addOption('trigger text', options.triggerText,
-        (harness, text) => HarnessPredicate.stringMatches(harness.getTriggerText(), text));
+    return new HarnessPredicate(MyMenuHarness, options).addOption(
+      'trigger text',
+      options.triggerText,
+      (harness, text) => HarnessPredicate.stringMatches(harness.getTriggerText(), text),
+    );
   }
 
   protected getPopupHarness = this.locatorFor(MyPopupHarness);
@@ -204,9 +205,11 @@ class MyMenuItemHarness extends ComponentHarness {
 
   /** Creates a `HarnessPredicate` used to locate a particular `MyMenuItemHarness`. */
   static with(options: MyMenuItemHarnessFilters): HarnessPredicate<MyMenuItemHarness> {
-    return new HarnessPredicate(MyMenuItemHarness, options)
-      .addOption('text', options.text,
-        (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text));
+    return new HarnessPredicate(MyMenuItemHarness, options).addOption(
+      'text',
+      options.text,
+      (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text),
+    );
   }
 
   /** Gets the text of the menu item. */
@@ -262,8 +265,8 @@ class MyPopupHarness extends ComponentHarness {
   async getHarnessLoaderForContent(): Promise<HarnessLoader> {
     const rootLocator = this.documentRootLocatorFactory();
     return rootLocator.harnessLoaderFor('my-popup-content');
-    }
   }
+}
 ```
 
 ## Waiting for asynchronous tasks

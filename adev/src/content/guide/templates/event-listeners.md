@@ -128,8 +128,8 @@ Angular’s event system is extensible via custom event plugins registered with 
 To create a custom event plugin, extend the `EventManagerPlugin` class and implement the required methods.
 
 ```ts
-import { Injectable } from '@angular/core';
-import { EventManagerPlugin } from '@angular/platform-browser';
+import {Injectable} from '@angular/core';
+import {EventManagerPlugin} from '@angular/platform-browser';
 
 @Injectable()
 export class DebounceEventPlugin extends EventManagerPlugin {
@@ -143,21 +143,17 @@ export class DebounceEventPlugin extends EventManagerPlugin {
   }
 
   // Handle the event registration
-  override addEventListener(
-    element: HTMLElement,
-    eventName: string,
-    handler: Function
-  ) {
+  override addEventListener(element: HTMLElement, eventName: string, handler: Function) {
     // Parse the event: e.g., "click.debounce.500"
     // event: "click", delay: 500
-    const [event, method , delay = 300 ] = eventName.split('.');
+    const [event, method, delay = 300] = eventName.split('.');
 
     let timeoutId: number;
 
     const listener = (event: Event) => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-          handler(event);
+        handler(event);
       }, delay);
     };
 
@@ -175,19 +171,19 @@ export class DebounceEventPlugin extends EventManagerPlugin {
 Register your custom plugin using the `EVENT_MANAGER_PLUGINS` token in your application's providers:
 
 ```ts
-import { bootstrapApplication } from '@angular/platform-browser';
-import { EVENT_MANAGER_PLUGINS } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
-import { DebounceEventPlugin } from './debounce-event-plugin';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
+import {AppComponent} from './app/app.component';
+import {DebounceEventPlugin} from './debounce-event-plugin';
 
 bootstrapApplication(AppComponent, {
   providers: [
     {
       provide: EVENT_MANAGER_PLUGINS,
       useClass: DebounceEventPlugin,
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 });
 ```
 

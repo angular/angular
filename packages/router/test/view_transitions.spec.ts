@@ -85,7 +85,7 @@ describe('view transitions', () => {
     it('should not create a view transition if only the fragment changes', async () => {
       @Component({
         selector: 'test-app',
-        template: `{{checks}}`,
+        template: `{{ checks }}`,
       })
       class App {
         checks = 0;

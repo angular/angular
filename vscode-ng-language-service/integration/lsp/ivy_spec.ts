@@ -76,7 +76,7 @@ describe('Angular language server', () => {
       textDocument: {
         uri: APP_COMPONENT_URI,
       },
-      position: {line: 4, character: 25},
+      position: {line: 4, character: 26},
     });
     expect(response?.contents).toContain({
       language: 'typescript',
@@ -453,11 +453,11 @@ export class AppComponent {
           textDocument: {
             uri: APP_COMPONENT_URI,
           },
-          position: {line: 4, character: 25},
+          position: {line: 4, character: 26},
         })) as {range: lsp.Range; placeholder: string};
         expect(response.range).toEqual({
-          start: {line: 4, character: 25},
-          end: {line: 4, character: 29},
+          start: {line: 4, character: 26},
+          end: {line: 4, character: 30},
         });
         expect(response.placeholder).toEqual('name');
       });
@@ -472,8 +472,8 @@ export class AppComponent {
         };
         const expectedRenameInTemplate = {
           range: {
-            start: {line: 4, character: 25},
-            end: {line: 4, character: 29},
+            start: {line: 4, character: 26},
+            end: {line: 4, character: 30},
           },
           newText: 'surname',
         };
@@ -483,7 +483,7 @@ export class AppComponent {
             textDocument: {
               uri: APP_COMPONENT_URI,
             },
-            position: {line: 4, character: 25},
+            position: {line: 4, character: 26},
             newName: 'surname',
           });
           expect(response).not.toBeNull();

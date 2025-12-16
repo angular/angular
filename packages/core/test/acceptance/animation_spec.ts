@@ -256,7 +256,11 @@ describe('Animation', () => {
       @Component({
         selector: 'test-cmp',
         styles: multiple,
-        template: `<div>@if (show()) {<p [animate.leave]="'slide-out fade'" #el>I should slide out</p>}</div>`,
+        template: `<div>
+          @if (show()) {
+            <p [animate.leave]="'slide-out fade'" #el>I should slide out</p>
+          }
+        </div>`,
         encapsulation: ViewEncapsulation.None,
       })
       class TestComponent {
@@ -1135,7 +1139,11 @@ describe('Animation', () => {
       @Component({
         selector: 'test-cmp',
         styles: multiple,
-        template: `<div>@if (show()) {<p [animate.enter]="'slide-in fade-in'" #el>I should slide in</p>}</div>`,
+        template: `<div>
+          @if (show()) {
+            <p [animate.enter]="'slide-in fade-in'" #el>I should slide in</p>
+          }
+        </div>`,
         encapsulation: ViewEncapsulation.None,
       })
       class TestComponent {
@@ -1710,7 +1718,7 @@ describe('Animation', () => {
         template: `
           <div>
             @for (item of items; track item) {
-              <p animate.enter="slide-in" animate.leave="fade" #el>I should slide in {{item}}.</p>
+              <p animate.enter="slide-in" animate.leave="fade" #el>I should slide in {{ item }}.</p>
             }
           </div>
         `,
@@ -1782,7 +1790,9 @@ describe('Animation', () => {
         template: `
           <div>
             @for (item of items(); track item) {
-              <p id="item-{{item}}" animate.enter="slide-in" animate.leave="fade">I should slide in {{item}}.</p>
+              <p id="item-{{ item }}" animate.enter="slide-in" animate.leave="fade">
+                I should slide in {{ item }}.
+              </p>
             }
           </div>
         `,
@@ -1866,7 +1876,9 @@ describe('Animation', () => {
         template: `
           <div>
             @for (item of items(); track item) {
-              <p id="item-{{item}}" animate.enter="slide-in" (animate.leave)="fadeOut($event)">I should slide in {{item}}.</p>
+              <p id="item-{{ item }}" animate.enter="slide-in" (animate.leave)="fadeOut($event)">
+                I should slide in {{ item }}.
+              </p>
             }
           </div>
         `,
@@ -1955,8 +1967,8 @@ describe('Animation', () => {
         imports: [NgFor],
         template: `
           <div>
-            <ng-container *ngFor="let item of items; trackBy: trackByIndex; let i=index">
-              <p animate.enter="slide-in" animate.leave="fade" #el>I should slide in {{item}}.</p>
+            <ng-container *ngFor="let item of items; trackBy: trackByIndex; let i = index">
+              <p animate.enter="slide-in" animate.leave="fade" #el>I should slide in {{ item }}.</p>
             </ng-container>
           </div>
         `,
@@ -2017,7 +2029,7 @@ describe('Animation', () => {
         template: `
           <div>
             @for (item of shown(); track item) {
-              <p animate.leave="fade" #el>I should slide in {{item}}.</p>
+              <p animate.leave="fade" #el>I should slide in {{ item }}.</p>
             }
           </div>
         `,
@@ -2192,15 +2204,13 @@ describe('Animation', () => {
       @Component({
         selector: 'app-control-panel',
         template: `
-        @if (step() === 0) {
-        <p class="not-here" [animate.leave]="'fade-out'">
-          THIS SHOULD NOT BE HERE
-        </p>
-        }
-        @if (step() === 1) {
-          <p class="all-there-is">THIS SHOULD BE ALL THERE IS</p>
-        }
-      `,
+          @if (step() === 0) {
+            <p class="not-here" [animate.leave]="'fade-out'">THIS SHOULD NOT BE HERE</p>
+          }
+          @if (step() === 1) {
+            <p class="all-there-is">THIS SHOULD BE ALL THERE IS</p>
+          }
+        `,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class StepperComponent {
@@ -2242,7 +2252,7 @@ describe('Animation', () => {
         template: `
           <div>
             @if (show()) {
-              <app-dynamic/>
+              <app-dynamic />
             }
           </div>
         `,

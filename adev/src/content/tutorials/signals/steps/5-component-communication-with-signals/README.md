@@ -49,18 +49,10 @@ Update the `product-card` usage in `app.ts` to pass dynamic signal values instea
 
 ```html
 <!-- Change from static values: -->
-<product-card
-  name="Static Product"
-  price="99"
-  available="true"
-/>
+<product-card name="Static Product" price="99" available="true" />
 
 <!-- To dynamic signals: -->
-<product-card
-  [name]="productName()"
-  [price]="productPrice()"
-  [available]="productAvailable()"
-/>
+<product-card [name]="productName()" [price]="productPrice()" [available]="productAvailable()" />
 ```
 
 The square brackets `[]` create property bindings that pass the current signal values to the child.

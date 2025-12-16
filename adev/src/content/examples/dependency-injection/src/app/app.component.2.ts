@@ -7,7 +7,7 @@ import {HeroesComponent} from './heroes/heroes.component';
 @Component({
   selector: 'app-root',
   template: `
-    <h1>{{title}}</h1>
+    <h1>{{ title }}</h1>
     <app-car />
     <app-heroes />
   `,

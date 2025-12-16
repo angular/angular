@@ -34,9 +34,9 @@ Angular profiling works exclusively in development mode.
 Here is an example of how you can enable the integration in the application bootstrap to capture all possible events:
 
 ```ts
-import { enableProfiling } from '@angular/core';
-import { bootstrapApplication } from '@angular/platform-browser';
-import { MyApp } from './my-app';
+import {enableProfiling} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {MyApp} from './my-app';
 
 // Turn on profiling *before* bootstrapping your application
 // in order to capture all of the code run on start-up.

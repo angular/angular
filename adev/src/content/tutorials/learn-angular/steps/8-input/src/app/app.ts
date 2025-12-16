@@ -3,9 +3,7 @@ import {User} from './user';
 
 @Component({
   selector: 'app-root',
-  template: `
-    <app-user />
-  `,
+  template: ` <app-user /> `,
   imports: [User],
 })
 export class App {}

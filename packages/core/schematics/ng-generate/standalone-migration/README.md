@@ -59,7 +59,7 @@ instead of `bootstrapModule`. Their declarations will be converted automatically
 // app.module.ts
 @NgModule({
   imports: [CommonModule],
-  declarations: [MyComp, MyDir, MyPipe]
+  declarations: [MyComp, MyDir, MyPipe],
 })
 export class AppModule {}
 ```
@@ -93,7 +93,7 @@ export class MyPipe {}
 ```typescript
 // app.module.ts
 @NgModule({
-  imports: [CommonModule, MyComp, MyDir, MyPipe]
+  imports: [CommonModule, MyComp, MyDir, MyPipe],
 })
 export class AppModule {}
 ```
@@ -103,7 +103,7 @@ export class AppModule {}
 @Component({
   selector: 'my-comp',
   template: '<div my-dir *ngIf="showGreeting">{{ "Hello" | myPipe }}</div>',
-  imports: [NgIf, MyDir, MyPipe]
+  imports: [NgIf, MyDir, MyPipe],
 })
 export class MyComp {
   public showGreeting = true;
@@ -145,7 +145,7 @@ A module is considered "safe to remove" if it:
 
 @NgModule({
   imports: [FooComp, BarPipe],
-  exports: [FooComp, BarPipe]
+  exports: [FooComp, BarPipe],
 })
 export class ImporterModule {}
 ```
@@ -159,7 +159,7 @@ console.log(ImporterModule);
 @NgModule({
   imports: [ImporterModule],
   exports: [ImporterModule],
-  providers: [{provide: FOO, useValue: 123}]
+  providers: [{provide: FOO, useValue: 123}],
 })
 export class ConfigurerModule {}
 ```
@@ -178,12 +178,14 @@ export {ImporterModule, ConfigurerModule} from './modules/index';
 
 ```typescript
 // configurer.module.ts
-console.log(/* TODO(standalone-migration): clean up removed NgModule reference manually */ ImporterModule);
+console.log(
+  /* TODO(standalone-migration): clean up removed NgModule reference manually */ ImporterModule,
+);
 
 @NgModule({
   imports: [],
   exports: [],
-  providers: [{provide: FOO, useValue: 123}]
+  providers: [{provide: FOO, useValue: 123}],
 })
 export class ConfigurerModule {}
 ```
@@ -240,19 +242,24 @@ export class ExportedConfigClass {}
   imports: [
     SharedModule,
     BrowserAnimationsModule,
-    RouterModule.forRoot([{
-      path: 'shop',
-      loadComponent: () => import('./shop/shop.component').then(m => m.ShopComponent)
-    }], {
-      initialNavigation: 'enabledBlocking'
-    })
+    RouterModule.forRoot(
+      [
+        {
+          path: 'shop',
+          loadComponent: () => import('./shop/shop.component').then((m) => m.ShopComponent),
+        },
+      ],
+      {
+        initialNavigation: 'enabledBlocking',
+      },
+    ),
   ],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
   providers: [
     {provide: token, useValue: {foo: true, bar: {baz: false}}},
-    {provide: CONFIG, useClass: ExportedConfigClass}
-  ]
+    {provide: CONFIG, useClass: ExportedConfigClass},
+  ],
 })
 export class AppModule {}
 ```
@@ -268,7 +275,9 @@ export class AppComponent {}
 import {platformBrowser} from '@angular/platform-browser';
 import {AppModule} from './app/app.module';
 
-platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+platformBrowser()
+  .bootstrapModule(AppModule)
+  .catch((e) => console.error(e));
 ```
 
 **After:**
@@ -324,10 +333,15 @@ bootstrapApplication(AppComponent, {
     {provide: token, useValue: {foo: true, bar: {baz: false}}},
     {provide: CONFIG, useClass: ExportedConfigClass},
     provideAnimations(),
-    provideRouter([{
-      path: 'shop',
-      loadComponent: () => import('./app/shop/shop.component').then(m => m.ShopComponent)
-    }], withEnabledBlockingInitialNavigation())
-  ]
-}).catch(e => console.error(e));
+    provideRouter(
+      [
+        {
+          path: 'shop',
+          loadComponent: () => import('./app/shop/shop.component').then((m) => m.ShopComponent),
+        },
+      ],
+      withEnabledBlockingInitialNavigation(),
+    ),
+  ],
+}).catch((e) => console.error(e));
 ```

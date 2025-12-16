@@ -6,7 +6,7 @@ import {HEROES} from './mock-heroes';
   selector: 'app-hero-list',
   template: `
     @for (hero of heroes; track hero) {
-      <div>{{hero.id}} - {{hero.name}}</div>
+      <div>{{ hero.id }} - {{ hero.name }}</div>
     }
   `,
 })

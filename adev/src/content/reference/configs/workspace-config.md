@@ -362,9 +362,7 @@ To add paths, use the `stylePreprocessorOptions` option:
           "builder": "@angular/build:application",
           "options": {
             "stylePreprocessorOptions": {
-              "includePaths": [
-                "src/style-paths"
-              ]
+              "includePaths": ["src/style-paths"]
             }
           }
         }
@@ -432,9 +430,7 @@ You can supply a value such as the following to apply optimization to one or the
           "builder": "@angular/build:application",
           "options": {
             "stylePreprocessorOptions": {
-              "includePaths": [
-                "src/style-paths"
-              ]
+              "includePaths": ["src/style-paths"]
             }
           }
         }

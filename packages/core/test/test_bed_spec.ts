@@ -151,8 +151,11 @@ export class HostBindingDir {
   selector: 'component-with-prop-bindings',
   template: `
     <div hostBindingDir [title]="title" [attr.aria-label]="label"></div>
-    <p title="( {{ label }} - {{ title }} )" [attr.aria-label]="label" id="[ {{ label }} ] [ {{ title }} ]">
-    </p>
+    <p
+      title="( {{ label }} - {{ title }} )"
+      [attr.aria-label]="label"
+      id="[ {{ label }} ] [ {{ title }} ]"
+    ></p>
   `,
   standalone: false,
 })
@@ -163,9 +166,7 @@ export class ComponentWithPropBindings {
 
 @Component({
   selector: 'simple-app',
-  template: `
-    <simple-cmp></simple-cmp> - <inherited-cmp></inherited-cmp>
-  `,
+  template: ` <simple-cmp></simple-cmp> - <inherited-cmp></inherited-cmp> `,
   standalone: false,
 })
 export class SimpleApp {}
@@ -2672,14 +2673,26 @@ describe('TestBed module teardown', () => {
   it('should remove the styles associated with a test component when the test module is torn down', () => {
     @Component({
       template: '<span>Hello</span>',
-      styles: [`span {color: hotpink;}`],
+      styles: [
+        `
+          span {
+            color: hotpink;
+          }
+        `,
+      ],
       standalone: false,
     })
     class StyledComp1 {}
 
     @Component({
       template: '<div>Hello</div>',
-      styles: [`div {color: red;}`],
+      styles: [
+        `
+          div {
+            color: red;
+          }
+        `,
+      ],
       standalone: false,
     })
     class StyledComp2 {}

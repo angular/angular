@@ -266,7 +266,7 @@ describe('getSignalGraph', () => {
     @Component({
       providers: [ExternalService],
       selector: 'component-with-external-service',
-      template: `{{externalService.oneTwoThree()}}`,
+      template: `{{ externalService.oneTwoThree() }}`,
     })
     class WithExternalService {
       externalService = inject(ExternalService);

@@ -517,10 +517,10 @@ describe('di', () => {
 
       @Component({
         template: `
-        <div dirA>
-          <span dirB dirC #dir="dirC">{{ dir.value }}</span>
-        </div>
-      `,
+          <div dirA>
+            <span dirB dirC #dir="dirC">{{ dir.value }}</span>
+          </div>
+        `,
         standalone: false,
       })
       class MyComp {}
@@ -941,15 +941,15 @@ describe('di', () => {
 
         @Component({
           template: `<div dirB value="declaration">
-           <ng-template #foo>
-               <div dirA #dir="dirA">{{ dir.dirB.value }}</div>
-           </ng-template>
-         </div>
+              <ng-template #foo>
+                <div dirA #dir="dirA">{{ dir.dirB.value }}</div>
+              </ng-template>
+            </div>
 
-         <div dirB value="insertion">
-           <div structuralDir [tmp]="foo"></div>
-           <!-- insertion point -->
-         </div>`,
+            <div dirB value="insertion">
+              <div structuralDir [tmp]="foo"></div>
+              <!-- insertion point -->
+            </div>`,
           standalone: false,
         })
         class MyComp {
@@ -1055,8 +1055,7 @@ describe('di', () => {
         class Projector {}
 
         @Component({
-          template: `
-          <projector>
+          template: ` <projector>
             <div dirA>
               <ng-container #childOrigin></ng-container>
               <ng-container #childOriginWithDirB dirB></ng-container>
@@ -2694,10 +2693,10 @@ describe('di', () => {
 
             @Component({
               template: `
-                   <div group>
-                     <my-comp></my-comp>
-                   </div>
-                 `,
+                <div group>
+                  <my-comp></my-comp>
+                </div>
+              `,
               standalone: false,
             })
             class MyApp {}
@@ -3206,7 +3205,9 @@ describe('di', () => {
       @Component({
         template: `<div parentDir>
           <ng-container *ngIf="showing">
-            <span childDir child2Dir #child1="childDir" #child2="child2Dir">{{ child1.value }}-{{ child2.value }}</span>
+            <span childDir child2Dir #child1="childDir" #child2="child2Dir"
+              >{{ child1.value }}-{{ child2.value }}</span
+            >
           </ng-container>
         </div>`,
         standalone: false,
@@ -3752,9 +3753,8 @@ describe('di', () => {
         @Component({
           selector: 'my-app',
           template: `<my-comp>
-               <div dir otherDir #dir="dir"></div>
-             </my-comp>
-              `,
+            <div dir otherDir #dir="dir"></div>
+          </my-comp> `,
           standalone: false,
         })
         class MyApp {
@@ -3915,7 +3915,7 @@ describe('di', () => {
       }
 
       @Component({
-        template: `<my-comp token='token'></my-comp>`,
+        template: `<my-comp token="token"></my-comp>`,
         standalone: false,
       })
       class WrapperComp {
@@ -5050,7 +5050,8 @@ describe('di', () => {
             style="margin: 1px; color: red;"
             class="hello there"
             some-attr="foo"
-            other="ignore"></div>
+            other="ignore"
+          ></div>
         `,
         imports: [Dir],
       })
@@ -5147,14 +5148,14 @@ describe('di', () => {
 
       @Component({
         imports: [Dir],
-        template: `
-          <div
-            dir
-            exists="existsValue"
-            [binding]="bindingValue"
-            (output)="noop()"
-            other="otherValue"
-            ignore="ignoreValue"></div>`,
+        template: ` <div
+          dir
+          exists="existsValue"
+          [binding]="bindingValue"
+          (output)="noop()"
+          other="otherValue"
+          ignore="ignoreValue"
+        ></div>`,
       })
       class TestCmp {
         @ViewChild(Dir) dir!: Dir;
@@ -5364,11 +5365,7 @@ describe('di', () => {
 
     @Component({
       template: `
-        <div i18n>{
-          count, select,
-          =1 {One}
-          other {Other value is: {{count | somePipe}}}
-        }</div>
+        <div i18n>{count, select, =1 {One} other {Other value is: {{count | somePipe}}}}</div>
       `,
       standalone: false,
     })
@@ -5407,9 +5404,7 @@ describe('di', () => {
 
     @Component({
       template: `
-        <ng-template #source i18n>
-          {{count | somePipe}} <span>items</span>
-        </ng-template>
+        <ng-template #source i18n> {{ count | somePipe }} <span>items</span> </ng-template>
         <ng-container #target></ng-container>
       `,
       standalone: false,
@@ -5465,7 +5460,7 @@ describe('di', () => {
     }
 
     @Component({
-      template: `<div dirA> <child></child> </div>`,
+      template: `<div dirA><child></child></div>`,
       standalone: false,
     })
     class App {
@@ -5674,7 +5669,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         standalone: false,
       })
       class App {
@@ -5739,16 +5734,16 @@ describe('di', () => {
 
       @Component({
         template: `
-            <menu-trigger #outerTrigger [triggerFor]="outerTemplate"></menu-trigger>
-            <ng-template #outerTemplate>
-              <menu></menu>
+          <menu-trigger #outerTrigger [triggerFor]="outerTemplate"></menu-trigger>
+          <ng-template #outerTemplate>
+            <menu></menu>
 
-              <menu-trigger #innerTrigger [triggerFor]="innerTemplate"></menu-trigger>
-              <ng-template #innerTemplate>
-                <menu #innerMenu></menu>
-              </ng-template>
+            <menu-trigger #innerTrigger [triggerFor]="innerTemplate"></menu-trigger>
+            <ng-template #innerTemplate>
+              <menu #innerMenu></menu>
             </ng-template>
-          `,
+          </ng-template>
+        `,
         standalone: false,
       })
       class App {
@@ -5783,21 +5778,21 @@ describe('di', () => {
 
       @Component({
         template: `
-            <menu-trigger #grandparentTrigger [triggerFor]="grandparentTemplate"></menu-trigger>
-            <ng-template #grandparentTemplate>
+          <menu-trigger #grandparentTrigger [triggerFor]="grandparentTemplate"></menu-trigger>
+          <ng-template #grandparentTemplate>
+            <menu></menu>
+
+            <menu-trigger #parentTrigger [triggerFor]="parentTemplate"></menu-trigger>
+            <ng-template #parentTemplate>
               <menu></menu>
 
-              <menu-trigger #parentTrigger [triggerFor]="parentTemplate"></menu-trigger>
-              <ng-template #parentTemplate>
-                <menu></menu>
-
-                <menu-trigger #childTrigger [triggerFor]="childTemplate"></menu-trigger>
-                <ng-template #childTemplate>
-                  <menu #childMenu></menu>
-                </ng-template>
+              <menu-trigger #childTrigger [triggerFor]="childTemplate"></menu-trigger>
+              <ng-template #childTemplate>
+                <menu #childMenu></menu>
               </ng-template>
             </ng-template>
-          `,
+          </ng-template>
+        `,
         standalone: false,
       })
       class App {
@@ -5894,7 +5889,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         standalone: false,
       })
       class App {
@@ -5935,7 +5930,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         standalone: false,
       })
       class App {
@@ -5978,7 +5973,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         providers: [{provide: token, useValue: 'hello from parent'}],
         standalone: false,
       })
@@ -6024,7 +6019,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         standalone: false,
       })
       class App {
@@ -6057,11 +6052,11 @@ describe('di', () => {
 
       @Component({
         template: `
-            <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
-            <ng-template #menuTemplate>
-              <menu></menu>
-            </ng-template>
-          `,
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <ng-template #menuTemplate>
+            <menu></menu>
+          </ng-template>
+        `,
         providers: [{provide: token, useValue: 'hello from parent'}],
         standalone: false,
       })
@@ -6112,7 +6107,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         standalone: false,
       })
       class App {
@@ -6155,11 +6150,11 @@ describe('di', () => {
       @Component({
         selector: 'parent',
         template: `
-            <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
-            <ng-template #menuTemplate>
-              <menu></menu>
-            </ng-template>
-           `,
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <ng-template #menuTemplate>
+            <menu></menu>
+          </ng-template>
+        `,
         standalone: false,
       })
       class Parent {
@@ -6271,9 +6266,9 @@ describe('di', () => {
 
       @Component({
         template: `
-              <declarer></declarer>
-              <creator></creator>
-            `,
+          <declarer></declarer>
+          <creator></creator>
+        `,
         standalone: false,
       })
       class App {
@@ -6368,13 +6363,13 @@ describe('di', () => {
 
       @Component({
         template: `
-              <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
-              <div provide-token>
-                <ng-template #menuTemplate>
-                  <menu></menu>
-                </ng-template>
-              </div>
-            `,
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <div provide-token>
+            <ng-template #menuTemplate>
+              <menu></menu>
+            </ng-template>
+          </div>
+        `,
         providers: [{provide: token, useValue: 'hello from parent'}],
         standalone: false,
       })
@@ -6429,13 +6424,13 @@ describe('di', () => {
 
       @Component({
         template: `
-              <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
-              <ng-template #menuTemplate>
-                <section provide-token>
-                  <wrapper></wrapper>
-                </section>
-              </ng-template>
-            `,
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <ng-template #menuTemplate>
+            <section provide-token>
+              <wrapper></wrapper>
+            </section>
+          </ng-template>
+        `,
         providers: [{provide: token, useValue: 'hello from parent'}],
         standalone: false,
       })
@@ -6490,13 +6485,13 @@ describe('di', () => {
 
       @Component({
         template: `
-              <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
-              <div provide-token>
-                <ng-template #menuTemplate>
-                  <wrapper></wrapper>
-                </ng-template>
-              </div>
-            `,
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <div provide-token>
+            <ng-template #menuTemplate>
+              <wrapper></wrapper>
+            </ng-template>
+          </div>
+        `,
         providers: [{provide: token, useValue: 'hello from parent'}],
         standalone: false,
       })

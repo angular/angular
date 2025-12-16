@@ -47,7 +47,7 @@ describe('embedded views', () => {
 
   it('should resolve template input variables through the implicit receiver', () => {
     @Component({
-      template: `<ng-template let-a [ngIf]="true">{{a}}</ng-template>`,
+      template: `<ng-template let-a [ngIf]="true">{{ a }}</ng-template>`,
       standalone: false,
     })
     class TestCmp {}
@@ -61,10 +61,9 @@ describe('embedded views', () => {
 
   it('should component instance variables through the implicit receiver', () => {
     @Component({
-      template: `
-        <ng-template [ngIf]="true">
-          <ng-template [ngIf]="true">{{this.myProp}}{{myProp}}</ng-template>
-        </ng-template>`,
+      template: ` <ng-template [ngIf]="true">
+        <ng-template [ngIf]="true">{{ this.myProp }}{{ myProp }}</ng-template>
+      </ng-template>`,
       standalone: false,
     })
     class TestCmp {

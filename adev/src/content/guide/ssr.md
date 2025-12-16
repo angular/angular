@@ -30,7 +30,7 @@ You can create a server route config by declaring an array of [`ServerRoute`](ap
 
 ```typescript
 // app.routes.server.ts
-import { RenderMode, ServerRoute } from '@angular/ssr';
+import {RenderMode, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
@@ -55,32 +55,29 @@ export const serverRoutes: ServerRoute[] = [
 You can add this config to your application with [`provideServerRendering`](api/ssr/provideServerRendering 'API reference') using the [`withRoutes`](api/ssr/withRoutes 'API reference') function:
 
 ```typescript
-import { provideServerRendering, withRoutes } from '@angular/ssr';
-import { serverRoutes } from './app.routes.server';
+import {provideServerRendering, withRoutes} from '@angular/ssr';
+import {serverRoutes} from './app.routes.server';
 
 // app.config.server.ts
 const serverConfig: ApplicationConfig = {
   providers: [
     provideServerRendering(withRoutes(serverRoutes)),
     // ... other providers ...
-  ]
+  ],
 };
 ```
 
 When using the [App shell pattern](ecosystem/service-workers/app-shell), you must specify the component to be used as the app shell for client-side rendered routes. To do this, use the [`withAppShell`](api/ssr/withAppShell 'API reference') feature:
 
 ```typescript
-import { provideServerRendering, withRoutes, withAppShell } from '@angular/ssr';
-import { AppShellComponent } from './app-shell/app-shell.component';
+import {provideServerRendering, withRoutes, withAppShell} from '@angular/ssr';
+import {AppShellComponent} from './app-shell/app-shell.component';
 
 const serverConfig: ApplicationConfig = {
   providers: [
-    provideServerRendering(
-      withRoutes(serverRoutes),
-      withAppShell(AppShellComponent),
-    ),
+    provideServerRendering(withRoutes(serverRoutes), withAppShell(AppShellComponent)),
     // ... other providers ...
-  ]
+  ],
 };
 ```
 
@@ -142,7 +139,7 @@ You can set custom headers and status codes for individual server routes using t
 
 ```typescript
 // app.routes.server.ts
-import { RenderMode, ServerRoute } from '@angular/ssr';
+import {RenderMode, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
@@ -183,7 +180,7 @@ You can also use this function with catch-all routes (e.g., `/**`), where the pa
 
 ```ts
 // app.routes.server.ts
-import { RenderMode, ServerRoute } from '@angular/ssr';
+import {RenderMode, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
@@ -193,7 +190,7 @@ export const serverRoutes: ServerRoute[] = [
       const dataService = inject(PostService);
       const ids = await dataService.getIds(); // Assuming this returns ['1', '2', '3']
 
-      return ids.map(id => ({ id })); // Generates paths like: /post/1, /post/2, /post/3
+      return ids.map((id) => ({id})); // Generates paths like: /post/1, /post/2, /post/3
     },
   },
   {
@@ -201,8 +198,8 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
     async getPrerenderParams() {
       return [
-        { id: '1', '**': 'foo/3' },
-        { id: '2', '**': 'bar/4' },
+        {id: '1', '**': 'foo/3'},
+        {id: '2', '**': 'bar/4'},
       ]; // Generates paths like: /post/1/foo/3, /post/2/bar/4
     },
   },
@@ -225,7 +222,7 @@ The available fallback strategies are:
 
 ```ts
 // app.routes.server.ts
-import { RenderMode, PrerenderFallback, ServerRoute } from '@angular/ssr';
+import {RenderMode, PrerenderFallback, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
@@ -236,7 +233,7 @@ export const serverRoutes: ServerRoute[] = [
       // This function returns an array of objects representing prerendered posts at the paths:
       // `/post/1`, `/post/2`, and `/post/3`.
       // The path `/post/4` will utilize the fallback behavior if it's requested.
-      return [{ id: 1 }, { id: 2 }, { id: 3 }];
+      return [{id: 1}, {id: 2}, {id: 3}];
     },
   },
 ];
@@ -315,9 +312,7 @@ Register the browser implementation in your main application configuration:
 ```ts
 // app.config.ts
 export const appConfig: ApplicationConfig = {
-  providers: [
-    { provide: AnalyticsService, useClass: BrowserAnalyticsService },
-  ]
+  providers: [{provide: AnalyticsService, useClass: BrowserAnalyticsService}],
 };
 ```
 
@@ -326,16 +321,16 @@ Override with the server implementation in your server configuration:
 ```ts
 // app.config.server.ts
 const serverConfig: ApplicationConfig = {
-  providers: [
-    { provide: AnalyticsService, useClass: ServerAnalyticsService },
-  ]
+  providers: [{provide: AnalyticsService, useClass: ServerAnalyticsService}],
 };
 ```
 
 Inject and use the service in your components:
 
 ```ts
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class Checkout {
   private analytics = inject(AnalyticsService);
 
@@ -350,9 +345,9 @@ export class Checkout {
 When working with server-side rendering, you should avoid directly referencing browser-specific globals like `document`. Instead, use the [`DOCUMENT`](api/core/DOCUMENT) token to access the document object in a platform-agnostic way.
 
 ```ts
-import { Injectable, inject, DOCUMENT } from '@angular/core';
+import {Injectable, inject, DOCUMENT} from '@angular/core';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class CanonicalLinkService {
   private readonly document = inject(DOCUMENT);
 
@@ -365,7 +360,6 @@ export class CanonicalLinkService {
     this.document.head.appendChild(link);
   }
 }
-
 ```
 
 HELPFUL: For managing meta tags, Angular provides the `Meta` service.
@@ -436,8 +430,8 @@ This configuration is provided globally using `withHttpTransferCacheOptions` ins
 By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization` or `Proxy-Authorization` headers. You can override those settings by using `withHttpTransferCacheOptions` to the hydration configuration.
 
 ```ts
-import { bootstrapApplication } from '@angular/platform-browser';
-import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {provideClientHydration, withHttpTransferCacheOptions} from '@angular/platform-browser';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -504,7 +498,7 @@ You can override caching behavior for a specific request using the `transferCach
 
 ```ts
 // Include specific headers for this request
-http.get('/api/profile', { transferCache: { includeHeaders: ['CustomHeader'] } });
+http.get('/api/profile', {transferCache: {includeHeaders: ['CustomHeader']}});
 ```
 
 ### Disabling caching
@@ -516,12 +510,14 @@ You can disable HTTP caching of requests sent from the server either globally or
 To disable caching for all requests in your application, use the `withNoHttpTransferCache` feature:
 
 ```ts
-import { bootstrapApplication, provideClientHydration, withNoHttpTransferCache } from '@angular/platform-browser';
+import {
+  bootstrapApplication,
+  provideClientHydration,
+  withNoHttpTransferCache,
+} from '@angular/platform-browser';
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideClientHydration(withNoHttpTransferCache())
-  ]
+  providers: [provideClientHydration(withNoHttpTransferCache())],
 });
 ```
 
@@ -530,14 +526,20 @@ bootstrapApplication(AppComponent, {
 You can also selectively disable caching for certain requests using the [`filter`](api/common/http/HttpTransferCacheOptions) option in `withHttpTransferCacheOptions`. For example, you can disable caching for a specific API endpoint:
 
 ```ts
-import { bootstrapApplication, provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
+import {
+  bootstrapApplication,
+  provideClientHydration,
+  withHttpTransferCacheOptions,
+} from '@angular/platform-browser';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideClientHydration(withHttpTransferCacheOptions({
-      filter: (req) => !req.url.includes('/api/sensitive-data')
-    }))
-  ]
+    provideClientHydration(
+      withHttpTransferCacheOptions({
+        filter: (req) => !req.url.includes('/api/sensitive-data'),
+      }),
+    ),
+  ],
 });
 ```
 
@@ -548,7 +550,7 @@ Use this option to exclude endpoints with user‑specific or dynamic data (for e
 To disable caching for an individual request, you can specify the [`transferCache`](api/common/http/HttpRequest#transferCache) option in an `HttpRequest`.
 
 ```ts
-httpClient.get('/api/sensitive-data', { transferCache: false });
+httpClient.get('/api/sensitive-data', {transferCache: false});
 ```
 
 NOTE: If your application uses different HTTP origins to make API calls on the server and on the client, the `HTTP_TRANSFER_CACHE_ORIGIN_MAP` token allows you to establish a mapping between those origins, so that `HttpTransferCache` feature can recognize those requests as the same ones and reuse the data cached on the server during hydration on the client.
@@ -561,7 +563,11 @@ The `@angular/ssr/node` extends `@angular/ssr` specifically for Node.js environm
 
 ```ts
 // server.ts
-import { AngularNodeAppEngine, createNodeRequestHandler, writeResponseToNodeResponse } from '@angular/ssr/node';
+import {
+  AngularNodeAppEngine,
+  createNodeRequestHandler,
+  writeResponseToNodeResponse,
+} from '@angular/ssr/node';
 import express from 'express';
 
 const app = express();
@@ -570,7 +576,7 @@ const angularApp = new AngularNodeAppEngine();
 app.use('*', (req, res, next) => {
   angularApp
     .handle(req)
-    .then(response => {
+    .then((response) => {
       if (response) {
         writeResponseToNodeResponse(response, res);
       } else {
@@ -592,7 +598,7 @@ The `@angular/ssr` provides essential APIs for server-side rendering your Angula
 
 ```ts
 // server.ts
-import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
+import {AngularAppEngine, createRequestHandler} from '@angular/ssr';
 
 const angularApp = new AngularAppEngine();
 
@@ -600,7 +606,7 @@ const angularApp = new AngularAppEngine();
  * This is a request handler used by the Angular CLI (dev-server and during build).
  */
 export const reqHandler = createRequestHandler(async (req: Request) => {
-  const res: Response|null = await angularApp.render(req);
+  const res: Response | null = await angularApp.render(req);
 
   // ...
 });

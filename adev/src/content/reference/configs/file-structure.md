@@ -123,12 +123,12 @@ When you create projects this way, the file structure of the workspace is entire
 
 ```markdown
 my-workspace/
-  ├── …                (workspace-wide configuration files)
-  └── projects/        (applications and libraries)
-      ├── my-app/      (an explicitly generated application)
-      │   └── …        (application-specific code and configuration)
-      └── my-lib/      (a generated library)
-          └── …        (library-specific code and configuration)
+├── … (workspace-wide configuration files)
+└── projects/ (applications and libraries)
+├── my-app/ (an explicitly generated application)
+│ └── … (application-specific code and configuration)
+└── my-lib/ (a generated library)
+└── … (library-specific code and configuration)
 ```
 
 ## Library project files

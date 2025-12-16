@@ -9,14 +9,14 @@ The `RouterOutlet` directive is a placeholder that marks the location where the 
 ```
 
 ```ts
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {}
 ```
@@ -24,21 +24,21 @@ export class AppComponent {}
 In this example, if an application has the following routes defined:
 
 ```ts
-import { Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
-import { ProductsComponent } from './products/products.component';
+import {Routes} from '@angular/router';
+import {HomeComponent} from './home/home.component';
+import {ProductsComponent} from './products/products.component';
 
 const routes: Routes = [
   {
     path: '',
     component: HomeComponent,
-    title: 'Home Page'
+    title: 'Home Page',
   },
   {
     path: 'products',
     component: ProductsComponent,
-    title: 'Our Products'
-  }
+    title: 'Our Products',
+  },
 ];
 ```
 

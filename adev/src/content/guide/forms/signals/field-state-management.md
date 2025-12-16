@@ -50,8 +50,8 @@ In this example, the template checks `registrationForm.email().invalid()` to det
 The most commonly used signal is `value()`, a [writable signal](guide/forms/signals/models#updating-models) that provides access to the field's current value:
 
 ```ts
-const emailValue = registrationForm.email().value()
-console.log(emailValue) // Current email string
+const emailValue = registrationForm.email().value();
+console.log(emailValue); // Current email string
 ```
 
 Beyond `value()`, field state includes signals for validation, interaction tracking, and availability control:
@@ -410,18 +410,18 @@ When a child field becomes invalid, its parent field group becomes invalid, and 
 const userModel = signal({
   profile: {
     firstName: '',
-    lastName: ''
+    lastName: '',
   },
   address: {
     street: '',
-    city: ''
-  }
-})
+    city: '',
+  },
+});
 
-const userForm = form(userModel)
+const userForm = form(userModel);
 
 // If firstName is invalid, profile is invalid
-userForm.profile.firstName().invalid() === true
+userForm.profile.firstName().invalid() === true;
 // → userForm.profile().invalid() === true
 // → userForm().invalid() === true
 ```
@@ -434,12 +434,12 @@ Hidden, disabled, and readonly fields are non-interactive and don't affect paren
 const orderModel = signal({
   customerName: '',
   requiresShipping: false,
-  shippingAddress: ''
-})
+  shippingAddress: '',
+});
 
-const orderForm = form(orderModel, schemaPath => {
-  hidden(schemaPath.shippingAddress, ({valueOf}) => !valueOf(schemaPath.requiresShipping))
-})
+const orderForm = form(orderModel, (schemaPath) => {
+  hidden(schemaPath.shippingAddress, ({valueOf}) => !valueOf(schemaPath.requiresShipping));
+});
 ```
 
 In this example, when `shippingAddress` is hidden, it doesn't affect form validity. As a result, even if `shippingAddress` is empty and required, the form can be valid.
@@ -535,26 +535,26 @@ export class Registration {
   registrationModel = signal({
     username: '',
     email: '',
-    password: ''
-  })
+    password: '',
+  });
 
-  registrationForm = form(this.registrationModel)
+  registrationForm = form(this.registrationModel);
 
   async onSubmit() {
     // Wait for any pending async validation
     if (this.registrationForm().pending()) {
-      console.log('Waiting for validation...')
-      return
+      console.log('Waiting for validation...');
+      return;
     }
 
     // Guard against invalid submissions
     if (this.registrationForm().invalid()) {
-      console.error('Form is invalid')
-      return
+      console.error('Form is invalid');
+      return;
     }
 
-    const data = this.registrationModel()
-    await this.api.register(data)
+    const data = this.registrationModel();
+    await this.api.register(data);
   }
 }
 ```
@@ -567,24 +567,24 @@ Create computed signals based on field state to automatically update when the un
 
 ```ts
 export class Password {
-  passwordModel = signal({ password: '', confirmPassword: '' })
-  passwordForm = form(this.passwordModel)
+  passwordModel = signal({password: '', confirmPassword: ''});
+  passwordForm = form(this.passwordModel);
 
   // Compute password strength indicator
   passwordStrength = computed(() => {
-    const password = this.passwordForm.password().value()
-    if (password.length < 8) return 'weak'
-    if (password.length < 12) return 'medium'
-    return 'strong'
-  })
+    const password = this.passwordForm.password().value();
+    if (password.length < 8) return 'weak';
+    if (password.length < 12) return 'medium';
+    return 'strong';
+  });
 
   // Check if all required fields are filled
   allFieldsFilled = computed(() => {
     return (
       this.passwordForm.password().value().length > 0 &&
       this.passwordForm.confirmPassword().value().length > 0
-    )
-  })
+    );
+  });
 }
 ```
 
@@ -597,22 +597,22 @@ While field state typically updates through user interactions (typing, focusing,
 When a user submits a form, use the `submit()` function to handle validation and reveal errors:
 
 ```ts
-import { Component, signal } from '@angular/core'
-import { form, submit, required, email } from '@angular/forms/signals'
+import {Component, signal} from '@angular/core';
+import {form, submit, required, email} from '@angular/forms/signals';
 
 export class Registration {
-  registrationModel = signal({ username: '', email: '', password: '' })
+  registrationModel = signal({username: '', email: '', password: ''});
 
-  registrationForm = form(this.registrationModel, schemaPath => {
-    required(schemaPath.username)
-    email(schemaPath.email)
-    required(schemaPath.password)
-  })
+  registrationForm = form(this.registrationModel, (schemaPath) => {
+    required(schemaPath.username);
+    email(schemaPath.email);
+    required(schemaPath.password);
+  });
 
   onSubmit() {
     submit(this.registrationForm, async () => {
-      this.submitToServer()
-    })
+      this.submitToServer();
+    });
   }
 
   submitToServer() {
@@ -629,19 +629,19 @@ After successfully submitting a form, you may want to return it to its initial s
 
 ```ts
 export class Contact {
-  contactModel = signal({ name: '', email: '', message: '' })
-  contactForm = form(this.contactModel)
+  contactModel = signal({name: '', email: '', message: ''});
+  contactForm = form(this.contactModel);
 
   async onSubmit() {
-    if (!this.contactForm().valid()) return
+    if (!this.contactForm().valid()) return;
 
-    await this.api.sendMessage(this.contactModel())
+    await this.api.sendMessage(this.contactModel());
 
     // Clear interaction state (touched, dirty)
-    this.contactForm().reset()
+    this.contactForm().reset();
 
     // Clear values
-    this.contactModel.set({ name: '', email: '', message: '' })
+    this.contactModel.set({name: '', email: '', message: ''});
   }
 }
 ```

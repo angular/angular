@@ -120,7 +120,8 @@ describe('DestroyRef', () => {
         imports: [WithCleanupDirective],
         // note: we are trying to register a LView-level cleanup _before_ TView-level one (event
         // listener)
-        template: `<div withCleanup></div><button (click)="noop()"></button>`,
+        template: `<div withCleanup></div>
+          <button (click)="noop()"></button>`,
       })
       class TestCmp {
         noop() {}

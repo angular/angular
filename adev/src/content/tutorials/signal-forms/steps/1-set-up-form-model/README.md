@@ -36,8 +36,8 @@ Add this interface above the `@Component` decorator.
 Import the `signal` function from `@angular/core` and the `form` function from `@angular/forms/signals`:
 
 ```ts
-import { Component, signal } from '@angular/core';
-import { form } from '@angular/forms/signals';
+import {Component, signal} from '@angular/core';
+import {form} from '@angular/forms/signals';
 ```
 
 </docs-step>

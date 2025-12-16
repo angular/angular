@@ -119,11 +119,11 @@ describe('transfer_state', () => {
         selector: 'app',
         imports: [Dep],
         template: `
-          <!-- This defer block will add internal defer data to the transfer state --> 
+          <!-- This defer block will add internal defer data to the transfer state -->
           @defer (hydrate on interaction) {
             <dep />
           }
-      `,
+        `,
       })
       class SimpleComponent {
         constructor() {

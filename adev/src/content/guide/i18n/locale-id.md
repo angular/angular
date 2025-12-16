@@ -54,7 +54,7 @@ To change the source locale of your project for the build, complete the followin
   "projects": {
     "your-project": {
       "i18n": {
-        "sourceLocale": "ca"  // Use your desired locale code
+        "sourceLocale": "ca" // Use your desired locale code
       }
     }
   }

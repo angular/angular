@@ -93,9 +93,7 @@ describe('event replay', () => {
 
     @Component({
       selector: 'app',
-      template: `
-        <button id="btn" (click)="onClick()" #localRef></button>
-      `,
+      template: ` <button id="btn" (click)="onClick()" #localRef></button> `,
     })
     class AppComponent {
       onClick = onClickSpy;
@@ -119,9 +117,7 @@ describe('event replay', () => {
 
     @Component({
       selector: 'app',
-      template: `
-        <button id="btn-1" (click)="onClick()"></button>
-      `,
+      template: ` <button id="btn-1" (click)="onClick()"></button> `,
     })
     class AppComponent_1 {
       onClick = onClickSpy;
@@ -129,9 +125,7 @@ describe('event replay', () => {
 
     @Component({
       selector: 'app-2',
-      template: `
-        <button id="btn-2" (click)="onClick()"></button>
-      `,
+      template: ` <button id="btn-2" (click)="onClick()"></button> `,
     })
     class AppComponent_2 {
       onClick() {}
@@ -180,9 +174,7 @@ describe('event replay', () => {
   it('should cleanup `window._ejsas[appId]` once app is destroyed', async () => {
     @Component({
       selector: 'app',
-      template: `
-        <button id="btn" (click)="onClick()"></button>
-      `,
+      template: ` <button id="btn" (click)="onClick()"></button> `,
     })
     class AppComponent {
       onClick() {}
@@ -279,10 +271,9 @@ describe('event replay', () => {
 
       @Component({
         selector: 'app',
-        template: `
-          <ng-container add-listener>
-            <button id="click-me">Click me!</button>
-          </ng-container>`,
+        template: ` <ng-container add-listener>
+          <button id="click-me">Click me!</button>
+        </ng-container>`,
         imports: [AddGlobalListener],
       })
       class AppComponent {}
@@ -319,10 +310,9 @@ describe('event replay', () => {
 
       @Component({
         selector: 'app',
-        template: `
-          <ng-container add-listener>
-            <button id="click-me">Click me!</button>
-          </ng-container>`,
+        template: ` <ng-container add-listener>
+          <button id="click-me">Click me!</button>
+        </ng-container>`,
         imports: [AddGlobalListener],
       })
       class AppComponent {}
@@ -359,10 +349,9 @@ describe('event replay', () => {
 
       @Component({
         selector: 'app',
-        template: `
-          <ng-container add-listener>
-            <button id="click-me">Click me!</button>
-          </ng-container>`,
+        template: ` <ng-container add-listener>
+          <button id="click-me">Click me!</button>
+        </ng-container>`,
         imports: [AddGlobalListener],
       })
       class AppComponent {}
@@ -392,10 +381,10 @@ describe('event replay', () => {
     @Component({
       selector: 'app',
       template: `
-            <div (click)="onClick()" id="1">
-              <div (click)="onClick()" id="2"></div>
-            </div>
-          `,
+        <div (click)="onClick()" id="1">
+          <div (click)="onClick()" id="2"></div>
+        </div>
+      `,
     })
     class SimpleComponent {
       onClick() {}
@@ -419,10 +408,10 @@ describe('event replay', () => {
     @Component({
       selector: 'app',
       template: `
-            <div (click)="onClick()">
-                <div (blur)="onClick()"></div>
-            </div>
-          `,
+        <div (click)="onClick()">
+          <div (blur)="onClick()"></div>
+        </div>
+      `,
     })
     class SimpleComponent {
       onClick() {}
@@ -445,9 +434,7 @@ describe('event replay', () => {
 
     @Component({
       selector: 'app',
-      template: `
-        <button id="btn" (click)="onClick()"></button>
-      `,
+      template: ` <button id="btn" (click)="onClick()"></button> `,
     })
     class AppComponent {
       constructor() {
@@ -504,10 +491,10 @@ describe('event replay', () => {
       @Component({
         selector: 'app',
         template: `
-            <div id="top" (click)="onClick()">
-                <div id="bottom" (click)="onClick()"></div>
-            </div>
-          `,
+          <div id="top" (click)="onClick()">
+            <div id="bottom" (click)="onClick()"></div>
+          </div>
+        `,
       })
       class SimpleComponent {
         onClick = onClickSpy;
@@ -535,10 +522,10 @@ describe('event replay', () => {
       @Component({
         selector: 'app',
         template: `
-            <div id="top" (click)="onClick($event)">
-                <div id="bottom" (click)="onClick($event)"></div>
-            </div>
-          `,
+          <div id="top" (click)="onClick($event)">
+            <div id="bottom" (click)="onClick($event)"></div>
+          </div>
+        `,
       })
       class SimpleComponent {
         onClick(e: Event) {
@@ -568,10 +555,10 @@ describe('event replay', () => {
       @Component({
         selector: 'app',
         template: `
-            <div id="top" (click)="onClick($event)">
-                <div id="bottom" (click)="onClick($event)"></div>
-            </div>
-          `,
+          <div id="top" (click)="onClick($event)">
+            <div id="bottom" (click)="onClick($event)"></div>
+          </div>
+        `,
       })
       class SimpleComponent {
         onClick(event: Event) {

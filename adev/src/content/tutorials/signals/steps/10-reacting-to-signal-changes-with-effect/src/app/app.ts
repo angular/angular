@@ -14,7 +14,8 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
             Dark
           } @else {
             Light
-          } Theme
+          }
+          Theme
         </button>
 
         @if (!isLoggedIn()) {
@@ -27,7 +28,8 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
       <div class="info">
         <p>Current theme: {{ theme() }}</p>
         <p>User: {{ username() }}</p>
-        <p>Status:
+        <p>
+          Status:
           @if (isLoggedIn()) {
             Logged in
           } @else {

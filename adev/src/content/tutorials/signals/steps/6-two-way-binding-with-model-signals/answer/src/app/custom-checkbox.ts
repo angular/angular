@@ -4,10 +4,7 @@ import {Component, model, input, ChangeDetectionStrategy} from '@angular/core';
   selector: 'custom-checkbox',
   template: `
     <label class="custom-checkbox">
-      <input 
-        type="checkbox" 
-        [checked]="checked()" 
-        (change)="toggle()">
+      <input type="checkbox" [checked]="checked()" (change)="toggle()" />
       <span class="checkmark"></span>
       {{ label() }}
     </label>

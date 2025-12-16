@@ -5,23 +5,23 @@ import {Component, Input} from '@angular/core';
 @Component({
   template: `
     @if (first) {
-      {{first}}
+      {{ first }}
     }
 
     <ng-template [ngIf]="second">
-      {{second}}
+      {{ second }}
     </ng-template>
 
     <div *ngIf="third">
-      {{third}}
+      {{ third }}
     </div>
 
     <div *ngIf="fourth">
-      {{notTheInput}}
+      {{ notTheInput }}
     </div>
 
     @if (fifth) {
-      {{notTheInput}}
+      {{ notTheInput }}
     }
   `,
 })

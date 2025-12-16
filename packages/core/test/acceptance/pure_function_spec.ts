@@ -36,9 +36,7 @@ describe('components using pure function instructions internally', () => {
 
     it('should support an array literal with a binding', () => {
       @Component({
-        template: `
-                <my-comp [names]="['Nancy', customName, 'Bess']"></my-comp>
-              `,
+        template: ` <my-comp [names]="['Nancy', customName, 'Bess']"></my-comp> `,
         standalone: false,
       })
       class App {
@@ -77,9 +75,7 @@ describe('components using pure function instructions internally', () => {
 
     it('should support array literals in dynamic views', () => {
       @Component({
-        template: `
-                <my-comp *ngIf="showing" [names]="['Nancy', customName, 'Bess']"></my-comp>
-              `,
+        template: ` <my-comp *ngIf="showing" [names]="['Nancy', customName, 'Bess']"></my-comp> `,
         standalone: false,
       })
       class App {
@@ -111,9 +107,9 @@ describe('components using pure function instructions internally', () => {
 
       @Component({
         template: `
-                <many-prop-comp [names1]="['Nancy', customName]" [names2]="[customName2]">
-                </many-prop-comp>
-              `,
+          <many-prop-comp [names1]="['Nancy', customName]" [names2]="[customName2]">
+          </many-prop-comp>
+        `,
         standalone: false,
       })
       class App {
@@ -142,9 +138,7 @@ describe('components using pure function instructions internally', () => {
     it('should support an array literals inside fn calls', () => {
       @Component({
         selector: 'parent-comp',
-        template: `
-                <my-comp [names]="someFn(['Nancy', customName])"></my-comp>
-              `,
+        template: ` <my-comp [names]="someFn(['Nancy', customName])"></my-comp> `,
         standalone: false,
       })
       class ParentComp {
@@ -158,9 +152,9 @@ describe('components using pure function instructions internally', () => {
 
       @Component({
         template: `
-                <parent-comp></parent-comp>
-                <parent-comp></parent-comp>
-              `,
+          <parent-comp></parent-comp>
+          <parent-comp></parent-comp>
+        `,
         standalone: false,
       })
       class App {}
@@ -190,8 +184,8 @@ describe('components using pure function instructions internally', () => {
     it('should support an array literal with more than 1 binding', () => {
       @Component({
         template: `
-                <my-comp *ngIf="showing" [names]="['Nancy', customName, 'Bess', customName2]"></my-comp>
-              `,
+          <my-comp *ngIf="showing" [names]="['Nancy', customName, 'Bess', customName2]"></my-comp>
+        `,
         standalone: false,
       })
       class App {
@@ -235,15 +229,15 @@ describe('components using pure function instructions internally', () => {
     it('should work up to 8 bindings', () => {
       @Component({
         template: `
-                <my-comp [names]="['a', 'b', 'c', 'd', 'e', 'f', 'g', v8]"></my-comp>
-                <my-comp [names]="['a', 'b', 'c', 'd', 'e', 'f', v7, v8]"></my-comp>
-                <my-comp [names]="['a', 'b', 'c', 'd', 'e', v6, v7, v8]"></my-comp>
-                <my-comp [names]="['a', 'b', 'c', 'd', v5, v6, v7, v8]"></my-comp>
-                <my-comp [names]="['a', 'b', 'c', v4, v5, v6, v7, v8]"></my-comp>
-                <my-comp [names]="['a', 'b', v3, v4, v5, v6, v7, v8]"></my-comp>
-                <my-comp [names]="['a', v2, v3, v4, v5, v6, v7, v8]"></my-comp>
-                <my-comp [names]="[v1, v2, v3, v4, v5, v6, v7, v8]"></my-comp>
-              `,
+          <my-comp [names]="['a', 'b', 'c', 'd', 'e', 'f', 'g', v8]"></my-comp>
+          <my-comp [names]="['a', 'b', 'c', 'd', 'e', 'f', v7, v8]"></my-comp>
+          <my-comp [names]="['a', 'b', 'c', 'd', 'e', v6, v7, v8]"></my-comp>
+          <my-comp [names]="['a', 'b', 'c', 'd', v5, v6, v7, v8]"></my-comp>
+          <my-comp [names]="['a', 'b', 'c', v4, v5, v6, v7, v8]"></my-comp>
+          <my-comp [names]="['a', 'b', v3, v4, v5, v6, v7, v8]"></my-comp>
+          <my-comp [names]="['a', v2, v3, v4, v5, v6, v7, v8]"></my-comp>
+          <my-comp [names]="[v1, v2, v3, v4, v5, v6, v7, v8]"></my-comp>
+        `,
         standalone: false,
       })
       class App {
@@ -309,9 +303,9 @@ describe('components using pure function instructions internally', () => {
     it('should work with pureFunctionV for 9+ bindings', () => {
       @Component({
         template: `
-                <my-comp [names]="['start', v0, v1, v2, v3, 'modified_' + v4, v5, v6, v7, v8, 'end']">
-                </my-comp>
-              `,
+          <my-comp [names]="['start', v0, v1, v2, v3, 'modified_' + v4, v5, v6, v7, v8, 'end']">
+          </my-comp>
+        `,
         standalone: false,
       })
       class App {
@@ -428,10 +422,17 @@ describe('components using pure function instructions internally', () => {
     it('should support expressions nested deeply in object/array literals', () => {
       @Component({
         template: `
-        <object-comp [config]="{animation: name, actions: [{ opacity: 0, duration: 0}, {opacity: 1,
-        duration: duration }]}">
-        </object-comp>
-      `,
+          <object-comp
+            [config]="{
+              animation: name,
+              actions: [
+                {opacity: 0, duration: 0},
+                {opacity: 1, duration: duration},
+              ],
+            }"
+          >
+          </object-comp>
+        `,
         standalone: false,
       })
       class App {
@@ -507,10 +508,7 @@ describe('components using pure function instructions internally', () => {
 
     it('should support multiple view instances with multiple bindings', () => {
       @Component({
-        template: `
-        <object-comp *ngFor="let config of configs" [config]="config">
-        </object-comp>
-      `,
+        template: ` <object-comp *ngFor="let config of configs" [config]="config"> </object-comp> `,
         standalone: false,
       })
       class App {

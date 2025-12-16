@@ -33,13 +33,13 @@ export class AppComponent {
     <table>
       <tbody>
         @for (row of data; track $index) {
-        <tr>
-          @for (cell of row; track $index) {
-          <td [style.backgroundColor]="getColor(cell.row)">
-            {{ cell.value + '!' }}
-          </td>
-          }
-        </tr>
+          <tr>
+            @for (cell of row; track $index) {
+              <td [style.backgroundColor]="getColor(cell.row)">
+                {{ cell.value + '!' }}
+              </td>
+            }
+          </tr>
         }
       </tbody>
     </table>

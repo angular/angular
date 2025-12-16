@@ -159,7 +159,9 @@ You can apply multiple animations to an element at once using the `animation` sh
 
 ```css
 .target-element {
-  animation: rotate 3s, fade-in 2s;
+  animation:
+    rotate 3s,
+    fade-in 2s;
 }
 ```
 

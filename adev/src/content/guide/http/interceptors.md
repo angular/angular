@@ -29,7 +29,10 @@ The basic form of an interceptor is a function which receives the outgoing `Http
 For example, this `loggingInterceptor` will log the outgoing request URL to `console.log` before forwarding the request:
 
 ```ts
-export function loggingInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+export function loggingInterceptor(
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> {
   console.log(req.url);
   return next(req);
 }
@@ -42,11 +45,9 @@ In order for this interceptor to actually intercept requests, you must configure
 You declare the set of interceptors to use when configuring `HttpClient` through dependency injection, by using the `withInterceptors` feature:
 
 ```ts
-bootstrapApplication(AppComponent, {providers: [
-  provideHttpClient(
-    withInterceptors([loggingInterceptor, cachingInterceptor]),
-  )
-]});
+bootstrapApplication(AppComponent, {
+  providers: [provideHttpClient(withInterceptors([loggingInterceptor, cachingInterceptor]))],
+});
 ```
 
 The interceptors you configure are chained together in the order that you've listed them in the providers. In the above example, the `loggingInterceptor` would process the request and then forward it to the `cachingInterceptor`.
@@ -56,12 +57,17 @@ The interceptors you configure are chained together in the order that you've lis
 An interceptor may transform the `Observable` stream of `HttpEvent`s returned by `next` in order to access or manipulate the response. Because this stream includes all response events, inspecting the `.type` of each event may be necessary in order to identify the final response object.
 
 ```ts
-export function loggingInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
-  return next(req).pipe(tap(event => {
-    if (event.type === HttpEventType.Response) {
-      console.log(req.url, 'returned a response with status', event.status);
-    }
-  }));
+export function loggingInterceptor(
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> {
+  return next(req).pipe(
+    tap((event) => {
+      if (event.type === HttpEventType.Response) {
+        console.log(req.url, 'returned a response with status', event.status);
+      }
+    }),
+  );
 }
 ```
 
@@ -171,29 +177,39 @@ When using `HttpClient` with the `withFetch` provider, responses include a `redi
 An interceptor can access and act upon the redirect information:
 
 ```ts
-export function redirectTrackingInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
-  return next(req).pipe(tap(event => {
-    if (event.type === HttpEventType.Response && event.redirected) {
-      console.log('Request to', req.url, 'was redirected to', event.url);
-      // Handle redirect logic - maybe update analytics, security checks, etc.
-    }
-  }));
+export function redirectTrackingInterceptor(
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> {
+  return next(req).pipe(
+    tap((event) => {
+      if (event.type === HttpEventType.Response && event.redirected) {
+        console.log('Request to', req.url, 'was redirected to', event.url);
+        // Handle redirect logic - maybe update analytics, security checks, etc.
+      }
+    }),
+  );
 }
 ```
 
 You can also use the redirect information to implement conditional logic in your interceptors:
 
 ```ts
-export function authRedirectInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
-  return next(req).pipe(tap(event => {
-    if (event.type === HttpEventType.Response && event.redirected) {
-      // Check if we were redirected to a login page
-      if (event.url?.includes('/login')) {
-        // Handle authentication redirect
-        handleAuthRedirect();
+export function authRedirectInterceptor(
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> {
+  return next(req).pipe(
+    tap((event) => {
+      if (event.type === HttpEventType.Response && event.redirected) {
+        // Check if we were redirected to a login page
+        if (event.url?.includes('/login')) {
+          // Handle authentication redirect
+          handleAuthRedirect();
+        }
       }
-    }
-  }));
+    }),
+  );
 }
 ```
 
@@ -212,26 +228,31 @@ The response `type` property can have the following values:
 An interceptor can use response type information for CORS debugging and error handling:
 
 ```ts
-export function responseTypeInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
-  return next(req).pipe(map(event => {
-    if (event.type === HttpEventType.Response) {
-      // Handle different response types appropriately
-      switch (event.responseType) {
-        case 'opaque':
-          // Limited access to response data
-          console.warn('Limited response data due to CORS policy');
-          break;
-        case 'cors':
-        case 'basic':
-          // Full access to response data
-          break;
-        case 'error':
-          // Handle network errors
-          console.error('Network error in response');
-          break;
+export function responseTypeInterceptor(
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> {
+  return next(req).pipe(
+    map((event) => {
+      if (event.type === HttpEventType.Response) {
+        // Handle different response types appropriately
+        switch (event.responseType) {
+          case 'opaque':
+            // Limited access to response data
+            console.warn('Limited response data due to CORS policy');
+            break;
+          case 'cors':
+          case 'basic':
+            // Full access to response data
+            break;
+          case 'error':
+            // Handle network errors
+            console.error('Network error in response');
+            break;
+        }
       }
-    }
-  }));
+    }),
+  );
 }
 ```
 
@@ -254,14 +275,16 @@ export class LoggingInterceptor implements HttpInterceptor {
 DI-based interceptors are configured through a dependency injection multi-provider:
 
 ```ts
-bootstrapApplication(AppComponent, {providers: [
-  provideHttpClient(
-    // DI-based interceptors must be explicitly enabled.
-    withInterceptorsFromDi(),
-  ),
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideHttpClient(
+      // DI-based interceptors must be explicitly enabled.
+      withInterceptorsFromDi(),
+    ),
 
-  {provide: HTTP_INTERCEPTORS, useClass: LoggingInterceptor, multi: true},
-]});
+    {provide: HTTP_INTERCEPTORS, useClass: LoggingInterceptor, multi: true},
+  ],
+});
 ```
 
 DI-based interceptors run in the order that their providers are registered. In an app with an extensive and hierarchical DI configuration, this order can be very hard to predict.

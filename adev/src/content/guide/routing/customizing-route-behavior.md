@@ -24,7 +24,7 @@ Switching to `'computed'` keeps the in-flight history index in sync with the Ang
 This setting is most helpful when your app uses `urlUpdateStrategy: 'eager'` or when guards frequently cancel popstate navigations initiated by the browser.
 
 ```ts
-provideRouter(routes, withRouterConfig({ canceledNavigationResolution: 'computed' }));
+provideRouter(routes, withRouterConfig({canceledNavigationResolution: 'computed'}));
 ```
 
 ### React to same-URL navigations
@@ -34,13 +34,13 @@ provideRouter(routes, withRouterConfig({ canceledNavigationResolution: 'computed
 This is useful when you want repeated clicks on a list filter, left-nav item, or refresh button to trigger new data retrieval even though the URL does not change.
 
 ```ts
-provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' }));
+provideRouter(routes, withRouterConfig({onSameUrlNavigation: 'reload'}));
 ```
 
 You can also control this behavior on individual navigations rather than globally. This allows you to keep the keep the default of `'ignore'` while selectively enabling reload behavior for specific use cases:
 
 ```ts
-router.navigate(['/some-path'], { onSameUrlNavigation: 'reload' });
+router.navigate(['/some-path'], {onSameUrlNavigation: 'reload'});
 ```
 
 ### Control parameter inheritance
@@ -50,7 +50,7 @@ router.navigate(['/some-path'], { onSameUrlNavigation: 'reload' });
 With the default `'emptyOnly'`, child routes inherit params only when their path is empty or the parent does not declare a component.
 
 ```ts
-provideRouter(routes, withRouterConfig({ paramsInheritanceStrategy: 'always' }));
+provideRouter(routes, withRouterConfig({paramsInheritanceStrategy: 'always'}));
 ```
 
 ```ts
@@ -65,17 +65,19 @@ export const routes: Routes = [
         children: [
           {
             path: 'customers/:customerId',
-            component: Customer
-          }
-        ]
-      }
-    ]
-  }
+            component: Customer,
+          },
+        ],
+      },
+    ],
+  },
 ];
 ```
 
 ```ts
-@Component({ /* ... */})
+@Component({
+  /* ... */
+})
 export class CustomerComponent {
   private route = inject(ActivatedRoute);
 
@@ -88,7 +90,9 @@ export class CustomerComponent {
 Using `'always'` ensures matrix parameters, route data, and resolved values are available further down the route tree—handy when you share contextual identifiers across feature areas such as `/org/:orgId/projects/:projectId/customers/:customerId`.
 
 ```ts
-@Component({ /* ... */})
+@Component({
+  /* ... */
+})
 export class CustomerComponent {
   private route = inject(ActivatedRoute);
 
@@ -106,7 +110,7 @@ export class CustomerComponent {
 Consider this when your analytics pipeline needs to see the attempted route even if guards block it.
 
 ```ts
-provideRouter(routes, withRouterConfig({ urlUpdateStrategy: 'eager' }));
+provideRouter(routes, withRouterConfig({urlUpdateStrategy: 'eager'}));
 ```
 
 ### Choose default query parameter handling
@@ -114,7 +118,7 @@ provideRouter(routes, withRouterConfig({ urlUpdateStrategy: 'eager' }));
 `defaultQueryParamsHandling` sets the fallback behavior for `Router.createUrlTree` when the call does not specify `queryParamsHandling`. `'replace'` is the default and swaps out the existing query string. `'merge'` combines the provided values with the current ones, and `'preserve'` keeps the existing query parameters unless you explicitly supply new ones.
 
 ```ts
-provideRouter(routes, withRouterConfig({ defaultQueryParamsHandling: 'merge' }));
+provideRouter(routes, withRouterConfig({defaultQueryParamsHandling: 'merge'}));
 ```
 
 This is especially helpful for search and filter pages to automatically retain existing filters when additional parameters are provided.
@@ -160,8 +164,13 @@ The `RouteReuseStrategy` class provides five methods that control the lifecycle 
 The following example demonstrates a custom route reuse strategy that selectively preserves component state based on route metadata:
 
 ```ts
-import { RouteReuseStrategy, Route, ActivatedRouteSnapshot, DetachedRouteHandle } from '@angular/router';
-import { Injectable } from '@angular/core';
+import {
+  RouteReuseStrategy,
+  Route,
+  ActivatedRouteSnapshot,
+  DetachedRouteHandle,
+} from '@angular/router';
+import {Injectable} from '@angular/core';
 
 @Injectable()
 export class CustomRouteReuseStrategy implements RouteReuseStrategy {
@@ -189,7 +198,7 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
   retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
     // Returns the stored route handle for reattachment
     const key = this.getRouteKey(route);
-    return route.data['reuse'] === true ? this.handlers.get(key) ?? null : null;
+    return route.data['reuse'] === true ? (this.handlers.get(key) ?? null) : null;
   }
 
   shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
@@ -214,7 +223,7 @@ export const routes: Routes = [
   {
     path: 'products',
     component: ProductListComponent,
-    data: { reuse: true }  // Component state persists across navigations
+    data: {reuse: true}, // Component state persists across navigations
   },
   {
     path: 'products/:id',
@@ -224,8 +233,8 @@ export const routes: Routes = [
   {
     path: 'search',
     component: SearchComponent,
-    data: { reuse: true }  // Preserves search results and filter state
-  }
+    data: {reuse: true}, // Preserves search results and filter state
+  },
 ];
 ```
 
@@ -235,8 +244,8 @@ You can also configure a custom route reuse strategy at the application level th
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    { provide: RouteReuseStrategy, useClass: CustomRouteReuseStrategy }
-  ]
+    {provide: RouteReuseStrategy, useClass: CustomRouteReuseStrategy},
+  ],
 };
 ```
 
@@ -256,17 +265,12 @@ Angular provides two preloading strategies out of the box:
 The `PreloadAllModules` strategy can be configured as follows:
 
 ```ts
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
-import { routes } from './app.routes';
+import {ApplicationConfig} from '@angular/core';
+import {provideRouter, withPreloading, PreloadAllModules} from '@angular/router';
+import {routes} from './app.routes';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(
-      routes,
-      withPreloading(PreloadAllModules)
-    )
-  ]
+  providers: [provideRouter(routes, withPreloading(PreloadAllModules))],
 };
 ```
 
@@ -277,10 +281,10 @@ The `PreloadAllModules` strategy works well for small to medium applications whe
 Custom preloading strategies implement the `PreloadingStrategy` interface, which requires a single `preload` method. This method receives the route configuration and a function that triggers the actual module load. The strategy returns an Observable that emits when preloading completes or an empty Observable to skip preloading:
 
 ```ts
-import { Injectable } from '@angular/core';
-import { PreloadingStrategy, Route } from '@angular/router';
-import { Observable, of, timer } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import {Injectable} from '@angular/core';
+import {PreloadingStrategy, Route} from '@angular/router';
+import {Observable, of, timer} from 'rxjs';
+import {mergeMap} from 'rxjs/operators';
 
 @Injectable()
 export class SelectivePreloadingStrategy implements PreloadingStrategy {
@@ -297,24 +301,24 @@ export class SelectivePreloadingStrategy implements PreloadingStrategy {
 This selective strategy checks route metadata to determine preloading behavior. Routes can opt into preloading through their configuration:
 
 ```ts
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
 export const routes: Routes = [
   {
     path: 'dashboard',
     loadChildren: () => import('./dashboard/dashboard.routes'),
-    data: { preload: true }  // Preload immediately after initial navigation
+    data: {preload: true}, // Preload immediately after initial navigation
   },
   {
     path: 'reports',
     loadChildren: () => import('./reports/reports.routes'),
-    data: { preload: false } // Only load when user navigates to reports
+    data: {preload: false}, // Only load when user navigates to reports
   },
   {
     path: 'admin',
-    loadChildren: () => import('./admin/admin.routes')
+    loadChildren: () => import('./admin/admin.routes'),
     // No preload flag - won't be preloaded
-  }
+  },
 ];
 ```
 
@@ -337,15 +341,14 @@ The `UrlHandlingStrategy` class gives you control over this boundary between Ang
 Custom URL handling strategies extend the `UrlHandlingStrategy` class and implement three methods. The `shouldProcessUrl` method determines whether Angular should handle a given URL, `extract` returns the portion of the URL that Angular should process, and `merge` combines the URL fragment with the rest of the URL:
 
 ```ts
-import { Injectable } from '@angular/core';
-import { UrlHandlingStrategy, UrlTree } from '@angular/router';
+import {Injectable} from '@angular/core';
+import {UrlHandlingStrategy, UrlTree} from '@angular/router';
 
 @Injectable()
 export class CustomUrlHandlingStrategy implements UrlHandlingStrategy {
   shouldProcessUrl(url: UrlTree): boolean {
     // Only handle URLs that start with /app or /admin
-    return url.toString().startsWith('/app') ||
-           url.toString().startsWith('/admin');
+    return url.toString().startsWith('/app') || url.toString().startsWith('/admin');
   }
 
   extract(url: UrlTree): UrlTree {
@@ -367,15 +370,15 @@ This strategy creates clear boundaries in the URL space. Angular handles `/app` 
 You can register a custom strategy through Angular's dependency injection system:
 
 ```ts
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { UrlHandlingStrategy } from '@angular/router';
+import {ApplicationConfig} from '@angular/core';
+import {provideRouter} from '@angular/router';
+import {UrlHandlingStrategy} from '@angular/router';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    { provide: UrlHandlingStrategy, useClass: CustomUrlHandlingStrategy }
-  ]
+    {provide: UrlHandlingStrategy, useClass: CustomUrlHandlingStrategy},
+  ],
 };
 ```
 
@@ -392,20 +395,20 @@ The router evaluates custom matchers during the route matching phase, before pat
 A custom matcher is a function that receives URL segments and returns either a match result with consumed segments and parameters, or null to indicate no match. The matcher function runs before Angular evaluates the route's path property:
 
 ```ts
-import { Route, UrlSegment, UrlSegmentGroup, UrlMatchResult } from '@angular/router';
+import {Route, UrlSegment, UrlSegmentGroup, UrlMatchResult} from '@angular/router';
 
 export function customMatcher(
   segments: UrlSegment[],
   group: UrlSegmentGroup,
-  route: Route
+  route: Route,
 ): UrlMatchResult | null {
   // Matching logic here
   if (matchSuccessful) {
     return {
       consumed: segments,
       posParams: {
-        paramName: new UrlSegment('paramValue', {})
-      }
+        paramName: new UrlSegment('paramValue', {}),
+      },
     };
   }
   return null;
@@ -417,17 +420,17 @@ export function customMatcher(
 Consider an API documentation site that needs to route based on version numbers in the URL. Different versions might have different component structures or feature sets:
 
 ```ts
-import { Routes, UrlSegment, UrlMatchResult } from '@angular/router';
+import {Routes, UrlSegment, UrlMatchResult} from '@angular/router';
 
 export function versionMatcher(segments: UrlSegment[]): UrlMatchResult | null {
   // Match patterns like /v1/docs, /v2.1/docs, /v3.0.1/docs
   if (segments.length >= 2 && segments[0].path.match(/^v\d+(\.\d+)*$/)) {
     return {
-      consumed: segments.slice(0, 2),  // Consume version and 'docs'
+      consumed: segments.slice(0, 2), // Consume version and 'docs'
       posParams: {
-        version: segments[0],  // Make version available as a parameter
-        section: segments[1]   // Make section available too
-      }
+        version: segments[0], // Make version available as a parameter
+        section: segments[1], // Make section available too
+      },
     };
   }
   return null;
@@ -437,12 +440,12 @@ export function versionMatcher(segments: UrlSegment[]): UrlMatchResult | null {
 export const routes: Routes = [
   {
     matcher: versionMatcher,
-    component: DocumentationComponent
+    component: DocumentationComponent,
   },
   {
     path: 'latest/docs',
-    redirectTo: 'v3/docs'
-  }
+    redirectTo: 'v3/docs',
+  },
 ];
 ```
 
@@ -505,16 +508,16 @@ export function localeMatcher(segments: UrlSegment[]): UrlMatchResult | null {
       return {
         consumed: [segments[0]],
         posParams: {
-          locale: segments[0]
-        }
+          locale: segments[0],
+        },
       };
     } else {
       // No locale prefix, use default locale
       return {
-        consumed: [],  // Don't consume any segments
+        consumed: [], // Don't consume any segments
         posParams: {
-          locale: new UrlSegment('en', {})
-        }
+          locale: new UrlSegment('en', {}),
+        },
       };
     }
   }
@@ -539,8 +542,8 @@ export function productMatcher(segments: UrlSegment[]): UrlMatchResult | null {
       consumed: [segments[0]],
       posParams: {
         productType: new UrlSegment('book', {}),
-        identifier: new UrlSegment(firstSegment.substring(5), {})
-      }
+        identifier: new UrlSegment(firstSegment.substring(5), {}),
+      },
     };
   }
 
@@ -550,8 +553,8 @@ export function productMatcher(segments: UrlSegment[]): UrlMatchResult | null {
       consumed: segments.slice(0, 2),
       posParams: {
         productType: new UrlSegment('electronics', {}),
-        identifier: segments[1]
-      }
+        identifier: segments[1],
+      },
     };
   }
 
@@ -562,8 +565,8 @@ export function productMatcher(segments: UrlSegment[]): UrlMatchResult | null {
       posParams: {
         productType: new UrlSegment('clothing', {}),
         brand: segments[1],
-        identifier: segments[2]
-      }
+        identifier: segments[2],
+      },
     };
   }
 

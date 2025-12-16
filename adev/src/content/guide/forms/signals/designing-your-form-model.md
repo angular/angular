@@ -10,14 +10,14 @@ The form model represents the raw user input as it appears in the UI. For instan
 
 ```ts
 interface AppointmentFormModel {
-  name: string;  // Appointment owner's name
-  date: Date;    // Appointment date (carries only date information, time component is unused)
-  time: string;  // Selected time as a string
+  name: string; // Appointment owner's name
+  date: Date; // Appointment date (carries only date information, time component is unused)
+  time: string; // Selected time as a string
 }
 
 interface AppointmentDomainModel {
-  name: string;  // Appointment owner's name
-  time: Date;    // Appointment time (carries both date and time information)
+  name: string; // Appointment owner's name
+  time: Date; // Appointment time (carries both date and time information)
 }
 ```
 
@@ -38,15 +38,15 @@ const taskModel = signal({
   title: '',
   description: '',
   priority: 'medium',
-  completed: false
-})
+  completed: false,
+});
 ```
 
 ```ts {avoid, header: 'Partial initialization'}
 const taskModel = signal({
-  title: ''
+  title: '',
   // Missing description, priority, completed
-})
+});
 ```
 
 Missing initial values mean those fields won't exist in the field tree, making them inaccessible for form interactions.
@@ -58,8 +58,8 @@ Each model should represent a single form or a cohesive set of related data:
 ```ts {prefer, header: 'Focused on a single purpose'}
 const loginModel = signal({
   email: '',
-  password: ''
-})
+  password: '',
+});
 ```
 
 ```ts {avoid, header: 'Mixing unrelated concerns'}
@@ -71,8 +71,8 @@ const appModel = signal({
   theme: 'light',
   language: 'en',
   // Shopping cart
-  cartItems: []
-})
+  cartItems: [],
+});
 ```
 
 Separate models for different concerns makes forms easier to understand and reuse. Create multiple forms if you're managing distinct sets of data.
@@ -84,9 +84,9 @@ Design models with validation in mind. Group fields that validate together:
 ```ts {prefer, header: 'Related fields grouped for comparison'}
 // Password fields grouped for comparison
 interface PasswordChangeData {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 ```
 
@@ -102,8 +102,8 @@ Although the size options look numeric, `<select>` elements work with string val
 
 ```ts {prefer, header: 'Appropriate data types for the bound UI controls'}
 interface BeverageOrderFormModel {
-  size: string;      // Bound to: <select> (option values: "6", "12", "24")
-  quantity: number;  // Bound to: <input type="number">
+  size: string; // Bound to: <select> (option values: "6", "12", "24")
+  quantity: number; // Bound to: <input type="number">
 }
 ```
 
@@ -115,8 +115,8 @@ To represent a property with an empty value in your form model, use a value that
 
 ```ts {prefer, header: 'Appropriate empty values'}
 interface UserFormModel {
-  name: string;           // Bound to <input type="text">
-  birthday: Date | null;  // Bound to <input type="date">
+  name: string; // Bound to <input type="text">
+  birthday: Date | null; // Bound to <input type="date">
 }
 
 // Initialize our form with empty values.
@@ -144,29 +144,29 @@ interface CreateAccountFormModel {
 When creating the form we encounter a dilemma, what should the initial value in the model be? It may be tempting to create a `form<CreateAccountFormModel | null>()` since we don't have any input from the user yet.
 
 ```ts {avoid, header: 'Using null as empty value for complex object'}
-createAccountForm = form<CreateAccountFormModel | null>(
-  signal(/* what goes here, null? */)
-);
+createAccountForm = form<CreateAccountFormModel | null>(signal(/* what goes here, null? */));
 ```
 
 However, it is important to remember that Signal Forms is _model driven_. If our model is `null` and `null` doesn't have a `name` or `username` property, that means our form won't have those subfields either. Instead what we really want is an instance of `CreateAccountFormModel` with all of its leaf fields set to an empty value.
 
 ```ts {prefer, header: 'Same shape value with empty values for properties'}
-createAccountForm = form<CreateAccountFormModel>(signal({
-  name: {
-    first: '',
-    last: ''
-  },
-  username: ''
-}));
+createAccountForm = form<CreateAccountFormModel>(
+  signal({
+    name: {
+      first: '',
+      last: '',
+    },
+    username: '',
+  }),
+);
 ```
 
 Using this representation, all of the subfields we need now exist, and we can bind them using the `[field]` directive in our template.
 
 ```html
-First: <input [field]="createAccountForm.name.first">
-Last: <input [field]="createAccountForm.name.last">
-Username: <input [field]="createAccountForm.username">
+First: <input [field]="createAccountForm.name.first" /> Last:
+<input [field]="createAccountForm.name.last" /> Username:
+<input [field]="createAccountForm.username" />
 ```
 
 #### Fields that are conditionally hidden or unavailable
@@ -174,24 +174,18 @@ Username: <input [field]="createAccountForm.username">
 Forms aren't always linear. You often need to create conditional paths based on previous user input. One example of this is a form where we give the user different payment options. Let's start by imagining what the UI for such a form might look like.
 
 ```html
-Name: <input type="text">
+Name: <input type="text" />
 
 <section>
   <h2>Payment Info</h2>
-  <input type="radio"> Credit Card
-  @if (/* credit card selected */) {
-    <section>
-      Card Number <input type="text">
-      Security Code <input type="text">
-      Expiration <input type="text">
-    </section>
+  <input type="radio" /> Credit Card @if (/* credit card selected */) {
+  <section>
+    Card Number <input type="text" /> Security Code <input type="text" /> Expiration
+    <input type="text" />
+  </section>
   }
-  <input type="radio"> Bank Account
-  @if (/* bank account selected */) {
-    <section>
-      Account Number <input type="text">
-      Routing Number <input type="text">
-    </section>
+  <input type="radio" /> Bank Account @if (/* bank account selected */) {
+  <section>Account Number <input type="text" /> Routing Number <input type="text" /></section>
   }
 </section>
 ```
@@ -202,16 +196,16 @@ The best way to handle this is to use a form model with a static structure that 
 interface BillPayFormModel {
   name: string;
   method: {
-    type: string,
+    type: string;
     card: {
-      cardNumber: string,
-      securityCode: string,
-      expiration: string
-    },
+      cardNumber: string;
+      securityCode: string;
+      expiration: string;
+    };
     bank: {
-      accountNumber: string,
-      routingNumber: string
-    }
+      accountNumber: string;
+      routingNumber: string;
+    };
   };
 }
 
@@ -232,15 +226,15 @@ interface BillPayFormModel {
   name: string;
   method:
     | {
-        type: 'card',
-        cardNumber: string,
-        securityCode: string,
-        expiration: string
+        type: 'card';
+        cardNumber: string;
+        securityCode: string;
+        expiration: string;
       }
     | {
-        type: 'bank',
-        accountNumber: string,
-        routingNumber: string
+        type: 'bank';
+        accountNumber: string;
+        routingNumber: string;
       };
 }
 ```
@@ -266,7 +260,7 @@ Arrays are the most common exception. Forms often need to collect a variable num
 ```ts
 interface SendEmailFormModel {
   subject: string;
-  recipientEmails: string[]
+  recipientEmails: string[];
 }
 ```
 
@@ -295,8 +289,8 @@ interface UserProfileFormModel {
 In the template, we bind the `location` field directly to our custom control:
 
 ```html
-Username: <input [field]="userForm.username">
-Location: <location-picker [field]="userForm.location"></location-picker>
+Username: <input [field]="userForm.username" /> Location:
+<location-picker [field]="userForm.location"></location-picker>
 ```
 
 Here, `<location-picker>` consumes and produces the entire `Location` object (or `null`), and doesn't access `userForm.location.lat` or `userForm.location.lng`. Therefore, `location` can safely have a dynamic shape without violating the principles of model-driven forms.

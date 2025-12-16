@@ -165,29 +165,27 @@ It's also possible to measure any "user metric" within the browser
 by setting a numeric value on the `window` object. For example:
 
 ```js
-bootstrap(App)
-  .then(() => {
-    window.timeToBootstrap = Date.now() - performance.timing.navigationStart;
-  });
+bootstrap(App).then(() => {
+  window.timeToBootstrap = Date.now() - performance.timing.navigationStart;
+});
 ```
 
 A test driver for this user metric could be written as follows:
 
 ```js
-
-describe('home page load', function() {
-  it('should log load time for a 2G connection', done => {
-    runner.sample({
-      execute: () => {
-        browser.get(`http://localhost:8080`);
-      },
-      userMetrics: {
-        timeToBootstrap: 'The time in milliseconds to bootstrap'
-      },
-      providers: [
-        {provide: RegressionSlopeValidator.METRIC, useValue: 'timeToBootstrap'}
-      ]
-    }).then(done);
+describe('home page load', function () {
+  it('should log load time for a 2G connection', (done) => {
+    runner
+      .sample({
+        execute: () => {
+          browser.get(`http://localhost:8080`);
+        },
+        userMetrics: {
+          timeToBootstrap: 'The time in milliseconds to bootstrap',
+        },
+        providers: [{provide: RegressionSlopeValidator.METRIC, useValue: 'timeToBootstrap'}],
+      })
+      .then(done);
   });
 });
 ```

@@ -128,7 +128,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       @Component({
         selector: 'need-cd',
-        template: `{{'it works!'}}`,
+        template: `{{ 'it works!' }}`,
         standalone: false,
       })
       class NeedCdCmp {}
@@ -214,7 +214,9 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     it('should work when an outlet is added/removed', async () => {
       @Component({
         selector: 'someRoot',
-        template: `[<div *ngIf="cond()"><router-outlet></router-outlet></div>]`,
+        template: `[
+          <div *ngIf="cond()"><router-outlet></router-outlet></div>
+          ]`,
         standalone: false,
       })
       class RootCmpWithLink {
@@ -233,15 +235,15 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       router.navigateByUrl('/simple');
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[simple]');
+      expect(fixture.nativeElement).toHaveText('[ simple ]');
 
       fixture.componentInstance.cond.set(false);
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[]');
+      expect(fixture.nativeElement).toHaveText('[  ]');
 
       fixture.componentInstance.cond.set(true);
       await advance(fixture);
-      expect(fixture.nativeElement).toHaveText('[simple]');
+      expect(fixture.nativeElement).toHaveText('[ simple ]');
     });
 
     it('should update location when navigating', async () => {
@@ -864,7 +866,10 @@ for (const browserAPI of ['navigation', 'history'] as const) {
     it('should emit an event when an outlet gets activated', async () => {
       @Component({
         selector: 'container',
-        template: `<router-outlet (activate)="recordActivate($event)" (deactivate)="recordDeactivate($event)"></router-outlet>`,
+        template: `<router-outlet
+          (activate)="recordActivate($event)"
+          (deactivate)="recordDeactivate($event)"
+        ></router-outlet>`,
         standalone: false,
       })
       class Container {
