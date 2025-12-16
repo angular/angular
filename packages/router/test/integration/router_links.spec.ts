@@ -117,11 +117,10 @@ export function routerLinkIntegrationSpec() {
       @Component({
         selector: 'someCmp',
         template: `<router-outlet></router-outlet>
-                <a [routerLink]="null">Link</a>
-                <button [routerLink]="null">Button</button>
-                <a [routerLink]="undefined">Link</a>
-                <button [routerLink]="undefined">Button</button>
-                `,
+          <a [routerLink]="null">Link</a>
+          <button [routerLink]="null">Button</button>
+          <a [routerLink]="undefined">Link</a>
+          <button [routerLink]="undefined">Button</button> `,
         standalone: false,
       })
       class CmpWithLink {}
@@ -142,7 +141,8 @@ export function routerLinkIntegrationSpec() {
     it('should not throw when some command is null', async () => {
       @Component({
         selector: 'someCmp',
-        template: `<router-outlet></router-outlet><a [routerLink]="[null]">Link</a><button [routerLink]="[null]">Button</button>`,
+        template: `<router-outlet></router-outlet><a [routerLink]="[null]">Link</a
+          ><button [routerLink]="[null]">Button</button>`,
         standalone: false,
       })
       class CmpWithLink {}
@@ -156,7 +156,8 @@ export function routerLinkIntegrationSpec() {
     it('should not throw when some command is undefined', async () => {
       @Component({
         selector: 'someCmp',
-        template: `<router-outlet></router-outlet><a [routerLink]="[undefined]">Link</a><button [routerLink]="[undefined]">Button</button>`,
+        template: `<router-outlet></router-outlet><a [routerLink]="[undefined]">Link</a
+          ><button [routerLink]="[undefined]">Button</button>`,
         standalone: false,
       })
       class CmpWithLink {}
@@ -170,7 +171,8 @@ export function routerLinkIntegrationSpec() {
     it('should update hrefs when query params or fragment change', async () => {
       @Component({
         selector: 'someRoot',
-        template: `<router-outlet></router-outlet><a routerLink="/home" queryParamsHandling="preserve" preserveFragment>Link</a>`,
+        template: `<router-outlet></router-outlet
+          ><a routerLink="/home" queryParamsHandling="preserve" preserveFragment>Link</a>`,
         standalone: false,
       })
       class RootCmpWithLink {}
@@ -198,7 +200,8 @@ export function routerLinkIntegrationSpec() {
     it('should correctly use the preserve strategy', async () => {
       @Component({
         selector: 'someRoot',
-        template: `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="preserve">Link</a>`,
+        template: `<router-outlet></router-outlet
+          ><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="preserve">Link</a>`,
         standalone: false,
       })
       class RootCmpWithLink {}
@@ -218,7 +221,13 @@ export function routerLinkIntegrationSpec() {
     it('should correctly use the merge strategy', async () => {
       @Component({
         selector: 'someRoot',
-        template: `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{removeMe: null, q: 456}" queryParamsHandling="merge">Link</a>`,
+        template: `<router-outlet></router-outlet
+          ><a
+            routerLink="/home"
+            [queryParams]="{removeMe: null, q: 456}"
+            queryParamsHandling="merge"
+            >Link</a
+          >`,
         standalone: false,
       })
       class RootCmpWithLink {}

@@ -174,12 +174,20 @@ export class AppWarningComponent {
 ```
 
 ```ts
-import { Component, ViewContainerRef, signal, inputBinding, outputBinding, twoWayBinding, inject } from '@angular/core';
-import { FocusTrap } from "@angular/cdk/a11y";
-import { ThemeDirective } from '../theme.directive';
+import {
+  Component,
+  ViewContainerRef,
+  signal,
+  inputBinding,
+  outputBinding,
+  twoWayBinding,
+  inject,
+} from '@angular/core';
+import {FocusTrap} from '@angular/cdk/a11y';
+import {ThemeDirective} from '../theme.directive';
 
 @Component({
-  template: `<ng-container #container />`
+  template: `<ng-container #container />`,
 })
 export class HostComponent {
   private vcr = inject(ViewContainerRef);
@@ -193,12 +201,12 @@ export class HostComponent {
         twoWayBinding('isExpanded', this.isExpanded),
         outputBinding<boolean>('close', (confirmed) => {
           console.log('Closed with result:', confirmed);
-        })
+        }),
       ],
       directives: [
         FocusTrap,
-        { type: ThemeDirective, bindings: [inputBinding('theme', () => 'warning')] }
-      ]
+        {type: ThemeDirective, bindings: [inputBinding('theme', () => 'warning')]},
+      ],
     });
   }
 }
@@ -220,9 +228,9 @@ import {
   inputBinding,
   outputBinding,
 } from '@angular/core';
-import { PopupComponent } from './popup.component';
+import {PopupComponent} from './popup.component';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class PopupService {
   private readonly injector = inject(EnvironmentInjector);
   private readonly appRef = inject(ApplicationRef);

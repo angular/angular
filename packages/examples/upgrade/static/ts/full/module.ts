@@ -51,7 +51,7 @@ export class TextFormatter {
       <ng1-hero [hero]="hero" (onRemove)="removeHero.emit(hero)"
         ><strong>Super Hero</strong></ng1-hero
       >
-      </div>
+    </div>
     <button (click)="addHero.emit()">Add Hero</button>`,
   standalone: false,
 })

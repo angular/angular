@@ -42,22 +42,22 @@ To do this:
 1. Add the following code in `src/typings.d.ts`:
 
    ```ts
-     declare module 'host' {
-       export interface Host {
-         protocol?: string;
-         hostname?: string;
-         pathname?: string;
-       }
-       export function parse(url: string, queryString?: string): Host;
+   declare module 'host' {
+     export interface Host {
+       protocol?: string;
+       hostname?: string;
+       pathname?: string;
      }
+     export function parse(url: string, queryString?: string): Host;
+   }
    ```
 
 1. In the component or file that uses the library, add the following code:
 
    ```ts
-       import * as host from 'host';
-       const parsedUrl = host.parse('https://angular.dev');
-       console.log(parsedUrl.hostname);
+   import * as host from 'host';
+   const parsedUrl = host.parse('https://angular.dev');
+   console.log(parsedUrl.hostname);
    ```
 
 Define more typings as needed.
@@ -116,9 +116,7 @@ After you import a library using the "scripts" array, do **not** import it using
 The following code snippet is an example import statement.
 
 ```ts
-
 import * as $ from 'jquery';
-
 ```
 
 If you import it using import statements, you have two different copies of the library: one imported as a global library, and one imported as a module.
@@ -134,28 +132,22 @@ If the global library you need to use does not have global typings, you can decl
 For example:
 
 ```ts
-
 declare var libraryName: any;
-
 ```
 
 Some scripts extend other libraries; for instance with JQuery plugins:
 
 ```ts
-
 $('.test').myPlugin();
-
 ```
 
 In this case, the installed `@types/jquery` does not include `myPlugin`, so you need to add an interface in `src/typings.d.ts`.
 For example:
 
 ```ts
-
 interface JQuery {
   myPlugin(options?: any): any;
 }
-
 ```
 
 If you do not add the interface for the script-defined extension, your IDE shows an error:

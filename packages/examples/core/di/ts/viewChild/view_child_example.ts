@@ -20,10 +20,10 @@ export class Pane {
   selector: 'example-app',
   imports: [Pane],
   template: `
-    @if(shouldShow()) {
-      <pane id="1"/>
+    @if (shouldShow()) {
+      <pane id="1" />
     } @else {
-      <pane id="2"/>
+      <pane id="2" />
     }
 
     <button (click)="toggle()">Toggle</button>

@@ -23,7 +23,7 @@ const baseCurrencies = {
   'CAD': ['CA$', '$', 2],
   'NZD': ['NZ$', '$'],
   'USD': ['$'],
-}
+};
 ```
 
 In the snippet above, you might wonder why values for `NZD` or `USD` are missing. This is intentional as for `USD` there is no narrow symbol (given `$` already being the symbol). The tool does not set an explicit value for byte savings. Same applies for the fraction digits.
@@ -50,8 +50,8 @@ Additionally, if locale data is equal to locale data at a previous index, then t
 [
   // ...
   labelsForDayPeriodsNarrow,
-  labelsForDayPeriodsAbbreviated
-]
+  labelsForDayPeriodsAbbreviated,
+];
 ```
 
 If `labelsForDayPeriodsAbbreviated` for example is equal to `labelsForDayPeriodsNarrow`, then the tool will not set a value for the abbreviated labels. Instead, it will set `undefined` as that minifies to: `[labelsForDayPeriodsNarrow, undefined]`.

@@ -33,7 +33,7 @@ or use the `.update()` operation to compute a new value from the previous one:
 
 ```ts
 // Increment the count by 1.
-count.update(value => value + 1);
+count.update((value) => value + 1);
 ```
 
 Writable signals have the type `WritableSignal`.

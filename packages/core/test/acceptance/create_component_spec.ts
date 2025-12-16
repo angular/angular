@@ -94,8 +94,7 @@ describe('createComponent', () => {
   it('should render projected content', () => {
     @Component({
       template: `
-        <ng-content></ng-content>|
-        <ng-content></ng-content>|
+        <ng-content></ng-content>| <ng-content></ng-content>|
         <ng-content></ng-content>
       `,
     })

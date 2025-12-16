@@ -49,7 +49,7 @@ To add Karma and Jasmine to an existing project, follow these steps:
             "test": {
               "builder": "@angular/build:unit-test",
               "options": {
-                "runner": "karma",
+                "runner": "karma"
                 // ... other options
               }
             }
@@ -68,10 +68,8 @@ To add Karma and Jasmine to an existing project, follow these steps:
       // ...
       "compilerOptions": {
         // ...
-        "types": [
-          "jasmine"
-        ]
-      },
+        "types": ["jasmine"]
+      }
       // ...
     }
     ```
@@ -135,7 +133,7 @@ To explicitly set Karma as the test runner for your project, locate the `test` t
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "runner": "karma",
+            "runner": "karma"
             // ... other options
           }
         }

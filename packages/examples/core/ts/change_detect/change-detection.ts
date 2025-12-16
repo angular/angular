@@ -44,9 +44,8 @@ class DataListProvider {
 
 @Component({
   selector: 'giant-list',
-  template: `
-  <ul>
-    @for( d of dataProvider.data; track $index) {
+  template: ` <ul>
+    @for (d of dataProvider.data; track $index) {
       <li>Item {{ d }}</li>
     }
   </ul>`,
@@ -67,7 +66,7 @@ class GiantList {
   selector: 'app',
   providers: [DataListProvider],
   imports: [GiantList],
-  template: `<giant-list/>`,
+  template: `<giant-list />`,
 })
 class App {}
 // #enddocregion detach

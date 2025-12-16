@@ -14,7 +14,7 @@ import {HousingService} from '../housing.service';
       </form>
     </section>
     <section class="results">
-      @for(housingLocation of filteredLocationList; track $index) {
+      @for (housingLocation of filteredLocationList; track $index) {
         <app-housing-location [housingLocation]="housingLocation" />
       }
     </section>

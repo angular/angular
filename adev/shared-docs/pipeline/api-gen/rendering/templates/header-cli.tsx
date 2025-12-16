@@ -8,7 +8,12 @@
 
 import {h} from 'preact';
 import {CliCommandRenderable} from '../entities/renderables.mjs';
-import {HEADER_CLASS_NAME, HEADER_ENTRY_CATEGORY, HEADER_ENTRY_LABEL, HEADER_ENTRY_TITLE} from '../styling/css-classes.mjs';
+import {
+  HEADER_CLASS_NAME,
+  HEADER_ENTRY_CATEGORY,
+  HEADER_ENTRY_LABEL,
+  HEADER_ENTRY_TITLE,
+} from '../styling/css-classes.mjs';
 
 /** Component to render a header of the CLI page. */
 export function HeaderCli(props: {command: CliCommandRenderable}) {
@@ -20,7 +25,9 @@ export function HeaderCli(props: {command: CliCommandRenderable}) {
 
       <div className={HEADER_ENTRY_TITLE}>
         <div>
-          <h1>{command.parentCommand?.name} {command.name}</h1>
+          <h1>
+            {command.parentCommand?.name} {command.name}
+          </h1>
           <div className={`${HEADER_ENTRY_LABEL} type-command full`}>{'Command'}</div>
         </div>
       </div>

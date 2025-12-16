@@ -6,8 +6,7 @@ import {map, startWith, take} from 'rxjs/operators';
 
 @Component({
   selector: 'app-hero-async-message',
-  template: `
-    <h2>Async Messages and AsyncPipe</h2>
+  template: ` <h2>Async Messages and AsyncPipe</h2>
     <p>{{ message$ | async }}</p>
     <button type="button" (click)="resend()">Resend Messages</button>`,
   imports: [AsyncPipe],

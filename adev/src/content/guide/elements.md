@@ -39,9 +39,7 @@ The `createCustomElement()` function converts a component into a class that can 
 After you register your configured class with the browser's custom-element registry, use the new element just like a built-in HTML element in content that you add directly into the DOM:
 
 ```html
-
 <my-popup message="Use Angular!"></my-popup>
-
 ```
 
 When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM.
@@ -121,21 +119,19 @@ Assume you create a `my-dialog` custom element based on the following component:
 ```ts
 @Component(/* ... */)
 class MyDialog {
-  content =  input(string);
+  content = input(string);
 }
-
 ```
 
 The most straightforward way to get accurate typings is to cast the return value of the relevant DOM methods to the correct type.
 For that, use the `NgElement` and `WithProperties` types \(both exported from `@angular/elements`\):
 
 ```ts
-
-const aDialog = document.createElement('my-dialog') as NgElement & WithProperties<{content: string}>;
+const aDialog = document.createElement('my-dialog') as NgElement &
+  WithProperties<{content: string}>;
 aDialog.content = 'Hello, world!';
 aDialog.content = 123; // <-- ERROR: TypeScript knows this should be a string.
 aDialog.body = 'News'; // <-- ERROR: TypeScript knows there is no `body` property on `aDialog`.
-
 ```
 
 This is a good way to quickly get TypeScript features, such as type checking and autocomplete support, for your custom element.
@@ -158,12 +154,10 @@ declare global {
 Now, TypeScript can infer the correct type the same way it does for built-in elements:
 
 ```ts
-
-document.createElement('div')               //--> HTMLDivElement (built-in element)
-document.querySelector('foo')               //--> Element        (unknown element)
-document.createElement('my-dialog')         //--> NgElement & WithProperties<{content: string}> (custom element)
-document.querySelector('my-other-element')  //--> NgElement & WithProperties<{foo: 'bar'}>      (custom element)
-
+document.createElement('div'); //--> HTMLDivElement (built-in element)
+document.querySelector('foo'); //--> Element        (unknown element)
+document.createElement('my-dialog'); //--> NgElement & WithProperties<{content: string}> (custom element)
+document.querySelector('my-other-element'); //--> NgElement & WithProperties<{foo: 'bar'}>      (custom element)
 ```
 
 ## Limitations

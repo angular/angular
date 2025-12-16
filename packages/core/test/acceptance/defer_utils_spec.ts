@@ -280,9 +280,9 @@ describe('@defer debugging utilities', () => {
           Loaded
         } @placeholder {
           @let one = 1;
-          One is {{one}}
+          One is {{ one }}
           @let two = one + 1;
-          Two is {{two}}
+          Two is {{ two }}
         }
         After
       `,

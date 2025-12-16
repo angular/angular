@@ -113,7 +113,7 @@ describe('standalone in Router API', () => {
       }
 
       @Component({
-        template: `{{service.value}}`,
+        template: `{{ service.value }}`,
         standalone: false,
       })
       class MyComponent {
@@ -145,7 +145,7 @@ describe('standalone in Router API', () => {
       class LazyModule {}
 
       @Component({
-        template: `{{service.value}}`,
+        template: `{{ service.value }}`,
         standalone: false,
       })
       class MyComponent {
@@ -174,7 +174,7 @@ describe('standalone in Router API', () => {
       }
 
       @Component({
-        template: `{{service.value}}`,
+        template: `{{ service.value }}`,
         standalone: false,
       })
       class MyComponent {

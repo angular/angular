@@ -90,7 +90,7 @@ describe('pipe', () => {
     }
 
     @Component({
-      template: `<div my-dir [dirProp]="'a'|double"></div>`,
+      template: `<div my-dir [dirProp]="'a' | double"></div>`,
       standalone: false,
     })
     class App {
@@ -106,7 +106,7 @@ describe('pipe', () => {
 
   it('should support arguments in pipes', () => {
     @Component({
-      template: `{{person.name | multiArgPipe:'one':person.address.city}}`,
+      template: `{{ person.name | multiArgPipe: 'one' : person.address.city }}`,
       standalone: false,
     })
     class App {
@@ -122,7 +122,7 @@ describe('pipe', () => {
 
   it('should support calling pipes with different number of arguments', () => {
     @Component({
-      template: `{{person.name | multiArgPipe:'a':'b'}} {{0 | multiArgPipe:1:2:3}}`,
+      template: `{{ person.name | multiArgPipe: 'a' : 'b' }} {{ 0 | multiArgPipe: 1 : 2 : 3 }}`,
       standalone: false,
     })
     class App {
@@ -249,7 +249,7 @@ describe('pipe', () => {
     }
 
     @Component({
-      template: `{{person.name | identityPipe}}`,
+      template: `{{ person.name | identityPipe }}`,
       standalone: false,
     })
     class App {
@@ -315,7 +315,7 @@ describe('pipe', () => {
     }
 
     @Component({
-      template: `{{ condition ? 'a' : 'b' | pipe }}`,
+      template: `{{ condition ? 'a' : ('b' | pipe) }}`,
       standalone: false,
     })
     class App {
@@ -479,8 +479,8 @@ describe('pipe', () => {
     it('should not cache impure pipes', () => {
       @Component({
         template: `
-          <div [id]="0 | countingImpurePipe">{{1 | countingImpurePipe}}</div>
-          <div [id]="2 | countingImpurePipe">{{3 | countingImpurePipe}}</div>
+          <div [id]="0 | countingImpurePipe">{{ 1 | countingImpurePipe }}</div>
+          <div [id]="2 | countingImpurePipe">{{ 3 | countingImpurePipe }}</div>
         `,
         standalone: false,
       })
@@ -653,9 +653,9 @@ describe('pipe', () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.OnPush,
         template: `
-              <some-comp [value]="pipeValue | testPipe"></some-comp>
-              Outer value: "{{displayValue}}"
-            `,
+          <some-comp [value]="pipeValue | testPipe"></some-comp>
+          Outer value: "{{ displayValue }}"
+        `,
         standalone: false,
       })
       class App {
@@ -709,11 +709,11 @@ describe('pipe', () => {
       @Component({
         changeDetection: ChangeDetectionStrategy.OnPush,
         template: `
-              <some-comp [value]="pipeValue | testPipe">
-                <div>Hello</div>
-              </some-comp>
-              Outer value: "{{displayValue}}"
-            `,
+          <some-comp [value]="pipeValue | testPipe">
+            <div>Hello</div>
+          </some-comp>
+          Outer value: "{{ displayValue }}"
+        `,
         standalone: false,
       })
       class App {
@@ -769,7 +769,7 @@ describe('pipe', () => {
         }
       }
       @Component({
-        template: `{{val | throwPipe}}`,
+        template: `{{ val | throwPipe }}`,
         standalone: false,
       })
       class App {
@@ -804,7 +804,7 @@ describe('pipe', () => {
       }
 
       @Component({
-        template: `{{val | throwPipe}}`,
+        template: `{{ val | throwPipe }}`,
         standalone: false,
       })
       class App {
@@ -848,7 +848,7 @@ describe('pipe', () => {
             }
           }
           @Component({
-            template: `{{val | throw${args.slice(0, numberOfPipeArgs).join('')}}}`,
+            template: `{{ val | throw${args.slice(0, numberOfPipeArgs).join('')} }}`,
             standalone: false,
           })
           class App {
@@ -910,10 +910,9 @@ describe('pipe', () => {
 
       it('should throw an error if a pipe is not found inside an inline template', () => {
         @Component({
-          template: `
-            <ng-container *ngIf="true">
-              {{ value | testMissingPipe }}
-            </ng-container>`,
+          template: ` <ng-container *ngIf="true">
+            {{ value | testMissingPipe }}
+          </ng-container>`,
           standalone: componentIsStandalone,
           ...(componentIsStandalone ? {imports: [CommonModule]} : {}),
         })
@@ -940,10 +939,9 @@ describe('pipe', () => {
         class TestChildComponent {}
 
         @Component({
-          template: `
-            <app-test-child>
-              {{ value | testMissingPipe }}
-            </app-test-child>`,
+          template: ` <app-test-child>
+            {{ value | testMissingPipe }}
+          </app-test-child>`,
           standalone: componentIsStandalone,
           ...(componentIsStandalone ? {imports: [TestChildComponent]} : {}),
         })
@@ -970,12 +968,11 @@ describe('pipe', () => {
         class TestChildComponent {}
 
         @Component({
-          template: `
-              <app-test-child>
-                <ng-container *ngIf="true">
-                  {{ value | testMissingPipe }}
-                </ng-container>
-              </app-test-child>`,
+          template: ` <app-test-child>
+            <ng-container *ngIf="true">
+              {{ value | testMissingPipe }}
+            </ng-container>
+          </app-test-child>`,
           standalone: componentIsStandalone,
           ...(componentIsStandalone ? {imports: [TestChildComponent, CommonModule]} : {}),
         })

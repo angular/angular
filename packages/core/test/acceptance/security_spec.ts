@@ -34,7 +34,10 @@ describe('comment node text escaping', () => {
       'should not be possible to do XSS through comment reflect data when writing: ' + xssValue,
       () => {
         @Component({
-          template: `<div><span *ngIf="xssValue"></span><div>`,
+          template: `<div>
+            <span *ngIf="xssValue"></span>
+            <div></div>
+          </div>`,
           standalone: false,
         })
         class XSSComp {
@@ -147,11 +150,7 @@ describe('iframe processing', () => {
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `
-                  <iframe
-                    ${srcAttr}="${TEST_IFRAME_URL}"
-                    ${securityAttr}="">
-                  </iframe>`,
+                template: ` <iframe ${srcAttr}="${TEST_IFRAME_URL}" ${securityAttr}=""> </iframe>`,
               })
               class IframeComp {}
 
@@ -166,11 +165,11 @@ describe('iframe processing', () => {
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `
-                  <iframe
-                    ${srcAttr}="${TEST_IFRAME_URL}"
-                    ${securityAttr.toUpperCase()}="">
-                  </iframe>`,
+                template: ` <iframe
+                  ${srcAttr}="${TEST_IFRAME_URL}"
+                  ${securityAttr.toUpperCase()}=""
+                >
+                </iframe>`,
               })
               class IframeComp {}
 
@@ -184,7 +183,10 @@ describe('iframe processing', () => {
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `<iframe ${srcAttr}="${TEST_IFRAME_URL}" [${securityAttr}]="''"></iframe>`,
+                template: `<iframe
+                  ${srcAttr}="${TEST_IFRAME_URL}"
+                  [${securityAttr}]="''"
+                ></iframe>`,
               })
               class IframeComp {}
 
@@ -198,7 +200,10 @@ describe('iframe processing', () => {
             () => {
               @Component({
                 selector: 'my-comp',
-                template: `<iframe ${srcAttr}="${TEST_IFRAME_URL}" ${securityAttr}="{{''}}"></iframe>`,
+                template: `<iframe
+                  ${srcAttr}="${TEST_IFRAME_URL}"
+                  ${securityAttr}="{{ '' }}"
+                ></iframe>`,
               })
               class IframeComp {}
 
@@ -214,11 +219,11 @@ describe('iframe processing', () => {
               @Component({
                 selector: 'my-comp',
                 template: `
-                    <iframe
-                      ${srcAttr}="${TEST_IFRAME_URL}"
-                      [${securityAttr.toUpperCase()}]="''"
-                    ></iframe>
-                  `,
+                  <iframe
+                    ${srcAttr}="${TEST_IFRAME_URL}"
+                    [${securityAttr.toUpperCase()}]="''"
+                  ></iframe>
+                `,
               })
               class IframeComp {}
 
@@ -233,11 +238,8 @@ describe('iframe processing', () => {
               @Component({
                 selector: 'my-comp',
                 template: `
-                    <iframe
-                      ${srcAttr}="${TEST_IFRAME_URL}"
-                      [attr.${securityAttr}]="''"
-                    ></iframe>
-                  `,
+                  <iframe ${srcAttr}="${TEST_IFRAME_URL}" [attr.${securityAttr}]="''"></iframe>
+                `,
               })
               class IframeComp {}
 
@@ -253,11 +255,11 @@ describe('iframe processing', () => {
               @Component({
                 selector: 'my-comp',
                 template: `
-                    <iframe
-                      ${srcAttr}="${TEST_IFRAME_URL}"
-                      [attr.${securityAttr.toUpperCase()}]="''"
-                    ></iframe>
-                  `,
+                  <iframe
+                    ${srcAttr}="${TEST_IFRAME_URL}"
+                    [attr.${securityAttr.toUpperCase()}]="''"
+                  ></iframe>
+                `,
               })
               class IframeComp {}
 
@@ -268,12 +270,7 @@ describe('iframe processing', () => {
           it(`should allow changing \`${srcAttr}\` after initial render`, () => {
             @Component({
               selector: 'my-comp',
-              template: `
-                    <iframe
-                      ${securityAttr}="allow-forms"
-                      [${srcAttr}]="src">
-                    </iframe>
-                  `,
+              template: ` <iframe ${securityAttr}="allow-forms" [${srcAttr}]="src"> </iframe> `,
             })
             class IframeComp {
               private sanitizer = inject(DomSanitizer);
@@ -485,9 +482,7 @@ describe('iframe processing', () => {
       it('should work when a security-sensitive attribute is set as a static attribute', () => {
         @Component({
           selector: 'my-comp',
-          template: `
-            <iframe referrerPolicy="no-referrer" src="${TEST_IFRAME_URL}"></iframe>
-          `,
+          template: ` <iframe referrerPolicy="no-referrer" src="${TEST_IFRAME_URL}"></iframe> `,
         })
         class IframeComp {}
 
@@ -503,13 +498,9 @@ describe('iframe processing', () => {
         () => {
           @Component({
             selector: 'my-comp',
-            template: `
-                <section>
-                  <iframe
-                    src="${TEST_IFRAME_URL}"
-                    [referrerPolicy]="'no-referrer'"
-                  ></iframe>
-                </section>`,
+            template: ` <section>
+              <iframe src="${TEST_IFRAME_URL}" [referrerPolicy]="'no-referrer'"></iframe>
+            </section>`,
           })
           class IframeComp {}
 
@@ -646,11 +637,11 @@ describe('iframe processing', () => {
           @Component({
             selector: 'my-comp',
             template: `
-                <ng-container #container></ng-container>
-                <ng-template #template>
-                  <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"></iframe>
-                </ng-template>
-              `,
+              <ng-container #container></ng-container>
+              <ng-template #template>
+                <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"></iframe>
+              </ng-template>
+            `,
           })
           class IframeComp {
             @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
@@ -681,11 +672,10 @@ describe('iframe processing', () => {
             @Component({
               selector: 'my-comp',
               template: `
-                  <section i18n>
-                    <iframe src="${TEST_IFRAME_URL}" [sandbox]="''">
-                    </iframe>
-                  </section>
-                `,
+                <section i18n>
+                  <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"> </iframe>
+                </section>
+              `,
             })
             class IframeComp {}
 
@@ -699,10 +689,7 @@ describe('iframe processing', () => {
           () => {
             @Component({
               selector: 'my-comp',
-              template: `
-                  <iframe i18n src="${TEST_IFRAME_URL}" [sandbox]="''">
-                  </iframe>
-                `,
+              template: ` <iframe i18n src="${TEST_IFRAME_URL}" [sandbox]="''"> </iframe> `,
             })
             class IframeComp {}
 
@@ -713,10 +700,7 @@ describe('iframe processing', () => {
         it('should work when a security-sensitive attributes are marked for translation', () => {
           @Component({
             selector: 'my-comp',
-            template: `
-              <iframe src="${TEST_IFRAME_URL}" i18n-sandbox sandbox="">
-              </iframe>
-            `,
+            template: ` <iframe src="${TEST_IFRAME_URL}" i18n-sandbox sandbox=""> </iframe> `,
           })
           class IframeComp {}
 

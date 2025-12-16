@@ -9,23 +9,25 @@ You can stop the server by pressing `Ctrl+C`.
 You can determine which builder is being used for a particular project by looking up the `serve` target for that project.
 
 ```json
-
 {
   "projects": {
     "my-app": {
       "architect": {
         // `ng serve` invokes the Architect target named `serve`.
         "serve": {
-          "builder": "@angular/build:dev-server",
+          "builder": "@angular/build:dev-server"
           // ...
         },
-        "build": { /* ... */ },
-        "test": { /* ... */ }
+        "build": {
+          /* ... */
+        },
+        "test": {
+          /* ... */
+        }
       }
     }
   }
 }
-
 ```
 
 ## Proxying to a backend server
@@ -62,7 +64,6 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
     }
   }
 }
-
 ```
 
 1. To run the development server with this proxy configuration, call `ng serve`.

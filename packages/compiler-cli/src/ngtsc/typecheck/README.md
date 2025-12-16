@@ -52,8 +52,7 @@ If `SomeCmp` does not have a `foo` property, then TypeScript will produce a type
 Not only can a template consume properties declared from its component, but various structures within a template can also be considered "declarations" which have types of their own. For example, the template:
 
 ```html
-<input #name>
-{{name.value}}
+<input #name /> {{name.value}}
 ```
 
 declares a single `<input>` element with a local ref `#name`, meaning that within this template `name` refers to the `<input>` element. The `{{name.value}}` interpolation is reading the `value` property of this element.
@@ -118,7 +117,6 @@ For directives, neither of these options makes sense. Users do not write direct 
 Instead, conceptually, the generic type of a directive depends on the types bound to its _inputs_. This is immediately evident for a directive such as `NgFor`:
 
 ```typescript
-
 @Directive({selector: '[ngFor]'})
 export class NgFor<T> {
   @Input() ngForOf!: Iterable<T>;
@@ -159,9 +157,7 @@ A single type constructor for a directive can be used in multiple places, whenev
 `NgFor` is a structural directive, meaning that it applies to a nested `<ng-template>`. That is, the template:
 
 ```html
-<div *ngFor="let user of users">
-  {{user.name}}
-</div>
+<div *ngFor="let user of users">{{user.name}}</div>
 ```
 
 is syntactic sugar for:
@@ -249,9 +245,7 @@ Because the `NgFor` directive _declared_ to the template type checking engine wh
 `NgIf` requires a similar, albeit not identical, operation to perform type narrowing with its nested template. Instead of narrowing the template context, `NgIf` wants to narrow the actual type of the expression within its binding. Consider the template:
 
 ```html
-<div *ngIf="user !== null">
-  {{user.name}}
-</div>
+<div *ngIf="user !== null">{{user.name}}</div>
 ```
 
 Obviously, if `user` is potentially `null`, then this `NgIf` is intended to only show the `<div>` when `user` actually has a value. However, from a type-checking perspective, the expression `user.name` is not legal if `user` is potentially `null`. So if this template was rendered into a TCB as:
@@ -308,8 +302,7 @@ The guard expression causes TypeScript to narrow the type of `this.user` within 
 Angular templates allow forward references. For example, the template:
 
 ```html
-The value is: {{in.value}}
-<input #in>
+The value is: {{in.value}} <input #in />
 ```
 
 contains an expression which makes use of the `#in` local reference before the targeted `<input #in>` element is declared. Since such forward references are not legal in TypeScript code, the TCB may need to declare and check template structures in a different order than the template itself.
@@ -332,10 +325,7 @@ The main algorithm for TCB generation then makes use of this abstraction:
 This potential out-of-order execution of `TcbOp`s allows for the TCB ordering to support forward references within templates. The above forward reference example thus results in a `TcbOp` queue of two operations:
 
 ```typescript
-[
-  TcbTextInterpolationOp(`in.value`),
-  TcbElementOp('<input #in>'),
-]
+[TcbTextInterpolationOp(`in.value`), TcbElementOp('<input #in>')];
 ```
 
 Execution of the first `TcbTextInterpolationOp` will attempt to generate code representing the expression. Doing this requires knowing the type of the `in` reference, which maps to the element node for the `<input>`. Therefore, as part of executing the `TcbTextInterpolationOp`, the execution of the `TcbElementOp` will be requested. This operation produces TCB code for the element:
@@ -449,7 +439,7 @@ The generated TCB code for this expression would look like:
 What actually gets generated for this expression looks more like:
 
 ```typescript
-'' + (this.foo /* 3,5 */).bar /* 3,9 */;
+'' + this.foo /* 3,5 */.bar /* 3,9 */;
 ```
 
 The trailing comment for each node in the TCB indicates the template offsets for the corresponding template nodes. If for example TypeScript returns a diagnostic for the `this.foo` part of the expression (such as if `foo` is not a valid property on the component context), the attached comment can be used to map this diagnostic back to the original template's `foo` node.
@@ -524,7 +514,6 @@ export class MyDir<T extends PrivateInterface> {
 In such cases, the type checking system falls back to an alternative mechanism for declaring type constructors: adding them as static methods on the directive class itself. As part of the type checking phase, the above directive would be transformed to:
 
 ```typescript
-
 interface PrivateInterface {
   field: string;
 }
@@ -533,7 +522,9 @@ interface PrivateInterface {
 export class MyDir<T extends PrivateInterface> {
   @Input() value: T;
 
-  static ngTypeCtor<T extends PrivateInterface>(inputs: {value?: T}): MyDir<T> { return null!; }
+  static ngTypeCtor<T extends PrivateInterface>(inputs: {value?: T}): MyDir<T> {
+    return null!;
+  }
 }
 ```
 

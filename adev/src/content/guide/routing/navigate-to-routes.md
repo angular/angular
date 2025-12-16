@@ -162,7 +162,7 @@ router.navigateByUrl('/products/123?view=details#reviews');
 router.navigateByUrl('/search?category=books&sortBy=price');
 
 // With matrix parameters
-router.navigateByUrl('/sales-awesome;isOffer=true;showModal=false')
+router.navigateByUrl('/sales-awesome;isOffer=true;showModal=false');
 ```
 
 In the event you need to replace the current URL in history, `navigateByUrl` also accepts a configuration object that has a `replaceUrl` option.
@@ -170,7 +170,7 @@ In the event you need to replace the current URL in history, `navigateByUrl` als
 ```ts
 // Replace current URL in history
 router.navigateByUrl('/checkout', {
-  replaceUrl: true
+  replaceUrl: true,
 });
 ```
 

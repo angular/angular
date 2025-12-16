@@ -72,7 +72,7 @@ HELPFUL: The schematic ignores NgModules which bootstrap a component during this
 @NgModule({
   imports: [CommonModule],
   declarations: [GreeterComponent],
-  exports: [GreeterComponent]
+  exports: [GreeterComponent],
 })
 export class SharedModule {}
 ```
@@ -95,7 +95,7 @@ export class GreeterComponent {
 // shared.module.ts
 @NgModule({
   imports: [CommonModule, GreeterComponent],
-  exports: [GreeterComponent]
+  exports: [GreeterComponent],
 })
 export class SharedModule {}
 ```
@@ -134,7 +134,7 @@ The migration considers a module safe to remove if that module:
 // importer.module.ts
 @NgModule({
   imports: [FooComponent, BarPipe],
-  exports: [FooComponent, BarPipe]
+  exports: [FooComponent, BarPipe],
 })
 export class ImporterModule {}
 ```
@@ -154,12 +154,12 @@ This step converts any usages of `bootstrapModule` to the new, standalone-based 
 
 ```typescript
 // ./app/app.module.ts
-import { NgModule } from '@angular/core';
-import { AppComponent } from './app.component';
+import {NgModule} from '@angular/core';
+import {AppComponent} from './app.component';
 
 @NgModule({
   declarations: [AppComponent],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
 ```
@@ -176,10 +176,12 @@ export class AppComponent {}
 
 ```typescript
 // ./main.ts
-import { platformBrowser } from '@angular/platform-browser';
-import { AppModule } from './app/app.module';
+import {platformBrowser} from '@angular/platform-browser';
+import {AppModule} from './app/app.module';
 
-platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+platformBrowser()
+  .bootstrapModule(AppModule)
+  .catch((e) => console.error(e));
 ```
 
 **After:**
@@ -193,17 +195,17 @@ platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
 // ./app/app.component.ts
 @Component({
   selector: 'app',
-  template: 'hello'
+  template: 'hello',
 })
 export class AppComponent {}
 ```
 
 ```typescript
 // ./main.ts
-import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {AppComponent} from './app/app.component';
 
-bootstrapApplication(AppComponent).catch(e => console.error(e));
+bootstrapApplication(AppComponent).catch((e) => console.error(e));
 ```
 
 ## Common problems

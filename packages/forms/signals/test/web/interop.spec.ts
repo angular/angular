@@ -21,13 +21,13 @@ describe('ControlValueAccessor', () => {
   @Component({
     selector: 'custom-control',
     template: `
-        <input
-          [value]="value"
-          [disabled]="disabled"
-          (blur)="onBlur()"
-          (input)="onInput($event.target.value)"
-        />
-      `,
+      <input
+        [value]="value"
+        [disabled]="disabled"
+        (blur)="onBlur()"
+        (input)="onInput($event.target.value)"
+      />
+    `,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CustomControl, multi: true}],
   })
   class CustomControl implements ControlValueAccessor {
@@ -187,7 +187,7 @@ describe('ControlValueAccessor', () => {
     @Component({
       selector: 'custom-control',
       template: `
-        <input [value]="value" (blur)="onBlur()" (input)="onInput($event.target.value)"/>
+        <input [value]="value" (blur)="onBlur()" (input)="onInput($event.target.value)" />
       `,
     })
     class CustomControl implements ControlValueAccessor {

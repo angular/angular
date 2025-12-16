@@ -346,7 +346,7 @@ describe('query logic', () => {
             <required></required>
           </ng-template>
           <insertion [content]="template"></insertion>
-          `,
+        `,
         standalone: false,
       })
       class App {
@@ -720,11 +720,11 @@ describe('query logic', () => {
 
       @Component({
         template: `
-        <sub-comp>
-          <div some-dir></div>
-          <div some-dir></div>
-        </sub-comp>
-      `,
+          <sub-comp>
+            <div some-dir></div>
+            <div some-dir></div>
+          </sub-comp>
+        `,
         standalone: false,
       })
       class App {
@@ -761,11 +761,11 @@ describe('query logic', () => {
 
       @Component({
         template: `
-        <sub-comp>
-          <div some-dir></div>
-          <div some-dir></div>
-        </sub-comp>
-      `,
+          <sub-comp>
+            <div some-dir></div>
+            <div some-dir></div>
+          </sub-comp>
+        `,
         standalone: false,
       })
       class App {
@@ -1088,8 +1088,7 @@ describe('query logic', () => {
     it('should register view query matches from top to bottom', () => {
       @Component({
         imports: [TextDirective],
-        template: `
-          <span text="A"></span>
+        template: ` <span text="A"></span>
           <div text="B">
             <span text="C">
               <span text="D"></span>
@@ -1123,16 +1122,15 @@ describe('query logic', () => {
 
       @Component({
         imports: [TextDirective, ContentQueryDirective],
-        template: `
-          <div content-query>
-            <span text="A"></span>
-            <div text="B">
-              <span text="C">
-                <span text="D"></span>
-              </span>
-            </div>
-            <span text="E"></span>
-          </div>`,
+        template: ` <div content-query>
+          <span text="A"></span>
+          <div text="B">
+            <span text="C">
+              <span text="D"></span>
+            </span>
+          </div>
+          <span text="E"></span>
+        </div>`,
       })
       class TestCmp {
         @ViewChild(ContentQueryDirective, {static: true})
@@ -2165,9 +2163,9 @@ describe('query logic', () => {
         @Component({
           selector: 'test-comp',
           template: `
-              <ng-template #tpl><div #foo>match</div></ng-template>
-              <ng-template vc></ng-template>
-            `,
+            <ng-template #tpl><div #foo>match</div></ng-template>
+            <ng-template vc></ng-template>
+          `,
           standalone: false,
         })
         class TestComponent implements AfterViewInit {
@@ -2265,18 +2263,18 @@ describe('query logic', () => {
         @Component({
           selector: 'test-comp',
           template: `
-               <ng-template #tpl1 let-idx="idx">
-                 <div #foo [id]="'foo1_' + idx"></div>
-               </ng-template>
+            <ng-template #tpl1 let-idx="idx">
+              <div #foo [id]="'foo1_' + idx"></div>
+            </ng-template>
 
-               <div #foo id="middle"></div>
+            <div #foo id="middle"></div>
 
-               <ng-template #tpl2 let-idx="idx">
-                 <div #foo [id]="'foo2_' + idx"></div>
-               </ng-template>
+            <ng-template #tpl2 let-idx="idx">
+              <div #foo [id]="'foo2_' + idx"></div>
+            </ng-template>
 
-               <ng-template vc></ng-template>
-             `,
+            <ng-template vc></ng-template>
+          `,
           standalone: false,
         })
         class TestComponent {
@@ -2342,13 +2340,13 @@ describe('query logic', () => {
         @Component({
           selector: 'test-comp',
           template: `
-               <ng-template #tpl let-idx="idx" let-container_idx="container_idx">
-                 <div #foo [id]="'foo_' + container_idx + '_' + idx"></div>
-               </ng-template>
+            <ng-template #tpl let-idx="idx" let-container_idx="container_idx">
+              <div #foo [id]="'foo_' + container_idx + '_' + idx"></div>
+            </ng-template>
 
-               <ng-template vc #vi0="vc"></ng-template>
-               <ng-template vc #vi1="vc"></ng-template>
-             `,
+            <ng-template vc #vi0="vc"></ng-template>
+            <ng-template vc #vi1="vc"></ng-template>
+          `,
           standalone: false,
         })
         class TestComponent {
@@ -2444,7 +2442,9 @@ describe('query logic', () => {
 
       @Component({
         selector: 'test-cmpt',
-        template: `<ng-template [ngIf]="true"><ng-template [ngIf]="true"><div parent></div></ng-template></ng-template>`,
+        template: `<ng-template [ngIf]="true"
+          ><ng-template [ngIf]="true"><div parent></div></ng-template
+        ></ng-template>`,
         standalone: false,
       })
       class TestCmpt {
@@ -3011,9 +3011,7 @@ class SubclassStaticContentQueryComp extends StaticContentQueryComp {
 
 @Component({
   selector: 'query-with-changes',
-  template: `
-    <div *ngIf="showing" #foo></div>
-  `,
+  template: ` <div *ngIf="showing" #foo></div> `,
   standalone: false,
 })
 export class QueryCompWithChanges {

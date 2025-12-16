@@ -1093,9 +1093,12 @@ export function lazyLoadingIntegrationSuite(browserAPI: 'navigation' | 'history'
 
       @Component({
         selector: 'link-cmp',
-        template: `<a [relativeTo]="route.parent" [routerLink]="[{outlets: {'secondary': null}}]">link</a>
-            <button [relativeTo]="route.parent" [routerLink]="[{outlets: {'secondary': null}}]">link</button>
-            `,
+        template: `<a [relativeTo]="route.parent" [routerLink]="[{outlets: {'secondary': null}}]"
+            >link</a
+          >
+          <button [relativeTo]="route.parent" [routerLink]="[{outlets: {'secondary': null}}]">
+            link
+          </button> `,
         standalone: false,
       })
       class RelativeLinkCmp {

@@ -245,7 +245,9 @@ The animations package has a `group()` function to play multiple animations at t
 
 ```css
 .target-element {
-  animation: rotate 3s, fade-in 2s;
+  animation:
+    rotate 3s,
+    fade-in 2s;
 }
 ```
 

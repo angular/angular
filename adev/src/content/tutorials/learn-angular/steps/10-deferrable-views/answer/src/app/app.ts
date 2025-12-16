@@ -54,11 +54,11 @@ import {Comments} from './comments';
       </article>
 
       @defer (on viewport) {
-      <comments />
+        <comments />
       } @placeholder {
-      <p>Future comments</p>
+        <p>Future comments</p>
       } @loading (minimum 2s) {
-      <p>Loading comments...</p>
+        <p>Loading comments...</p>
       }
     </div>
   `,

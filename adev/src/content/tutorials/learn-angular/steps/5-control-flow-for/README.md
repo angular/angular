@@ -37,7 +37,13 @@ Two things to take note of:
 In the `App` class, add a property called `users` that contains users and their names.
 
 ```ts
-[{id: 0, name: 'Sarah'}, {id: 1, name: 'Amy'}, {id: 2, name: 'Rachel'}, {id: 3, name: 'Jessica'}, {id: 4, name: 'Poornima'}]
+[
+  {id: 0, name: 'Sarah'},
+  {id: 1, name: 'Amy'},
+  {id: 2, name: 'Rachel'},
+  {id: 3, name: 'Jessica'},
+  {id: 4, name: 'Poornima'},
+];
 ```
 
 </docs-step>

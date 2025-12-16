@@ -83,11 +83,9 @@ The base file `environment.ts`, contains the default environment settings.
 For example:
 
 ```ts
-
 export const environment = {
-  production: true
+  production: true,
 };
-
 ```
 
 The `build` command uses this as the build target when no environment is specified.
@@ -95,24 +93,20 @@ You can add further variables, either as additional properties on the environmen
 For example, the following adds a default for a variable to the default environment:
 
 ```ts
-
 export const environment = {
   production: true,
-  apiUrl: 'http://my-prod-url'
+  apiUrl: 'http://my-prod-url',
 };
-
 ```
 
 You can add target-specific configuration files, such as `environment.development.ts`.
 The following content sets default values for the development build target:
 
 ```ts
-
 export const environment = {
   production: false,
-  apiUrl: 'http://my-dev-url'
+  apiUrl: 'http://my-dev-url',
 };
-
 ```
 
 ## Using environment-specific variables in your app
@@ -120,9 +114,7 @@ export const environment = {
 To use the environment configurations you have defined, your components must import the original environments file:
 
 ```ts
-
-import { environment } from './environments/environment';
-
+import {environment} from './environments/environment';
 ```
 
 This ensures that the build and serve commands can find the configurations for specific build targets.
@@ -130,12 +122,10 @@ This ensures that the build and serve commands can find the configurations for s
 The following code in the component file (`app.component.ts`) uses an environment variable defined in the configuration files.
 
 ```ts
-
-import { environment } from './../environments/environment';
+import {environment} from './../environments/environment';
 
 // Fetches from `http://my-prod-url` in production, `http://my-dev-url` in development.
 fetch(environment.apiUrl);
-
 ```
 
 The main CLI configuration file, `angular.json`, contains a `fileReplacements` section in the configuration for each build target, which lets you replace any file in the TypeScript program with a target-specific version of that file.

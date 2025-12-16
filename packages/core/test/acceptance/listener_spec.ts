@@ -57,7 +57,7 @@ describe('event listeners', () => {
 
     it('should call function chain on event emit', () => {
       @Component({
-        template: `<button (click)="onClick(); onClick2(); "> Click me </button>`,
+        template: `<button (click)="onClick(); onClick2()">Click me</button>`,
         standalone: false,
       })
       class MyComp {
@@ -84,7 +84,7 @@ describe('event listeners', () => {
 
     it('should evaluate expression on event emit', () => {
       @Component({
-        template: `<button (click)="showing=!showing"> Click me </button>`,
+        template: `<button (click)="showing = !showing">Click me</button>`,
         standalone: false,
       })
       class MyComp {
@@ -105,7 +105,7 @@ describe('event listeners', () => {
 
     it('should support listeners with specified set of args', () => {
       @Component({
-        template: `<button (click)="onClick(data.a, data.b)"> Click me </button>`,
+        template: `<button (click)="onClick(data.a, data.b)">Click me</button>`,
         standalone: false,
       })
       class MyComp {
@@ -134,9 +134,7 @@ describe('event listeners', () => {
       let eventObject: MouseEvent | undefined;
 
       @Component({
-        template: `
-          <button (click)="clicked(this.$event, $event)">Click me!</button>
-        `,
+        template: ` <button (click)="clicked(this.$event, $event)">Click me!</button> `,
         standalone: false,
       })
       class MyComp {
@@ -399,7 +397,7 @@ describe('event listeners', () => {
     it('should coalesce multiple event listeners in presence of queries', () => {
       @Component({
         selector: 'test-cmpt',
-        template: `<button likes-clicks (click)="counter = counter+1">Click me!</button>`,
+        template: `<button likes-clicks (click)="counter = counter + 1">Click me!</button>`,
         standalone: false,
       })
       class TestCmpt {
@@ -432,7 +430,7 @@ describe('event listeners', () => {
 
       @Component({
         selector: 'test-cmpt',
-        template: `<button throws-on-clicks likes-clicks><button>`,
+        template: `<button throws-on-clicks likes-clicks><button></button></button>`,
         standalone: false,
       })
       class TestCmpt {}
@@ -464,9 +462,7 @@ describe('event listeners', () => {
     it('should prevent default if any of the listeners returns false', () => {
       @Component({
         selector: 'test-cmpt',
-        template: `
-          <button returns-false likes-clicks></button>
-        `,
+        template: ` <button returns-false likes-clicks></button> `,
         standalone: false,
       })
       class TestCmpt {}
@@ -592,9 +588,7 @@ describe('event listeners', () => {
     it('should destroy listeners when view is removed', () => {
       @Component({
         selector: 'my-comp',
-        template: `
-          <button *ngIf="visible" (click)="count()">Click me!</button>
-        `,
+        template: ` <button *ngIf="visible" (click)="count()">Click me!</button> `,
         standalone: false,
       })
       class MyComp {
@@ -626,9 +620,7 @@ describe('event listeners', () => {
       let counter = 0;
       @Component({
         selector: 'my-comp',
-        template: `
-          <button *ngFor="let button of buttons" (click)="count()">Click me!</button>
-        `,
+        template: ` <button *ngFor="let button of buttons" (click)="count()">Click me!</button> `,
         standalone: false,
       })
       class MyComp {
@@ -833,10 +825,10 @@ describe('event listeners', () => {
 
       @Component({
         template: `
-              <ng-container add-global-listener>
-                <button>Click me!</button>
-              </ng-container>
-            `,
+          <ng-container add-global-listener>
+            <button>Click me!</button>
+          </ng-container>
+        `,
         standalone: false,
       })
       class MyComp {}
@@ -866,12 +858,12 @@ describe('event listeners', () => {
 
       @Component({
         template: `
-              <ng-template #template add-global-listener>
-                <button>Click me!</button>
-              </ng-template>
+          <ng-template #template add-global-listener>
+            <button>Click me!</button>
+          </ng-template>
 
-              <ng-container [ngTemplateOutlet]="template"></ng-container>
-            `,
+          <ng-container [ngTemplateOutlet]="template"></ng-container>
+        `,
         standalone: false,
       })
       class MyComp {}
@@ -913,10 +905,10 @@ describe('event listeners', () => {
 
       @Component({
         template: `
-              <div *add-global-listener>
-                <button>Click me!</button>
-              </div>
-            `,
+          <div *add-global-listener>
+            <button>Click me!</button>
+          </div>
+        `,
         standalone: false,
       })
       class MyComp {}

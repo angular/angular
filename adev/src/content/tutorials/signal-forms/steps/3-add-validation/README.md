@@ -18,7 +18,7 @@ Let's add validation!
 Import the `required` and `email` validators from `@angular/forms/signals`:
 
 ```ts
-import { form, Field, required, email } from '@angular/forms/signals';
+import {form, Field, required, email} from '@angular/forms/signals';
 ```
 
 </docs-step>
@@ -39,8 +39,8 @@ Inside the schema function, add validation for the email field. Use both `requir
 
 ```ts
 loginForm = form(this.loginModel, (fieldPath) => {
-  required(fieldPath.email, { message: 'Email is required' });
-  email(fieldPath.email, { message: 'Enter a valid email address' });
+  required(fieldPath.email, {message: 'Email is required'});
+  email(fieldPath.email, {message: 'Enter a valid email address'});
 });
 ```
 
@@ -52,9 +52,9 @@ Add validation for the password field using the `required()` validator:
 
 ```ts
 loginForm = form(this.loginModel, (fieldPath) => {
-  required(fieldPath.email, { message: 'Email is required' });
-  email(fieldPath.email, { message: 'Enter a valid email address' });
-  required(fieldPath.password, { message: 'Password is required' });
+  required(fieldPath.email, {message: 'Email is required'});
+  email(fieldPath.email, {message: 'Enter a valid email address'});
+  required(fieldPath.password, {message: 'Password is required'});
 });
 ```
 

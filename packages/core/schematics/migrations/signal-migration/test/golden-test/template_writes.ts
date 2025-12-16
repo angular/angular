@@ -5,8 +5,7 @@ import {Component, Input} from '@angular/core';
 @Component({
   template: `
     <input [(ngModel)]="inputA" />
-    <div (click)="inputB = false">
-    </div>
+    <div (click)="inputB = false"></div>
   `,
   host: {
     '(click)': 'inputC = true',

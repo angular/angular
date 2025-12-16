@@ -370,7 +370,7 @@ console.log(contents); // <svg>...</svg>
 Additionally, TypeScript needs to be aware of the module type for the import to prevent type-checking errors during the build. This can be accomplished with an additional type definition file within the application source code (`src/types.d.ts`, for example) with the following or similar content:
 
 ```ts
-declare module "*.svg" {
+declare module '*.svg' {
   const content: string;
   export default content;
 }
@@ -402,7 +402,7 @@ As an example, an SVG file can be imported as text via:
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import contents from './some-file.svg' with { loader: 'text' };
+import contents from './some-file.svg' with {loader: 'text'};
 ```
 
 The same can be accomplished with an import expression inside an async function.
@@ -410,7 +410,7 @@ The same can be accomplished with an import expression inside an async function.
 ```ts
 async function loadSvg(): Promise<string> {
   // @ts-expect-error TypeScript cannot provide types based on attributes yet
-  return import('./some-file.svg', { with: { loader: 'text' } }).then((m) => m.default);
+  return import('./some-file.svg', {with: {loader: 'text'}}).then((m) => m.default);
 }
 ```
 
@@ -421,7 +421,7 @@ The `file` loader is useful when a file will be loaded at runtime through either
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import imagePath from './image.webp' with { loader: 'file' };
+import imagePath from './image.webp' with {loader: 'file'};
 
 console.log(imagePath); // media/image-ULK2SIIB.webp
 ```
@@ -430,18 +430,18 @@ The `base64` loader is useful when a file needs to be embedded directly into the
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import logo from './logo.png' with { loader: 'base64' };
+import logo from './logo.png' with {loader: 'base64'};
 
-console.log(logo) // "iVBORw0KGgoAAAANSUhEUgAA..."
+console.log(logo); // "iVBORw0KGgoAAAANSUhEUgAA..."
 ```
 
 The `dataurl` loader to inline assets as complete Data URLs.
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import icon from './icon.svg' with { loader: 'dataurl' };
+import icon from './icon.svg' with {loader: 'dataurl'};
 
-console.log(icon);// "data:image/svg+xml;..."
+console.log(icon); // "data:image/svg+xml;..."
 ```
 
 For production builds as shown in the code comment above, hashing will be automatically added to the path for long-term caching.

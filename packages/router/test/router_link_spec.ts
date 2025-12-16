@@ -45,7 +45,8 @@ describe('RouterLink', () => {
           [routerLink]="link()"
           [preserveFragment]="preserveFragment()"
           [skipLocationChange]="skipLocationChange()"
-          [replaceUrl]="replaceUrl()"></div>
+          [replaceUrl]="replaceUrl()"
+        ></div>
       `,
       standalone: false,
     })
@@ -126,7 +127,8 @@ describe('RouterLink', () => {
             [routerLink]="link()"
             [preserveFragment]="preserveFragment()"
             [skipLocationChange]="skipLocationChange()"
-            [replaceUrl]="replaceUrl()"></a>
+            [replaceUrl]="replaceUrl()"
+          ></a>
         `,
         standalone: false,
       })
@@ -246,9 +248,7 @@ describe('RouterLink', () => {
       }
 
       @Component({
-        template: `
-          <custom-anchor [routerLink]="link()"></custom-anchor>
-        `,
+        template: ` <custom-anchor [routerLink]="link()"></custom-anchor> `,
         standalone: false,
       })
       class LinkComponent {

@@ -31,8 +31,7 @@ export class HelloWorldShadowComponent {
 
 @Component({
   selector: 'test-card',
-  template: `
-    <header>
+  template: ` <header>
       <slot name="card-header"></slot>
     </header>
     <slot></slot>

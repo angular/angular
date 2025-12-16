@@ -6,14 +6,14 @@ import {loadUser} from './user-api';
   template: `
     <div>
       <h2>User Profile Loader</h2>
-      
+
       <div>
         <button (click)="loadUser(1)">Load User 1</button>
         <button (click)="loadUser(2)">Load User 2</button>
         <button (click)="loadUser(999)">Load Invalid User</button>
         <button (click)="reloadUser()">Reload</button>
       </div>
-      
+
       <div class="status">
         @if (isLoading()) {
           <p>Loading user...</p>

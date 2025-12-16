@@ -196,7 +196,9 @@ properties initialized by `input`, `model`, `output`, and queries. The readonly 
 ensures that the value set by Angular is not overwritten.
 
 ```ts
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class UserProfile {
   readonly userId = input();
   readonly userSaved = output();
@@ -208,7 +210,9 @@ For components and directives that use the decorator-based `@Input`, `@Output`, 
 advice applies to output properties and queries, but not input properties.
 
 ```ts
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class UserProfile {
   @Output() readonly userSaved = new EventEmitter<void>();
   @ViewChildren(PaymentMethod) readonly paymentMethods?: QueryList<PaymentMethod>;
@@ -221,15 +225,19 @@ Prefer `class` and `style` bindings over using the [`NgClass`](/api/common/NgCla
 
 ```html {prefer}
 <div [class.admin]="isAdmin" [class.dense]="density === 'high'">
-<div [style.color]="textColor" [style.background-color]="backgroundColor">
-<!-- OR -->
-<div [class]="{admin: isAdmin, dense: density === 'high'}">
-<div [style]="{'color': textColor, 'background-color': backgroundColor}">
+  <div [style.color]="textColor" [style.background-color]="backgroundColor">
+    <!-- OR -->
+    <div [class]="{admin: isAdmin, dense: density === 'high'}">
+      <div [style]="{'color': textColor, 'background-color': backgroundColor}"></div>
+    </div>
+  </div>
+</div>
 ```
 
 ```html {avoid}
 <div [ngClass]="{admin: isAdmin, dense: density === 'high'}">
-<div [ngStyle]="{'color': textColor, 'background-color': backgroundColor}">
+  <div [ngStyle]="{'color': textColor, 'background-color': backgroundColor}"></div>
+</div>
 ```
 
 Both `class` and `style` bindings use a more straightforward syntax that aligns closely with
@@ -267,8 +275,9 @@ single well-named handler. In these cases, it's fine to fall back to a name like
 then delegate to more specific behaviors based on the event details:
 
 ```ts
-
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 class RichText {
   handleKeydown(event: KeyboardEvent) {
     if (event.ctrlKey) {
@@ -277,7 +286,7 @@ class RichText {
       } else if (event.key === 'I') {
         this.activateItalic();
       }
-// ...
+      // ...
     }
   }
 }
@@ -313,10 +322,13 @@ your class, import and `implement` these interfaces to ensure that the methods a
 ```ts
 import {Component, OnInit} from '@angular/core';
 
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class UserProfile implements OnInit {
-
   // The `OnInit` interface ensures this method is named correctly.
-  ngOnInit() { /* ... */ }
+  ngOnInit() {
+    /* ... */
+  }
 }
 ```

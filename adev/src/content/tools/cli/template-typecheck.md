@@ -63,7 +63,6 @@ The three modes of type-checking treat embedded views differently.
 Consider the following example.
 
 ```ts {header:"User interface"}
-
 interface User {
   name: string;
   address: {
@@ -71,16 +70,13 @@ interface User {
     state: string;
   };
 }
-
 ```
 
 ```html
-
 <div *ngFor="let user of users">
   <h2>{{config.title}}</h2>
   <span>City: {{user.address.city}}</span>
 </div>
-
 ```
 
 The `<h2>` and the `<span>` are in the `*ngFor` embedded view.
@@ -197,18 +193,14 @@ There are two potential workarounds to the preceding issues:
 - In the template, include the non-null assertion operator `!` at the end of a nullable expression, such as
 
 ```html
-
 <user-detail [user]="user!"></user-detail>
-
 ```
 
 In this example, the compiler disregards type incompatibilities in nullability, just as in TypeScript code.
 In the case of the `async` pipe, notice that the expression needs to be wrapped in parentheses, as in
 
 ```html
-
 <user-detail [user]="(user$ | async)!"></user-detail>
-
 ```
 
 - Disable strict null checks in Angular templates completely.
@@ -252,17 +244,13 @@ All of this works as expected, as long as a `boolean` value is bound to the inpu
 But, suppose a consumer uses this input in the template as an attribute:
 
 ```html
-
 <submit-button disabled></submit-button>
-
 ```
 
 This has the same effect as the binding:
 
 ```html
-
 <submit-button [disabled]="''"></submit-button>
-
 ```
 
 At runtime, the input will be set to the empty string, which is not a `boolean` value.
@@ -285,7 +273,6 @@ As a workaround for this problem, Angular supports checking a wider, more permis
 Enable this by adding a static property with the `ngAcceptInputType_` prefix to the component class:
 
 ```ts
-
 class SubmitButton {
   private _disabled: boolean;
 
@@ -295,12 +282,11 @@ class SubmitButton {
   }
 
   set disabled(value: boolean) {
-    this._disabled = (value === '') || value;
+    this._disabled = value === '' || value;
   }
 
-  static ngAcceptInputType_disabled: boolean|'';
+  static ngAcceptInputType_disabled: boolean | '';
 }
-
 ```
 
 Since TypeScript 4.3, the setter could have been declared to accept `boolean|''` as type, making the input setter coercion field obsolete.

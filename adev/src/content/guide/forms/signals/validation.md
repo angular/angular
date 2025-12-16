@@ -110,9 +110,9 @@ For conditional requirements, use the `when` option:
 registrationForm = form(this.registrationModel, (schemaPath) => {
   required(schemaPath.promoCode, {
     message: 'Promo code is required for discounts',
-    when: ({valueOf}) => valueOf(schemaPath.applyDiscount)
-  })
-})
+    when: ({valueOf}) => valueOf(schemaPath.applyDiscount),
+  });
+});
 ```
 
 The validation rule only runs when the `when` function returns `true`.
@@ -194,9 +194,9 @@ You can use computed values for dynamic constraints:
 ```ts
 ageForm = form(this.ageModel, (schemaPath) => {
   min(schemaPath.participants, () => this.minimumRequired(), {
-    message: 'Not enough participants'
-  })
-})
+    message: 'Not enough participants',
+  });
+});
 ```
 
 ### minLength() and maxLength()
@@ -298,10 +298,10 @@ Common patterns:
 Forms can include arrays of nested objects (for example, a list of order items). To apply validation rules to each item in an array, use `applyEach()` inside your schema function. `applyEach()` iterates the array path and supplies a path for each item where you can apply validators just like top-level fields.
 
 ```ts
-import { Component, signal } from '@angular/core'
-import { applyEach, Field, form, min, required, SchemaPathTree } from '@angular/forms/signals';
+import {Component, signal} from '@angular/core';
+import {applyEach, Field, form, min, required, SchemaPathTree} from '@angular/forms/signals';
 
-type Item = { name: string; quantity: number }
+type Item = {name: string; quantity: number};
 
 interface Order {
   title: string;
@@ -310,8 +310,8 @@ interface Order {
 }
 
 function ItemSchema(item: SchemaPathTree<Item>) {
-  required(item.name, { message: 'Item name is required' })
-  min(item.quantity, 1, { message: 'Quantity must be at least 1' })
+  required(item.name, {message: 'Item name is required'});
+  min(item.quantity, 1, {message: 'Quantity must be at least 1'});
 }
 
 @Component(/* ... */)
@@ -319,17 +319,15 @@ export class OrderComponent {
   orderModel = signal<Order>({
     title: '',
     description: '',
-    items: [
-      { name: '', quantity: 0 },
-    ]
-  })
+    items: [{name: '', quantity: 0}],
+  });
 
   orderForm = form(this.orderModel, (schemaPath) => {
-    required(schemaPath.title)
-    required(schemaPath.description)
+    required(schemaPath.title);
+    required(schemaPath.description);
 
-    applyEach(schemaPath.items, ItemSchema)
-  })
+    applyEach(schemaPath.items, ItemSchema);
+  });
 }
 ```
 
@@ -406,10 +404,10 @@ When a field has multiple validation rules, each validation rule runs independen
 
 ```ts
 signupForm = form(this.signupModel, (schemaPath) => {
-  required(schemaPath.email, { message: 'Email is required' })
-  email(schemaPath.email, { message: 'Enter a valid email address' })
-  minLength(schemaPath.email, 5, { message: 'Email is too short' })
-})
+  required(schemaPath.email, {message: 'Email is required'});
+  email(schemaPath.email, {message: 'Enter a valid email address'});
+  minLength(schemaPath.email, 5, {message: 'Email is too short'});
+});
 ```
 
 If the email field is empty, only the `required()` error appears. If the user types "a@b", both `email()` and `minLength()` errors appear. All validation rules run - validation doesn't stop after the first failure.
@@ -484,33 +482,33 @@ Return an error object with `kind` and `message` when validation fails. Return `
 Create reusable validation rule functions by wrapping `validate()`:
 
 ```ts
-function url(field: any, options?: { message?: string }) {
+function url(field: any, options?: {message?: string}) {
   validate(field, ({value}) => {
     try {
-      new URL(value())
-      return null
+      new URL(value());
+      return null;
     } catch {
       return {
         kind: 'url',
-        message: options?.message || 'Enter a valid URL'
-      }
+        message: options?.message || 'Enter a valid URL',
+      };
     }
-  })
+  });
 }
 
-function phoneNumber(field: any, options?: { message?: string }) {
+function phoneNumber(field: any, options?: {message?: string}) {
   validate(field, ({value}) => {
-    const phoneRegex = /^\d{3}-\d{3}-\d{4}$/
+    const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
 
     if (!phoneRegex.test(value())) {
       return {
         kind: 'phoneNumber',
-        message: options?.message || 'Phone must be in format: 555-123-4567'
-      }
+        message: options?.message || 'Phone must be in format: 555-123-4567',
+      };
     }
 
-    return null
-  })
+    return null;
+  });
 }
 ```
 
@@ -518,9 +516,9 @@ You can use custom validation rules just like built-in validation rules:
 
 ```ts
 urlForm = form(this.urlModel, (schemaPath) => {
-  url(schemaPath.website, { message: 'Please enter a valid website URL' })
-  phoneNumber(schemaPath.phone)
-})
+  url(schemaPath.website, {message: 'Please enter a valid website URL'});
+  phoneNumber(schemaPath.phone);
+});
 ```
 
 ## Cross-field validation

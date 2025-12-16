@@ -485,14 +485,14 @@ describe('bootstrap', () => {
       @Component({
         selector: 'component-a',
         template: `
-           <div style="height: 3000px;"></div>
-           <div id="marker1"></div>
-           <div style="height: 3000px;"></div>
-           <div id="marker2"></div>
-           <div style="height: 3000px;"></div>
-           <a name="marker3"></a>
-           <div style="height: 3000px;"></div>
-      `,
+          <div style="height: 3000px;"></div>
+          <div id="marker1"></div>
+          <div style="height: 3000px;"></div>
+          <div id="marker2"></div>
+          <div style="height: 3000px;"></div>
+          <a name="marker3"></a>
+          <div style="height: 3000px;"></div>
+        `,
         standalone: false,
       })
       class TallComponent {}

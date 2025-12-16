@@ -25,7 +25,7 @@ ng generate @angular/core:output-migration
 import {Component, Output, EventEmitter} from '@angular/core';
 
 @Component({
-  template: `<button (click)="someMethod('test')">emit</button>`
+  template: `<button (click)="someMethod('test')">emit</button>`,
 })
 export class MyComponent {
   @Output() someChange = new EventEmitter<string>();
@@ -42,7 +42,7 @@ export class MyComponent {
 import {Component, output} from '@angular/core';
 
 @Component({
-  template: `<button (click)="someMethod('test')">emit</button>`
+  template: `<button (click)="someMethod('test')">emit</button>`,
 })
 export class MyComponent {
   readonly someChange = output<string>();

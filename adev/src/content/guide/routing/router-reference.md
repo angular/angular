@@ -110,9 +110,7 @@ For more complete information on how `<base href>` is used to construct target U
 Use `HashLocationStrategy` by providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot()` in the `AppModule`.
 
 ```ts
-providers: [
-  provideRouter(appRoutes, withHashLocation())
-]
+providers: [provideRouter(appRoutes, withHashLocation())];
 ```
 
 When using `RouterModule.forRoot`, this is configured with the `useHash: true` in the second argument: `RouterModule.forRoot(routes, {useHash: true})`.

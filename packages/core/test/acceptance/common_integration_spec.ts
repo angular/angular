@@ -146,9 +146,9 @@ describe('@angular/common integration', () => {
       @Component({
         selector: 'app-toggle',
         template: `<button (click)="toggle()">Toggle List</button>
-         <ul>
-            <li *ngFor="let item of items">{{item}}</li>
-         </ul>`,
+          <ul>
+            <li *ngFor="let item of items">{{ item }}</li>
+          </ul>`,
         standalone: false,
       })
       class ToggleComponent {
@@ -200,9 +200,11 @@ describe('@angular/common integration', () => {
         selector: 'app-multi',
         template: `<ul>
           <li *ngFor="let row of items">
-            <span *ngFor="let cell of row.data">{{cell}} - {{ row.value }} - {{ items.length }}</span>
+            <span *ngFor="let cell of row.data"
+              >{{ cell }} - {{ row.value }} - {{ items.length }}</span
+            >
           </li>
-       </ul>`,
+        </ul>`,
         standalone: false,
       })
       class MultiLevelComponent {
@@ -314,9 +316,9 @@ describe('@angular/common integration', () => {
       @Component({
         selector: 'app-multi',
         template: `<div *ngFor="let row of items">
-           <div *ngFor="let cell of row">
-              <span *ngFor="let span of cell.data">{{ cell.value }} - {{ name }}</span>
-           </div>
+          <div *ngFor="let cell of row">
+            <span *ngFor="let span of cell.data">{{ cell.value }} - {{ name }}</span>
+          </div>
         </div>`,
         standalone: false,
       })
@@ -354,22 +356,28 @@ describe('@angular/common integration', () => {
       @Component({
         selector: 'app-multi',
         template: `<div *ngFor="let item0 of items">
-            <span *ngFor="let item1 of item0.data">
-               <span *ngFor="let item2 of item1.data">
-                   <span *ngFor="let item3 of item2.data">
-                       <span *ngFor="let item4 of item3.data">
-                           <span *ngFor="let item5 of item4.data">
-                               <span *ngFor="let item6 of item5.data">
-                                   <span *ngFor="let item7 of item6.data">
-                                       <span *ngFor="let item8 of item7.data">{{ item8 }}.{{ item7.value }}.{{ item6.value }}.{{ item5.value }}.{{ item4.value }}.{{ item3.value }}.{{ item2.value }}.{{ item1.value }}.{{ item0.value }}.{{ value }}</span>
-                                   </span>
-                               </span>
-                           </span>
-                       </span>
-                   </span>
-               </span>
+          <span *ngFor="let item1 of item0.data">
+            <span *ngFor="let item2 of item1.data">
+              <span *ngFor="let item3 of item2.data">
+                <span *ngFor="let item4 of item3.data">
+                  <span *ngFor="let item5 of item4.data">
+                    <span *ngFor="let item6 of item5.data">
+                      <span *ngFor="let item7 of item6.data">
+                        <span *ngFor="let item8 of item7.data"
+                          >{{ item8 }}.{{ item7.value }}.{{ item6.value }}.{{ item5.value }}.{{
+                            item4.value
+                          }}.{{ item3.value }}.{{ item2.value }}.{{ item1.value }}.{{
+                            item0.value
+                          }}.{{ value }}</span
+                        >
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
             </span>
-         </div>`,
+          </span>
+        </div>`,
         standalone: false,
       })
       class NineLevelsComponent {
@@ -536,10 +544,9 @@ describe('@angular/common integration', () => {
         selector: 'app-multi',
         template: `<div *ngIf="showing">
           <div *ngIf="outerShowing">
-              <div *ngIf="innerShowing">{{ name }}</div>
-            </div>
+            <div *ngIf="innerShowing">{{ name }}</div>
           </div>
-        `,
+        </div> `,
         standalone: false,
       })
       class NestedConditionsComponent {
@@ -568,8 +575,7 @@ describe('@angular/common integration', () => {
       @Component({
         selector: 'app-multi',
         template: `<ng-template #tpl>from tpl</ng-template>
-          <ng-template [ngTemplateOutlet]="showing ? tpl : null"></ng-template>
-        `,
+          <ng-template [ngTemplateOutlet]="showing ? tpl : null"></ng-template> `,
         standalone: false,
       })
       class EmbeddedViewsComponent {
@@ -595,8 +601,7 @@ describe('@angular/common integration', () => {
       @Component({
         selector: 'app-multi',
         template: `<ng-template #tpl>from tpl</ng-template>
-          <ng-container [ngTemplateOutlet]="showing ? tpl : null"></ng-container>
-        `,
+          <ng-container [ngTemplateOutlet]="showing ? tpl : null"></ng-container> `,
         standalone: false,
       })
       class NgContainerComponent {

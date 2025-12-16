@@ -19,7 +19,7 @@ Let's complete the form!
 Import the `submit` function from `@angular/forms/signals`:
 
 ```ts
-import { form, Field, required, email, submit } from '@angular/forms/signals';
+import {form, Field, required, email, submit} from '@angular/forms/signals';
 ```
 
 </docs-step>
@@ -45,7 +45,7 @@ The `submit()` function only runs your async callback if the form is valid. It a
 In your template, bind the `onSubmit()` method to the form's submit event:
 
 ```html
-<form (submit)="onSubmit($event)">
+<form (submit)="onSubmit($event)"></form>
 ```
 
 </docs-step>
@@ -54,9 +54,7 @@ In your template, bind the `onSubmit()` method to the form's submit event:
 Update the submit button to be disabled when the form is invalid:
 
 ```html
-<button type="submit" [disabled]="loginForm().invalid()">
-  Log in
-</button>
+<button type="submit" [disabled]="loginForm().invalid()">Log in</button>
 ```
 
 This prevents submission when the form has validation errors.

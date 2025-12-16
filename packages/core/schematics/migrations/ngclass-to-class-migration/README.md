@@ -25,7 +25,7 @@ Example:
 ```html
 <!-- Before -->
 <div [ngClass]="{admin: isAdmin, dense: density === 'high'}">
-
-<!-- After -->
-<div [class]="{admin: isAdmin, dense: density === 'high'}">
+  <!-- After -->
+  <div [class]="{admin: isAdmin, dense: density === 'high'}"></div>
+</div>
 ```

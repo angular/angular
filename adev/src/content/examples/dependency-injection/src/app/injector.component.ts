@@ -11,10 +11,10 @@ import {Logger} from './logger.service';
 @Component({
   selector: 'app-injectors',
   template: `
-  <h2>Other Injections</h2>
-  <div id="car">{{car.drive()}}</div>
-  <div id="hero">{{hero.name}}</div>
-  <div id="rodent">{{rodent}}</div>
+    <h2>Other Injections</h2>
+    <div id="car">{{ car.drive() }}</div>
+    <div id="hero">{{ hero.name }}</div>
+    <div id="rodent">{{ rodent }}</div>
   `,
   providers: [Car, Engine, Tires, heroServiceProvider, Logger],
 })

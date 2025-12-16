@@ -44,7 +44,7 @@ You can alternatively choose to write your template and styles in separate files
   templateUrl: 'profile-photo.html',
   styleUrl: 'profile-photo.css',
 })
-export class ProfilePhoto { }
+export class ProfilePhoto {}
 ```
 
 This can help separate the concerns of _presentation_ from _behavior_ in your project. You can choose one approach for your entire project, or you decide which to use for each component.
@@ -67,7 +67,7 @@ import {ProfilePhoto} from './profile-photo';
   imports: [ProfilePhoto],
   /* ... */
 })
-export class UserProfile { }
+export class UserProfile {}
 ```
 
 By default, Angular components are _standalone_, meaning that you can directly add them to the `imports` array of other components. Components created with an earlier version of Angular may instead specify `standalone: false` in their `@Component` decorator. For these components, you instead import the `NgModule` in which the component is defined. See the full [`NgModule` guide](guide/ngmodules) for details.

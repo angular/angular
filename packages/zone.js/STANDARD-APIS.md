@@ -132,12 +132,7 @@ This can be done through `__Zone_ignore_on_properties` and `__zone_symbol__UNPAT
 <head>
   <script>
     // Disable patching `on` properties for the following targets:
-    const targets = [
-      window,
-      Document.prototype,
-      HTMLBodyElement.prototype,
-      HTMLElement.prototype,
-    ];
+    const targets = [window, Document.prototype, HTMLBodyElement.prototype, HTMLElement.prototype];
 
     // This is declared without `let` or `const`, so it will become a property
     // of the global `window` object:
@@ -166,7 +161,7 @@ When we declare events in `__zone_symbol__UNPATCHED_EVENTS`, their callbacks wil
 ```js
 __zone_symbol__UNPATCHED_EVENTS = ['scroll'];
 
-Zone.current.fork({ name: 'child' }).run(() => {
+Zone.current.fork({name: 'child'}).run(() => {
   window.addEventListener('scroll', () => {
     console.log(Zone.current); // <root>
   });

@@ -427,9 +427,7 @@ describe('signal inputs', () => {
 
       @Component({
         selector: 'app-content',
-        template: `
-          <ng-content></ng-content>
-        `,
+        template: ` <ng-content></ng-content> `,
         styles: animateStyles,
         host: {
           'animate.leave': 'fade-out',
@@ -613,8 +611,8 @@ describe('signal inputs', () => {
 
       @Component({
         template: `
-          @for(itm of list(); track itm) {
-          <ng-template [messageRenderer]="itm" (closed)="removeItem($event)" />
+          @for (itm of list(); track itm) {
+            <ng-template [messageRenderer]="itm" (closed)="removeItem($event)" />
           }
         `,
         imports: [MessageRendererDirective],

@@ -3,7 +3,9 @@
 You can use the `signal` function to hold some state in your Angular code. Sometimes, this state depends on some _other_ state. For example, imagine a component that lets the user select a shipping method for an order:
 
 ```typescript
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class ShippingMethodPicker {
   shippingOptions: Signal<ShippingMethod[]> = getShippingOptions();
 
@@ -21,7 +23,9 @@ In this example, the `selectedOption` defaults to the first option, but changes 
 **The `linkedSignal` function lets you create a signal to hold some state that is intrinsically _linked_ to some other state.** Revisiting the example above, `linkedSignal` can replace `signal`:
 
 ```typescript
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class ShippingMethodPicker {
   shippingOptions: Signal<ShippingMethod[]> = getShippingOptions();
 
@@ -62,7 +66,9 @@ interface ShippingMethod {
   name: string;
 }
 
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class ShippingMethodPicker {
   constructor() {
     this.changeShipping(2);
@@ -71,9 +77,9 @@ export class ShippingMethodPicker {
   }
 
   shippingOptions = signal<ShippingMethod[]>([
-    { id: 0, name: 'Ground' },
-    { id: 1, name: 'Air' },
-    { id: 2, name: 'Sea' },
+    {id: 0, name: 'Ground'},
+    {id: 1, name: 'Air'},
+    {id: 2, name: 'Sea'},
   ]);
 
   selectedOption = linkedSignal<ShippingMethod[], ShippingMethod>({
@@ -82,9 +88,7 @@ export class ShippingMethodPicker {
     computation: (newOptions, previous) => {
       // If the newOptions contain the previously selected option, preserve that selection.
       // Otherwise, default to the first option.
-      return (
-        newOptions.find((opt) => opt.id === previous?.value.id) ?? newOptions[0]
-      );
+      return newOptions.find((opt) => opt.id === previous?.value.id) ?? newOptions[0];
     },
   });
 
@@ -94,9 +98,9 @@ export class ShippingMethodPicker {
 
   changeShippingOptions() {
     this.shippingOptions.set([
-      { id: 0, name: 'Email' },
-      { id: 1, name: 'Sea' },
-      { id: 2, name: 'Postal Service' },
+      {id: 0, name: 'Email'},
+      {id: 1, name: 'Sea'},
+      {id: 2, name: 'Postal Service'},
     ]);
   }
 }
@@ -125,7 +129,7 @@ const activeUserEditCopy = linkedSignal(() => activeUser(), {
 // Or, if separating `source` and `computation`
 const activeUserEditCopy = linkedSignal({
   source: activeUser,
-  computation: user => user,
+  computation: (user) => user,
   equal: (a, b) => a.id === b.id,
 });
 ```

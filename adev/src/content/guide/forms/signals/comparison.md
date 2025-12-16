@@ -54,7 +54,7 @@ This separates form state management from your component's data model. The form 
 Template-driven Forms stores data in component properties. You access values directly:
 
 ```ts
-const credentials = { email: this.email, password: this.password };
+const credentials = {email: this.email, password: this.password};
 ```
 
 This is the most direct approach but requires manually assembling values when you need them. Angular manages form state through directives in the template.
@@ -67,8 +67,8 @@ Signal Forms uses a schema function where you bind validators to field paths:
 
 ```ts
 loginForm = form(this.loginModel, (fieldPath) => {
-  required(fieldPath.email, { message: 'Email is required' });
-  email(fieldPath.email, { message: 'Enter a valid email address' });
+  required(fieldPath.email, {message: 'Email is required'});
+  email(fieldPath.email, {message: 'Enter a valid email address'});
 });
 ```
 
@@ -78,7 +78,7 @@ Reactive Forms attaches validators when creating controls:
 
 ```ts
 loginForm = new FormGroup({
-  email: new FormControl('', [Validators.required, Validators.email])
+  email: new FormControl('', [Validators.required, Validators.email]),
 });
 ```
 
@@ -99,7 +99,7 @@ TypeScript integration differs significantly between approaches, affecting how m
 Signal Forms infers types from your model structure:
 
 ```ts
-const loginModel = signal({ email: '', password: '' });
+const loginModel = signal({email: '', password: ''});
 const loginForm = form(loginModel);
 // TypeScript knows: loginForm.email exists and returns FieldState<string>
 ```
@@ -111,7 +111,7 @@ Reactive Forms requires explicit type annotations with typed forms:
 ```ts
 const loginForm = new FormGroup({
   email: new FormControl<string>(''),
-  password: new FormControl<string>('')
+  password: new FormControl<string>(''),
 });
 // TypeScript knows: loginForm.controls.email is FormControl<string>
 ```

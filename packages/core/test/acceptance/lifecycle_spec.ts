@@ -344,7 +344,7 @@ describe('onChanges', () => {
 
     @Component({
       selector: 'comp',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
       standalone: false,
     })
     class Comp {
@@ -405,7 +405,7 @@ describe('onChanges', () => {
     const events: any[] = [];
     @Component({
       selector: 'projected',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
       standalone: false,
     })
     class Projected {
@@ -482,7 +482,7 @@ describe('onChanges', () => {
     const events: any[] = [];
     @Component({
       selector: 'projected',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
       standalone: false,
     })
     class Projected {
@@ -611,7 +611,7 @@ describe('onChanges', () => {
 
     @Component({
       selector: 'comp',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
       standalone: false,
     })
     class Comp {
@@ -688,7 +688,7 @@ describe('onChanges', () => {
 
     @Component({
       selector: 'comp',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
       standalone: false,
     })
     class Comp {
@@ -871,7 +871,7 @@ describe('onChanges', () => {
 
     @Component({
       selector: 'comp',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
       standalone: false,
     })
     class Comp {
@@ -886,9 +886,9 @@ describe('onChanges', () => {
 
     @Component({
       template: `
-      <comp name="0" [val]="val"></comp>
-      <comp *ngFor="let number of numbers" [name]="number" [val]="val"></comp>
-      <comp name="1" [val]="val"></comp>
+        <comp name="0" [val]="val"></comp>
+        <comp *ngFor="let number of numbers" [name]="number" [val]="val"></comp>
+        <comp name="1" [val]="val"></comp>
       `,
       standalone: false,
     })
@@ -986,7 +986,7 @@ describe('onChanges', () => {
 
     @Component({
       selector: 'child',
-      template: `<p>{{val}}</p>`,
+      template: `<p>{{ val }}</p>`,
       standalone: false,
     })
     class Child {
@@ -1179,7 +1179,7 @@ describe('onChanges', () => {
     const events: any[] = [];
 
     @Component({
-      template: `<p>{{value}}</p>`,
+      template: `<p>{{ value }}</p>`,
       standalone: false,
     })
     class App {
@@ -1527,9 +1527,7 @@ describe('onInit', () => {
     }
 
     @Component({
-      template: `
-        <my-comp [input1]="value1" [input2]="value2"></my-comp>
-      `,
+      template: ` <my-comp [input1]="value1" [input2]="value2"></my-comp> `,
       standalone: false,
     })
     class App {
@@ -1672,9 +1670,7 @@ describe('onInit', () => {
     }
 
     @Component({
-      template: `
-        <div *ngIf="show"><my-comp></my-comp></div>
-      `,
+      template: ` <div *ngIf="show"><my-comp></my-comp></div> `,
       standalone: false,
     })
     class App {
@@ -1715,17 +1711,13 @@ describe('onInit', () => {
 
     @Component({
       selector: 'dynamic-comp',
-      template: `
-        <my-comp></my-comp>
-      `,
+      template: ` <my-comp></my-comp> `,
       standalone: false,
     })
     class DynamicComp {}
 
     @Component({
-      template: `
-        <div #container></div>
-      `,
+      template: ` <div #container></div> `,
       standalone: false,
     })
     class App {
@@ -2288,9 +2280,9 @@ describe('doCheck', () => {
 
     @Component({
       template: `
-      <comp name="1" dir="1"></comp>
-      <comp name="2" dir="2"></comp>
-    `,
+        <comp name="1" dir="1"></comp>
+        <comp name="2" dir="2"></comp>
+      `,
       standalone: false,
     })
     class App {
@@ -2339,9 +2331,9 @@ describe('doCheck', () => {
 
     @Component({
       template: `
-      <comp name="1" dir="1"></comp>
-      <comp name="2" dir="2"></comp>
-    `,
+        <comp name="1" dir="1"></comp>
+        <comp name="2" dir="2"></comp>
+      `,
       standalone: false,
     })
     class App {
@@ -2592,8 +2584,8 @@ describe('afterContentinit', () => {
 
     @Component({
       template: `
-      <parent name="1"></parent>
-      <parent name="2"></parent>
+        <parent name="1"></parent>
+        <parent name="2"></parent>
       `,
       standalone: false,
     })
@@ -2649,7 +2641,7 @@ describe('afterContentinit', () => {
 
     @Component({
       selector: 'projected',
-      template: `<projected-child [name]=name></projected-child>`,
+      template: `<projected-child [name]="name"></projected-child>`,
       standalone: false,
     })
     class Projected {
@@ -2753,7 +2745,7 @@ describe('afterContentinit', () => {
 
     @Component({
       selector: 'parent',
-      template: `<child [name]=name></child>`,
+      template: `<child [name]="name"></child>`,
       standalone: false,
     })
     class Parent {
@@ -3037,7 +3029,7 @@ describe('afterViewInit', () => {
 
     @Component({
       selector: 'parent',
-      template: `<child [name]=name></child>`,
+      template: `<child [name]="name"></child>`,
       standalone: false,
     })
     class Parent {
@@ -3484,7 +3476,7 @@ describe('afterViewChecked', () => {
 
     @Component({
       selector: 'comp',
-      template: `<p>{{value}}</p>`,
+      template: `<p>{{ value }}</p>`,
       standalone: false,
     })
     class Comp {
@@ -3545,9 +3537,9 @@ describe('afterViewChecked', () => {
 
     @Component({
       template: `
-      <parent name="4"></parent>
-      <parent *ngFor="let number of numbers" [name]="number"></parent>
-      <parent name="5"></parent>
+        <parent name="4"></parent>
+        <parent *ngFor="let number of numbers" [name]="number"></parent>
+        <parent name="5"></parent>
       `,
       standalone: false,
     })
@@ -3612,9 +3604,9 @@ describe('afterViewChecked', () => {
 
     @Component({
       template: `
-      <comp name="1" dir="1"></comp>
-      <comp name="2" dir="2"></comp>
-    `,
+        <comp name="1" dir="1"></comp>
+        <comp name="2" dir="2"></comp>
+      `,
       standalone: false,
     })
     class App {
@@ -3649,9 +3641,9 @@ describe('afterViewChecked', () => {
 
     @Component({
       template: `
-      <div dir="1"></div>
-      <div dir="2"></div>
-    `,
+        <div dir="1"></div>
+        <div dir="2"></div>
+      `,
       standalone: false,
     })
     class App {
@@ -3976,11 +3968,11 @@ describe('onDestroy', () => {
 
     @Component({
       template: `
-      <div *ngIf="showAll">
-        <comp name="1"></comp>
-        <comp *ngIf="showMiddle" name="2"></comp>
-        <comp name="3"></comp>
-      </div>
+        <div *ngIf="showAll">
+          <comp name="1"></comp>
+          <comp *ngIf="showMiddle" name="2"></comp>
+          <comp name="3"></comp>
+        </div>
       `,
       standalone: false,
     })
@@ -4312,7 +4304,8 @@ describe('hook order', () => {
 
   @Component({
     selector: 'comp',
-    template: `{{value}}<div><ng-content></ng-content></div>`,
+    template: `{{ value }}
+      <div><ng-content></ng-content></div>`,
     standalone: false,
   })
   class Comp {
@@ -4355,7 +4348,9 @@ describe('hook order', () => {
 
   @Component({
     selector: 'parent',
-    template: `<comp [name]="'child of ' + this.name" [value]="value"><ng-content></ng-content></comp>`,
+    template: `<comp [name]="'child of ' + this.name" [value]="value"
+      ><ng-content></ng-content
+    ></comp>`,
     standalone: false,
   })
   class Parent extends Comp {}
@@ -4677,7 +4672,7 @@ describe('non-regression', () => {
     }
 
     @Component({
-      template: `<div [testDir]="value">{{value}}</div>`,
+      template: `<div [testDir]="value">{{ value }}</div>`,
       standalone: false,
     })
     class App {
@@ -4717,7 +4712,7 @@ describe('non-regression', () => {
     }
 
     @Component({
-      template: `<div [testDir]="value">{{value}}</div>`,
+      template: `<div [testDir]="value">{{ value }}</div>`,
       standalone: false,
     })
     class App {
