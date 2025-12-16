@@ -40,7 +40,7 @@
   }
 
   @if (defer && defer.currentBlock) {
-    <span class="on-push">(&#64;{{defer.currentBlock}})</span>
+    <span class="on-push">(&#64;{{ defer.currentBlock }})</span>
   }
 
   @switch (hydration?.status) {
@@ -73,11 +73,11 @@
   <div class="hydration-error">
     @if (hydration.expectedNodeDetails) {
       <div>Expected DOM:</div>
-      <pre>{{hydration.expectedNodeDetails}}</pre>
+      <pre>{{ hydration.expectedNodeDetails }}</pre>
     }
     @if (hydration.actualNodeDetails) {
       <div>Actual DOM:</div>
-      <pre>{{hydration.actualNodeDetails}}</pre>
+      <pre>{{ hydration.actualNodeDetails }}</pre>
     }
   </div>
 }

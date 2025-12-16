@@ -7,7 +7,7 @@
   type="text"
   id="hero-name"
   #box
-  (keyup.enter)="addHero(box.value); box.value=''"
+  (keyup.enter)="addHero(box.value); box.value = ''"
   placeholder="hero name"
 />
 <div>
@@ -23,7 +23,7 @@
 <h3>Heroes who fly (piped)</h3>
 <div id="flyers">
   <!-- #docregion template-flying-heroes -->
-  @for (hero of (heroes | flyingHeroesImpure); track hero) {
+  @for (hero of heroes | flyingHeroesImpure; track hero) {
     <div>{{ hero.name }}</div>
   }
   <!-- #enddocregion template-flying-heroes -->

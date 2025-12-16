@@ -14,12 +14,11 @@
     <button id="b2">Cause Error</button>
 
     <script>
-
       /*
        * This is a simple example of async stack traces with zones
        */
 
-      function main () {
+      function main() {
         b1.addEventListener('click', bindSecondButton);
       }
 
@@ -32,12 +31,11 @@
        * Think of how much more productive your debugging could be!
        */
 
-      function bindSecondButton () {
+      function bindSecondButton() {
         b2.addEventListener('click', throwError);
       }
 
-
-      function throwError () {
+      function throwError() {
         throw new Error('aw shucks');
       }
 
@@ -45,13 +43,14 @@
        * Bootstrap the app
        */
       //main();
-      Zone.current.fork(
-              {
-                  onHandleError: function (parentZoneDelegate, currentZone, targetZone, error) {
-                      console.log(error.stack);
-                  }
-              }
-      ).fork(Zone.longStackTraceZoneSpec).run(main);
+      Zone.current
+        .fork({
+          onHandleError: function (parentZoneDelegate, currentZone, targetZone, error) {
+            console.log(error.stack);
+          },
+        })
+        .fork(Zone.longStackTraceZoneSpec)
+        .run(main);
     </script>
   </body>
 </html>

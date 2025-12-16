@@ -1,6 +1,6 @@
 <mat-toolbar>Current block</mat-toolbar>
 <div class="defer-details">
-  <span class="pill"> &#64;{{defer().currentBlock ?? 'defer'}}</span>
+  <span class="pill"> &#64;{{ defer().currentBlock ?? 'defer' }}</span>
 </div>
 
 @let triggers = defer().triggers;
@@ -10,11 +10,15 @@
   @if (blocks.placeholderBlock) {
     <span class="pill">
       &#64;placeholder<!--
-      -->{{blocks.placeholderBlock.minimumTime ? `(minimum ${blocks.placeholderBlock.minimumTime} ms)` : ''}}</span
+      -->{{
+        blocks.placeholderBlock.minimumTime
+          ? `(minimum ${blocks.placeholderBlock.minimumTime} ms)`
+          : ''
+      }}</span
     >
   }
   @if (blocks.loadingBlock) {
-    <span class="pill">&#64;loading{{loadingBlockInfo()}}</span>
+    <span class="pill">&#64;loading{{ loadingBlockInfo() }}</span>
   }
   @if (blocks.hasErrorBlock) {
     <span class="pill">&#64;error</span>
@@ -25,18 +29,18 @@
 <div class="defer-details">
   <h3>Defer triggers</h3>
   @for (trigger of triggers.defer; track $index) {
-    <span class="trigger">{{trigger}}</span>
+    <span class="trigger">{{ trigger }}</span>
   }
   @if (triggers.hydrate.length > 0) {
     <h3>Hydration triggers</h3>
     @for (trigger of triggers.hydrate; track $index) {
-      <span class="trigger">{{trigger}}</span>
+      <span class="trigger">{{ trigger }}</span>
     }
   }
   @if (triggers.prefetch.length > 0) {
     <h3>Prefetch triggers</h3>
     @for (trigger of triggers.prefetch; track $index) {
-      <span class="trigger">{{trigger}}</span>
+      <span class="trigger">{{ trigger }}</span>
     }
   }
 

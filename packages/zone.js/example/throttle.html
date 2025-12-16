@@ -30,7 +30,7 @@
        * Start the app
        * Bind listeners
        */
-      function bootstrap () {
+      function bootstrap() {
         b2.addEventListener('click', throttleMakeRequest);
       }
 
@@ -42,25 +42,22 @@
         makeRequestToServer(handleServerResponse);
       }, 1000);
 
-
       /*
        * Pretend this makes a request to a server
        */
-      function makeRequestToServer (cb) {
+      function makeRequestToServer(cb) {
         setTimeout(cb, 100);
       }
 
-
-      function handleServerResponse (err, data) {
+      function handleServerResponse(err, data) {
         throw new Error('Oops');
       }
-
 
       /*
        * Returns a fn that can only be called once
        * per `time` milliseconds
        */
-      function throttle (fn, time) {
+      function throttle(fn, time) {
         var id = null;
         if (typeof time !== 'number') {
           time = 0;
