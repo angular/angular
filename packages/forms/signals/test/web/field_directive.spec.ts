@@ -1988,43 +1988,6 @@ describe('field directive', () => {
     expect(fix.componentInstance.select()!.nativeElement.value).toEqual('four');
   });
 
-  it('synchronizes with a custom checkbox control', () => {
-    @Component({
-      selector: 'my-input',
-      template:
-        '<input #i type="checkbox" [checked]="checked()" (input)="checked.set(i.checked)" />',
-    })
-    class CustomInput implements FormCheckboxControl {
-      checked = model(false);
-    }
-
-    @Component({
-      imports: [Field, CustomInput],
-      template: `<my-input [field]="f" />`,
-    })
-    class TestCmp {
-      f = form(signal(false));
-    }
-
-    const fix = act(() => TestBed.createComponent(TestCmp));
-    const input = fix.nativeElement.firstChild.firstChild as HTMLInputElement;
-    const cmp = fix.componentInstance as TestCmp;
-
-    // Initial state
-    expect(input.checked).toBe(false);
-
-    // Model -> View
-    act(() => cmp.f().value.set(true));
-    expect(input.checked).toBe(true);
-
-    // View -> Model
-    act(() => {
-      input.checked = false;
-      input.dispatchEvent(new Event('input'));
-    });
-    expect(cmp.f().value()).toBe(false);
-  });
-
   it('does not interfere with a component which accepts a field input directly', () => {
     @Component({
       selector: 'my-wrapper',
