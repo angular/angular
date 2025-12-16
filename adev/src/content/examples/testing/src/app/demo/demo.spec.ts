@@ -1,6 +1,6 @@
 // #docplaster
-import {LightswitchComponent, MasterService, ValueService, ReversePipe} from './demo';
 import {firstValueFrom} from 'rxjs';
+import {LightswitchComponent, MasterService, ValueService, ReversePipe} from './demo';
 
 ///////// Fakes /////////
 export class FakeValueService extends ValueService {
