@@ -9,7 +9,11 @@
 import {AST, TmplAstNode} from '@angular/compiler';
 import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
+import {
+  ErrorCode,
+  isFatalDiagnosticError,
+  ngErrorCode,
+} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
 import {FileUpdate, ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
@@ -141,11 +145,20 @@ export class LanguageService {
         const components = compiler.getComponentsWithTemplateFile(fileName);
         for (const component of components) {
           if (ts.isClassDeclaration(component)) {
-            diagnostics.push(
-              ...compiler
-                .getTemplateTypeChecker()
-                .getSuggestionDiagnosticsForComponent(component, this.tsLS),
-            );
+            try {
+              diagnostics.push(
+                ...compiler
+                  .getTemplateTypeChecker()
+                  .getSuggestionDiagnosticsForComponent(component, this.tsLS),
+              );
+            } catch (e) {
+              // Type check code may throw fatal diagnostic errors if e.g. the type check
+              // block cannot be generated. In this case, we consider that there are no available suggestion diagnostics.
+              if (isFatalDiagnosticError(e)) {
+                continue;
+              }
+              throw e;
+            }
           }
         }
       }
