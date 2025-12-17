@@ -14,6 +14,7 @@ import {
   ElementRef,
   EventEmitter,
   inject,
+  Injectable,
   Injector,
   input,
   Input,
@@ -4346,6 +4347,39 @@ describe('field directive', () => {
 
     const select = fixture.debugElement.parent!.nativeElement.querySelector('select');
     expect(select.value).toBe('us');
+  });
+
+  it('should not interfere with other directives with a formField input', async () => {
+    @Injectable()
+    class FooService {}
+
+    @Directive({
+      selector: '[formField]',
+    })
+    class Foo {
+      formField = input<string>();
+      injector = inject(Injector);
+
+      constructor() {
+        setTimeout(() => {
+          // delay injection after the lview has been altered
+          this.injector.get(FooService);
+        });
+      }
+    }
+
+    @Component({
+      selector: 'app-root',
+      providers: [FooService],
+      imports: [Foo],
+      template: `@if (true) {
+        <div formField="{{ 'xx' }}">{{ 'test' }}</div>
+      }`,
+    })
+    class App {}
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
   });
 });
 
