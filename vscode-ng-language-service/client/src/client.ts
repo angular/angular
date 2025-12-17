@@ -24,7 +24,7 @@ import {
   GetTemplateLocationForComponent,
   IsInAngularProject,
 } from '../../common/requests';
-import {NodeModule, resolve} from '../../common/resolver';
+import {NodeModule, resolve, Version} from '../../common/resolver';
 
 import {isInsideStringLiteral, isNotTypescriptOrSupportedDecoratorField} from './embedded_support';
 
@@ -676,6 +676,10 @@ function setAngularVersionAndShowMultipleVersionsWarning(
 ) {
   if (angularVersions.length === 0) {
     return;
+  }
+  if (angularVersions[0].version.toString() === '0.0.0') {
+    // If only version 0.x is found, update it to 999 instead (0.0.0 is used for the version when building locally)
+    angularVersions[0].version = new Version('999.999.999');
   }
   // Pass the earliest Angular version along to the compiler for maximum compatibility.
   // For example, if we tell the v21 compiler that we're using v21 but there's a v13 project,
