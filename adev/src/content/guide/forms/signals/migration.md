@@ -212,3 +212,24 @@ const formValue = computed(() => ({
 ## Bottom-up migration
 
 This is coming soon.
+
+## Automatic status classes
+
+To avoid manually adding classes like `.ng-valid`, `.ng-dirty` etc to every field, you can provide a global configuration using `provideSignalFormsConfig`.
+
+```typescript
+import {provideSignalFormsConfig} from '@angular/forms/signals';
+
+bootstrapApplication(App, {
+  providers: [
+    provideSignalFormsConfig({
+      classes: {
+        'ng-valid': ({state}) => state().valid(),
+        'ng-invalid': ({state}) => state().invalid(),
+        'ng-touched': ({state}) => state().touched(),
+        'ng-dirty': ({state}) => state().dirty(),
+      },
+    }),
+  ],
+});
+```
