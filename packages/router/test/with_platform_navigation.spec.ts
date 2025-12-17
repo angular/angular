@@ -8,7 +8,7 @@
 
 import {TestBed} from '@angular/core/testing';
 import {provideRouter, Router} from '../src';
-import {withPlatformNavigation, withRouterConfig} from '../src/provide_router';
+import {withExperimentalPlatformNavigation, withRouterConfig} from '../src/provide_router';
 import {withBody} from '@angular/private/testing';
 import {
   PlatformLocation,
@@ -27,7 +27,9 @@ import {timeout, useAutoTick} from './helpers';
 
 describe('withPlatformNavigation feature', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({providers: [provideRouter([], withPlatformNavigation())]});
+    TestBed.configureTestingModule({
+      providers: [provideRouter([], withExperimentalPlatformNavigation())],
+    });
   });
 
   it('provides FakeNavigation by default', () => {
@@ -170,7 +172,7 @@ describe('withPlatformNavigation feature', () => {
         providers: [
           provideRouter(
             [{path: '**', children: []}],
-            withPlatformNavigation(),
+            withExperimentalPlatformNavigation(),
             withRouterConfig({urlUpdateStrategy: 'eager'}),
           ),
         ],
@@ -203,7 +205,7 @@ describe('withPlatformNavigation feature', () => {
 describe('configuration error', () => {
   it('throws an error mentioning SpyLocation and the location mocks', () => {
     TestBed.configureTestingModule({
-      providers: [provideRouter([], withPlatformNavigation()), provideLocationMocks()],
+      providers: [provideRouter([], withExperimentalPlatformNavigation()), provideLocationMocks()],
     });
     expect(() => TestBed.inject(Location)).toThrowError(/SpyLocation.*provideLocationMocks/);
   });
@@ -215,7 +217,7 @@ if (typeof window !== 'undefined' && 'navigation' in window) {
     beforeEach(() => {
       TestBed.configureTestingModule({
         providers: [
-          provideRouter([{path: '**', children: []}], withPlatformNavigation()),
+          provideRouter([{path: '**', children: []}], withExperimentalPlatformNavigation()),
           {provide: PlatformLocation, useClass: BrowserPlatformLocation},
           {provide: PlatformNavigation, useFactory: () => navigation},
         ],

@@ -801,7 +801,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | ExperimentalAutoCleanupInjectorsFeature | RouterHashLocationFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | ExperimentalAutoCleanupInjectorsFeature | RouterHashLocationFeature | ExperimentalPlatformNavigationFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -1143,6 +1143,9 @@ export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNa
 
 // @public
 export function withExperimentalAutoCleanupInjectors(): ExperimentalAutoCleanupInjectorsFeature;
+
+// @public
+export function withExperimentalPlatformNavigation(): ExperimentalPlatformNavigationFeature;
 
 // @public
 export function withHashLocation(): RouterHashLocationFeature;
