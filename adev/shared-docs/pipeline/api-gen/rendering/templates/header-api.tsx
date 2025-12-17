@@ -123,13 +123,6 @@ function tagInVersionString(label: string, tag: {version: string | undefined} | 
   return <>{label}</>;
 }
 
-function tagInVersionTooltip(
-  label: string,
-  tag: {version: string | undefined} | undefined,
-): string {
-  return tag?.version ? `${label} since ${tag.version}` : label;
-}
-
 function getEntryTypeDisplayName(entryType: EntryType | string): string {
   switch (entryType) {
     case EntryType.NgModule:
