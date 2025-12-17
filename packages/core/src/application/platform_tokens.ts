@@ -37,6 +37,16 @@ export const REQUEST = new InjectionToken<Request | null>(
 );
 
 /**
+ * Type that represents the initialization options for a response.
+ *
+ * @publicApi
+ */
+export type ResponseInit = {
+  // This is needed as `@types/node` and Undici marks all these properties as readonly. This is not the case in lib.dom.d.ts
+  -readonly [P in keyof globalThis.ResponseInit]: globalThis.ResponseInit[P];
+};
+
+/**
  * Injection token for response initialization options.
  *
  * Use this token to provide response options for configuring or initializing
