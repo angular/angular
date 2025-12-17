@@ -518,8 +518,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/animations
       '@angular/aria':
-        specifier: 21.0.3
-        version: 21.0.3(@angular/cdk@21.0.3(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/core@packages+core)
+        specifier: 21.0.4
+        version: 21.0.4(@angular/cdk@21.0.3(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 21.0.3
         version: 21.0.3(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.9.1)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.5.1)(ng-packagr@21.0.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.21.0)(yaml@2.8.2))(terser@5.44.1)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -1658,10 +1658,10 @@ packages:
     resolution: {integrity: sha512-E/Nja+RIyMzjqLXREOnTRwv7GMrycpAD7kGwDg7l8cWrNQ7phqBZcXAt74Jv9K9aYsOC8tw2Ms9t59aQ6iow8w==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
-  '@angular/aria@21.0.3':
-    resolution: {integrity: sha512-QRDd5zH6Dxns0IOD5pcFTSOSlXdi3cZ0sVbT8bA5XraUh2vCgXd2uITuyRoVozXnIR2JklF+IUtLv3rkG6VM8A==}
+  '@angular/aria@21.0.4':
+    resolution: {integrity: sha512-czWnHZobNcTTM1NOzVCzBfKFndWDuAREKJ0hLmHP61zAHs91WVBXQ42qWC+8VeXWqAHNclLlN6wfLsSSvqiPZQ==}
     peerDependencies:
-      '@angular/cdk': 21.0.3
+      '@angular/cdk': 21.0.4
       '@angular/core': ^21.0.0 || ^22.0.0
 
   '@angular/build@21.0.3':
@@ -13758,7 +13758,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/aria@21.0.3(@angular/cdk@21.0.3(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/core@packages+core)':
+  '@angular/aria@21.0.4(@angular/cdk@21.0.3(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/core@packages+core)':
     dependencies:
       '@angular/cdk': 21.0.3(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/core': link:packages/core
