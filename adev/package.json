@@ -5,7 +5,7 @@
     "@algolia/requester-browser-xhr": "5.41.0",
     "@algolia/requester-node-http": "5.41.0",
     "@angular/animations": "workspace:*",
-    "@angular/aria": "21.0.3",
+    "@angular/aria": "21.0.4",
     "@angular/build": "21.0.3",
     "@angular/cdk": "21.0.3",
     "@angular/cli": "21.0.3",
