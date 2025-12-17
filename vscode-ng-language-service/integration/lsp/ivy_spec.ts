@@ -23,6 +23,7 @@ import {
 } from '../../common/requests';
 import {
   APP_COMPONENT,
+  APP_COMPONENT_MODULE,
   APP_COMPONENT_MODULE_URI,
   APP_COMPONENT_URI,
   BAR_COMPONENT,
@@ -32,7 +33,6 @@ import {
   FOO_TEMPLATE,
   FOO_TEMPLATE_URI,
   makeTempDir,
-  PRE_STANDALONE_PROJECT_PATH,
   PROJECT_PATH,
   TSCONFIG,
 } from '../test_constants';
@@ -614,9 +614,30 @@ export class AppComponent {
 
   it('should handle apps where standalone is not enabled by default (pre v19)', async () => {
     await initServer({angularCoreVersion: '18.0.0'});
-    const moduleFile = join(PRE_STANDALONE_PROJECT_PATH, 'app/app.module.ts');
+    const moduleFile = join(PROJECT_PATH, 'app/app.module.ts');
 
-    openTextDocument(client, moduleFile);
+    // Update component to not specify standalone explicitly. This should be interpreted as
+    // false in pre-v19 projects. The component is already declared in AppModule, and there should
+    // be no diagnostics.
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+      import {Component, EventEmitter, Input, Output} from '@angular/core';
+
+      @Component({
+        selector: 'my-app',
+        template: '<h1>Hello {{name}}</h1>',
+        // standalone: false, // standalone is implicitly false
+      })
+      export class AppComponent {
+        name = 'Angular';
+        @Input() appInput = '';
+        @Output() appOutput = new EventEmitter<string>();
+      }
+      `,
+    );
+    openTextDocument(client, APP_COMPONENT_MODULE);
     const diagnostics = await getDiagnosticsForFile(client, moduleFile);
     expect(diagnostics.length).toBe(0);
   });
