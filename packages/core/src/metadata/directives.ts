@@ -687,38 +687,99 @@ export const Component: ComponentDecorator = makeDecorator(
 );
 
 /**
- * Type of the Pipe decorator / constructor function.
+ * Pipe decorator and metadata.
  *
+ * @see [Pipes](guide/templates/pipes)
+ * @see [Understanding pipes](guide/pipes/overview)
+ * @see [Pipe transformation](guide/pipes/pipe-transform)
+ * @see [Pure and impure pipes](guide/pipes/pure-impure)
+ * @see [Creating custom pipes](guide/pipes/transforming-data)
+ * @Annotation
  * @publicApi
  */
 export interface PipeDecorator {
   /**
+   * Decorator that marks a class as an Angular pipe and supplies configuration metadata.
    *
-   * Decorator that marks a class as pipe and supplies configuration metadata.
+   * A pipe transforms input values to output values for display in a template.
+   * You can define your own pipes to encapsulate custom transformations.
    *
-   * A pipe class must implement the `PipeTransform` interface.
-   * For example, if the name is "myPipe", use a template binding expression
-   * such as the following:
+   * The options provide configuration metadata that determines
+   * how the pipe should be processed, instantiated and used at
+   * runtime.
    *
-   * ```html
-   * {{ exp | myPipe }}
+   * @usageNotes
+   * To define a pipe, mark the class with the decorator and provide metadata.
+   *
+   * ```ts
+   * import {Pipe} from '@angular/core';
+   *
+   * @Pipe({
+   *   name: 'myPipe',
+   * })
+   * export class MyPipe implements PipeTransform {
+   *   transform(value: string): string {
+   *     return value.toUpperCase();
+   *   }
+   * }
    * ```
    *
-   * The result of the expression is passed to the pipe's `transform()` method.
+   * ### Declaring pipes
    *
-   * A pipe must belong to an NgModule in order for it to be available
-   * to a template. To make it a member of an NgModule,
-   * list it in the `declarations` field of the `NgModule` metadata.
+   * By default, pipes are marked as [standalone](guide/components/importing), which makes
+   * them available to other components in your application.
    *
-   * @see [Pipes](/guide/templates/pipes)
+   * ```ts
+   * @Pipe({
+   *   name: 'myPipe',
+   * })
+   * export class MyPipe implements PipeTransform {
+   *   transform(value: string): string {
+   *     return value.toUpperCase();
+   *   }
+   * }
+   * ```
    *
+   * Please make sure that pipes marked as standalone are not already declared in an NgModule.
+   *
+   * ** Declaring a pipe in an NgModule **
+   * If you want to declare a pipe in an NgModule, add the `standalone: false` flag to the
+   * Pipe decorator metadata and add the pipe to the `declarations` and `exports`
+   * fields of your NgModule.
+   *
+   * ```ts
+   * @Pipe({
+   *   standalone: false,
+   *   name: 'myPipe',
+   * })
+   * export class MyPipe implements PipeTransform {
+   *   transform(value: string): string {
+   *     return value.toUpperCase();
+   *   }
+   * }
+   *
+   * @NgModule({
+   *   declarations: [MyPipe, SomeComponent],
+   *   exports: [MyPipe], // making it available outside of this module
+   * })
+   * class SomeNgModule {}
+   * ```
+   *
+   * When declaring a pipe in an NgModule, please make sure that:
+   *  - the pipe is declared in exactly one NgModule.
+   *  - the pipe is not standalone.
+   *  - you do not re-declare a pipe imported from another module.
+   *  - the pipe is included into the `exports` field as well if you want this pipe to be
+   *    accessible for components outside of the NgModule.
+   *
+   * @Annotation
    */
-  (obj: Pipe): TypeDecorator;
+  (obj?: Pipe): TypeDecorator;
 
   /**
    * See the `Pipe` decorator.
    */
-  new (obj: Pipe): Pipe;
+  new (obj?: Pipe): Pipe;
 }
 
 /**
