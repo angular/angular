@@ -31,7 +31,7 @@ import { NgOptimizedImage } from '@angular/common';
 
 To enable the `NgOptimizedImage` directive, swap out the `src` attribute for `ngSrc`. This applies for both static image sources (i.e., `src`) and dynamic image sources (i.e., `[src]`).
 
-```angular-ts {highlight:[[9],[13]]}
+```angular-ts {highlight:[[7],[11]]}
 import { NgOptimizedImage } from '@angular/common';
 
 @Component({
