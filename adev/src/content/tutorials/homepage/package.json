@@ -14,7 +14,7 @@
     "@angular/core": "^18.0.6",
     "@angular/forms": "^18.0.6",
     "@angular/platform-browser": "^18.0.6",
-    "rxjs": "~7.8.0",
+    "rxjs": "~7.8.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.0"
   },
