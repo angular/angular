@@ -23,9 +23,9 @@ Some tools are provided in experimental / preview status since they are new or n
 | :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------: | :---------: |
 | `build`                    | Perform a one-off, non-watched build using `ng build`.                                                                                                                                                                                                              |      ✅      |     ❌      |
 | `modernize`                | Performs code migrations and provides further instructions on how to modernize Angular code to align with the latest best practices and syntax. [Learn more](/reference/migrations)                                                                                 |      ✅      |     ❌      |
-| `start_devserver`          | Asynchronously starts a development server that watches the workspace for changes, similar to running `ng serve`. Since this is asynchronous it returns immediately. To manage the resulting server, use the `stop_devserver` and `wait_for_devserver_build` tools. |      ✅      |     ✅      |
-| `stop_devserver`           | Stops a development server started by `start_devserver`.                                                                                                                                                                                                            |      ✅      |     ✅      |
-| `wait_for_devserver_build` | Returns the output logs of the most recent build in a running development server started by `start_devserver`. If a build is currently ongoing, it will first wait for that build to complete and then return the logs.                                             |      ✅      |     ✅      |
+| `devserver.start`          | Asynchronously starts a development server that watches the workspace for changes, similar to running `ng serve`. Since this is asynchronous it returns immediately. To manage the resulting server, use the `devserver.stop` and `devserver.wait_for_build` tools. |      ✅      |     ✅      |
+| `devserver.stop`           | Stops a development server started by `devserver.start`.                                                                                                                                                                                                            |      ✅      |     ✅      |
+| `devserver.wait_for_build` | Returns the output logs of the most recent build in a running development server started by `devserver.start`. If a build is currently ongoing, it will first wait for that build to complete and then return the logs.                                             |      ✅      |     ✅      |
 
 ## Get Started
 
@@ -133,11 +133,11 @@ For other IDEs, check your IDE's documentation for the proper location of the MC
 
 The `mcp` command can be configured with the following options passed as arguments in your IDE's MCP configuration:
 
-| Option                        | Type      | Description                                                                                                                       | Default |
-| :---------------------------- | :-------- | :-------------------------------------------------------------------------------------------------------------------------------- | :------ |
-| `--read-only`                 | `boolean` | Only register tools that do not make changes to the project. Your editor or coding agent may still perform edits.                 | `false` |
-| `--local-only`                | `boolean` | Only register tools that do not require an internet connection. Your editor or coding agent may still send data over the network. | `false` |
-| `--experimental-tool`<br>`-E` | `string`  | Enable an [experimental tool](#experimental-tools). Separate multiple options by spaces, e.g. `-E tool_a tool_b`.                 |         |
+| Option                        | Type      | Description                                                                                                                                                                                                                  | Default |
+| :---------------------------- | :-------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------ |
+| `--read-only`                 | `boolean` | Only register tools that do not make changes to the project. Your editor or coding agent may still perform edits.                                                                                                            | `false` |
+| `--local-only`                | `boolean` | Only register tools that do not require an internet connection. Your editor or coding agent may still send data over the network.                                                                                            | `false` |
+| `--experimental-tool`<br>`-E` | `string`  | Enable an [experimental tool](#experimental-tools). Separate multiple options by spaces, e.g. `-E tool_a tool_b`. You can also enable tool groups like `devserver` to enable all related tools at once, e.g. `-E devserver`. |         |
 
 For example, to run the server in read-only mode in VS Code, you would update your `mcp.json` like this:
 
