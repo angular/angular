@@ -1679,7 +1679,13 @@ export type ResourceStreamItem<T> = {
 };
 
 // @public
-export const RESPONSE_INIT: InjectionToken<ResponseInit | null>;
+export const RESPONSE_INIT: InjectionToken<ResponseInit_2 | null>;
+
+// @public
+type ResponseInit_2 = {
+    -readonly [P in keyof globalThis.ResponseInit]: globalThis.ResponseInit[P];
+};
+export { ResponseInit_2 as ResponseInit }
 
 // @public
 export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => ReturnT): ReturnT;
