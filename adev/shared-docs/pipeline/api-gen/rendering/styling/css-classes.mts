@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-// TODO(jelbourn): all of these CSS classes should use the `docs-` prefix.
-
 export const API_REFERENCE_CONTAINER = 'docs-api';
 
 export const PARAM_KEYWORD_CLASS_NAME = 'docs-param-keyword';
