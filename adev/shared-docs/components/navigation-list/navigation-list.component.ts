@@ -11,7 +11,7 @@ import {NavigationItem} from '../../interfaces/index';
 import {NavigationState} from '../../services/index';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 import {IconComponent} from '../icon/icon.component';
-import {IsActiveNavigationItem} from '../../pipes';
+import {IsActiveNavigationItem, RemoveHtmlTags} from '../../pipes';
 import {NgTemplateOutlet, TitleCasePipe} from '@angular/common';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -27,6 +27,7 @@ import {ReactiveFormsModule} from '@angular/forms';
     MatTooltipModule,
     ReactiveFormsModule,
     TitleCasePipe,
+    RemoveHtmlTags,
   ],
   templateUrl: './navigation-list.component.html',
   styleUrls: ['./navigation-list.component.scss'],

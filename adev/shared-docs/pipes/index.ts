@@ -8,3 +8,4 @@
 
 export * from './is-active-navigation-item.pipe';
 export * from './relative-link.pipe';
+export * from './remove-html-tags.pipe';

@@ -40,7 +40,7 @@ function errorsStrategy(packageDir: string): NavigationItemGenerationStrategy {
   return {
     pathPrefix: 'errors',
     contentPath: packageDir.replace(CONTENT_FOLDER_PATH, ''),
-    labelGeneratorFn: (fileName, firstLine) => fileName + ': ' + firstLine,
+    labelGeneratorFn: (fileName, firstLine) => fileName + ': ' + convertBackticksToCode(firstLine),
   };
 }
 
@@ -49,6 +49,10 @@ function extendedDiagnosticsStrategy(packageDir: string): NavigationItemGenerati
   return {
     pathPrefix: 'extended-diagnostics',
     contentPath: packageDir.replace(CONTENT_FOLDER_PATH, ''),
-    labelGeneratorFn: (fileName, firstLine) => fileName + ': ' + firstLine,
+    labelGeneratorFn: (fileName, firstLine) => fileName + ': ' + convertBackticksToCode(firstLine),
   };
+}
+
+function convertBackticksToCode(text: string): string {
+  return text.replace(/`([^`]+)`/g, '<code>$1</code>');
 }
