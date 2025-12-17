@@ -47,7 +47,7 @@
 
 <a name="21.0.6"></a>
 # 21.0.6 (2025-12-17)
-## Breaking Changes
+## Breaking Changes (affecting only experimental features)
 ### forms
 - The shape of `SignalFormsConfig.classes` has changed
   
