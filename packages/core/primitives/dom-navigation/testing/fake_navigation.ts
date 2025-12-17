@@ -125,7 +125,7 @@ export class FakeNavigation implements Navigation {
         return new EventTarget();
       }
     };
-    this._window = document.defaultView ?? this.createEventTarget();
+    this._window = doc.defaultView ?? this.createEventTarget();
     this.eventTarget = this.createEventTarget();
     // First entry.
     this.setInitialEntryForTesting(startURL);

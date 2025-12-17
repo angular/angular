@@ -302,14 +302,15 @@ export class FakeNavigationPlatformLocation implements PlatformLocation {
     return this.config?.appBaseHref ?? '';
   }
 
+  // window, addEventListener, removeEventListener might be undefined due to test mocks
   onPopState(fn: LocationChangeListener): VoidFunction {
-    this._platformNavigation.window.addEventListener('popstate', fn);
-    return () => this._platformNavigation.window.removeEventListener('popstate', fn);
+    this._platformNavigation.window?.addEventListener?.('popstate', fn);
+    return () => this._platformNavigation.window?.removeEventListener?.('popstate', fn);
   }
 
   onHashChange(fn: LocationChangeListener): VoidFunction {
-    this._platformNavigation.window.addEventListener('hashchange', fn as any);
-    return () => this._platformNavigation.window.removeEventListener('hashchange', fn as any);
+    this._platformNavigation.window?.addEventListener?.('hashchange', fn as any);
+    return () => this._platformNavigation.window?.removeEventListener?.('hashchange', fn as any);
   }
 
   get href(): string {
