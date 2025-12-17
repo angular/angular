@@ -38,8 +38,8 @@ export interface ValidationState {
   rawSyncTreeErrors: Signal<ValidationError.WithField[]>;
 
   /**
-   * The full set of synchronous errors for this field, including synchronous tree errors and server
-   * errors. Server errors are considered "synchronous" because they are imperatively added. From
+   * The full set of synchronous errors for this field, including synchronous tree errors and submission
+   * errors. Submission errors are considered "synchronous" because they are imperatively added. From
    * the perspective of the field state they are either there or not, they are never in a pending
    * state.
    */
@@ -163,10 +163,10 @@ export class FieldValidationState implements ValidationState {
   });
 
   /**
-   * The full set of synchronous errors for this field, including synchronous tree errors and server
-   * errors. Server errors are considered "synchronous" because they are imperatively added. From
-   * the perspective of the field state they are either there or not, they are never in a pending
-   * state.
+   * The full set of synchronous errors for this field, including synchronous tree errors and
+   * submission errors. Submission errors are considered "synchronous" because they are imperatively
+   * added. From the perspective of the field state they are either there or not, they are never in a
+   * pending state.
    */
   readonly syncErrors: Signal<ValidationError.WithField[]> = computed(() => {
     // Short-circuit running validators if validation doesn't apply to this field.
@@ -177,7 +177,7 @@ export class FieldValidationState implements ValidationState {
     return [
       ...this.node.logicNode.logic.syncErrors.compute(this.node.context),
       ...this.syncTreeErrors(),
-      ...normalizeErrors(this.node.submitState.serverErrors()),
+      ...normalizeErrors(this.node.submitState.submissionErrors()),
     ];
   });
 
