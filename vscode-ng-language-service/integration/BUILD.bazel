@@ -7,9 +7,6 @@ ts_project(
         "test_constants.ts",
     ],
     data = [
-        "//vscode-ng-language-service/integration/pre_standalone_project",
-        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/common",
-        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/core",
         "//vscode-ng-language-service/integration/project",
         "//vscode-ng-language-service/integration/project:node_modules/@angular/common",
         "//vscode-ng-language-service/integration/project:node_modules/@angular/core",

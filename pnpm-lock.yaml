@@ -1386,39 +1386,27 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0
 
-  vscode-ng-language-service/integration/pre_standalone_project:
-    dependencies:
-      '@angular/common':
-        specifier: 18.2.10
-        version: 18.2.10(@angular/core@18.2.10(zone.js@0.15.0))
-      '@angular/core':
-        specifier: 18.2.10
-        version: 18.2.10(zone.js@0.15.0)
-      zone.js:
-        specifier: 0.15.0
-        version: 0.15.0
-
   vscode-ng-language-service/integration/project:
     dependencies:
       '@angular/common':
-        specifier: 21.1.0-next.4
-        version: 21.1.0-next.4(@angular/core@21.1.0-next.4(@angular/compiler@21.1.0-next.4)(rxjs@7.8.2))(rxjs@7.8.2)
+        specifier: workspace:*
+        version: link:../../../packages/common
       '@angular/compiler':
-        specifier: 21.1.0-next.4
-        version: 21.1.0-next.4
+        specifier: workspace:*
+        version: link:../../../packages/compiler
       '@angular/compiler-cli':
-        specifier: 21.1.0-next.4
-        version: 21.1.0-next.4(@angular/compiler@21.1.0-next.4)(typescript@5.9.3)
+        specifier: workspace:*
+        version: link:../../../packages/compiler-cli
       '@angular/core':
-        specifier: 21.1.0-next.4
-        version: 21.1.0-next.4(@angular/compiler@21.1.0-next.4)(rxjs@7.8.2)
+        specifier: workspace:*
+        version: link:../../../packages/core
       rxjs:
         specifier: 7.8.2
         version: 7.8.2
     devDependencies:
       ng-packagr:
         specifier: 21.1.0-next.0
-        version: 21.1.0-next.0(@angular/compiler-cli@21.1.0-next.4(@angular/compiler@21.1.0-next.4)(typescript@5.9.3))(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3)
+        version: 21.1.0-next.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3)
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -1748,55 +1736,11 @@ packages:
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
 
-  '@angular/common@18.2.10':
-    resolution: {integrity: sha512-YzTCmuqLiOuT+Yv07vuKymDWiebOVZ8BuXakJiz4EM7FMoOw5gICHJ04jepZSjDNWpA16e7kJSdt5ucnmvCFDQ==}
-    engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
-    peerDependencies:
-      '@angular/core': 18.2.10
-
-  '@angular/common@21.1.0-next.4':
-    resolution: {integrity: sha512-HNM0eaZ86pXQZnmI6MlVj0FvvI3wF5mBkGyMN8Ktuswf9DUq04xBkliLiMwkb5UFmeSibxE3mUaMymw92Nn4fA==}
-    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
-    peerDependencies:
-      '@angular/core': 21.1.0-next.4
-      rxjs: ^6.5.3 || ^7.4.0
-
-  '@angular/compiler-cli@21.1.0-next.4':
-    resolution: {integrity: sha512-iW+8gnGSUqCv4WdN3LMv9ikh9vHfKnbfaG01Hvzxs+q4tL3xVRDezeL+EnpaIdmKsCOIfsYrWwAXNfMd48S4Lw==}
-    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
-    hasBin: true
-    peerDependencies:
-      '@angular/compiler': 21.1.0-next.4
-      typescript: '>=5.9 <6.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
-  '@angular/compiler@21.1.0-next.4':
-    resolution: {integrity: sha512-uY4Yg3OJ/DL6AlqMjO8VXgKiFHJK3QspFJzslkJKys2d8I7a7YIoWxYRJ9ZUfWW++8Swig17pL9NOrRLXx+iQg==}
-    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
-
-  '@angular/core@18.2.10':
-    resolution: {integrity: sha512-EfxVz0pLaxnOppOYkdhnaUkk8HZT+uxaAGpJD3ppAa7YAWTE9xIGoNJmtS33cZNNOnvriMkdv7yn6pDtV4ct+Q==}
-    engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
-    peerDependencies:
-      zone.js: ~0.14.10
-
   '@angular/core@21.1.0-next.0':
     resolution: {integrity: sha512-dhAp5/QFwbtZC5ie8BGbLMkXeRu81WDdWPuNNBxq5qGRGixNsLQSO0fXDT5X1JK31mGbS+HEjxkv/BrLI7YH7w==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
       '@angular/compiler': 21.1.0-next.0
-    peerDependenciesMeta:
-      '@angular/compiler':
-        optional: true
-
-  '@angular/core@21.1.0-next.4':
-    resolution: {integrity: sha512-aJAGd+8o/8vle68hAJGah/DMQVD4/vFf/lDhnqe69sFLY7HLeq5UdBjIu00nZ1DUVeL0n/QOA97bLRICINhVrg==}
-    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
-    peerDependencies:
-      '@angular/compiler': 21.1.0-next.4
-      rxjs: ^6.5.3 || ^7.4.0
     peerDependenciesMeta:
       '@angular/compiler':
         optional: true
@@ -13805,9 +13749,6 @@ packages:
   zod@4.2.1:
     resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}
 
-  zone.js@0.15.0:
-    resolution: {integrity: sha512-9oxn0IIjbCZkJ67L+LkhYWRyAy7axphb3VgE2MBDlOqnmHMPWGYMxJxBYFueFq/JGY2GMwS0rU+UCLunEmy5UA==}
-
   zone.js@0.15.1:
     resolution: {integrity: sha512-XE96n56IQpJM7NAoXswY3XRLcWFW83xe0BiAOeMD7K5k5xecOeul3Qcpx6GqEeeHNkW5DWL5zOyTbEfB4eti8w==}
 
@@ -14429,44 +14370,6 @@ snapshots:
       - hono
       - supports-color
 
-  '@angular/common@18.2.10(@angular/core@18.2.10(zone.js@0.15.0))':
-    dependencies:
-      '@angular/core': 18.2.10(zone.js@0.15.0)
-      rxjs: 7.8.2
-      tslib: 2.8.1
-
-  '@angular/common@21.1.0-next.4(@angular/core@21.1.0-next.4(@angular/compiler@21.1.0-next.4)(rxjs@7.8.2))(rxjs@7.8.2)':
-    dependencies:
-      '@angular/core': 21.1.0-next.4(@angular/compiler@21.1.0-next.4)(rxjs@7.8.2)
-      rxjs: 7.8.2
-      tslib: 2.8.1
-
-  '@angular/compiler-cli@21.1.0-next.4(@angular/compiler@21.1.0-next.4)(typescript@5.9.3)':
-    dependencies:
-      '@angular/compiler': 21.1.0-next.4
-      '@babel/core': 7.28.5
-      '@jridgewell/sourcemap-codec': 1.5.5
-      chokidar: 5.0.0
-      convert-source-map: 1.9.0
-      reflect-metadata: 0.2.2
-      semver: 7.7.3
-      tslib: 2.8.1
-      yargs: 18.0.0
-    optionalDependencies:
-      typescript: 5.9.3
-    transitivePeerDependencies:
-      - supports-color
-
-  '@angular/compiler@21.1.0-next.4':
-    dependencies:
-      tslib: 2.8.1
-
-  '@angular/core@18.2.10(zone.js@0.15.0)':
-    dependencies:
-      rxjs: 7.8.2
-      tslib: 2.8.1
-      zone.js: 0.15.0
-
   '@angular/core@21.1.0-next.0(@angular/compiler@packages+compiler)':
     dependencies:
       rxjs: 7.8.2
@@ -14474,14 +14377,6 @@ snapshots:
       zone.js: 0.16.0
     optionalDependencies:
       '@angular/compiler': link:packages/compiler
-
-  '@angular/core@21.1.0-next.4(@angular/compiler@21.1.0-next.4)(rxjs@7.8.2)':
-    dependencies:
-      rxjs: 7.8.2
-      tslib: 2.8.1
-      zone.js: 0.16.0
-    optionalDependencies:
-      '@angular/compiler': 21.1.0-next.4
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b': {}
 
@@ -25068,36 +24963,6 @@ snapshots:
 
   netmask@2.0.2: {}
 
-  ng-packagr@21.1.0-next.0(@angular/compiler-cli@21.1.0-next.4(@angular/compiler@21.1.0-next.4)(typescript@5.9.3))(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3):
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular/compiler-cli': 21.1.0-next.4(@angular/compiler@21.1.0-next.4)(typescript@5.9.3)
-      '@rollup/plugin-json': 6.1.0(rollup@4.53.2)
-      '@rollup/wasm-node': 4.53.3
-      ajv: 8.17.1
-      ansi-colors: 4.1.3
-      browserslist: 4.28.0
-      chokidar: 4.0.3
-      commander: 14.0.2
-      dependency-graph: 1.0.0
-      esbuild: 0.27.0
-      find-cache-directory: 6.0.0
-      injection-js: 2.6.1
-      jsonc-parser: 3.3.1
-      less: 4.4.2
-      ora: 9.0.0
-      piscina: 5.1.4
-      postcss: 8.5.6
-      rollup-plugin-dts: 6.2.3(rollup@4.53.2)(typescript@5.9.3)
-      rxjs: 7.8.2
-      sass: 1.94.2
-      tinyglobby: 0.2.15
-      tslib: 2.8.1
-      typescript: 5.9.3
-    optionalDependencies:
-      rollup: 4.53.2
-      tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
-
   ng-packagr@21.1.0-next.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.20.6)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3):
     dependencies:
       '@ampproject/remapping': 2.3.0
@@ -25158,7 +25023,6 @@ snapshots:
     optionalDependencies:
       rollup: 4.53.2
       tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
-    optional: true
 
   ngx-flamegraph@0.1.1(@angular/common@packages+common)(@angular/core@packages+core):
     dependencies:
@@ -29146,8 +29010,6 @@ snapshots:
   zod@4.1.13: {}
 
   zod@4.2.1: {}
-
-  zone.js@0.15.0: {}
 
   zone.js@0.15.1: {}
 

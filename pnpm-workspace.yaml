@@ -29,7 +29,6 @@ packages:
   - tools/bazel/rules_angular_store/
   - vscode-ng-language-service
   - vscode-ng-language-service/server
-  - vscode-ng-language-service/integration/pre_standalone_project
   - vscode-ng-language-service/integration/project
 
 allowedDeprecatedVersions:
