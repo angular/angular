@@ -1,3 +1,50 @@
+<a name="21.0.6"></a>
+# 21.0.6 (2025-12-17)
+## Breaking Changes
+### forms
+- The shape of `SignalFormsConfig.classes` has changed
+  
+  Previously each function in the `classes` map took a `FieldState`. Now
+  it takes a `Field` directive.
+  
+  For example if you previously had:
+  ```
+  provideSignalFormsConfig({
+    classes: {
+      'my-valid': (state) => state.valid()
+    }
+  })
+  ```
+  
+  You would need to update to:
+  ```
+  provideSignalFormsConfig({
+    classes: {
+      'my-valid': ({state}) => state().valid()
+    }
+  })
+  ```
+  
+  (cherry picked from commit 348f149e8b06d6885f54bac4cf03a9481a8b19b7)
+- (cherry picked from commit ae0c59028a2f393ea5716bf222db2c38e7a3989f)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4c8fb3631d](https://github.com/angular/angular/commit/4c8fb3631d58e22d693aba0b89243f2e9ecb0807) | fix | throw better errors for potential circular references |
+| [48492524ea](https://github.com/angular/angular/commit/48492524ea4adfa232b0daee0d955924be31ebea) | fix | use mutable ResponseInit type for RESPONSE_INIT token |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [81772b420d](https://github.com/angular/angular/commit/81772b420dcda2cbe2a8cb75e50c6da2e1ecdc68) | feat | pass field directive to class config |
+| [729b96476b](https://github.com/angular/angular/commit/729b96476b73f1670a0f7c6ab3f36be9d38ebcac) | refactor | rename field to fieldTree in FieldContext and ValidationError |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e0694df3ec](https://github.com/angular/angular/commit/e0694df3eccae3d31a4ea537dffe1db1368ef34a) | fix | avoid interpolation highlighting inside @let |
+| [5047be4bc1](https://github.com/angular/angular/commit/5047be4bc1c6f6016263703c743f8033f669f0ee) | fix | Prevent language service from crashing on suggestion diagnostic errors |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.1.0-next.3"></a>
 
 # 21.1.0-next.3 (2025-12-11)
