@@ -82,6 +82,7 @@ export {
   NavigationErrorHandlerFeature,
   PreloadingFeature,
   provideRouter,
+  withExperimentalPlatformNavigation,
   provideRoutes,
   RouterConfigurationFeature,
   RouterFeature,
