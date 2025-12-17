@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/benchmark-compare ')}}
     steps:
-      - uses: TheModdingInquisition/actions-team-membership@a69636a92bc927f32c3910baac06bacc949c984c # v1.0
+      - uses: TheModdingInquisition/actions-team-membership@057d91bb80f2976a1bc6dfab5b4ae1da9aebbd89 # v1.0
         with:
           team: 'team'
           organization: angular
