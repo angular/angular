@@ -31,7 +31,7 @@ For this form to use Angular features that enable data binding to forms, you'll 
 
 Import the `FormsModule` from `@angular/forms` and add it to the `imports` array of the `User`.
 
-```ts {highlight:[2,7]}
+```ts {highlight:[2,6]}
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
