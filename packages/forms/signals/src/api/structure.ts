@@ -330,10 +330,10 @@ export function applyWhenValue(
 }
 
 /**
- * Submits a given `FieldTree` using the given action function and applies any server errors
- * resulting from the action to the field. Server errors returned by the `action` will be integrated
+ * Submits a given `FieldTree` using the given action function and applies any submission errors
+ * resulting from the action to the field. Submission errors returned by the `action` will be integrated
  * into the field as a `ValidationError` on the sub-field indicated by the `field` property of the
- * server error.
+ * submission error.
  *
  * @example
  * ```ts
@@ -356,7 +356,7 @@ export function applyWhenValue(
  * ```
  *
  * @param form The field to submit.
- * @param action An asynchronous action used to submit the field. The action may return server
+ * @param action An asynchronous action used to submit the field. The action may return submission
  * errors.
  * @template TModel The data type of the field being submitted.
  *
@@ -378,19 +378,19 @@ export async function submit<TModel>(
   node.submitState.selfSubmitting.set(true);
   try {
     const errors = await action(form);
-    errors && setServerErrors(node, errors);
+    errors && setSubmissionErrors(node, errors);
   } finally {
     node.submitState.selfSubmitting.set(false);
   }
 }
 
 /**
- * Sets a list of server errors to their individual fields.
+ * Sets a list of submission errors to their individual fields.
  *
  * @param submittedField The field that was submitted, resulting in the errors.
  * @param errors The errors to set.
  */
-function setServerErrors(
+function setSubmissionErrors(
   submittedField: FieldNode,
   errors: OneOrMany<ValidationError.WithOptionalField>,
 ) {
@@ -409,7 +409,7 @@ function setServerErrors(
     fieldErrors.push(errorWithField);
   }
   for (const [field, fieldErrors] of errorsByField) {
-    field.submitState.serverErrors.set(fieldErrors);
+    field.submitState.submissionErrors.set(fieldErrors);
   }
 }
 
