@@ -384,6 +384,76 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should migrate files present in other workspace projects', async () => {
+    writeFile('/tsconfig.json', '{}');
+
+    // Multiple projects...
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {
+          app: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}},
+          lib: {root: 'lib', architect: {build: {options: {tsConfig: './lib/tsconfig.json'}}}},
+        },
+      }),
+    );
+
+    // The lib tsconfig includes only its own folder so the second program does see the file.
+    writeFile('/lib/tsconfig.json', JSON.stringify({include: ['**/*.ts']}));
+
+    // File that should be migrated exists only under the second project's folder.
+    writeFile(
+      '/lib/should-migrate/dir.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(private foo: Foo) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    // Unrelated file outside the specified path should remain unchanged.
+    writeFile(
+      '/other.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class Other {`,
+        `  constructor(private foo: Foo) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    // Files should be migrated under the path
+    await runMigration({path: 'lib/should-migrate'});
+
+    expect(tree.readContent('/lib/should-migrate/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Foo } from 'foo';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  private foo = inject(Foo);`,
+      `}`,
+    ]);
+
+    expect(tree.readContent('/other.ts').split('\n')).toEqual([
+      `import { Directive } from '@angular/core';`,
+      `import { Foo } from 'foo';`,
+      ``,
+      `@Directive()`,
+      `class Other {`,
+      `  constructor(private foo: Foo) {}`,
+      `}`,
+    ]);
+  });
+
   it('should only migrate the specified file', async () => {
     writeFile(
       '/dir.ts',
