@@ -1,3 +1,50 @@
+<a name="21.1.0-next.4"></a>
+# 21.1.0-next.4 (2025-12-17)
+## Breaking Changes
+### forms
+- The shape of `SignalFormsConfig.classes` has changed
+  
+  Previously each function in the `classes` map took a `FieldState`. Now
+  it takes a `Field` directive.
+  
+  For example if you previously had:
+  ```
+  provideSignalFormsConfig({
+    classes: {
+      'my-valid': (state) => state.valid()
+    }
+  })
+  ```
+  
+  You would need to update to:
+  ```
+  provideSignalFormsConfig({
+    classes: {
+      'my-valid': ({state}) => state().valid()
+    }
+  })
+  ```
+- 
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [06be8034bb](https://github.com/angular/angular/commit/06be8034bb9b9adfc07ab0d40cd87c6ae5de02de) | fix | Microtask scheduling should be used after any application synchronization |
+| [b4f584cf42](https://github.com/angular/angular/commit/b4f584cf42235c94bb8389fa55bc634e23d7b010) | fix | return `StaticProvider` for `providePlatformInitializer` |
+| [7be4ddef1c](https://github.com/angular/angular/commit/7be4ddef1ccb9a6b330b52b9bbdd174089755503) | fix | throw better errors for potential circular references |
+| [f516370c8e](https://github.com/angular/angular/commit/f516370c8e8e96806bad757d43c857ab5f2051ed) | fix | use mutable ResponseInit type for RESPONSE_INIT token |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [348f149e8b](https://github.com/angular/angular/commit/348f149e8b06d6885f54bac4cf03a9481a8b19b7) | feat | pass field directive to class config |
+| [ae0c59028a](https://github.com/angular/angular/commit/ae0c59028a2f393ea5716bf222db2c38e7a3989f) | refactor | rename field to fieldTree in FieldContext and ValidationError |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9f5744a92d](https://github.com/angular/angular/commit/9f5744a92dda4219e93bf7e6236d32a93bc167e6) | fix | avoid interpolation highlighting inside @let |
+| [ce1a4769f9](https://github.com/angular/angular/commit/ce1a4769f987e96e2a1b1cbc7654ed5bac9ce91d) | fix | Prevent language service from crashing on suggestion diagnostic errors |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.6"></a>
 # 21.0.6 (2025-12-17)
 ## Breaking Changes
