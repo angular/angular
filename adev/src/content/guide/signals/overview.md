@@ -160,7 +160,7 @@ All signal APIs are synchronous— `signal`, `computed`, `input`, etc. However, 
 
 ## Executing side effects on non-reactive APIs
 
-Synchronous or asynchronous derivations are recommended when we want to react to state changes. However this doesn't cover all the usecase and you'll sometime find yourself in a situation where you need to react on signal changes on non-reactive apis. Use `effect` or `afterRenderEffect` for those specific usecases. For more information see [Side effects for non-reactives APIs](/guide/signals/effect) guide.
+Synchronous or asynchronous derivations are recommended when we want to react to state changes. However, this doesn't cover all the possible use cases, and you'll sometimes find yourself in a situation where you need to react to signal changes on non-reactive apis. Use `effect` or `afterRenderEffect` for those specific usecases. For more information see [Side effects for non-reactive APIs](/guide/signals/effect) guide.
 
 ## Reading signals in `OnPush` components
 
