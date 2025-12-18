@@ -9,7 +9,6 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {performanceMarkFeature} from '../../util/performance';
 import {getClosureSafeProperty} from '../../util/property';
 import {assertFirstCreatePass} from '../assert';
-import {bindingUpdated} from '../bindings';
 import {ɵCONTROL, ɵControl, ɵFieldState} from '../interfaces/control';
 import {DirectiveDef} from '../interfaces/definition';
 import {InputFlags} from '../interfaces/input_flags';
@@ -34,7 +33,7 @@ import {debugStringifyTypeForError} from '../util/stringify_utils';
 import {getNativeByTNode, storeCleanupWithContext} from '../util/view_utils';
 import {listenToOutput} from '../view/directive_outputs';
 import {listenToDomEvent, wrapListener} from '../view/listeners';
-import {setPropertyAndInputs, storePropertyBindingMetadata} from './shared';
+import {ɵɵproperty} from './property';
 import {writeToDirectiveInput} from './write_to_directive_input';
 
 /**
@@ -87,21 +86,14 @@ export function ɵɵcontrolCreate(): void {
  * @codeGenApi
  */
 export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
-  const lView = getLView();
-  const tNode = getSelectedTNode();
-  const bindingIndex = nextBindingIndex();
-
-  if (bindingUpdated(lView, bindingIndex, value)) {
-    const tView = getTView();
-    setPropertyAndInputs(tNode, lView, 'field', value, lView[RENDERER], sanitizer);
-    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'field', bindingIndex);
-  }
-
-  updateControl(lView, tNode);
+  ɵɵproperty('field', value, sanitizer);
+  ɵcontrolUpdate();
 }
 
 /**
- * Calls {@link updateControl} with the current `LView` and selected `TNode`.
+ * Updates the form control properties of a `field` bound form control.
+ *
+ * Does nothing if the current node is not a `field` bound form control.
  *
  * NOTE: This instruction exists solely to accommodate tree-shakeable, dynamic control bindings.
  * It's intended to be referenced exclusively by the Signal Forms `Field` directive and should not
@@ -110,18 +102,6 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
 export function ɵcontrolUpdate(): void {
   const lView = getLView();
   const tNode = getSelectedTNode();
-  updateControl(lView, tNode);
-}
-
-/**
- * Updates the form control properties of a `field` bound form control.
- *
- * Does nothing if the current node is not a `field` bound form control.
- *
- * @param lView The `LView` that contains the control.
- * @param tNode The `TNode` of the control.
- */
-function updateControl<T>(lView: LView, tNode: TNode): void {
   const control = getControlDirective(tNode, lView);
   if (control) {
     updateControlClasses(lView, tNode, control);
