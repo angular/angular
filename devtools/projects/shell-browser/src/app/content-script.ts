@@ -19,10 +19,21 @@ const port = chrome.runtime.connect({
   name: `${document.title || location.href}`,
 });
 
+// Since Manifest V3, the service worker (background)
+// gets terminated after 30s of inactivity. This can
+// break the initialization phase of DevTools or the
+// BE-FE communication channel, if already initialized.
+// To prevent that, we emit a heartbeat in a >30s interval.
+const HEARTBEAT_INTERVAL = 20000; // Keep below 30s
+const heartbeatInterval = setInterval(() => {
+  port.postMessage('__NG_DEVTOOLS_BEAT');
+}, HEARTBEAT_INTERVAL);
+
 const handleDisconnect = (): void => {
   localMessageBus.emit('shutdown');
   localMessageBus.destroy();
   chromeMessageBus.destroy();
+  clearInterval(heartbeatInterval);
   backgroundDisconnected = true;
 };
 
