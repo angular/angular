@@ -273,8 +273,8 @@ This is because the tslib version is tied to the TypeScript version used to comp
 ## Examples
 
 <docs-pill-row>
-  <docs-pill href="https://unpkg.com/browse/@angular/core@17.0.0/" title="@angular/core package"/>
-  <docs-pill href="https://unpkg.com/browse/@angular/material@17.0.0/" title="@angular/material package"/>
+  <docs-pill href="https://app.unpkg.com/@angular/core@21.0.6" title="@angular/core package"/>
+  <docs-pill href="https://app.unpkg.com/@angular/material@21.0.3" title="@angular/material package"/>
 </docs-pill-row>
 
 ## Definition of terms
