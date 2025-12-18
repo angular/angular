@@ -243,7 +243,7 @@ async function generateChangelog(fromVersion: string, toVersion: string): Promis
   let {stdout: commits} = await exec(
     `git log --left-only FETCH_HEAD...${getTagName(fromVersion)} -E ` +
       '--grep="^(feat|fix|perf)\\((vscode-extension|language-server|language-service)\\):" ' +
-      '--format="format:- %s (%h)[https://github.com/angular/angular/commit/%H]"',
+      '--format="format:- %s ([%h](https://github.com/angular/angular/commit/%H))"',
   );
 
   commits = commits.trim();
@@ -386,8 +386,6 @@ async function createGithubRelease(version: string, changelog: string): Promise<
       body: changelog
         // Remove the version header from the changelog as it is already in the release title.
         .replace(/## .*? \(\d{4}-\d{2}-\d{2}\)/, '')
-        // Remove the commit links from the changelog as they are not needed in the release body.
-        .replace(/\[https:\/\/github\.com\/angular\/angular\/commit\/[a-f0-9]+\]/g, '')
         .trim(),
       make_latest: 'false',
       prerelease: false,

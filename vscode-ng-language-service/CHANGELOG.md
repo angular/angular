@@ -1,15 +1,15 @@
 ## 21.0.1 (2025-12-17)
 
-- fix(language-service): Prevent language service from crashing on suggestion diagnostic errors (5047be4bc1)[https://github.com/angular/angular/commit/5047be4bc1c6f6016263703c743f8033f669f0ee]
-- fix(language-service): avoid interpolation highlighting inside @let (e0694df3ec)[https://github.com/angular/angular/commit/e0694df3eccae3d31a4ea537dffe1db1368ef34a]
-- fix(vscode-extension): Show warning if multiple versions of Angular are detected in workspace (a41b0ce025)[https://github.com/angular/angular/commit/a41b0ce02528c27e4804bcd39a61c932503bae61]
+- fix(language-service): Prevent language service from crashing on suggestion diagnostic errors ([5047be4bc1](https://github.com/angular/angular/commit/5047be4bc1c6f6016263703c743f8033f669f0ee))
+- fix(language-service): avoid interpolation highlighting inside @let ([e0694df3ec](https://github.com/angular/angular/commit/e0694df3eccae3d31a4ea537dffe1db1368ef34a))
+- fix(vscode-extension): Show warning if multiple versions of Angular are detected in workspace ([a41b0ce025](https://github.com/angular/angular/commit/a41b0ce02528c27e4804bcd39a61c932503bae61))
 
 <!-- CHANGELOG SPLIT MARKER -->
 
 ## 21.0.0 (2025-11-18)
 
-- fix(language-service): address potential memory leak during project creation (89095946cf)[https://github.com/angular/angular/commit/89095946cff051c5613b8f54ec722d08cd47c709]
-- fix(language-server): fix directory renaming on Windows (3f7111a9c3)[https://github.com/angular/angular/commit/3f7111a9c38c6fd00af705a3045f2909f47b505b]
+- fix(language-service): address potential memory leak during project creation ([89095946cf](https://github.com/angular/angular/commit/89095946cff051c5613b8f54ec722d08cd47c709))
+- fix(language-server): fix directory renaming on Windows ([3f7111a9c3](https://github.com/angular/angular/commit/3f7111a9c38c6fd00af705a3045f2909f47b505b))
 
 # 20.3.3
 
