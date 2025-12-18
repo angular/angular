@@ -363,4 +363,4 @@ The Ahead of Time Compiler for Angular.
 
 ### Flattened type definitions
 
-The bundled TypeScript definitions generated from [API Extractor](https://api-extractor.com).
+The bundled TypeScript definitions generated using tools like [API Extractor](https://api-extractor.com) or [rollup-plugin-dts](https://github.com/Swatinem/rollup-plugin-dts).
