@@ -311,3 +311,4 @@ export {
   ɵɵvalidateAttribute,
 } from './sanitization/sanitization';
 export {noSideEffects as ɵnoSideEffects} from './util/closure';
+export {ForLoopBlockData as ɵForLoopBlockData} from './render3/util/repeater';

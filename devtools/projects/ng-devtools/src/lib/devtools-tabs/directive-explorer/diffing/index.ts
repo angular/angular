@@ -111,6 +111,18 @@ export const diff = <T extends Record<string, any>>(
       }
       updatedItems.push(a[currIdx]);
     }
+
+    // Handle items with same identity but changed content (e.g., @for itemCount changes)
+    // These items are not moved, added, or removed - they stayed in place but their
+    // properties may have updated.
+    if (currIdx !== null) {
+      Object.keys(b[currIdx] as unknown as {}).forEach((prop) => {
+        if (currIdx === null) {
+          return;
+        }
+        (a[currIdx] as any)[prop] = (b[currIdx] as any)[prop];
+      });
+    }
   });
 
   for (let i = a.length - 1; i >= 0; i--) {

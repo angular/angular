@@ -29,5 +29,9 @@
     @if (currentSelectedElement.defer) {
       <ng-defer-view [defer]="currentSelectedElement.defer" />
     }
+
+    @if (currentSelectedElement.forLoop) {
+      <ng-for-view [forLoop]="currentSelectedElement.forLoop" />
+    }
   </div>
 }

@@ -12,6 +12,7 @@ import {DirectivePosition} from '../../../../../../protocol';
 import {IndexedNode} from '../directive-forest/index-forest';
 import {PropertyPaneHeaderComponent} from './property-pane-header/property-pane-header.component';
 import {DeferViewComponent} from './defer-view/defer-view.component';
+import {ForViewComponent} from './for-view/for-view.component';
 import {PropertyViewComponent} from './property-view/property-view.component';
 import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
 import {DevtoolsSignalGraphNode} from '../signal-graph';
@@ -20,7 +21,12 @@ import {DevtoolsSignalGraphNode} from '../signal-graph';
   selector: 'ng-property-pane',
   templateUrl: './property-pane.component.html',
   styleUrls: ['./property-pane.component.scss'],
-  imports: [PropertyPaneHeaderComponent, PropertyViewComponent, DeferViewComponent],
+  imports: [
+    PropertyPaneHeaderComponent,
+    PropertyViewComponent,
+    DeferViewComponent,
+    ForViewComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyPaneComponent {

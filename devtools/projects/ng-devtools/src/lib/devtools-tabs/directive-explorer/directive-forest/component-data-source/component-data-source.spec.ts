@@ -21,6 +21,7 @@ const tree1: DevToolsNode = {
   ],
   component: null,
   hydration: null,
+  forLoop: null,
   children: [
     {
       children: [],
@@ -34,6 +35,7 @@ const tree1: DevToolsNode = {
       hydration: null,
       nativeElement: document.createElement('bar'),
       defer: null,
+      forLoop: null,
     },
   ],
   nativeElement: document.createElement('foo'),
@@ -50,6 +52,7 @@ const tree2: DevToolsNode = {
   ],
   component: null,
   hydration: null,
+  forLoop: null,
   children: [
     {
       children: [],
@@ -63,6 +66,7 @@ const tree2: DevToolsNode = {
       hydration: null,
       nativeElement: document.createElement('bar'),
       defer: null,
+      forLoop: null,
     },
     {
       children: [],
@@ -76,6 +80,7 @@ const tree2: DevToolsNode = {
       hydration: null,
       nativeElement: document.createElement('qux'),
       defer: null,
+      forLoop: null,
     },
   ],
   nativeElement: document.createElement('foo'),
@@ -92,6 +97,7 @@ const tree3: DevToolsNode = {
   ],
   component: null,
   hydration: null,
+  forLoop: null,
   children: [
     {
       children: [],
@@ -104,6 +110,7 @@ const tree3: DevToolsNode = {
       element: '#comment',
       hydration: null,
       defer: null,
+      forLoop: null,
       nativeElement: document.createComment('bar'),
     },
     {
@@ -117,6 +124,7 @@ const tree3: DevToolsNode = {
       element: '#comment',
       hydration: null,
       defer: null,
+      forLoop: null,
       nativeElement: document.createComment('bar'),
     },
   ],
@@ -127,6 +135,7 @@ const tree3: DevToolsNode = {
 const tree4: DevToolsNode = {
   element: 'app',
   hydration: null,
+  forLoop: null,
   directives: [
     {
       id: 1,
@@ -154,6 +163,7 @@ const tree4: DevToolsNode = {
                       element: 'bar',
                       hydration: null,
                       defer: null,
+                      forLoop: null,
                       nativeElement: document.createComment('bar'),
                     },
                   ],
@@ -166,6 +176,7 @@ const tree4: DevToolsNode = {
                   element: '#comment',
                   hydration: null,
                   defer: null,
+                  forLoop: null,
                   nativeElement: document.createComment('bar'),
                 },
               ],
@@ -178,6 +189,7 @@ const tree4: DevToolsNode = {
               element: '#comment',
               hydration: null,
               defer: null,
+              forLoop: null,
               nativeElement: document.createComment('bar'),
             },
           ],
@@ -190,6 +202,7 @@ const tree4: DevToolsNode = {
           element: '#comment',
           hydration: null,
           defer: null,
+          forLoop: null,
           nativeElement: document.createComment('bar'),
         },
       ],
@@ -203,6 +216,7 @@ const tree4: DevToolsNode = {
       hydration: null,
       nativeElement: document.createComment('bar'),
       defer: null,
+      forLoop: null,
     },
   ],
   defer: null,
