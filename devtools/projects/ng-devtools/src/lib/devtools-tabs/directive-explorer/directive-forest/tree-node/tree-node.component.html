@@ -43,6 +43,14 @@
     <span class="on-push">(&#64;{{defer.currentBlock}})</span>
   }
 
+  @let forLoop = node().forLoop;
+
+  @if (forLoop) {
+    <span class="for-loop-count">
+      ({{ forLoop.itemCount }} {{ forLoop.itemCount === 1 ? 'item' : 'items' }})
+    </span>
+  }
+
   @switch (hydration?.status) {
     @case ('hydrated') {
       <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>

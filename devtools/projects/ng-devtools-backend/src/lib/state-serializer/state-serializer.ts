@@ -129,8 +129,8 @@ export function serializeDirectiveState(instance: object): Record<string, Descri
   return result;
 }
 
-export function serializeValue(value: unknown): Descriptor {
-  return levelSerializer({value}, 'value', false, 0, 0);
+export function serializeValue(value: unknown, level = MAX_LEVEL): Descriptor {
+  return levelSerializer({value}, 'value', false, 0, level);
 }
 
 export function deeplySerializeSelectedProperties(
