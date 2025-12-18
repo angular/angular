@@ -162,25 +162,27 @@ function initializeControlFirstCreatePass<T>(tView: TView, tNode: TNode, lView: 
     return;
   }
 
+  // Check if the `Field` directive is present.
   const controlIndex = directiveIndices.find((index) => ɵCONTROL in lView[index]);
   if (controlIndex === undefined) {
-    return; // The `ɵControl` directive was not imported by this component.
-  }
-
-  tNode.fieldIndex = controlIndex;
-  const isCustomControl = isCustomControlFirstCreatePass(tView, tNode);
-
-  // Only check for an interop control if we haven't already found a custom one.
-  if (!isCustomControl && (lView[controlIndex] as ɵControl<T>).ɵinteropControl) {
-    tNode.flags |= TNodeFlags.isInteropControl;
     return;
   }
 
-  // We check for a native control, even if we found a custom one, to determine whether we can set
-  // native properties as a fallback for those without corresponding inputs defined on the custom
-  // control.
-  const isNativeControl = isNativeControlFirstCreatePass(tView, tNode);
-  if (isNativeControl || isCustomControl) {
+  // Cache the index of the `Field` directive.
+  tNode.fieldIndex = controlIndex;
+
+  // First check if the `Field` directive is bound to an interop control (e.g. a Reactive Forms
+  // control using `ControlValueAccessor`).
+  if (isInteropControlFirstCreatePass(tNode, lView)) {
+    return;
+  }
+
+  // Finally check for a custom or native control. We check for a native control even if we found a
+  // custom one to determine whether we can set native properties as a fallback for those without
+  // corresponding inputs defined on the custom control.
+  const isCustomControl = isCustomControlFirstCreatePass(tView, tNode);
+  const isNativeControl = isNativeControlFirstCreatePass(tNode);
+  if (isCustomControl || isNativeControl) {
     return;
   }
 
@@ -207,6 +209,25 @@ function describeElement(tView: TView, tNode: TNode): string {
     return `Component ${debugStringifyTypeForError(componentDef.type)}`;
   }
   return `<${tNode.value}>`;
+}
+
+/**
+ * Determines whether an interop control (with a `value` or `checked` model input) is present
+ * on the current `TNode` during the first creation pass.
+ *
+ * If an interop control is found, the function sets the appropriate `TNodeFlags`.
+ *
+ * @param tNode The `TNode` to inspect for an interop control.
+ * @param lView The `LView` of the current view.
+ * @returns `true` if an interop control is found, `false` otherwise.
+ */
+function isInteropControlFirstCreatePass(tNode: TNode, lView: LView): boolean {
+  const control = lView[tNode.fieldIndex] as ɵControl<unknown>;
+  if (control.ɵinteropControl) {
+    tNode.flags |= TNodeFlags.isInteropControl;
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -244,11 +265,10 @@ function isCustomControlFirstCreatePass(tView: TView, tNode: TNode): boolean {
  * If a native control is found, the function sets the appropriate `TNodeFlags` to indicate
  * its type (e.g., numeric, text).
  *
- * @param tView The `TView` of the current view.
  * @param tNode The `TNode` to inspect for a native control.
  * @returns `true` if the `TNode` is a native control, `false` otherwise.
  */
-function isNativeControlFirstCreatePass(tView: TView, tNode: TNode): boolean {
+function isNativeControlFirstCreatePass(tNode: TNode): boolean {
   if (!isNativeControl(tNode)) {
     return false;
   }
