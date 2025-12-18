@@ -30,6 +30,7 @@ const mockIndexedNode: IndexedNode = {
     },
   ],
   defer: null,
+  forLoop: null,
   hasNativeElement: true,
   children: [],
   element: 'foo',
