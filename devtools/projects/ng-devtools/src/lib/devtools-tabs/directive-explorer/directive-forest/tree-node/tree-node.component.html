@@ -47,6 +47,14 @@
     }
   }
 
+  @let forLoop = node().forLoop;
+
+  @if (forLoop) {
+    <span class="trait">
+      ({{ forLoop.itemCount }} {{ forLoop.itemCount === 1 ? 'item' : 'items' }})
+    </span>
+  }
+
   @switch (hydration?.status) {
     @case ('hydrated') {
       <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>

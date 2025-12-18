@@ -10,7 +10,7 @@ import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DefaultIterableDiffer, TrackByFunction} from '@angular/core';
 import {MatTreeFlattener} from '@angular/material/tree';
-import {DeferInfo, DevToolsNode, HydrationStatus} from '../../../../../../../protocol';
+import {DeferInfo, DevToolsNode, ForLoopInfo, HydrationStatus} from '../../../../../../../protocol';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -29,6 +29,7 @@ export interface FlatNode {
   newItem?: boolean;
   hydration: HydrationStatus;
   defer: DeferInfo | null;
+  forLoop: ForLoopInfo | null;
   onPush?: boolean;
   hasNativeElement: boolean;
 }
@@ -41,6 +42,8 @@ const trackBy: TrackByFunction<FlatNode> = (_: number, item: FlatNode) =>
 const getId = (node: IndexedNode) => {
   if (node.defer) {
     return node.defer.id;
+  } else if (node.forLoop) {
+    return node.forLoop.id;
   } else if (node.hydration?.status === 'dehydrated') {
     return node.position.join('-');
   }
@@ -104,6 +107,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         level,
         hydration: node.hydration,
         defer: node.defer,
+        forLoop: node.forLoop,
         onPush: node.onPush,
         hasNativeElement: node.hasNativeElement,
       };
@@ -129,6 +133,14 @@ export class ComponentDataSource extends DataSource<FlatNode> {
 
   getFlatNodeFromIndexedNode(indexedNode: IndexedNode): FlatNode | undefined {
     return this._nodeToFlat.get(indexedNode);
+  }
+
+  getFlatNodeByPosition(position: number[]): FlatNode | undefined {
+    return this.data.find(
+      (node) =>
+        node.position.length === position.length &&
+        node.position.every((p, i) => p === position[i]),
+    );
   }
 
   update(
