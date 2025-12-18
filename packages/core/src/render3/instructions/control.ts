@@ -487,7 +487,6 @@ function updateControlClasses(lView: LView, tNode: TNode, control: ɵControl<unk
   if (control.classes) {
     const bindings = getControlBindings(lView);
     bindings.classes ??= {};
-    const state = control.state();
     const renderer = lView[RENDERER];
     const element = getNativeByTNode(tNode, lView) as HTMLElement;
 
