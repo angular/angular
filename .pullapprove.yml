@@ -270,6 +270,8 @@ groups:
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
+        - ~clydin
+        - ~dgp1130
 
   # =========================================================
   #  Angular DevTools
