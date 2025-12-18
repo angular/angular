@@ -14,7 +14,11 @@ import {
   Injectable,
 } from '@angular/core';
 
-import {PlatformLocation, PlatformNavigation} from '@angular/common';
+import {
+  PlatformLocation,
+  PlatformNavigation,
+  ɵPRECOMMIT_HANDLER_SUPPORTED as PRECOMMIT_HANDLER_SUPPORTED,
+} from '@angular/common';
 import {StateManager} from './state_manager';
 import {RestoredState, Navigation as RouterNavigation} from '../navigation_transition';
 import {
@@ -59,6 +63,7 @@ export class NavigationStateManager extends StateManager {
   /** The root URL of the Angular application, considering the base href. */
   private readonly appRootURL = new URL(this.location.prepareExternalUrl?.('/') ?? '/', this.base)
     .href;
+  private readonly precommitHandlerSupported = inject(PRECOMMIT_HANDLER_SUPPORTED);
   /**
    * The `NavigationHistoryEntry` from the Navigation API that corresponds to the last successfully
    * activated router state. This is crucial for restoring the browser state if an ongoing navigation
