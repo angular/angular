@@ -8,7 +8,7 @@
 
 import {join} from 'path';
 
-import {bazelCmd, exec} from './package-builder.mjs';
+import {bazelCmd, exec} from './package-builder.mts';
 
 /**
  * Build the `zone.js` npm package into `dist/bin/packages/zone.js/npm_package/` and copy it to
