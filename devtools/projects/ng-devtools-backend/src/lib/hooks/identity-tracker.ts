@@ -136,6 +136,7 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
     nativeElement: node.nativeElement,
     hydration: node.hydration,
     defer: node.defer,
+    forLoop: node.forLoop,
   } as IndexedNode;
 };
 
