@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {APP_ID, effect, inject, Injector, untracked} from '@angular/core';
+import {APP_ID, effect, Injector, untracked} from '@angular/core';
 import type {FieldNodeStructure} from './structure';
 
 /**
