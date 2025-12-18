@@ -8,7 +8,7 @@
 
 import {execSync} from 'child_process';
 import {join, dirname} from 'path';
-import {BuiltPackage} from '@angular/ng-dev';
+import type {BuiltPackage} from '@angular/ng-dev';
 import {fileURLToPath} from 'url';
 import {existsSync, lstatSync} from 'fs';
 

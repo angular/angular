@@ -8,7 +8,7 @@
 
 import {join} from 'path';
 
-import {bazelCmd, exec} from './package-builder.mjs';
+import {bazelCmd, exec} from './package-builder.mts';
 
 /**
  * Build the `angular-in-memory-web-api` npm package and copies it into the release
