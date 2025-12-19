@@ -1062,14 +1062,14 @@ class _ParseAST {
           return new PrefixNot(this.span(start), this.sourceSpan(start), result);
       }
     } else if (this.next.isKeywordTypeof()) {
-      this.advance();
       const start = this.inputIndex;
-      let result = this.parsePrefix();
+      this.advance();
+      const result = this.parsePrefix();
       return new TypeofExpression(this.span(start), this.sourceSpan(start), result);
     } else if (this.next.isKeywordVoid()) {
-      this.advance();
       const start = this.inputIndex;
-      let result = this.parsePrefix();
+      this.advance();
+      const result = this.parsePrefix();
       return new VoidExpression(this.span(start), this.sourceSpan(start), result);
     }
     return this.parseCallChain();
