@@ -25,7 +25,7 @@
   "devtools_page": "devtools.html",
   "web_accessible_resources": [
     {
-      "resources": ["app/backend_bundle.js", "app/detect_angular_for_extension_icon_bundle.js"],
+      "resources": ["app/backend_bundle.js", "app/detect_angular_bundle.js"],
       "matches": ["<all_urls>"],
       "extension_ids": []
     }
