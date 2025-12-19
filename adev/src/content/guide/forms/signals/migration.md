@@ -17,7 +17,7 @@ controls that involve:
 Consider an existing `passwordControl` that uses a specialized `enterprisePasswordValidator`. Instead of rewriting the
 validator, you can bridge the control into your signal state.
 
-We can do it using `compatForm`
+We can do it using `compatForm`:
 
 ```typescript
 import {signal} from '@angular/core';
@@ -44,7 +44,7 @@ console.log(f.email().value()); // Current email value
 console.log(f.password().value()); // Current value of passwordControl
 
 // Reactive state is proxied automatically
-const isInvalid = f.password().valid();
+const isPasswordValid = f.password().valid();
 const passwordErrors = f.password().errors(); // Returns CompatValidationError if the legacy validator fails
 ```
 
@@ -57,12 +57,6 @@ In the template, use standard reactive syntax by binding the underlying control:
       Email:
       <input [field]="f.email">
     </label>
-
-    @if (f.email().touched() && f.email().invalid()) {
-    <div class="error-list">
-      <p>Email is required.</p>
-    </div>
-    }
   </div>
 
   <div>
@@ -72,11 +66,11 @@ In the template, use standard reactive syntax by binding the underlying control:
     </label>
 
     @if (f.password().touched() && f.password().invalid()) {
-    <div class="error-list">
-      @for (error of f.password().errors(); track error) {
-      <p>{{ error.message || error.kind }}</p>
-      }
-    </div>
+      <div class="error-list">
+        @for (error of f.password().errors(); track error) {
+          <p>{{ error.message || error.kind }}</p>
+        }
+      </div>
     }
   </div>
 </form>
@@ -89,8 +83,7 @@ In the template, use standard reactive syntax by binding the underlying control:
 
 ### Integrating a `FormGroup` into a signal form
 
-You can also wrap an entire `FormGroup`. This is common when a reusable sub-section of a form—such as an **Address Block
-**—is still managed by legacy Reactive Forms.
+You can also wrap an entire `FormGroup`. This is common when a reusable sub-section of a form—such as an **Address Block**—is still managed by legacy Reactive Forms.
 
 ```typescript
 import {signal} from '@angular/core';
@@ -156,9 +149,9 @@ template by accessing the underlying legacy controls via `.control()`:
         <input [formControl]="city">
       </label>
       @if (city.touched && city.invalid) {
-         <div class="error-list">
-           <p>City is required</p>
-         </div>
+        <div class="error-list">
+          <p>City is required</p>
+        </div>
       }
     </div>
 
@@ -169,9 +162,9 @@ template by accessing the underlying legacy controls via `.control()`:
         <input [formControl]="zip">
       </label>
       @if (zip.touched && zip.invalid) {
-         <div class="error-list">
-           <p>Zip Code is required</p>
-         </div>
+        <div class="error-list">
+          <p>Zip Code is required</p>
+        </div>
       }
     </div>
   </fieldset>
@@ -185,7 +178,7 @@ template by accessing the underlying legacy controls via `.control()`:
 
 ### Accessing values
 
-While `compatForm` proxies value access on the `FormControl` level, full form value would preserve the control:
+While `compatForm` proxies value access on the `FormControl` level, the full form value preserves the control:
 
 ```typescript
 const passwordControl = new FormControl('password' /** ... */);
@@ -215,7 +208,7 @@ This is coming soon.
 
 ## Automatic status classes
 
-To avoid manually adding classes like `.ng-valid`, `.ng-dirty` etc to every field, you can provide a global configuration using `provideSignalFormsConfig`.
+To avoid manually adding classes like `.ng-valid`, `.ng-dirty` etc to every field, you can provide a global configuration using `provideSignalFormsConfig`. Signal Forms provides a built-in `NG_STATUS_CLASSES` preset that matches legacy Reactive Forms behavior.
 
 ```typescript
 import {provideSignalFormsConfig} from '@angular/forms/signals';
