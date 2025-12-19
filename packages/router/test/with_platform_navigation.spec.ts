@@ -110,11 +110,8 @@ describe('withPlatformNavigation feature', () => {
           children: [],
         },
       ]);
-      const {finished} = navigation.navigate('/somepath');
+      navigation.navigate('/somepath');
       await timeout(5);
-      // note that this finished promise will be rejected because the Router will create a separate 'replace' navigate
-      // since we cannot redirect the original navigation without precommit handler support
-      await expectAsync(finished).not.toBeResolved();
       expect(navigation.transition).not.toBeNull();
       await timeout(10);
       expect(navigation.transition).toBeNull();
@@ -133,7 +130,8 @@ describe('withPlatformNavigation feature', () => {
       // set up navigation
       navigation.addEventListener(
         'navigate',
-        (e: any) => e.intercept({handler: () => new Promise((_, reject) => setTimeout(reject, 5))}),
+        (e: any) =>
+          e.intercept({precommitHandler: () => new Promise((_, reject) => setTimeout(reject, 5))}),
         {once: true},
       );
 
