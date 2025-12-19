@@ -1076,7 +1076,7 @@
     "@@rules_nodejs+//nodejs:extensions.bzl%node": {
       "general": {
         "bzlTransitiveDigest": "NwcLXHrbh2hoorA/Ybmcpjxsn/6avQmewDglodkDrgo=",
-        "usagesDigest": "eycVhpa7dyjfsYiyP69uXfJ7I60zQlL3Bd0gcVPq8+8=",
+        "usagesDigest": "SgNpdSfM1gX3V9B70uDcYRmDwEtGZnWIhfqEngR/Sco=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -1089,7 +1089,8 @@
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.21.1",
+              "node_version": "20.19.5",
+              "node_version_from_nvmrc": "@@//:.nvmrc",
               "include_headers": false,
               "platform": "linux_amd64"
             }
@@ -1102,7 +1103,8 @@
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.21.1",
+              "node_version": "20.19.5",
+              "node_version_from_nvmrc": "@@//:.nvmrc",
               "include_headers": false,
               "platform": "linux_arm64"
             }
@@ -1115,7 +1117,8 @@
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.21.1",
+              "node_version": "20.19.5",
+              "node_version_from_nvmrc": "@@//:.nvmrc",
               "include_headers": false,
               "platform": "linux_s390x"
             }
@@ -1128,7 +1131,8 @@
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.21.1",
+              "node_version": "20.19.5",
+              "node_version_from_nvmrc": "@@//:.nvmrc",
               "include_headers": false,
               "platform": "linux_ppc64le"
             }
@@ -1141,7 +1145,8 @@
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.21.1",
+              "node_version": "20.19.5",
+              "node_version_from_nvmrc": "@@//:.nvmrc",
               "include_headers": false,
               "platform": "darwin_amd64"
             }
@@ -1154,7 +1159,8 @@
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.21.1",
+              "node_version": "20.19.5",
+              "node_version_from_nvmrc": "@@//:.nvmrc",
               "include_headers": false,
               "platform": "darwin_arm64"
             }
@@ -1167,7 +1173,8 @@
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.21.1",
+              "node_version": "20.19.5",
+              "node_version_from_nvmrc": "@@//:.nvmrc",
               "include_headers": false,
               "platform": "windows_amd64"
             }
@@ -1180,7 +1187,8 @@
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.21.1",
+              "node_version": "20.19.5",
+              "node_version_from_nvmrc": "@@//:.nvmrc",
               "include_headers": false,
               "platform": "windows_arm64"
             }
