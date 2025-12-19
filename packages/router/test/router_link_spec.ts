@@ -10,12 +10,9 @@ import {Component, inject, signal, provideZonelessChangeDetection} from '@angula
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {Router, RouterLink, RouterModule, provideRouter} from '../index';
+import {RouterTestingHarness} from '../testing';
 
 describe('RouterLink', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
-  });
-
   it('does not modify tabindex if already set on non-anchor element', async () => {
     @Component({
       template: `<div [routerLink]="link" tabindex="1"></div>`,
@@ -314,5 +311,22 @@ describe('RouterLink', () => {
 
     const fixture = TestBed.createComponent(WithUrlTree);
     expect(() => fixture.changeDetectorRef.detectChanges()).toThrow();
+  });
+
+  it('correctly updates when relativeTo segments change', async () => {
+    @Component({
+      template: `<a [routerLink]="['./child']" queryParamsHandling="'replace'">link</a>`,
+      imports: [RouterLink],
+    })
+    class WithLink {}
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{path: '**', component: WithLink}])],
+    });
+
+    const harness = await RouterTestingHarness.create('/initial');
+    const anchor = harness.fixture.nativeElement.querySelector('a');
+    expect(anchor.getAttribute('href')).toBe('/initial/child');
+    await harness.navigateByUrl('/different');
+    expect(anchor.getAttribute('href')).toBe('/different/child');
   });
 });
