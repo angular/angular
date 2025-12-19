@@ -317,8 +317,9 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
       expect(navigation.extras.state).toEqual(state);
 
       // Manually set state rather than using navigate()
-      state = {bar: 'foo'};
+      state = {foo: 'replaced'};
       location.replaceState(location.path(), '', state);
+      await timeout();
       location.back();
       await timeout();
       location.forward();

@@ -293,6 +293,7 @@ export class Router {
         this.location.path(true),
         IMPERATIVE_NAVIGATION,
         this.stateManager.restoredState(),
+        {replaceUrl: true},
       );
     }
   }
@@ -307,9 +308,11 @@ export class Router {
     // already patch onPopState, so location change callback will
     // run into ngZone
     this.nonRouterCurrentEntryChangeSubscription ??=
-      this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state, source) => {
-        this.navigateToSyncWithBrowser(url, source, state);
-      });
+      this.stateManager.registerNonRouterCurrentEntryChangeListener(
+        (url, state, source, extras) => {
+          this.navigateToSyncWithBrowser(url, source, state, extras);
+        },
+      );
   }
 
   /**
@@ -323,9 +326,8 @@ export class Router {
     url: string,
     source: NavigationTrigger,
     state: RestoredState | null | undefined,
+    extras: NavigationExtras,
   ) {
-    const extras: NavigationExtras = {replaceUrl: true};
-
     // TODO: restoredState should always include the entire state, regardless
     // of navigationId. This requires a breaking change to update the type on
     // NavigationStart’s restoredState, which currently requires navigationId
