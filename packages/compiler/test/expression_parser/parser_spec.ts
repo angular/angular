@@ -719,6 +719,36 @@ describe('parser', () => {
       }
     });
 
+    it('should produce correct span for typeof expression', () => {
+      const ast = parseAction('foo = typeof bar');
+
+      expect(unparseWithSpan(ast)).toEqual([
+        ['foo = typeof bar', 'foo = typeof bar'],
+        ['foo', 'foo'],
+        ['foo', '[nameSpan] foo'],
+        ['', ''],
+        ['typeof bar', 'typeof bar'],
+        ['bar', 'bar'],
+        ['bar', '[nameSpan] bar'],
+        ['', ' '],
+      ]);
+    });
+
+    it('should produce correct span for void expression', () => {
+      const ast = parseAction('foo = void bar');
+
+      expect(unparseWithSpan(ast)).toEqual([
+        ['foo = void bar', 'foo = void bar'],
+        ['foo', 'foo'],
+        ['foo', '[nameSpan] foo'],
+        ['', ''],
+        ['void bar', 'void bar'],
+        ['bar', 'bar'],
+        ['bar', '[nameSpan] bar'],
+        ['', ' '],
+      ]);
+    });
+
     it('should record span for a regex without flags', () => {
       const ast = parseBinding('/^http:\\/\\/foo\\.bar/');
       expect(unparseWithSpan(ast)).toContain([
