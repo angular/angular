@@ -26,6 +26,7 @@ import {createRouterState} from './create_router_state';
 import {INPUT_BINDER} from './directives/router_outlet';
 import {
   BeforeActivateRoutes,
+  BeforeRoutesRecognized,
   Event,
   GuardsCheckEnd,
   GuardsCheckStart,
@@ -294,6 +295,11 @@ export interface Navigation {
    * This function is a no-op if the navigation is beyond the point where it can be aborted.
    */
   readonly abort: () => void;
+
+  /** @internal */
+  routesRecognizeHandler: {deferredHandle?: Promise<void>};
+  /** @internal */
+  beforeActivateHandler: {deferredHandle?: Promise<void>};
 }
 
 const noop = () => {};
@@ -317,6 +323,9 @@ export interface NavigationTransition {
   targetRouterState: RouterState | null;
   guards: Checks;
   guardsResult: GuardResult | null;
+
+  routesRecognizeHandler: {deferredHandle?: Promise<void>};
+  beforeActivateHandler: {deferredHandle?: Promise<void>};
 }
 
 /**
@@ -429,6 +438,9 @@ export class NavigationTransitions {
         guards: {canActivateChecks: [], canDeactivateChecks: []},
         guardsResult: null,
         id,
+
+        routesRecognizeHandler: {},
+        beforeActivateHandler: {},
       });
     });
   }
@@ -483,6 +495,9 @@ export class NavigationTransitions {
                     previousNavigation: null,
                   },
               abort: () => abortController.abort(),
+
+              routesRecognizeHandler: t.routesRecognizeHandler,
+              beforeActivateHandler: t.beforeActivateHandler,
             });
             const urlTransition =
               !router.navigated || this.isUpdatingInternalState() || this.isUpdatedBrowserUrl();
@@ -545,7 +560,16 @@ export class NavigationTransitions {
                     nav!.finalUrl = t.urlAfterRedirects;
                     return nav;
                   });
+                  this.events.next(new BeforeRoutesRecognized());
+                }),
 
+                switchMap((value) =>
+                  from(
+                    overallTransitionState.routesRecognizeHandler.deferredHandle ?? of(void 0),
+                  ).pipe(map(() => value)),
+                ),
+
+                tap(() => {
                   // Fire RoutesRecognized
                   const routesRecognized = new RoutesRecognized(
                     t.id,
@@ -746,7 +770,7 @@ export class NavigationTransitions {
           // this is done as a safety measure to avoid surfacing this error (#49567).
           take(1),
 
-          map((t: NavigationTransition) => {
+          switchMap(async (t: NavigationTransition) => {
             const targetRouterState = createRouterState(
               router.routeReuseStrategy,
               t.targetSnapshot!,
@@ -762,7 +786,12 @@ export class NavigationTransitions {
             if (!shouldContinueNavigation()) {
               return;
             }
-
+            if (overallTransitionState.beforeActivateHandler.deferredHandle) {
+              await overallTransitionState.beforeActivateHandler.deferredHandle;
+            }
+            if (!shouldContinueNavigation()) {
+              return;
+            }
             new ActivateRoutes(
               router.routeReuseStrategy,
               overallTransitionState.targetRouterState!,
