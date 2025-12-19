@@ -7,7 +7,7 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {provideRouter, Router} from '../src';
+import {NavigationStart, provideRouter, Router} from '../src';
 import {withExperimentalPlatformNavigation, withRouterConfig} from '../src/provide_router';
 import {withBody} from '@angular/private/testing';
 import {
@@ -15,6 +15,7 @@ import {
   Location,
   PlatformNavigation,
   BrowserPlatformLocation,
+  ɵPRECOMMIT_HANDLER_SUPPORTED as PRECOMMIT_HANDLER_SUPPORTED,
 } from '@angular/common';
 import {
   ɵFakeNavigation as FakeNavigation,
@@ -22,6 +23,7 @@ import {
   provideLocationMocks,
 } from '@angular/common/testing';
 import {timeout, useAutoTick} from './helpers';
+import {inject} from '@angular/core';
 
 /// <reference types="dom-navigation" />
 
@@ -158,6 +160,26 @@ describe('withPlatformNavigation feature', () => {
       await navigation.back().finished;
       expect(navigateEvents.length).toBe(1);
       expect(navigateEvents[0].navigationType).toBe('traverse');
+    });
+
+    it('retains a single NavigateEvent across redirects', async () => {
+      const navigateEvents: NavigateEvent[] = [];
+      navigation.addEventListener('navigate', (e: NavigateEvent) => navigateEvents.push(e));
+
+      router.resetConfig([
+        {path: 'first', canActivate: [() => inject(Router).parseUrl('/redirected')], children: []},
+        {path: '**', children: []},
+      ]);
+      const navPromise = router.navigateByUrl('/first');
+      if (TestBed.inject(PRECOMMIT_HANDLER_SUPPORTED)) {
+        router.events.subscribe((e) => {
+          if (e instanceof NavigationStart) {
+            expect(navigateEvents.length).toBe(1);
+          }
+        });
+      }
+      await navPromise;
+      expect(navigateEvents.length).toBe(1);
     });
   });
 
