@@ -218,11 +218,13 @@ export class LiteralArray extends AST {
   }
 }
 
-export type LiteralMapKey = {
+export interface LiteralMapKey {
   key: string;
   quoted: boolean;
+  span: ParseSpan;
+  sourceSpan: AbsoluteSourceSpan;
   isShorthandInitialized?: boolean;
-};
+}
 
 export class LiteralMap extends AST {
   constructor(

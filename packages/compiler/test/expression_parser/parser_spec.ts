@@ -18,6 +18,7 @@ import {
   TemplateBinding,
   VariableBinding,
   BindingPipeType,
+  ParseSpan,
 } from '../../src/expression_parser/ast';
 import {ParseError} from '../../src/parse_util';
 import {Lexer} from '../../src/expression_parser/lexer';
@@ -732,6 +733,17 @@ describe('parser', () => {
         '/^http:\\/\\/foo\\.bar/gim',
         '/^http:\\/\\/foo\\.bar/gim',
       ]);
+    });
+
+    it('should record span for literal map keys', () => {
+      const ast = parseBinding('{one: 1, two: "the number two", three, "four": 4}');
+      const literal = ast.ast as LiteralMap;
+      const getSource = (span: ParseSpan) => ast.source?.substring(span.start, span.end);
+
+      expect(getSource(literal.keys[0].span)).toBe('one');
+      expect(getSource(literal.keys[1].span)).toBe('two');
+      expect(getSource(literal.keys[2].span)).toBe('three');
+      expect(getSource(literal.keys[3].span)).toBe('"four"');
     });
   });
 
