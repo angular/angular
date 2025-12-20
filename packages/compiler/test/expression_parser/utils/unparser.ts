@@ -30,6 +30,7 @@ import {
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
+  SpreadElement,
   TaggedTemplateLiteral,
   TemplateLiteral,
   TemplateLiteralElement,
@@ -246,6 +247,11 @@ class Unparser implements AstVisitor {
 
   visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any) {
     this._expression += `/${ast.body}/${ast.flags || ''}`;
+  }
+
+  visitSpreadElement(ast: SpreadElement, context: any) {
+    this._expression += '...';
+    this._visit(ast.expression);
   }
 
   private _visit(ast: AST) {
