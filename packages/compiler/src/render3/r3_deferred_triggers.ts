@@ -616,13 +616,17 @@ function createViewportTrigger(
 
     if (!(parsed.ast instanceof LiteralMap)) {
       throw new Error('Options parameter of the "viewport" trigger must be an object literal');
-    } else if (parsed.ast.keys.some((key) => key.key === 'root')) {
+    } else if (parsed.ast.keys.some((key) => key.kind === 'spread')) {
+      throw new Error('Spread operator are not allowed in this context');
+    } else if (parsed.ast.keys.some((key) => key.kind === 'property' && key.key === 'root')) {
       throw new Error(
         'The "root" option is not supported in the options parameter of the "viewport" trigger',
       );
     }
 
-    const triggerIndex = parsed.ast.keys.findIndex((key) => key.key === 'trigger');
+    const triggerIndex = parsed.ast.keys.findIndex(
+      (key) => key.kind === 'property' && key.key === 'trigger',
+    );
 
     if (triggerIndex === -1) {
       reference = null;
