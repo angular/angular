@@ -412,6 +412,23 @@ describe('BabelAstFactory', () => {
     });
   });
 
+  describe('createSpreadElement()', () => {
+    it('should create a spread element in an array', () => {
+      const before = factory.createIdentifier('a');
+      const spread = factory.createSpreadElement(factory.createIdentifier('b'));
+      const array = factory.createArrayLiteral([before, spread]);
+      expect(generate(array).code).toEqual('[a, ...b]');
+    });
+
+    it('should create a spread in a call expression', () => {
+      const fn = factory.createIdentifier('fn');
+      const before = factory.createIdentifier('a');
+      const spread = factory.createSpreadElement(factory.createIdentifier('b'));
+      const call = factory.createCallExpression(fn, [before, spread], false);
+      expect(generate(call).code).toEqual('fn(a, ...b)');
+    });
+  });
+
   describe('setSourceMapRange()', () => {
     it('should attach the `sourceMapRange` to the given `node`', () => {
       const expr = expression.ast`42`;
