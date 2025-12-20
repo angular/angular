@@ -361,9 +361,11 @@ export interface SourceMapRange {
 }
 
 /**
- * Information used by the `AstFactory` to create a property on an object literal expression.
+ * Information used by the `AstFactory` to create a property assignment
+ * on an object literal expression.
  */
-export interface ObjectLiteralProperty<TExpression> {
+export interface ObjectLiteralAssignment<TExpression> {
+  kind: 'property';
   propertyName: string;
   value: TExpression;
   /**
@@ -371,6 +373,19 @@ export interface ObjectLiteralProperty<TExpression> {
    */
   quoted: boolean;
 }
+
+/**
+ * Information used by the `AstFactory` to create a spread on an object literal expression.
+ */
+export interface ObjectLiteralSpread<TExpression> {
+  kind: 'spread';
+  expression: TExpression;
+}
+
+/** Possible properties in an object literal. */
+export type ObjectLiteralProperty<TExpression> =
+  | ObjectLiteralAssignment<TExpression>
+  | ObjectLiteralSpread<TExpression>;
 
 /**
  * Information used by the `AstFactory` to create a template literal string (i.e. a back-ticked

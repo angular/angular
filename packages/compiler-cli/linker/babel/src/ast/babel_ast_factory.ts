@@ -163,6 +163,10 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
   createObjectLiteral(properties: ObjectLiteralProperty<t.Expression>[]): t.Expression {
     return t.objectExpression(
       properties.map((prop) => {
+        if (prop.kind === 'spread') {
+          return t.spreadElement(prop.expression);
+        }
+
         const key = prop.quoted
           ? t.stringLiteral(prop.propertyName)
           : t.identifier(prop.propertyName);

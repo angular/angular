@@ -239,9 +239,14 @@ class AstTranslator implements AstVisitor {
   }
 
   visitLiteralMap(ast: LiteralMap): ts.Expression {
-    const properties = ast.keys.map(({key}, idx) => {
+    const properties = ast.keys.map((key, idx) => {
       const value = this.translate(ast.values[idx]);
-      return ts.factory.createPropertyAssignment(ts.factory.createStringLiteral(key), value);
+
+      if (key.kind === 'property') {
+        return ts.factory.createPropertyAssignment(ts.factory.createStringLiteral(key.key), value);
+      } else {
+        return ts.factory.createSpreadAssignment(value);
+      }
     });
     const literal = ts.factory.createObjectLiteralExpression(properties, true);
     // If strictLiteralTypes is disabled, object literals are cast to `any`.
