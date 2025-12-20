@@ -288,9 +288,21 @@ class _Scanner {
     switch (peek) {
       case chars.$PERIOD:
         this.advance();
-        return chars.isDigit(this.peek)
-          ? this.scanNumber(start)
-          : newCharacterToken(start, this.index, chars.$PERIOD);
+
+        if (chars.isDigit(this.peek)) {
+          return this.scanNumber(start);
+        }
+
+        if (this.peek !== chars.$PERIOD) {
+          return newCharacterToken(start, this.index, chars.$PERIOD);
+        }
+
+        this.advance();
+        if (this.peek === chars.$PERIOD) {
+          this.advance();
+          return newOperatorToken(start, this.index, '...');
+        }
+        return this.error(`Unexpected character [${String.fromCharCode(peek)}]`, 0);
       case chars.$LPAREN:
       case chars.$RPAREN:
       case chars.$LBRACKET:
