@@ -10,7 +10,9 @@ import * as o from '@angular/compiler';
 import {
   AstFactory,
   BinaryOperator,
+  ObjectLiteralAssignment,
   ObjectLiteralProperty,
+  ObjectLiteralSpread,
   SourceMapRange,
   TemplateElement,
   TemplateLiteral,
@@ -390,11 +392,17 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
 
   visitLiteralMapExpr(ast: o.LiteralMapExpr, context: Context): TExpression {
     const properties: ObjectLiteralProperty<TExpression>[] = ast.entries.map((entry) => {
-      return {
-        propertyName: entry.key,
-        quoted: entry.quoted,
-        value: entry.value.visitExpression(this, context),
-      };
+      return entry instanceof o.LiteralMapPropertyAssignment
+        ? ({
+            kind: 'property',
+            propertyName: entry.key,
+            quoted: entry.quoted,
+            value: entry.value.visitExpression(this, context),
+          } satisfies ObjectLiteralAssignment<TExpression>)
+        : ({
+            kind: 'spread',
+            expression: entry.expression.visitExpression(this, context),
+          } satisfies ObjectLiteralSpread<TExpression>);
     });
     return this.setSourceMapRange(this.factory.createObjectLiteral(properties), ast.sourceSpan);
   }

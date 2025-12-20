@@ -288,11 +288,15 @@ describe('BabelAstFactory', () => {
     it('should create an object literal node, with the given properties', () => {
       const prop1 = expression.ast`42`;
       const prop2 = expression.ast`"moo"`;
+      const prop3 = expression.ast`foo`;
       const obj = factory.createObjectLiteral([
-        {propertyName: 'prop1', value: prop1, quoted: false},
-        {propertyName: 'prop2', value: prop2, quoted: true},
+        {propertyName: 'prop1', value: prop1, kind: 'property', quoted: false},
+        {propertyName: 'prop2', value: prop2, kind: 'property', quoted: true},
+        {expression: prop3, kind: 'spread'},
       ]);
-      expect(generate(obj).code).toEqual(['{', '  prop1: 42,', '  "prop2": "moo"', '}'].join('\n'));
+      expect(generate(obj).code).toEqual(
+        ['{', '  prop1: 42,', '  "prop2": "moo",', '  ...foo', '}'].join('\n'),
+      );
     });
   });
 

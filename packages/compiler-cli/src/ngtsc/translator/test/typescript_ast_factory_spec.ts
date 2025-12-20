@@ -330,14 +330,15 @@ describe('TypeScriptAstFactory', () => {
   describe('createObjectLiteral()', () => {
     it('should create an object literal node, with the given properties', () => {
       const {
-        items: [prop1, prop2],
+        items: [prop1, prop2, prop3],
         generate,
-      } = setupExpressions('42', '"moo"');
+      } = setupExpressions('42', '"moo"', 'foo');
       const obj = factory.createObjectLiteral([
-        {propertyName: 'prop1', value: prop1, quoted: false},
-        {propertyName: 'prop2', value: prop2, quoted: true},
+        {propertyName: 'prop1', value: prop1, kind: 'property', quoted: false},
+        {propertyName: 'prop2', value: prop2, kind: 'property', quoted: true},
+        {expression: prop3, kind: 'spread'},
       ]);
-      expect(generate(obj)).toEqual('{ prop1: 42, "prop2": "moo" }');
+      expect(generate(obj)).toEqual('{ prop1: 42, "prop2": "moo", ...foo }');
     });
   });
 
