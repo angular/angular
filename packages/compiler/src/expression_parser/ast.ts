@@ -70,7 +70,7 @@ export class Chain extends AST {
   constructor(
     span: ParseSpan,
     sourceSpan: AbsoluteSourceSpan,
-    public expressions: any[],
+    public expressions: AST[],
   ) {
     super(span, sourceSpan);
   }
@@ -173,7 +173,7 @@ export class BindingPipe extends ASTWithName {
     sourceSpan: AbsoluteSourceSpan,
     public exp: AST,
     public name: string,
-    public args: any[],
+    public args: AST[],
     readonly type: BindingPipeType,
     nameSpan: AbsoluteSourceSpan,
   ) {
@@ -188,7 +188,7 @@ export class LiteralPrimitive extends AST {
   constructor(
     span: ParseSpan,
     sourceSpan: AbsoluteSourceSpan,
-    public value: any,
+    public value: string | number | boolean | null | undefined,
   ) {
     super(span, sourceSpan);
   }
@@ -201,7 +201,7 @@ export class LiteralArray extends AST {
   constructor(
     span: ParseSpan,
     sourceSpan: AbsoluteSourceSpan,
-    public expressions: any[],
+    public expressions: AST[],
   ) {
     super(span, sourceSpan);
   }
@@ -223,7 +223,7 @@ export class LiteralMap extends AST {
     span: ParseSpan,
     sourceSpan: AbsoluteSourceSpan,
     public keys: LiteralMapKey[],
-    public values: any[],
+    public values: AST[],
   ) {
     super(span, sourceSpan);
   }
