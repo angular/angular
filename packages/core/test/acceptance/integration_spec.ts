@@ -2741,6 +2741,23 @@ describe('acceptance integration tests', () => {
     expect(fixture.componentInstance.e!.defaultPrevented).toBe(false);
   });
 
+  it('should support object spread assigments in templates', () => {
+    @Component({
+      template: '@let obj = {a: {...foo}}; Hello, {{obj.a.b}}',
+    })
+    class TestComponent {
+      foo = {b: 'Frodo'};
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Hello, Frodo');
+
+    fixture.componentInstance.foo = {b: 'Bilbo'};
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Hello, Bilbo');
+  });
+
   it('should have correct operator precedence', () => {
     @Component({
       template: '{{1 + 10 ** -2 * 3}}',

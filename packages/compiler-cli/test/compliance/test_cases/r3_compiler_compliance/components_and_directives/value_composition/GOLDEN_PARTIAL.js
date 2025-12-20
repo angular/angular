@@ -589,6 +589,53 @@ export declare class MyModule {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: object_literal_spread.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class ObjectComp {
+    foo = {};
+    bar = {};
+    baz = {};
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ObjectComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: ObjectComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @let simple = {...foo};
+    @let otherProps = {a: 1, ...foo, b: 2};
+    @let multipleSpreads = {...foo, a: 1, ...bar, ...baz, b: 2};
+    @let objectLiteral = {a: 1, ...{b: {...{c: 3}}}};
+
+    <!-- Use the objects so they don't get flagged as unused. -->
+    {{simple}} {{otherProps}} {{multipleSpreads}} {{objectLiteral}}
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ObjectComp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @let simple = {...foo};
+    @let otherProps = {a: 1, ...foo, b: 2};
+    @let multipleSpreads = {...foo, a: 1, ...bar, ...baz, b: 2};
+    @let objectLiteral = {a: 1, ...{b: {...{c: 3}}}};
+
+    <!-- Use the objects so they don't get flagged as unused. -->
+    {{simple}} {{otherProps}} {{multipleSpreads}} {{objectLiteral}}
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: object_literal_spread.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class ObjectComp {
+    foo: {};
+    bar: {};
+    baz: {};
+    static ɵfac: i0.ɵɵFactoryDeclaration<ObjectComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ObjectComp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: literal_nested_expression.js
  ****************************************************************************************************/
 import { Component, Input, NgModule } from '@angular/core';

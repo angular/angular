@@ -32,6 +32,8 @@ import {
   LiteralArray,
   LiteralMap,
   LiteralMapKey,
+  LiteralMapPropertyKey,
+  LiteralMapSpreadKey,
   LiteralPrimitive,
   NonNullAssert,
   ParenthesizedExpression,
@@ -1195,11 +1197,23 @@ class _ParseAST {
       this.rbracesExpected++;
       do {
         const keyStart = this.inputIndex;
+
+        if (this.next.isOperator('...')) {
+          this.advance();
+          keys.push({
+            kind: 'spread',
+            span: this.span(keyStart),
+            sourceSpan: this.sourceSpan(keyStart),
+          } satisfies LiteralMapSpreadKey);
+          values.push(this.parsePipe());
+          continue;
+        }
+
         const quoted = this.next.isString();
         const key = this.expectIdentifierOrKeywordOrString();
         const keySpan = this.span(keyStart);
         const keySourceSpan = this.sourceSpan(keyStart);
-        const literalMapKey: LiteralMapKey = {
+        const literalMapKey: LiteralMapPropertyKey = {
           kind: 'property',
           key,
           quoted,
