@@ -19,6 +19,7 @@ import {
   VariableBinding,
   BindingPipeType,
   ParseSpan,
+  LiteralMapPropertyKey,
 } from '../../src/expression_parser/ast';
 import {ParseError} from '../../src/parse_util';
 import {Lexer} from '../../src/expression_parser/lexer';
@@ -914,9 +915,10 @@ describe('parser', () => {
     it('should expose object shorthand information in AST', () => {
       const parser = new Parser(new Lexer());
       const ast = parser.parseBinding('{bla}', getFakeSpan(), 0);
-      expect(ast.ast instanceof LiteralMap).toBe(true);
-      expect((ast.ast as LiteralMap).keys.length).toBe(1);
-      expect((ast.ast as LiteralMap).keys[0].isShorthandInitialized).toBe(true);
+      const map = ast.ast as LiteralMap;
+      expect(map instanceof LiteralMap).toBe(true);
+      expect(map.keys.length).toBe(1);
+      expect((map.keys[0] as LiteralMapPropertyKey).isShorthandInitialized).toBe(true);
     });
   });
 

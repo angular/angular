@@ -116,6 +116,8 @@ export {
   UnaryOperatorExpr,
   VoidExpr,
   WrappedNodeExpr,
+  LiteralMapPropertyAssignment,
+  LiteralMapSpreadAssignment,
 } from './output/output_ast';
 export {JitEvaluator} from './output/output_jit';
 export {SourceMap} from './output/source_map';

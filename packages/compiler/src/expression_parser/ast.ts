@@ -210,13 +210,22 @@ export class LiteralArray extends AST {
   }
 }
 
-export interface LiteralMapKey {
+export interface LiteralMapPropertyKey {
+  kind: 'property';
   key: string;
   quoted: boolean;
   span: ParseSpan;
   sourceSpan: AbsoluteSourceSpan;
   isShorthandInitialized?: boolean;
 }
+
+export interface LiteralMapSpreadKey {
+  kind: 'spread';
+  span: ParseSpan;
+  sourceSpan: AbsoluteSourceSpan;
+}
+
+export type LiteralMapKey = LiteralMapPropertyKey | LiteralMapSpreadKey;
 
 export class LiteralMap extends AST {
   constructor(

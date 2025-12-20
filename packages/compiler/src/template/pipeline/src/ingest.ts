@@ -1140,10 +1140,13 @@ function convertAst(
     throw new Error(`AssertionError: Chain in unknown context`);
   } else if (ast instanceof e.LiteralMap) {
     const entries = ast.keys.map((key, idx) => {
-      const value = ast.values[idx];
+      const value = convertAst(ast.values[idx], job, baseSourceSpan);
+
       // TODO: should literals have source maps, or do we just map the whole surrounding
       // expression?
-      return new o.LiteralMapEntry(key.key, convertAst(value, job, baseSourceSpan), key.quoted);
+      return key.kind === 'spread'
+        ? new o.LiteralMapSpreadAssignment(value)
+        : new o.LiteralMapPropertyAssignment(key.key, value, key.quoted);
     });
     return new o.LiteralMapExpr(entries, undefined, convertSourceSpan(ast.span, baseSourceSpan));
   } else if (ast instanceof e.LiteralArray) {

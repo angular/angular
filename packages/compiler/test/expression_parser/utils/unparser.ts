@@ -161,8 +161,14 @@ class Unparser implements AstVisitor {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
       const key = ast.keys[i];
-      this._expression += key.quoted ? JSON.stringify(key.key) : key.key;
-      this._expression += ': ';
+
+      if (key.kind === 'spread') {
+        this._expression += '...';
+      } else {
+        this._expression += key.quoted ? JSON.stringify(key.key) : key.key;
+        this._expression += ': ';
+      }
+
       this._visit(ast.values[i]);
     }
 

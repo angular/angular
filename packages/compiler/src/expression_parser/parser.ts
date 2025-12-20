@@ -1200,6 +1200,7 @@ class _ParseAST {
         const keySpan = this.span(keyStart);
         const keySourceSpan = this.sourceSpan(keyStart);
         const literalMapKey: LiteralMapKey = {
+          kind: 'property',
           key,
           quoted,
           span: keySpan,
