@@ -39,13 +39,22 @@ function spawn(...args: Parameters<typeof cp.spawn>): Promise<number> {
 async function snapshotTest({scopeName, grammarFiles, testFile}: TestCase): Promise<number> {
   grammarFiles.push(...DUMMY_GRAMMARS);
   const grammarOptions = grammarFiles.reduce((acc, file) => [...acc, '-g', file], [] as string[]);
+
+  const resolvedTestFile = process.env.BUILD_WORKSPACE_DIRECTORY
+    ? path.join(process.env.BUILD_WORKSPACE_DIRECTORY, 'vscode-ng-language-service', testFile)
+    : testFile;
+
   const options = [
     'node_modules/vscode-tmgrammar-test/dist/snapshot.js',
     '-s',
     scopeName,
     ...grammarOptions,
-    testFile,
+    resolvedTestFile,
   ];
+
+  if (process.argv.includes('-u')) {
+    options.push('-u');
+  }
 
   return spawn('node', options, {stdio: 'inherit' /* use parent process IO */}).catch(
     (code) => code,

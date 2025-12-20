@@ -106,9 +106,7 @@ While the `@if` block is great for most scenarios, the `@switch` block provides 
   @case ('admin') {
     <app-admin-dashboard />
   }
-  @case ('reviewer') {
-    <app-reviewer-dashboard />
-  }
+  @case ('reviewer')
   @case ('editor') {
     <app-editor-dashboard />
   }
@@ -121,6 +119,8 @@ While the `@if` block is great for most scenarios, the `@switch` block provides 
 The value of the conditional expression is compared to the case expression using the triple-equals (`===`) operator.
 
 **`@switch` does not have a fallthrough**, so you do not need an equivalent to a `break` or `return` statement in the block.
+
+You can specify multiple conditions for a single block by have consecutive `@case` statements.
 
 You can optionally include a `@default` block. The content of the `@default` block displays if none of the preceding case expressions match the switch value.
 

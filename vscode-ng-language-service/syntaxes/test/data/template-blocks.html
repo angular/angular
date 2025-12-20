@@ -7,10 +7,10 @@
 }
 
 @switch (a) {
-    @case (1) {
+    @case(0) @case (1) {
         {{getCase1()}}
     }
-    @case (2) {
+    @case (2) @case(3) {
         {{a.b.c}}
     }
     @default {

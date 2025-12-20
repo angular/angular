@@ -136,7 +136,7 @@ class R3AstSourceSpans implements t.Visitor<void> {
       humanizeSpan(block.startSourceSpan),
       humanizeSpan(block.endSourceSpan),
     ]);
-    this.visitAll([block.cases]);
+    this.visitAll([block.groups]);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase): void {
@@ -145,7 +145,15 @@ class R3AstSourceSpans implements t.Visitor<void> {
       humanizeSpan(block.sourceSpan),
       humanizeSpan(block.startSourceSpan),
     ]);
-    this.visitAll([block.children]);
+  }
+
+  visitSwitchBlockCaseGroup(block: t.SwitchBlockCaseGroup): void {
+    this.result.push([
+      'SwitchBlockCaseGroup',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+    ]);
+    this.visitAll([block.cases, block.children]);
   }
 
   visitForLoopBlock(block: t.ForLoopBlock): void {
@@ -828,12 +836,44 @@ describe('R3 AST source spans', () => {
           '@switch (cond.kind) {',
           '}',
         ],
+        ['SwitchBlockCaseGroup', '@case (x()) {X case}', '@case (x()) {'],
         ['SwitchBlockCase', '@case (x()) {X case}', '@case (x()) {'],
         ['Text', 'X case'],
+        ['SwitchBlockCaseGroup', "@case ('hello') {Y case}", "@case ('hello') {"],
         ['SwitchBlockCase', "@case ('hello') {Y case}", "@case ('hello') {"],
         ['Text', 'Y case'],
+        ['SwitchBlockCaseGroup', '@case (42) {Z case}', '@case (42) {'],
         ['SwitchBlockCase', '@case (42) {Z case}', '@case (42) {'],
         ['Text', 'Z case'],
+        ['SwitchBlockCaseGroup', '@default {No case matched}', '@default {'],
+        ['SwitchBlockCase', '@default {No case matched}', '@default {'],
+        ['Text', 'No case matched'],
+      ]);
+    });
+
+    it('is correct for switch blocks with consecutive cases', () => {
+      const html =
+        `@switch (cond.kind) {` +
+        `@case (x()) @case ('hello') {X case}` +
+        `@default {No case matched}` +
+        `}`;
+
+      expectFromHtml(html).toEqual([
+        [
+          'SwitchBlock',
+          "@switch (cond.kind) {@case (x()) @case ('hello') {X case}@default {No case matched}}",
+          '@switch (cond.kind) {',
+          '}',
+        ],
+        [
+          'SwitchBlockCaseGroup',
+          "@case (x()) @case ('hello') {X case}",
+          "@case (x()) @case ('hello') {",
+        ],
+        ['SwitchBlockCase', '@case (x()) ', '@case (x()) '],
+        ['SwitchBlockCase', "@case ('hello') {X case}", "@case ('hello') {"],
+        ['Text', 'X case'],
+        ['SwitchBlockCaseGroup', '@default {No case matched}', '@default {'],
         ['SwitchBlockCase', '@default {No case matched}', '@default {'],
         ['Text', 'No case matched'],
       ]);

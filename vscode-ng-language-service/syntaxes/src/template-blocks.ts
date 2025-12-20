@@ -19,8 +19,7 @@ export const TemplateBlocks: GrammarDefinition = {
     },
 
     block: {
-      begin:
-        /(@)(if|else if|else|defer|placeholder|loading|error|switch|case|default|for|empty)(?:\s*)/,
+      begin: /(@)(if|else if|else|defer|placeholder|loading|error|switch|for|empty)(?:\s*)/,
       beginCaptures: {
         1: {
           patterns: [{include: '#transition'}],
@@ -33,7 +32,22 @@ export const TemplateBlocks: GrammarDefinition = {
       // by the #blockBody.
       end: /(?<=\})/,
     },
-
+    caseHeader: {
+      begin: /(@)(case|default)(?:\s*)/,
+      beginCaptures: {
+        1: {patterns: [{include: '#transition'}]},
+        2: {name: 'keyword.control.block.kind.ng'},
+      },
+      patterns: [{include: '#blockExpression'}],
+      end: /(?=@|{)/,
+      name: 'control.block.case.header.ng',
+    },
+    caseBlock: {
+      begin: /(?=@(?:case|default))/,
+      patterns: [{include: '#caseHeader'}, {include: '#blockBody'}],
+      end: /(?<=\})/,
+      name: 'control.block.case.ng',
+    },
     blockExpression: {
       begin: /\(/,
       beginCaptures: {
@@ -90,7 +104,11 @@ export const TemplateBlocks: GrammarDefinition = {
         0: {name: 'punctuation.definition.block.ts'},
       },
       contentName: 'control.block.body.ng',
-      patterns: [{include: 'text.html.derivative'}, {include: 'template.ng'}],
+      patterns: [
+        {include: '#caseBlock'},
+        {include: 'text.html.derivative'},
+        {include: 'template.ng'},
+      ],
     },
   },
 };

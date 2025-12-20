@@ -7019,6 +7019,37 @@ suppress
             `not be projected into the specific slot because the surrounding @default has more than one node at its root.`,
         );
       });
+
+      it('should work with @switch block declared in an ng-template with template scoped variables', () => {
+        env.write(
+          'test.ts',
+          `import {Component} from '@angular/core'; 
+           import {CommonModule} from '@angular/common'; 
+
+          @Component({
+            imports: [CommonModule],
+            template: \`
+                <ng-template #template let-foo="fooValue" let-bar="fooValue">
+                  @switch (bar) {
+                    @case (foo) {
+                      {{bar}}
+                    }
+                  }
+                </ng-template>
+
+                <ng-container *ngTemplateOutlet="template; context: {fooValue: expr}"></ng-container>
+            \`,
+          })
+          class TestCmp {
+            expr = 2;
+          }
+        `,
+        );
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(0); // Template variables should be accessible
+      });
     });
 
     describe('@let declarations', () => {

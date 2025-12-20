@@ -2328,6 +2328,68 @@ export declare class MyApp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: switch_multiple_cases.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    message = 'hello';
+    value() {
+        return 1;
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: false, selector: "ng-component", ngImport: i0, template: `
+    <div>
+      {{message}}
+      @switch (value()) {
+        @case (0) @case(1) {
+          case 01
+        }
+        @case (2) {
+          case 2
+        }
+        @default {
+          default
+        }
+      }
+    </div>
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div>
+      {{message}}
+      @switch (value()) {
+        @case (0) @case(1) {
+          case 01
+        }
+        @case (2) {
+          case 2
+        }
+        @default {
+          default
+        }
+      }
+    </div>
+  `,
+                    standalone: false
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: switch_multiple_cases.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    value(): number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: nested_for_computed_template_variables.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';
