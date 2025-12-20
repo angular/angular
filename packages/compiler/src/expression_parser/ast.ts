@@ -210,6 +210,19 @@ export class LiteralArray extends AST {
   }
 }
 
+export class SpreadElement extends AST {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    readonly expression: AST,
+  ) {
+    super(span, sourceSpan);
+  }
+  override visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitSpreadElement(this, context);
+  }
+}
+
 export interface LiteralMapPropertyKey {
   kind: 'property';
   key: string;
@@ -636,6 +649,7 @@ export interface AstVisitor {
   visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any): any;
   visitParenthesizedExpression(ast: ParenthesizedExpression, context: any): any;
   visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any): any;
+  visitSpreadElement(ast: SpreadElement, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
   /**
    * This function is optionally defined to allow classes that implement this
@@ -739,6 +753,9 @@ export class RecursiveAstVisitor implements AstVisitor {
     this.visit(ast.expression, context);
   }
   visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any) {}
+  visitSpreadElement(ast: SpreadElement, context: any) {
+    this.visit(ast.expression, context);
+  }
   // This is not part of the AstVisitor interface, just a helper method
   visitAll(asts: AST[], context: any): any {
     for (const ast of asts) {

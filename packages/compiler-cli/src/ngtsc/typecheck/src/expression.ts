@@ -30,6 +30,7 @@ import {
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
+  SpreadElement,
   TaggedTemplateLiteral,
   TemplateLiteral,
   TemplateLiteralElement,
@@ -484,6 +485,13 @@ class AstTranslator implements AstVisitor {
     return ts.factory.createParenthesizedExpression(this.translate(ast.expression));
   }
 
+  visitSpreadElement(ast: SpreadElement) {
+    const expression = wrapForDiagnostics(this.translate(ast.expression));
+    const node = ts.factory.createSpreadElement(expression);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
+
   private convertToSafeCall(
     ast: Call | SafeCall,
     expr: ts.Expression,
@@ -546,40 +554,40 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   visitBinary(ast: Binary): boolean {
     return ast.left.visit(this) || ast.right.visit(this);
   }
-  visitChain(ast: Chain): boolean {
+  visitChain(): boolean {
     return false;
   }
   visitConditional(ast: Conditional): boolean {
     return ast.condition.visit(this) || ast.trueExp.visit(this) || ast.falseExp.visit(this);
   }
-  visitCall(ast: Call): boolean {
+  visitCall(): boolean {
     return true;
   }
-  visitSafeCall(ast: SafeCall): boolean {
+  visitSafeCall(): boolean {
     return false;
   }
-  visitImplicitReceiver(ast: ImplicitReceiver): boolean {
+  visitImplicitReceiver(): boolean {
     return false;
   }
-  visitThisReceiver(ast: ThisReceiver): boolean {
+  visitThisReceiver(): boolean {
     return false;
   }
   visitInterpolation(ast: Interpolation): boolean {
     return ast.expressions.some((exp) => exp.visit(this));
   }
-  visitKeyedRead(ast: KeyedRead): boolean {
+  visitKeyedRead(): boolean {
     return false;
   }
-  visitLiteralArray(ast: LiteralArray): boolean {
+  visitLiteralArray(): boolean {
     return true;
   }
-  visitLiteralMap(ast: LiteralMap): boolean {
+  visitLiteralMap(): boolean {
     return true;
   }
-  visitLiteralPrimitive(ast: LiteralPrimitive): boolean {
+  visitLiteralPrimitive(): boolean {
     return false;
   }
-  visitPipe(ast: BindingPipe): boolean {
+  visitPipe(): boolean {
     return true;
   }
   visitPrefixNot(ast: PrefixNot): boolean {
@@ -594,28 +602,31 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   visitNonNullAssert(ast: NonNullAssert): boolean {
     return ast.expression.visit(this);
   }
-  visitPropertyRead(ast: PropertyRead): boolean {
+  visitPropertyRead(): boolean {
     return false;
   }
-  visitSafePropertyRead(ast: SafePropertyRead): boolean {
+  visitSafePropertyRead(): boolean {
     return false;
   }
-  visitSafeKeyedRead(ast: SafeKeyedRead): boolean {
+  visitSafeKeyedRead(): boolean {
     return false;
   }
-  visitTemplateLiteral(ast: TemplateLiteral, context: any) {
+  visitTemplateLiteral() {
     return false;
   }
-  visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any) {
+  visitTemplateLiteralElement() {
     return false;
   }
-  visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any) {
+  visitTaggedTemplateLiteral() {
     return false;
   }
-  visitParenthesizedExpression(ast: ParenthesizedExpression, context: any) {
+  visitParenthesizedExpression(ast: ParenthesizedExpression) {
     return ast.expression.visit(this);
   }
-  visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any) {
+  visitRegularExpressionLiteral() {
     return false;
+  }
+  visitSpreadElement(ast: SpreadElement) {
+    return ast.expression.visit(this);
   }
 }
