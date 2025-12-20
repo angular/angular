@@ -3340,6 +3340,31 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should type check object spread assignments in templates', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '@let obj = {a: 1, ...foo}; {{checkObj(obj)}}',
+        })
+        export class TestCmp {
+          foo = {b: 'two'};
+
+          checkObj(obj: {a: number, b: number}) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(1);
+      expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toContain(
+        `Argument of type '{ b: string; a: number; }' is not assignable to parameter of type '{ a: number; b: number; }'.`,
+      );
+    });
+
     describe('template literals', () => {
       it('should treat template literals as strings', () => {
         env.write(

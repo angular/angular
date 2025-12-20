@@ -202,6 +202,13 @@ describe('parser', () => {
         expectActionError('{a["b"]}', 'expected } at column 3');
         expectActionError('{1234}', ' expected identifier, keyword, or string at column 2');
       });
+
+      it('should parse spread assignments in object literals', () => {
+        checkAction('{...foo}');
+        checkAction('{one: 1, ...foo, two: 2}');
+        checkAction('{...foo, middle: true, ...bar}');
+        checkAction('{...{...{...{foo: 1}}}}');
+      });
     });
 
     describe('member access', () => {
@@ -737,7 +744,7 @@ describe('parser', () => {
     });
 
     it('should record span for literal map keys', () => {
-      const ast = parseBinding('{one: 1, two: "the number two", three, "four": 4}');
+      const ast = parseBinding('{one: 1, two: "the number two", three, "four": 4, ...five}');
       const literal = ast.ast as LiteralMap;
       const getSource = (span: ParseSpan) => ast.source?.substring(span.start, span.end);
 
@@ -745,6 +752,7 @@ describe('parser', () => {
       expect(getSource(literal.keys[1].span)).toBe('two');
       expect(getSource(literal.keys[2].span)).toBe('three');
       expect(getSource(literal.keys[3].span)).toBe('"four"');
+      expect(getSource(literal.keys[4].span)).toBe('...');
     });
   });
 
