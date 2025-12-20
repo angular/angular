@@ -281,6 +281,13 @@ export interface AstFactory<TStatement, TExpression> {
   createRegularExpressionLiteral(body: string, flags: string | null): TExpression;
 
   /**
+   * Create a spread element, typically in an array or function call. E.g. `[...a]` or `fn(...b)`.
+   *
+   * @param target Expression of the spread element.
+   */
+  createSpreadElement(expression: TExpression): TExpression;
+
+  /**
    * Attach a source map range to the given node.
    *
    * @param node the node to which the range should be attached.

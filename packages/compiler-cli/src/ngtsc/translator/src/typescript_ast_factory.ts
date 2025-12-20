@@ -262,6 +262,8 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createPropertyAccess = ts.factory.createPropertyAccessExpression;
 
+  createSpreadElement = ts.factory.createSpreadElement;
+
   createReturnStatement(expression: ts.Expression | null): ts.Statement {
     return ts.factory.createReturnStatement(expression ?? undefined);
   }
