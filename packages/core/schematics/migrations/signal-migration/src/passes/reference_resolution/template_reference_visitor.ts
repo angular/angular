@@ -272,7 +272,8 @@ export class TemplateExpressionReferenceVisitor<
   // E.g. `{bla}` may be transformed to `{bla: bla()}`.
   override visitLiteralMap(ast: LiteralMap, context: any) {
     for (const [idx, key] of ast.keys.entries()) {
-      this.isInsideObjectShorthandExpression = !!key.isShorthandInitialized;
+      this.isInsideObjectShorthandExpression =
+        key.kind === 'property' && !!key.isShorthandInitialized;
       (ast.values[idx] as AST).visit(this, context);
       this.isInsideObjectShorthandExpression = false;
     }
