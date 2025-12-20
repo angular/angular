@@ -9,7 +9,6 @@ import {
   compileDirectiveFromMetadata,
   ConstantPool,
   ForwardRefHandling,
-  LegacyInputPartialMapping,
   makeBindingParser,
   outputAst as o,
   ParseLocation,
@@ -114,59 +113,15 @@ function toInputMapping<TExpression>(
   value: AstValue<NonNullable<R3DeclareDirectiveMetadata['inputs']>[string], TExpression>,
   key: string,
 ): R3InputMetadata {
-  if (value.isObject()) {
-    const obj = value.getObject();
-    const transformValue = obj.getValue('transformFunction');
-
-    return {
-      classPropertyName: obj.getString('classPropertyName'),
-      bindingPropertyName: obj.getString('publicName'),
-      isSignal: obj.getBoolean('isSignal'),
-      required: obj.getBoolean('isRequired'),
-      transformFunction: transformValue.isNull() ? null : transformValue.getOpaque(),
-    };
-  }
-
-  return parseLegacyInputPartialOutput(
-    key,
-    value as AstValue<LegacyInputPartialMapping, TExpression>,
-  );
-}
-
-/**
- * Parses the legacy partial output for inputs.
- *
- * More details, see: `legacyInputsPartialMetadata` in `partial/directive.ts`.
- * TODO(legacy-partial-output-inputs): Remove function in v18.
- */
-function parseLegacyInputPartialOutput<TExpression>(
-  key: string,
-  value: AstValue<LegacyInputPartialMapping, TExpression>,
-): R3InputMetadata {
-  if (value.isString()) {
-    return {
-      bindingPropertyName: value.getString(),
-      classPropertyName: key,
-      required: false,
-      transformFunction: null,
-      isSignal: false,
-    };
-  }
-
-  const values = value.getArray();
-  if (values.length !== 2 && values.length !== 3) {
-    throw new FatalLinkerError(
-      value.expression,
-      'Unsupported input, expected a string or an array containing two strings and an optional function',
-    );
-  }
+  const obj = value.getObject();
+  const transformValue = obj.getValue('transformFunction');
 
   return {
-    bindingPropertyName: values[0].getString(),
-    classPropertyName: values[1].getString(),
-    transformFunction: values.length > 2 ? values[2].getOpaque() : null,
-    required: false,
-    isSignal: false,
+    classPropertyName: obj.getString('classPropertyName'),
+    bindingPropertyName: obj.getString('publicName'),
+    isSignal: obj.getBoolean('isSignal'),
+    required: obj.getBoolean('isRequired'),
+    transformFunction: transformValue.isNull() ? null : transformValue.getOpaque(),
   };
 }
 

@@ -11,7 +11,6 @@ import {
   CoreEnvironment,
   ExportedCompilerFacade,
   FactoryTarget,
-  LegacyInputPartialMapping,
   OpaqueValue,
   R3ComponentMetadataFacade,
   R3DeclareComponentFacade,
@@ -914,50 +913,20 @@ function inputsPartialMetadataToInputMetadata(
     (result, minifiedClassName) => {
       const value = inputs[minifiedClassName];
 
-      // Handle legacy partial input output.
-      if (typeof value === 'string' || Array.isArray(value)) {
-        result[minifiedClassName] = parseLegacyInputPartialOutput(value);
-      } else {
-        result[minifiedClassName] = {
-          bindingPropertyName: value.publicName,
-          classPropertyName: minifiedClassName,
-          transformFunction:
-            value.transformFunction !== null ? new WrappedNodeExpr(value.transformFunction) : null,
-          required: value.isRequired,
-          isSignal: value.isSignal,
-        };
-      }
+      // Always expect new format (object)
+      result[minifiedClassName] = {
+        bindingPropertyName: value.publicName,
+        classPropertyName: minifiedClassName,
+        transformFunction:
+          value.transformFunction !== null ? new WrappedNodeExpr(value.transformFunction) : null,
+        required: value.isRequired,
+        isSignal: value.isSignal,
+      };
 
       return result;
     },
     {},
   );
-}
-
-/**
- * Parses the legacy input partial output. For more details see `partial/directive.ts`.
- * TODO(legacy-partial-output-inputs): Remove in v18.
- */
-function parseLegacyInputPartialOutput(value: LegacyInputPartialMapping): R3InputMetadata {
-  if (typeof value === 'string') {
-    return {
-      bindingPropertyName: value,
-      classPropertyName: value,
-      transformFunction: null,
-      required: false,
-      // legacy partial output does not capture signal inputs.
-      isSignal: false,
-    };
-  }
-
-  return {
-    bindingPropertyName: value[0],
-    classPropertyName: value[1],
-    transformFunction: value[2] ? new WrappedNodeExpr(value[2]) : null,
-    required: false,
-    // legacy partial output does not capture signal inputs.
-    isSignal: false,
-  };
 }
 
 function parseInputsArray(
