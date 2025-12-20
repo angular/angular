@@ -17,9 +17,9 @@ Classes alone cannot tell you if the component is going to render properly, resp
 
 - Is `Lightswitch.clicked()` bound to anything such that the user can invoke it?
 - Is the `Lightswitch.message` displayed?
-- Can the user actually select the hero displayed by `DashboardHeroComponent`?
+- Can the user actually select the hero displayed by the `DashboardHero` component?
 - Is the hero name displayed as expected \(such as uppercase\)?
-- Is the welcome message displayed by the template of `WelcomeComponent`?
+- Is the welcome message displayed by the template of the `Welcome` component?
 
 These might not be troubling questions for the preceding simple components illustrated.
 But many components have complex interactions with the DOM elements described in their templates, causing HTML to appear and disappear as the component state changes.
@@ -32,19 +32,37 @@ To write these kinds of test, you'll use additional features of the `TestBed` as
 
 The CLI creates an initial test file for you by default when you ask it to generate a new component.
 
-For example, the following CLI command generates a `BannerComponent` in the `app/banner` folder \(with inline template and styles\):
+For example, the following CLI command generates a `Banner` component in the `app/banner` folder \(with inline template and styles\):
 
 ```shell
-ng generate component banner --inline-template --inline-style --module app
+ng generate component banner --inline-template --inline-style
 ```
 
-It also generates an initial test file for the component, `banner-external.component.spec.ts`, that looks like this:
+It also generates an initial test file for the component, `banner.spec.ts`, that looks like this:
 
-<docs-code header="banner-external.component.spec.ts (initial)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v1"/>
+```ts
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {Banner} from './banner';
 
-HELPFUL: Because `compileComponents` is asynchronous, it uses the [`waitForAsync`](api/core/testing/waitForAsync) utility function imported from `@angular/core/testing`.
+describe('Banner', () => {
+  let component: Banner;
+  let fixture: ComponentFixture<Banner>;
 
-Refer to the [waitForAsync](guide/testing/components-scenarios#waitForAsync) section for more details.
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [Banner],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Banner);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+```
 
 ### Reduce the setup
 
@@ -55,25 +73,30 @@ The rest of the file is boilerplate setup code anticipating more advanced tests 
 You'll learn about these advanced test features in the following sections.
 For now, you can radically reduce this test file to a more manageable size:
 
-<docs-code header="banner-initial.component.spec.ts (minimal)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v2"/>
-
-In this example, the metadata object passed to `TestBed.configureTestingModule` simply declares `BannerComponent`, the component to test.
-
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="configureTestingModule"/>
-
-HELPFUL: There's no need to declare or import anything else.
-The default test module is pre-configured with something like the `BrowserModule` from `@angular/platform-browser`.
+```ts
+describe('Banner (minimal)', () => {
+  it('should create', () => {
+    const fixture = TestBed.createComponent(Banner);
+    const component = fixture.componentInstance;
+    expect(component).toBeDefined();
+  });
+});
+```
 
 Later you'll call `TestBed.configureTestingModule()` with imports, providers, and more declarations to suit your testing needs.
 Optional `override` methods can further fine-tune aspects of the configuration.
+
+NOTE: `TestBed.compileComponents` is only required when `@defer` blocks are used in the tested components.
 
 ### `createComponent()`
 
 After configuring `TestBed`, you call its `createComponent()` method.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="createComponent"/>
+```ts
+const fixture = TestBed.createComponent(Banner);
+```
 
-`TestBed.createComponent()` creates an instance of the `BannerComponent`, adds a corresponding element to the test-runner DOM, and returns a [`ComponentFixture`](#componentfixture).
+`TestBed.createComponent()` creates an instance of the `Banner` component, adds a corresponding element to the test-runner DOM, and returns a [`ComponentFixture`](#componentfixture).
 
 IMPORTANT: Do not re-configure `TestBed` after calling `createComponent`.
 
@@ -84,22 +107,62 @@ If you try, `TestBed` throws an error.
 
 ### `ComponentFixture`
 
-The [ComponentFixture](api/core/testing/ComponentFixture) is a test harness for interacting with the created component and its corresponding element.
+The [`ComponentFixture`](api/core/testing/ComponentFixture) is a test harness for interacting with the created component and its corresponding element.
 
-Access the component instance through the fixture and confirm it exists with a Jasmine expectation:
+Access the component instance through the fixture and confirm it exists with an expectation:
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="componentInstance"/>
+```ts
+const component = fixture.componentInstance;
+expect(component).toBeDefined();
+```
 
 ### `beforeEach()`
 
 You will add more tests as this component evolves.
-Rather than duplicate the `TestBed` configuration for each test, you refactor to pull the setup into a Jasmine `beforeEach()` and some supporting variables:
+Rather than duplicate the `TestBed` configuration for each test, you refactor to pull the setup into a `beforeEach()` and some supporting variables:
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v3"/>
+```ts
+describe('Banner (with beforeEach)', () => {
+  let component: Banner;
+  let fixture: ComponentFixture<Banner>;
+
+  beforeEach(async () => {
+    fixture = TestBed.createComponent(Banner);
+    component = fixture.componentInstance;
+
+    await fixture.whenStable(); // necessary to wait for the initial rendering
+  });
+
+  it('should create', () => {
+    expect(component).toBeDefined();
+  });
+});
+```
+
+HELPFUL: By awaiting the initial rendering in the `beforeEach` with `await fixture.whenStable` the single tests synchronous.
 
 Now add a test that gets the component's element from `fixture.nativeElement` and looks for the expected text.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v4-test-2"/>
+```ts
+it('should contain "banner works!"', () => {
+  const bannerElement: HTMLElement = fixture.nativeElement;
+  expect(bannerElement.textContent).toContain('banner works!');
+});
+```
+
+### create a `setup` function
+
+As an alternative to `beforeEach`, you can also create a setup function that you will call in every test.
+A setup function has the advantage of being customizable via parameters.
+
+Here is an example of what a setup function could look like:
+
+```ts
+function setup(providers?: StaticProviders[]): ComponentFixture<Banner> {
+  TestBed.configureTestingModule({providers});
+  return TestBed.createComponent(Banner);
+}
+```
 
 ### `nativeElement`
 
@@ -107,7 +170,7 @@ The value of `ComponentFixture.nativeElement` has the `any` type.
 Later you'll encounter the `DebugElement.nativeElement` and it too has the `any` type.
 
 Angular can't know at compile time what kind of HTML element the `nativeElement` is or if it even is an HTML element.
-The application might be running on a _non-browser platform_, such as the server or a [Web Worker](https://developer.mozilla.org/docs/Web/API/Web_Workers_API), where the element might have a diminished API or not exist at all.
+The application might be running on a _non-browser platform_, such as the server or a node environment, where the element might have a diminished API or not exist at all.
 
 The tests in this guide are designed to run in a browser so a `nativeElement` value will always be an `HTMLElement` or one of its derived classes.
 
@@ -115,17 +178,28 @@ Knowing that it is an `HTMLElement` of some sort, use the standard HTML `querySe
 
 Here's another test that calls `HTMLElement.querySelector` to get the paragraph element and look for the banner text:
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v4-test-3"/>
+```ts
+it('should have <p> with "banner works!"', () => {
+  const bannerElement: HTMLElement = fixture.nativeElement;
+  const p = bannerElement.querySelector('p')!;
+  expect(p.textContent).toEqual('banner works!');
+});
+```
 
 ### `DebugElement`
 
 The Angular _fixture_ provides the component's element directly through the `fixture.nativeElement`.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="nativeElement"/>
+```ts
+const bannerElement: HTMLElement = fixture.nativeElement;
+```
 
 This is actually a convenience method, implemented as `fixture.debugElement.nativeElement`.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="debugElement-nativeElement"/>
+```ts
+const bannerDe: DebugElement = fixture.debugElement;
+const bannerEl: HTMLElement = bannerDe.nativeElement;
+```
 
 There's a good reason for this circuitous path to the element.
 
@@ -140,13 +214,22 @@ Because the sample tests for this guide are designed to run only in a browser, a
 
 Here's the previous test, re-implemented with `fixture.debugElement.nativeElement`:
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v4-test-4"/>
+```ts
+it('should find the <p> with fixture.debugElement.nativeElement', () => {
+  const bannerDe: DebugElement = fixture.debugElement;
+  const bannerEl: HTMLElement = bannerDe.nativeElement;
+  const p = bannerEl.querySelector('p')!;
+  expect(p.textContent).toEqual('banner works!');
+});
+```
 
 The `DebugElement` has other methods and properties that are useful in tests, as you'll see elsewhere in this guide.
 
 You import the `DebugElement` symbol from the Angular core library.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="import-debug-element"/>
+```ts
+import {DebugElement} from '@angular/core';
+```
 
 ### `By.css()`
 
@@ -162,11 +245,20 @@ These query methods take a _predicate_ function that returns `true` when a node 
 You create a _predicate_ with the help of a `By` class imported from a library for the runtime platform.
 Here's the `By` import for the browser platform:
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="import-by"/>
+```ts
+import {By} from '@angular/platform-browser';
+```
 
 The following example re-implements the previous test with `DebugElement.query()` and the browser's `By.css` method.
 
-<docs-code path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" region="v4-test-5"/>
+```ts
+it('should find the <p> with fixture.debugElement.query(By.css)', () => {
+  const bannerDe: DebugElement = fixture.debugElement;
+  const paragraphDe = bannerDe.query(By.css('p'));
+  const p: HTMLElement = paragraphDe.nativeElement;
+  expect(p.textContent).toEqual('banner works!');
+});
+```
 
 Some noteworthy observations:
 
