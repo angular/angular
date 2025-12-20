@@ -42,6 +42,7 @@ import {
   TmplAstReference,
   TmplAstSwitchBlock,
   TmplAstSwitchBlockCase,
+  TmplAstSwitchBlockCaseGroup,
   TmplAstTemplate,
   TmplAstText,
   TmplAstTextAttribute,
@@ -659,12 +660,16 @@ class TemplateTargetVisitor implements TmplAstVisitor {
 
   visitSwitchBlock(block: TmplAstSwitchBlock) {
     this.visitBinding(block.expression);
-    this.visitAll(block.cases);
+    this.visitAll(block.groups);
     this.visitAll(block.unknownBlocks);
   }
 
   visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {
     block.expression && this.visitBinding(block.expression);
+  }
+
+  visitSwitchBlockCaseGroup(block: TmplAstSwitchBlockCaseGroup) {
+    this.visitAll(block.cases);
     this.visitAll(block.children);
   }
 

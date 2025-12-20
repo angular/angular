@@ -41,6 +41,7 @@ import {
   Reference,
   SwitchBlock,
   SwitchBlockCase,
+  SwitchBlockCaseGroup,
   Template,
   Text,
   TextAttribute,
@@ -327,7 +328,7 @@ class Scope implements Visitor {
       nodeOrNodes.contextVariables.forEach((v) => this.visitVariable(v));
       nodeOrNodes.children.forEach((node) => node.visit(this));
     } else if (
-      nodeOrNodes instanceof SwitchBlockCase ||
+      nodeOrNodes instanceof SwitchBlockCaseGroup ||
       nodeOrNodes instanceof ForLoopBlockEmpty ||
       nodeOrNodes instanceof DeferredBlock ||
       nodeOrNodes instanceof DeferredBlockError ||
@@ -387,10 +388,12 @@ class Scope implements Visitor {
   }
 
   visitSwitchBlock(block: SwitchBlock) {
-    block.cases.forEach((node) => node.visit(this));
+    block.groups.forEach((node) => node.visit(this));
   }
 
-  visitSwitchBlockCase(block: SwitchBlockCase) {
+  visitSwitchBlockCase(block: SwitchBlockCase) {}
+
+  visitSwitchBlockCaseGroup(block: SwitchBlockCaseGroup) {
     this.ingestScopedNode(block);
   }
 
@@ -575,10 +578,14 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitSwitchBlock(block: SwitchBlock) {
-    block.cases.forEach((node) => node.visit(this));
+    block.groups.forEach((node) => node.visit(this));
   }
 
   visitSwitchBlockCase(block: SwitchBlockCase) {
+    // DirectiveBinder does not visit expressions
+  }
+
+  visitSwitchBlockCaseGroup(block: SwitchBlockCaseGroup) {
     block.children.forEach((node) => node.visit(this));
   }
 
@@ -864,7 +871,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
       nodeOrNodes.children.forEach((node) => node.visit(this));
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (
-      nodeOrNodes instanceof SwitchBlockCase ||
+      nodeOrNodes instanceof SwitchBlockCaseGroup ||
       nodeOrNodes instanceof ForLoopBlockEmpty ||
       nodeOrNodes instanceof DeferredBlockError ||
       nodeOrNodes instanceof DeferredBlockPlaceholder ||
@@ -933,6 +940,10 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
 
   override visitSwitchBlockCase(block: SwitchBlockCase) {
     block.expression?.visit(this);
+  }
+
+  override visitSwitchBlockCaseGroup(block: SwitchBlockCaseGroup) {
+    block.cases.forEach((caseNode) => caseNode.visit(this));
     this.ingestScopedNode(block);
   }
 

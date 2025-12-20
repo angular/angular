@@ -165,6 +165,7 @@ export {
   Reference as TmplAstReference,
   SwitchBlock as TmplAstSwitchBlock,
   SwitchBlockCase as TmplAstSwitchBlockCase,
+  SwitchBlockCaseGroup as TmplAstSwitchBlockCaseGroup,
   Template as TmplAstTemplate,
   Text as TmplAstText,
   TextAttribute as TmplAstTextAttribute,

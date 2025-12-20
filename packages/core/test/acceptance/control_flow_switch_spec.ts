@@ -251,4 +251,75 @@ describe('control flow - switch', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe('case 1: (), case 2: (), case 3: (value 3)');
   });
+
+  it('should support consecutive cases for the same block', () => {
+    @Component({
+      template: `
+        @switch (case) {
+          @case (0)
+          @case (1) {
+            case 0 or 1
+          }
+          @case (2) {
+            case 2
+          }
+          @default {
+            default
+          }
+        }
+      `,
+    })
+    class TestComponent {
+      case = 0;
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe(' case 0 or 1 ');
+
+    fixture.componentInstance.case = 1;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe(' case 0 or 1 ');
+
+    fixture.componentInstance.case = 2;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe(' case 2 ');
+
+    fixture.componentInstance.case = 3;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe(' default ');
+  });
+
+  it('should support a case following a default case in the same group', () => {
+    @Component({
+      template: `
+        @switch (case) {
+          @case (0) {
+            case 0
+          }
+          @default
+          @case (1) {
+            default or case 1
+          }
+        }
+      `,
+    })
+    class TestComponent {
+      case = 0;
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe(' case 0 ');
+
+    fixture.componentInstance.case = 1;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe(' default or case 1 ');
+
+    fixture.componentInstance.case = 5;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe(' default or case 1 ');
+  });
 });

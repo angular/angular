@@ -36,53 +36,73 @@
 #          ^ template.blocks.ng control.block.ng meta.brace.round.ts
 #           ^ template.blocks.ng control.block.ng
 #            ^ template.blocks.ng control.block.ng punctuation.definition.block.ts
->    @case (1) {
-#^^^^^^^^^^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng
+>    @case(0) @case (1) {
+#^^^^ template.blocks.ng control.block.ng control.block.body.ng
+#    ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.transition.ng
+#     ^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.kind.ng
+#         ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng meta.brace.round.ts
+#          ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng control.block.expression.ng constant.numeric.decimal.ts
+#           ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng meta.brace.round.ts
+#            ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng
+#             ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.transition.ng
+#              ^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.kind.ng
+#                  ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng
+#                   ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng meta.brace.round.ts
+#                    ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng control.block.expression.ng constant.numeric.decimal.ts
+#                     ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng meta.brace.round.ts
+#                      ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng
+#                       ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng punctuation.definition.block.ts
 >        {{getCase1()}}
-#^^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng
-#        ^^ template.blocks.ng control.block.ng control.block.body.ng punctuation.definition.block.ts
-#          ^^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng expression.ng entity.name.function.ts
-#                  ^ template.blocks.ng control.block.ng control.block.body.ng expression.ng meta.brace.round.ts
-#                   ^ template.blocks.ng control.block.ng control.block.body.ng expression.ng meta.brace.round.ts
-#                    ^^ template.blocks.ng control.block.ng control.block.body.ng punctuation.definition.block.ts
+#^^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng
+#        ^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng punctuation.definition.block.ts
+#          ^^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng expression.ng entity.name.function.ts
+#                  ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng expression.ng meta.brace.round.ts
+#                   ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng expression.ng meta.brace.round.ts
+#                    ^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng punctuation.definition.block.ts
 >    }
+#^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng
+#    ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng punctuation.definition.block.ts
+>    @case (2) @case(3) {
 #^^^^ template.blocks.ng control.block.ng control.block.body.ng
-#    ^ template.blocks.ng control.block.ng punctuation.definition.block.ts
->    @case (2) {
-#^^^^ template.blocks.ng
-#    ^ template.blocks.ng control.block.ng keyword.control.block.transition.ng
-#     ^^^^ template.blocks.ng control.block.ng keyword.control.block.kind.ng
-#         ^ template.blocks.ng control.block.ng
-#          ^ template.blocks.ng control.block.ng meta.brace.round.ts
-#           ^ template.blocks.ng control.block.ng control.block.expression.ng constant.numeric.decimal.ts
-#            ^ template.blocks.ng control.block.ng meta.brace.round.ts
-#             ^ template.blocks.ng control.block.ng
-#              ^ template.blocks.ng control.block.ng punctuation.definition.block.ts
+#    ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.transition.ng
+#     ^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.kind.ng
+#         ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng
+#          ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng meta.brace.round.ts
+#           ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng control.block.expression.ng constant.numeric.decimal.ts
+#            ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng meta.brace.round.ts
+#             ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng
+#              ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.transition.ng
+#               ^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.kind.ng
+#                   ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng meta.brace.round.ts
+#                    ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng control.block.expression.ng constant.numeric.decimal.ts
+#                     ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng meta.brace.round.ts
+#                      ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng
+#                       ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng punctuation.definition.block.ts
 >        {{a.b.c}}
-#^^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng
-#        ^^ template.blocks.ng control.block.ng control.block.body.ng punctuation.definition.block.ts
-#          ^ template.blocks.ng control.block.ng control.block.body.ng expression.ng variable.other.object.ts
-#           ^ template.blocks.ng control.block.ng control.block.body.ng expression.ng punctuation.accessor.ts
-#            ^ template.blocks.ng control.block.ng control.block.body.ng expression.ng variable.other.object.property.ts
-#             ^ template.blocks.ng control.block.ng control.block.body.ng expression.ng punctuation.accessor.ts
-#              ^ template.blocks.ng control.block.ng control.block.body.ng expression.ng variable.other.property.ts
-#               ^^ template.blocks.ng control.block.ng control.block.body.ng punctuation.definition.block.ts
+#^^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng
+#        ^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng punctuation.definition.block.ts
+#          ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng expression.ng variable.other.object.ts
+#           ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng expression.ng punctuation.accessor.ts
+#            ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng expression.ng variable.other.object.property.ts
+#             ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng expression.ng punctuation.accessor.ts
+#              ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng expression.ng variable.other.property.ts
+#               ^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng punctuation.definition.block.ts
 >    }
-#^^^^ template.blocks.ng control.block.ng control.block.body.ng
-#    ^ template.blocks.ng control.block.ng punctuation.definition.block.ts
+#^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng
+#    ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng punctuation.definition.block.ts
 >    @default {
-#^^^^ template.blocks.ng
-#    ^ template.blocks.ng control.block.ng keyword.control.block.transition.ng
-#     ^^^^^^^ template.blocks.ng control.block.ng keyword.control.block.kind.ng
-#            ^ template.blocks.ng control.block.ng
-#             ^ template.blocks.ng control.block.ng punctuation.definition.block.ts
->        default case
-#^^^^^^^^^^^^^^^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng
->    }
 #^^^^ template.blocks.ng control.block.ng control.block.body.ng
-#    ^ template.blocks.ng control.block.ng punctuation.definition.block.ts
+#    ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.transition.ng
+#     ^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.kind.ng
+#            ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng
+#             ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng punctuation.definition.block.ts
+>        default case
+#^^^^^^^^^^^^^^^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng
+>    }
+#^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.body.ng
+#    ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng punctuation.definition.block.ts
 >}
-#^^ template.blocks.ng
+#^ template.blocks.ng control.block.ng punctuation.definition.block.ts
 >
 >@if (a==b) { hello } @else  { goodbye }
 #^ template.blocks.ng control.block.ng keyword.control.block.transition.ng

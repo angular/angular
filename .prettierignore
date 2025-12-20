@@ -25,6 +25,7 @@ packages/compiler-cli/test/compliance/test_cases/**/*.ts
 
 # Ignore testing data files for language service
 vscode-ng-language-service/syntaxes/test/data/*.ts
+vscode-ng-language-service/syntaxes/test/data/*.html
 
 # Ignore goldens MD files
 goldens/**/*.api.md

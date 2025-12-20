@@ -1075,6 +1075,24 @@ describe('HtmlParser', () => {
         ]);
       });
 
+      it('should parse consecutive @case statements', () => {
+        expect(
+          humanizeDom(
+            parser.parse(`@switch (expr) {@case ('foo') @case ('bar') { <input> }}`, `TestComp`),
+          ),
+        ).toEqual([
+          [html.Block, 'switch', 0],
+          [html.BlockParameter, 'expr'],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'foo'`],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'bar'`],
+          [html.Text, ' ', 2, [' ']],
+          [html.Element, 'input', 2],
+          [html.Text, ' ', 2, [' ']],
+        ]);
+      });
+
       it('should close void elements used right before a block', () => {
         expect(humanizeDom(parser.parse('<img>@defer {hello}', 'TestComp'))).toEqual([
           [html.Element, 'img', 0],
@@ -1126,6 +1144,18 @@ describe('HtmlParser', () => {
             null,
             'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
             '0:28',
+          ],
+        ]);
+      });
+
+      it('should report a final @case without a body', () => {
+        const errors = parser.parse('@switch (expr) {@case (1)}', 'TestComp').errors;
+        expect(errors.length).toEqual(1);
+        expect(humanizeErrors(errors)).toEqual([
+          [
+            'case',
+            'Incomplete block "case". If you meant to write the @ character, you should use the "&#64;" HTML entity instead.',
+            '0:16',
           ],
         ]);
       });

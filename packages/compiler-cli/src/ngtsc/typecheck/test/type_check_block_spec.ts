@@ -2002,6 +2002,50 @@ describe('type check blocks', () => {
       );
     });
 
+    it('should generate a switch block with a falltrough for consecutive cases', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case ('one')
+          @case ('two') {
+            {{oneOrTwo()}}
+          }
+          @case ('three') {
+            {{three()}}
+          }
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case "one": ' +
+          'case "two": "" + ((this).oneOrTwo()); break; ' +
+          'case "three": "" + ((this).three()); break; }',
+      );
+    });
+
+    it('should generate a switch block with a fallthrough to default case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1)
+          @case (2) {
+            {{oneOrTwo()}}
+          }
+          @case (3)
+          @default {
+            {{default()}}
+          }
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: ' +
+          'case 2: "" + ((this).oneOrTwo()); break; ' +
+          'case 3: ' +
+          'default: "" + ((this).default()); break; }',
+      );
+    });
+
     it('should generate a switch block that only has a default case', () => {
       const TEMPLATE = `
         @switch (expr) {

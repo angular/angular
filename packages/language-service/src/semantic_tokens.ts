@@ -29,6 +29,7 @@ import {
   TmplAstReference,
   TmplAstSwitchBlock,
   TmplAstSwitchBlockCase,
+  TmplAstSwitchBlockCaseGroup,
   TmplAstText,
   TmplAstTextAttribute,
   TmplAstUnknownBlock,
@@ -170,10 +171,12 @@ class ClassificationVisitor implements TmplAstVisitor {
   visitDeferredTrigger(trigger: TmplAstDeferredTrigger) {}
 
   visitSwitchBlock(block: TmplAstSwitchBlock) {
-    this.visitAll(block.cases);
+    this.visitAll(block.groups);
   }
 
-  visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {
+  visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {}
+
+  visitSwitchBlockCaseGroup(block: TmplAstSwitchBlockCaseGroup) {
     this.visitAll(block.children);
   }
 
