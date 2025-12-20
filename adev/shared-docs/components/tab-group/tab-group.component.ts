@@ -16,6 +16,7 @@ import {
   afterRenderEffect,
   Renderer2,
   ElementRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {_IdGenerator} from '@angular/cdk/a11y';
 
@@ -31,6 +32,7 @@ import {_IdGenerator} from '@angular/cdk/a11y';
   host: {
     class: 'docs-tab-group',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TabGroup {
   private readonly _renderer = inject(Renderer2);

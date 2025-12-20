@@ -14,7 +14,6 @@ import {IconComponent} from '../icon/icon.component';
 import {IsActiveNavigationItem} from '../../pipes';
 import {NgTemplateOutlet, TitleCasePipe} from '@angular/common';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'docs-navigation-list',
@@ -25,7 +24,6 @@ import {ReactiveFormsModule} from '@angular/forms';
     IsActiveNavigationItem,
     NgTemplateOutlet,
     MatTooltipModule,
-    ReactiveFormsModule,
     TitleCasePipe,
   ],
   templateUrl: './navigation-list.component.html',
