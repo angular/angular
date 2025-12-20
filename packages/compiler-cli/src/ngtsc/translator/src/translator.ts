@@ -415,6 +415,11 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     throw new Error('Method not implemented');
   }
 
+  visitSpreadElementExpr(ast: o.outputAst.SpreadElementExpr, context: any): TExpression {
+    const expression = ast.expression.visitExpression(this, context);
+    return this.setSourceMapRange(this.factory.createSpreadElement(expression), ast.sourceSpan);
+  }
+
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, _context: Context): any {
     this.recordWrappedNode(ast);
     return ast.node;
