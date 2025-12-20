@@ -486,6 +486,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     // TODO: Do we *need* to parenthesize everything?
     ast.expr.visitExpression(this, ctx);
   }
+  visitSpreadElementExpr(ast: o.SpreadElementExpr, ctx: EmitterVisitorContext) {
+    ctx.print(ast, '...');
+    ast.expression.visitExpression(this, ctx);
+  }
   visitAllExpressions(
     expressions: o.Expression[],
     ctx: EmitterVisitorContext,

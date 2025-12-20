@@ -280,6 +280,11 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     throw new Error('Method not implemented.');
   }
 
+  visitSpreadElementExpr(ast: o.outputAst.SpreadElementExpr, context: any) {
+    const typeNode = this.translateExpression(ast.expression, context);
+    return ts.factory.createRestTypeNode(typeNode);
+  }
+
   private translateType(type: o.Type, context: Context): ts.TypeNode {
     const typeNode = type.visitType(this, context);
     if (!ts.isTypeNode(typeNode)) {

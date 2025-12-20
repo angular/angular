@@ -1425,6 +1425,31 @@ export class CommaExpr extends Expression {
   }
 }
 
+export class SpreadElementExpr extends Expression {
+  constructor(
+    public expression: Expression,
+    sourceSpan?: ParseSourceSpan | null,
+  ) {
+    super(null, sourceSpan);
+  }
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof SpreadElementExpr && this.expression.isEquivalent(e.expression);
+  }
+
+  override isConstant() {
+    return this.expression.isConstant();
+  }
+
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitSpreadElementExpr(this, context);
+  }
+
+  override clone(): SpreadElementExpr {
+    return new SpreadElementExpr(this.expression.clone(), this.sourceSpan);
+  }
+}
+
 export interface ExpressionVisitor {
   visitReadVarExpr(ast: ReadVarExpr, context: any): any;
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any;
@@ -1452,6 +1477,7 @@ export interface ExpressionVisitor {
   visitArrowFunctionExpr(ast: ArrowFunctionExpr, context: any): any;
   visitParenthesizedExpr(ast: ParenthesizedExpr, context: any): any;
   visitRegularExpressionLiteral(ast: RegularExpressionLiteralExpr, context: any): any;
+  visitSpreadElementExpr(ast: SpreadElementExpr, context: any): any;
 }
 
 export const NULL_EXPR = new LiteralExpr(null, null, null);
@@ -1770,6 +1796,10 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   }
   visitParenthesizedExpr(ast: ParenthesizedExpr, context: any) {
     ast.expr.visitExpression(this, context);
+    return this.visitExpression(ast, context);
+  }
+  visitSpreadElementExpr(ast: SpreadElementExpr, context: any): any {
+    ast.expression.visitExpression(this, context);
     return this.visitExpression(ast, context);
   }
   visitAllExpressions(exprs: Expression[], context: any): void {
