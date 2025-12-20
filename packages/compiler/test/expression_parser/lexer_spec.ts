@@ -430,6 +430,29 @@ describe('lexer', () => {
       expectOperatorToken(lex('??=')[0], 0, 3, '??=');
     });
 
+    it('should tokenize a spread operator', () => {
+      const tokens = lex('{...foo}');
+      expect(tokens.length).toEqual(4);
+      expectCharacterToken(tokens[0], 0, 1, '{');
+      expectOperatorToken(tokens[1], 1, 4, '...');
+      expectIdentifierToken(tokens[2], 4, 7, 'foo');
+      expectCharacterToken(tokens[3], 7, 8, '}');
+    });
+
+    it('should produce an error for a spread with two dots', () => {
+      const tokens = lex('{..foo}');
+      expect(tokens.length).toEqual(4);
+      expectCharacterToken(tokens[0], 0, 1, '{');
+      expectErrorToken(
+        tokens[1],
+        3,
+        3,
+        'Lexer Error: Unexpected character [.] at column 3 in expression [{..foo}]',
+      );
+      expectIdentifierToken(tokens[2], 3, 6, 'foo');
+      expectCharacterToken(tokens[3], 6, 7, '}');
+    });
+
     describe('template literals', () => {
       it('should tokenize template literal with no interpolations', () => {
         const tokens: Token[] = lex('`hello world`');
