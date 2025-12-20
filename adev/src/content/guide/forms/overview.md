@@ -304,7 +304,7 @@ Here are the steps performed in the model to view test.
 
 1. Use the component instance to set the value of the `favoriteColor` property.
 1. Run change detection through the test fixture.
-1. Use the `tick()` method to simulate the passage of time within the `fakeAsync()` task.
+1. Use `await fixture.whenStable()` to wait for the next rendering.
 1. Query the view for the form input element.
 1. Assert that the input value matches the value of the `favoriteColor` property in the component instance.
 
