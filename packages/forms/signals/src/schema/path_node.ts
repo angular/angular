@@ -13,7 +13,7 @@ import type {SchemaImpl} from './schema';
 /**
  * Special key which is used to retrieve the `FieldPathNode` instance from its `FieldPath` proxy wrapper.
  */
-const PATH = Symbol('PATH');
+const PATH: unique symbol = /* @__PURE__ */ Symbol('PATH');
 
 /**
  * A path in the schema on which logic is stored so that it can be added to the corresponding field
