@@ -38,6 +38,17 @@ function transformLiteralArray(expr: o.LiteralArrayExpr): o.Expression {
   const derivedEntries: o.Expression[] = [];
   const nonConstantArgs: o.Expression[] = [];
   for (const entry of expr.entries) {
+    if (entry instanceof o.SpreadElementExpr) {
+      if (entry.expression.isConstant()) {
+        derivedEntries.push(entry);
+      } else {
+        const idx = nonConstantArgs.length;
+        nonConstantArgs.push(entry.expression);
+        derivedEntries.push(new o.SpreadElementExpr(new ir.PureFunctionParameterExpr(idx)));
+      }
+      continue;
+    }
+
     if (entry.isConstant()) {
       derivedEntries.push(entry);
     } else {

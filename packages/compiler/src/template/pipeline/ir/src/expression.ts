@@ -1319,6 +1319,8 @@ export function transformExpressionsInExpression(
     }
   } else if (expr instanceof o.ParenthesizedExpr) {
     expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
+  } else if (expr instanceof o.SpreadElementExpr) {
+    expr.expression = transformExpressionsInExpression(expr.expression, transform, flags);
   } else if (
     expr instanceof o.ReadVarExpr ||
     expr instanceof o.ExternalExpr ||

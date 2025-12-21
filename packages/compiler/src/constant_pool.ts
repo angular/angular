@@ -11,16 +11,6 @@ import * as o from './output/output_ast';
 const CONSTANT_PREFIX = '_c';
 
 /**
- * `ConstantPool` tries to reuse literal factories when two or more literals are identical.
- * We determine whether literals are identical by creating a key out of their AST using the
- * `KeyVisitor`. This constant is used to replace dynamic expressions which can't be safely
- * converted into a key. E.g. given an expression `{foo: bar()}`, since we don't know what
- * the result of `bar` will be, we create a key that looks like `{foo: <unknown>}`. Note
- * that we use a variable, rather than something like `null` in order to avoid collisions.
- */
-const UNKNOWN_VALUE_KEY = o.variable('<unknown>');
-
-/**
  * Context to use when producing a key.
  *
  * This ensures we see the constant not the reference variable when producing
@@ -277,16 +267,14 @@ export class GenericKeyFn implements ExpressionKeyFn {
       return `read(${expr.name})`;
     } else if (expr instanceof o.TypeofExpr) {
       return `typeof(${this.keyOf(expr.expr)})`;
+    } else if (expr instanceof o.SpreadElementExpr) {
+      return `...${this.keyOf(expr.expression)}`;
     } else {
       throw new Error(
         `${this.constructor.name} does not handle expressions of type ${expr.constructor.name}`,
       );
     }
   }
-}
-
-function isVariable(e: o.Expression): e is o.ReadVarExpr {
-  return e instanceof o.ReadVarExpr;
 }
 
 function isLongStringLiteral(expr: o.Expression): boolean {

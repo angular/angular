@@ -1218,6 +1218,8 @@ function convertAst(
     );
   } else if (ast instanceof e.RegularExpressionLiteral) {
     return new o.RegularExpressionLiteralExpr(ast.body, ast.flags, baseSourceSpan);
+  } else if (ast instanceof e.SpreadElement) {
+    return new o.SpreadElementExpr(convertAst(ast.expression, job, baseSourceSpan));
   } else {
     throw new Error(
       `Unhandled expression type "${ast.constructor.name}" in file "${baseSourceSpan?.start.file.url}"`,

@@ -45,6 +45,7 @@ import {
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
+  SpreadElement,
   TaggedTemplateLiteral,
   TemplateBinding,
   TemplateBindingIdentifier,
@@ -1136,11 +1137,7 @@ class _ParseAST {
       this.advance();
       return new ThisReceiver(this.span(start), this.sourceSpan(start));
     } else if (this.consumeOptionalCharacter(chars.$LBRACKET)) {
-      this.rbracketsExpected++;
-      const elements = this.parseExpressionList(chars.$RBRACKET);
-      this.rbracketsExpected--;
-      this.expectCharacter(chars.$RBRACKET);
-      return new LiteralArray(this.span(start), this.sourceSpan(start), elements);
+      return this.parseLiteralArray(start);
     } else if (this.next.isCharacter(chars.$LBRACE)) {
       return this.parseLiteralMap();
     } else if (this.next.isIdentifier()) {
@@ -1175,17 +1172,28 @@ class _ParseAST {
     }
   }
 
-  private parseExpressionList(terminator: number): AST[] {
-    const result: AST[] = [];
+  private parseLiteralArray(arrayStart: number): LiteralArray {
+    this.rbracketsExpected++;
+    const elements: AST[] = [];
 
     do {
-      if (!this.next.isCharacter(terminator)) {
-        result.push(this.parsePipe());
+      if (this.next.isOperator('...')) {
+        const spreadStart = this.inputIndex;
+        this.advance();
+        const expression = this.parsePipe();
+        const span = this.span(spreadStart);
+        const sourceSpan = this.sourceSpan(spreadStart);
+        elements.push(new SpreadElement(span, sourceSpan, expression));
+      } else if (!this.next.isCharacter(chars.$RBRACKET)) {
+        elements.push(this.parsePipe());
       } else {
         break;
       }
     } while (this.consumeOptionalCharacter(chars.$COMMA));
-    return result;
+
+    this.rbracketsExpected--;
+    this.expectCharacter(chars.$RBRACKET);
+    return new LiteralArray(this.span(arrayStart), this.sourceSpan(arrayStart), elements);
   }
 
   private parseLiteralMap(): LiteralMap {
