@@ -41,6 +41,7 @@
     padding: 0.75rem 1.5rem;
     width: max-content;
     color: transparent;
+    user-select: none;
 
     // border gradient / background
     --angle: 90deg;
@@ -66,7 +67,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.3s ease, background 0.3s ease;
+      transition:
+        opacity 0.3s ease,
+        background 0.3s ease;
       color: var(--primary-contrast);
     }
 
@@ -80,7 +83,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.3s ease, background 0.3s ease;
+      transition:
+        opacity 0.3s ease,
+        background 0.3s ease;
       color: var(--primary-contrast);
     }
 
