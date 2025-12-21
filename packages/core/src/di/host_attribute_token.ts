@@ -37,6 +37,10 @@ export class HostAttributeToken {
   __NG_ELEMENT_ID__ = () => ɵɵinjectAttribute(this.attributeName);
 
   toString(): string {
-    return `HostAttributeToken ${this.attributeName}`;
+    if (ngDevMode) {
+      return `HostAttributeToken ${this.attributeName}`;
+    }
+
+    return '';
   }
 }

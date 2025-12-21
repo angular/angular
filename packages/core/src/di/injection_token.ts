@@ -124,7 +124,11 @@ export class InjectionToken<T> {
   }
 
   toString(): string {
-    return `InjectionToken ${this._desc}`;
+    if (ngDevMode) {
+      return `InjectionToken ${this._desc}`;
+    }
+
+    return '';
   }
 }
 
