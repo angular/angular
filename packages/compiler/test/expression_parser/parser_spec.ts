@@ -209,6 +209,14 @@ describe('parser', () => {
         checkAction('{...foo, middle: true, ...bar}');
         checkAction('{...{...{...{foo: 1}}}}');
       });
+
+      it('should spread elements in array literals', () => {
+        checkAction('[...foo]');
+        checkAction('[1, ...foo, 2]');
+        checkAction('[...foo, middle, ...bar]');
+        checkAction('[...[...[...[1]]]]');
+        checkAction('[a, ...b, ...[1, 2, 3]]');
+      });
     });
 
     describe('member access', () => {
@@ -753,6 +761,16 @@ describe('parser', () => {
       expect(getSource(literal.keys[2].span)).toBe('three');
       expect(getSource(literal.keys[3].span)).toBe('"four"');
       expect(getSource(literal.keys[4].span)).toBe('...');
+    });
+
+    it('should record span for spread elements', () => {
+      expect(unparseWithSpan(parseBinding('[...foo]'))).toEqual([
+        ['[...foo]', '[...foo]'],
+        ['...foo', '...foo'],
+        ['foo', 'foo'],
+        ['foo', '[nameSpan] foo'],
+        ['', ''],
+      ]);
     });
   });
 

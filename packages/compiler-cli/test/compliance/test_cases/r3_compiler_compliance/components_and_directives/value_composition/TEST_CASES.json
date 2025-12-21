@@ -229,6 +229,16 @@
       ]
     },
     {
+      "description": "should support spread elements in array literals",
+      "inputFiles": ["array_literal_spread.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid array emit",
+          "files": ["array_literal_spread.js"]
+        }
+      ]
+    },
+    {
       "description": "should support object literals",
       "inputFiles": ["object_literals.ts"],
       "expectations": [

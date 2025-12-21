@@ -514,6 +514,55 @@ export declare class MyModule {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: array_literal_spread.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class ArrayComp {
+    constructor() {
+        this.foo = [];
+        this.bar = [];
+        this.baz = [];
+    }
+}
+ArrayComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ArrayComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+ArrayComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: ArrayComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @let simple = [...foo];
+    @let otherEntries = [1, ...foo, 2];
+    @let multipleSpreads = [...foo, 1, ...bar, ...baz, 2];
+    @let inlineArraySpread = [1, ...[2, ...[3]]];
+
+    <!-- Use the arrays so they don't get flagged as unused. -->
+    {{simple}} {{otherEntries}} {{multipleSpreads}} {{inlineArraySpread}}
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ArrayComp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @let simple = [...foo];
+    @let otherEntries = [1, ...foo, 2];
+    @let multipleSpreads = [...foo, 1, ...bar, ...baz, 2];
+    @let inlineArraySpread = [1, ...[2, ...[3]]];
+
+    <!-- Use the arrays so they don't get flagged as unused. -->
+    {{simple}} {{otherEntries}} {{multipleSpreads}} {{inlineArraySpread}}
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: array_literal_spread.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class ArrayComp {
+    foo: never[];
+    bar: never[];
+    baz: never[];
+    static ɵfac: i0.ɵɵFactoryDeclaration<ArrayComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<ArrayComp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: object_literals.js
  ****************************************************************************************************/
 import { Component, Input, NgModule } from '@angular/core';

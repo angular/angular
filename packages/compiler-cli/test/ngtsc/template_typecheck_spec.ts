@@ -3365,6 +3365,31 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should type check array spread elements in templates', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '@let array = [1, ...foo]; {{checkArray(array)}}',
+        })
+        export class TestCmp {
+          foo = ['two'];
+
+          checkArray(arr: number[]) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(1);
+      expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toBe(
+        `Argument of type '(string | number)[]' is not assignable to parameter of type 'number[]'.`,
+      );
+    });
+
     describe('template literals', () => {
       it('should treat template literals as strings', () => {
         env.write(

@@ -2758,6 +2758,23 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toContain('Hello, Bilbo');
   });
 
+  it('should support arrays with spread elements in templates', () => {
+    @Component({
+      template: "@let arr = [...[...[...foo]], 'Baggins']; Hello, {{arr[0]}} {{arr[1]}}",
+    })
+    class TestComponent {
+      foo = ['Frodo'];
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Hello, Frodo Baggins');
+
+    fixture.componentInstance.foo = ['Bilbo'];
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Hello, Bilbo Baggins');
+  });
+
   it('should have correct operator precedence', () => {
     @Component({
       template: '{{1 + 10 ** -2 * 3}}',
