@@ -9,7 +9,7 @@ import {Signal} from '../reactivity/api';
 import {WritableSignal} from '../reactivity/signal';
 
 /** A unique symbol used to identify {@link ɵControl} implementations. */
-export const ɵCONTROL: unique symbol = Symbol('CONTROL');
+export const ɵCONTROL: unique symbol = /* @__PURE__ */ Symbol('CONTROL');
 
 /**
  * Instructions for dynamically binding a {@link ɵControl} to a form control.

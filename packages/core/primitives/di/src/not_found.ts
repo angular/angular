@@ -10,7 +10,7 @@
  * Value returned if the key-value pair couldn't be found in the context
  * hierarchy.
  */
-export const NOT_FOUND: unique symbol = Symbol('NotFound');
+export const NOT_FOUND: unique symbol = /* @__PURE__ */ Symbol('NotFound');
 
 /**
  * Error thrown when the key-value pair couldn't be found in the context
