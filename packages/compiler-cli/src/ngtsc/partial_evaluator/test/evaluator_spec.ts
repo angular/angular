@@ -425,6 +425,33 @@ runInEachFileSystem(() => {
       expect(local.ownedByModuleGuess).toBeNull();
     });
 
+    // https://github.com/angular/angular/issues/65686
+    it('supports declarations of readonly tuples with class references using qualified names', () => {
+      const tuple = evaluate(
+        `
+        import * as ext from 'external';
+        declare class Local {}
+        declare const x: readonly [typeof ext.External];`,
+        `x`,
+        [
+          {
+            name: _('/node_modules/external/index.d.ts'),
+            contents: 'export declare class External {}',
+          },
+        ],
+      );
+      if (!Array.isArray(tuple)) {
+        return fail('Should have evaluated tuple as an array');
+      }
+      const [external] = tuple;
+      if (!(external instanceof Reference)) {
+        return fail('Should have evaluated `typeof ext.External` to a Reference');
+      }
+      expect(ts.isClassDeclaration(external.node)).toBe(true);
+      expect(external.debugName).toBe('External');
+      expect(external.ownedByModuleGuess).toBe('external');
+    });
+
     it('evaluates tuple elements it cannot understand to DynamicValue', () => {
       const value = evaluate(`declare const x: ['foo', string];`, `x`) as [string, DynamicValue];
 
