@@ -11,8 +11,6 @@ import {
   computed,
   createEnvironmentInjector,
   EnvironmentInjector,
-  Injector,
-  Signal,
   signal,
 } from '../../src/core';
 import {toObservable} from '../src';

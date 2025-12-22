@@ -95,9 +95,6 @@ export class ComponentFixture<T> {
 
   private subscriptions = new Subscription();
 
-  // TODO(atscott): Remove this from public API
-  ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
-
   /** @docs-private */
   constructor(public componentRef: ComponentRef<T>) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
