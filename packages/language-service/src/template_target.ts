@@ -17,6 +17,7 @@ import {
   PropertyRead,
   RecursiveAstVisitor,
   SafeCall,
+  ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundDeferredTrigger,
   TmplAstBoundEvent,
@@ -723,7 +724,11 @@ class ExpressionVisitor extends RecursiveAstVisitor {
     }
     // The third condition is to account for the implicit receiver, which should
     // not be visited.
-    if (isWithin(this.position, node.sourceSpan) && !(node instanceof ImplicitReceiver)) {
+    if (
+      isWithin(this.position, node.sourceSpan) &&
+      !(node instanceof ImplicitReceiver) &&
+      !(node instanceof ThisReceiver)
+    ) {
       path.push(node);
       node.visit(this, path);
     }

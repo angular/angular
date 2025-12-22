@@ -1067,10 +1067,7 @@ function convertAst(
   if (ast instanceof e.ASTWithSource) {
     return convertAst(ast.ast, job, baseSourceSpan);
   } else if (ast instanceof e.PropertyRead) {
-    // Whether this is an implicit receiver, *excluding* explicit reads of `this`.
-    const isImplicitReceiver =
-      ast.receiver instanceof e.ImplicitReceiver && !(ast.receiver instanceof e.ThisReceiver);
-    if (isImplicitReceiver) {
+    if (ast.receiver instanceof e.ImplicitReceiver) {
       return new ir.LexicalReadExpr(ast.name);
     } else {
       return new o.ReadPropExpr(

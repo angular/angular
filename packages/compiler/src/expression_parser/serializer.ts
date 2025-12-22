@@ -94,7 +94,10 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
   }
 
   visitPropertyRead(ast: expr.PropertyRead, context: any): string {
-    if (ast.receiver instanceof expr.ImplicitReceiver) {
+    if (
+      ast.receiver instanceof expr.ImplicitReceiver ||
+      ast.receiver instanceof expr.ThisReceiver
+    ) {
       return ast.name;
     } else {
       return `${ast.receiver.visit(this, context)}.${ast.name}`;

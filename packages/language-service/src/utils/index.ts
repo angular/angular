@@ -17,7 +17,6 @@ import {
   ParseSpan,
   PropertyRead,
   SelectorMatcher,
-  ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstElement,
@@ -400,12 +399,7 @@ export function filterAliasImports(displayParts: ts.SymbolDisplayPart[]): ts.Sym
 }
 
 export function isDollarEvent(n: TmplAstNode | AST): n is PropertyRead {
-  return (
-    n instanceof PropertyRead &&
-    n.name === '$event' &&
-    n.receiver instanceof ImplicitReceiver &&
-    !(n.receiver instanceof ThisReceiver)
-  );
+  return n instanceof PropertyRead && n.name === '$event' && n.receiver instanceof ImplicitReceiver;
 }
 
 export function isTypeScriptFile(fileName: string): boolean {
