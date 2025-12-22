@@ -461,7 +461,12 @@ export class NavigationStateManager extends StateManager {
       >((resolve) => {
         // The `precommitHandler` option is not in the standard DOM types yet
         (interceptOptions as any).precommitHandler = (controller: any) => {
-          resolve(controller.redirect.bind(controller));
+          if (this.navigation.transition?.navigationType === 'traverse') {
+            // TODO(atscott): Figure out correct behavior for redirecting traversals
+            resolve(() => {});
+          } else {
+            resolve(controller.redirect.bind(controller));
+          }
           return precommitHandlerPromise;
         };
       });
@@ -541,9 +546,7 @@ export class NavigationStateManager extends StateManager {
     return (
       this.precommitHandlerSupported &&
       // Cannot defer commit if not cancelable by the Navigation API's rules.
-      event.cancelable &&
-      // Deferring a traversal commit is currently problematic or not fully supported.
-      event.navigationType !== 'traverse'
+      event.cancelable
     );
   }
 }
