@@ -20,7 +20,6 @@ import {
   PropertyRead,
   RecursiveAstVisitor,
   SafePropertyRead,
-  ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstBoundText,
@@ -444,7 +443,7 @@ function traverseReceiverAndLookupSymbol(
     path.unshift(node.name);
   }
 
-  if (!(node.receiver instanceof ImplicitReceiver || node.receiver instanceof ThisReceiver)) {
+  if (!(node.receiver instanceof ImplicitReceiver)) {
     return null;
   }
 

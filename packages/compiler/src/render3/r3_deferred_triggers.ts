@@ -16,7 +16,6 @@ import {
   LiteralPrimitive,
   PropertyRead,
   RecursiveAstVisitor,
-  ThisReceiver,
 } from '../expression_parser/ast';
 import {Lexer, Token, TokenType} from '../expression_parser/lexer';
 import * as html from '../ml_parser/ast';
@@ -632,11 +631,7 @@ function createViewportTrigger(
       const value = parsed.ast.values[triggerIndex];
       const triggerFilter = (_: unknown, index: number) => index !== triggerIndex;
 
-      if (
-        !(value instanceof PropertyRead) ||
-        !(value.receiver instanceof ImplicitReceiver) ||
-        value.receiver instanceof ThisReceiver
-      ) {
+      if (!(value instanceof PropertyRead) || !(value.receiver instanceof ImplicitReceiver)) {
         throw new Error(`"trigger" option of the "viewport" trigger must be an identifier`);
       }
 

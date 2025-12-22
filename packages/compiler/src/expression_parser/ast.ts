@@ -57,15 +57,7 @@ export class ImplicitReceiver extends AST {
   }
 }
 
-/**
- * Receiver when something is accessed through `this` (e.g. `this.foo`). Note that this class
- * inherits from `ImplicitReceiver`, because accessing something through `this` is treated the
- * same as accessing it implicitly inside of an Angular template (e.g. `[attr.title]="this.title"`
- * is the same as `[attr.title]="title"`.). Inheriting allows for the `this` accesses to be treated
- * the same as implicit ones, except for a couple of exceptions like `$event` and `$any`.
- * TODO: we should find a way for this class not to extend from `ImplicitReceiver` in the future.
- */
-export class ThisReceiver extends ImplicitReceiver {
+export class ThisReceiver extends AST {
   override visit(visitor: AstVisitor, context: any = null): any {
     return visitor.visitThisReceiver?.(this, context);
   }

@@ -32,6 +32,7 @@ import {
   TmplAstVariable,
   TmplAstLetDeclaration,
   TmplAstSwitchBlock,
+  ThisReceiver,
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
@@ -393,7 +394,8 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     if (
       this.node instanceof EmptyExpr ||
       this.node instanceof BoundEvent ||
-      this.node.receiver instanceof ImplicitReceiver
+      this.node.receiver instanceof ImplicitReceiver ||
+      this.node.receiver instanceof ThisReceiver
     ) {
       return this.getGlobalPropertyExpressionCompletion(options);
     } else {
@@ -417,6 +419,7 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
 
       if (
         !(this.node.receiver instanceof ImplicitReceiver) &&
+        !(this.node.receiver instanceof ThisReceiver) &&
         !(this.node instanceof SafePropertyRead) &&
         options?.includeCompletionsWithInsertText &&
         options.includeAutomaticOptionalChainCompletions !== false
@@ -463,7 +466,8 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
     if (
       this.node instanceof EmptyExpr ||
       this.node instanceof BoundEvent ||
-      this.node.receiver instanceof ImplicitReceiver
+      this.node.receiver instanceof ImplicitReceiver ||
+      this.node.receiver instanceof ThisReceiver
     ) {
       details = this.getGlobalPropertyExpressionCompletionDetails(
         entryName,
@@ -505,7 +509,8 @@ export class CompletionBuilder<N extends TmplAstNode | AST> {
       this.node instanceof EmptyExpr ||
       this.node instanceof LiteralPrimitive ||
       this.node instanceof BoundEvent ||
-      this.node.receiver instanceof ImplicitReceiver
+      this.node.receiver instanceof ImplicitReceiver ||
+      this.node.receiver instanceof ThisReceiver
     ) {
       return this.getGlobalPropertyExpressionCompletionSymbol(name);
     } else {
