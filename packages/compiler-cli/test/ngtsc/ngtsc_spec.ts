@@ -2589,11 +2589,69 @@ runInEachFileSystem((os: string) => {
           export class HelloDir {}
 
           const someVar = {} as any;
+          const tuple = [() => {}] as const;
 
           @Component({
             template: '<div hello></div>',
             imports: [
               someVar,
+              HelloDir,
+              'invalid',
+              tuple,
+            ]
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(3);
+      {
+        const message = ts.flattenDiagnosticMessageText(diags[0].messageText, '\n');
+        expect(getDiagnosticSourceCode(diags[0])).toBe('someVar');
+        expect(message).toContain(
+          `'imports' must be an array of components, directives, pipes, or NgModules.`,
+        );
+        expect(message).toContain(`Value is of type '{}'`);
+      }
+      {
+        const message = ts.flattenDiagnosticMessageText(diags[1].messageText, '\n');
+        expect(getDiagnosticSourceCode(diags[1])).toBe(`'invalid'`);
+        expect(message).toContain(
+          `'imports' must be an array of components, directives, pipes, or NgModules.`,
+        );
+        expect(message).toContain(`Value is of type 'string'`);
+      }
+      {
+        const message = ts.flattenDiagnosticMessageText(diags[2].messageText, '\n');
+        expect(getDiagnosticSourceCode(diags[2])).toBe('tuple');
+        expect(message).toContain(
+          `'imports' must be an array of components, directives, pipes, or NgModules.`,
+        );
+        expect(message).toContain(`Value is of type '[(not statically analyzable)]'.`);
+      }
+    });
+
+    it('should report imports diagnostic for declaration file in original expression', () => {
+      env.write(
+        'node_modules/external/index.d.ts',
+        `
+        export declare const UNRESOLVED_ITEM: readonly [unresolved];
+      `,
+      );
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive} from '@angular/core';
+          import {UNRESOLVED_ITEM as Unresolved} from 'external';
+
+          @Directive({selector: '[hello]'})
+          export class HelloDir {}
+
+          @Component({
+            template: '<div hello></div>',
+            imports: [
+              [Unresolved],
               HelloDir,
             ]
           })
@@ -2606,11 +2664,12 @@ runInEachFileSystem((os: string) => {
         ? ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')
         : '';
       expect(diags.length).toBe(1);
-      expect(getDiagnosticSourceCode(diags[0])).toBe('someVar');
+      expect(diags[0].file!.fileName).toContain('test.ts');
+      expect(getDiagnosticSourceCode(diags[0])).toBe('Unresolved');
       expect(message).toContain(
         `'imports' must be an array of components, directives, pipes, or NgModules.`,
       );
-      expect(message).toContain(`Value is of type '{}'`);
+      expect(message).toContain(`Value is of type '[(not statically analyzable)]'.`);
     });
 
     describe('empty and missing selectors', () => {
