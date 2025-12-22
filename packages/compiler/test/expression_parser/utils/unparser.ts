@@ -52,7 +52,10 @@ class Unparser implements AstVisitor {
 
   visitPropertyRead(ast: PropertyRead, context: any) {
     this._visit(ast.receiver);
-    this._expression += ast.receiver instanceof ImplicitReceiver ? `${ast.name}` : `.${ast.name}`;
+    this._expression +=
+      ast.receiver instanceof ImplicitReceiver || ast.receiver instanceof ThisReceiver
+        ? `${ast.name}`
+        : `.${ast.name}`;
   }
 
   visitUnary(ast: Unary, context: any) {

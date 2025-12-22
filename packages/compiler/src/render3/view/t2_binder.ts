@@ -12,7 +12,6 @@ import {
   ImplicitReceiver,
   PropertyRead,
   SafePropertyRead,
-  ThisReceiver,
 } from '../../expression_parser/ast';
 import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../directive_matching';
 import {
@@ -1004,7 +1003,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
   private maybeMap(ast: PropertyRead | SafePropertyRead, name: string): void {
     // If the receiver of the expression isn't the `ImplicitReceiver`, this isn't the root of an
     // `AST` expression that maps to a `Variable` or `Reference`.
-    if (!(ast.receiver instanceof ImplicitReceiver) || ast.receiver instanceof ThisReceiver) {
+    if (!(ast.receiver instanceof ImplicitReceiver)) {
       return;
     }
 
