@@ -51,7 +51,7 @@ import { ActivatedRoute } from '@angular/router';
   template: '<h1>User Profile: {{userId}}</h1>'
 })
 export class UserProfile {
-  private route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
   userId: string | null = this.route.snapshot.paramMap.get('id');
 }
 ```
@@ -314,7 +314,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   template: '<div>Search term: {{searchTerm()}}</div>'
 })
 export class Search {
-  private route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
   private queryParams = toSignal(this.route.queryParams, { initialValue: {} });
 
   searchTerm = computed(() => this.queryParams()['q'] || null);

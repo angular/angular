@@ -80,7 +80,7 @@ export class OuterContainer {}
   `,
 })
 export class InnerItem {
-  private viewContainer = inject(ViewContainerRef);
+  private readonly viewContainer = inject(ViewContainerRef);
 
   loadContent() {
     this.viewContainer.createComponent(LeafContent);
@@ -190,7 +190,7 @@ import {ThemeDirective} from '../theme.directive';
   template: `<ng-container #container />`,
 })
 export class HostComponent {
-  private vcr = inject(ViewContainerRef);
+  private readonly vcr = inject(ViewContainerRef);
   readonly canClose = signal(true);
   readonly isExpanded = signal(true);
 

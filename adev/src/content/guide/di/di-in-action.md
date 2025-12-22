@@ -18,7 +18,7 @@ import {Directive, ElementRef, inject} from '@angular/core';
   selector: '[appHighlight]',
 })
 export class HighlightDirective {
-  private element = inject(ElementRef);
+  private readonly element = inject(ElementRef);
 
   update() {
     this.element.nativeElement.style.color = 'red';
@@ -37,7 +37,7 @@ import {Directive, HOST_TAG_NAME, inject} from '@angular/core';
   selector: '[roleButton]',
 })
 export class RoleButtonDirective {
-  private tagName = inject(HOST_TAG_NAME);
+  private readonly tagName = inject(HOST_TAG_NAME);
 
   onAction() {
     switch (this.tagName) {

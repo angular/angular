@@ -50,7 +50,7 @@ In the following example, the `@Component()` metadata object and the class const
 })
 export class TypicalComponent {
   data = input.required<TypicalData>();
-  private someService = inject(SomeService);
+  private readonly someService = inject(SomeService);
 }
 
 ```

@@ -58,10 +58,11 @@ In this step, you will get the route parameter in the `Details`. Currently, the 
 
          ```ts
          export class Details {
-            route: ActivatedRoute = inject(ActivatedRoute);
+            readonly route: ActivatedRoute = inject(ActivatedRoute);
             housingLocationId = -1;
+
             constructor() {
-            this.housingLocationId = Number(this.route.snapshot.params['id']);
+              this.housingLocationId = Number(this.route.snapshot.params['id']);
             }
          }
          ```

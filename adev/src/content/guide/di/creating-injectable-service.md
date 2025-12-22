@@ -45,8 +45,8 @@ import {inject} from '@angular/core';
 export class HeroService {
   private heroes: Hero[] = [];
 
-  private backend = inject(BackendService);
-  private logger = inject(Logger);
+  private readonly backend = inject(BackendService);
+  private readonly logger = inject(Logger);
 
   async getHeroes() {
     // Fetch
@@ -115,7 +115,7 @@ The type of `heroService` is `HeroService`.
 import {inject} from '@angular/core';
 
 export class HeroListComponent {
-  private heroService = inject(HeroService);
+  private readonly heroService = inject(HeroService);
 }
 ```
 
@@ -141,7 +141,7 @@ import {Logger} from '../logger.service';
   providedIn: 'root',
 })
 export class HeroService {
-  private logger = inject(Logger);
+  private readonly logger = inject(Logger);
 
   getHeroes() {
     this.logger.log('Getting heroes.');

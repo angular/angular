@@ -41,7 +41,7 @@ This requires access to a given injector, like the `EnvironmentInjector`, for ex
   providedIn: 'root',
 })
 export class HeroService {
-  private environmentInjector = inject(EnvironmentInjector);
+  private readonly environmentInjector = inject(EnvironmentInjector);
 
   someMethod() {
     runInInjectionContext(this.environmentInjector, () => {

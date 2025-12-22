@@ -195,7 +195,7 @@ import { ROUTER_OUTLET_DATA } from '@angular/router';
   template: `<p>Stats view (layout: {{ outletData().layout }})</p>`,
 })
 export class StatsComponent {
-  outletData = inject(ROUTER_OUTLET_DATA) as Signal<{ layout: string }>;
+  readonly outletData = inject(ROUTER_OUTLET_DATA) as Signal<{ layout: string }>;
 }
 ```
 

@@ -611,7 +611,7 @@ import { form, Field, required, validateHttp } from '@angular/forms/signals'
   `
 })
 export class UsernameFormComponent {
-  http = inject(HttpClient)
+  readonly http = inject(HttpClient)
 
   usernameModel = signal({ username: '' })
 

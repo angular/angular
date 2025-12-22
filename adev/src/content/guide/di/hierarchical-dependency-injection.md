@@ -195,7 +195,7 @@ In the following example, the service, `OptionalService`, isn't provided in the 
 
 ```ts {header:"src/app/optional/optional.component.ts"}
 export class OptionalComponent {
-  public optional? = inject(OptionalService, {optional: true});
+  public readonly optional? = inject(OptionalService, {optional: true});
 }
 ```
 
@@ -215,7 +215,7 @@ For example, in the following `SelfNoDataComponent`, notice the injected `LeafSe
   styleUrls: ['./self-no-data.component.css'],
 })
 export class SelfNoDataComponent {
-  public leaf = inject(LeafService, {optional: true, self: true});
+  public readonly leaf = inject(LeafService, {optional: true, self: true});
 }
 ```
 
@@ -263,7 +263,7 @@ This is when you'd use `skipSelf`:
 })
 export class SkipselfComponent {
   // Use skipSelf as inject option
-  public leaf = inject(LeafService, {skipSelf: true});
+  public readonly leaf = inject(LeafService, {skipSelf: true});
 }
 ```
 
@@ -278,7 +278,7 @@ In the following example, the `Person` service is injected during property initi
 
 ```ts
 class Person {
-  parent = inject(Person, {optional: true, skipSelf: true});
+  readonly parent = inject(Person, {optional: true, skipSelf: true});
 }
 ```
 
@@ -301,7 +301,7 @@ Use `host` as follows:
 })
 export class HostComponent {
   // use host when injecting the service
-  flower = inject(FlowerService, {host: true, optional: true});
+  readonly flower = inject(FlowerService, {host: true, optional: true});
 }
 ```
 
@@ -422,7 +422,7 @@ Now, consider that `<app-root>` injects the `FlowerService`:
 
 ```typescript
 export class AppComponent {
-  flower = inject(FlowerService);
+  readonly flower = inject(FlowerService);
 }
 ```
 
@@ -486,7 +486,7 @@ Now, in the `ChildComponent` class, add a provider for `FlowerService` to demons
 })
 export class ChildComponent {
   // inject the service
-  flower = inject(FlowerService);
+  readonly flower = inject(FlowerService);
 }
 ```
 
@@ -559,8 +559,8 @@ Following the same pattern as with the `FlowerService`, inject the `AnimalServic
 
 ```ts
 export class AppComponent {
-  public flower = inject(FlowerService);
-  public animal = inject(AnimalService);
+  public readonly flower = inject(FlowerService);
+  public readonly animal = inject(AnimalService);
 }
 ```
 
@@ -580,8 +580,8 @@ Here, it has a value of dog 🐶.
 })
 export class ChildComponent {
   // inject services
-  flower = inject(FlowerService);
-  animal = inject(AnimalService);
+  readonly flower = inject(FlowerService);
+  readonly animal = inject(AnimalService);
 }
 ```
 
@@ -643,8 +643,8 @@ In `inspector.component.ts`, inject the `FlowerService` and `AnimalService` duri
 
 ```typescript
 export class InspectorComponent {
-  flower = inject(FlowerService);
-  animal = inject(AnimalService);
+  readonly flower = inject(FlowerService);
+  readonly animal = inject(AnimalService);
 }
 ```
 
@@ -754,7 +754,7 @@ To alter where the injector starts looking for `FlowerService`, add `skipSelf` t
 This invocation is a property initializer the `<app-child>` as shown in `child.component.ts`:
 
 ```typescript
-flower = inject(FlowerService, {skipSelf: true});
+readonly flower = inject(FlowerService, {skipSelf: true});
 ```
 
 With `skipSelf`, the `<app-child>` injector doesn't look to itself for the `FlowerService`.
@@ -859,7 +859,7 @@ You can also see `host` the `inject()`:
   ]
 })
 export class ChildComponent {
-  animal = inject(AnimalService, { host: true })
+  readonly animal = inject(AnimalService, { host: true })
 }
 ```
 
@@ -897,7 +897,7 @@ Here are `host` and `skipSelf` in the `animal` property initialization:
 
 ```typescript
 export class ChildComponent {
-  animal = inject(AnimalService, {host: true, skipSelf: true});
+  readonly animal = inject(AnimalService, {host: true, skipSelf: true});
 }
 ```
 
@@ -996,7 +996,7 @@ export class HeroTaxReturnService {
   private currentTaxReturn!: HeroTaxReturn;
   private originalTaxReturn!: HeroTaxReturn;
 
-  private heroService = inject(HeroesService);
+  private readonly heroService = inject(HeroesService);
 
   set taxReturn(htr: HeroTaxReturn) {
     this.originalTaxReturn = htr;
@@ -1048,7 +1048,7 @@ export class HeroTaxReturnComponent {
     });
   }
 
-  private heroTaxReturnService = inject(HeroTaxReturnService);
+  private readonly heroTaxReturnService = inject(HeroTaxReturnService);
 
   onCanceled() {
     this.flashMessage('Canceled');

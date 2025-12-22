@@ -45,7 +45,7 @@ import { Calculator } from './calculator';
 })
 
 export class Receipt {
-  private calculator = inject(Calculator);
+  private readonly calculator = inject(Calculator);
   totalCost = this.calculator.add(50, 25);
 }
 ```

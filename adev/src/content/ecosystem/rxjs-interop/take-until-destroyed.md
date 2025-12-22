@@ -11,8 +11,8 @@ import {NotificationDispatcher, CustomPopupShower} from './some-shared-project-c
 
 @Component(/* ... */)
 export class UserProfile {
-  private dispatcher = inject(NotificationDispatcher);
-  private popup = inject(CustomPopupShower);
+  private readonly dispatcher = inject(NotificationDispatcher);
+  private readonly popup = inject(CustomPopupShower);
 
   constructor() {
     // This subscription the 'notifications' Observable is automatically
@@ -30,9 +30,9 @@ The `takeUntilDestroyed` operator accepts a single optional [`DestroyRef`](/api/
 ```typescript
 @Component(/* ... */)
 export class UserProfile {
-  private dispatcher = inject(NotificationDispatcher);
-  private popup = inject(CustomPopupShower);
-  private destroyRef = inject(DestroyRef);
+  private readonly dispatcher = inject(NotificationDispatcher);
+  private readonly popup = inject(CustomPopupShower);
+  private readonly destroyRef = inject(DestroyRef);
 
   startListeningToNotifications() {
     // Always pass a `DestroyRef` if you call `takeUntilDestroyed` outside

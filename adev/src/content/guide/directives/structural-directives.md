@@ -82,8 +82,8 @@ import {Directive, TemplateRef, ViewContainerRef} from '@angular/core';
   selector: '[select]',
 })
 export class SelectDirective {
-  private templateRef = inject(TemplateRef);
-  private viewContainerRef = inject(ViewContainerRef);
+  private readonly templateRef = inject(TemplateRef);
+  private readonly viewContainerRef = inject(ViewContainerRef);
 }
 ```
 

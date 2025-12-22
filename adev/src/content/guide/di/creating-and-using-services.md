@@ -66,7 +66,7 @@ import { BasicDataStore } from './basic-data-store';
   `
 })
 export class ExampleComponent {
-  dataStore = inject(BasicDataStore);
+  readonly dataStore = inject(BasicDataStore);
 }
 ```
 
@@ -80,7 +80,7 @@ import {AdvancedDataStore} from './advanced-data-store';
   providedIn: 'root',
 })
 export class BasicDataStore {
-  private advancedDataStore = inject(AdvancedDataStore);
+  private readonly advancedDataStore = inject(AdvancedDataStore);
   private data: string[] = [];
 
   addData(item: string): void {

@@ -80,8 +80,8 @@ import { AnalyticsLogger } from './analytics-logger';
   `,
 })
 export class NavbarComponent {
-  private router = inject(Router);
-  private analytics = inject(AnalyticsLogger);
+  private readonly router = inject(Router);
+  private readonly analytics = inject(AnalyticsLogger);
 
   navigateToDetail(event: Event) {
     event.preventDefault();
@@ -99,7 +99,7 @@ You can inject dependencies during construction of a component, directive, or se
 @Component({...})
 export class MyComponent {
   // ✅ In class field initializer
-  private service = inject(MyService);
+  private readonly service = inject(MyService);
 
   // ✅ In constructor body
   private anotherService: MyService;
@@ -114,7 +114,7 @@ export class MyComponent {
 @Directive({...})
 export class MyDirective {
   // ✅ In class field initializer
-  private element = inject(ElementRef);
+  private readonly element = inject(ElementRef);
 }
 ```
 
@@ -125,7 +125,7 @@ import {HttpClient} from '@angular/common/http';
 @Injectable({providedIn: 'root'})
 export class MyService {
   // ✅ In a service
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 }
 ```
 

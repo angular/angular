@@ -137,7 +137,7 @@ export class CustomHttpParamEncoder implements HttpParameterCodec {
 }
 
 export class ApiService {
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
   search() {
     const params = new HttpParams({
@@ -637,7 +637,7 @@ While `HttpClient` can be injected and used directly from components, generally 
 ```ts
 @Injectable({providedIn: 'root'})
 export class UserService {
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
   getUser(id: string): Observable<User> {
     return this.http.get<User>(`/api/user/${id}`);
@@ -663,7 +663,7 @@ export class UserProfileComponent {
   userId = input.required<string>();
   user$!: Observable<User>;
 
-  private userService = inject(UserService);
+  private readonly userService = inject(UserService);
 
   constructor(): void {
     effect(() => {

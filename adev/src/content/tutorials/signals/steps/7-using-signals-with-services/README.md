@@ -85,7 +85,7 @@ import {CartDisplay} from './cart-display';
   styleUrl: './app.css',
 })
 export class App {
-  cartStore = inject(CartStore);
+  readonly cartStore = inject(CartStore);
 }
 ```
 

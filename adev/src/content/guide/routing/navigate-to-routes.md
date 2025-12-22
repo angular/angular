@@ -88,7 +88,7 @@ import { Router } from '@angular/router';
   `
 })
 export class AppDashboard {
-  private router = inject(Router);
+  private readonly router = inject(Router);
 
   navigateToProfile() {
     // Standard navigation
@@ -123,8 +123,8 @@ import { Router, ActivatedRoute } from '@angular/router';
   `
 })
 export class UserDetailComponent {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   constructor() {}
 

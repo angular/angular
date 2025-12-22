@@ -89,7 +89,7 @@ import type { User, Settings } from './types';
   `
 })
 export class UserDetail {
-  private route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
   private data = toSignal(this.route.data);
   user = computed(() => this.data().user as User);
   settings = computed(() => this.data().settings as Settings);
@@ -204,7 +204,7 @@ import { map } from 'rxjs';
   `
 })
 export class App {
-  private router = inject(Router);
+  private readonly router = inject(Router);
   private lastFailedUrl = signal('');
 
   private navigationErrors = toSignal(
@@ -290,7 +290,7 @@ import { map } from 'rxjs';
   `
 })
 export class App {
-  private router = inject(Router);
+  private readonly router = inject(Router);
   isNavigating = computed(() => !!this.router.currentNavigation());
 }
 ```

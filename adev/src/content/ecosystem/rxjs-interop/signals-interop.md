@@ -96,8 +96,8 @@ import {toObservable} from '@angular/core/rxjs-interop';
 
 @Component(/* ... */)
 export class SearchResults {
-  query: Signal<string> = inject(QueryService).query;
-  query$ = toObservable(this.query);
+  readonly query: Signal<string> = inject(QueryService).query;
+  readonly query$ = toObservable(this.query);
 
   results$ = this.query$.pipe(switchMap((query) => this.http.get('/search?q=' + query)));
 }

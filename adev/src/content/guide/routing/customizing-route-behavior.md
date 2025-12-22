@@ -79,7 +79,7 @@ export const routes: Routes = [
   /* ... */
 })
 export class CustomerComponent {
-  private route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
 
   orgId = this.route.parent?.parent?.snapshot.params['orgId'];
   projectId = this.route.parent?.snapshot.params['projectId'];
@@ -94,7 +94,7 @@ Using `'always'` ensures matrix parameters, route data, and resolved values are 
   /* ... */
 })
 export class CustomerComponent {
-  private route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
 
   // All parent parameters are available directly
   orgId = this.route.snapshot.params['orgId'];
@@ -472,7 +472,7 @@ export class DocumentationComponent {
   version = input.required<string>();  // Receives the version parameter
   section = input.required<string>();  // Receives the section parameter
 
-  private docsService = inject(DocumentationService);
+  private readonly docsService = inject(DocumentationService);
 
   // Resource automatically loads documentation when version or section changes
   documentation = resource({

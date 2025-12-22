@@ -332,7 +332,7 @@ Inject and use the service in your components:
   /* ... */
 })
 export class Checkout {
-  private analytics = inject(AnalyticsService);
+  private readonly analytics = inject(AnalyticsService);
 
   onAction() {
     this.analytics.trackEvent('action');

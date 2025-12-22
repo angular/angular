@@ -176,7 +176,7 @@ import { Component, HostAttributeToken, inject } from '@angular/core';
   ...,
 })
 export class Button {
-  variation = inject(new HostAttributeToken('variation'));
+  readonly variation = inject(new HostAttributeToken('variation'));
 }
 ```
 

@@ -151,7 +151,7 @@ Schematic templates support special syntax to execute code and variable substitu
       providedIn: 'root'
    })
    export class <%= classify(name) %>Service {
-      private http = inject(HttpClient);
+      private readonly http = inject(HttpClient);
    }
 
    ```

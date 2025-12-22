@@ -97,7 +97,7 @@ import { map } from 'rxjs/operators';
   `
 })
 export class AppComponent {
-  private router = inject(Router);
+  private readonly router = inject(Router);
 
   readonly loading = toSignal(
     this.router.events.pipe(
@@ -119,8 +119,8 @@ import {Router, NavigationEnd} from '@angular/router';
 
 @Injectable({providedIn: 'root'})
 export class AnalyticsService {
-  private router = inject(Router);
-  private destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   startTracking() {
     this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
@@ -161,7 +161,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   `
 })
 export class ErrorHandlerComponent {
-  private router = inject(Router);
+  private readonly router = inject(Router);
   readonly errorMessage = signal('');
 
   constructor() {

@@ -168,7 +168,7 @@ export class LocalDataStore {
   template: `...`,
 })
 export class ExampleComponent {
-  dataStore = inject(LocalDataStore);
+  readonly dataStore = inject(LocalDataStore);
 }
 ```
 
@@ -192,7 +192,7 @@ export class DataStore {
   template: `...`,
 })
 export class IsolatedComponent {
-  dataStore = inject(DataStore); // Component-specific instance
+  readonly dataStore = inject(DataStore); // Component-specific instance
 }
 ```
 
@@ -324,7 +324,7 @@ import { DATA_SERVICE_TOKEN } from './tokens';
   ]
 })
 export class ExampleComponent {
-  private dataService = inject(DATA_SERVICE_TOKEN);
+  private readonly dataService = inject(DATA_SERVICE_TOKEN);
 }
 ```
 
@@ -345,7 +345,7 @@ interface DataService {
   ],
 })
 export class ExampleComponent {
-  private dataService = inject(DataService); // Error!
+  private readonly dataService = inject(DataService); // Error!
 }
 
 // ✅ Use InjectionToken instead
@@ -355,7 +355,7 @@ export const DATA_SERVICE_TOKEN = new InjectionToken<DataService>('DataService')
   providers: [{provide: DATA_SERVICE_TOKEN, useClass: LocalDataService}],
 })
 export class ExampleComponent {
-  private dataService = inject(DATA_SERVICE_TOKEN); // Works!
+  private readonly dataService = inject(DATA_SERVICE_TOKEN); // Works!
 }
 ```
 
@@ -412,7 +412,7 @@ export class BetterLogger extends Logger {
 // Logger that includes user context
 @Injectable()
 export class EvenBetterLogger extends Logger {
-  private userService = inject(UserService);
+  private readonly userService = inject(UserService);
 
   override log(message: string) {
     const name = this.userService.user.name;
@@ -429,7 +429,7 @@ export class EvenBetterLogger extends Logger {
   ],
 })
 export class ExampleComponent {
-  private logger = inject(Logger); // Gets EvenBetterLogger instance
+  private readonly logger = inject(Logger); // Gets EvenBetterLogger instance
 }
 ```
 
@@ -486,7 +486,7 @@ bootstrapApplication(AppComponent, {
   template: `<h1>{{ title }}</h1>`,
 })
 export class HeaderComponent {
-  private config = inject(APP_CONFIG);
+  private readonly config = inject(APP_CONFIG);
   title = this.config.appTitle;
 }
 ```
@@ -576,7 +576,7 @@ export const apiClientProvider = {
   providers: [apiClientProvider],
 })
 export class DashboardComponent {
-  private apiClient = inject(ApiClient);
+  private readonly apiClient = inject(ApiClient);
 }
 ```
 
@@ -757,7 +757,7 @@ const ANALYTICS_CONFIG = new InjectionToken<AnalyticsConfig>('analytics.config')
 
 // Main service that uses the configuration
 export class AnalyticsService {
-  private config = inject(ANALYTICS_CONFIG);
+  private readonly config = inject(ANALYTICS_CONFIG);
 
   track(event: string, properties?: any) {
     // Implementation using config
@@ -815,8 +815,8 @@ const HTTP_FEATURES = new InjectionToken<Set<HttpFeatures>>('http.features');
 
 // Core service
 class HttpClientService {
-  private config = inject(HTTP_CONFIG, {optional: true});
-  private features = inject(HTTP_FEATURES);
+  private readonly config = inject(HTTP_CONFIG, {optional: true});
+  private readonly features = inject(HTTP_FEATURES);
 
   get(url: string) {
     // Use config and check features
@@ -825,7 +825,7 @@ class HttpClientService {
 
 // Feature services
 class RetryInterceptor {
-  private config = inject(RETRY_CONFIG);
+  private readonly config = inject(RETRY_CONFIG);
   // Retry logic
 }
 

@@ -14,7 +14,7 @@ import { ActivatedRoute } from '@angular/router';
   selector: 'app-product',
 })
 export class ProductComponent {
-  private activatedRoute = inject(ActivatedRoute);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   constructor() {
     console.log(this.activatedRoute);
@@ -47,7 +47,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 @Component({ ... })
 export class UserProfileComponent {
   readonly userId: string;
-  private route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
 
   constructor() {
     // Example URL: https://www.angular.dev/users/123?role=admin&status=active#contact
@@ -101,7 +101,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class ProductDetailComponent {
   productId = signal('');
-  private activatedRoute = inject(ActivatedRoute);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   constructor() {
     // Access route parameters
@@ -154,8 +154,8 @@ import { ActivatedRoute, Router } from '@angular/router';
   `
 })
 export class ProductListComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   constructor() {
     // Access query parameters reactively
@@ -204,7 +204,7 @@ import {ActivatedRoute} from '@angular/router';
 
 @Component(/* ... */)
 export class AwesomeProducts {
-  private route = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
 
   constructor() {
     // Access matrix parameters via params

@@ -114,7 +114,7 @@ A directive can inject a `TemplateRef` if that directive is applied directly to 
   selector: '[myDirective]'
 })
 export class MyDirective {
-  private fragment = inject(TemplateRef);
+  private readonly fragment = inject(TemplateRef);
 }
 ```
 
@@ -187,7 +187,7 @@ export class ComponentWithFragment { }
   template: `<button (click)="showFragment()">Show</button>`,
 })
 export class MyOutlet {
-  private viewContainer = inject(ViewContainerRef);
+  private readonly viewContainer = inject(ViewContainerRef);
   fragment = input<TemplateRef<unknown> | undefined>();
 
   showFragment() {

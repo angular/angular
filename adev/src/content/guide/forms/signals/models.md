@@ -213,7 +213,7 @@ export class UserProfileComponent {
   });
 
   userForm = form(this.userModel);
-  private userService = inject(UserService);
+  private readonly userService = inject(UserService);
 
   ngOnInit() {
     this.loadUserProfile();

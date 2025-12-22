@@ -188,7 +188,7 @@ A similar interceptor could be implemented with class based interceptors:
 ```ts
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private authService = inject(AuthService);
+  private readonly authService = inject(AuthService);
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const clonedRequest = request.clone({

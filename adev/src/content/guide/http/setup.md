@@ -27,7 +27,7 @@ You can then inject the `HttpClient` service as a dependency of your components,
 ```ts
 @Injectable({providedIn: 'root'})
 export class ConfigService {
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
   // This service can now make HTTP requests via `this.http`.
 }
 ```

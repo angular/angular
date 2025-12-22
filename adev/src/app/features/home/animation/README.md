@@ -30,7 +30,7 @@ To create a new animation instance, you should use the `AnimationCreatorService`
 
 ```typescript
 class AnimationHost implements AfterViewInit {
-  private animationCreator = inject(AnimationCreatorService);
+  private readonly animationCreator = inject(AnimationCreatorService);
   layers = viewChildren(AnimationLayerDirective);
 
   constructor() {
