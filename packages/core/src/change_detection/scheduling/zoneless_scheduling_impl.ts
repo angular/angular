@@ -26,7 +26,6 @@ import {
   ChangeDetectionScheduler,
   NotificationSource,
   PROVIDED_ZONELESS,
-  SCHEDULE_IN_ROOT_ZONE,
   ZONELESS_ENABLED,
 } from './zoneless_scheduling';
 import {TracingService} from '../../application/tracing';
@@ -69,10 +68,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly angularZoneId = this.zoneIsDefined
     ? (this.ngZone as NgZonePrivate)._inner?.get(angularZoneInstanceIdProperty)
     : null;
-  private readonly scheduleInRootZone =
-    !this.zonelessEnabled &&
-    this.zoneIsDefined &&
-    (inject(SCHEDULE_IN_ROOT_ZONE, {optional: true}) ?? false);
 
   private cancelScheduledCallback: null | (() => void) = null;
   private useMicrotaskScheduler = false;
@@ -214,13 +209,10 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       ? scheduleCallbackWithMicrotask
       : scheduleCallbackWithRafRace;
     this.pendingRenderTaskId = this.taskService.add();
-    if (this.scheduleInRootZone) {
-      this.cancelScheduledCallback = Zone.root.run(() => scheduleCallback(() => this.tick()));
-    } else {
-      this.cancelScheduledCallback = this.ngZone.runOutsideAngular(() =>
-        scheduleCallback(() => this.tick()),
-      );
-    }
+
+    this.cancelScheduledCallback = this.ngZone.runOutsideAngular(() =>
+      scheduleCallback(() => this.tick()),
+    );
   }
 
   private shouldScheduleTick(): boolean {

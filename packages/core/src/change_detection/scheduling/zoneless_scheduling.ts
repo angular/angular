@@ -74,8 +74,3 @@ export const PROVIDED_ZONELESS = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'Zoneless provided' : '',
   {factory: () => false},
 );
-
-// TODO(atscott): Remove in v19. Scheduler should be done with runOutsideAngular.
-export const SCHEDULE_IN_ROOT_ZONE = new InjectionToken<boolean>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'run changes outside zone in root' : '',
-);
