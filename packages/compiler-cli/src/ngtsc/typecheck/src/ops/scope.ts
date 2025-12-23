@@ -52,9 +52,9 @@ import {TcbDirectiveInputsOp, TcbUnclaimedInputsOp} from './inputs';
 import {TcbDomSchemaCheckerOp} from './schema';
 import {TcbDirectiveOutputsOp, TcbUnclaimedOutputsOp} from './events';
 import {
-  CustomFieldType,
+  CustomFormControlType,
   getCustomFieldDirectiveType,
-  isFieldDirective,
+  isFormControl,
   isNativeField,
   TcbNativeFieldOp,
   TcbNativeRadioButtonFieldOp,
@@ -766,11 +766,10 @@ export class Scope {
     dirMap: Map<TypeCheckableDirectiveMeta, number>,
     allDirectiveMatches: TypeCheckableDirectiveMeta[],
   ): void {
-    const customFieldType = allDirectiveMatches.some(isFieldDirective)
-      ? getCustomFieldDirectiveType(dir)
-      : null;
+    const nodeIsFormControl = isFormControl(allDirectiveMatches);
+    const customFormControlType = nodeIsFormControl ? getCustomFieldDirectiveType(dir) : null;
 
-    const directiveOp = this.getDirectiveOp(dir, node, customFieldType);
+    const directiveOp = this.getDirectiveOp(dir, node, customFormControlType);
     const dirIndex = this.opQueue.push(directiveOp) - 1;
     dirMap.set(dir, dirIndex);
 
@@ -786,13 +785,15 @@ export class Scope {
       );
     }
 
-    this.opQueue.push(new TcbDirectiveInputsOp(this.tcb, this, node, dir, customFieldType));
+    this.opQueue.push(
+      new TcbDirectiveInputsOp(this.tcb, this, node, dir, nodeIsFormControl, customFormControlType),
+    );
   }
 
   private getDirectiveOp(
     dir: TypeCheckableDirectiveMeta,
     node: DirectiveOwner,
-    customFieldType: CustomFieldType | null,
+    customFieldType: CustomFormControlType | null,
   ): TcbOp {
     const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
 

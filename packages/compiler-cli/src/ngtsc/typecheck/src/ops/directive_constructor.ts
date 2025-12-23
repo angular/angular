@@ -17,7 +17,7 @@ import {addParseSpanInfo, wrapForDiagnostics} from '../diagnostics';
 import {tsCreateVariable} from '../ts_util';
 import {unwrapWritableSignal} from './expression';
 import {getAnyExpression} from '../expression';
-import {CustomFieldType, expandBoundAttributesForField} from './signal_forms';
+import {CustomFormControlType, expandBoundAttributesForField} from './signal_forms';
 import {getBoundAttributes, TcbBoundAttribute, TcbDirectiveInput, widenBinding} from './bindings';
 import {translateInput} from './inputs';
 
@@ -39,7 +39,7 @@ export class TcbDirectiveCtorOp extends TcbOp {
     private scope: Scope,
     private node: DirectiveOwner,
     private dir: TypeCheckableDirectiveMeta,
-    private customControlType: CustomFieldType | null,
+    private customFormControlType: CustomFormControlType | null,
   ) {
     super();
   }
@@ -64,11 +64,11 @@ export class TcbDirectiveCtorOp extends TcbOp {
       span = this.node.startSourceSpan || this.node.sourceSpan;
       boundAttrs = getBoundAttributes(this.dir, this.node);
 
-      if (this.customControlType !== null) {
+      if (this.customFormControlType !== null) {
         const additionalBindings = expandBoundAttributesForField(
           this.dir,
           this.node,
-          this.customControlType,
+          this.customFormControlType,
         );
 
         if (additionalBindings !== null) {
