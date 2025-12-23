@@ -61,7 +61,7 @@ export class FakeNavigation implements Navigation {
    * A prospective current active entry index, which includes unresolved
    * traversals. Used by `go` to determine where navigations are intended to go.
    */
-  private prospectiveEntryIndex = 0;
+  private propsectiveTraversalDestinations: number[] = [];
 
   /**
    * A test-only option to make traversals synchronous, rather than emulate
@@ -300,7 +300,7 @@ export class FakeNavigation implements Navigation {
       index: entry.index,
       sameDocument: entry.sameDocument,
     });
-    this.prospectiveEntryIndex = entry.index;
+    this.propsectiveTraversalDestinations.push(entry.index);
     const result = new InternalNavigationResult(this);
     this.traversalQueue.set(entry.key, result);
     this.runTraversal(() => {
@@ -366,11 +366,13 @@ export class FakeNavigation implements Navigation {
    * `back(); forward()` chains it collapses certain traversals.
    */
   go(direction: number): void {
-    const targetIndex = this.prospectiveEntryIndex + direction;
+    const targetIndex =
+      (this.propsectiveTraversalDestinations[this.propsectiveTraversalDestinations.length - 1] ??
+        this.currentEntryIndex) + direction;
     if (targetIndex >= this.entriesArr.length || targetIndex < 0) {
       return;
     }
-    this.prospectiveEntryIndex = targetIndex;
+    this.propsectiveTraversalDestinations.push(targetIndex);
     this.runTraversal(() => {
       // Check again that destination is in the entries array.
       if (targetIndex >= this.entriesArr.length || targetIndex < 0) {
@@ -407,6 +409,7 @@ export class FakeNavigation implements Navigation {
   private runTraversal(traversal: () => void) {
     if (this.synchronousTraversals) {
       traversal();
+      this.propsectiveTraversalDestinations.shift();
       return;
     }
 
@@ -418,6 +421,7 @@ export class FakeNavigation implements Navigation {
         setTimeout(() => {
           resolve();
           traversal();
+          this.propsectiveTraversalDestinations.shift();
         });
       });
     });
@@ -558,7 +562,7 @@ export class FakeNavigation implements Navigation {
       }
     } else if (navigationType === 'push') {
       this.currentEntryIndex++;
-      this.prospectiveEntryIndex = this.currentEntryIndex; // prospectiveEntryIndex isn't in the spec but is an implementation detail
+      this.propsectiveTraversalDestinations = []; // prospectiveEntryIndex isn't in the spec but is an implementation detail
       disposedNHEs.push(...this.entriesArr.splice(this.currentEntryIndex));
     } else if (navigationType === 'replace') {
       disposedNHEs.push(oldCurrentNHE);
