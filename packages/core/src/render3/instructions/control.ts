@@ -568,45 +568,28 @@ function updateCustomControl(
   const state = control.state();
   const bindings = getControlBindings(lView);
 
-  maybeUpdateInput(directiveDef, directive, bindings, state, CONTROL_VALUE, modelName);
+  // Bind custom form control model ('value' or 'checked').
+  const controlValue = state.controlValue();
+  if (controlBindingUpdated(bindings, CONTROL_VALUE, controlValue)) {
+    writeToDirectiveInput(directiveDef, directive, modelName, controlValue);
+  }
 
+  const isNative = (tNode.flags & TNodeFlags.isNativeControl) !== 0;
+  const element = isNative ? (getNativeByTNode(tNode, lView) as NativeControlElement) : null;
+  const renderer = lView[RENDERER];
+
+  // Bind remaining field state properties.
   for (const key of CONTROL_BINDING_KEYS) {
-    const inputName = CONTROL_BINDING_NAMES[key];
-    maybeUpdateInput(directiveDef, directive, bindings, state, key, inputName);
-  }
-
-  // If the host node is a native control, we can bind field state properties to attributes for any
-  // that weren't defined as inputs on the custom control. We can reuse the update path for native
-  // controls since any properties with a corresponding input would have just been checked above,
-  // and thus will appear unchanged.
-  if (tNode.flags & TNodeFlags.isNativeControl) {
-    updateNativeControl(tNode, lView, control);
-  }
-}
-
-/**
- * Binds a value from the field state to a component input, if the input exists and the value has
- * changed.
- *
- * @param componentDef The component definition used to check for the input.
- * @param component The component instance to update.
- * @param bindings A map of previously bound values to check for changes.
- * @param state The control's field state.
- * @param key The key of the property in the `ɵFieldState` to bind.
- * @param inputName The name of the input to update.
- */
-function maybeUpdateInput(
-  directiveDef: DirectiveDef<unknown>,
-  directive: unknown,
-  bindings: ControlBindings,
-  state: ɵFieldState<unknown>,
-  key: ControlBindingKeys,
-  inputName: string,
-): void {
-  if (inputName in directiveDef.inputs) {
     const value = state[key]?.();
     if (controlBindingUpdated(bindings, key, value)) {
-      writeToDirectiveInput(directiveDef, directive, inputName, value);
+      const inputName = CONTROL_BINDING_NAMES[key];
+      updateDirectiveInputs(tNode, lView, inputName, value);
+
+      // If the host node is a native control, we can bind field state properties to native
+      // properties for any that weren't defined as inputs on the custom control.
+      if (isNative && !(inputName in directiveDef.inputs)) {
+        updateNativeProperty(tNode, renderer, element!, key, value, inputName);
+      }
     }
   }
 }
