@@ -32,8 +32,8 @@ import {tcbExpression} from './expression';
 import {markIgnoreDiagnostics} from '../comments';
 import {TcbBoundAttribute} from './bindings';
 
-/** Possible types of custom field directives. */
-export type CustomFieldType = 'value' | 'checkbox';
+/** Possible types of custom form control directives. */
+export type CustomFormControlType = 'value' | 'checkbox';
 
 /** Names of the input fields on custom controls. */
 const formControlInputFields = [
@@ -224,7 +224,7 @@ export class TcbNativeRadioButtonFieldOp extends TcbNativeFieldOp {
 export function expandBoundAttributesForField(
   directive: TypeCheckableDirectiveMeta,
   node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
-  customFieldType: CustomFieldType,
+  customFormControlType: CustomFormControlType | null,
 ): TcbBoundAttribute[] | null {
   const fieldBinding = node.inputs.find(
     (input) => input.type === BindingType.Property && input.name === 'field',
@@ -237,21 +237,21 @@ export function expandBoundAttributesForField(
   let boundInputs: TcbBoundAttribute[] | null = null;
   let primaryInput: TcbBoundAttribute | null;
 
-  if (customFieldType === 'value') {
+  if (customFormControlType === 'value') {
     primaryInput = getSyntheticFieldBoundInput(
       directive,
       'value',
       'value',
       fieldBinding,
-      customFieldType,
+      customFormControlType,
     );
-  } else if (customFieldType === 'checkbox') {
+  } else if (customFormControlType === 'checkbox') {
     primaryInput = getSyntheticFieldBoundInput(
       directive,
       'checked',
       'value',
       fieldBinding,
-      customFieldType,
+      customFormControlType,
     );
   } else {
     primaryInput = null;
@@ -263,7 +263,13 @@ export function expandBoundAttributesForField(
   }
 
   for (const name of formControlInputFields) {
-    const input = getSyntheticFieldBoundInput(directive, name, name, fieldBinding, customFieldType);
+    const input = getSyntheticFieldBoundInput(
+      directive,
+      name,
+      name,
+      fieldBinding,
+      customFormControlType,
+    );
 
     if (input !== null) {
       boundInputs ??= [];
@@ -302,7 +308,7 @@ function getSyntheticFieldBoundInput(
   inputName: string,
   fieldPropertyName: string,
   fieldBinding: TmplAstBoundAttribute,
-  customFieldType: CustomFieldType,
+  customFieldType: CustomFormControlType | null,
 ): TcbBoundAttribute | null {
   const inputs = dir.inputs.getByBindingPropertyName(inputName);
 
@@ -345,7 +351,7 @@ function getSyntheticFieldBoundInput(
 /** Determines if a directive is a custom field and its type. */
 export function getCustomFieldDirectiveType(
   meta: TypeCheckableDirectiveMeta,
-): CustomFieldType | null {
+): CustomFormControlType | null {
   if (hasModelInput('value', meta)) {
     return 'value';
   } else if (hasModelInput('checked', meta)) {
@@ -448,4 +454,24 @@ function hasModelInput(name: string, meta: TypeCheckableDirectiveMeta): boolean 
   return (
     meta.inputs.hasBindingPropertyName(name) && meta.outputs.hasBindingPropertyName(name + 'Change')
   );
+}
+
+/**
+ * Determines whether a node is a form control based on its matching directives.
+ *
+ * A node is a form control if it has a matching `Field` directive, and no other directives match
+ * the `field` input.
+ */
+export function isFormControl(allDirectiveMatches: TypeCheckableDirectiveMeta[]): boolean {
+  let result = false;
+  for (const match of allDirectiveMatches) {
+    if (match.inputs.hasBindingPropertyName('field')) {
+      if (isFieldDirective(match)) {
+        result = true;
+      } else {
+        return false;
+      }
+    }
+  }
+  return result;
 }

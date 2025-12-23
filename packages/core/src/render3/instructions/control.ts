@@ -656,71 +656,80 @@ function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unkn
     setNativeControlValue(element, controlValue);
   }
 
-  const name = state.name();
-  if (controlBindingUpdated(bindings, NAME, name)) {
-    renderer.setAttribute(element, 'name', name);
-  }
-
-  updateBooleanAttribute(renderer, element, bindings, state, DISABLED);
-  updateBooleanAttribute(renderer, element, bindings, state, READONLY);
-  updateBooleanAttribute(renderer, element, bindings, state, REQUIRED);
-
-  if (tNode.flags & TNodeFlags.isNativeNumericControl) {
-    updateOptionalAttribute(renderer, element, bindings, state, MAX);
-    updateOptionalAttribute(renderer, element, bindings, state, MIN);
-  }
-
-  if (tNode.flags & TNodeFlags.isNativeTextControl) {
-    updateOptionalAttribute(renderer, element, bindings, state, MAX_LENGTH);
-    updateOptionalAttribute(renderer, element, bindings, state, MIN_LENGTH);
+  for (const key of CONTROL_BINDING_KEYS) {
+    const value = state[key]?.();
+    if (controlBindingUpdated(bindings, key, value)) {
+      const inputName = CONTROL_BINDING_NAMES[key];
+      updateNativeProperty(tNode, renderer, element, key, value, inputName);
+      updateDirectiveInputs(tNode, lView, inputName, value);
+    }
   }
 }
 
 /**
- * Binds a boolean property to a DOM attribute.
+ * Updates all directive inputs with the given name on the given node.
  *
- * @param renderer The renderer used to update the DOM.
- * @param element The element to update.
- * @param bindings The control bindings to check for changes.
- * @param state The control's field state.
- * @param key The key of the boolean property in the `ɵFieldState`.
+ * @param tNode The node on which the directives are hosted.
+ * @param lView The current LView.
+ * @param inputName The public name of the input to update.
+ * @param value The value to write to the input.
  */
-function updateBooleanAttribute(
-  renderer: Renderer,
-  element: HTMLElement,
-  bindings: ControlBindings,
-  state: ɵFieldState<unknown>,
-  key: typeof DISABLED | typeof READONLY | typeof REQUIRED,
-) {
-  const value = state[key]();
-  if (controlBindingUpdated(bindings, key, value)) {
-    const name = CONTROL_BINDING_NAMES[key];
-    setBooleanAttribute(renderer, element, name, value);
-  }
-}
-
-/**
- * Binds a value source, if it exists, to an optional DOM attribute.
- *
- * An optional DOM attribute will be added, if defined, or removed, if undefined.
- *
- * @param renderer The renderer used to update the DOM.
- * @param element The element to update.
- * @param bindings The control bindings to check for changes.
- * @param state The control's field state.
- * @param key The key of the optional property in the `ɵFieldState`.
- */
-function updateOptionalAttribute(
-  renderer: Renderer,
-  element: HTMLElement,
-  bindings: ControlBindings,
-  state: ɵFieldState<unknown>,
-  key: typeof MAX | typeof MAX_LENGTH | typeof MIN | typeof MIN_LENGTH,
+function updateDirectiveInputs(
+  tNode: TNode,
+  lView: LView,
+  inputName: string,
+  value: unknown,
 ): void {
-  const value = state[key]?.();
-  if (controlBindingUpdated(bindings, key, value)) {
-    const name = CONTROL_BINDING_NAMES[key];
-    setOptionalAttribute(renderer, element, name, value);
+  const directiveIndices = tNode.inputs?.[inputName];
+  if (directiveIndices) {
+    const tView = getTView();
+    for (const index of directiveIndices) {
+      const directiveDef = tView.data[index] as DirectiveDef<unknown>;
+      const directive = lView[index];
+      writeToDirectiveInput(directiveDef, directive, inputName, value);
+    }
+  }
+}
+
+/**
+ * Updates the native DOM property on the given node.
+ *
+ * @param tNode The node corresponding to the native control.
+ * @param renderer The renderer to use for DOM updates.
+ * @param element The native control element.
+ * @param key The control binding key (identifies the property type, e.g. disabled, required).
+ * @param value The new value for the property.
+ * @param name The DOM attribute/property name.
+ */
+function updateNativeProperty(
+  tNode: TNode,
+  renderer: Renderer,
+  element: NativeControlElement,
+  key: ControlBindingKeys,
+  value: any,
+  name: string,
+) {
+  switch (key) {
+    case NAME:
+      renderer.setAttribute(element, name, value);
+      break;
+    case DISABLED:
+    case READONLY:
+    case REQUIRED:
+      setBooleanAttribute(renderer, element, name, value);
+      break;
+    case MAX:
+    case MIN:
+      if (tNode.flags & TNodeFlags.isNativeNumericControl) {
+        setOptionalAttribute(renderer, element, name, value);
+      }
+      break;
+    case MAX_LENGTH:
+    case MIN_LENGTH:
+      if (tNode.flags & TNodeFlags.isNativeTextControl) {
+        setOptionalAttribute(renderer, element, name, value);
+      }
+      break;
   }
 }
 
