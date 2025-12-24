@@ -453,7 +453,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
               {
                 label: 'Form model design',
                 path: 'guide/forms/signals/model-design',
-                contentPath: 'guide/forms/signals/designing-your-form-model',
+                contentPath: 'guide/forms/signals/model-design',
               },
               {
                 label: 'Field state management',

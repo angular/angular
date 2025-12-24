@@ -51,7 +51,7 @@ To learn more about how Signal Forms work, check out the following guides:
 <docs-pill-row>
   <docs-pill href="essentials/signal-forms" title="Signal forms essentials" />
   <docs-pill href="guide/forms/signals/models" title="Form models" />
-  <docs-pill href="guide/forms/signals/designing-your-form-model" title="Designing your form model" />
+  <docs-pill href="guide/forms/signals/model-design" title="Designing your form model" />
   <docs-pill href="guide/forms/signals/field-state-management" title="Field state management" />
   <docs-pill href="guide/forms/signals/validation" title="Validation" />
   <docs-pill href="guide/forms/signals/custom-controls" title="Custom controls" />
