@@ -3,8 +3,8 @@
 :host {
   display: flex;
   justify-content: center;
-  font-family: var(--inter-font);
-  --border-color: color-mix(in srgb, var(--full-contrast) 20%, var(--page-background));
+  font-family: var(--inter-font, system-ui, sans-serif);
+  --border-color: color-mix(in srgb, var(--full-contrast, #000) 20%, var(--page-background, #fff));
 }
 
 [ngCombobox] {
@@ -37,8 +37,8 @@
 }
 
 [ngCombobox]:focus-within [ngComboboxInput] {
-  outline: 1.5px solid var(--vivid-pink);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink) 25%, transparent);
+  outline: 1.5px solid var(--vivid-pink, #f542a4);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink, #f542a4) 25%, transparent);
 }
 
 .icon {
@@ -74,7 +74,8 @@
   outline: none;
   font-size: 1rem;
   padding: 0.7rem 1rem 0.7rem 2.5rem;
-  background-color: var(--mat-sys-surface);
+  background-color: var(--septenary-contrast, #f5f5f5);
+  color: var(--primary-contrast, #1a1a1a);
 }
 
 .popover {
@@ -82,7 +83,7 @@
   padding: 0;
   border: 1px solid var(--border-color);
   border-radius: 0.25rem;
-  background-color: var(--mat-sys-surface);
+  background-color: var(--septenary-contrast, #f5f5f5);
 }
 
 [ngListbox] {
@@ -104,17 +105,17 @@
 }
 
 [ngOption]:hover {
-  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+  background-color: color-mix(in srgb, var(--primary-contrast, #1a1a1a) 5%, transparent);
 }
 
 [ngOption][data-active='true'] {
   outline-offset: -2px;
-  outline: 2px solid var(--vivid-pink);
+  outline: 2px solid var(--vivid-pink, #f542a4);
 }
 
 [ngOption][aria-selected='true'] {
-  color: var(--vivid-pink);
-  background-color: color-mix(in srgb, var(--vivid-pink) 5%, transparent);
+  color: var(--vivid-pink, #f542a4);
+  background-color: color-mix(in srgb, var(--vivid-pink, #f542a4) 5%, transparent);
 }
 
 [ngOption]:not([aria-selected='true']) .check-icon {
@@ -138,6 +139,8 @@
   padding: 0;
   border: 1px solid var(--border-color);
   border-radius: 0.25rem;
+  background-color: var(--septenary-contrast, #f5f5f5);
+  color: inherit;
 }
 
 .dialog .combobox-input-container {
