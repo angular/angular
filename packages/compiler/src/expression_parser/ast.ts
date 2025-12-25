@@ -542,6 +542,31 @@ export class ParenthesizedExpression extends AST {
   }
 }
 
+export class ArrowFunctionIdentifierParameter {
+  constructor(
+    public name: string,
+    public span: ParseSpan,
+    public sourceSpan: AbsoluteSourceSpan,
+  ) {}
+}
+
+export type ArrowFunctionParameter = ArrowFunctionIdentifierParameter; // TODO(crisbeto): also rest parameters?
+
+export class ArrowFunction extends AST {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public parameters: ArrowFunctionParameter[],
+    public body: AST,
+  ) {
+    super(span, sourceSpan);
+  }
+
+  override visit(visitor: AstVisitor, context?: any) {
+    return visitor.visitArrowFunction(this, context);
+  }
+}
+
 export class RegularExpressionLiteral extends AST {
   constructor(
     span: ParseSpan,
@@ -686,6 +711,7 @@ export interface AstVisitor {
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any): any;
   visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any): any;
   visitParenthesizedExpression(ast: ParenthesizedExpression, context: any): any;
+  visitArrowFunction(ast: ArrowFunction, context: any): any;
   visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any): any;
   visitSpreadElement(ast: SpreadElement, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
@@ -790,6 +816,9 @@ export class RecursiveAstVisitor implements AstVisitor {
   }
   visitParenthesizedExpression(ast: ParenthesizedExpression, context: any) {
     this.visit(ast.expression, context);
+  }
+  visitArrowFunction(ast: ArrowFunction, context: any): any {
+    this.visit(ast.body, context);
   }
   visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any) {}
   visitSpreadElement(ast: SpreadElement, context: any) {
