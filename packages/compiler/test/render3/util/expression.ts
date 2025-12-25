@@ -136,6 +136,11 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     super.visitSpreadElement(ast, null);
   }
 
+  override visitArrowFunction(ast: e.ArrowFunction) {
+    this.recordAst(ast);
+    super.visitArrowFunction(ast, null);
+  }
+
   visitTemplate(ast: t.Template) {
     t.visitAll(this, ast.directives);
     t.visitAll(this, ast.children);

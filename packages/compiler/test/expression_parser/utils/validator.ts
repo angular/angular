@@ -7,6 +7,7 @@
  */
 
 import {
+  ArrowFunction,
   AST,
   Binary,
   BindingPipe,
@@ -164,6 +165,10 @@ class ASTValidator extends RecursiveAstVisitor {
 
   override visitSpreadElement(ast: SpreadElement, context: any): void {
     this.validate(ast, () => super.visitSpreadElement(ast, context));
+  }
+
+  override visitArrowFunction(ast: ArrowFunction, context: any) {
+    this.validate(ast, () => super.visitArrowFunction(ast, context));
   }
 }
 
