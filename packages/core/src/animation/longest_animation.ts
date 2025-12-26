@@ -147,4 +147,5 @@ function determineLongestAnimationFromElementAnimations(
   }
 }
 
-export const allLeavingAnimations = new Set<LView>();
+/** Tracks the IDs of LViews with leaving animations. */
+export const allLeavingAnimations = new Set<number>();
