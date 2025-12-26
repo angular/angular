@@ -7,6 +7,7 @@
  */
 
 import * as ir from '../../ir';
+import * as o from '../../../../output/output_ast';
 import {CompilationJob, ComponentCompilationJob} from '../compilation';
 
 /**
@@ -28,50 +29,64 @@ export function countVariables(job: CompilationJob): void {
     // Count variables on expressions inside ops. We do this later because some of these expressions
     // might be conditional (e.g. `pipeBinding` inside of a ternary), and we don't want to interfere
     // with indices for top-level binding slots (e.g. `property`).
-    for (const op of unit.ops()) {
-      ir.visitExpressionsInOp(op, (expr) => {
-        if (!ir.isIrExpression(expr)) {
-          return;
-        }
+    const firstPassCountExpressionVars = (expr: o.Expression) => {
+      if (!ir.isIrExpression(expr)) {
+        return;
+      }
 
-        // TemplateDefinitionBuilder assigns variable offsets for everything but pure functions
-        // first, and then assigns offsets to pure functions lazily. We emulate that behavior by
-        // assigning offsets in two passes instead of one, only in compatibility mode.
-        if (
-          job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-          expr instanceof ir.PureFunctionExpr
-        ) {
-          return;
-        }
+      // TemplateDefinitionBuilder assigns variable offsets for everything but pure functions
+      // first, and then assigns offsets to pure functions lazily. We emulate that behavior by
+      // assigning offsets in two passes instead of one, only in compatibility mode.
+      if (
+        job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+        expr instanceof ir.PureFunctionExpr
+      ) {
+        return;
+      }
 
-        // Some expressions require knowledge of the number of variable slots consumed.
-        if (ir.hasUsesVarOffsetTrait(expr)) {
-          expr.varOffset = varCount;
-        }
+      // Some expressions require knowledge of the number of variable slots consumed.
+      if (ir.hasUsesVarOffsetTrait(expr)) {
+        expr.varOffset = varCount;
+      }
 
-        if (ir.hasConsumesVarsTrait(expr)) {
-          varCount += varsUsedByIrExpression(expr);
-        }
-      });
-    }
+      if (ir.hasConsumesVarsTrait(expr)) {
+        varCount += varsUsedByIrExpression(expr);
+      }
+    };
 
     // Compatibility mode pass for pure function offsets (as explained above).
+    const secondPassCountExpressionVars = (expr: o.Expression) => {
+      if (!ir.isIrExpression(expr) || !(expr instanceof ir.PureFunctionExpr)) {
+        return;
+      }
+
+      // Some expressions require knowledge of the number of variable slots consumed.
+      if (ir.hasUsesVarOffsetTrait(expr)) {
+        expr.varOffset = varCount;
+      }
+
+      if (ir.hasConsumesVarsTrait(expr)) {
+        varCount += varsUsedByIrExpression(expr);
+      }
+    };
+
+    // Note: we iterate over `create` and `update` separately, instead of going using `unit.ops()`,
+    // because `unit.ops()` will visit nested ops too (e.g. the `ListenerOp.handlerOps`). We
+    // don't want that, because the `visitExpressionsInOp` call below will visit the same nested
+    // ops again, leading to vars in some expressions to be counted twice.
+    for (const createOp of unit.create) {
+      ir.visitExpressionsInOp(createOp, firstPassCountExpressionVars);
+    }
+    for (const updateOp of unit.update) {
+      ir.visitExpressionsInOp(updateOp, firstPassCountExpressionVars);
+    }
+
     if (job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
-      for (const op of unit.ops()) {
-        ir.visitExpressionsInOp(op, (expr) => {
-          if (!ir.isIrExpression(expr) || !(expr instanceof ir.PureFunctionExpr)) {
-            return;
-          }
-
-          // Some expressions require knowledge of the number of variable slots consumed.
-          if (ir.hasUsesVarOffsetTrait(expr)) {
-            expr.varOffset = varCount;
-          }
-
-          if (ir.hasConsumesVarsTrait(expr)) {
-            varCount += varsUsedByIrExpression(expr);
-          }
-        });
+      for (const createOp of unit.create) {
+        ir.visitExpressionsInOp(createOp, secondPassCountExpressionVars);
+      }
+      for (const updateOp of unit.update) {
+        ir.visitExpressionsInOp(updateOp, secondPassCountExpressionVars);
       }
     }
 
@@ -164,7 +179,7 @@ function varsUsedByOp(op: (ir.CreateOp | ir.UpdateOp) & ir.ConsumesVarsTrait): n
   }
 }
 
-export function varsUsedByIrExpression(expr: ir.Expression & ir.ConsumesVarsTrait): number {
+function varsUsedByIrExpression(expr: ir.Expression & ir.ConsumesVarsTrait): number {
   switch (expr.kind) {
     case ir.ExpressionKind.PureFunctionExpr:
       return 1 + expr.args.length;
