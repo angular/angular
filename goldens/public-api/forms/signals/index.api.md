@@ -182,7 +182,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
 }
 
 // @public
-export type FieldTree<TModel, TKey extends string | number = string | number> = (() => [TModel] extends [AbstractControl] ? CompatFieldState<TModel, TKey> : FieldState<TModel, TKey>) & ([TModel] extends [AbstractControl] ? object : [TModel] extends [Array<infer U>] ? ReadonlyArrayLike<MaybeFieldTree<U, number>> : TModel extends Record<string, any> ? Subfields<TModel> : object);
+export type FieldTree<TModel, TKey extends string | number = string | number> = (() => [TModel] extends [AbstractControl] ? CompatFieldState<TModel, TKey> : FieldState<TModel, TKey>) & ([TModel] extends [AbstractControl] ? object : [TModel] extends [ReadonlyArray<infer U>] ? ReadonlyArrayLike<MaybeFieldTree<U, number>> : TModel extends Record<string, any> ? Subfields<TModel> : object);
 
 // @public
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, ValidationResult<ValidationError.WithoutField>, TPathKind>;
@@ -513,7 +513,7 @@ export namespace SchemaPathRules {
 }
 
 // @public
-export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> = ([TModel] extends [AbstractControl] ? CompatSchemaPath<TModel, TPathKind> : SchemaPath<TModel, SchemaPathRules.Supported, TPathKind>) & (TModel extends AbstractControl ? unknown : TModel extends Array<any> ? unknown : TModel extends Record<string, any> ? {
+export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> = ([TModel] extends [AbstractControl] ? CompatSchemaPath<TModel, TPathKind> : SchemaPath<TModel, SchemaPathRules.Supported, TPathKind>) & (TModel extends AbstractControl ? unknown : TModel extends ReadonlyArray<any> ? unknown : TModel extends Record<string, any> ? {
     [K in keyof TModel]: MaybeSchemaPathTree<TModel[K], PathKind.Child>;
 } : unknown);
 
