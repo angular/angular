@@ -120,14 +120,14 @@ import {isUrlTree, UrlTree} from '../url_tree';
  * </a>
  * ```
  *
- * Use {@link Router#getCurrentNavigation} to retrieve a saved
+ * Use {@link Router#currentNavigation} to retrieve a saved Signal
  * navigation-state value. For example, to capture the `tracingId` during the `NavigationStart`
  * event:
  *
  * ```ts
  * // Get NavigationStart events
  * router.events.pipe(filter(e => e instanceof NavigationStart)).subscribe(e => {
- *   const navigation = router.getCurrentNavigation();
+ *   const navigation = router.currentNavigation();
  *   tracingService.trace({id: navigation.extras.state.tracingId});
  * });
  * ```

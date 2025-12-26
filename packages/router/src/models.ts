@@ -1500,8 +1500,8 @@ export interface NavigationBehaviorOptions {
   /**
    * Developer-defined state that can be passed to any navigation.
    * Access this value through the `Navigation.extras` object
-   * returned from the [Router.getCurrentNavigation()
-   * method](api/router/Router#getcurrentnavigation) while a navigation is executing.
+   * returned from the [Router.currentNavigation()
+   * method](api/router/Router#currentNavigation) while a navigation is executing.
    *
    * After a navigation completes, the router writes an object containing this
    * value together with a `navigationId` to `history.state`.
@@ -1555,7 +1555,7 @@ export interface NavigationBehaviorOptions {
    *   const userService = inject(UserService);
    *   const router = inject(Router);
    *   if (!userService.isLoggedIn()) {
-   *     const targetOfCurrentNavigation = router.getCurrentNavigation()?.finalUrl;
+   *     const targetOfCurrentNavigation = router.currentNavigation()?.finalUrl;
    *     const redirect = router.parseUrl('/404');
    *     return new RedirectCommand(redirect, {browserUrl: targetOfCurrentNavigation});
    *   }

@@ -85,26 +85,19 @@ Show loading indicators during navigation:
 ```angular-ts
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-loading',
+  selector: 'app-root',
   template: `
-    @if (loading()) {
-      <div class="loading-spinner">Loading...</div>
+    @if (isNavigating()) {
+      <div class="loading-bar">Loading...</div>
     }
+    <router-outlet />
   `
 })
-export class AppComponent {
+export class App {
   private router = inject(Router);
-
-  readonly loading = toSignal(
-    this.router.events.pipe(
-      map(() => !!this.router.getCurrentNavigation())
-    ),
-    { initialValue: false }
-  );
+  isNavigating = computed(() => !!this.router.currentNavigation());
 }
 ```
 
