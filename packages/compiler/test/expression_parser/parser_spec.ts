@@ -20,6 +20,7 @@ import {
   BindingPipeType,
   ParseSpan,
   LiteralMapPropertyKey,
+  ArrowFunction,
 } from '../../src/expression_parser/ast';
 import {ParseError} from '../../src/parse_util';
 import {Lexer} from '../../src/expression_parser/lexer';
@@ -1004,6 +1005,138 @@ describe('parser', () => {
       expect(map instanceof LiteralMap).toBe(true);
       expect(map.keys.length).toBe(1);
       expect((map.keys[0] as LiteralMapPropertyKey).isShorthandInitialized).toBe(true);
+    });
+
+    describe('arrow functions', () => {
+      it('should parse a single-parameter arrow function', () => {
+        checkBinding('a => a');
+      });
+
+      it('should parse a single-parameter arrow function with parentheses', () => {
+        checkBinding('(a) => a', 'a => a');
+      });
+
+      it('should parse an arrow function with not parameters', () => {
+        checkBinding('() => 1');
+      });
+
+      it('should parse an arrow function with multiple parameters', () => {
+        checkBinding('(a, b, c, d, e) => a / b + c * d');
+      });
+
+      it('should parse an immediately-invoked arrow function', () => {
+        checkBinding('((a, b) => a + b)(1, 2)');
+      });
+
+      it('should parse an arrow function that returns other arrow functions', () => {
+        checkBinding('(a, b) => c => (d, e) => () => a + b + c + d + e');
+      });
+
+      it('should parse an arrow function that returns an object literal', () => {
+        checkBinding('() => ({a: 1, b: 2})');
+      });
+
+      it('should parse an arrow function containing an assignment', () => {
+        checkBinding('(a, b) => c = a + b');
+      });
+
+      it('should be able to pass an arrow function through a pipe', () => {
+        checkBinding('(a, b) => a + b | pipe', '((a, b) => a + b | pipe)');
+      });
+
+      it('should parse an arrow function that returns an array', () => {
+        checkBinding('(a, b) => [a, b, foo]');
+      });
+
+      describe('arrow function spans', () => {
+        it('should produce spans for the entire arrow function', () => {
+          expect(unparseWithSpan(parseBinding('a => a'))).toEqual([
+            ['a => a', 'a => a'],
+            ['a', 'a'],
+            ['a', '[nameSpan] a'],
+            ['', ' '],
+          ]);
+          expect(unparseWithSpan(parseBinding('(a, b, c) => a + b + c'))).toEqual([
+            ['(a, b, c) => a + b + c', '(a, b, c) => a + b + c'],
+            ['a + b + c', 'a + b + c'],
+            ['a + b', 'a + b'],
+            ['a', 'a'],
+            ['a', '[nameSpan] a'],
+            ['', ' '],
+            ['b', 'b'],
+            ['b', '[nameSpan] b'],
+            ['', ' '],
+            ['c', 'c'],
+            ['c', '[nameSpan] c'],
+            ['', ' '],
+          ]);
+        });
+
+        it('should produce spans for the arrow function parameters', () => {
+          const ast = parseBinding('(foo, bar, baz) => foo + bar + baz');
+          const arrowFn = ast.ast as ArrowFunction;
+          const getSource = (span: ParseSpan) => ast.source?.substring(span.start, span.end);
+
+          expect(getSource(arrowFn.parameters[0].span)).toBe('foo');
+          expect(getSource(arrowFn.parameters[1].span)).toBe('bar');
+          expect(getSource(arrowFn.parameters[2].span)).toBe('baz');
+        });
+      });
+
+      describe('arrow function validations', () => {
+        it('should not allow pipe to be used inside an arrow function', () => {
+          expectBindingError(
+            '(a, b) => (a + b | pipe)',
+            'Cannot have a pipe in an action expression',
+          );
+        });
+
+        it('should report an error for an arrow function with a body', () => {
+          expectBindingError('() => {}', 'Multi-line arrow functions are not supported');
+        });
+
+        it('should report missing comma between arrow function parameters', () => {
+          expectBindingError('(a b) => a + b', 'Missing expected ,');
+        });
+
+        it('should report arrow function parameter starting with a comma', () => {
+          expectBindingError('(, a) => a', 'Unexpected token ,');
+        });
+
+        it('should report arrow function parameter with a trailing comma', () => {
+          expectBindingError('(a, ) => a', 'Unexpected token )');
+        });
+
+        it('should report an arrow function without a closing paren', () => {
+          expectBindingError(
+            '(a => a + 1',
+            'Missing closing parentheses at the end of the expression',
+          );
+        });
+
+        it('should report an arrow function without an opening paren', () => {
+          expectBindingError('a) => a + 1', "Unexpected token ')'");
+        });
+
+        it('should report missing comma between arrow function parameters', () => {
+          expectBindingError('(a b) => a + b', 'Missing expected ,');
+        });
+
+        it('should report an error inside the arrow function expression', () => {
+          expectBindingError('(a) => a. + 1', 'Unexpected token +, expected identifier or keyword');
+        });
+
+        it('should report an error for chained expression in arrow function', () => {
+          expectBindingError(
+            '() => foo(); bar()',
+            'Binding expression cannot contain chained expression',
+          );
+          expectBindingError(
+            '() => (foo; bar)',
+            'Binding expression cannot contain chained expression',
+          );
+        });
+      });
     });
   });
 
