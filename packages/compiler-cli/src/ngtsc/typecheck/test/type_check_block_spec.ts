@@ -2267,6 +2267,58 @@ describe('type check blocks', () => {
     });
   });
 
+  describe('arrow functions', () => {
+    it('should generate an arrow function that uses only local parameters', () => {
+      const TEMPLATE = `<button (click)="withCallback((a, b) => a + b)"></button>`;
+      expect(tcb(TEMPLATE)).toContain('(this).withCallback((a, b) => (a) + (b));');
+    });
+
+    it('should generate an arrow function that references class members', () => {
+      const TEMPLATE = `<button (click)="withCallback((a) => componentFn(a + componentProp))"></button>`;
+      expect(tcb(TEMPLATE)).toContain(
+        '(this).withCallback(a => (this).componentFn((a) + (((this).componentProp))));',
+      );
+    });
+
+    it('should generate an arrow function that accesses higher-level parameters', () => {
+      expect(tcb(`{{() => () => (a) => () => () => a + 1}}`)).toContain(
+        '(() => () => a => () => () => (a) + (1)',
+      );
+    });
+
+    it('should generate an arrow function that accesses a class member with the same name as a parameter through `this`', () => {
+      const TEMPLATE = `<button (click)="withCallback((a) => a + this.a)"></button>`;
+      expect(tcb(TEMPLATE)).toContain('(this).withCallback(a => (a) + (((this).a)));');
+    });
+
+    it('should generate an arrow function that accesses a class member with the same name as a higher-level parameter through `this`', () => {
+      const TEMPLATE = `<button (click)="withCallback(a => b => () => a + b + this.a + this.b + someOtherProp)"></button>`;
+      expect(tcb(TEMPLATE)).toContain(
+        '(this).withCallback(a => b => () => ((((a) + (b)) + (((this).a))) + (((this).b))) + (((this).someOtherProp)));',
+      );
+    });
+
+    it('should generate an arrow function that references local symbols', () => {
+      const TEMPLATE = `
+        @let one = 1;
+        <input #someInput/>
+        <button (click)="withCallback(() => one + someInput.value)"></button>
+      `;
+
+      const result = tcb(TEMPLATE);
+      expect(result).toContain('const _t1 = (1);');
+      // _t2 is the button which we don't care about in this test.
+      expect(result).toContain('var _t3 = _t4;');
+      expect(result).toContain('var _t4 = document.createElement("input");');
+      expect(tcb(TEMPLATE)).toContain('(this).withCallback(() => (_t1) + (((_t3).value)));');
+    });
+
+    it('should ignore diagnostics on arrow function parameters', () => {
+      const result = tcb(`{{(a, b) => a + b}}`, undefined, undefined, {emitSpans: true});
+      expect(result).toContain('((a /*D:ignore*/, b /*D:ignore*/) =>');
+    });
+  });
+
   describe('import generation', () => {
     const TEMPLATE = `<div dir [test]="null"></div>`;
     const DIRECTIVE: TestDeclaration = {

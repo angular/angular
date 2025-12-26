@@ -8589,5 +8589,100 @@ suppress
         );
       });
     });
+
+    describe('arrow functions', () => {
+      it('should infer the types of parameters of arrow functions passed in as callbacks', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, signal} from '@angular/core';
+
+            @Component({
+              template: '<button (click)="sig.update(prev => acceptsString(prev))"></button>',
+            })
+            class TestCmp {
+              sig = signal(1);
+              acceptsString(value: string): number {
+                return 1;
+              }
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should infer the return type of arrow functions', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, signal} from '@angular/core';
+
+            @Component({
+              template: \`<button (click)="sig.update(() => 'hello')"></button>\`,
+            })
+            class TestCmp {
+              sig = signal(1);
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
+      });
+
+      it('should infer the parameter type of arrow functions when they are called immediately', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, signal} from '@angular/core';
+
+            @Component({
+              template: \`{{((a) => acceptsString(a))(1)}}\`,
+            })
+            class TestCmp {
+              sig = signal(1);
+              acceptsString(value: string) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should not report implicit any errors on arrow functions defined in @let', () => {
+        env.tsconfig(undefined, {
+          strict: true,
+          noImplicitAny: true,
+        });
+
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                @let arrowFn = a => a;
+                {{arrowFn(1)}}
+              \`,
+            })
+            class TestCmp {}
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+    });
   });
 });
