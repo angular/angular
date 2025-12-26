@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApiManifestPackage} from '../interfaces/api-manifest';
+import {PackageSubEntry} from '@angular/docs';
 import {getApiUrl} from './manifest.helper';
 
 describe('ManiferHelper', () => {
   describe('getApiUrl', () => {
     it('should return the correct URL for a given package and API name', () => {
-      const packageEntry: ApiManifestPackage = {
+      const packageEntry: PackageSubEntry = {
         moduleName: '@angular/common',
         moduleLabel: 'common',
         normalizedModuleName: 'angular_common',
@@ -22,7 +22,7 @@ describe('ManiferHelper', () => {
       const result = getApiUrl(packageEntry, apiName);
       expect(result).toBe('api/common/DatePipe');
 
-      const packageEntry2: ApiManifestPackage = {
+      const packageEntry2: PackageSubEntry = {
         moduleName: '@angular/animations/browser',
         moduleLabel: 'animations/browser',
         normalizedModuleName: 'angular_animations_browser',
@@ -31,7 +31,7 @@ describe('ManiferHelper', () => {
       const result2 = getApiUrl(packageEntry2, apiName);
       expect(result2).toBe('api/animations/browser/DatePipe');
 
-      const packageEntry3: ApiManifestPackage = {
+      const packageEntry3: PackageSubEntry = {
         moduleName: '@angular/common/http/testing',
         moduleLabel: 'common/http/testing',
         normalizedModuleName: 'angular_common_http_testing',

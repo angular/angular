@@ -42,6 +42,7 @@ describe('NavigationList', () => {
     });
     fixture = TestBed.createComponent(NavigationList);
     fixture.componentRef.setInput('navigationItems', []);
+    fixture.componentRef.setInput('sortCategories', false);
 
     component = fixture.componentInstance;
   });

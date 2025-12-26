@@ -19,9 +19,18 @@ esbuild(
 )
 
 ts_project(
+    name = "interface",
+    srcs = ["interface.ts"],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+)
+
+ts_project(
     name = "generate_api_manifest_lib",
     srcs = glob(["**/*.mts"]),
     deps = [
+        ":interface",
         "//adev:node_modules/@angular/compiler-cli",
         "//adev:node_modules/@types/node",
     ],

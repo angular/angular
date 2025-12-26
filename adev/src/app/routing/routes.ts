@@ -34,7 +34,9 @@ const commonReferenceRouteData = {
   displaySecondaryNav: true,
 };
 const referencePageRoutes = mapNavigationItemsToRoutes(
-  referenceNavigationItems.filter((r) => r.path === DEFAULT_PAGES.REFERENCE),
+  referenceNavigationItems.filter(
+    (r) => r.path === DEFAULT_PAGES.REFERENCE || r.path === DEFAULT_PAGES.API,
+  ),
   {
     loadComponent: () =>
       import('../features/references/api-reference-list/api-reference-list.component'),
@@ -71,6 +73,7 @@ const docsReferencePageRoutes = mapNavigationItemsToRoutes(
   referenceNavigationItems.filter(
     (r) =>
       r.path !== DEFAULT_PAGES.REFERENCE &&
+      r.path !== DEFAULT_PAGES.API &&
       r.path !== DEFAULT_PAGES.UPDATE &&
       !r.path?.startsWith(`${PAGE_PREFIX.API}/`) &&
       !r.path?.startsWith(`${PAGE_PREFIX.CLI}/`),
@@ -139,10 +142,11 @@ export const routes: Route[] = [
         path: PAGE_PREFIX.DOCS,
         redirectTo: DEFAULT_PAGES.DOCS,
       },
-      {
-        path: PAGE_PREFIX.REFERENCE,
-        redirectTo: DEFAULT_PAGES.REFERENCE,
-      },
+      // {
+      //   path: PAGE_PREFIX.REFERENCE,
+      //   redirectTo: DEFAULT_PAGES.REFERENCE,
+      // },
+      // {path: PAGE_PREFIX.API, redirectTo: DEFAULT_PAGES.API},
       {
         path: PAGE_PREFIX.PLAYGROUND,
         loadComponent: () => import('../features/playground/playground.component'),

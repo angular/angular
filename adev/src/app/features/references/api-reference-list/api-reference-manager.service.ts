@@ -7,12 +7,13 @@
  */
 
 import {Injectable, signal} from '@angular/core';
-// This file is generated at build-time, error is expected here.
+import {Manifest as ApiManifest} from '@angular/docs';
+// @ts-ignore This file is generated at build-time, error is expected here.
 import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
 import {getApiUrl} from '../helpers/manifest.helper';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
-import {ApiManifest} from '../interfaces/api-manifest';
 import {ApiItem} from '../interfaces/api-item';
+import {ApiItemType} from '../interfaces/api-item-type';
 
 const manifest = API_MANIFEST_JSON as ApiManifest;
 
@@ -25,28 +26,29 @@ export class ApiReferenceManager {
   private mapManifestToApiGroups(): ApiItemsGroup[] {
     const groups: ApiItemsGroup[] = [];
 
-    for (const module of manifest) {
-      groups.push({
-        title: module.moduleLabel.replace('@angular/', ''),
-        id: module.normalizedModuleName,
-        items: module.entries.map((api) => {
-          const url = getApiUrl(module, api.name);
-          const apiItem: ApiItem = {
-            itemType: api.type,
-            title: api.name,
-            deprecated: api.deprecated,
-            developerPreview: api.developerPreview,
-            experimental: api.experimental,
-            stable: api.stable,
-            url,
-            category: api.category,
-          };
+    Object.entries(manifest).map(([_, packageSubEntries]) => {
+      for (const module of packageSubEntries) {
+        groups.push({
+          title: module.moduleLabel.replace('@angular/', ''),
+          id: module.normalizedModuleName,
+          items: module.entries.map((api) => {
+            const url = getApiUrl(module, api.name);
+            const apiItem: ApiItem = {
+              itemType: api.type as ApiItemType,
+              title: api.name,
+              deprecated: api.deprecated,
+              developerPreview: api.developerPreview,
+              experimental: api.experimental,
+              stable: api.stable,
+              url,
+              category: api.category,
+            };
 
-          return apiItem;
-        }),
-      });
-    }
-
+            return apiItem;
+          }),
+        });
+      }
+    });
     return groups;
   }
 }

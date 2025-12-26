@@ -11,12 +11,7 @@ import path from 'path';
 import {initHighlighter} from '../shared/shiki.mjs';
 import {parseMarkdownAsync} from '../shared/marked/parse.mjs';
 import {hasUnknownAnchors} from './helpers.mjs';
-
-type ApiManifest = ApiManifestPackage[];
-interface ApiManifestPackage {
-  moduleName: string;
-  entries: {name: string; aliases?: string[]}[];
-}
+import {Manifest} from '../api-gen/manifest/interface';
 
 async function main() {
   const [paramFilePath] = process.argv.slice(2);
@@ -33,7 +28,7 @@ async function main() {
         throw new Error(`Input file "${filePath}" does not end in a ".md" file extension.`);
       }
 
-      let apiManifest: ApiManifest = [];
+      let apiManifest: Manifest = {};
       if (apiManifestPath) {
         try {
           const apiManifestStr = await readFile(apiManifestPath, {encoding: 'utf8'});
@@ -69,34 +64,36 @@ async function main() {
 main();
 
 function mapManifestToEntries(
-  apiManifest: ApiManifest,
+  apiManifest: Manifest,
 ): Record<string, {moduleName: string; targetSymbol?: string}> {
   const duplicateEntries = new Set<string>();
 
   const entryToModuleMap: Record<string, {moduleName: string; targetSymbol?: string}> = {};
-  for (const pkg of apiManifest) {
-    for (const entry of pkg.entries) {
-      if (duplicateEntries.has(entry.name)) {
-        continue;
-      } else if (entryToModuleMap[entry.name]) {
-        delete entryToModuleMap[entry.name];
-        duplicateEntries.add(entry.name);
-      } else {
-        const normalizedModuleName = pkg.moduleName.replace(/^@angular\//, '');
+  Object.entries(apiManifest).forEach(([_, packageSubEntries]) => {
+    for (const pkg of packageSubEntries) {
+      for (const entry of pkg.entries) {
+        if (duplicateEntries.has(entry.name)) {
+          continue;
+        } else if (entryToModuleMap[entry.name]) {
+          delete entryToModuleMap[entry.name];
+          duplicateEntries.add(entry.name);
+        } else {
+          const normalizedModuleName = pkg.moduleName.replace(/^@angular\//, '');
 
-        entryToModuleMap[entry.name] = {moduleName: normalizedModuleName};
+          entryToModuleMap[entry.name] = {moduleName: normalizedModuleName};
 
-        // If there are aliases, create entries for each alias
-        if (entry.aliases) {
-          for (const alias of entry.aliases) {
-            entryToModuleMap[alias] = {
-              moduleName: normalizedModuleName,
-              targetSymbol: entry.name,
-            };
+          // If there are aliases, create entries for each alias
+          if (entry.aliases) {
+            for (const alias of entry.aliases) {
+              entryToModuleMap[alias] = {
+                moduleName: normalizedModuleName,
+                targetSymbol: entry.name,
+              };
+            }
           }
         }
       }
     }
-  }
+  });
   return entryToModuleMap;
 }

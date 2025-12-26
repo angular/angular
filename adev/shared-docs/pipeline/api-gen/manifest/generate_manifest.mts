@@ -8,25 +8,7 @@
 
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
 import type {DocEntry, EntryCollection, FunctionEntry, JsDocTagEntry} from '@angular/compiler-cli';
-
-export interface ManifestEntry {
-  name: string;
-  aliases?: string[];
-  type: string;
-  category: string | undefined;
-  deprecated: {version: string | undefined} | undefined;
-  developerPreview: {version: string | undefined} | undefined;
-  experimental: {version: string | undefined} | undefined;
-  stable: {version: string | undefined} | undefined;
-}
-
-/** Manifest that maps each module name to a list of API symbols. */
-export type Manifest = {
-  moduleName: string;
-  normalizedModuleName: string;
-  moduleLabel: string;
-  entries: ManifestEntry[];
-}[];
+import {Manifest, ManifestEntry, PackageSubEntry} from './interface';
 
 /**
  * @returns the JsDocTagEntry for the given tag name
@@ -76,26 +58,30 @@ function getTagSinceVersion(
  * extract_api_to_json.
  */
 export function generateManifest(apiCollections: EntryCollection[]): Manifest {
-  const manifest: Manifest = [];
+  const packageSubEntries: PackageSubEntry[] = [];
   for (const collection of apiCollections) {
     const entries = collection.entries
       .filter((entry) => !isHiddenEntry(entry))
-      .map((entry: DocEntry) => ({
-        name: entry.name,
-        ...(entry.aliases && {aliases: entry.aliases}),
-        type: entry.entryType,
-        deprecated: getTagSinceVersion(entry, 'deprecated', true),
-        developerPreview: getTagSinceVersion(entry, 'developerPreview'),
-        experimental: getTagSinceVersion(entry, 'experimental'),
-        stable: getTagSinceVersion(entry, 'publicApi'),
-        category: getTag(entry, 'category')?.comment.trim(),
-      }));
+      .map(
+        (entry: DocEntry): ManifestEntry => ({
+          name: entry.name,
+          ...(entry.aliases && {aliases: entry.aliases}),
+          type: entry.entryType,
+          deprecated: getTagSinceVersion(entry, 'deprecated', true),
+          developerPreview: getTagSinceVersion(entry, 'developerPreview'),
+          experimental: getTagSinceVersion(entry, 'experimental'),
+          stable: getTagSinceVersion(entry, 'publicApi'),
+          category: getTag(entry, 'category')?.comment.trim(),
+        }),
+      );
 
-    const existingEntry = manifest.find((entry) => entry.moduleName === collection.moduleName);
+    const existingEntry = packageSubEntries.find(
+      (entry) => entry.moduleName === collection.moduleName,
+    );
     if (existingEntry) {
       existingEntry.entries.push(...entries);
     } else {
-      manifest.push({
+      packageSubEntries.push({
         moduleName: collection.moduleName,
         normalizedModuleName: collection.normalizedModuleName,
         moduleLabel: collection.moduleLabel ?? collection.moduleName,
@@ -105,11 +91,11 @@ export function generateManifest(apiCollections: EntryCollection[]): Manifest {
   }
 
   // We sort the API entries alphabetically by name to ensure a stable order in the manifest.
-  manifest.forEach((entry) => {
+  packageSubEntries.forEach((entry) => {
     entry.entries.sort((entry1, entry2) => entry1.name.localeCompare(entry2.name));
   });
 
-  manifest.sort((entry1, entry2) => {
+  packageSubEntries.sort((entry1, entry2) => {
     // Ensure that labels that start with a `code` tag like `window.ng` are last
     if (entry1.moduleLabel.startsWith('<')) {
       return 1;
@@ -120,5 +106,18 @@ export function generateManifest(apiCollections: EntryCollection[]): Manifest {
     return entry1.moduleLabel.localeCompare(entry2.moduleLabel);
   });
 
+  const manifest: Manifest = {};
+  for (const entry of packageSubEntries) {
+    const packageName = getRootPackageName(entry.moduleName);
+    if (!manifest[packageName]) {
+      manifest[packageName] = [];
+    }
+    manifest[packageName].push(entry);
+  }
+
   return manifest;
+}
+
+function getRootPackageName(moduleName: string): string {
+  return moduleName.match(/(@angular\/[\w-]+)/)?.[1] ?? moduleName;
 }

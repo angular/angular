@@ -29,6 +29,7 @@ ts_project(
     deps = [
         "//adev:node_modules/@angular/compiler-cli",
         "//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest_lib",
+        "//adev/shared-docs/pipeline/api-gen/manifest:interface",
     ],
 )
 
