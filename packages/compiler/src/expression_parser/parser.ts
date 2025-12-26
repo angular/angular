@@ -16,6 +16,9 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import {
   AbsoluteSourceSpan,
+  ArrowFunction,
+  ArrowFunctionParameter,
+  ArrowFunctionIdentifierParameter,
   AST,
   ASTWithSource,
   Binary,
@@ -1111,7 +1114,9 @@ class _ParseAST {
 
   private parsePrimary(): AST {
     const start = this.inputIndex;
-    if (this.consumeOptionalCharacter(chars.$LPAREN)) {
+    if (this.isArrowFunction()) {
+      return this.parseArrowFunction(start);
+    } else if (this.consumeOptionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
       const result = this.parsePipe();
       if (!this.consumeOptionalCharacter(chars.$RPAREN)) {
@@ -1127,7 +1132,7 @@ class _ParseAST {
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), null);
     } else if (this.next.isKeywordUndefined()) {
       this.advance();
-      return new LiteralPrimitive(this.span(start), this.sourceSpan(start), void 0);
+      return new LiteralPrimitive(this.span(start), this.sourceSpan(start), undefined);
     } else if (this.next.isKeywordTrue()) {
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), true);
@@ -1692,6 +1697,108 @@ class _ParseAST {
       bodyToken.strValue,
       flagsToken ? flagsToken.strValue : null,
     );
+  }
+
+  private parseArrowFunction(start: number) {
+    let params: ArrowFunctionParameter[];
+
+    if (this.next.isIdentifier()) {
+      const token = this.next;
+      this.advance();
+      params = [this.getArrowFunctionIdentifierArg(token)];
+    } else if (this.next.isCharacter(chars.$LPAREN)) {
+      this.rparensExpected++;
+      this.advance();
+      params = this.parseArrowFunctionParameters();
+      this.rparensExpected--;
+    } else {
+      params = [];
+      this.error(`Unexpected token ${this.next}`);
+    }
+
+    this.expectOperator('=>');
+    let body: AST;
+
+    if (this.next.isCharacter(chars.$LBRACE)) {
+      this.error(
+        'Multi-line arrow functions are not supported. If you meant to return an object literal, wrap it with parentheses.',
+      );
+      body = new EmptyExpr(this.span(start), this.sourceSpan(start));
+    } else {
+      const prevFlags = this.parseFlags;
+      this.parseFlags = ParseFlags.Action; // Arrow function can contain assignments even in a binding context.
+      body = this.parseExpression();
+      this.parseFlags = prevFlags;
+    }
+
+    return new ArrowFunction(this.span(start), this.sourceSpan(start), params, body);
+  }
+
+  private parseArrowFunctionParameters(): ArrowFunctionParameter[] {
+    const params: ArrowFunctionParameter[] = [];
+
+    if (!this.consumeOptionalCharacter(chars.$RPAREN)) {
+      while (this.next !== EOF) {
+        if (this.next.isIdentifier()) {
+          const token = this.next;
+          this.advance();
+          params.push(this.getArrowFunctionIdentifierArg(token));
+
+          if (this.consumeOptionalCharacter(chars.$RPAREN)) {
+            break;
+          } else {
+            this.expectCharacter(chars.$COMMA);
+          }
+        } else {
+          this.error(`Unexpected token ${this.next}`);
+          break;
+        }
+      }
+    }
+
+    return params;
+  }
+
+  private getArrowFunctionIdentifierArg(token: Token): ArrowFunctionParameter {
+    return new ArrowFunctionIdentifierParameter(
+      token.strValue,
+      this.span(token.index),
+      this.sourceSpan(token.index),
+    );
+  }
+
+  private isArrowFunction(): boolean {
+    // Scan ahead without advancing the pointer since we don't know if there is an arrow function.
+    const start = this.index;
+    const tokens = this.tokens;
+
+    if (start > tokens.length - 2) {
+      return false;
+    }
+
+    // One parameter and no parens.
+    if (tokens[start].isIdentifier() && tokens[start + 1].isOperator('=>')) {
+      return true;
+    }
+
+    // Multiple parenthesized params.
+    if (tokens[start].isCharacter(chars.$LPAREN)) {
+      let i = start + 1;
+
+      for (i; i < tokens.length; i++) {
+        if (!tokens[i].isIdentifier() && !tokens[i].isCharacter(chars.$COMMA)) {
+          break;
+        }
+      }
+
+      return (
+        i < tokens.length - 1 &&
+        tokens[i].isCharacter(chars.$RPAREN) &&
+        tokens[i + 1].isOperator('=>')
+      );
+    }
+
+    return false;
   }
 
   /**
