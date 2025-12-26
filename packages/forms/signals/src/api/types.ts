@@ -9,8 +9,7 @@
 import {Signal, ɵFieldState} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import type {Field} from './field_directive';
-import type {MetadataKey} from './rules/metadata';
-import type {ValidationError} from './rules/validation/validation_errors';
+import type {ValidationError, MetadataKey} from './rules';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -169,7 +168,7 @@ export type FieldTree<TModel, TKey extends string | number = string | number> =
     // Children:
     ([TModel] extends [AbstractControl]
       ? object
-      : [TModel] extends [Array<infer U>]
+      : [TModel] extends [ReadonlyArray<infer U>]
         ? ReadonlyArrayLike<MaybeFieldTree<U, number>>
         : TModel extends Record<string, any>
           ? Subfields<TModel>
@@ -408,7 +407,7 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
     (TModel extends AbstractControl
       ? unknown
       : // Array paths have no subpaths
-        TModel extends Array<any>
+        TModel extends ReadonlyArray<any>
         ? unknown
         : // Object subfields
           TModel extends Record<string, any>
