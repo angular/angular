@@ -444,6 +444,60 @@ describe('definitions', () => {
     assertFileNames(Array.from(definitions!), ['app.html']);
   });
 
+  it('gets definition for component property access in an arrow function', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({templateUrl: '/app.html', standalone: false})
+         export class AppCmp {
+          componentProp = 123;
+         }
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    template.contents = '{{() => componentProp + 1}}';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('{{() => compon¦entProp + 1}}');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('componentProp');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.memberVariableElement);
+    expect(definitions[0].textSpan).toBe('componentProp');
+    assertFileNames(Array.from(definitions), ['app.ts']);
+  });
+
+  it('gets definition for parameter access in an arrow function', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.html': '',
+      'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({templateUrl: '/app.html', standalone: false})
+         export class AppCmp {}
+       `,
+    };
+    const env = LanguageServiceTestEnv.setup();
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    template.contents = '{{(val) => val + 1}}';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('{{(val) => va¦l + 1}}');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(definitions[0].name).toEqual('val');
+    expect(definitions[0].kind).toBe(ts.ScriptElementKind.parameterElement);
+    expect(definitions[0].textSpan).toBe('val + 1');
+    assertFileNames(Array.from(definitions), ['app.html']);
+  });
+
   it('gets definition for a let declaration', () => {
     initMockFileSystem('Native');
     const files = {

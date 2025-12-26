@@ -295,6 +295,20 @@ describe('completions', () => {
       expectContain(completions, ts.ScriptElementKind.variableElement, ['undefined']);
       expectDoesNotContain(completions, ts.ScriptElementKind.parameterElement, ['ctx']);
     });
+
+    it('should provide completions for access of a component property in an arrow function', () => {
+      const {templateFile} = setup('{{() => ti}}', `title!: string; hero!: number;`);
+      templateFile.moveCursorToText('{{() => ti¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
+    });
+
+    it('should provide completions for access of a parameter in an arrow function', () => {
+      const {templateFile} = setup('{{((value) => value.)(foo)}}', `foo = {a: number, b: string};`);
+      templateFile.moveCursorToText('{{((value) => value.¦)(foo)}}');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['a', 'b']);
+    });
   });
 
   describe('signal inputs', () => {
