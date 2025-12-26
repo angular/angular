@@ -940,6 +940,14 @@ export function attachSourceLocation(
   return call(Identifiers.attachSourceLocations, [o.literal(templatePath), locations], null);
 }
 
+export function storeCallback(slotOffset: number, expression: o.Expression): ir.CreateOp {
+  return call(Identifiers.storeCallback, [o.literal(slotOffset), expression], null);
+}
+
+export function getCallback(slotOffset: number): o.Expression {
+  return o.importExpr(Identifiers.getCallback).callFn([o.literal(slotOffset)]);
+}
+
 /**
  * Collates the string an expression arguments for an interpolation instruction.
  */
