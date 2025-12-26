@@ -76,6 +76,7 @@ import {
   TView,
   TViewType,
   INJECTOR,
+  ID,
 } from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {profiler} from './profiler';
@@ -387,7 +388,7 @@ function runLeaveAnimationsWithCallback(
   if (animations == null || animations.leave == undefined || !animations.leave.has(tNode.index))
     return callback(false);
 
-  if (lView) allLeavingAnimations.add(lView);
+  if (lView) allLeavingAnimations.add(lView[ID]);
 
   addToAnimationQueue(
     injector,
@@ -410,7 +411,7 @@ function runLeaveAnimationsWithCallback(
         animations.running = Promise.allSettled(runningAnimations);
         runAfterLeaveAnimations(lView!, callback);
       } else {
-        if (lView) allLeavingAnimations.delete(lView);
+        if (lView) allLeavingAnimations.delete(lView[ID]);
         callback(false);
       }
     },
@@ -423,7 +424,7 @@ function runAfterLeaveAnimations(lView: LView, callback: Function) {
   if (runningAnimations) {
     runningAnimations.then(() => {
       lView[ANIMATIONS]!.running = undefined;
-      allLeavingAnimations.delete(lView);
+      allLeavingAnimations.delete(lView[ID]);
       callback(true);
     });
     return;

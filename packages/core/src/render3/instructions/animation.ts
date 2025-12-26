@@ -13,7 +13,7 @@ import {
   MAX_ANIMATION_TIMEOUT,
 } from '../../animation/interfaces';
 import {getLView, getCurrentTNode} from '../state';
-import {RENDERER, INJECTOR, CONTEXT, LView} from '../interfaces/view';
+import {RENDERER, INJECTOR, CONTEXT, LView, ID} from '../interfaces/view';
 import {getNativeByTNode} from '../util/view_utils';
 import {performanceMarkFeature} from '../../util/performance';
 import {Renderer} from '../interfaces/renderer';
@@ -277,7 +277,7 @@ function runLeaveAnimations(
 
   const renderer = lView[RENDERER];
   const ngZone = lView[INJECTOR].get(NgZone);
-  allLeavingAnimations.add(lView);
+  allLeavingAnimations.add(lView[ID]);
   (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
 
   const activeClasses = getClassListFromValue(value);
@@ -389,7 +389,7 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
   const tNode = getCurrentTNode()!;
   cancelLeavingNodes(tNode, lView);
 
-  allLeavingAnimations.add(lView);
+  allLeavingAnimations.add(lView[ID]);
 
   addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
     runLeaveAnimationFunction(lView, tNode, value),
