@@ -67,7 +67,7 @@ The background color appears when the pointer hovers over the paragraph element 
 
 This section walks you through setting the highlight color while applying the `HighlightDirective`.
 
-1. In `highlight.directive.ts`, import `Input` from `@angular/core`.
+1. In `highlight.directive.ts`, import `input` from `@angular/core`.
 
    <docs-code header="highlight.directive.ts (imports)" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.3.ts" region="imports"/>
 
