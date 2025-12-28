@@ -841,7 +841,7 @@ export function textInterpolate(
 ): ir.UpdateOp {
   const interpolationArgs = collateInterpolationArgs(strings, expressions);
 
-  return callVariadicInstruction(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan);
+  return callVariadicInstruction(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs, sourceSpan);
 }
 
 export function i18nExp(expr: o.Expression, sourceSpan: ParseSourceSpan | null): ir.UpdateOp {
@@ -930,13 +930,7 @@ export function pureFunction(
   fn: o.Expression,
   args: o.Expression[],
 ): o.Expression {
-  return callVariadicInstructionExpr(
-    PURE_FUNCTION_CONFIG,
-    [o.literal(varOffset), fn],
-    args,
-    [],
-    null,
-  );
+  return callVariadicInstructionExpr(PURE_FUNCTION_CONFIG, [o.literal(varOffset), fn], args, null);
 }
 
 export function attachSourceLocation(
@@ -980,13 +974,7 @@ function interpolationToExpression(
     interpolation.strings,
     interpolation.expressions,
   );
-  return callVariadicInstructionExpr(
-    VALUE_INTERPOLATE_CONFIG,
-    [],
-    interpolationArgs,
-    [],
-    sourceSpan,
-  );
+  return callVariadicInstructionExpr(VALUE_INTERPOLATE_CONFIG, [], interpolationArgs, sourceSpan);
 }
 
 function call<OpT extends ir.CreateOp | ir.UpdateOp>(
@@ -1085,7 +1073,6 @@ function callVariadicInstructionExpr(
   config: VariadicInstructionConfig,
   baseArgs: o.Expression[],
   interpolationArgs: o.Expression[],
-  extraArgs: o.Expression[],
   sourceSpan: ParseSourceSpan | null,
 ): o.Expression {
   // mapping need to be done before potentially dropping the last interpolation argument
@@ -1095,7 +1082,6 @@ function callVariadicInstructionExpr(
   // And the runtime will take care of it.
   const lastInterpolationArg = interpolationArgs.at(-1);
   if (
-    extraArgs.length === 0 &&
     interpolationArgs.length > 1 &&
     lastInterpolationArg instanceof o.LiteralExpr &&
     lastInterpolationArg.value === ''
@@ -1105,14 +1091,12 @@ function callVariadicInstructionExpr(
 
   if (n < config.constant.length) {
     // Constant calling pattern.
-    return o
-      .importExpr(config.constant[n])
-      .callFn([...baseArgs, ...interpolationArgs, ...extraArgs], sourceSpan);
+    return o.importExpr(config.constant[n]).callFn([...baseArgs, ...interpolationArgs], sourceSpan);
   } else if (config.variable !== null) {
     // Variable calling pattern.
     return o
       .importExpr(config.variable)
-      .callFn([...baseArgs, o.literalArr(interpolationArgs), ...extraArgs], sourceSpan);
+      .callFn([...baseArgs, o.literalArr(interpolationArgs)], sourceSpan);
   } else {
     throw new Error(`AssertionError: unable to call variadic function`);
   }
@@ -1122,16 +1106,9 @@ function callVariadicInstruction(
   config: VariadicInstructionConfig,
   baseArgs: o.Expression[],
   interpolationArgs: o.Expression[],
-  extraArgs: o.Expression[],
   sourceSpan: ParseSourceSpan | null,
 ): ir.UpdateOp {
   return ir.createStatementOp(
-    callVariadicInstructionExpr(
-      config,
-      baseArgs,
-      interpolationArgs,
-      extraArgs,
-      sourceSpan,
-    ).toStmt(),
+    callVariadicInstructionExpr(config, baseArgs, interpolationArgs, sourceSpan).toStmt(),
   );
 }
