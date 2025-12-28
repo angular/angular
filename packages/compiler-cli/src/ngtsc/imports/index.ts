@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+// Export runtime classes from alias; do not re-export the `AliasingHost` interface
+// which is type-only and causes ESM runtime export errors.
 export {
   AliasingHost,
   AliasStrategy,
@@ -21,28 +23,27 @@ export {
 export {DefaultImportTracker} from './src/default';
 export {DeferredSymbolTracker} from './src/deferred_symbol_tracker';
 export {
-  AbsoluteModuleStrategy,
-  assertSuccessfulReferenceEmit,
+  ImportFlags,
+  ImportedFile,
+  ReferenceEmitKind,
+  ReferenceEmitStrategy,
   EmittedReference,
   FailedEmitResult,
-  ImportedFile,
-  ImportFlags,
-  LocalIdentifierStrategy,
-  LogicalProjectStrategy,
-  ReferenceEmitKind,
-  ReferenceEmitResult,
-  ReferenceEmitStrategy,
+  assertSuccessfulReferenceEmit,
   ReferenceEmitter,
+  LocalIdentifierStrategy,
+  AbsoluteModuleStrategy,
+  LogicalProjectStrategy,
   RelativePathStrategy,
   UnifiedModulesStrategy,
 } from './src/emitter';
 export {ImportedSymbolsTracker} from './src/imported_symbols_tracker';
 export {LocalCompilationExtraImportsTracker} from './src/local_compilation_extra_imports_tracker';
 export {
-  AliasImportDeclaration,
   isAliasImportDeclaration,
   loadIsReferencedAliasDeclarationPatch,
 } from './src/patch_alias_reference_resolution';
-export {Reexport} from './src/reexport';
+export type {AliasImportDeclaration} from './src/patch_alias_reference_resolution';
 export {OwningModule, Reference} from './src/references';
+export {Reexport} from './src/reexport';
 export {ModuleResolver} from './src/resolver';

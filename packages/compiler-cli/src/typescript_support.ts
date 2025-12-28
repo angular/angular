@@ -64,3 +64,33 @@ export function checkVersion(version: string, minVersion: string, maxVersion: st
 export function verifySupportedTypeScriptVersion(): void {
   checkVersion(tsVersion, MIN_TS_VERSION, MAX_TS_VERSION);
 }
+
+export function setGetSourceFileAsHashVersioned(host: ts.CompilerHost): void {
+  // TypeScript ships this helper as an internal API and uses it for solution
+  // builders. Prefer it when present to keep behavior aligned with TS.
+  const tsAny = ts as any;
+  if (typeof tsAny.setGetSourceFileAsHashVersioned === 'function') {
+    tsAny.setGetSourceFileAsHashVersioned(host);
+    return;
+  }
+
+  // Fallback for environments where the helper is unavailable.
+  const originalGetSourceFile = host.getSourceFile;
+  host.getSourceFile = (...args) => {
+    const sf = originalGetSourceFile.call(host, ...args);
+    if (sf) {
+      const createHash: ((text: string) => string) | undefined = (host as any).createHash;
+      (sf as any).version = (
+        createHash ??
+        ((text: string) => {
+          let hash = 5381;
+          for (let i = 0; i < text.length; i++) {
+            hash = (hash * 33) ^ text.charCodeAt(i);
+          }
+          return (hash >>> 0).toString(16);
+        })
+      )(sf.text);
+    }
+    return sf;
+  };
+}

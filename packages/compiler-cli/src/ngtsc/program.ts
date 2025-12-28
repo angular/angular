@@ -11,7 +11,10 @@ import ts from 'typescript';
 
 import * as api from '../transformers/api';
 import {i18nExtract} from '../transformers/i18n';
-import {verifySupportedTypeScriptVersion} from '../typescript_support';
+import {
+  setGetSourceFileAsHashVersioned,
+  verifySupportedTypeScriptVersion,
+} from '../typescript_support';
 
 import {
   CompilationTicket,
@@ -25,7 +28,7 @@ import {DocEntry} from './docs';
 import {absoluteFrom, AbsoluteFsPath, getFileSystem, resolve} from './file_system';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
-import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
+import {ActivePerfRecorder, PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
 import {TsCreateProgramDriver} from './program_driver';
 import {DeclarationNode} from './reflection';
 import {retagAllTsFiles} from './shims';
@@ -43,6 +46,14 @@ export class NgtscProgram implements api.Program {
    * The primary TypeScript program, which is used for analysis and emit.
    */
   private tsProgram: ts.Program;
+
+  /**
+   * Optional builder program used to support TS disk incremental builds (reads/writes `.tsbuildinfo`).
+   *
+   * Only used when there is no in-memory program to reuse (i.e. not watch-mode incremental
+   * compilation).
+   */
+  private tsBuilderProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram | null = null;
 
   private host: NgCompilerHost;
   private incrementalStrategy: TrackedIncrementalBuildStrategy;
@@ -79,9 +90,27 @@ export class NgtscProgram implements api.Program {
       retagAllTsFiles(reuseProgram);
     }
 
-    this.tsProgram = perfRecorder.inPhase(PerfPhase.TypeScriptProgramCreate, () =>
-      ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram),
-    );
+    // If we don't have an in-memory program to reuse (e.g. non-watch invocations), prefer TS disk
+    // incremental builds when enabled so `.tsbuildinfo` can be consumed across invocations.
+    if (reuseProgram === undefined && (options.incremental || options.composite)) {
+      // TS BuilderPrograms require every SourceFile to have a `version`.
+      // Angular's `NgCompilerHost` can synthesize shim files which would otherwise
+      // miss a version and trip TS's builder invariant.
+      setGetSourceFileAsHashVersioned(this.host);
+
+      this.tsBuilderProgram = perfRecorder.inPhase(PerfPhase.TypeScriptProgramCreate, () =>
+        ts.createIncrementalProgram({
+          rootNames: this.host.inputFiles,
+          options,
+          host: this.host,
+        }),
+      ) as ts.EmitAndSemanticDiagnosticsBuilderProgram;
+      this.tsProgram = this.tsBuilderProgram.getProgram();
+    } else {
+      this.tsProgram = perfRecorder.inPhase(PerfPhase.TypeScriptProgramCreate, () =>
+        ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram),
+      );
+    }
 
     perfRecorder.phase(PerfPhase.Unaccounted);
     perfRecorder.memory(PerfCheckpoint.TypeScriptProgramCreate);
@@ -147,7 +176,7 @@ export class NgtscProgram implements api.Program {
     cancellationToken?: ts.CancellationToken | undefined,
   ): readonly ts.Diagnostic[] {
     return this.compiler.perfRecorder.inPhase(PerfPhase.TypeScriptDiagnostics, () =>
-      this.tsProgram.getOptionsDiagnostics(cancellationToken),
+      (this.tsBuilderProgram ?? this.tsProgram).getOptionsDiagnostics(cancellationToken),
     );
   }
 
@@ -163,12 +192,20 @@ export class NgtscProgram implements api.Program {
           return [];
         }
 
-        res = this.tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken);
+        res = (this.tsBuilderProgram ?? this.tsProgram).getSyntacticDiagnostics(
+          sourceFile,
+          cancellationToken,
+        );
       } else {
         const diagnostics: ts.Diagnostic[] = [];
         for (const sf of this.tsProgram.getSourceFiles()) {
           if (!ignoredFiles.has(sf)) {
-            diagnostics.push(...this.tsProgram.getSyntacticDiagnostics(sf, cancellationToken));
+            diagnostics.push(
+              ...(this.tsBuilderProgram ?? this.tsProgram).getSyntacticDiagnostics(
+                sf,
+                cancellationToken,
+              ),
+            );
           }
         }
         res = diagnostics;
@@ -195,12 +232,20 @@ export class NgtscProgram implements api.Program {
           return [];
         }
 
-        res = this.tsProgram.getSemanticDiagnostics(sourceFile, cancellationToken);
+        res = (this.tsBuilderProgram ?? this.tsProgram).getSemanticDiagnostics(
+          sourceFile,
+          cancellationToken,
+        );
       } else {
         const diagnostics: ts.Diagnostic[] = [];
         for (const sf of this.tsProgram.getSourceFiles()) {
           if (!ignoredFiles.has(sf)) {
-            diagnostics.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
+            diagnostics.push(
+              ...(this.tsBuilderProgram ?? this.tsProgram).getSemanticDiagnostics(
+                sf,
+                cancellationToken,
+              ),
+            );
           }
         }
         res = diagnostics;
@@ -210,20 +255,20 @@ export class NgtscProgram implements api.Program {
   }
 
   getNgOptionDiagnostics(
-    cancellationToken?: ts.CancellationToken | undefined,
+    _cancellationToken?: ts.CancellationToken | undefined,
   ): readonly ts.Diagnostic[] {
     return this.compiler.getOptionDiagnostics();
   }
 
   getNgStructuralDiagnostics(
-    cancellationToken?: ts.CancellationToken | undefined,
+    _cancellationToken?: ts.CancellationToken | undefined,
   ): readonly ts.Diagnostic[] {
     return [];
   }
 
   getNgSemanticDiagnostics(
     fileName?: string | undefined,
-    cancellationToken?: ts.CancellationToken | undefined,
+    _cancellationToken?: ts.CancellationToken | undefined,
   ): readonly ts.Diagnostic[] {
     let sf: ts.SourceFile | undefined = undefined;
     if (fileName !== undefined) {
@@ -253,7 +298,7 @@ export class NgtscProgram implements api.Program {
     return this.compiler.analyzeAsync();
   }
 
-  listLazyRoutes(entryRoute?: string | undefined): api.LazyRoute[] {
+  listLazyRoutes(_entryRoute?: string | undefined): api.LazyRoute[] {
     return [];
   }
 
@@ -317,6 +362,12 @@ export class NgtscProgram implements api.Program {
         sourceFiles: ReadonlyArray<ts.SourceFile> | undefined,
       ) => {
         if (sourceFiles !== undefined) {
+          for (const sf of sourceFiles) {
+            if (ignoreFiles.has(sf)) {
+              return;
+            }
+          }
+
           // Record successful writes for any `ts.SourceFile` (that's not a declaration file)
           // that's an input to this write.
           for (const writtenSf of sourceFiles) {
@@ -336,6 +387,27 @@ export class NgtscProgram implements api.Program {
 
       if (customTransforms !== undefined && customTransforms.beforeTs !== undefined) {
         beforeTransforms.push(...customTransforms.beforeTs);
+      }
+
+      // If we have a TS builder program, use a whole-program emit so TS can write `.tsbuildinfo`
+      // for disk incremental builds. If callers provided a custom emit callback, preserve the
+      // existing per-file emit path.
+      if (
+        this.tsBuilderProgram !== null &&
+        opts?.emitCallback === undefined &&
+        opts?.mergeEmitResultsCallback === undefined
+      ) {
+        return this.tsBuilderProgram.emit(
+          /* targetSourceFile */ undefined,
+          writeFile,
+          /* cancellationToken */ undefined,
+          /* emitOnlyDtsFiles */ false,
+          {
+            before: beforeTransforms,
+            after: customTransforms && customTransforms.afterTs,
+            afterDeclarations: afterDeclarationsTransforms,
+          },
+        );
       }
 
       const emitResults: CbEmitRes[] = [];

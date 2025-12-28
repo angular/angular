@@ -9,6 +9,7 @@
 import ts from 'typescript';
 import yargs from 'yargs';
 
+import {mainBuildMode} from './build_mode';
 import {
   exitCodeFromResult,
   formatDiagnostics,
@@ -29,6 +30,9 @@ export function main(
   },
   modifiedResourceFiles?: Set<string> | null,
 ): number {
+  if (ts.isBuildCommand(args)) {
+    return mainBuildMode(args, consoleError);
+  }
   let {
     project,
     rootNames,

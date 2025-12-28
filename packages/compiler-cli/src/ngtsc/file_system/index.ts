@@ -24,7 +24,7 @@ export {
 } from './src/helpers';
 export {LogicalFileSystem, LogicalProjectPath} from './src/logical';
 export {NodeJSFileSystem} from './src/node_js_file_system';
-export {
+export type {
   AbsoluteFsPath,
   FileStats,
   FileSystem,

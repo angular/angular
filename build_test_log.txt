@@ -1,0 +1,175 @@
+==================== Test output for //packages/compiler-cli/test/ngtsc:ngtsc (shard 3 of 4):
+Started
+.........................................................................*.......................................................................................................................................................................................................................................*............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................*............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................*......................................................
+
+Pending:
+
+1) <<FileSystem: OS/X>> ngtsc behavioral tests undecorated providers should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass
+  Temporarily disabled with xit
+
+
+2) <<FileSystem: Windows>> ngtsc behavioral tests undecorated providers should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass
+  Temporarily disabled with xit
+
+
+3) <<FileSystem: Unix>> ngtsc behavioral tests undecorated providers should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass
+  Temporarily disabled with xit
+
+
+4) <<FileSystem: Native>> ngtsc behavioral tests undecorated providers should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass
+  Temporarily disabled with xit
+
+1538 specs, 0 failures, 4 pending specs
+Finished in 31.29 seconds
+================================================================================
+==================== Test output for //packages/compiler-cli/test/ngtsc:ngtsc (shard 1 of 4):
+Started
+............................................................................................................................................................................................................................................................................................F........F..................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................*.................................F.....................................................................................................................................................................................................................................................................................................................................................*.................................*.............................................F..*......................................................................................F.......................
+
+Failures:
+1) <<FileSystem: Unix>> ngc build mode (project references) produces .tsbuildinfo for single-project incremental builds
+  Message:
+    Expected 1 to be 0.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:135:24)
+        at <Jasmine>
+  Message:
+    Expected spy consoleError not to have been called.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:136:28)
+        at <Jasmine>
+  Message:
+    Expected false to be true.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:139:64)
+        at <Jasmine>
+
+2) <<FileSystem: OS/X>> ngc build mode (project references) produces .tsbuildinfo for single-project incremental builds
+  Message:
+    Expected 1 to be 0.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:135:24)
+        at <Jasmine>
+  Message:
+    Expected spy consoleError not to have been called.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:136:28)
+        at <Jasmine>
+  Message:
+    Expected false to be true.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:139:64)
+        at <Jasmine>
+
+3) <<FileSystem: Windows>> ngc build mode (project references) produces .tsbuildinfo for single-project incremental builds
+  Message:
+    Expected 1 to be 0.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:135:24)
+        at <Jasmine>
+  Message:
+    Expected spy consoleError not to have been called.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:136:28)
+        at <Jasmine>
+  Message:
+    Expected false to be true.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:139:64)
+        at <Jasmine>
+
+4) build mode tsbuildinfo recovery prefers diagnostic fileName when it points at a tsbuildinfo file
+  Message:
+    Expected null to be '/tmp/p/.tsbuildinfo'.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_tsbuildinfo_recovery_spec.ts:50:56)
+        at <Jasmine>
+
+5) <<FileSystem: Native>> ngc build mode (project references) produces .tsbuildinfo for single-project incremental builds
+  Message:
+    Expected 1 to be 0.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:135:24)
+        at <Jasmine>
+  Message:
+    Expected spy consoleError not to have been called.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:136:28)
+        at <Jasmine>
+  Message:
+    Expected false to be true.
+  Stack:
+        at <Jasmine>
+        at UserContext.<anonymous> (./packages/compiler-cli/test/ngtsc/build_mode_spec.ts:139:64)
+        at <Jasmine>
+Pending:
+
+1) <<FileSystem: Windows>> initializer-based model() API should not widen the type of two-way bindings on Angular versions less than 17.2
+  Temporarily disabled with xit
+
+
+2) <<FileSystem: Unix>> initializer-based model() API should not widen the type of two-way bindings on Angular versions less than 17.2
+  Temporarily disabled with xit
+
+
+3) <<FileSystem: OS/X>> initializer-based model() API should not widen the type of two-way bindings on Angular versions less than 17.2
+  Temporarily disabled with xit
+
+
+4) <<FileSystem: Native>> initializer-based model() API should not widen the type of two-way bindings on Angular versions less than 17.2
+  Temporarily disabled with xit
+
+1538 specs, 5 failures, 4 pending specs
+Finished in 32.157 seconds
+================================================================================
+==================== Test output for //packages/compiler-cli/test/ngtsc:ngtsc (shard 4 of 4):
+Started
+.............................................................................................................................................................................................................................................................................................................................I18n comments are deprecated, use an <ng-container> element instead (/src/basic.html@2:4)
+.................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................*.............................*..................................................................*......................................*..........................
+
+Pending:
+
+1) <<FileSystem: Windows>> template source-mapping Inline templates $localize should correctly handle collapsed whitespace in interpolation placeholder source-mappings
+  Temporarily disabled with xit
+
+
+2) <<FileSystem: Native>> template source-mapping Inline templates $localize should correctly handle collapsed whitespace in interpolation placeholder source-mappings
+  Temporarily disabled with xit
+
+
+3) <<FileSystem: Unix>> template source-mapping Inline templates $localize should correctly handle collapsed whitespace in interpolation placeholder source-mappings
+  Temporarily disabled with xit
+
+
+4) <<FileSystem: OS/X>> template source-mapping Inline templates $localize should correctly handle collapsed whitespace in interpolation placeholder source-mappings
+  Temporarily disabled with xit
+
+1537 specs, 0 failures, 4 pending specs
+Finished in 36.151 seconds
+================================================================================
+==================== Test output for //packages/compiler-cli/test/ngtsc:ngtsc (shard 2 of 4):
+Started
+.................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+
+
+1537 specs, 0 failures
+Finished in 41.199 seconds
+================================================================================
+//packages/compiler-cli/test/ngtsc:ngtsc                                 FAILED in 1 out of 4 in 44.6s
+  Stats over 4 runs: max = 44.6s, min = 34.7s, avg = 38.6s, dev = 3.9s
+  /private/var/tmp/_bazel_krzbri/d83c4d7fac92f82421489d77ddf06164/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/packages/compiler-cli/test/ngtsc/ngtsc/shard_1_of_4/test.log
+
+Executed 1 out of 1 test: 1 fails locally.
+There were tests whose specified size is too big. Use the --test_verbose_timeout_warnings command line option to see which ones these are.
