@@ -43,16 +43,15 @@ import {NO_CHANGE} from './tokens';
  *
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn Function that returns a value
- * @param thisArg Optional calling context of pureFn
  * @returns value
  *
  * @codeGenApi
  */
-export function ɵɵpureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: any): T {
+export function ɵɵpureFunction0<T>(slotOffset: number, pureFn: () => T): T {
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
   return lView[bindingIndex] === NO_CHANGE
-    ? updateBinding(lView, bindingIndex, thisArg ? pureFn.call(thisArg) : pureFn())
+    ? updateBinding(lView, bindingIndex, pureFn())
     : getBinding(lView, bindingIndex);
 }
 
@@ -63,18 +62,12 @@ export function ɵɵpureFunction0<T>(slotOffset: number, pureFn: () => T, thisAr
  * @param slotOffset the offset from binding root to the reserved slot
  * @param pureFn Function that returns an updated value
  * @param exp Updated expression value
- * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
  * @codeGenApi
  */
-export function ɵɵpureFunction1(
-  slotOffset: number,
-  pureFn: (v: any) => any,
-  exp: any,
-  thisArg?: any,
-): any {
-  return pureFunction1Internal(getLView(), getBindingRoot(), slotOffset, pureFn, exp, thisArg);
+export function ɵɵpureFunction1(slotOffset: number, pureFn: (v: any) => any, exp: any): any {
+  return pureFunction1Internal(getLView(), getBindingRoot(), slotOffset, pureFn, exp);
 }
 
 /**
@@ -85,7 +78,6 @@ export function ɵɵpureFunction1(
  * @param pureFn
  * @param exp1
  * @param exp2
- * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
  * @codeGenApi
@@ -95,17 +87,8 @@ export function ɵɵpureFunction2(
   pureFn: (v1: any, v2: any) => any,
   exp1: any,
   exp2: any,
-  thisArg?: any,
 ): any {
-  return pureFunction2Internal(
-    getLView(),
-    getBindingRoot(),
-    slotOffset,
-    pureFn,
-    exp1,
-    exp2,
-    thisArg,
-  );
+  return pureFunction2Internal(getLView(), getBindingRoot(), slotOffset, pureFn, exp1, exp2);
 }
 
 /**
@@ -117,7 +100,6 @@ export function ɵɵpureFunction2(
  * @param exp1
  * @param exp2
  * @param exp3
- * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
  * @codeGenApi
@@ -128,18 +110,8 @@ export function ɵɵpureFunction3(
   exp1: any,
   exp2: any,
   exp3: any,
-  thisArg?: any,
 ): any {
-  return pureFunction3Internal(
-    getLView(),
-    getBindingRoot(),
-    slotOffset,
-    pureFn,
-    exp1,
-    exp2,
-    exp3,
-    thisArg,
-  );
+  return pureFunction3Internal(getLView(), getBindingRoot(), slotOffset, pureFn, exp1, exp2, exp3);
 }
 
 /**
@@ -152,7 +124,6 @@ export function ɵɵpureFunction3(
  * @param exp2
  * @param exp3
  * @param exp4
- * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
  * @codeGenApi
@@ -175,7 +146,6 @@ export function ɵɵpureFunction4(
     exp2,
     exp3,
     exp4,
-    thisArg,
   );
 }
 
@@ -190,7 +160,6 @@ export function ɵɵpureFunction4(
  * @param exp3
  * @param exp4
  * @param exp5
- * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
  * @codeGenApi
@@ -203,19 +172,12 @@ export function ɵɵpureFunction5(
   exp3: any,
   exp4: any,
   exp5: any,
-  thisArg?: any,
 ): any {
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
   const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated(lView, bindingIndex + 4, exp5) || different
-    ? updateBinding(
-        lView,
-        bindingIndex + 5,
-        thisArg
-          ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5)
-          : pureFn(exp1, exp2, exp3, exp4, exp5),
-      )
+    ? updateBinding(lView, bindingIndex + 5, pureFn(exp1, exp2, exp3, exp4, exp5))
     : getBinding(lView, bindingIndex + 5);
 }
 
@@ -231,7 +193,6 @@ export function ɵɵpureFunction5(
  * @param exp4
  * @param exp5
  * @param exp6
- * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
  * @codeGenApi
@@ -245,19 +206,12 @@ export function ɵɵpureFunction6(
   exp4: any,
   exp5: any,
   exp6: any,
-  thisArg?: any,
 ): any {
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
   const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated2(lView, bindingIndex + 4, exp5, exp6) || different
-    ? updateBinding(
-        lView,
-        bindingIndex + 6,
-        thisArg
-          ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6)
-          : pureFn(exp1, exp2, exp3, exp4, exp5, exp6),
-      )
+    ? updateBinding(lView, bindingIndex + 6, pureFn(exp1, exp2, exp3, exp4, exp5, exp6))
     : getBinding(lView, bindingIndex + 6);
 }
 
@@ -274,7 +228,6 @@ export function ɵɵpureFunction6(
  * @param exp5
  * @param exp6
  * @param exp7
- * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
  * @codeGenApi
@@ -289,19 +242,12 @@ export function ɵɵpureFunction7(
   exp5: any,
   exp6: any,
   exp7: any,
-  thisArg?: any,
 ): any {
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
   let different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated3(lView, bindingIndex + 4, exp5, exp6, exp7) || different
-    ? updateBinding(
-        lView,
-        bindingIndex + 7,
-        thisArg
-          ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6, exp7)
-          : pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7),
-      )
+    ? updateBinding(lView, bindingIndex + 7, pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7))
     : getBinding(lView, bindingIndex + 7);
 }
 
@@ -319,7 +265,6 @@ export function ɵɵpureFunction7(
  * @param exp6
  * @param exp7
  * @param exp8
- * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
  * @codeGenApi
@@ -335,19 +280,12 @@ export function ɵɵpureFunction8(
   exp6: any,
   exp7: any,
   exp8: any,
-  thisArg?: any,
 ): any {
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
   const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated4(lView, bindingIndex + 4, exp5, exp6, exp7, exp8) || different
-    ? updateBinding(
-        lView,
-        bindingIndex + 8,
-        thisArg
-          ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8)
-          : pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8),
-      )
+    ? updateBinding(lView, bindingIndex + 8, pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8))
     : getBinding(lView, bindingIndex + 8);
 }
 
@@ -361,7 +299,6 @@ export function ɵɵpureFunction8(
  * @param pureFn A pure function that takes binding values and builds an object or array
  * containing those values.
  * @param exps An array of binding values
- * @param thisArg Optional calling context of pureFn
  * @returns Updated or cached value
  *
  * @codeGenApi
@@ -370,9 +307,8 @@ export function ɵɵpureFunctionV(
   slotOffset: number,
   pureFn: (...v: any[]) => any,
   exps: any[],
-  thisArg?: any,
 ): any {
-  return pureFunctionVInternal(getLView(), getBindingRoot(), slotOffset, pureFn, exps, thisArg);
+  return pureFunctionVInternal(getLView(), getBindingRoot(), slotOffset, pureFn, exps);
 }
 
 /**
