@@ -75,7 +75,7 @@ export function match(
   }
 
   const matcher = route.matcher || defaultUrlMatcher;
-  const res = runInInjectionContext(injector, () => matcher(segments, segmentGroup, route))
+  const res = runInInjectionContext(injector, () => matcher(segments, segmentGroup, route));
   if (!res) return {...noMatch};
 
   const posParams: {[n: string]: string} = {};
