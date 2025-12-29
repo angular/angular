@@ -201,11 +201,33 @@ function getRedirectResult(
     return Promise.resolve(redirectTo);
   }
   const redirectToFn = redirectTo;
-  const {queryParams, fragment, routeConfig, url, outlet, params, data, title} = currentSnapshot;
+  const {
+    queryParams,
+    fragment,
+    routeConfig,
+    url,
+    outlet,
+    params,
+    data,
+    title,
+    paramMap,
+    queryParamMap,
+  } = currentSnapshot;
   return firstValueFrom(
     wrapIntoObservable(
       runInInjectionContext(injector, () =>
-        redirectToFn({params, data, queryParams, fragment, routeConfig, url, outlet, title}),
+        redirectToFn({
+          params,
+          data,
+          queryParams,
+          fragment,
+          routeConfig,
+          url,
+          outlet,
+          title,
+          paramMap,
+          queryParamMap,
+        }),
       ),
     ),
   );
