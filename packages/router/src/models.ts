@@ -315,7 +315,16 @@ export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 export type RedirectFunction = (
   redirectData: Pick<
     ActivatedRouteSnapshot,
-    'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title'
+    | 'routeConfig'
+    | 'url'
+    | 'params'
+    | 'queryParams'
+    | 'fragment'
+    | 'data'
+    | 'outlet'
+    | 'title'
+    | 'paramMap'
+    | 'queryParamMap'
   >,
 ) => MaybeAsync<string | UrlTree>;
 

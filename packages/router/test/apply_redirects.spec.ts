@@ -1655,6 +1655,26 @@ describe('redirects', () => {
       );
     });
 
+    it('can access queryParamMap and paramMap and redirect using them', async () => {
+      await checkRedirect(
+        [
+          {
+            path: 'a/b',
+            redirectTo: ({queryParamMap, paramMap}) => {
+              const tree = TestBed.inject(Router).parseUrl(`other;id=${paramMap.get('id')}`);
+              tree.queryParams = {hl: queryParamMap.get('hl')};
+              return Promise.resolve(tree);
+            },
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a/b;id=123?hl=en&q=hello',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'other;id=123?hl=en');
+        },
+      );
+    });
+
     it('with a function using inject and returning a UrlTree with params', async () => {
       await checkRedirect(
         [
