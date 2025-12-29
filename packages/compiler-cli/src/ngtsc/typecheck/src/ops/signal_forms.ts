@@ -466,11 +466,10 @@ export function isFormControl(allDirectiveMatches: TypeCheckableDirectiveMeta[])
   let result = false;
   for (const match of allDirectiveMatches) {
     if (match.inputs.hasBindingPropertyName('field')) {
-      if (isFieldDirective(match)) {
-        result = true;
-      } else {
+      if (!isFieldDirective(match)) {
         return false;
       }
+      result = true;
     }
   }
   return result;
