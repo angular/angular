@@ -103,7 +103,9 @@ const checkoutModel = signal({
   shippingAddress: addressGroup,
 });
 
-const f = compatForm(checkoutModel);
+const f = compatForm(checkoutModel, (p) => {
+  required(p.customerName);
+});
 ```
 
 The `shippingAddress` field acts as a branch in your Signal Form tree. You can bind these nested controls in your
@@ -208,7 +210,24 @@ This is coming soon.
 
 ## Automatic status classes
 
-To avoid manually adding classes like `.ng-valid`, `.ng-dirty` etc to every field, you can provide a global configuration using `provideSignalFormsConfig`. Signal Forms provides a built-in `NG_STATUS_CLASSES` preset that matches legacy Reactive Forms behavior.
+Reactive forms used to bind classes like `.ng-valid` or `.ng-dirty` to every field. Signal forms do not do that anymore.
+
+If you want this behavior you can provide an NG_STATUS_CLASSES preset that can be provided to match the Reactive Forms
+behavior:
+
+```typescript
+import {provideSignalFormsConfig} from '@angular/forms/signals';
+
+bootstrapApplication(App, {
+  providers: [
+    provideSignalFormsConfig({
+      classes: NG_STATUS_CLASSES,
+    }),
+  ],
+});
+```
+
+You can also provide your own custom configuration to apply whatever classes you wish based on you custom logic:
 
 ```typescript
 import {provideSignalFormsConfig} from '@angular/forms/signals';
