@@ -949,6 +949,9 @@ export function provideNetlifyLoader(path?: string): Provider[];
 export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
 
 // @public
+export const REMOVE_TRAILING_SLASH: InjectionToken<boolean>;
+
+// @public
 export class SlicePipe implements PipeTransform {
     // (undocumented)
     transform<T>(value: ReadonlyArray<T>, start: number, end?: number): Array<T>;

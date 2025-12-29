@@ -166,9 +166,15 @@ export function defaultUrlMatcher(
 
     if (
       route.pathMatch === 'full' &&
-      (segmentGroup.hasChildren() || parts.length < segments.length)
+      (segmentGroup.hasChildren() || parts.length < segments.length) &&
+      (parts.length + 1 !== segments.length || segments[parts.length].path !== '')
     ) {
-      // The config is longer than the actual URL but we are looking for a full match, return null
+      // The config is longer than the actual URL but we are looking for a full match, return null.
+      //
+      // We allow the actual URL to be longer than the config if it has exactly one trailing empty
+      // segment (representing a trailing slash). This is because we want to allow `path: 'a'` to match
+      // `/a/` if the global configuration allows it. We rely on the `Location` service or `UrlSerializer`
+      // to strip the slash if it's not allowed, so if it's here, we should match it.
       return null;
     }
 
@@ -177,6 +183,7 @@ export function defaultUrlMatcher(
     if (!matchParts(parts, consumed, posParams)) {
       return null;
     }
+
     return {consumed, posParams};
   }
 

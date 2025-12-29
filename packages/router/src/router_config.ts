@@ -111,6 +111,17 @@ export interface RouterConfigOptions {
   urlUpdateStrategy?: 'deferred' | 'eager';
 
   /**
+   * Configures how the `DefaultUrlSerializer` and `Location` service handle trailing slashes in URLs.
+   *
+   * - 'always': Forces a trailing slash on all URLs.
+   * - 'never': Removes trailing slashes from all URLs.
+   *
+   * Note: By default, the `DefaultUrlSerializer` preserves trailing slashes, but `Location.path()`
+   * and `Location.normalize()` strip them.
+   */
+  trailingSlash?: 'always' | 'never';
+
+  /**
    * The default strategy to use for handling query params in `Router.createUrlTree` when one is not provided.
    *
    * The `createUrlTree` method is used internally by `Router.navigate` and `RouterLink`.
