@@ -12,6 +12,7 @@ import {
   LocationStrategy,
   ViewportScroller,
   Location,
+  REMOVE_TRAILING_SLASH,
   ɵNavigationAdapterForLocation,
 } from '@angular/common';
 import {
@@ -48,6 +49,7 @@ import {routeInjectorCleanup, ROUTE_INJECTOR_CLEANUP} from './route_injector_cle
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 
 import {ActivatedRoute} from './router_state';
+import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 import {afterNextNavigation} from './utils/navigations';
 import {
   CREATE_VIEW_TRANSITION,
@@ -110,6 +112,7 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
       ? {provide: ROUTER_IS_PROVIDED, useValue: true}
       : [],
     {provide: ActivatedRoute, useFactory: rootRoute},
+    {provide: UrlSerializer, useClass: DefaultUrlSerializer},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
     features.map((feature) => feature.ɵproviders),
   ]);
@@ -647,7 +650,16 @@ export type RouterConfigurationFeature =
  * @publicApi
  */
 export function withRouterConfig(options: RouterConfigOptions): RouterConfigurationFeature {
-  const providers = [{provide: ROUTER_CONFIGURATION, useValue: options}];
+  const providers = [
+    {provide: ROUTER_CONFIGURATION, useValue: options},
+    {
+      provide: REMOVE_TRAILING_SLASH,
+      useFactory: () => {
+        const {trailingSlash} = options;
+        return trailingSlash === 'always' || trailingSlash === 'preserve' ? false : true;
+      },
+    },
+  ];
   return routerFeature(RouterFeatureKind.RouterConfigurationFeature, providers);
 }
 

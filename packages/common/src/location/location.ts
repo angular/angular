@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, OnDestroy, ɵɵinject} from '@angular/core';
+import {Injectable, InjectionToken, OnDestroy, inject, ɵɵinject} from '@angular/core';
 import {Subject, SubscriptionLike} from 'rxjs';
 
 import {LocationStrategy} from './location_strategy';
@@ -19,6 +19,22 @@ export interface PopStateEvent {
   type?: string;
   url?: string;
 }
+
+/**
+ * A token that can be provided to configure whether the `Location` service should
+ * strip trailing slashes from URLs.
+ *
+ * If `true`, the `Location` service will remove trailing slashes from URLs.
+ * If `false`, the `Location` service will not remove trailing slashes from URLs.
+ *
+ * @publicApi
+ */
+export const REMOVE_TRAILING_SLASH = new InjectionToken<boolean>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'remove trailing slash' : '',
+  {
+    factory: () => true,
+  },
+);
 
 /**
  * @description
@@ -35,23 +51,22 @@ export interface PopStateEvent {
  * routing.
  *
  * `Location` is responsible for normalizing the URL against the application's base href.
- * A normalized URL is absolute from the URL host, includes the application's base href, and has no
- * trailing slash:
+ * A normalized URL is absolute from the URL host, includes the application's base href, and may
+ * have a trailing slash:
  * - `/my/app/user/123` is normalized
  * - `my/app/user/123` **is not** normalized
- * - `/my/app/user/123/` **is not** normalized
+ * - `/my/app/user/123/` **is** normalized if `REMOVE_TRAILING_SLASH` is `false`
  *
  * ### Example
  *
  * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
  *
+ * @see {@link LocationStrategy}
+ * @see [Routing and Navigation Guide](guide/routing/common-router-tasks)
+ *
  * @publicApi
  */
-@Injectable({
-  providedIn: 'root',
-  // See #23917
-  useFactory: createLocation,
-})
+@Injectable({providedIn: 'root', useFactory: createLocation})
 export class Location implements OnDestroy {
   /** @internal */
   _subject = new Subject<PopStateEvent>();
@@ -63,9 +78,16 @@ export class Location implements OnDestroy {
   _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
   /** @internal */
   _urlChangeSubscription: SubscriptionLike | null = null;
+  /** @internal */
+  readonly _stripTrailingSlash: boolean;
 
   constructor(locationStrategy: LocationStrategy) {
     this._locationStrategy = locationStrategy;
+    try {
+      this._stripTrailingSlash = inject(REMOVE_TRAILING_SLASH, {optional: true}) ?? true;
+    } catch {
+      this._stripTrailingSlash = true;
+    }
     const baseHref = this._locationStrategy.getBaseHref();
     // Note: This class's interaction with base HREF does not fully follow the rules
     // outlined in the spec https://www.freesoft.org/CIE/RFC/1808/18.htm.
@@ -132,7 +154,8 @@ export class Location implements OnDestroy {
    * @returns The normalized URL string.
    */
   normalize(url: string): string {
-    return Location.stripTrailingSlash(_stripBasePath(this._basePath, _stripIndexHtml(url)));
+    const s = _stripBasePath(this._basePath, _stripIndexHtml(url));
+    return this._stripTrailingSlash ? Location.stripTrailingSlash(s) : s;
   }
 
   /**

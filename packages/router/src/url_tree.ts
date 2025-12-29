@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Injectable, ɵRuntimeError as RuntimeError, Signal} from '@angular/core';
+import {computed, inject, Injectable, ɵRuntimeError as RuntimeError, Signal} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 import {equalArraysOrString, shallowEqual} from './utils/collection';
 import type {Router} from './router';
+import {ROUTER_CONFIGURATION} from './router_config';
 
 /**
  * A set of options which specify how to determine if a `UrlTree` is active, given the `UrlTree`
@@ -416,6 +417,21 @@ export abstract class UrlSerializer {
  * @publicApi
  */
 export class DefaultUrlSerializer implements UrlSerializer {
+  /**
+   * Configures how to handle trailing slashes in URLs.
+   *
+   * - 'always': Forces a trailing slash on all URLs.
+   * - 'never': Removes trailing slashes from all URLs.
+   * - 'preserve': Keeps the trailing slash if present, and omits it if not.
+   */
+  private readonly trailingSlash?: 'always' | 'never' | 'preserve';
+
+  constructor() {
+    try {
+      this.trailingSlash = inject(ROUTER_CONFIGURATION).trailingSlash;
+    } catch {}
+  }
+
   /** Parses a url into a `UrlTree` */
   parse(url: string): UrlTree {
     const p = new UrlParser(url);
@@ -425,11 +441,22 @@ export class DefaultUrlSerializer implements UrlSerializer {
   /** Converts a `UrlTree` into a url */
   serialize(tree: UrlTree): string {
     const segment = `/${serializeSegment(tree.root, true)}`;
+    let path = segment;
     const query = serializeQueryParams(tree.queryParams);
     const fragment =
       typeof tree.fragment === `string` ? `#${encodeUriFragment(tree.fragment)}` : '';
 
-    return `${segment}${query}${fragment}`;
+    if (this.trailingSlash === 'always') {
+      if (!path.endsWith('/')) {
+        path += '/';
+      }
+    } else if (this.trailingSlash === 'never') {
+      if (path.endsWith('/') && path.length > 1) {
+        path = path.slice(0, -1);
+      }
+    }
+
+    return `${path}${query}${fragment}`;
   }
 }
 
