@@ -738,6 +738,16 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
     static ɵfac: i0.ɵɵFactoryDeclaration<NgTemplateOutlet<any>, never>;
 }
 
+// @public
+export class NoTrailingSlashPathLocationStrategy extends PathLocationStrategy {
+    // (undocumented)
+    prepareExternalUrl(internal: string): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NoTrailingSlashPathLocationStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NoTrailingSlashPathLocationStrategy>;
+}
+
 // @public @deprecated
 export enum NumberFormatStyle {
     // (undocumented)
@@ -984,6 +994,16 @@ export class TitleCasePipe implements PipeTransform {
     static ɵfac: i0.ɵɵFactoryDeclaration<TitleCasePipe, never>;
     // (undocumented)
     static ɵpipe: i0.ɵɵPipeDeclaration<TitleCasePipe, "titlecase", true>;
+}
+
+// @public
+export class TrailingSlashPathLocationStrategy extends PathLocationStrategy {
+    // (undocumented)
+    prepareExternalUrl(internal: string): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<TrailingSlashPathLocationStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<TrailingSlashPathLocationStrategy>;
 }
 
 // @public @deprecated
