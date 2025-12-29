@@ -102,6 +102,9 @@ export const APP_BASE_HREF = new InjectionToken<string>(
  * the fragment in the `<base href>` will be preserved, as outlined
  * by the [RFC](https://tools.ietf.org/html/rfc3986#section-5.2.2).
  *
+ * To ensure that trailing slashes are always present or never present in the URL, use
+ * {@link TrailingSlashPathLocationStrategy} or {@link NoTrailingSlashPathLocationStrategy}.
+ *
  * @usageNotes
  *
  * ### Example
@@ -182,4 +185,46 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
   override historyGo(relativePosition: number = 0): void {
     this._platformLocation.historyGo?.(relativePosition);
   }
+}
+
+/**
+ * A `LocationStrategy` that ensures URLs never have a trailing slash.
+ * This strategy only affects the URL written to the browser.
+ * `Location.path()` and `Location.normalize()` will continue to strip trailing slashes when reading the URL.
+ *
+ * @publicApi
+ */
+@Injectable({providedIn: 'root'})
+export class NoTrailingSlashPathLocationStrategy extends PathLocationStrategy {
+  override prepareExternalUrl(internal: string): string {
+    const path = extractUrlPath(internal);
+    if (path.endsWith('/') && path.length > 1) {
+      internal = path.slice(0, -1) + internal.slice(path.length);
+    }
+    return super.prepareExternalUrl(internal);
+  }
+}
+
+/**
+ * A `LocationStrategy` that ensures URLs always have a trailing slash.
+ * This strategy only affects the URL written to the browser.
+ * `Location.path()` and `Location.normalize()` will continue to strip trailing slashes when reading the URL.
+ *
+ * @publicApi
+ */
+@Injectable({providedIn: 'root'})
+export class TrailingSlashPathLocationStrategy extends PathLocationStrategy {
+  override prepareExternalUrl(internal: string): string {
+    const path = extractUrlPath(internal);
+    if (!path.endsWith('/')) {
+      internal = path + '/' + internal.slice(path.length);
+    }
+    return super.prepareExternalUrl(internal);
+  }
+}
+
+function extractUrlPath(url: string): string {
+  const questionMarkOrHashIndex = url.search(/[?#]/);
+  const pathEnd = questionMarkOrHashIndex > -1 ? questionMarkOrHashIndex : url.length;
+  return url.slice(0, pathEnd);
 }

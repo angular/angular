@@ -127,6 +127,33 @@ provideRouter(routes, withRouterConfig({defaultQueryParamsHandling: 'merge'}));
 
 This is especially helpful for search and filter pages to automatically retain existing filters when additional parameters are provided.
 
+### Configure trailing slash handling
+
+By default, the `Location` service strips trailing slashes from URLs on read.
+
+You can configure the `Location` service to force a trailing slash on all URLs written to the browser by providing the `TrailingSlashPathLocationStrategy` in your application.
+
+```ts
+import {LocationStrategy, TrailingSlashPathLocationStrategy} from '@angular/common';
+
+bootstrapApplication(App, {
+  providers: [{provide: LocationStrategy, useClass: TrailingSlashPathLocationStrategy}],
+});
+```
+
+You can also force the `Location` service to never have a trailing slash on all URLs written to the browser by providing the `NoTrailingSlashPathLocationStrategy` in your application.
+
+```ts
+import {LocationStrategy, NoTrailingSlashPathLocationStrategy} from '@angular/common';
+
+bootstrapApplication(App, {
+  providers: [{provide: LocationStrategy, useClass: NoTrailingSlashPathLocationStrategy}],
+});
+```
+
+These strategies only affect the URL written to the browser.
+`Location.path()` and `Location.normalize()` will continue to strip trailing slashes when reading the URL.
+
 Angular Router exposes four main areas for customization:
 
   <docs-pill-row>
