@@ -130,7 +130,7 @@ function updateControl<T>(lView: LView, tNode: TNode): void {
     } else if (tNode.flags & TNodeFlags.isFormCheckboxControl) {
       updateCustomControl(tNode, lView, control, 'checked');
     } else if (tNode.flags & TNodeFlags.isInteropControl) {
-      updateInteropControl(lView, control);
+      updateInteropControl(tNode, lView, control);
     } else {
       updateNativeControl(tNode, lView, control);
     }
@@ -597,10 +597,11 @@ function updateCustomControl(
 /**
  * Updates the properties of an interop form control with the latest state from the `field`.
  *
+ * @param tNode The `TNode` of the form control.
  * @param lView The `LView` that contains the native form control.
  * @param control The `ɵControl` directive instance.
  */
-function updateInteropControl(lView: LView, control: ɵControl<unknown>): void {
+function updateInteropControl(tNode: TNode, lView: LView, control: ɵControl<unknown>): void {
   const interopControl = control.ɵinteropControl!;
   const bindings = getControlBindings(lView);
   const state = control.state();
@@ -612,11 +613,16 @@ function updateInteropControl(lView: LView, control: ɵControl<unknown>): void {
     untracked(() => interopControl.writeValue(value));
   }
 
-  // Only check `disabled` for changes if the interop control supports it.
-  if (interopControl.setDisabledState) {
-    const disabled = state.disabled();
-    if (controlBindingUpdated(bindings, DISABLED, disabled)) {
-      untracked(() => interopControl.setDisabledState!(disabled));
+  for (const key of CONTROL_BINDING_KEYS) {
+    const value = state[key]?.();
+    if (controlBindingUpdated(bindings, key, value)) {
+      const inputName = CONTROL_BINDING_NAMES[key];
+      updateDirectiveInputs(tNode, lView, inputName, value);
+
+      // Only check `disabled` for changes if the interop control supports it.
+      if (key === DISABLED && interopControl.setDisabledState) {
+        untracked(() => interopControl.setDisabledState!(value as boolean));
+      }
     }
   }
 }
