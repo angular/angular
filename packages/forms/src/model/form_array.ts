@@ -113,7 +113,7 @@ export type ɵFormArrayRawValue<T extends AbstractControl<any>> = ɵTypedOrUntyp
  * the `FormArray` directly, as that result in strange and unexpected behavior such
  * as broken change detection.
  *
- * @see [FormArray: Dynamic, Homogenous Collections](guide/forms/typed-forms#formcontrol-getting-started)
+ * @see [FormArray: Dynamic, Homogenous Collections](guide/forms/typed-forms#formarray-dynamic-homogenous-collections)
  * @see [Creating dynamic forms](guide/forms/reactive-forms#creating-dynamic-forms)
  *
  * @publicApi
