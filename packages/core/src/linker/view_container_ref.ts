@@ -123,6 +123,7 @@ import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
  *
  * @see {@link ComponentRef}
  * @see {@link EmbeddedViewRef}
+ * @see [Using ViewContainerRef](guide/components/programmatic-rendering#using-viewcontainerref)
  *
  * @publicApi
  */

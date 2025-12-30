@@ -270,7 +270,7 @@ original decorator-based query APIs remain fully supported.
 
 You can alternatively declare queries by adding the corresponding decorator to a property. Decorator-based queries behave the same way as signal-based queries except as described below.
 
-### View queries
+### View queries {#decorator-view-queries}
 
 You can query for a single result with the `@ViewChild` decorator.
 
@@ -333,7 +333,7 @@ export class CustomCard {
 
 `@ViewChildren` creates a `QueryList` object that contains the query results. You can subscribe to changes to the query results over time via the `changes` property.
 
-### Content queries
+### Content queries {#decorator-content-queries}
 
 You can query for a single result with the `@ContentChild` decorator.
 

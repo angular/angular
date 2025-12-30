@@ -33,6 +33,8 @@ import {EmbeddedViewRef} from './view_ref';
  *
  * @see {@link ViewContainerRef}
  *
+ * @see [Getting a reference to a template fragment](guide/templates/ng-template#getting-a-reference-to-a-template-fragment)
+ *
  * @publicApi
  */
 export class TemplateRef<C> {
