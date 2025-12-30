@@ -210,13 +210,12 @@ This is coming soon.
 
 ## Automatic status classes
 
-Reactive forms used to bind classes like `.ng-valid` or `.ng-dirty` to every field. Signal forms do not do that anymore.
+Reactive/Template Forms automatically adds [class attributes](https://angular.dev/guide/forms/template-driven-forms#track-control-states) (such as `.ng-valid` or `.ng-dirty`) to facilitate styling control states. Signal Forms does not do that.
 
-If you want this behavior you can provide an NG_STATUS_CLASSES preset that can be provided to match the Reactive Forms
-behavior:
+If you want to preserve this behavior, you can provide the `NG_STATUS_CLASSES` preset:
 
 ```typescript
-import {provideSignalFormsConfig} from '@angular/forms/signals';
+import {NG_STATUS_CLASSES, provideSignalFormsConfig} from '@angular/forms/signals';
 
 bootstrapApplication(App, {
   providers: [
