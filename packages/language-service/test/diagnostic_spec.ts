@@ -285,7 +285,9 @@ describe('getSemanticDiagnostics', () => {
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const diags = project.getDiagnosticsForFile('app.ts');
-    expect(diags.map((x) => x.messageText)).toEqual(['component is missing a template']);
+    expect(diags.map((x) => x.messageText)).toEqual([
+      '@Component is missing a template. Add either a `template` or `templateUrl`',
+    ]);
   });
 
   it('reports a warning when the project configuration prevents good type inference', () => {
