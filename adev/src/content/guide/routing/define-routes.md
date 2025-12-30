@@ -166,12 +166,12 @@ If a user visits `/users/new`, Angular router would go through the following ste
 1. Never reaches `users`
 1. Never reaches `**`
 
-## Loading Route Component Strategies
+## Route Loading Strategies
 
-Understanding how and when components load in Angular routing is crucial for building responsive web applications. Angular offers two primary strategies to control component loading behavior:
+Understanding how and when routes and components load in Angular routing is crucial for building responsive web applications. Angular offers two primary strategies to control loading behavior:
 
-1. **Eagerly loaded**: Components that are loaded immediately
-2. **Lazily loaded**: Components loaded only when needed
+1. **Eagerly loaded**: Routes and components that are loaded immediately
+2. **Lazily loaded**: Routes and components loaded only when needed
 
 Each approach offers distinct advantages for different scenarios.
 
@@ -202,28 +202,29 @@ Eagerly loading route components like this means that the browser has to downloa
 
 While including more JavaScript in your initial page load leads to slower initial load times, this can lead to more seamless transitions as the user navigates through an application.
 
-### Lazily loaded components
+### Lazily loaded components and routes
 
-You can use the `loadComponent` property to lazily load the JavaScript for a route only at the point at which that route would become active.
+You can use the `loadComponent` property to lazily load the JavaScript for a component at the point at which that route would become active. The `loadChildren` property lazily loads child routes during route matching.
 
 ```ts
 import {Routes} from '@angular/router';
 
 export const routes: Routes = [
-  // The HomePage and LoginPage components are loaded lazily at the point at which
-  // their corresponding routes become active.
   {
     path: 'login',
-    loadComponent: () => import('./components/auth/login-page').then((m) => m.LoginPage),
+    loadComponent: () => import('./components/auth/login-page'),
   },
   {
-    path: '',
-    loadComponent: () => import('./components/home/home-page').then((m) => m.HomePage),
+    path: 'admin',
+    loadComponent: () => import('./admin/admin.component'),
+    loadChildren: () => import('./admin/admin.routes'),
   },
 ];
 ```
 
-The `loadComponent` property accepts a loader function that returns a Promise that resolves to an Angular component. In most cases, this function uses the standard [JavaScript dynamic import API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import). You can, however, use any arbitrary async loader function.
+The `loadComponent` and `loadChildren` properties accept a loader function that returns a Promise that resolves to an Angular component or a set of routes respectively. In most cases, this function uses the standard [JavaScript dynamic import API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import). You can, however, use any arbitrary async loader function.
+
+If the lazily loaded file uses a `default` export, you can return the `import()` promise directly without an additional `.then` call to select the exported class.
 
 Lazily loading routes can significantly improve the load speed of your Angular application by removing large portions of JavaScript from the initial bundle. These portions of your code compile into separate JavaScript "chunks" that the router requests only when the user visits the corresponding route.
 
@@ -243,8 +244,8 @@ export const routes: Routes = [
     loadComponent: () => {
       const flags = inject(FeatureFlags);
       return flags.isPremium
-        ? import('./dashboard/premium-dashboard').then((m) => m.PremiumDashboard)
-        : import('./dashboard/basic-dashboard').then((m) => m.BasicDashboard);
+        ? import('./dashboard/premium-dashboard')
+        : import('./dashboard/basic-dashboard');
     },
   },
 ];
