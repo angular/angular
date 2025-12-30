@@ -7721,7 +7721,9 @@ runInEachFileSystem((os: string) => {
           );
 
           const diags = await driveDiagnostics();
-          expect(diags[0].messageText).toBe('component is missing a template');
+          expect(diags[0].messageText).toBe(
+            '@Component is missing a template. Add either a `template` or `templateUrl`',
+          );
           expect(diags[0].file!.fileName).toBe(absoluteFrom('/test.ts'));
         });
 
