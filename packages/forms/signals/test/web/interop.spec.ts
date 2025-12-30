@@ -90,6 +90,17 @@ describe('ControlValueAccessor', () => {
     }
   }
 
+  @Directive({
+    selector: '[cvaDir]',
+    providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CvaDir, multi: true}],
+  })
+  class CvaDir implements ControlValueAccessor {
+    writeValue(obj: any): void {}
+    registerOnChange(fn: any): void {}
+    registerOnTouched(fn: any): void {}
+    setDisabledState(isDisabled: boolean): void {}
+  }
+
   it('synchronizes value', () => {
     @Component({
       imports: [CustomControl, Field],
@@ -361,6 +372,27 @@ describe('ControlValueAccessor', () => {
         act(() => fixture.componentInstance.disabled.set(true));
         expect(dir.disabled()).toBe(true);
       });
+
+      it('should not bind to native property', () => {
+        @Component({
+          imports: [Field, CvaDir],
+          template: `<input [field]="f" cvaDir />`,
+        })
+        class TestCmp {
+          readonly disabled = signal(false);
+          readonly f = form(signal(''), (p) => {
+            disabled(p, this.disabled);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.querySelector('input');
+
+        expect(input.disabled).toBe(false);
+
+        act(() => fixture.componentInstance.disabled.set(true));
+        expect(input.disabled).toBe(false);
+      });
     });
 
     describe('touched', () => {
@@ -556,6 +588,21 @@ describe('ControlValueAccessor', () => {
 
         expect(dir.name()).toBe('root');
       });
+
+      it('should bind to native property', () => {
+        @Component({
+          imports: [Field, CvaDir],
+          template: `<input [field]="f" cvaDir />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(''), {name: 'root'});
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.querySelector('input');
+
+        expect(input.getAttribute('name')).toBe('root');
+      });
     });
 
     describe('pending', () => {
@@ -625,6 +672,27 @@ describe('ControlValueAccessor', () => {
         act(() => fixture.componentInstance.isReadonly.set(true));
         expect(dir.readonly()).toBe(true);
       });
+
+      it('should bind to native property', () => {
+        @Component({
+          imports: [Field, CvaDir],
+          template: `<input [field]="f" cvaDir />`,
+        })
+        class TestCmp {
+          readonly isReadonly = signal(false);
+          readonly f = form(signal(''), (p) => {
+            readonly(p, this.isReadonly);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.querySelector('input');
+
+        expect(input.readOnly).toBe(false);
+
+        act(() => fixture.componentInstance.isReadonly.set(true));
+        expect(input.readOnly).toBe(true);
+      });
     });
 
     describe('required', () => {
@@ -653,6 +721,27 @@ describe('ControlValueAccessor', () => {
 
         act(() => fixture.componentInstance.required.set(true));
         expect(dir.required()).toBe(true);
+      });
+
+      it('should bind to native property', () => {
+        @Component({
+          imports: [Field, CvaDir],
+          template: `<input [field]="f" cvaDir />`,
+        })
+        class TestCmp {
+          readonly required = signal(false);
+          readonly f = form(signal(''), (p) => {
+            required(p, {when: this.required});
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.querySelector('input');
+
+        expect(input.required).toBe(false);
+
+        act(() => fixture.componentInstance.required.set(true));
+        expect(input.required).toBe(true);
       });
     });
 
@@ -683,6 +772,27 @@ describe('ControlValueAccessor', () => {
         act(() => fixture.componentInstance.max.set(5));
         expect(dir.max()).toBe(5);
       });
+
+      it('should bind to native property', () => {
+        @Component({
+          imports: [Field, CvaDir],
+          template: `<input type="number" [field]="f" cvaDir />`,
+        })
+        class TestCmp {
+          readonly max = signal(10);
+          readonly f = form(signal(0), (p) => {
+            max(p, this.max);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.querySelector('input');
+
+        expect(input.getAttribute('max')).toBe('10');
+
+        act(() => fixture.componentInstance.max.set(5));
+        expect(input.getAttribute('max')).toBe('5');
+      });
     });
 
     describe('maxLength', () => {
@@ -711,6 +821,27 @@ describe('ControlValueAccessor', () => {
 
         act(() => fixture.componentInstance.maxLength.set(5));
         expect(dir.maxLength()).toBe(5);
+      });
+
+      it('should bind to native property', () => {
+        @Component({
+          imports: [Field, CvaDir],
+          template: `<input [field]="f" cvaDir />`,
+        })
+        class TestCmp {
+          readonly maxLength = signal(10);
+          readonly f = form(signal(''), (p) => {
+            maxLength(p, this.maxLength);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.querySelector('input');
+
+        expect(input.getAttribute('maxLength')).toBe('10');
+
+        act(() => fixture.componentInstance.maxLength.set(5));
+        expect(input.getAttribute('maxLength')).toBe('5');
       });
     });
 
@@ -741,6 +872,27 @@ describe('ControlValueAccessor', () => {
         act(() => fixture.componentInstance.min.set(5));
         expect(dir.min()).toBe(5);
       });
+
+      it('should bind to native property', () => {
+        @Component({
+          imports: [Field, CvaDir],
+          template: `<input type="number" [field]="f" cvaDir />`,
+        })
+        class TestCmp {
+          readonly min = signal(10);
+          readonly f = form(signal(0), (p) => {
+            min(p, this.min);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.querySelector('input');
+
+        expect(input.getAttribute('min')).toBe('10');
+
+        act(() => fixture.componentInstance.min.set(5));
+        expect(input.getAttribute('min')).toBe('5');
+      });
     });
 
     describe('minLength', () => {
@@ -769,6 +921,27 @@ describe('ControlValueAccessor', () => {
 
         act(() => fixture.componentInstance.minLength.set(5));
         expect(dir.minLength()).toBe(5);
+      });
+
+      it('should bind to native property', () => {
+        @Component({
+          imports: [Field, CvaDir],
+          template: `<input [field]="f" cvaDir />`,
+        })
+        class TestCmp {
+          readonly minLength = signal(10);
+          readonly f = form(signal(''), (p) => {
+            minLength(p, this.minLength);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.querySelector('input');
+
+        expect(input.getAttribute('minLength')).toBe('10');
+
+        act(() => fixture.componentInstance.minLength.set(5));
+        expect(input.getAttribute('minLength')).toBe('5');
       });
     });
 
