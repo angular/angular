@@ -2,10 +2,11 @@
 {
   "name": "Angular dev container",
   "dockerFile": "Dockerfile",
-  "appPort": [4000, 4200, 4433, 5000, 8080, 9876],
+  "forwardPorts": [4200, 4201, 4205, 4206, 9876],
   "postCreateCommand": "pnpm install",
-  "extensions": [
-    "devondcarew.bazel-code",
-    "ms-vscode.vscode-typescript-tslint-plugin"
-  ],
+  "customizations": {
+    "vscode": {
+      "extensions": ["BazelBuild.vscode-bazel", "ms-vscode.vscode-typescript-tslint-plugin"]
+    }
+  }
 }
