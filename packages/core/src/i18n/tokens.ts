@@ -77,6 +77,7 @@ export function getGlobalLocale(): string {
  * ```
  *
  * @publicApi
+ * @see [Import global variants of the locale data](guide/i18n/import-global-variants)
  */
 export const LOCALE_ID: InjectionToken<string> = new InjectionToken(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'LocaleId' : '',
