@@ -171,17 +171,13 @@ function initializeControlFirstCreatePass<T>(tView: TView, tNode: TNode, lView: 
   tNode.fieldIndex = controlIndex;
 
   // First check if the `Field` directive is bound to an interop control (e.g. a Reactive Forms
-  // control using `ControlValueAccessor`).
-  if (isInteropControlFirstCreatePass(tNode, lView)) {
-    return;
-  }
+  // control using `ControlValueAccessor`). If not, look for a custom control.
+  const foundControl =
+    isInteropControlFirstCreatePass(tNode, lView) || isCustomControlFirstCreatePass(tView, tNode);
 
-  // Finally check for a custom or native control. We check for a native control even if we found a
-  // custom one to determine whether we can set native properties as a fallback for those without
-  // corresponding inputs defined on the custom control.
-  const isCustomControl = isCustomControlFirstCreatePass(tView, tNode);
-  const isNativeControl = isNativeControlFirstCreatePass(tNode);
-  if (isCustomControl || isNativeControl) {
+  // We check for a native control, even if we found a custom or interop one, to determine whether
+  // we can set native properties as a fallback on the custom or interop control.
+  if (isNativeControlFirstCreatePass(tNode) || foundControl) {
     return;
   }
 
@@ -606,6 +602,10 @@ function updateInteropControl(tNode: TNode, lView: LView, control: ɵControl<unk
   const bindings = getControlBindings(lView);
   const state = control.state();
 
+  const isNative = (tNode.flags & TNodeFlags.isNativeControl) !== 0;
+  const element = isNative ? (getNativeByTNode(tNode, lView) as NativeControlElement) : null;
+  const renderer = lView[RENDERER];
+
   const value = state.value();
   if (controlBindingUpdated(bindings, CONTROL_VALUE, value)) {
     // We don't know if the interop control has underlying signals, so we must use `untracked` to
@@ -617,11 +617,18 @@ function updateInteropControl(tNode: TNode, lView: LView, control: ɵControl<unk
     const value = state[key]?.();
     if (controlBindingUpdated(bindings, key, value)) {
       const inputName = CONTROL_BINDING_NAMES[key];
-      updateDirectiveInputs(tNode, lView, inputName, value);
+      const didUpdateInput = updateDirectiveInputs(tNode, lView, inputName, value);
 
-      // Only check `disabled` for changes if the interop control supports it.
-      if (key === DISABLED && interopControl.setDisabledState) {
-        untracked(() => interopControl.setDisabledState!(value as boolean));
+      // We never fallback to the native property for `disabled` since it's handled directly by
+      // `ControlValueAccessor`.
+      if (key === DISABLED) {
+        if (interopControl.setDisabledState) {
+          untracked(() => interopControl.setDisabledState!(value as boolean));
+        }
+      } else if (isNative && !didUpdateInput) {
+        // If the host node is a native control, we can bind field state properties to native
+        // properties for any that aren't managed by `ControlValueAccessor`.
+        updateNativeProperty(tNode, renderer, element!, key, value, inputName);
       }
     }
   }
@@ -668,7 +675,7 @@ function updateDirectiveInputs(
   lView: LView,
   inputName: string,
   value: unknown,
-): void {
+): boolean {
   const directiveIndices = tNode.inputs?.[inputName];
   if (directiveIndices) {
     const tView = getTView();
@@ -677,7 +684,9 @@ function updateDirectiveInputs(
       const directive = lView[index];
       writeToDirectiveInput(directiveDef, directive, inputName, value);
     }
+    return true;
   }
+  return false;
 }
 
 /**
