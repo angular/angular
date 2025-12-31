@@ -1,5 +1,8 @@
-BasicInjectable.ɵfac = …;
-BasicInjectable.ɵprov = …;
+export class BasicInjectable {
+  static ɵfac = …;
+  static ɵprov = …;
+}
+
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && $i0$.ɵsetClassMetadata(BasicInjectable, [{
     type: Injectable
@@ -8,8 +11,11 @@ BasicInjectable.ɵprov = …;
 
 …
 
-RootInjectable.ɵfac = …;
-RootInjectable.ɵprov = …;
+export class RootInjectable {
+  static ɵfac = …;
+  static ɵprov = …;
+}
+
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && $i0$.ɵsetClassMetadata(RootInjectable, [{
     type: Injectable,
@@ -19,8 +25,10 @@ RootInjectable.ɵprov = …;
 
 …
 
-CustomInjectable.ɵfac = …;
-CustomInjectable.ɵprov = …;
+let CustomInjectable = class CustomInjectable {
+  static ɵfac = function CustomInjectable_Factory(__ngFactoryType__) { return new (__ngFactoryType__ || CustomInjectable)(); };
+  static ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: CustomInjectable, factory: CustomInjectable.ɵfac });
+};
 CustomInjectable = __decorate([
   CustomClassDecorator()
 ], CustomInjectable);
@@ -32,8 +40,11 @@ CustomInjectable = __decorate([
 
 …
 
-ComponentWithExternalResource.ɵfac = …;
-ComponentWithExternalResource.ɵcmp = …;
+export class ComponentWithExternalResource {
+  static ɵfac = …;
+  static ɵcmp = …;
+}
+
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && $i0$.ɵsetClassMetadata(ComponentWithExternalResource, [{
     type: Component,

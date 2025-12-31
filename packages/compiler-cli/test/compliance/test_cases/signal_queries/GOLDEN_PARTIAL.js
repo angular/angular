@@ -7,24 +7,22 @@ export class SomeToken {
 }
 const nonAnalyzableRefersToString = 'a, b, c';
 export class TestDir {
-    constructor() {
-        this.query1 = viewChild('locatorA', ...(ngDevMode ? [{ debugName: "query1" }] : []));
-        this.query2 = viewChildren('locatorB', ...(ngDevMode ? [{ debugName: "query2" }] : []));
-        this.query3 = contentChild('locatorC', ...(ngDevMode ? [{ debugName: "query3" }] : []));
-        this.query4 = contentChildren('locatorD', ...(ngDevMode ? [{ debugName: "query4" }] : []));
-        this.query5 = viewChild(forwardRef(() => SomeToken), ...(ngDevMode ? [{ debugName: "query5" }] : []));
-        this.query6 = viewChildren(SomeToken, ...(ngDevMode ? [{ debugName: "query6" }] : []));
-        this.query7 = viewChild('locatorE', Object.assign(Object.assign({}, (ngDevMode ? { debugName: "query7" } : {})), { read: SomeToken }));
-        this.query8 = contentChildren('locatorF, locatorG', Object.assign(Object.assign({}, (ngDevMode ? { debugName: "query8" } : {})), { descendants: true }));
-        this.query9 = contentChildren(nonAnalyzableRefersToString, Object.assign(Object.assign({}, (ngDevMode ? { debugName: "query9" } : {})), { descendants: true }));
-    }
+    query1 = viewChild('locatorA', ...(ngDevMode ? [{ debugName: "query1" }] : []));
+    query2 = viewChildren('locatorB', ...(ngDevMode ? [{ debugName: "query2" }] : []));
+    query3 = contentChild('locatorC', ...(ngDevMode ? [{ debugName: "query3" }] : []));
+    query4 = contentChildren('locatorD', ...(ngDevMode ? [{ debugName: "query4" }] : []));
+    query5 = viewChild(forwardRef(() => SomeToken), ...(ngDevMode ? [{ debugName: "query5" }] : []));
+    query6 = viewChildren(SomeToken, ...(ngDevMode ? [{ debugName: "query6" }] : []));
+    query7 = viewChild('locatorE', { ...(ngDevMode ? { debugName: "query7" } : {}), read: SomeToken });
+    query8 = contentChildren('locatorF, locatorG', { ...(ngDevMode ? { debugName: "query8" } : {}), descendants: true });
+    query9 = contentChildren(nonAnalyzableRefersToString, { ...(ngDevMode ? { debugName: "query9" } : {}), descendants: true });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.2.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, queries: [{ propertyName: "query3", first: true, predicate: ["locatorC"], descendants: true, isSignal: true }, { propertyName: "query4", predicate: ["locatorD"], isSignal: true }, { propertyName: "query8", predicate: ["locatorF, locatorG"], descendants: true, isSignal: true }, { propertyName: "query9", predicate: nonAnalyzableRefersToString, descendants: true, isSignal: true }], viewQueries: [{ propertyName: "query1", first: true, predicate: ["locatorA"], descendants: true, isSignal: true }, { propertyName: "query2", predicate: ["locatorB"], descendants: true, isSignal: true }, { propertyName: "query5", first: true, predicate: i0.forwardRef(() => SomeToken), descendants: true, isSignal: true }, { propertyName: "query6", predicate: SomeToken, descendants: true, isSignal: true }, { propertyName: "query7", first: true, predicate: ["locatorE"], descendants: true, read: SomeToken, isSignal: true }], ngImport: i0 });
 }
-TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.2.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, queries: [{ propertyName: "query3", first: true, predicate: ["locatorC"], descendants: true, isSignal: true }, { propertyName: "query4", predicate: ["locatorD"], isSignal: true }, { propertyName: "query8", predicate: ["locatorF, locatorG"], descendants: true, isSignal: true }, { propertyName: "query9", predicate: nonAnalyzableRefersToString, descendants: true, isSignal: true }], viewQueries: [{ propertyName: "query1", first: true, predicate: ["locatorA"], descendants: true, isSignal: true }, { propertyName: "query2", predicate: ["locatorB"], descendants: true, isSignal: true }, { propertyName: "query5", first: true, predicate: i0.forwardRef(() => SomeToken), descendants: true, isSignal: true }, { propertyName: "query6", predicate: SomeToken, descendants: true, isSignal: true }, { propertyName: "query7", first: true, predicate: ["locatorE"], descendants: true, read: SomeToken, isSignal: true }], ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{}]
-        }], propDecorators: { query1: [{ type: i0.ViewChild, args: ['locatorA', { isSignal: true }] }], query2: [{ type: i0.ViewChildren, args: ['locatorB', { isSignal: true }] }], query3: [{ type: i0.ContentChild, args: ['locatorC', { isSignal: true }] }], query4: [{ type: i0.ContentChildren, args: ['locatorD', { isSignal: true }] }], query5: [{ type: i0.ViewChild, args: [forwardRef(() => SomeToken), { isSignal: true }] }], query6: [{ type: i0.ViewChildren, args: [i0.forwardRef(() => SomeToken), { isSignal: true }] }], query7: [{ type: i0.ViewChild, args: ['locatorE', Object.assign({ read: SomeToken }, { isSignal: true })] }], query8: [{ type: i0.ContentChildren, args: ['locatorF, locatorG', Object.assign({ descendants: true }, { isSignal: true })] }], query9: [{ type: i0.ContentChildren, args: [i0.forwardRef(() => nonAnalyzableRefersToString), Object.assign({ descendants: true }, { isSignal: true })] }] } });
+        }], propDecorators: { query1: [{ type: i0.ViewChild, args: ['locatorA', { isSignal: true }] }], query2: [{ type: i0.ViewChildren, args: ['locatorB', { isSignal: true }] }], query3: [{ type: i0.ContentChild, args: ['locatorC', { isSignal: true }] }], query4: [{ type: i0.ContentChildren, args: ['locatorD', { isSignal: true }] }], query5: [{ type: i0.ViewChild, args: [forwardRef(() => SomeToken), { isSignal: true }] }], query6: [{ type: i0.ViewChildren, args: [i0.forwardRef(() => SomeToken), { isSignal: true }] }], query7: [{ type: i0.ViewChild, args: ['locatorE', { ...{ read: SomeToken }, isSignal: true }] }], query8: [{ type: i0.ContentChildren, args: ['locatorF, locatorG', { ...{ descendants: true }, isSignal: true }] }], query9: [{ type: i0.ContentChildren, args: [i0.forwardRef(() => nonAnalyzableRefersToString), { ...{ descendants: true }, isSignal: true }] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: query_in_directive.d.ts
@@ -52,15 +50,13 @@ export declare class TestDir {
 import { Component, contentChild, contentChildren, viewChild, viewChildren } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestComp {
-    constructor() {
-        this.query1 = viewChild('locatorA', ...(ngDevMode ? [{ debugName: "query1" }] : []));
-        this.query2 = viewChildren('locatorB', ...(ngDevMode ? [{ debugName: "query2" }] : []));
-        this.query3 = contentChild('locatorC', ...(ngDevMode ? [{ debugName: "query3" }] : []));
-        this.query4 = contentChildren('locatorD', ...(ngDevMode ? [{ debugName: "query4" }] : []));
-    }
+    query1 = viewChild('locatorA', ...(ngDevMode ? [{ debugName: "query1" }] : []));
+    query2 = viewChildren('locatorB', ...(ngDevMode ? [{ debugName: "query2" }] : []));
+    query3 = contentChild('locatorC', ...(ngDevMode ? [{ debugName: "query3" }] : []));
+    query4 = contentChildren('locatorD', ...(ngDevMode ? [{ debugName: "query4" }] : []));
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.2.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", queries: [{ propertyName: "query3", first: true, predicate: ["locatorC"], descendants: true, isSignal: true }, { propertyName: "query4", predicate: ["locatorD"], isSignal: true }], viewQueries: [{ propertyName: "query1", first: true, predicate: ["locatorA"], descendants: true, isSignal: true }, { propertyName: "query2", predicate: ["locatorB"], descendants: true, isSignal: true }], ngImport: i0, template: 'Works', isInline: true });
 }
-TestComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-TestComp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.2.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", queries: [{ propertyName: "query3", first: true, predicate: ["locatorC"], descendants: true, isSignal: true }, { propertyName: "query4", predicate: ["locatorD"], isSignal: true }], viewQueries: [{ propertyName: "query1", first: true, predicate: ["locatorA"], descendants: true, isSignal: true }, { propertyName: "query2", predicate: ["locatorB"], descendants: true, isSignal: true }], ngImport: i0, template: 'Works', isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, decorators: [{
             type: Component,
             args: [{
@@ -87,13 +83,13 @@ export declare class TestComp {
 import { ContentChild, contentChild, Directive, ViewChild, viewChild } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestDir {
-    constructor() {
-        this.signalViewChild = viewChild('locator1', ...(ngDevMode ? [{ debugName: "signalViewChild" }] : []));
-        this.signalContentChild = contentChild('locator2', ...(ngDevMode ? [{ debugName: "signalContentChild" }] : []));
-    }
+    decoratorViewChild;
+    signalViewChild = viewChild('locator1', ...(ngDevMode ? [{ debugName: "signalViewChild" }] : []));
+    decoratorContentChild;
+    signalContentChild = contentChild('locator2', ...(ngDevMode ? [{ debugName: "signalContentChild" }] : []));
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.2.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, queries: [{ propertyName: "signalContentChild", first: true, predicate: ["locator2"], descendants: true, isSignal: true }, { propertyName: "decoratorContentChild", first: true, predicate: ["locator2"], descendants: true }], viewQueries: [{ propertyName: "signalViewChild", first: true, predicate: ["locator1"], descendants: true, isSignal: true }, { propertyName: "decoratorViewChild", first: true, predicate: ["locator1"], descendants: true }], ngImport: i0 });
 }
-TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.2.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, queries: [{ propertyName: "signalContentChild", first: true, predicate: ["locator2"], descendants: true, isSignal: true }, { propertyName: "decoratorContentChild", first: true, predicate: ["locator2"], descendants: true }], viewQueries: [{ propertyName: "signalViewChild", first: true, predicate: ["locator1"], descendants: true, isSignal: true }, { propertyName: "decoratorViewChild", first: true, predicate: ["locator1"], descendants: true }], ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{}]

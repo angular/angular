@@ -10,7 +10,9 @@ function MyApp_DeferPlaceholder_1_Template(rf, ctx) {
   }
 }
 …
-MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+export class MyApp {
+  …
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   consts: [[2000], ["src", "placeholder.gif"]],
   template: function MyApp_Template(rf, ctx) {
@@ -25,3 +27,4 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
 
 …
 $r3$.ɵsetClassMetadata(MyApp, …);
+}
