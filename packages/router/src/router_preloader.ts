@@ -115,9 +115,7 @@ export class RouterPreloader implements OnDestroy {
 
   /** @docs-private */
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.subscription?.unsubscribe();
   }
 
   private processRoutes(injector: EnvironmentInjector, routes: Routes): Observable<void> {
@@ -127,7 +125,7 @@ export class RouterPreloader implements OnDestroy {
         route._injector = createEnvironmentInjector(
           route.providers,
           injector,
-          `Route: ${route.path}`,
+          typeof ngDevMode === 'undefined' || ngDevMode ? `Route: ${route.path}` : '',
         );
       }
 
