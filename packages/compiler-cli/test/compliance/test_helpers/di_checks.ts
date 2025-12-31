@@ -10,7 +10,7 @@
  * Verifies that there is exactly one factory definition for the provided type.
  */
 export function verifyUniqueFactory(output: string, type: string): boolean {
-  const matches = output.match(new RegExp(type + '.ɵfac =', 'g'));
+  const matches = output.match(new RegExp(`function ${type}_Factory`, 'g'));
   if (matches === null) {
     return false;
   }

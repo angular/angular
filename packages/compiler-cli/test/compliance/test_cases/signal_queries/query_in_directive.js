@@ -7,7 +7,9 @@ const _c5 = ["locatorE"];
 
 …
 
-TestDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
+export class TestDir {
+  …
+  static ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
     …
     contentQueries: function TestDir_ContentQueries(rf, ctx, dirIndex) {
         if (rf & 1) {
@@ -25,3 +27,4 @@ TestDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
     }
     …
   });
+}

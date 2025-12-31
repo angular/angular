@@ -31,8 +31,9 @@ function MyApp_Conditional_5_Template(rf, ctx) {
 }
 
 …
-
-MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+export class MyApp {
+  …
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   consts: () => {
     let i18n_0;
@@ -96,3 +97,4 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   },
   …
 });
+}
