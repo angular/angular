@@ -399,10 +399,8 @@ export class Router {
     // RxJS will throw an error.
     this._events.unsubscribe();
     this.navigationTransitions.complete();
-    if (this.nonRouterCurrentEntryChangeSubscription) {
-      this.nonRouterCurrentEntryChangeSubscription.unsubscribe();
-      this.nonRouterCurrentEntryChangeSubscription = undefined;
-    }
+    this.nonRouterCurrentEntryChangeSubscription?.unsubscribe();
+    this.nonRouterCurrentEntryChangeSubscription = undefined;
     this.disposed = true;
     this.eventsSubscription.unsubscribe();
   }
