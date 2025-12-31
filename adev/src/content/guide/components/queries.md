@@ -337,7 +337,7 @@ export class CustomCard {
 
 You can query for a single result with the `@ContentChild` decorator.
 
-```angular-ts {highlight: [14, 16, 17, 18, 25]}
+```angular-ts {highlight: [15, 16, 17, 18, 19, 26]}
 @Component({
   selector: 'custom-toggle',
   /*...*/
