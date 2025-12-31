@@ -1,5 +1,8 @@
-SomeComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
-  type: SomeComponent,
-  selectors: [["", "id", "my-app"]],
+export class SomeComponent {
   // ...
-});
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+    type: SomeComponent,
+    selectors: [["", "id", "my-app"]],
+    // ...
+  });
+}

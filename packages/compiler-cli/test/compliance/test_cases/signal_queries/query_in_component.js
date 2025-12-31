@@ -1,4 +1,6 @@
-TestComp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+export class TestComp {
+  …
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     …
     contentQueries: function TestComp_ContentQueries(rf, ctx, dirIndex) {
         if (rf & 1) {
@@ -16,3 +18,4 @@ TestComp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     },
     …
   });
+}

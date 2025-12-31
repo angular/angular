@@ -129,7 +129,7 @@ function getOptions(
     baseUrl: '.',
     allowJs: true,
     declaration: true,
-    target: ts.ScriptTarget.ES2015,
+    target: ts.ScriptTarget.ES2022,
     newLine: ts.NewLineKind.LineFeed,
     module: ts.ModuleKind.ES2015,
     moduleResolution: ts.ModuleResolutionKind.Bundler,
