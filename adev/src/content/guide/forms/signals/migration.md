@@ -210,7 +210,7 @@ This is coming soon.
 
 ## Automatic status classes
 
-Reactive/Template Forms automatically adds [class attributes](https://angular.dev/guide/forms/template-driven-forms#track-control-states) (such as `.ng-valid` or `.ng-dirty`) to facilitate styling control states. Signal Forms does not do that.
+Reactive/Template Forms automatically adds [class attributes](/guide/forms/template-driven-forms#track-control-states) (such as `.ng-valid` or `.ng-dirty`) to facilitate styling control states. Signal Forms does not do that.
 
 If you want to preserve this behavior, you can provide the `NG_STATUS_CLASSES` preset:
 
