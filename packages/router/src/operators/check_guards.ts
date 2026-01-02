@@ -28,6 +28,7 @@ import {
   CanLoadFn,
   CanMatchFn,
   Route,
+  PartialMatchRouteSnapshot,
 } from '../models';
 import {redirectingNavigationError} from '../navigation_canceling_error';
 import type {NavigationTransition} from '../navigation_transition';
@@ -266,6 +267,7 @@ export function runCanMatchGuards(
   route: Route,
   segments: UrlSegment[],
   urlSerializer: UrlSerializer,
+  currentSnapshot: PartialMatchRouteSnapshot,
   abortSignal: AbortSignal,
 ): Observable<GuardResult> {
   const canMatch = route.canMatch;
@@ -274,8 +276,10 @@ export function runCanMatchGuards(
   const canMatchObservables = canMatch.map((injectionToken) => {
     const guard = getTokenOrFunctionIdentity(injectionToken as ProviderToken<any>, injector);
     const guardVal = isCanMatch(guard)
-      ? guard.canMatch(route, segments)
-      : runInInjectionContext(injector, () => (guard as CanMatchFn)(route, segments));
+      ? guard.canMatch(route, segments, currentSnapshot)
+      : runInInjectionContext(injector, () =>
+          (guard as CanMatchFn)(route, segments, currentSnapshot),
+        );
     return wrapIntoObservable(guardVal).pipe(takeUntilAbort(abortSignal));
   });
 

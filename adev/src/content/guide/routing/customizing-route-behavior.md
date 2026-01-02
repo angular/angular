@@ -224,7 +224,7 @@ When implementing a custom `RouteReuseStrategy`, you may need to manually destro
 Since `DetachedRouteHandle` is an opaque type, you cannot call a destroy method directly on it. Instead, use the `destroyDetachedRouteHandle` function provided by the Router.
 
 ```ts
-import { destroyDetachedRouteHandle } from '@angular/router';
+import {destroyDetachedRouteHandle} from '@angular/router';
 
 // ... inside your strategy
 if (this.handles.size > MAX_CACHE_SIZE) {
@@ -245,12 +245,10 @@ By default, Angular does not destroy the injectors of detached routes, even if t
 To enable automatic cleanup of unused route injectors, you can use the `withExperimentalAutoCleanupInjectors` feature in your router configuration. This feature checks which routes are currently stored by the strategy after navigations and destroys the injectors of any detached routes that are not currently stored by the reuse strategy.
 
 ```ts
-import { provideRouter, withExperimentalAutoCleanupInjectors } from '@angular/router';
+import {provideRouter, withExperimentalAutoCleanupInjectors} from '@angular/router';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes, withExperimentalAutoCleanupInjectors())
-  ]
+  providers: [provideRouter(routes, withExperimentalAutoCleanupInjectors())],
 };
 ```
 

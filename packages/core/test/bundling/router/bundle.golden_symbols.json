@@ -508,6 +508,7 @@
       "createOrReusePlatformInjector",
       "createPlatformInjector",
       "createPositionApplyingDoubleDots",
+      "createPreMatchRouteSnapshot",
       "createProvidersConfig",
       "createResultByTNodeType",
       "createResultForNode",
