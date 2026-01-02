@@ -16,7 +16,7 @@ import {getTypeCheckInfoAtPosition, TypeCheckInfo} from '../utils';
 import {CodeActionMeta, FixIdForCodeFixesAll} from './utils';
 
 /**
- * fix [invalid banana-in-box](https://angular.io/extended-diagnostics/NG8101)
+ * fix [invalid banana-in-box](https://angular.dev/extended-diagnostics/NG8101)
  */
 export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
   errorCodes: [ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX)],
