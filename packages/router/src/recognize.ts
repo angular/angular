@@ -356,7 +356,16 @@ export class Recognizer {
       consumedSegments,
       route.redirectTo!,
       positionalParamSegments,
-      currentSnapshot,
+      {
+        queryParams: currentSnapshot.queryParams,
+        fragment: currentSnapshot.fragment,
+        routeConfig: currentSnapshot.routeConfig,
+        url: currentSnapshot.url,
+        outlet: currentSnapshot.outlet,
+        params: currentSnapshot.params,
+        data: currentSnapshot.data,
+        title: currentSnapshot.title,
+      },
       injector,
     );
 
