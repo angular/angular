@@ -10,7 +10,7 @@
 const banner = `'use strict';
 /**
  * @license Angular
- * (c) 2010-2025 Google LLC. https://angular.dev/
+ * (c) 2010-2026 Google LLC. https://angular.dev/
  * License: MIT
  */`;
 
