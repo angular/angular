@@ -33,6 +33,8 @@ export function mergeNextContextExpressions(job: CompilationJob): void {
         op.kind === ir.OpKind.TwoWayListener
       ) {
         mergeNextContextsInOps(op.handlerOps);
+      } else if (op.kind === ir.OpKind.StoreCallback) {
+        mergeNextContextsInOps(op.callbackOps);
       }
     }
     mergeNextContextsInOps(unit.update);
@@ -84,6 +86,7 @@ function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
           case ir.ExpressionKind.GetCurrentView:
           case ir.ExpressionKind.Reference:
           case ir.ExpressionKind.ContextLetReference:
+          case ir.ExpressionKind.CallbackReference:
             // Can't merge past a dependency on the context.
             tryToMerge = false;
             break;

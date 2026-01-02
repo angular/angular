@@ -51,7 +51,8 @@ export type Expression =
   | TwoWayBindingSetExpr
   | ContextLetReferenceExpr
   | StoreLetExpr
-  | TrackContextExpr;
+  | TrackContextExpr
+  | CallbackReferenceExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -1039,6 +1040,33 @@ export class ConstCollectedExpr extends ExpressionBase {
   }
 }
 
+export class CallbackReferenceExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.CallbackReference;
+
+  constructor(
+    readonly target: XrefId,
+    readonly targetSlot: SlotHandle,
+  ) {
+    super();
+  }
+
+  override visitExpression(): void {}
+
+  override isEquivalent(): boolean {
+    return false;
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(): void {}
+
+  override clone(): CallbackReferenceExpr {
+    return new CallbackReferenceExpr(this.target, this.targetSlot);
+  }
+}
+
 /**
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
@@ -1205,6 +1233,12 @@ export function transformExpressionsInOp(
     case OpKind.StoreLet:
       op.value = transformExpressionsInExpression(op.value, transform, flags);
       break;
+    case OpKind.StoreCallback:
+    case OpKind.ExtractCallback:
+      for (const innerOp of op.callbackOps) {
+        transformExpressionsInOp(innerOp, transform, flags | VisitorContextFlag.InChildOperation);
+      }
+      break;
     case OpKind.Advance:
     case OpKind.Container:
     case OpKind.ContainerEnd:
@@ -1306,10 +1340,18 @@ export function transformExpressionsInExpression(
   } else if (expr instanceof o.ArrowFunctionExpr) {
     if (Array.isArray(expr.body)) {
       for (let i = 0; i < expr.body.length; i++) {
-        transformExpressionsInStatement(expr.body[i], transform, flags);
+        transformExpressionsInStatement(
+          expr.body[i],
+          transform,
+          flags | VisitorContextFlag.InChildOperation,
+        );
       }
     } else {
-      expr.body = transformExpressionsInExpression(expr.body, transform, flags);
+      expr.body = transformExpressionsInExpression(
+        expr.body,
+        transform,
+        flags | VisitorContextFlag.InChildOperation,
+      );
     }
   } else if (expr instanceof o.WrappedNodeExpr) {
     // TODO: Do we need to transform any TS nodes nested inside of this expression?

@@ -70,6 +70,9 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope | 
         // Prepend variables to listener handler functions.
         op.handlerOps.prepend(generateVariablesInScopeForView(view, scope, true));
         break;
+      case ir.OpKind.StoreCallback:
+        op.callbackOps.prepend(generateVariablesInScopeForView(view, scope, true));
+        break;
     }
   }
 
@@ -100,6 +103,11 @@ interface Scope {
    * `@let` declarations collected from the view.
    */
   letDeclarations: LetDeclaration[];
+
+  /**
+   * Callbacks that are stored within the view.
+   */
+  storedCallbacks: StoredCallback[];
 
   /**
    * `Scope` of the parent view, if any.
@@ -151,6 +159,20 @@ interface LetDeclaration {
 }
 
 /**
+ * Information about stored callback functions within the same view.
+ */
+interface StoredCallback {
+  /** `XrefId` of the `StoreCallbackOp` that the reference is pointing to. */
+  targetId: ir.XrefId;
+
+  /** Slot in which the target is stored. */
+  targetSlot: ir.SlotHandle;
+
+  /** Variable referring to the callback. */
+  variable: ir.IdentifierVariable;
+}
+
+/**
  * Process a view and generate a `Scope` representing the variables available for reference within
  * that view.
  */
@@ -166,6 +188,7 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
     aliases: view.aliases,
     references: [],
     letDeclarations: [],
+    storedCallbacks: [],
     parent,
   };
 
@@ -213,6 +236,19 @@ function getScopeForView(view: ViewCompilationUnit, parent: Scope | null): Scope
             kind: ir.SemanticVariableKind.Identifier,
             name: null,
             identifier: op.declaredName,
+            local: false,
+          },
+        });
+        break;
+
+      case ir.OpKind.StoreCallback:
+        scope.storedCallbacks.push({
+          targetId: op.xref,
+          targetSlot: op.handle,
+          variable: {
+            kind: ir.SemanticVariableKind.Identifier,
+            name: null,
+            identifier: op.localName,
             local: false,
           },
         });
@@ -285,6 +321,17 @@ function generateVariablesInScopeForView(
         view.job.allocateXrefId(),
         ref.variable,
         new ir.ReferenceExpr(ref.targetId, ref.targetSlot, ref.offset),
+        ir.VariableFlags.None,
+      ),
+    );
+  }
+
+  for (const cb of scope.storedCallbacks) {
+    newOps.push(
+      ir.createVariableOp<ir.UpdateOp>(
+        view.job.allocateXrefId(),
+        cb.variable,
+        new ir.CallbackReferenceExpr(cb.targetId, cb.targetSlot),
         ir.VariableFlags.None,
       ),
     );

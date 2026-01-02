@@ -210,6 +210,10 @@ export abstract class CompilationUnit {
         for (const trackOp of op.trackByOps) {
           yield trackOp;
         }
+      } else if (op.kind === ir.OpKind.StoreCallback || op.kind === ir.OpKind.ExtractCallback) {
+        for (const callbackOp of op.callbackOps) {
+          yield callbackOp;
+        }
       }
     }
     for (const op of this.update) {

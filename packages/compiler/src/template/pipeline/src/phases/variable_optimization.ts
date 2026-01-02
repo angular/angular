@@ -41,6 +41,8 @@ export function optimizeVariables(job: CompilationJob): void {
         op.kind === ir.OpKind.TwoWayListener
       ) {
         inlineAlwaysInlineVariables(op.handlerOps);
+      } else if (op.kind === ir.OpKind.StoreCallback || op.kind === ir.OpKind.ExtractCallback) {
+        inlineAlwaysInlineVariables(op.callbackOps);
       } else if (op.kind === ir.OpKind.RepeaterCreate && op.trackByOps !== null) {
         inlineAlwaysInlineVariables(op.trackByOps);
       }
@@ -57,6 +59,8 @@ export function optimizeVariables(job: CompilationJob): void {
         op.kind === ir.OpKind.TwoWayListener
       ) {
         optimizeVariablesInOpList(op.handlerOps, job.compatibility);
+      } else if (op.kind === ir.OpKind.StoreCallback || op.kind === ir.OpKind.ExtractCallback) {
+        optimizeVariablesInOpList(op.callbackOps, job.compatibility);
       } else if (op.kind === ir.OpKind.RepeaterCreate && op.trackByOps !== null) {
         optimizeVariablesInOpList(op.trackByOps, job.compatibility);
       }
@@ -338,6 +342,7 @@ function fencesForIrExpression(expr: ir.Expression): Fence {
       return Fence.SideEffectful;
     case ir.ExpressionKind.Reference:
     case ir.ExpressionKind.ContextLetReference:
+    case ir.ExpressionKind.CallbackReference:
       return Fence.ViewContextRead;
     default:
       return Fence.None;
