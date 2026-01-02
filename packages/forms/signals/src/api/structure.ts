@@ -379,6 +379,7 @@ export async function submit<TModel>(
   node.submitState.selfSubmitting.set(true);
   try {
     const errors = await action(form);
+    node.cancelPendingValidation();
     errors && setSubmissionErrors(node, errors);
   } finally {
     node.submitState.selfSubmitting.set(false);

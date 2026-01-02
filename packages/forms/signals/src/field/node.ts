@@ -36,7 +36,7 @@ import {
   type TrackingKey,
 } from './structure';
 import {FieldSubmitState} from './submit';
-import {ValidationState} from './validation';
+import {PENDING_VALIDATION_PARAMS, ValidationState} from './validation';
 
 /**
  * Internal node in the form tree for a given field.
@@ -229,6 +229,24 @@ export class FieldNode implements FieldState<unknown> {
     return this.metadata(REQUIRED) ?? FALSE;
   }
 
+  /**
+   * Cancels any pending async validations for this field and its descendants.
+   */
+  cancelPendingValidation(): void {
+    if (!this.pending()) {
+      return;
+    }
+
+    if (this.hasMetadata(PENDING_VALIDATION_PARAMS)) {
+      // Setting the resource params to `undefined` cancels the pending validation.
+      this.metadata(PENDING_VALIDATION_PARAMS)!().forEach((params) => params.set(undefined));
+    }
+
+    for (const child of this.structure.children()) {
+      child.cancelPendingValidation();
+    }
+  }
+
   metadata<M>(key: MetadataKey<M, any, any>): M | undefined {
     return this.metadataState.get(key);
   }
@@ -256,8 +274,6 @@ export class FieldNode implements FieldState<unknown> {
 
   /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
-   *
-   * Note this does not change the data model, which can be reset directly if desired.
    *
    * @param value Optional value to set to the form. If not passed, the value will not be changed.
    */

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ResourceRef, Signal} from '@angular/core';
+import {ResourceRef, Signal, WritableSignal, linkedSignal} from '@angular/core';
 import {FieldNode} from '../../../field/node';
-import {addDefaultField} from '../../../field/validation';
+import {PENDING_VALIDATION_PARAMS, addDefaultField} from '../../../field/validation';
 import {FieldPathNode} from '../../../schema/path_node';
 import {assertPathIsCurrent} from '../../../schema/schema';
 import {
@@ -117,6 +117,15 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   assertPathIsCurrent(path);
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
+  // Wrap the parameters in a linked signal so they can be overridden with `undefined` to cancel the
+  // validation on submission.
+  const PARAMS = createManagedMetadataKey<WritableSignal<TParams | undefined>, TParams>(
+    linkedSignal,
+  );
+  metadata(path, PARAMS, (ctx) => opts.params(ctx));
+  // Add the linked signal to the list of all pending validations.
+  metadata(path, PENDING_VALIDATION_PARAMS, (ctx) => ctx.state.metadata(PARAMS));
+
   const RESOURCE = createManagedMetadataKey<ReturnType<typeof opts.factory>, TParams | undefined>(
     opts.factory,
   );
@@ -126,7 +135,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
     if (validationState.shouldSkipValidation() || !validationState.syncValid()) {
       return undefined;
     }
-    return opts.params(ctx);
+    return ctx.state.metadata(PARAMS)!();
   });
 
   pathNode.builder.addAsyncErrorRule((ctx) => {

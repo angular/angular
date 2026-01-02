@@ -6,12 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal, ɵWritable} from '@angular/core';
+import {computed, Signal, WritableSignal, ɵWritable} from '@angular/core';
+import {createMetadataKey, MetadataKey, MetadataReducer} from '../api/rules/metadata';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
 import type {FieldTree, TreeValidationResult, ValidationResult} from '../api/types';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 import {shortCircuitFalse} from './util';
+
+/**
+ * A private {@link MetadataKey} used to accumulate `validateAsync()` parameters.
+ *
+ * This is used to cancel all pending validations when the field is submitted.
+ */
+export const PENDING_VALIDATION_PARAMS: MetadataKey<
+  Signal<WritableSignal<unknown | undefined>[]>,
+  WritableSignal<unknown | undefined> | undefined,
+  WritableSignal<unknown | undefined>[]
+> = createMetadataKey(MetadataReducer.list());
 
 /**
  * Helper function taking validation state, and returning own state of the node.

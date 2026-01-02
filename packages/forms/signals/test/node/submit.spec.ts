@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, resource, signal} from '@angular/core';
+import {ApplicationRef, Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   form,
@@ -18,6 +18,12 @@ import {
 } from '../../public_api';
 
 describe('submit', () => {
+  let appRef: ApplicationRef;
+
+  beforeEach(() => {
+    appRef = TestBed.inject(ApplicationRef);
+  });
+
   it('fails fast on invalid form', async () => {
     const data = signal({first: '', last: ''});
     const f = form(
@@ -60,8 +66,77 @@ describe('submit', () => {
     const submitSpy = jasmine.createSpy();
     await submit(f, submitSpy);
 
-    expect(f().pending()).toBe(true);
     expect(submitSpy).toHaveBeenCalled();
+  });
+
+  it('should cancel pending async validations on success', async () => {
+    const data = signal('');
+    const {promise, resolve} = promiseWithResolvers();
+    const f = form(
+      data,
+      (p) => {
+        validateAsync(p, {
+          params: ({value}) => value(),
+          factory: (params) =>
+            resource({
+              params,
+              loader: async ({params}) => {
+                await promise;
+                return params;
+              },
+            }),
+          onSuccess: () => ({kind: 'async'}),
+          onError: () => ({kind: 'async-error'}),
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f().pending()).withContext('Async validator should be pending').toBe(true);
+
+    await submit(f, async () => {});
+    expect(f().pending()).withContext('Submission should cancel pending validators').toBe(false);
+    expect(f().valid()).toBe(true);
+
+    resolve(undefined);
+    await appRef.whenStable();
+    expect(f().valid()).toBe(true);
+  });
+
+  it('should cancel pending async validations on error', async () => {
+    const data = signal('');
+    const {promise, resolve} = promiseWithResolvers();
+    const f = form(
+      data,
+      (p) => {
+        validateAsync(p, {
+          params: ({value}) => value(),
+          factory: (params) =>
+            resource({
+              params,
+              loader: async ({params}) => {
+                await promise;
+                return params;
+              },
+            }),
+          onSuccess: () => ({kind: 'async'}),
+          onError: () => ({kind: 'async-error'}),
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f().pending()).withContext('Async validator should be pending').toBe(true);
+
+    await submit(f, async () => ({kind: 'submit'}));
+    expect(f().pending()).withContext('Submission should cancel pending validators').toBe(false);
+    expect(f().errors()).toEqual([jasmine.objectContaining({kind: 'submit'})]);
+
+    resolve(undefined);
+    await appRef.whenStable();
+    expect(f().errors())
+      .withContext('Resolving the pending validator should not clear submission errors')
+      .toEqual([jasmine.objectContaining({kind: 'submit'})]);
   });
 
   it('maps error to a field', async () => {
