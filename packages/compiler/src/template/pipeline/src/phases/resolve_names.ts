@@ -82,6 +82,9 @@ function processLexicalScope(
         // lexical scope.
         processLexicalScope(unit, op.handlerOps, savedView);
         break;
+      case ir.OpKind.StoreCallback:
+        processLexicalScope(unit, op.callbackOps, savedView);
+        break;
       case ir.OpKind.RepeaterCreate:
         if (op.trackByOps !== null) {
           processLexicalScope(unit, op.trackByOps, savedView);
@@ -98,7 +101,8 @@ function processLexicalScope(
       op.kind == ir.OpKind.Listener ||
       op.kind === ir.OpKind.TwoWayListener ||
       op.kind === ir.OpKind.Animation ||
-      op.kind === ir.OpKind.AnimationListener
+      op.kind === ir.OpKind.AnimationListener ||
+      op.kind === ir.OpKind.StoreCallback
     ) {
       // Listeners were already processed above with their own scopes.
       continue;

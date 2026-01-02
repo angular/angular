@@ -35,18 +35,25 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
         op.kind !== ir.OpKind.Listener &&
         op.kind !== ir.OpKind.TwoWayListener &&
         op.kind !== ir.OpKind.Animation &&
-        op.kind !== ir.OpKind.AnimationListener
+        op.kind !== ir.OpKind.AnimationListener &&
+        op.kind !== ir.OpKind.StoreCallback
       ) {
         continue;
       }
 
       // Embedded views always need the save/restore view operation.
       let needsRestoreView = unit !== job.root;
+      const innerOps = op.kind === ir.OpKind.StoreCallback ? op.callbackOps : op.handlerOps;
 
       if (!needsRestoreView) {
-        for (const handlerOp of op.handlerOps) {
-          ir.visitExpressionsInOp(handlerOp, (expr) => {
-            if (expr instanceof ir.ReferenceExpr || expr instanceof ir.ContextLetReferenceExpr) {
+        for (const innerOp of innerOps) {
+          ir.visitExpressionsInOp(innerOp, (expr) => {
+            if (
+              expr instanceof ir.ReferenceExpr ||
+              expr instanceof ir.ContextLetReferenceExpr ||
+              // TODO(crisbeto): workaround for #66286, only covers basic cases.
+              (expr instanceof ir.CallbackReferenceExpr && op.kind !== ir.OpKind.StoreCallback)
+            ) {
               // Listeners that reference() a local ref need the save/restore view operation.
               needsRestoreView = true;
             }
@@ -55,7 +62,7 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
       }
 
       if (needsRestoreView) {
-        addSaveRestoreViewOperationToListener(unit, op);
+        addSaveRestoreViewOperationToListener(unit, innerOps);
       }
     }
   }
@@ -63,9 +70,9 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
 
 function addSaveRestoreViewOperationToListener(
   unit: ViewCompilationUnit,
-  op: ir.ListenerOp | ir.TwoWayListenerOp | ir.AnimationOp | ir.AnimationListenerOp,
+  opList: ir.OpList<ir.UpdateOp>,
 ) {
-  op.handlerOps.prepend([
+  opList.prepend([
     ir.createVariableOp<ir.UpdateOp>(
       unit.job.allocateXrefId(),
       {
@@ -81,7 +88,7 @@ function addSaveRestoreViewOperationToListener(
   // The "restore view" operation in listeners requires a call to `resetView` to reset the
   // context prior to returning from the listener operation. Find any `return` statements in
   // the listener body and wrap them in a call to reset the view.
-  for (const handlerOp of op.handlerOps) {
+  for (const handlerOp of opList) {
     if (
       handlerOp.kind === ir.OpKind.Statement &&
       handlerOp.statement instanceof o.ReturnStatement

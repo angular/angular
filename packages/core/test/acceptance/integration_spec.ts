@@ -24,6 +24,7 @@ import {
   Pipe,
   provideZoneChangeDetection,
   QueryList,
+  signal,
   TemplateRef,
   ViewChild,
   ViewChildren,
@@ -3374,6 +3375,254 @@ describe('acceptance integration tests', () => {
         'inner', // removal of the inner comp element
       ]);
     }));
+  });
+
+  describe('arrow functions', () => {
+    it('should support a basic arrow function in an event listener', () => {
+      @Component({
+        template: `<button (click)="value.update(prev => prev + 1)">Increment</button>`,
+      })
+      class TestComponent {
+        value = signal(0);
+      }
+      const fixture = TestBed.createComponent(TestComponent);
+      const button = fixture.nativeElement.querySelector('button');
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value()).toBe(0);
+
+      button.click();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value()).toBe(1);
+    });
+
+    it('should support an arrow function accessing value from different views in an event listener', () => {
+      @Component({
+        template: `
+          @let parent = 'parent';
+
+          @if (true) {
+            @let child = 'child';
+
+            @if (true) {
+              @let grandchild = 'grandchild';
+              <button
+                (click)="value.update(prev => prev + '->' + grandchild + '->' + child + '->' + parent)"
+              >
+                Assign
+              </button>
+            }
+          }
+        `,
+      })
+      class TestComponent {
+        value = signal('initial');
+      }
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      expect(fixture.componentInstance.value()).toBe('initial');
+
+      button.click();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value()).toBe('initial->grandchild->child->parent');
+    });
+
+    it('should support an arrow function in a binding', () => {
+      @Component({
+        template: `Result: {{((a) => a + b)(1)}}`,
+      })
+      class TestComponent {
+        b = 2;
+      }
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: 3');
+
+      fixture.componentInstance.b = 5;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toContain('Result: 6');
+    });
+
+    it('should support an arrow function in a host binding', () => {
+      @Directive({
+        selector: '[test]',
+        host: {
+          '[attr.foo]': '((a) => a + 1 + directiveProp)(1000)',
+        },
+      })
+      class TestDir {
+        directiveProp = 0;
+      }
+
+      @Component({
+        imports: [TestDir],
+        template: '<div test></div>',
+      })
+      class App {
+        @ViewChild(TestDir) testDir!: TestDir;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const element = fixture.nativeElement.querySelector('[test]');
+      expect(element.getAttribute('foo')).toBe('1001');
+
+      fixture.componentInstance.testDir.directiveProp = 1;
+      fixture.detectChanges();
+      expect(element.getAttribute('foo')).toBe('1002');
+    });
+
+    it('should support a basic arrow function in a host listener', () => {
+      @Directive({
+        selector: '[test]',
+        host: {
+          '(click)': 'directiveSignal.update(prev => prev + 1)',
+        },
+      })
+      class TestDir {
+        directiveSignal = signal(0);
+      }
+
+      @Component({
+        imports: [TestDir],
+        template: '<button test></button>',
+      })
+      class App {
+        @ViewChild(TestDir) testDir!: TestDir;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      expect(fixture.componentInstance.testDir.directiveSignal()).toBe(0);
+
+      button.click();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.testDir.directiveSignal()).toBe(1);
+    });
+
+    it('should support an arrow function that accesses the context in a host listener', () => {
+      @Directive({
+        selector: '[test]',
+        host: {
+          '(click)': 'directiveSignal.update(prev => (prev + 2) * multiplier)',
+        },
+      })
+      class TestDir {
+        directiveSignal = signal(0);
+        multiplier = 10;
+      }
+
+      @Component({
+        imports: [TestDir],
+        template: '<button test></button>',
+      })
+      class App {
+        @ViewChild(TestDir) testDir!: TestDir;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      expect(fixture.componentInstance.testDir.directiveSignal()).toBe(0);
+
+      button.click();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.testDir.directiveSignal()).toBe(20);
+    });
+
+    it('should support an arrow function returning another arrow function with access across multiple views', () => {
+      @Component({
+        template: `
+          @let topLevelLet = 1;
+
+          @if (true) {
+            @let nestedLet = 2;
+
+            @if (true) {
+              Result:
+              {{(a => b => c => d => a + b + c + d + componentProp + topLevelLet + nestedLet)(1)(2)(3)(4)}}
+            }
+          }
+        `,
+      })
+      class App {
+        componentProp = 0;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: 13');
+
+      fixture.componentInstance.componentProp = 1000;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: 1013');
+    });
+
+    it('should support an arrow function using safe accesses', () => {
+      @Component({
+        template: `
+          @if (true) {
+            Result: {{(() => componentProp?.a?.b?.c?.()?.()?.()?.())()}}.
+          }
+        `,
+      })
+      class App {
+        componentProp: {a?: {b?: {c?: () => () => () => () => string}}} = {};
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: .');
+
+      fixture.componentInstance.componentProp = {a: {b: {c: () => () => () => () => 'hello'}}};
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Result: hello.');
+    });
+
+    it('should be able to use local references in an arrow function', () => {
+      @Component({
+        template: `
+          <input #inp />
+          @let fn = (prefix) => prefix + (inp.value || '<empty>');
+
+          {{ fn('Hello ') }}
+        `,
+      })
+      class App {}
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Hello <empty>');
+
+      fixture.nativeElement.querySelector('input').value = 'Bilbo';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Hello Bilbo');
+    });
+
+    it('should be able to pass arrow functions through as inputs', () => {
+      @Directive({selector: '[test]'})
+      class TestDir {
+        @Input() callback!: () => void;
+      }
+
+      @Component({
+        template: `<button test [callback]="() => prop = prop + 1"></button> `,
+        imports: [TestDir],
+      })
+      class App {
+        @ViewChild(TestDir) testDir!: TestDir;
+        prop = 0;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.prop).toBe(0);
+
+      fixture.componentInstance.testDir.callback();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.prop).toBe(1);
+    });
   });
 });
 
