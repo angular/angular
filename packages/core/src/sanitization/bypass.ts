@@ -7,7 +7,6 @@
  */
 
 import {XSS_SECURITY_URL} from '../error_details_base_url';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
 
 export const enum BypassType {
   Url = 'URL',
@@ -129,10 +128,7 @@ export function allowSanitizationBypassAndThrow(value: any, type: BypassType): b
   if (actualType != null && actualType !== type) {
     // Allow ResourceURLs in URL contexts, they are strictly more trusted.
     if (actualType === BypassType.ResourceUrl && type === BypassType.Url) return true;
-    throw new RuntimeError(
-      RuntimeErrorCode.SANITIZATION_BYPASS_TYPE_MISMATCH,
-      ngDevMode && `Required a safe ${type}, got a ${actualType} (see ${XSS_SECURITY_URL})`,
-    );
+    throw new Error(`Required a safe ${type}, got a ${actualType} (see ${XSS_SECURITY_URL})`);
   }
   return actualType === type;
 }
