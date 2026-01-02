@@ -3,7 +3,7 @@
  * Copyright Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as fs from 'node:fs';
@@ -575,8 +575,8 @@ function registerNotificationHandlers(client: lsp.LanguageClient): vscode.Dispos
       const doNotPromptAgain = 'Do not show again for this workspace';
       const selection = await vscode.window.showInformationMessage(
         'Some language features are not available. To access all features, enable ' +
-          '[strictTemplates](https://angular.io/guide/angular-compiler-options#stricttemplates) in ' +
-          '[angularCompilerOptions](https://angular.io/guide/angular-compiler-options).',
+          '[strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) in ' +
+          '[angularCompilerOptions](https://angular.dev/reference/configs/angular-compiler-options).',
         openTsConfig,
         doNotPromptAgain,
       );
