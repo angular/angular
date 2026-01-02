@@ -24,8 +24,10 @@ import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {getOutlet, sortByMatchingOutlets} from './utils/config';
 import {
+  createPreMatchRouteSnapshot,
   emptyPathMatch,
   match,
+  MatchResult,
   matchWithChecks,
   noLeftoversInUrl,
   split,
@@ -356,7 +358,7 @@ export class Recognizer {
       consumedSegments,
       route.redirectTo!,
       positionalParamSegments,
-      currentSnapshot,
+      createPreMatchRouteSnapshot(currentSnapshot),
       injector,
     );
 
@@ -408,8 +410,19 @@ export class Recognizer {
     if (this.abortSignal.aborted) {
       throw new Error(this.abortSignal.reason);
     }
+
+    const createSnapshot = (result: MatchResult) =>
+      this.createSnapshot(injector, route, result.consumedSegments, result.parameters, parentRoute);
     const result = await firstValueFrom(
-      matchWithChecks(rawSegment, route, segments, injector, this.urlSerializer, this.abortSignal),
+      matchWithChecks(
+        rawSegment,
+        route,
+        segments,
+        injector,
+        this.urlSerializer,
+        createSnapshot,
+        this.abortSignal,
+      ),
     );
     if (route.path === '**') {
       // Prior versions of the route matching algorithm would stop matching at the wildcard route.
