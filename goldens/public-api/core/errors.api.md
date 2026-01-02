@@ -42,6 +42,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     DUPLICATE_DIRECTIVE = 309,
     // (undocumented)
+    DUPLICATE_NG_MODULE_ID = 921,
+    // (undocumented)
     EXPORT_NOT_FOUND = -301,
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,
@@ -134,6 +136,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MUST_PROVIDE_STREAM_OPTION = 990,
     // (undocumented)
+    NG_MODULE_ID_NOT_FOUND = 920,
+    // (undocumented)
     NO_BINDING_TARGET = 315,
     // (undocumented)
     NO_COMPONENT_FACTORY_FOUND = 917,
@@ -200,7 +204,11 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     VIEW_ALREADY_ATTACHED = 902,
     // (undocumented)
-    VIEW_ALREADY_DESTROYED = 911
+    VIEW_ALREADY_DESTROYED = 911,
+    // (undocumented)
+    VIEW_DESTROYED_INSERT_ERROR = 922,
+    // (undocumented)
+    VIEW_DESTROYED_MOVE_ERROR = 923
 }
 
 // (No @packageDocumentation comment for this package)
