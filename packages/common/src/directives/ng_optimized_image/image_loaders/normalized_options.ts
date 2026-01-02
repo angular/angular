@@ -9,7 +9,7 @@
 /**
  * Converts transform parameter to URL parameter string.
  * @param transform The transform parameter as string or object
- * @param separator The separator between key and value ('_' for Cloudinary, '=' for Cloudflare)
+ * @param separator The separator between key and value ('_' for Cloudinary, '=' for Cloudflare/Imgix , '-' for ImageKit)
  */
 export function normalizeLoaderTransform(
   transform: string | Record<string, string>,
