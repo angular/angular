@@ -83,6 +83,58 @@ describe('Built-in image directive loaders', () => {
       const config = {src: 'img.png', isPlaceholder: true};
       expect(loader(config)).toBe(`${path}/img.png?auto=format&q=20`);
     });
+
+    it('should apply custom transformations when transform is provided as a string', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      expect(loader({src: '/img.png', loaderParams: {transform: 'bri=50,con=20'}})).toBe(
+        `${path}/img.png?auto=format&bri=50&con=20`,
+      );
+    });
+
+    it('should apply custom transformations when transform is provided as an object', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      expect(
+        loader({src: '/img.png', loaderParams: {transform: {bri: '50', con: '20', sat: '-20'}}}),
+      ).toBe(`${path}/img.png?auto=format&bri=50&con=20&sat=-20`);
+    });
+
+    it('should combine width and transform parameters', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      expect(
+        loader({
+          src: 'img.png',
+          width: 400,
+          loaderParams: {transform: {fit: 'crop'}},
+        }),
+      ).toBe(`${path}/img.png?auto=format&w=400&fit=crop`);
+    });
+
+    it('should support additional transformation options via transform object', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      expect(
+        loader({
+          src: 'img.png',
+          loaderParams: {transform: {blur: '50', sharp: '30', usm: '20'}},
+        }),
+      ).toBe(`${path}/img.png?auto=format&blur=50&sharp=30&usm=20`);
+    });
+
+    it('should apply width, placeholder, and transform parameters together', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      expect(
+        loader({
+          src: '/img.png',
+          width: 500,
+          isPlaceholder: true,
+          loaderParams: {transform: {bri: '10', flip: 'hv'}},
+        }),
+      ).toBe(`${path}/img.png?auto=format&w=500&q=20&bri=10&flip=hv`);
+    });
   });
 
   describe('Cloudinary loader', () => {
@@ -227,6 +279,38 @@ describe('Built-in image directive loaders', () => {
 
       config = {src: 'img.png', isPlaceholder: true, width: 30};
       expect(loader(config)).toBe(`${path}/tr:w-30,q-20/img.png`);
+    });
+
+    it('should apply custom transformations when transform is provided as a string', () => {
+      const path = 'https://ik.imageengine.io/imagetest';
+      const loader = createImageKitLoader(path);
+      expect(loader({src: '/img.png', loaderParams: {transform: 'r-max,fo-auto'}})).toBe(
+        `${path}/tr:r-max,fo-auto/img.png`,
+      );
+    });
+
+    it('should support additional transformation options via transform object', () => {
+      const path = 'https://ik.imageengine.io/imagetest';
+      const loader = createImageKitLoader(path);
+      expect(
+        loader({
+          src: 'img.png',
+          loaderParams: {transform: {bl: '10', ar: '16-9', q: '80'}},
+        }),
+      ).toBe(`${path}/tr:bl-10,ar-16-9,q-80/img.png`);
+    });
+
+    it('should apply width, placeholder, and transform parameters together', () => {
+      const path = 'https://ik.imageengine.io/imagetest';
+      const loader = createImageKitLoader(path);
+      expect(
+        loader({
+          src: '/img.png',
+          width: 500,
+          isPlaceholder: true,
+          loaderParams: {transform: {e: 'grayscale'}},
+        }),
+      ).toBe(`${path}/tr:w-500,q-20,e-grayscale/img.png`);
     });
 
     describe('input validation', () => {
