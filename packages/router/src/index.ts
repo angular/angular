@@ -64,6 +64,7 @@ export {
   CanLoad,
   CanMatch,
   Resolve,
+  PartialMatchRouteSnapshot,
 } from './models';
 export {ViewTransitionInfo, ViewTransitionsFeatureOptions} from './utils/view_transition';
 

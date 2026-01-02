@@ -300,32 +300,16 @@ export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 /**
  * The type for the function that can be used to handle redirects when the path matches a `Route` config.
  *
- * The `RedirectFunction` does _not_ have access to the full
- * `ActivatedRouteSnapshot` interface. Some data are not accurately known
- * at the route matching phase. For example, resolvers are not run until
- * later, so any resolved title would not be populated. The same goes for lazy
- * loaded components. This is also true for all the snapshots up to the
- * root, so properties that include parents (root, parent, pathFromRoot)
- * are also excluded. And naturally, the full route matching hasn't yet
- * happened so firstChild and children are not available either.
+ * The `RedirectFunction` does not have access to the full
+ * `ActivatedRouteSnapshot` interface because Route matching has not
+ * yet completed when the function is called. See {@link PartialMatchRouteSnapshot}
+ * for more information.
  *
  * @see {@link Route#redirectTo}
  * @publicApi
  */
 export type RedirectFunction = (
-  redirectData: Pick<
-    ActivatedRouteSnapshot,
-    | 'routeConfig'
-    | 'url'
-    | 'params'
-    | 'queryParams'
-    | 'fragment'
-    | 'data'
-    | 'outlet'
-    | 'title'
-    | 'paramMap'
-    | 'queryParamMap'
-  >,
+  redirectData: PartialMatchRouteSnapshot,
 ) => MaybeAsync<string | UrlTree>;
 
 /**
@@ -1190,6 +1174,32 @@ export interface CanMatch {
  * @see [CanMatch](guide/routing/route-guards#canmatch)
  */
 export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
+
+/**
+ * A subset of the `ActivatedRouteSnapshot` interface that includes only the known data
+ * up to the route matching phase. Some data are not accurately known
+ * at in this phase. For example, resolvers are not run until
+ * later, so any resolved title would not be populated. The same goes for lazy
+ * loaded components. This is also true for all the snapshots up to the
+ * root, so properties that include parents (root, parent, pathFromRoot)
+ * are also excluded. And naturally, the full route matching hasn't yet
+ * happened so firstChild and children are not available either.
+ *
+ * @publicApi
+ */
+export type PartialMatchRouteSnapshot = Pick<
+  ActivatedRouteSnapshot,
+  | 'routeConfig'
+  | 'url'
+  | 'params'
+  | 'queryParams'
+  | 'fragment'
+  | 'data'
+  | 'outlet'
+  | 'title'
+  | 'paramMap'
+  | 'queryParamMap'
+>;
 
 /**
  * @description
