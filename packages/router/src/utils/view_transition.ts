@@ -94,6 +94,11 @@ export function createViewTransition(
     // complete (below), which includes the update phase of the routed components.
     return createRenderPromise(injector);
   });
+  transition.updateCallbackDone.catch((error) => {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      console.error(error);
+    }
+  });
   transition.ready.catch((error) => {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       console.error(error);
