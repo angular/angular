@@ -328,7 +328,7 @@ provideRouter([
         resolve: {
           posts: (route: ActivatedRouteSnapshot) => {
             const postService = inject(PostService);
-            const user = route.data['user'] as User; // parent data
+            const user = route.parent?.data['user'] as User; // parent data
             const userId = user.id;
             return postService.getPostByUser(userId);
           },
