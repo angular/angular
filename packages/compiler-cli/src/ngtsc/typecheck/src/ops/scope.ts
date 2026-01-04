@@ -40,7 +40,7 @@ import {Context} from './context';
 import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
 import {TcbElementOp} from './element';
 import {addParseSpanInfo} from '../diagnostics';
-import {tcbExpression, TcbExpressionOp} from './expression';
+import {tcbExpression, TcbConditionOp, TcbExpressionOp} from './expression';
 import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} from './variables';
 import {TcbComponentContextCompletionOp} from './completions';
 import {LocalSymbol, TcbInvalidReferenceOp, TcbReferenceOp} from './references';
@@ -945,7 +945,7 @@ export class Scope {
 
     // Only the `when` hydration trigger needs to be checked.
     if (block.hydrateTriggers.when) {
-      this.opQueue.push(new TcbExpressionOp(this.tcb, this, block.hydrateTriggers.when.value));
+      this.opQueue.push(new TcbConditionOp(this.tcb, this, block.hydrateTriggers.when.value));
     }
 
     this.appendChildren(block);
@@ -968,7 +968,7 @@ export class Scope {
     triggers: TmplAstDeferredBlockTriggers,
   ): void {
     if (triggers.when !== undefined) {
-      this.opQueue.push(new TcbExpressionOp(this.tcb, this, triggers.when.value));
+      this.opQueue.push(new TcbConditionOp(this.tcb, this, triggers.when.value));
     }
 
     if (triggers.viewport !== undefined && triggers.viewport.options !== null) {
