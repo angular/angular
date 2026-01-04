@@ -75,6 +75,34 @@ export class TcbExpressionOp extends TcbOp {
   }
 }
 
+/**
+ * A `TcbOp` which renders an Angular expression inside a conditional context.
+ * This is used for `@defer` triggers (`when`, `prefetch when`, `hydrate when`)
+ * to enable TypeScript's TS2774 diagnostic for uninvoked functions/signals.
+ *
+ * Executing this operation returns nothing.
+ */
+export class TcbConditionOp extends TcbOp {
+  constructor(
+    private tcb: Context,
+    private scope: Scope,
+    private expression: AST,
+  ) {
+    super();
+  }
+
+  override get optional() {
+    return false;
+  }
+
+  override execute(): null {
+    const expr = tcbExpression(this.expression, this.tcb, this.scope);
+    // Wrap in an if-statement to enable TS2774 for uninvoked signals/functions.
+    this.scope.addStatement(ts.factory.createIfStatement(expr, ts.factory.createBlock([])));
+    return null;
+  }
+}
+
 export class TcbExpressionTranslator {
   constructor(
     protected tcb: Context,
