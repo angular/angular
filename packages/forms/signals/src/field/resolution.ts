@@ -24,7 +24,7 @@ export function getBoundPathDepth() {
  *
  * Consider this example:
  *
- * ```
+ * ```ts
  * const s = schema(p => {
  *   disabled(p.next, ({valueOf}) => valueOf(p.data));
  *   apply(p.next, s);

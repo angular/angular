@@ -23,7 +23,7 @@ let currentCompilingNode: FieldPathNode | undefined = undefined;
  * A cache of all schemas compiled under the current root compilation. This is used to avoid doing
  * extra work when compiling a schema that reuses references to the same sub-schema. For example:
  *
- * ```
+ * ```ts
  * const sub = schema(p => ...);
  * const s = schema(p => {
  *   apply(p.a, sub);

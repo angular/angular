@@ -48,7 +48,7 @@ export interface Predicate {
  *
  * Consider the following example:
  *
- * ```
+ * ```ts
  * const s = schema(p => {
  *   disabled(p.data);
  *   applyWhen(p.next, ({valueOf}) => valueOf(p.data) === 1, s);
