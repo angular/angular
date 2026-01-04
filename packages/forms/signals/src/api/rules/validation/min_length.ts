@@ -32,6 +32,7 @@ import {minLengthError} from './validation_errors';
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @see [Signal Form Min Length Validation](guide/forms/signals/validation#minlength-and-maxlength)
  * @category validation
  * @experimental 21.0.0
  */

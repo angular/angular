@@ -49,7 +49,7 @@ export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind
  * @template TParams The type of parameters to the resource.
  * @template TResult The type of result returned by the resource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
- *
+ * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
  * @category validation
  * @experimental 21.0.0
  */
@@ -106,6 +106,7 @@ export interface AsyncValidatorOptions<
  * @template TResult The type of result returned by the resource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
+ * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
  * @category validation
  * @experimental 21.0.0
  */

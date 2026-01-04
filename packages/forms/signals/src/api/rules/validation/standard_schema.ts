@@ -53,6 +53,7 @@ export type IgnoreUnknownProperties<T> =
  *   or a partial of it.
  * @template TValue The type of value stored in the field being validated.
  *
+ * @see [Signal Form Schema Validation](guide/forms/signals/validation#integration-with-schema-validation-libraries)
  * @category validation
  * @experimental 21.0.0
  */
