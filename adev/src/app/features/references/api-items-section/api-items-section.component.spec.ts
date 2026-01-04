@@ -54,18 +54,18 @@ describe('ApiItemsSection', () => {
     component = fixture.componentInstance;
   });
 
-  it('should render list of all APIs of provided group', () => {
+  it('should render list of all APIs of provided group', async () => {
     fixture.componentRef.setInput('group', fakeGroup);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const apis = fixture.debugElement.queryAll(By.css('.adev-api-items-section-grid li'));
 
     expect(apis.length).toBe(2);
   });
 
-  it('should display deprecated icon for deprecated API', () => {
+  it('should display deprecated icon for deprecated API', async () => {
     fixture.componentRef.setInput('group', fakeGroup);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const deprecatedApiIcons = fixture.debugElement.queryAll(
       By.css('.adev-api-items-section-grid li .adev-item-attribute'),

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {provideZonelessChangeDetection, ApplicationRef} from '@angular/core';
+import {ApplicationRef} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {provideRouter} from '@angular/router';
@@ -75,11 +75,7 @@ describe('SearchHistoryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [
-        provideZonelessChangeDetection(),
-        {provide: LOCAL_STORAGE, useClass: MockLocalStorage},
-        provideRouter([]),
-      ],
+      providers: [{provide: LOCAL_STORAGE, useClass: MockLocalStorage}, provideRouter([])],
     });
 
     fixture = TestBed.createComponent(SearchHistoryComponent);
