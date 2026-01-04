@@ -152,7 +152,7 @@ export type Routes = Route[];
  */
 export type UrlMatchResult = {
   consumed: UrlSegment[];
-  posParams?: {[name: string]: UrlSegment};
+  posParams?: {[name: string]: UrlSegment | UrlSegment[]};
 };
 
 /**
