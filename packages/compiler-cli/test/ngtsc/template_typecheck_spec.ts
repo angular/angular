@@ -4957,6 +4957,66 @@ suppress
         ]);
       });
 
+      it('should check that functions are invoked in `when` trigger', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal} from '@angular/core';
+
+          @Component({
+            template: \`@defer (when flag) {Hello}\`,
+          })
+          export class Main {
+            flag = signal(false);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('always return true');
+      });
+
+      it('should check that functions are invoked in `prefetch when` trigger', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal} from '@angular/core';
+
+          @Component({
+            template: \`@defer (prefetch when flag) {Hello}\`,
+          })
+          export class Main {
+            flag = signal(false);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('always return true');
+      });
+
+      it('should check that functions are invoked in `hydrate when` trigger', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal} from '@angular/core';
+
+          @Component({
+            template: \`@defer (hydrate when flag) {Hello}\`,
+          })
+          export class Main {
+            flag = signal(false);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toContain('always return true');
+      });
+
       it('should report if a deferred trigger reference does not exist', () => {
         env.write(
           'test.ts',
