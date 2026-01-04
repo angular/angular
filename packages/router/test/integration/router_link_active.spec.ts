@@ -305,5 +305,44 @@ export function routerLinkActiveIntegrationSuite() {
       expect(nativeLink.hasAttribute('aria-current')).toEqual(false);
       expect(nativeButton.hasAttribute('aria-current')).toEqual(false);
     });
+
+    it('should use default options when routerLinkActiveOptions is null', async () => {
+      const router: Router = TestBed.inject(Router);
+      const location: Location = TestBed.inject(Location);
+      const fixture = await createRoot(router, RootCmp);
+
+      router.resetConfig([
+        {
+          path: 'team/:id',
+          component: TeamCmp,
+          children: [
+            {
+              path: 'link',
+              component: DummyLinkCmp,
+              children: [
+                {path: 'simple', component: SimpleCmp},
+                {path: '', component: BlankCmp},
+              ],
+            },
+          ],
+        },
+      ]);
+
+      router.navigateByUrl('/team/22/link;exact=true');
+      await advance(fixture);
+      await advance(fixture);
+      expect(location.path()).toEqual('/team/22/link;exact=true');
+
+      const nativeLink = fixture.nativeElement.querySelector('a');
+      const nativeButton = fixture.nativeElement.querySelector('button');
+      expect(nativeLink.className).toEqual('active');
+      expect(nativeButton.className).toEqual('active');
+
+      router.navigateByUrl('/team/22/link/simple');
+      await advance(fixture);
+      expect(location.path()).toEqual('/team/22/link/simple');
+      expect(nativeLink.className).toEqual('');
+      expect(nativeButton.className).toEqual('');
+    });
   });
 }
