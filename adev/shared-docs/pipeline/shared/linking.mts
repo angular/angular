@@ -18,6 +18,8 @@ const LINK_EXEMPT = new Set([
   'readonly',
   'disabled',
   'hidden',
+  'state',
+  'group',
 ]);
 
 export function shouldLinkSymbol(symbol: string): boolean {
