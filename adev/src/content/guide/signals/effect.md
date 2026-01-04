@@ -72,18 +72,18 @@ Angular implicitly defines two implicit behaviors for its effects depending on t
 A "View Effect" is an `effect` created in the context of a component instantiation. This includes effects created by services that are tied to component injectors.<br>
 A "Root Effect" is created in the context of a root provided service instantiation.
 
-The execution of both kind of `effect` are tied to the change detection process.
+The execution of both kinds of `effect` are tied to the change detection process.
 
-- "View effects" are executed _before_ there corresponding component is checked the change detection process.
+- "View effects" are executed _before_ their corresponding component is checked by the change detection process.
 - "Root effects" are executed prior to all components being checked by the change detection process.
 
-In both cases, if at least one of the effect dependency changed during the effect execution, the effect will re-run before moving ahead on the change detection process,
+In both cases, if at least one of the effect dependencies changed during the effect execution, the effect will re-run before moving ahead on the change detection process,
 
 ### Destroying effects
 
 When a component or directive is destroyed, Angular automatically cleans up any associated effects.
 
-An `effect` can be created two different context that will affect when it's destroyed:
+An `effect` can be created in two different contexts that will affect when it's destroyed:
 
 - A "View effect" is destroyed when the component is destroyed.
 - A "Root effect" is destroyed when the application is destroyed.
@@ -128,7 +128,7 @@ export class MyFancyChart {
     // Run a single time to create the chart instance
     afterNextRender({
       write: () => {
-        this.chart = initializeChart(this.nativeElement(), this.charData());
+        this.chart = initializeChart(this.canvas().nativeElement(), this.charData());
       },
     });
 
