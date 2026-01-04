@@ -16,27 +16,23 @@ describe('RouteDetailsRowComponent', () => {
   let fixture: ComponentFixture<RouteDetailsRowComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [RouteDetailsRowComponent],
-    }).compileComponents();
-
     fixture = TestBed.createComponent(RouteDetailsRowComponent);
     component = fixture.componentInstance;
 
     fixture.componentRef.setInput('label', 'Route Title');
     fixture.componentRef.setInput('data', {value: 'Route Data'});
     fixture.componentRef.setInput('dataKey', 'value');
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render a label and text data', () => {
+  it('should render a label and text data', async () => {
     fixture.componentRef.setInput('data', {value: 'Route Data'});
     fixture.componentRef.setInput('dataKey', 'value');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
@@ -46,11 +42,11 @@ describe('RouteDetailsRowComponent', () => {
     expect(dataElements[0].nativeElement.innerText).toEqual('Route Data');
   });
 
-  it('should render a label and flag data true', () => {
+  it('should render a label and flag data true', async () => {
     fixture.componentRef.setInput('type', 'flag');
     fixture.componentRef.setInput('data', {isActive: true});
     fixture.componentRef.setInput('dataKey', 'isActive');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
@@ -60,11 +56,11 @@ describe('RouteDetailsRowComponent', () => {
     expect(dataElements[0].nativeElement.innerText).toEqual('true');
   });
 
-  it('should render a label and flag data false', () => {
+  it('should render a label and flag data false', async () => {
     fixture.componentRef.setInput('type', 'flag');
     fixture.componentRef.setInput('data', {isLazy: false, isRedirect: false});
     fixture.componentRef.setInput('dataKey', 'isLazy');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
@@ -74,12 +70,12 @@ describe('RouteDetailsRowComponent', () => {
     expect(dataElements[0].nativeElement.innerText).toEqual('false');
   });
 
-  it('should render a label with an action button', () => {
+  it('should render a label with an action button', async () => {
     fixture.componentRef.setInput('type', 'chip');
     fixture.componentRef.setInput('data', {name: 'Component Name'});
     fixture.componentRef.setInput('dataKey', 'name');
     fixture.componentRef.setInput('actionBtnType', 'view-source');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
@@ -88,13 +84,13 @@ describe('RouteDetailsRowComponent', () => {
     expect(dataElements.length).toEqual(1);
   });
 
-  it('should render a label with a disabled action button', () => {
+  it('should render a label with a disabled action button', async () => {
     fixture.componentRef.setInput('type', 'chip');
     fixture.componentRef.setInput('data', {name: 'Lazy Component Name'});
     fixture.componentRef.setInput('dataKey', 'name');
     fixture.componentRef.setInput('actionBtnType', 'view-source');
     fixture.componentRef.setInput('actionBtnDisabled', true);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
@@ -104,12 +100,12 @@ describe('RouteDetailsRowComponent', () => {
     expect(dataElements[0].nativeElement.disabled).toEqual(true);
   });
 
-  it('should render a label and list data', () => {
+  it('should render a label and list data', async () => {
     fixture.componentRef.setInput('type', 'list');
     fixture.componentRef.setInput('data', {providers: ['Guard 1', 'Guard 2']});
     fixture.componentRef.setInput('dataKey', 'providers');
     fixture.componentRef.setInput('actionBtnType', 'view-source');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');

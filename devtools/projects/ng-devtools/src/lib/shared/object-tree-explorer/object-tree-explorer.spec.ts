@@ -87,26 +87,26 @@ describe('ObjectTreeExplorerComponent', () => {
   let fixture: ComponentFixture<ObjectTreeExplorerComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ObjectTreeExplorerComponent],
-    }).compileComponents();
-
     fixture = TestBed.createComponent(ObjectTreeExplorerComponent);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('dataSource', mockDataSource);
     fixture.componentRef.setInput('childrenAccessor', (fl: FlatNode) => fl.prop.descriptor.value);
     fixture.componentRef.setInput('editingEnabled', true);
 
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
-  it('should throw an error if treeControl and childrenAccessor are missing', () => {
-    expect(() => {
-      fixture.componentRef.setInput('dataSource', mockDataSource);
-      fixture.componentRef.setInput('childrenAccessor', null);
-      fixture.componentRef.setInput('treeControl', null);
-      fixture.detectChanges();
-    }).toThrowError('The object tree explorer requires a "treeControl" or "childrenAccessor"');
+  it('should throw an error if treeControl and childrenAccessor are missing', async () => {
+    await expectAsync(
+      (async () => {
+        fixture.componentRef.setInput('dataSource', mockDataSource);
+        fixture.componentRef.setInput('childrenAccessor', null);
+        fixture.componentRef.setInput('treeControl', null);
+        await fixture.whenStable();
+      })(),
+    ).toBeRejectedWithError(
+      'The object tree explorer requires a "treeControl" or "childrenAccessor"',
+    );
   });
 
   it('should render property preview if the property is NOT editable', () => {
@@ -135,7 +135,7 @@ describe('ObjectTreeExplorerComponent', () => {
 
   it('should NOT render root nodes names when omitRootNodesNames is provided', async () => {
     fixture.componentRef.setInput('omitRootNodesNames', true);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const nodes = fixture.debugElement.queryAll(By.directive(MatTreeNode));
 
