@@ -1,5 +1,5 @@
 import {bootstrapApplication} from '@angular/platform-browser';
 
-import {CdkDragDropCustomPreviewExample} from './app/app.component';
+import {CdkDragDropCustomPreviewExample} from './app/app';
 
 bootstrapApplication(CdkDragDropCustomPreviewExample);

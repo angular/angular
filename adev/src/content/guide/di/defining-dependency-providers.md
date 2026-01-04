@@ -66,7 +66,7 @@ export const APP_CONFIG = new InjectionToken<AppConfig>('app.config', {
   selector: 'app-header',
   template: `<h1>Version: {{ config.version }}</h1>`,
 })
-export class HeaderComponent {
+export class Header {
   config = inject(APP_CONFIG); // Automatically available
 }
 ```
@@ -167,7 +167,7 @@ export class LocalDataStore {
   providers: [LocalDataStore],
   template: `...`,
 })
-export class ExampleComponent {
+export class Example {
   dataStore = inject(LocalDataStore);
 }
 ```
@@ -191,7 +191,7 @@ export class DataStore {
   providers: [DataStore],
   template: `...`,
 })
-export class IsolatedComponent {
+export class Isolated {
   dataStore = inject(DataStore); // Component-specific instance
 }
 ```
@@ -242,7 +242,7 @@ import { LocalService } from './local-service';
   selector: 'app-example',
   providers: [LocalService]  // Service without providedIn
 })
-export class ExampleComponent { }
+export class Example { }
 ```
 
 This is actually a shorthand for a more detailed provider configuration:
@@ -291,7 +291,7 @@ import { LocalService } from './local-service';
     { provide: LocalService, useClass: LocalService }
   ]
 })
-export class ExampleComponent { /* ... */ }
+export class Example { /* ... */ }
 ```
 
 The class serves as both the identifier and the implementation, which is why Angular provides the shorthand `providers: [LocalService]`.
@@ -323,7 +323,7 @@ import { DATA_SERVICE_TOKEN } from './tokens';
     { provide: DATA_SERVICE_TOKEN, useClass: LocalDataService }
   ]
 })
-export class ExampleComponent {
+export class Example {
   private dataService = inject(DATA_SERVICE_TOKEN);
 }
 ```
@@ -344,7 +344,7 @@ interface DataService {
     {provide: DataService, useClass: LocalDataService}, // Error!
   ],
 })
-export class ExampleComponent {
+export class Example {
   private dataService = inject(DataService); // Error!
 }
 
@@ -354,7 +354,7 @@ export const DATA_SERVICE_TOKEN = new InjectionToken<DataService>('DataService')
 @Component({
   providers: [{provide: DATA_SERVICE_TOKEN, useClass: LocalDataService}],
 })
-export class ExampleComponent {
+export class Example {
   private dataService = inject(DATA_SERVICE_TOKEN); // Works!
 }
 ```
@@ -428,7 +428,7 @@ export class EvenBetterLogger extends Logger {
     {provide: Logger, useClass: EvenBetterLogger},
   ],
 })
-export class ExampleComponent {
+export class Example {
   private logger = inject(Logger); // Gets EvenBetterLogger instance
 }
 ```
@@ -485,7 +485,7 @@ bootstrapApplication(AppComponent, {
   selector: 'app-header',
   template: `<h1>{{ title }}</h1>`,
 })
-export class HeaderComponent {
+export class Header {
   private config = inject(APP_CONFIG);
   title = this.config.appTitle;
 }
@@ -575,7 +575,7 @@ export const apiClientProvider = {
   selector: 'app-dashboard',
   providers: [apiClientProvider],
 })
-export class DashboardComponent {
+export class Dashboard {
   private apiClient = inject(ApiClient);
 }
 ```
@@ -628,7 +628,7 @@ Use application-level providers in `bootstrapApplication` when:
 
 ```ts
 // main.ts
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [
     {provide: API_BASE_URL, useValue: 'https://api.example.com'},
     {provide: INTERCEPTOR_TOKEN, useClass: AuthInterceptor, multi: true},
@@ -676,7 +676,7 @@ Use component or directive providers when:
     { provide: FORM_CONFIG, useValue: { strictMode: true } }
   ]
 })
-export class AdvancedFormComponent { }
+export class AdvancedForm { }
 
 // Modal component with isolated state management
 @Component({
@@ -685,7 +685,7 @@ export class AdvancedFormComponent { }
     ModalStateService  // Each modal manages its own state
   ]
 })
-export class ModalComponent { }
+export class Modal { }
 ```
 
 **Benefits:**
@@ -771,7 +771,7 @@ export function provideAnalytics(config: AnalyticsConfig): Provider[] {
 
 // Usage in consumer app
 // main.ts
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [
     provideAnalytics({
       trackingId: 'GA-12345',
@@ -881,7 +881,7 @@ export function withRetry(config: RetryConfig): HttpFeature {
 }
 
 // Consumer usage with multiple features
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [
     provideHttpClient(
       {baseUrl: 'https://api.example.com'},
