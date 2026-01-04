@@ -87,7 +87,11 @@ export class CustomerComponent {
 }
 ```
 
-Using `'always'` ensures matrix parameters, route data, and resolved values are available further down the route tree—handy when you share contextual identifiers across feature areas such as `/org/:orgId/projects/:projectId/customers/:customerId`.
+Using `'always'` ensures matrix parameters, route data, and resolved values are available further down the route tree—handy when you share contextual identifiers across feature areas such as:
+
+```text {hideCopy}
+/org/:orgId/projects/:projectId/customers/:customerId
+```
 
 ```ts
 @Component({
