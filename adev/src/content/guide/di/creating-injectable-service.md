@@ -108,20 +108,20 @@ For clarity and maintainability, it is recommended that you define components an
 
 To inject a service as a dependency into a component, you can declare a class field representing the dependency and use Angular's [`inject`](/api/core/inject) function to initialize it.
 
-The following example specifies the `HeroService` in the `HeroListComponent`.
+The following example specifies the `HeroService` in the `HeroList`.
 The type of `heroService` is `HeroService`.
 
 ```ts
 import {inject} from '@angular/core';
 
-export class HeroListComponent {
+export class HeroList {
   private heroService = inject(HeroService);
 }
 ```
 
 It is also possible to inject a service into a component using the component's constructor:
 
-```ts {header: 'hero-list.component.ts (constructor signature)'}
+```ts {header: 'hero-list.ts (constructor signature)'}
   constructor(private heroService: HeroService)
 ```
 

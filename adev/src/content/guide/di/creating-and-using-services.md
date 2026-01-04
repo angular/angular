@@ -65,7 +65,7 @@ import { BasicDataStore } from './basic-data-store';
     </div>
   `
 })
-export class ExampleComponent {
+export class Example {
   dataStore = inject(BasicDataStore);
 }
 ```

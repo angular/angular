@@ -1,5 +1,5 @@
 import {bootstrapApplication} from '@angular/platform-browser';
 
-import {CdkDragDropConnectedSortingExample} from './app/app.component';
+import {CdkDragDropConnectedSortingExample} from './app/app';
 
 bootstrapApplication(CdkDragDropConnectedSortingExample);

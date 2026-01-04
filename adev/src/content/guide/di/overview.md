@@ -79,7 +79,7 @@ import { AnalyticsLogger } from './analytics-logger';
     <a href="#" (click)="navigateToDetail($event)">Detail Page</a>
   `,
 })
-export class NavbarComponent {
+export class Navbar {
   private router = inject(Router);
   private analytics = inject(AnalyticsLogger);
 
