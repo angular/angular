@@ -81,13 +81,9 @@ describe('Animation', () => {
   const layerObjects = new Map<string, HTMLElement>();
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AnimationHost],
-    });
-
     fixture = TestBed.createComponent(AnimationHost);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
     animation = component.animation;
 
     // Store all layer objects in a map for easier access.

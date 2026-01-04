@@ -9,21 +9,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TabGroup} from './tab-group.component';
-import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('TabGroup', () => {
   let fixture: ComponentFixture<TabGroup>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     fixture = TestBed.createComponent(TabGroup);
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
-  it('should update tabs and tabpanels', () => {
+  it('should update tabs and tabpanels', async () => {
     const testPanel = document.createElement('div');
     testPanel.textContent = 'panel 1';
     fixture.componentRef.setInput('tabs', [{label: 'tab 1', panel: testPanel}]);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const tabs = fixture.nativeElement.querySelectorAll('.docs-tab');
     const tabpanels = fixture.nativeElement.querySelectorAll('.docs-tab-panel');

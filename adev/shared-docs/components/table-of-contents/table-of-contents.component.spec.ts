@@ -12,7 +12,6 @@ import {provideRouter} from '@angular/router';
 import {TableOfContentsItem, TableOfContentsLevel} from '../../interfaces/index';
 import {TableOfContentsLoader} from '../../services/index';
 import {WINDOW} from '../../providers/index';
-import {provideZonelessChangeDetection, signal} from '@angular/core';
 
 describe('TableOfContents', () => {
   let component: TableOfContents;
@@ -40,11 +39,10 @@ describe('TableOfContents', () => {
   };
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [TableOfContents],
       providers: [
         provideRouter([]),
-        provideZonelessChangeDetection(),
         {
           provide: WINDOW,
           useValue: fakeWindow,
@@ -59,7 +57,7 @@ describe('TableOfContents', () => {
     fixture.componentRef.setInput('contentSourceElement', document.createElement('div'));
 
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -69,8 +67,6 @@ describe('TableOfContents', () => {
   it('should call scrollToTop when user click on Back to the top button', () => {
     const spy = spyOn(component, 'scrollToTop');
 
-    fixture.detectChanges();
-
     const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
     button.click();
 
@@ -78,8 +74,6 @@ describe('TableOfContents', () => {
   });
 
   it('should render items when tableOfContentItems has value', () => {
-    fixture.detectChanges();
-
     const renderedItems = fixture.nativeElement.querySelectorAll('li');
 
     expect(renderedItems.length).toBe(3);
@@ -87,8 +81,6 @@ describe('TableOfContents', () => {
   });
 
   it('should append level class to element', () => {
-    fixture.detectChanges();
-
     const h2Items = fixture.nativeElement.querySelectorAll('li.docs-toc-item-h2');
     const h3Items = fixture.nativeElement.querySelectorAll('li.docs-toc-item-h3');
 
@@ -97,8 +89,6 @@ describe('TableOfContents', () => {
   });
 
   it('should append active class when item is active', () => {
-    fixture.detectChanges();
-
     const activeItem = fixture.nativeElement.querySelector('.docs-faceted-list-item-active');
     expect(activeItem).toBeDefined();
   });
