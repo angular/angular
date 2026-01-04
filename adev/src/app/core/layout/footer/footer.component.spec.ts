@@ -21,7 +21,7 @@ describe('Footer', () => {
     },
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [Footer],
       providers: [
@@ -34,7 +34,7 @@ describe('Footer', () => {
     });
     fixture = TestBed.createComponent(Footer);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

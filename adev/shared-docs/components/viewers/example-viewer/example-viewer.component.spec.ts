@@ -10,7 +10,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ExampleViewer} from './example-viewer.component';
 import {ExampleMetadata, ExampleViewerContentLoader} from '../../../interfaces';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
-import {Component, provideZonelessChangeDetection, ComponentRef, signal} from '@angular/core';
+import {Component, ComponentRef, signal} from '@angular/core';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Clipboard} from '@angular/cdk/clipboard';
@@ -32,10 +32,9 @@ describe('ExampleViewer', () => {
   });
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [ExampleViewer],
       providers: [
-        provideZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: ActivatedRoute, useValue: {snapshot: {fragment: 'fragment'}}},
       ],
@@ -44,7 +43,7 @@ describe('ExampleViewer', () => {
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
     loader = TestbedHarnessEnvironment.loader(fixture);
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should set file extensions as tab names when all files have different extension', async () => {
@@ -131,7 +130,7 @@ describe('ExampleViewer', () => {
     );
 
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const hiddenLine = fixture.debugElement.query(By.css('div[class="line hidden"]'));
     expect(hiddenLine).toBeTruthy();
@@ -155,13 +154,13 @@ describe('ExampleViewer', () => {
     );
 
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const expandButton = fixture.debugElement.query(
       By.css('button[aria-label="Expand code example"]'),
     );
     expandButton.nativeElement.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const hiddenLine = fixture.debugElement.query(By.css('div[class="line hidden"]'));
     expect(hiddenLine).toBeNull();
@@ -191,7 +190,7 @@ describe('ExampleViewer', () => {
     );
     componentRef.setInput('githubUrl', 'https://github.com/');
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const githubButton = fixture.debugElement.query(
       By.css('a[aria-label="Open example on GitHub"]'),
@@ -212,7 +211,7 @@ describe('ExampleViewer', () => {
     componentRef.setInput('stackblitzUrl', 'https://stackblitz.com/');
 
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const stackblitzButton = fixture.debugElement.query(
       By.css('a[aria-label="Edit example in StackBlitz"]'),
@@ -261,7 +260,7 @@ describe('ExampleViewer', () => {
   it('should call clipboard service when clicked on copy example link', async () => {
     componentRef.setInput('metadata', getMetadata());
     component.expanded.set(true);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const clipboardService = TestBed.inject(Clipboard);
     const spy = spyOn(clipboardService, 'copy');
@@ -283,7 +282,7 @@ describe('ExampleViewer', () => {
     );
 
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     // Initially, the code should be hidden.
     expect(component.showCode()).toBeFalse();
@@ -295,7 +294,7 @@ describe('ExampleViewer', () => {
     componentRef.setInput('metadata', getMetadata());
 
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     // Initially, the code should be visible.
     expect(component.showCode()).toBeTrue();
@@ -304,14 +303,14 @@ describe('ExampleViewer', () => {
 
     const codeToggleButton = fixture.debugElement.query(By.css('.docs-example-code-toggle'));
     codeToggleButton.nativeElement.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(component.showCode()).toBeFalse();
     codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
     expect(codeContainer).toBeNull();
 
     codeToggleButton.nativeElement.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(component.showCode()).toBeTrue();
     codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
@@ -328,7 +327,7 @@ describe('ExampleViewer', () => {
       }),
     );
     await component.renderExample();
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(component.exampleComponent).toBeDefined();
 
     const previewContainer = fixture.debugElement.query(By.css('.docs-example-viewer-preview'));

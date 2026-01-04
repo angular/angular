@@ -12,7 +12,7 @@ import {NavigationList} from './navigation-list.component';
 import {By} from '@angular/platform-browser';
 import {NavigationItem} from '../../interfaces';
 import {provideRouter} from '@angular/router';
-import {provideZonelessChangeDetection, signal} from '@angular/core';
+import {signal} from '@angular/core';
 import {NavigationState} from '../../services';
 
 const navigationItems: NavigationItem[] = [
@@ -38,11 +38,7 @@ describe('NavigationList', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [NavigationList],
-      providers: [
-        provideRouter([]),
-        {provide: NavigationState, useClass: FakeNavigationListState},
-        provideZonelessChangeDetection(),
-      ],
+      providers: [provideRouter([]), {provide: NavigationState, useClass: FakeNavigationListState}],
     });
     fixture = TestBed.createComponent(NavigationList);
     fixture.componentRef.setInput('navigationItems', []);
@@ -50,9 +46,9 @@ describe('NavigationList', () => {
     component = fixture.componentInstance;
   });
 
-  it('should display provided navigation structure', () => {
+  it('should display provided navigation structure', async () => {
     fixture.componentRef.setInput('navigationItems', [...navigationItems]);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const links = fixture.debugElement.queryAll(By.css('a'));
     const nonClickableItem = fixture.debugElement.queryAll(By.css('.docs-secondary-nav-header'));
@@ -61,28 +57,28 @@ describe('NavigationList', () => {
     expect(nonClickableItem.length).toBe(1);
   });
 
-  it('should append `docs-navigation-list-dropdown` when isDropdownView is true', () => {
+  it('should append `docs-navigation-list-dropdown` when isDropdownView is true', async () => {
     fixture.componentRef.setInput('isDropdownView', true);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const ulElement = fixture.debugElement.query(By.css('ul.docs-navigation-list-dropdown'));
 
     expect(ulElement).toBeTruthy();
   });
 
-  it('should not append `docs-navigation-list-dropdown` when isDropdownView is false', () => {
+  it('should not append `docs-navigation-list-dropdown` when isDropdownView is false', async () => {
     fixture.componentRef.setInput('isDropdownView', false);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const ulElement = fixture.debugElement.query(By.css('ul.docs-navigation-list-dropdown'));
 
     expect(ulElement).toBeFalsy();
   });
 
-  it('should emit linkClicked when user clicked on link', () => {
+  it('should emit linkClicked when user clicked on link', async () => {
     const emitClickOnLinkSpy = spyOn(component, 'emitClickOnLink');
     fixture.componentRef.setInput('navigationItems', [...navigationItems]);
-    fixture.detectChanges(true);
+    await fixture.whenStable();
 
     const guideLink = fixture.debugElement.query(By.css('a[href="/guide"]'));
     guideLink.nativeElement.click();
@@ -122,10 +118,10 @@ describe('NavigationList', () => {
     expect(toggleItemSpy).toHaveBeenCalledOnceWith(itemToToggle);
   });
 
-  it('should display only items to provided level (Level 1)', () => {
+  it('should display only items to provided level (Level 1)', async () => {
     fixture.componentRef.setInput('navigationItems', [...navigationItems]);
     fixture.componentRef.setInput('displayItemsToLevel', 1);
-    fixture.detectChanges(true);
+    await fixture.whenStable();
 
     const items = fixture.debugElement.queryAll(By.css('li.docs-faceted-list-item'));
 
@@ -134,10 +130,10 @@ describe('NavigationList', () => {
     expect(items[1].nativeElement.innerText).toBe(navigationItems[1].label);
   });
 
-  it('should display all items (Level 2)', () => {
+  it('should display all items (Level 2)', async () => {
     fixture.componentRef.setInput('navigationItems', [...navigationItems]);
     fixture.componentRef.setInput('displayItemsToLevel', 2);
-    fixture.detectChanges(true);
+    await fixture.whenStable();
 
     const items = fixture.debugElement.queryAll(By.css('li.docs-faceted-list-item'));
 
