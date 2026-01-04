@@ -25,6 +25,7 @@ import {maxError} from './validation_errors';
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @see [Signal Form Max Validation](guide/forms/signals/validation#min-and-max)
  * @category validation
  * @experimental 21.0.0
  */

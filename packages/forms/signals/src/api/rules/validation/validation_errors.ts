@@ -306,6 +306,8 @@ export function customError<E extends Partial<ValidationError.WithField>>(
  * It's also used by the creation functions to create an instance
  * (e.g. `requiredError`, `minError`, etc.).
  *
+ * @see [Signal Form Validation](guide/forms/signals/validation)
+ * @see [Signal Form Validation Errors](guide/forms/signals/validation#validation-errors)
  * @category validation
  * @experimental 21.0.0
  */

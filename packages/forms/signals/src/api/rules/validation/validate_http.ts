@@ -74,6 +74,7 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
  * @template TResult The type of result returned by the httpResource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
+ * @see [Signal Form Async Validation](guide/forms/signals/validation#async-validation)
  * @category validation
  * @experimental 21.0.0
  */
