@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ApplicationConfig,
-  provideZonelessChangeDetection,
-  provideAppInitializer,
-} from '@angular/core';
+import {ApplicationConfig, provideAppInitializer} from '@angular/core';
 import {provideRouter} from '@angular/router';
 import {
   ApplicationEnvironment,
@@ -21,12 +17,9 @@ import {
 import {DemoApplicationEnvironment} from '../demo-application-environment';
 import {DemoApplicationOperations} from '../demo-application-operations';
 import {serializeTransferState} from './transfer-state';
-import {provideHttpClient} from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZonelessChangeDetection(),
-    provideHttpClient(),
     provideRouter([
       {
         path: '',

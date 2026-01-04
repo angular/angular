@@ -17,16 +17,12 @@ describe('ResolutionPath', () => {
   let fixture: ComponentFixture<ResolutionPathComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ResolutionPathComponent],
-    }).compileComponents();
-
     fixture = TestBed.createComponent(ResolutionPathComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
-  it('should render a proper path in a reverse order', () => {
+  it('should render a proper path in a reverse order', async () => {
     const dummyPath = [
       {
         name: 'Root',
@@ -47,7 +43,7 @@ describe('ResolutionPath', () => {
     ] as SerializedInjector[];
 
     fixture.componentRef.setInput('path', dummyPath);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const nodeElements = fixture.debugElement.queryAll(By.css('.node'));
     expect(nodeElements.length).toEqual(dummyPath.length);
