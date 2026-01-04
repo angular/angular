@@ -130,7 +130,7 @@ function controlBinding(binding: BindingInternal, tNode: TNode): ControlBinding 
  * In this example we create an instance of the `MyButton` component and bind the value of
  * the `isDisabled` signal to its `disabled` input.
  *
- * ```
+ * ```ts
  * const isDisabled = signal(false);
  *
  * createComponent(MyButton, {
@@ -177,7 +177,7 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
  * In this example we create an instance of the `MyCheckbox` component and listen
  * to its `onChange` event.
  *
- * ```
+ * ```ts
  * interface CheckboxChange {
  *   value: string;
  * }
@@ -217,7 +217,7 @@ export function outputBinding<T>(eventName: string, listener: (event: T) => unkn
  * In this example we create an instance of the `MyCheckbox` component and bind to its `value`
  * input using a two-way binding.
  *
- * ```
+ * ```ts
  * const checkboxValue = signal('');
  *
  * createComponent(MyCheckbox, {

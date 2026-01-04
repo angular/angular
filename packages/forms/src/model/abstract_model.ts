@@ -867,7 +867,7 @@ export abstract class AbstractControl<
    *
    * ### Reference to a ValidatorFn
    *
-   * ```
+   * ```ts
    * // Reference to the RequiredValidator
    * const ctrl = new FormControl<string | null>('', Validators.required);
    * ctrl.removeValidators(Validators.required);
@@ -913,7 +913,7 @@ export abstract class AbstractControl<
    *
    * ### Reference to a ValidatorFn
    *
-   * ```
+   * ```ts
    * // Reference to the RequiredValidator
    * const ctrl = new FormControl<number | null>(0, Validators.required);
    * expect(ctrl.hasValidator(Validators.required)).toEqual(true)
