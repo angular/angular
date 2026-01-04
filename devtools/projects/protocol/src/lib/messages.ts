@@ -122,7 +122,7 @@ export interface SerializedInjector {
 
 export interface SerializedProviderRecord {
   token: string;
-  type: 'type' | 'existing' | 'class' | 'value' | 'factory' | 'multi';
+  type: 'type' | 'existing' | 'class' | 'value' | 'factory' | 'multi' | 'internal';
   multi: boolean;
   isViewProvider: boolean;
   index?: number | number[];

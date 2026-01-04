@@ -60,6 +60,15 @@ export function getInjectorId() {
   return `${injectorId++}`;
 }
 
+const INTERNAL_TOKENS = [
+  'ElementRef',
+  'Renderer2',
+  'ViewContainerRef',
+  'DestroyRef',
+  'ChangeDetectorRef',
+  'Injector',
+];
+
 export function getInjectorMetadata(
   injector: Injector,
 ): ReturnType<NonNullable<ReturnType<typeof ngDebugClient>['ɵgetInjectorMetadata']>> {
@@ -468,7 +477,7 @@ export function serializeProviderRecord(
   index: number,
   hasImportPath = false,
 ): SerializedProviderRecord {
-  let type: 'type' | 'class' | 'value' | 'factory' | 'existing' = 'type';
+  let type: 'type' | 'class' | 'value' | 'factory' | 'existing' | 'internal' = 'type';
   let multi = false;
 
   if (typeof providerRecord.provider === 'object') {
@@ -484,6 +493,10 @@ export function serializeProviderRecord(
 
     if (providerRecord.provider.multi !== undefined) {
       multi = providerRecord.provider.multi;
+    }
+  } else if (typeof providerRecord.provider === 'function') {
+    if (INTERNAL_TOKENS.includes((providerRecord.token as Type<any>).name)) {
+      type = 'internal';
     }
   }
 
