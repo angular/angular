@@ -60,6 +60,10 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     HOST_DIRECTIVE_UNRESOLVABLE = 307,
     // (undocumented)
+    HTML_SANITIZATION_CLOBBERED = 925,
+    // (undocumented)
+    HTML_SANITIZATION_UNSTABLE = 924,
+    // (undocumented)
     HYDRATION_MISSING_NODE = -502,
     // (undocumented)
     HYDRATION_MISSING_SIBLINGS = -501,
@@ -175,6 +179,8 @@ export const enum RuntimeErrorCode {
     RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 980,
     // (undocumented)
     RUNTIME_DEPS_ORPHAN_COMPONENT = 981,
+    // (undocumented)
+    SANITIZATION_BYPASS_TYPE_MISMATCH = 926,
     // (undocumented)
     SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
     // (undocumented)

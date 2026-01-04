@@ -255,8 +255,12 @@ describe('HTML sanitizer', () => {
     if (isBrowser) {
       // Running in a real browser
       const errorMsg = 'Failed to sanitize html because the element is clobbered: ';
-      expect(nextSibling).toThrowError(`${errorMsg}<input name="nextSibling" form="a">`);
-      expect(firstChild).toThrowError(`${errorMsg}<object form="a" id="firstChild"></object>`);
+      expect(nextSibling).toThrowError(
+        /Failed to sanitize html because the element is clobbered: <input name="nextSibling" form="a">/,
+      );
+      expect(firstChild).toThrowError(
+        /Failed to sanitize html because the element is clobbered: <object form="a" id="firstChild"><\/object>/,
+      );
     } else {
       // Running in Node, using Domino DOM emulation
       expect(nextSibling()).toBe('A');
