@@ -8,16 +8,16 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
+import {Location} from '@angular/common';
+import {signal} from '@angular/core';
+import {TextField} from '@angular/docs';
+import {By} from '@angular/platform-browser';
+import {provideRouter} from '@angular/router';
+import {RouterTestingHarness} from '@angular/router/testing';
+import {ApiItem} from '../interfaces/api-item';
+import {ApiItemType} from '../interfaces/api-item-type';
 import ApiReferenceList, {ALL_TYPES_KEY, STATUSES} from './api-reference-list.component';
 import {ApiReferenceManager} from './api-reference-manager.service';
-import {signal} from '@angular/core';
-import {ApiItemType} from '../interfaces/api-item-type';
-import {RouterTestingHarness} from '@angular/router/testing';
-import {provideRouter} from '@angular/router';
-import {Location} from '@angular/common';
-import {By} from '@angular/platform-browser';
-import {TextField} from '@angular/docs';
-import {ApiItem} from '../interfaces/api-item';
 
 describe('ApiReferenceList', () => {
   let component: ApiReferenceList;
@@ -114,7 +114,7 @@ describe('ApiReferenceList', () => {
     fixture.componentRef.setInput('query', 'Item1');
     await fixture.whenStable();
 
-    expect(component.filteredGroups()![0].items).toEqual([fakeItem1]);
+    expect(component.filteredGroups()[0].items).toEqual([fakeItem1]);
   });
 
   it('should display items which match the query by group title', async () => {
@@ -122,33 +122,33 @@ describe('ApiReferenceList', () => {
     await fixture.whenStable();
 
     // Should find all items whose group title contains the query
-    expect(component.filteredGroups()![0].items.length).toBeGreaterThan(0);
-    expect(component.filteredGroups()![0].items).toContain(fakeItem1);
+    expect(component.filteredGroups()[0].items.length).toBeGreaterThan(0);
+    expect(component.filteredGroups()[0].items).toContain(fakeItem1);
   });
 
   it('should display only class items when user selects Class in the Type select', async () => {
     fixture.componentRef.setInput('type', ApiItemType.CLASS);
     await fixture.whenStable();
 
-    expect(component.type()).toEqual(ApiItemType.CLASS);
-    expect(component.filteredGroups()![0].items).toEqual([fakeItem2]);
+    expect(component.form.type().value()).toEqual(ApiItemType.CLASS);
+    expect(component.filteredGroups()[0].items).toEqual([fakeItem2]);
   });
 
   it('should set selected type when provided type is different than selected', async () => {
-    expect(component.type()).toBe(ALL_TYPES_KEY);
+    expect(component.form.type().value()).toBe(ALL_TYPES_KEY);
     component.setItemType(ApiItemType.BLOCK);
     await RouterTestingHarness.create(`/api?type=${ApiItemType.BLOCK}`);
-    expect(component.type()).toBe(ApiItemType.BLOCK);
+    expect(component.form.type().value()).toBe(ApiItemType.BLOCK);
   });
 
   it('should reset selected type when provided type is equal to selected', async () => {
     component.setItemType(ApiItemType.BLOCK);
     const harness = await RouterTestingHarness.create(`/api?type=${ApiItemType.BLOCK}`);
-    expect(component.type()).toBe(ApiItemType.BLOCK);
+    expect(component.form.type().value()).toBe(ApiItemType.BLOCK);
 
     component.setItemType(ApiItemType.BLOCK);
     harness.navigateByUrl(`/api`);
-    expect(component.type()).toBe(ALL_TYPES_KEY);
+    expect(component.form.type().value()).toBe(ALL_TYPES_KEY);
   });
 
   it('should set the value of the queryParam equal to the query text field', async () => {
@@ -164,15 +164,15 @@ describe('ApiReferenceList', () => {
     const location = TestBed.inject(Location);
 
     const textField = fixture.debugElement.query(By.directive(TextField));
-    (textField.componentInstance as TextField).setValue('item1');
+    fixture.componentInstance.form.query().value.set('item1');
     await fixture.whenStable();
     expect(location.path()).toBe(`?query=item1`);
 
-    component.setItemType(ApiItemType.BLOCK);
+    fixture.componentInstance.form.type().value.set(ApiItemType.BLOCK);
     await fixture.whenStable();
     expect(location.path()).toBe(`?query=item1&type=${ApiItemType.BLOCK}`);
 
-    fixture.componentRef.setInput('status', STATUSES.experimental);
+    fixture.componentInstance.form.status().value.set(STATUSES.experimental);
     await fixture.whenStable();
     expect(location.path()).toBe(
       `?query=item1&type=${ApiItemType.BLOCK}&status=${STATUSES.experimental}`,

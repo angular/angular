@@ -31,27 +31,14 @@ describe('SlideToggle', () => {
     expect(component['checked']()).toBeTrue();
   });
 
-  it('should call onChange and onTouched when toggled', () => {
-    const onChangeSpy = jasmine.createSpy('onChangeSpy');
-    const onTouchedSpy = jasmine.createSpy('onTouchedSpy');
-    component.registerOnChange(onChangeSpy);
-    component.registerOnTouched(onTouchedSpy);
-
-    component.toggle();
-
-    expect(onChangeSpy).toHaveBeenCalled();
-    expect(onChangeSpy).toHaveBeenCalledWith(true);
-    expect(onTouchedSpy).toHaveBeenCalled();
-  });
-
-  it('should set active class for button when is checked', async () => {
-    component.writeValue(true);
-    await fixture.whenStable();
+  it('should set active class for button when is checked', () => {
+    component.checked.set(true);
+    fixture.detectChanges();
     const buttonElement: HTMLButtonElement = fixture.nativeElement.querySelector('input');
     expect(buttonElement.classList.contains('docs-toggle-active')).toBeTrue();
 
-    component.writeValue(false);
-    await fixture.whenStable();
+    component.checked.set(false);
+    fixture.detectChanges();
     expect(buttonElement.classList.contains('docs-toggle-active')).toBeFalse();
   });
 });
