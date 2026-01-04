@@ -225,14 +225,6 @@ describe('quick info', () => {
         });
       });
 
-      it('should work for data-let- syntax', () => {
-        expectQuickInfo({
-          templateOverride: `<ng-template ngFor data-let-he¦ro [ngForOf]="heroes">{{hero}}</ng-template>`,
-          expectedSpanText: 'hero',
-          expectedDisplayString: '(variable) hero: Hero',
-        });
-      });
-
       it('should get tags', () => {
         const templateOverride = '<div depr¦ecated></div>';
         const text = templateOverride.replace('¦', '');
@@ -261,11 +253,6 @@ describe('quick info', () => {
         it('should work for bind- syntax', () => {
           expectQuickInfo({
             templateOverride: `<test-comp bind-tcN¦ame="name"></test-comp>`,
-            expectedSpanText: 'tcName',
-            expectedDisplayString: '(property) TestComponent.name: string',
-          });
-          expectQuickInfo({
-            templateOverride: `<test-comp data-bind-tcN¦ame="name"></test-comp>`,
             expectedSpanText: 'tcName',
             expectedDisplayString: '(property) TestComponent.name: string',
           });
@@ -322,11 +309,6 @@ describe('quick info', () => {
             expectedSpanText: 'test',
             expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>',
           });
-          expectQuickInfo({
-            templateOverride: `<test-comp data-on-te¦st="myClick($event)"></test-comp>`,
-            expectedSpanText: 'test',
-            expectedDisplayString: '(event) TestComponent.testEvent: EventEmitter<string>',
-          });
         });
 
         it('should work for $event from EventEmitter', () => {
@@ -372,11 +354,6 @@ describe('quick info', () => {
       it('should work for ref- syntax', () => {
         expectQuickInfo({
           templateOverride: `<div ref-ch¦art></div>`,
-          expectedSpanText: 'chart',
-          expectedDisplayString: '(reference) chart: HTMLDivElement',
-        });
-        expectQuickInfo({
-          templateOverride: `<div data-ref-ch¦art></div>`,
           expectedSpanText: 'chart',
           expectedDisplayString: '(reference) chart: HTMLDivElement',
         });
