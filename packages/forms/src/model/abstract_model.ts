@@ -865,8 +865,6 @@ export abstract class AbstractControl<
    *
    * @usageNotes
    *
-   * ### Reference to a ValidatorFn
-   *
    * ```ts
    * // Reference to the RequiredValidator
    * const ctrl = new FormControl<string | null>('', Validators.required);
@@ -910,8 +908,6 @@ export abstract class AbstractControl<
    * validator must be a reference to the exact same function that was provided.
    *
    * @usageNotes
-   *
-   * ### Reference to a ValidatorFn
    *
    * ```ts
    * // Reference to the RequiredValidator
