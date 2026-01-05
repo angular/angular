@@ -23,7 +23,7 @@ importers:
     dependencies:
       '@angular-devkit/build-angular':
         specifier: 21.1.0-next.3
-        version: 21.1.0-next.3(d1710e0d0e8cf242583d7fc41fedc081)
+        version: 21.1.0-next.3(d69bf3f8e82771b7967badb6c9a70ef6)
       '@angular-devkit/core':
         specifier: 21.1.0-next.3
         version: 21.1.0-next.3(chokidar@5.0.0)
@@ -38,7 +38,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 21.1.0-next.3
-        version: 21.1.0-next.3(7a343c4ed3044b896c8b12ba9f0ebe75)
+        version: 21.1.0-next.3(a0c9cce645ba43ab004311676d5ec528)
       '@angular/cdk':
         specifier: 21.1.0-next.3
         version: 21.1.0-next.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -236,7 +236,7 @@ importers:
         version: 2.5.2
       karma:
         specifier: ~6.4.0
-        version: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+        version: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       karma-chrome-launcher:
         specifier: ^3.1.0
         version: 3.2.0
@@ -245,10 +245,10 @@ importers:
         version: 2.1.3
       karma-jasmine:
         specifier: ^5.0.0
-        version: 5.1.0(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))
+        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       karma-requirejs:
         specifier: ^1.1.0
-        version: 1.1.0(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))
+        version: 1.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       karma-sourcemap-loader:
         specifier: ^0.4.0
         version: 0.4.0
@@ -284,7 +284,7 @@ importers:
         version: 3.5.0
       selenium-webdriver4:
         specifier: npm:selenium-webdriver@4.39.0
-        version: selenium-webdriver@4.39.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+        version: selenium-webdriver@4.39.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       semver-dsl:
         specifier: ^1.0.1
         version: 1.0.1
@@ -326,7 +326,7 @@ importers:
         version: 2.0.1
       ws:
         specifier: ^8.15.0
-        version: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+        version: 8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       xhr2:
         specifier: 0.2.1
         version: 0.2.1
@@ -347,8 +347,8 @@ importers:
         specifier: 0.2101.0-next.3
         version: 0.2101.0-next.3(chokidar@5.0.0)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#82943a3f90fe02629e4ea1846ced3f3adfb74c6b
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/82943a3f90fe02629e4ea1846ced3f3adfb74c6b(@modelcontextprotocol/sdk@1.25.0)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#db25c6de468ee66edda4705a005535283251f173
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/db25c6de468ee66edda4705a005535283251f173(@modelcontextprotocol/sdk@1.25.0)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.5)
@@ -408,7 +408,7 @@ importers:
         version: 15.8.1
       firebase-tools:
         specifier: ^15.0.0
-        version: 15.0.0(@types/node@20.19.25)(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.5)
+        version: 15.0.0(@types/node@20.19.25)(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.6)
       get-tsconfig:
         specifier: ^4.10.1
         version: 4.13.0
@@ -426,10 +426,10 @@ importers:
         version: 2.2.1
       karma-jasmine-html-reporter:
         specifier: ^2.1.0
-        version: 2.1.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)))(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))
+        version: 2.1.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       karma-sauce-launcher:
         specifier: ^4.3.6
-        version: 4.3.6(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.5)
+        version: 4.3.6(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.6)
       prettier:
         specifier: ^3.0.0
         version: 3.6.2
@@ -489,7 +489,7 @@ importers:
         version: 21.1.0-next.3(@angular/cdk@21.1.0-next.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 21.1.0-next.3
-        version: 21.1.0-next.3(4308d8b283b909a9614df8a841cbc126)
+        version: 21.1.0-next.3(c4a9dbb3caecee9b10e2dc29ddff4c0d)
       '@angular/cdk':
         specifier: 21.1.0-next.3
         version: 21.1.0-next.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -639,7 +639,7 @@ importers:
         version: 5.13.0
       jsdom:
         specifier: 27.4.0
-        version: 27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5)
+        version: 27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6)
       karma-chrome-launcher:
         specifier: 3.2.0
         version: 3.2.0
@@ -648,10 +648,10 @@ importers:
         version: 2.2.1
       karma-jasmine:
         specifier: 5.1.0
-        version: 5.1.0(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))
+        version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       karma-jasmine-html-reporter:
         specifier: 2.1.0
-        version: 2.1.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)))(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))
+        version: 2.1.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       marked:
         specifier: 17.0.1
         version: 17.0.1
@@ -703,7 +703,7 @@ importers:
         version: 10.4.23(postcss@8.5.6)
       karma:
         specifier: ~6.4.4
-        version: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+        version: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       postcss:
         specifier: 8.5.6
         version: 8.5.6
@@ -742,7 +742,7 @@ importers:
         version: 0.8.2
       jsdom:
         specifier: ~27.4.0
-        version: 27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5)
+        version: 27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6)
       marked:
         specifier: ~17.0.0
         version: 17.0.0
@@ -803,7 +803,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: 21.1.0-next.3
-        version: 21.1.0-next.3(1c56d16b6d8f2f6e43ba84ee6a3573c6)
+        version: 21.1.0-next.3(a3acb8fb744a12092f5ff09db2d43fe8)
       '@angular/cli':
         specifier: 21.1.0-next.3
         version: 21.1.0-next.3(@types/node@24.10.4)(chokidar@5.0.0)
@@ -812,13 +812,13 @@ importers:
         version: link:../packages/compiler-cli
       jsdom:
         specifier: ^27.0.0
-        version: 27.2.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+        version: 27.2.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       typescript:
         specifier: ~5.9.2
         version: 5.9.3
       vitest:
         specifier: ^4.0.0
-        version: 4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@27.2.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
+        version: 4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@27.2.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
   integration:
     dependencies:
@@ -875,7 +875,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 21.1.0-next.3
-        version: 21.1.0-next.3(4308d8b283b909a9614df8a841cbc126)
+        version: 21.1.0-next.3(c4a9dbb3caecee9b10e2dc29ddff4c0d)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1046,7 +1046,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 21.1.0-next.3
-        version: 21.1.0-next.3(4308d8b283b909a9614df8a841cbc126)
+        version: 21.1.0-next.3(c4a9dbb3caecee9b10e2dc29ddff4c0d)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1277,7 +1277,7 @@ importers:
         version: 30.2.0(@types/node@24.10.1)(ts-node@10.9.2(@types/node@24.10.1)(typescript@5.9.3))
       jest-environment-jsdom:
         specifier: 30.2.0
-        version: 30.2.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+        version: 30.2.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       jest-environment-node:
         specifier: 30.2.0
         version: 30.2.0
@@ -1301,7 +1301,7 @@ importers:
         version: 2.8.1
       vitest:
         specifier: ^4.0.0
-        version: 4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.1)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
+        version: 4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.1)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/zone.js/test/typings:
     dependencies:
@@ -1815,9 +1815,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/82943a3f90fe02629e4ea1846ced3f3adfb74c6b':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/82943a3f90fe02629e4ea1846ced3f3adfb74c6b}
-    version: 0.0.0-af87f27d7508acd9156fe840b38f0d7fbe6d5e3a
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/db25c6de468ee66edda4705a005535283251f173':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/db25c6de468ee66edda4705a005535283251f173}
+    version: 0.0.0-1eab387dad9d95950b449f605983ea83f5edb9c8
     hasBin: true
 
   '@angular/ssr@21.1.0-next.3':
@@ -3600,8 +3600,8 @@ packages:
     resolution: {integrity: sha512-IJn+8A3QZJfe7FUtWqHVNo3xJs7KFpurCWGWCiCz3oEh+BkRymKZ1QxfAbU2yGMDzTytLGQ2IV6T2r3cuo75/w==}
     engines: {node: '>=18'}
 
-  '@google/genai@1.33.0':
-    resolution: {integrity: sha512-ThUjFZ1N0DU88peFjnQkb8K198EWaW2RmmnDShFQ+O+xkIH9itjpRe358x3L/b4X/A7dimkvq63oz49Vbh7Cog==}
+  '@google/genai@1.34.0':
+    resolution: {integrity: sha512-vu53UMPvjmb7PGzlYu6Tzxso8Dfhn+a7eQFaS2uNemVtDZKwzSpJ5+ikqBbXplF7RGB1STcVDqCkPvquiwb2sw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.24.0
@@ -6830,8 +6830,8 @@ packages:
   buffer@6.0.3:
     resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
-  bufferutil@4.0.9:
-    resolution: {integrity: sha512-WDtdLmJvAuNNPzByAYpRo2rF1Mmradw6gvWsQKf63476DDXmomT9zUiGypLcG4ibIM67vhAj8jJRdbmEws2Aqw==}
+  bufferutil@4.1.0:
+    resolution: {integrity: sha512-ZMANVnAixE6AWWnPzlW2KpUrxhm9woycYvPOo67jWHyFowASTEd9s+QN1EIMsSDtwhIxN4sWE1jotpuDUIgyIw==}
     engines: {node: '>=6.14.2'}
 
   builtin-modules@1.1.1:
@@ -13096,8 +13096,8 @@ packages:
   url-template@2.0.8:
     resolution: {integrity: sha512-XdVKMF4SJ0nP/O7XIPB0JwAEuT9lDIYnNsK8yGVe43y0AWoKeJNdv3ZNWh7ksJ6KqQFjOO6ox/VEitLnaVNufw==}
 
-  utf-8-validate@6.0.5:
-    resolution: {integrity: sha512-EYZR+OpIXp9Y1eG1iueg8KRsY8TuT8VNgnanZ0uA3STqhHQTLwbl+WX76/9X5OY12yQubymBpaBSmMPkSTQcKA==}
+  utf-8-validate@6.0.6:
+    resolution: {integrity: sha512-q3l3P9UtEEiAHcsgsqTgf9PPjctrDWoIXW3NpOHFdRDbLvu4DLIcxHangJ4RLrWkBcKjmcs/6NkerI8T/rE4LA==}
     engines: {node: '>=6.14.2'}
 
   util-deprecate@1.0.2:
@@ -14053,13 +14053,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@21.1.0-next.3(d1710e0d0e8cf242583d7fc41fedc081)':
+  '@angular-devkit/build-angular@21.1.0-next.3(d69bf3f8e82771b7967badb6c9a70ef6)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2101.0-next.3(chokidar@5.0.0)
-      '@angular-devkit/build-webpack': 0.2101.0-next.3(chokidar@5.0.0)(webpack-dev-server@5.2.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)(webpack@5.104.0(esbuild@0.27.1)))(webpack@5.104.0(esbuild@0.27.1))
+      '@angular-devkit/build-webpack': 0.2101.0-next.3(chokidar@5.0.0)(webpack-dev-server@5.2.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)(webpack@5.104.0(esbuild@0.27.1)))(webpack@5.104.0(esbuild@0.27.1))
       '@angular-devkit/core': 21.1.0-next.3(chokidar@5.0.0)
-      '@angular/build': 21.1.0-next.3(7a343c4ed3044b896c8b12ba9f0ebe75)
+      '@angular/build': 21.1.0-next.3(a0c9cce645ba43ab004311676d5ec528)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@babel/core': 7.28.5
       '@babel/generator': 7.28.5
@@ -14108,7 +14108,7 @@ snapshots:
       typescript: 5.9.3
       webpack: 5.104.0(esbuild@0.27.1)
       webpack-dev-middleware: 7.4.5(webpack@5.104.0(esbuild@0.27.1))
-      webpack-dev-server: 5.2.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)(webpack@5.104.0(esbuild@0.27.1))
+      webpack-dev-server: 5.2.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)(webpack@5.104.0(esbuild@0.27.1))
       webpack-merge: 6.0.1
       webpack-subresource-integrity: 5.1.0(webpack@5.104.0(esbuild@0.27.1))
     optionalDependencies:
@@ -14120,8 +14120,8 @@ snapshots:
       '@angular/ssr': 21.1.0-next.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       esbuild: 0.27.1
       jest: 30.2.0(@types/node@20.19.25)(ts-node@10.9.2(@types/node@20.19.25)(typescript@5.9.3))
-      jest-environment-jsdom: 30.2.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      jest-environment-jsdom: 30.2.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       ng-packagr: 21.1.0-next.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.20.6)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3)
       protractor: 7.0.0
       tailwindcss: 3.4.19(tsx@4.20.6)(yaml@2.8.2)
@@ -14148,12 +14148,12 @@ snapshots:
       - webpack-cli
       - yaml
 
-  '@angular-devkit/build-webpack@0.2101.0-next.3(chokidar@5.0.0)(webpack-dev-server@5.2.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)(webpack@5.104.0(esbuild@0.27.1)))(webpack@5.104.0(esbuild@0.27.1))':
+  '@angular-devkit/build-webpack@0.2101.0-next.3(chokidar@5.0.0)(webpack-dev-server@5.2.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)(webpack@5.104.0(esbuild@0.27.1)))(webpack@5.104.0(esbuild@0.27.1))':
     dependencies:
       '@angular-devkit/architect': 0.2101.0-next.3(chokidar@5.0.0)
       rxjs: 7.8.2
       webpack: 5.104.0(esbuild@0.27.1)
-      webpack-dev-server: 5.2.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)(webpack@5.104.0(esbuild@0.27.1))
+      webpack-dev-server: 5.2.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)(webpack@5.104.0(esbuild@0.27.1))
     transitivePeerDependencies:
       - chokidar
 
@@ -14184,127 +14184,7 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  '@angular/build@21.1.0-next.3(1c56d16b6d8f2f6e43ba84ee6a3573c6)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2101.0-next.3(chokidar@5.0.0)
-      '@angular/compiler': link:packages/compiler
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 7.28.5
-      '@babel/helper-annotate-as-pure': 7.27.3
-      '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 5.1.21(@types/node@24.10.4)
-      '@vitejs/plugin-basic-ssl': 2.1.0(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
-      beasties: 0.3.5
-      browserslist: 4.28.1
-      esbuild: 0.27.1
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
-      istanbul-lib-instrument: 6.0.3
-      jsonc-parser: 3.3.1
-      listr2: 9.0.5
-      magic-string: 0.30.21
-      mrmime: 2.0.1
-      parse5-html-rewriting-stream: 8.0.0
-      picomatch: 4.0.3
-      piscina: 5.1.4
-      rolldown: 1.0.0-beta.54
-      sass: 1.97.0
-      semver: 7.7.3
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.15
-      tslib: 2.8.1
-      typescript: 5.9.3
-      undici: 7.16.0
-      vite: 7.3.0(@types/node@24.10.4)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
-      watchpack: 2.4.4
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 21.1.0-next.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      less: 4.4.2
-      lmdb: 3.4.4
-      ng-packagr: 21.1.0-next.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3)
-      postcss: 8.5.6
-      tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
-      vitest: 4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@27.2.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
-    transitivePeerDependencies:
-      - '@types/node'
-      - chokidar
-      - jiti
-      - lightningcss
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  '@angular/build@21.1.0-next.3(4308d8b283b909a9614df8a841cbc126)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2101.0-next.3(chokidar@5.0.0)
-      '@angular/compiler': link:packages/compiler
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 7.28.5
-      '@babel/helper-annotate-as-pure': 7.27.3
-      '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 5.1.21(@types/node@24.10.4)
-      '@vitejs/plugin-basic-ssl': 2.1.0(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
-      beasties: 0.3.5
-      browserslist: 4.28.1
-      esbuild: 0.27.1
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
-      istanbul-lib-instrument: 6.0.3
-      jsonc-parser: 3.3.1
-      listr2: 9.0.5
-      magic-string: 0.30.21
-      mrmime: 2.0.1
-      parse5-html-rewriting-stream: 8.0.0
-      picomatch: 4.0.3
-      piscina: 5.1.4
-      rolldown: 1.0.0-beta.54
-      sass: 1.97.0
-      semver: 7.7.3
-      source-map-support: 0.5.21
-      tinyglobby: 0.2.15
-      tslib: 2.8.1
-      typescript: 5.9.3
-      undici: 7.16.0
-      vite: 7.3.0(@types/node@24.10.4)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
-      watchpack: 2.4.4
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 21.1.0-next.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      less: 4.4.2
-      lmdb: 3.4.4
-      ng-packagr: 21.1.0-next.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3)
-      postcss: 8.5.6
-      tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
-      vitest: 4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
-    transitivePeerDependencies:
-      - '@types/node'
-      - chokidar
-      - jiti
-      - lightningcss
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
-  '@angular/build@21.1.0-next.3(7a343c4ed3044b896c8b12ba9f0ebe75)':
+  '@angular/build@21.1.0-next.3(a0c9cce645ba43ab004311676d5ec528)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2101.0-next.3(chokidar@5.0.0)
@@ -14344,13 +14224,133 @@ snapshots:
       '@angular/platform-server': link:packages/platform-server
       '@angular/service-worker': link:packages/service-worker
       '@angular/ssr': 21.1.0-next.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       less: 4.4.2
       lmdb: 3.4.4
       ng-packagr: 21.1.0-next.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.20.6)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3)
       postcss: 8.5.6
       tailwindcss: 3.4.19(tsx@4.20.6)(yaml@2.8.2)
-      vitest: 4.0.13(@opentelemetry/api@1.9.0)(@types/node@20.19.25)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.2)
+      vitest: 4.0.13(@opentelemetry/api@1.9.0)(@types/node@20.19.25)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.2)
+    transitivePeerDependencies:
+      - '@types/node'
+      - chokidar
+      - jiti
+      - lightningcss
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  '@angular/build@21.1.0-next.3(a3acb8fb744a12092f5ff09db2d43fe8)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2101.0-next.3(chokidar@5.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 7.28.5
+      '@babel/helper-annotate-as-pure': 7.27.3
+      '@babel/helper-split-export-declaration': 7.24.7
+      '@inquirer/confirm': 5.1.21(@types/node@24.10.4)
+      '@vitejs/plugin-basic-ssl': 2.1.0(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+      beasties: 0.3.5
+      browserslist: 4.28.1
+      esbuild: 0.27.1
+      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      istanbul-lib-instrument: 6.0.3
+      jsonc-parser: 3.3.1
+      listr2: 9.0.5
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      parse5-html-rewriting-stream: 8.0.0
+      picomatch: 4.0.3
+      piscina: 5.1.4
+      rolldown: 1.0.0-beta.54
+      sass: 1.97.0
+      semver: 7.7.3
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.15
+      tslib: 2.8.1
+      typescript: 5.9.3
+      undici: 7.16.0
+      vite: 7.3.0(@types/node@24.10.4)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
+      watchpack: 2.4.4
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 21.1.0-next.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      less: 4.4.2
+      lmdb: 3.4.4
+      ng-packagr: 21.1.0-next.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3)
+      postcss: 8.5.6
+      tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
+      vitest: 4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@27.2.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
+    transitivePeerDependencies:
+      - '@types/node'
+      - chokidar
+      - jiti
+      - lightningcss
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  '@angular/build@21.1.0-next.3(c4a9dbb3caecee9b10e2dc29ddff4c0d)':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@angular-devkit/architect': 0.2101.0-next.3(chokidar@5.0.0)
+      '@angular/compiler': link:packages/compiler
+      '@angular/compiler-cli': link:packages/compiler-cli
+      '@babel/core': 7.28.5
+      '@babel/helper-annotate-as-pure': 7.27.3
+      '@babel/helper-split-export-declaration': 7.24.7
+      '@inquirer/confirm': 5.1.21(@types/node@24.10.4)
+      '@vitejs/plugin-basic-ssl': 2.1.0(vite@7.3.0(@types/node@24.10.4)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
+      beasties: 0.3.5
+      browserslist: 4.28.1
+      esbuild: 0.27.1
+      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      istanbul-lib-instrument: 6.0.3
+      jsonc-parser: 3.3.1
+      listr2: 9.0.5
+      magic-string: 0.30.21
+      mrmime: 2.0.1
+      parse5-html-rewriting-stream: 8.0.0
+      picomatch: 4.0.3
+      piscina: 5.1.4
+      rolldown: 1.0.0-beta.54
+      sass: 1.97.0
+      semver: 7.7.3
+      source-map-support: 0.5.21
+      tinyglobby: 0.2.15
+      tslib: 2.8.1
+      typescript: 5.9.3
+      undici: 7.16.0
+      vite: 7.3.0(@types/node@24.10.4)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
+      watchpack: 2.4.4
+    optionalDependencies:
+      '@angular/core': link:packages/core
+      '@angular/localize': link:packages/localize
+      '@angular/platform-browser': link:packages/platform-browser
+      '@angular/platform-server': link:packages/platform-server
+      '@angular/service-worker': link:packages/service-worker
+      '@angular/ssr': 21.1.0-next.3(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      less: 4.4.2
+      lmdb: 3.4.4
+      ng-packagr: 21.1.0-next.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(tslib@2.8.1)(typescript@5.9.3)
+      postcss: 8.5.6
+      tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
+      vitest: 4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -14495,11 +14495,11 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/82943a3f90fe02629e4ea1846ced3f3adfb74c6b(@modelcontextprotocol/sdk@1.25.0)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/db25c6de468ee66edda4705a005535283251f173(@modelcontextprotocol/sdk@1.25.0)':
     dependencies:
       '@actions/core': 2.0.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
-      '@google/genai': 1.33.0(@modelcontextprotocol/sdk@1.25.0)(bufferutil@4.0.9)(supports-color@10.2.2)(utf-8-validate@6.0.5)
+      '@google/genai': 1.34.0(@modelcontextprotocol/sdk@1.25.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
       '@inquirer/prompts': 8.1.0(@types/node@24.10.4)
       '@inquirer/type': 4.0.2(@types/node@24.10.4)
       '@octokit/auth-app': 8.1.2
@@ -14525,7 +14525,7 @@ snapshots:
       '@types/yargs': 17.0.35
       '@types/yarnpkg__lockfile': 1.1.9
       '@yarnpkg/lockfile': 1.1.0
-      bufferutil: 4.0.9
+      bufferutil: 4.1.0
       cli-progress: 3.12.0
       conventional-commits-filter: 5.0.0
       conventional-commits-parser: 6.2.1
@@ -14547,7 +14547,7 @@ snapshots:
       tsx: 4.21.0
       typed-graphqlify: 3.1.6
       typescript: 5.9.3
-      utf-8-validate: 6.0.5
+      utf-8-validate: 6.0.6
       which: 6.0.0
       yaml: 2.8.2
       yargs: 18.0.0
@@ -16492,10 +16492,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@google/genai@1.33.0(@modelcontextprotocol/sdk@1.25.0)(bufferutil@4.0.9)(supports-color@10.2.2)(utf-8-validate@6.0.5)':
+  '@google/genai@1.34.0(@modelcontextprotocol/sdk@1.25.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)':
     dependencies:
       google-auth-library: 10.5.0(supports-color@10.2.2)
-      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      ws: 8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     optionalDependencies:
       '@modelcontextprotocol/sdk': 1.25.0
     transitivePeerDependencies:
@@ -17159,7 +17159,7 @@ snapshots:
 
   '@jest/diff-sequences@30.0.1': {}
 
-  '@jest/environment-jsdom-abstract@30.2.0(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))':
+  '@jest/environment-jsdom-abstract@30.2.0(jsdom@26.1.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
     dependencies:
       '@jest/environment': 30.2.0
       '@jest/fake-timers': 30.2.0
@@ -17168,7 +17168,7 @@ snapshots:
       '@types/node': 24.10.4
       jest-mock: 30.2.0
       jest-util: 30.2.0
-      jsdom: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      jsdom: 26.1.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
 
   '@jest/environment@30.2.0':
     dependencies:
@@ -18978,9 +18978,9 @@ snapshots:
       '@types/duplexify': 3.6.5
       '@types/node': 24.10.4
 
-  '@types/puppeteer-core@5.4.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@6.0.5)':
+  '@types/puppeteer-core@5.4.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)':
     dependencies:
-      '@types/puppeteer': 7.0.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@6.0.5)
+      '@types/puppeteer': 7.0.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -18990,9 +18990,9 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@types/puppeteer@7.0.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@6.0.5)':
+  '@types/puppeteer@7.0.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)':
     dependencies:
-      puppeteer: 24.31.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@6.0.5)
+      puppeteer: 24.31.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -20140,7 +20140,7 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  bufferutil@4.0.9:
+  bufferutil@4.1.0:
     dependencies:
       node-gyp-build: 4.8.4
 
@@ -21324,7 +21324,7 @@ snapshots:
 
   devtools-protocol@0.0.818844: {}
 
-  devtools@6.12.1(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@6.0.5):
+  devtools@6.12.1(bufferutil@4.1.0)(encoding@0.1.13)(utf-8-validate@6.0.6):
     dependencies:
       '@wdio/config': 6.12.1
       '@wdio/logger': 6.10.10
@@ -21332,7 +21332,7 @@ snapshots:
       '@wdio/utils': 6.11.0
       chrome-launcher: 0.13.4
       edge-paths: 2.2.1
-      puppeteer-core: 5.5.0(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@6.0.5)
+      puppeteer-core: 5.5.0(bufferutil@4.1.0)(encoding@0.1.13)(utf-8-validate@6.0.6)
       ua-parser-js: 0.7.41
       uuid: 8.3.2
     transitivePeerDependencies:
@@ -21490,7 +21490,7 @@ snapshots:
 
   engine.io-parser@5.2.3: {}
 
-  engine.io@6.6.4(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  engine.io@6.6.4(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       '@types/cors': 2.8.19
       '@types/node': 24.10.4
@@ -21500,7 +21500,7 @@ snapshots:
       cors: 2.8.5
       debug: 4.3.7
       engine.io-parser: 5.2.3
-      ws: 8.17.1(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      ws: 8.17.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -22150,7 +22150,7 @@ snapshots:
       object.pick: 1.3.0
       parse-filepath: 1.0.2
 
-  firebase-tools@15.0.0(@types/node@20.19.25)(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.5):
+  firebase-tools@15.0.0(@types/node@20.19.25)(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.6):
     dependencies:
       '@apphosting/build': 0.1.7(@types/node@20.19.25)(typescript@5.9.3)
       '@apphosting/common': 0.0.8
@@ -22223,7 +22223,7 @@ snapshots:
       uuid: 8.3.2
       winston: 3.18.3
       winston-transport: 4.9.0
-      ws: 7.5.10(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      ws: 7.5.10(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       yaml: 2.8.2
       zod: 3.25.76
       zod-to-json-schema: 3.25.0(zod@3.25.76)
@@ -23752,13 +23752,13 @@ snapshots:
       jest-util: 30.2.0
       pretty-format: 30.2.0
 
-  jest-environment-jsdom@30.2.0(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  jest-environment-jsdom@30.2.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       '@jest/environment': 30.2.0
-      '@jest/environment-jsdom-abstract': 30.2.0(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))
+      '@jest/environment-jsdom-abstract': 30.2.0(jsdom@26.1.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       '@types/jsdom': 21.1.7
       '@types/node': 24.10.4
-      jsdom: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      jsdom: 26.1.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -24020,7 +24020,7 @@ snapshots:
 
   jsbn@0.1.1: {}
 
-  jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  jsdom@26.1.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       cssstyle: 4.6.0
       data-urls: 5.0.0
@@ -24040,14 +24040,14 @@ snapshots:
       whatwg-encoding: 3.1.1
       whatwg-mimetype: 4.0.0
       whatwg-url: 14.2.0
-      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      ws: 8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       xml-name-validator: 5.0.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  jsdom@27.2.0(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  jsdom@27.2.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       '@acemir/cssom': 0.9.24
       '@asamuzakjp/dom-selector': 6.7.4
@@ -24067,14 +24067,14 @@ snapshots:
       whatwg-encoding: 3.1.1
       whatwg-mimetype: 4.0.0
       whatwg-url: 15.1.0
-      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      ws: 8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       xml-name-validator: 5.0.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  jsdom@27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5):
+  jsdom@27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6):
     dependencies:
       '@acemir/cssom': 0.9.28
       '@asamuzakjp/dom-selector': 6.7.6
@@ -24094,7 +24094,7 @@ snapshots:
       webidl-conversions: 8.0.0
       whatwg-mimetype: 4.0.0
       whatwg-url: 15.1.0
-      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      ws: 8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       xml-name-validator: 5.0.0
     transitivePeerDependencies:
       - '@exodus/crypto'
@@ -24223,26 +24223,26 @@ snapshots:
       is-wsl: 2.2.0
       which: 3.0.1
 
-  karma-jasmine-html-reporter@2.1.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)))(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)):
+  karma-jasmine-html-reporter@2.1.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)):
     dependencies:
       jasmine-core: 5.13.0
-      karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
 
-  karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)):
+  karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)):
     dependencies:
       jasmine-core: 4.6.1
-      karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
 
-  karma-requirejs@1.1.0(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)):
+  karma-requirejs@1.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)):
     dependencies:
-      karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
 
-  karma-sauce-launcher@4.3.6(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.5):
+  karma-sauce-launcher@4.3.6(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.6):
     dependencies:
       global-agent: 2.2.0
       saucelabs: 9.0.2
-      webdriverio: 6.12.1(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.5)
+      webdriverio: 6.12.1(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -24261,7 +24261,7 @@ snapshots:
     dependencies:
       graceful-fs: 4.2.11
 
-  karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       '@colors/colors': 1.5.0
       body-parser: 1.20.3
@@ -24282,7 +24282,7 @@ snapshots:
       qjobs: 1.2.0
       range-parser: 1.2.1
       rimraf: 3.0.2
-      socket.io: 4.8.1(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      socket.io: 4.8.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       source-map: 0.6.1
       tmp: 0.2.5
       ua-parser-js: 0.7.41
@@ -26103,7 +26103,7 @@ snapshots:
     dependencies:
       escape-goat: 2.1.1
 
-  puppeteer-core@24.31.0(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  puppeteer-core@24.31.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       '@puppeteer/browsers': 2.10.13
       chromium-bidi: 11.0.0(devtools-protocol@0.0.1521046)
@@ -26111,7 +26111,7 @@ snapshots:
       devtools-protocol: 0.0.1521046
       typed-query-selector: 2.12.0
       webdriver-bidi-protocol: 0.3.9
-      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      ws: 8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -26120,7 +26120,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  puppeteer-core@5.5.0(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@6.0.5):
+  puppeteer-core@5.5.0(bufferutil@4.1.0)(encoding@0.1.13)(utf-8-validate@6.0.6):
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
       devtools-protocol: 0.0.818844
@@ -26133,20 +26133,20 @@ snapshots:
       rimraf: 3.0.2
       tar-fs: 2.1.4
       unbzip2-stream: 1.4.3
-      ws: 7.5.10(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      ws: 7.5.10(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bufferutil
       - encoding
       - supports-color
       - utf-8-validate
 
-  puppeteer@24.31.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@6.0.5):
+  puppeteer@24.31.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6):
     dependencies:
       '@puppeteer/browsers': 2.10.13
       chromium-bidi: 11.0.0(devtools-protocol@0.0.1521046)
       cosmiconfig: 9.0.0(typescript@5.9.3)
       devtools-protocol: 0.0.1521046
-      puppeteer-core: 24.31.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      puppeteer-core: 24.31.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       typed-query-selector: 2.12.0
     transitivePeerDependencies:
       - bare-abort-controller
@@ -26738,12 +26738,12 @@ snapshots:
       tmp: 0.0.30
       xml2js: 0.4.23
 
-  selenium-webdriver@4.39.0(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  selenium-webdriver@4.39.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       '@bazel/runfiles': 6.5.0
       jszip: 3.10.1
       tmp: 0.2.5
-      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      ws: 8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -27022,10 +27022,10 @@ snapshots:
       dot-case: 3.0.4
       tslib: 2.8.1
 
-  socket.io-adapter@2.5.5(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  socket.io-adapter@2.5.5(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       debug: 4.3.7
-      ws: 8.17.1(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      ws: 8.17.1(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -27038,14 +27038,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  socket.io@4.8.1(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  socket.io@4.8.1(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     dependencies:
       accepts: 1.3.8
       base64id: 2.0.0
       cors: 2.8.5
       debug: 4.3.7
-      engine.io: 6.6.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      socket.io-adapter: 2.5.5(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      engine.io: 6.6.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      socket.io-adapter: 2.5.5(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       socket.io-parser: 4.2.4
     transitivePeerDependencies:
       - bufferutil
@@ -28176,7 +28176,7 @@ snapshots:
 
   url-template@2.0.8: {}
 
-  utf-8-validate@6.0.5:
+  utf-8-validate@6.0.6:
     dependencies:
       node-gyp-build: 4.8.4
 
@@ -28376,7 +28376,7 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.2
 
-  vitest@4.0.13(@opentelemetry/api@1.9.0)(@types/node@20.19.25)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.2):
+  vitest@4.0.13(@opentelemetry/api@1.9.0)(@types/node@20.19.25)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.13
       '@vitest/mocker': 4.0.13(vite@7.2.4(@types/node@20.19.25)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.2))
@@ -28401,7 +28401,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/node': 20.19.25
-      jsdom: 27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5)
+      jsdom: 27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - jiti
       - less
@@ -28417,7 +28417,7 @@ snapshots:
       - yaml
     optional: true
 
-  vitest@4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.1)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2):
+  vitest@4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.1)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.13
       '@vitest/mocker': 4.0.13(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -28442,7 +28442,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/node': 24.10.1
-      jsdom: 27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5)
+      jsdom: 27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - jiti
       - less
@@ -28457,7 +28457,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@27.2.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2):
+  vitest@4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@27.2.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.13
       '@vitest/mocker': 4.0.13(vite@7.2.4(@types/node@24.10.4)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -28482,7 +28482,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/node': 24.10.4
-      jsdom: 27.2.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      jsdom: 27.2.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - jiti
       - less
@@ -28497,7 +28497,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2):
+  vitest@4.0.13(@opentelemetry/api@1.9.0)(@types/node@24.10.4)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6))(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.13
       '@vitest/mocker': 4.0.13(vite@7.2.4(@types/node@24.10.4)(jiti@2.6.1)(less@4.4.2)(sass@1.97.0)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -28522,7 +28522,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/node': 24.10.4
-      jsdom: 27.4.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5)
+      jsdom: 27.4.0(bufferutil@4.1.0)(postcss@8.5.6)(utf-8-validate@6.0.6)
     transitivePeerDependencies:
       - jiti
       - less
@@ -28666,9 +28666,9 @@ snapshots:
       got: 11.8.6
       lodash.merge: 4.6.2
 
-  webdriverio@6.12.1(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.5):
+  webdriverio@6.12.1(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.6):
     dependencies:
-      '@types/puppeteer-core': 5.4.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@6.0.5)
+      '@types/puppeteer-core': 5.4.0(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@6.0.6)
       '@wdio/config': 6.12.1
       '@wdio/logger': 6.10.10
       '@wdio/repl': 6.11.0
@@ -28677,7 +28677,7 @@ snapshots:
       atob: 2.1.2
       css-shorthand-properties: 1.1.2
       css-value: 0.0.1
-      devtools: 6.12.1(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@6.0.5)
+      devtools: 6.12.1(bufferutil@4.1.0)(encoding@0.1.13)(utf-8-validate@6.0.6)
       fs-extra: 9.1.0
       get-port: 5.1.1
       grapheme-splitter: 1.0.4
@@ -28686,7 +28686,7 @@ snapshots:
       lodash.isplainobject: 4.0.6
       lodash.zip: 4.2.0
       minimatch: 3.1.2
-      puppeteer-core: 5.5.0(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@6.0.5)
+      puppeteer-core: 5.5.0(bufferutil@4.1.0)(encoding@0.1.13)(utf-8-validate@6.0.6)
       resq: 1.11.0
       rgb2hex: 0.2.3
       serialize-error: 8.1.0
@@ -28718,7 +28718,7 @@ snapshots:
     optionalDependencies:
       webpack: 5.104.0(esbuild@0.27.1)
 
-  webpack-dev-server@5.2.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)(webpack@5.104.0(esbuild@0.27.1)):
+  webpack-dev-server@5.2.2(bufferutil@4.1.0)(utf-8-validate@6.0.6)(webpack@5.104.0(esbuild@0.27.1)):
     dependencies:
       '@types/bonjour': 3.5.13
       '@types/connect-history-api-fallback': 1.5.4
@@ -28747,7 +28747,7 @@ snapshots:
       sockjs: 0.3.24
       spdy: 4.0.2
       webpack-dev-middleware: 7.4.5(webpack@5.104.0(esbuild@0.27.1))
-      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      ws: 8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     optionalDependencies:
       webpack: 5.104.0(esbuild@0.27.1)
     transitivePeerDependencies:
@@ -28979,20 +28979,20 @@ snapshots:
       imurmurhash: 0.1.4
       signal-exit: 4.1.0
 
-  ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  ws@7.5.10(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     optionalDependencies:
-      bufferutil: 4.0.9
-      utf-8-validate: 6.0.5
+      bufferutil: 4.1.0
+      utf-8-validate: 6.0.6
 
-  ws@8.17.1(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  ws@8.17.1(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     optionalDependencies:
-      bufferutil: 4.0.9
-      utf-8-validate: 6.0.5
+      bufferutil: 4.1.0
+      utf-8-validate: 6.0.6
 
-  ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5):
+  ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6):
     optionalDependencies:
-      bufferutil: 4.0.9
-      utf-8-validate: 6.0.5
+      bufferutil: 4.1.0
+      utf-8-validate: 6.0.6
 
   wsl-utils@0.1.0:
     dependencies:
