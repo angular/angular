@@ -16,6 +16,7 @@
         [navigationItems]="navigationItems"
         [displayItemsToLevel]="maxVisibleLevelsOnSecondaryNav()"
         [expandableLevel]="maxVisibleLevelsOnSecondaryNav()"
+        [preserveOtherCategoryOrder]="true"
         (linkClicked)="close()"
       />
     }
@@ -26,6 +27,7 @@
         [collapsableLevel]="level + maxVisibleLevelsOnSecondaryNav()"
         [expandableLevel]="level + maxVisibleLevelsOnSecondaryNav() + 1"
         [navigationItems]="[item]"
+        [preserveOtherCategoryOrder]="item.preserveOtherCategoryOrder ?? false"
         [displayItemsToLevel]="level + maxVisibleLevelsOnSecondaryNav() + 1"
         (linkClicked)="close()"
       />

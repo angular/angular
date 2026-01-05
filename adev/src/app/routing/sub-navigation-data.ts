@@ -10,16 +10,23 @@ import {isDevMode} from '@angular/core';
 import {NavigationItem} from '@angular/docs';
 
 // These imports are expected to be red because they are generated a build time
+// @ts-ignore
 import FIRST_APP_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/first-app/routes.json';
+// @ts-ignore
 import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/learn-angular/routes.json';
+// @ts-ignore
 import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/deferrable-views/routes.json';
+// @ts-ignore
 import SIGNALS_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/signals/routes.json';
+// @ts-ignore
 import SIGNAL_FORMS_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/signal-forms/routes.json';
+// @ts-ignore
 import ERRORS_NAV_DATA from '../../../src/assets/content/reference/errors/routes.json';
+// @ts-ignore
 import EXT_DIAGNOSTICS_NAV_DATA from '../../../src/assets/content/reference/extended-diagnostics/routes.json';
 
-import {getApiNavigationItems} from '../features/references/helpers/manifest.helper';
 import {DEFAULT_PAGES} from '../core/constants/pages';
+import {getApiNavigationItems} from '../features/references/helpers/manifest.helper';
 
 interface SubNavigationData {
   docs: NavigationItem[];
@@ -430,82 +437,105 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       {
         label: 'Forms',
         status: 'updated',
+        preserveOtherCategoryOrder: true,
         children: [
           {
             label: 'Overview',
             path: 'guide/forms',
             contentPath: 'guide/forms/overview',
           },
+
           {
-            label: 'Signal forms',
+            label: 'Overview',
+            path: 'guide/forms/signals/overview',
+            contentPath: 'guide/forms/signals/overview',
+            category: 'Signal Forms',
             status: 'new',
-            children: [
-              {
-                label: 'Overview',
-                path: 'guide/forms/signals/overview',
-                contentPath: 'guide/forms/signals/overview',
-              },
-              {
-                label: 'Form models',
-                path: 'guide/forms/signals/models',
-                contentPath: 'guide/forms/signals/models',
-              },
-              {
-                label: 'Form model design',
-                path: 'guide/forms/signals/model-design',
-                contentPath: 'guide/forms/signals/designing-your-form-model',
-              },
-              {
-                label: 'Field state management',
-                path: 'guide/forms/signals/field-state-management',
-                contentPath: 'guide/forms/signals/field-state-management',
-              },
-              {
-                label: 'Validation',
-                path: 'guide/forms/signals/validation',
-                contentPath: 'guide/forms/signals/validation',
-              },
-              {
-                label: 'Custom controls',
-                path: 'guide/forms/signals/custom-controls',
-                contentPath: 'guide/forms/signals/custom-controls',
-              },
-              {
-                label: 'Comparison with other form systems',
-                path: 'guide/forms/signals/comparison',
-                contentPath: 'guide/forms/signals/comparison',
-              },
-              {
-                label: 'Migrating from Legacy Forms',
-                path: 'guide/forms/signals/migration',
-                contentPath: 'guide/forms/signals/migration',
-              },
-            ],
+          },
+          {
+            label: 'Form models',
+            path: 'guide/forms/signals/models',
+            contentPath: 'guide/forms/signals/models',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
+            label: 'Form model design',
+            path: 'guide/forms/signals/model-design',
+            contentPath: 'guide/forms/signals/designing-your-form-model',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
+            label: 'Field state management',
+            path: 'guide/forms/signals/field-state-management',
+            contentPath: 'guide/forms/signals/field-state-management',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
+            label: 'Validation',
+            path: 'guide/forms/signals/validation',
+            contentPath: 'guide/forms/signals/validation',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
+            label: 'Custom controls',
+            path: 'guide/forms/signals/custom-controls',
+            contentPath: 'guide/forms/signals/custom-controls',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
+            label: 'Comparison with other form systems',
+            path: 'guide/forms/signals/comparison',
+            contentPath: 'guide/forms/signals/comparison',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
+            label: 'Migrating from Legacy Forms',
+            path: 'guide/forms/signals/migration',
+            contentPath: 'guide/forms/signals/migration',
+            category: 'Signal Forms',
+            status: 'new',
           },
           {
             label: 'Reactive forms',
             path: 'guide/forms/reactive-forms',
             contentPath: 'guide/forms/reactive-forms',
+            category: 'Reactive Forms',
           },
           {
             label: 'Strictly typed reactive forms',
             path: 'guide/forms/typed-forms',
             contentPath: 'guide/forms/typed-forms',
+            category: 'Reactive Forms',
           },
           {
             label: 'Template-driven forms',
             path: 'guide/forms/template-driven-forms',
             contentPath: 'guide/forms/template-driven-forms',
+            category: 'Template driven Forms',
           },
           {
             label: 'Validate form input',
             path: 'guide/forms/form-validation',
             contentPath: 'guide/forms/form-validation',
+            category: 'Reactive Forms',
+          },
+          {
+            label: 'Validate form input',
+            path: 'guide/forms/form-validation',
+            contentPath: 'guide/forms/form-validation',
+            category: 'Template driven Forms',
           },
           {
             label: 'Building dynamic forms',
             path: 'guide/forms/dynamic-forms',
             contentPath: 'guide/forms/dynamic-forms',
+            category: 'Reactive Forms',
           },
         ],
       },
@@ -1262,6 +1292,7 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
   },
   {
     label: 'API Reference',
+    preserveOtherCategoryOrder: true,
     children: [
       {
         label: 'Overview',
