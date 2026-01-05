@@ -36086,7 +36086,15 @@ var import_typed_graphqlify2 = __toESM(require_dist());
 var GithubClient = class {
   constructor(_octokitOptions) {
     this._octokitOptions = _octokitOptions;
-    this._octokit = new Octokit2({ ...this._octokitOptions });
+    this._octokit = new Octokit2({
+      log: {
+        debug: Log.debug,
+        error: Log.debug,
+        info: Log.debug,
+        warn: Log.debug
+      },
+      ...this._octokitOptions
+    });
     this.pulls = this._octokit.pulls;
     this.orgs = this._octokit.orgs;
     this.repos = this._octokit.repos;
