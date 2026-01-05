@@ -266,7 +266,7 @@ export function runCanMatchGuards(
   route: Route,
   segments: UrlSegment[],
   urlSerializer: UrlSerializer,
-  abortSignal?: AbortSignal,
+  abortSignal: AbortSignal,
 ): Observable<GuardResult> {
   const canMatch = route.canMatch;
   if (!canMatch || canMatch.length === 0) return of(true);
@@ -276,8 +276,7 @@ export function runCanMatchGuards(
     const guardVal = isCanMatch(guard)
       ? guard.canMatch(route, segments)
       : runInInjectionContext(injector, () => (guard as CanMatchFn)(route, segments));
-    let obs$ = wrapIntoObservable(guardVal);
-    return abortSignal ? obs$.pipe(takeUntilAbort(abortSignal)) : obs$;
+    return wrapIntoObservable(guardVal).pipe(takeUntilAbort(abortSignal));
   });
 
   return of(canMatchObservables).pipe(prioritizedGuardValue(), redirectIfUrlTree(urlSerializer));
