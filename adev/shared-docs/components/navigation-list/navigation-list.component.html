@@ -1,16 +1,25 @@
-<ng-template #navigationList let-navigationItems>
+<ng-template
+  #navigationList
+  let-navigationItems
+  let-preserveOtherCategoryOrder="preserveOtherCategoryOrder"
+>
   <ul
     class="docs-navigation-list docs-faceted-list"
     [class.docs-navigation-list-dropdown]="isDropdownView()"
   >
-    @for (itemGroup of groupItems(navigationItems); track $index) {
+    @for (itemGroup of groupItems(navigationItems, preserveOtherCategoryOrder); track $index) {
       @let groupLabel = itemGroup[0];
       @let items = itemGroup[1];
-      @if (groupLabel) {
-        <li class="docs-navigation-group">{{ groupLabel | titlecase }}</li>
+      @let firstItem = items[0];
+
+      @if (groupLabel && collapsableLevel() !== firstItem.level && items.length > 1) {
+        <li class="docs-navigation-group">{{ groupLabel }}</li>
       }
       @for (item of items; track $index) {
-        <li class="docs-faceted-list-item">
+        <li
+          class="docs-faceted-list-item"
+          [class.single-entry]="items.length === 1 && item.level !== 1"
+        >
           @let itemLabel = item.label!;
           @if (item.path) {
             @if (item.isExternal) {
@@ -28,7 +37,6 @@
                   class="docs-faceted-list-item-text"
                 >
                   {{ item.label }}
-                  <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
                 </span>
 
                 @if (item.children && item.level! > 1 && !item.isExpanded) {
@@ -122,7 +130,11 @@
             <ng-container
               *ngTemplateOutlet="
                 navigationList;
-                context: {$implicit: item.children, level: item.level}
+                context: {
+                  $implicit: item.children,
+                  level: item.level,
+                  preserveOtherCategoryOrder: item.preserveOtherCategoryOrder,
+                }
               "
             />
           }
@@ -132,7 +144,15 @@
   </ul>
 </ng-template>
 
-<ng-container *ngTemplateOutlet="navigationList; context: {$implicit: navigationItems()}" />
+<ng-container
+  *ngTemplateOutlet="
+    navigationList;
+    context: {
+      $implicit: navigationItems(),
+      preserveOtherCategoryOrder: preserveOtherCategoryOrder(),
+    }
+  "
+/>
 
 <ng-template let-item #itemStatus>
   @if (item.status === 'new') {

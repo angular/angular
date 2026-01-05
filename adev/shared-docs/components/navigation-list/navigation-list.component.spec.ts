@@ -8,12 +8,12 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {NavigationList} from './navigation-list.component';
-import {By} from '@angular/platform-browser';
-import {NavigationItem} from '../../interfaces';
-import {provideRouter} from '@angular/router';
 import {signal} from '@angular/core';
+import {By} from '@angular/platform-browser';
+import {provideRouter} from '@angular/router';
+import {NavigationItem} from '../../interfaces';
 import {NavigationState} from '../../services';
+import {NavigationList} from './navigation-list.component';
 
 const navigationItems: NavigationItem[] = [
   {
@@ -42,6 +42,7 @@ describe('NavigationList', () => {
     });
     fixture = TestBed.createComponent(NavigationList);
     fixture.componentRef.setInput('navigationItems', []);
+    fixture.componentRef.setInput('preserveOtherCategoryOrder', false);
 
     component = fixture.componentInstance;
   });
