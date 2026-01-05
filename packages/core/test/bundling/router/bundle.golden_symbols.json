@@ -241,6 +241,7 @@
       "ROUTER_SCROLLER",
       "ROUTES",
       "ROUTES2",
+      "ROUTE_INJECTOR_CLEANUP",
       "Recognizer",
       "RedirectCommand",
       "RedirectRequest",

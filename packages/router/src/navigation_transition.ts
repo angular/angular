@@ -23,6 +23,7 @@ import {BehaviorSubject, EMPTY, from, Observable, of, Subject} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, take, takeUntil, tap} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
+
 import {INPUT_BINDER} from './directives/router_outlet';
 import {
   BeforeActivateRoutes,
@@ -81,6 +82,7 @@ import {UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
 import {abortSignalToObservable} from './utils/abort_signal_to_observable';
+import type {Router} from './router';
 
 /**
  * @description
@@ -319,19 +321,6 @@ export interface NavigationTransition {
   guardsResult: GuardResult | null;
 }
 
-/**
- * The interface from the Router needed by the transitions. Used to avoid a circular dependency on
- * Router. This interface should be whittled down with future refactors. For example, we do not need
- * to get `UrlSerializer` from the Router. We can instead inject it in `NavigationTransitions`
- * directly.
- */
-interface InternalRouterInterface {
-  config: Routes;
-  navigated: boolean;
-  routeReuseStrategy: RouteReuseStrategy;
-  onSameUrlNavigation: 'reload' | 'ignore';
-}
-
 export const NAVIGATION_ERROR_HANDLER = new InjectionToken<
   (error: NavigationError) => unknown | RedirectCommand
 >(typeof ngDevMode === 'undefined' || ngDevMode ? 'navigation error handler' : '');
@@ -433,7 +422,7 @@ export class NavigationTransitions {
     });
   }
 
-  setupNavigations(router: InternalRouterInterface): Observable<NavigationTransition> {
+  setupNavigations(router: Router): Observable<NavigationTransition> {
     this.transitions = new BehaviorSubject<NavigationTransition | null>(null);
     return this.transitions.pipe(
       filter((t): t is NavigationTransition => t !== null),

@@ -487,7 +487,11 @@ export class Recognizer {
     if (route.loadChildren) {
       // lazy children belong to the loaded module
       if (route._loadedRoutes !== undefined) {
-        return {routes: route._loadedRoutes, injector: route._loadedInjector!};
+        const ngModuleFactory = route._loadedNgModuleFactory;
+        if (ngModuleFactory && !route._loadedInjector) {
+          route._loadedInjector = ngModuleFactory.create(injector).injector;
+        }
+        return {routes: route._loadedRoutes, injector: route._loadedInjector};
       }
 
       if (this.abortSignal.aborted) {
@@ -500,6 +504,7 @@ export class Recognizer {
         const cfg = await this.configLoader.loadChildren(injector, route);
         route._loadedRoutes = cfg.routes;
         route._loadedInjector = cfg.injector;
+        route._loadedNgModuleFactory = cfg.factory;
         return cfg;
       }
       throw canLoadFails(route);

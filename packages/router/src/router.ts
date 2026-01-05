@@ -26,6 +26,7 @@ import {standardizeConfig} from './components/empty_outlet';
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
 import {INPUT_BINDER} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
+
 import {
   Event,
   IMPERATIVE_NAVIGATION,
@@ -33,9 +34,11 @@ import {
   NavigationCancel,
   NavigationCancellationCode,
   NavigationEnd,
+  NavigationError,
   NavigationTrigger,
   RedirectRequest,
 } from './events';
+
 import {NavigationBehaviorOptions, OnSameUrlNavigation, Routes} from './models';
 import {
   isBrowserTriggeredNavigation,
@@ -45,7 +48,10 @@ import {
   RestoredState,
   UrlCreationOptions,
 } from './navigation_transition';
+import {ROUTE_INJECTOR_CLEANUP} from './route_injector_cleanup';
+
 import {RouteReuseStrategy} from './route_reuse_strategy';
+
 import {ROUTER_CONFIGURATION} from './router_config';
 import {ROUTES} from './router_config_loader';
 import {Params} from './shared';
@@ -158,6 +164,11 @@ export class Router {
    */
   routeReuseStrategy: RouteReuseStrategy = inject(RouteReuseStrategy);
 
+  /** @internal */
+  readonly injectorCleanup = inject(ROUTE_INJECTOR_CLEANUP, {optional: true});
+
+  // TODO: Consider exposing releaseUnusedRouteInjectors as a public API
+
   /**
    * How to handle a navigation request to the current URL.
    *
@@ -191,7 +202,9 @@ export class Router {
 
     this.navigationTransitions.setupNavigations(this).subscribe({
       error: (e) => {
-        this.console.warn(ngDevMode ? `Unhandled Navigation Error: ${e}` : e);
+        // Note: This subscription is not unsubscribed when the `Router` is destroyed.
+        // This is intentional as the `Router` is generally never destroyed.
+        // If it is destroyed, the `events` subject is completed, which cleans up this subscription.
       },
     });
     this.subscribeToNavigationEvents();
@@ -217,6 +230,7 @@ export class Router {
             this.navigated = true;
           } else if (e instanceof NavigationEnd) {
             this.navigated = true;
+            this.injectorCleanup?.(this.routeReuseStrategy, this.routerState, this.config);
           } else if (e instanceof RedirectRequest) {
             const opts = e.navigationBehaviorOptions;
             const mergedTree = this.urlHandlingStrategy.merge(
@@ -247,6 +261,7 @@ export class Router {
             });
           }
         }
+
         // Note that it's important to have the Router process the events _before_ the event is
         // pushed through the public observable. This ensures the correct router state is in place
         // before applications observe the events.
