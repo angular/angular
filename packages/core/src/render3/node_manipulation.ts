@@ -250,6 +250,7 @@ export function detachViewFromDOM(tView: TView, lView: LView) {
  *  - Destroy only called on movement to sibling or movement to parent (laterally or up)
  *
  *  @param rootView The view to destroy
+ * TODO: Relevant?
  */
 export function destroyViewTree(rootView: LView): void {
   // If the view has no children, we can clean it up and return early.
@@ -388,7 +389,10 @@ function runLeaveAnimationsWithCallback(
   if (animations == null || animations.leave == undefined || !animations.leave.has(tNode.index))
     return callback(false);
 
-  if (lView) allLeavingAnimations.add(lView[ID]);
+  if (lView) {
+    console.log(`runLeaveAnimationsWithCallback scheduling: ${lView[ID]}\n${new Error().stack}`); // DEBUG
+    allLeavingAnimations.add(lView[ID]);
+  }
 
   addToAnimationQueue(
     injector,
@@ -411,7 +415,11 @@ function runLeaveAnimationsWithCallback(
         animations.running = Promise.allSettled(runningAnimations);
         runAfterLeaveAnimations(lView!, callback);
       } else {
-        if (lView) allLeavingAnimations.delete(lView[ID]);
+        if (lView) {
+          allLeavingAnimations.delete(lView[ID]);
+        } else {
+          console.log('runAfterLeaveAnimations: Not deleting.'); // DEBUG
+        }
         callback(false);
       }
     },
@@ -425,9 +433,12 @@ function runAfterLeaveAnimations(lView: LView, callback: Function) {
     runningAnimations.then(() => {
       lView[ANIMATIONS]!.running = undefined;
       allLeavingAnimations.delete(lView[ID]);
+      console.log(`runAfterLeaveAnimations: Deleting: ${lView[ID]}`); // DEBUG
       callback(true);
     });
     return;
+  } else {
+    console.log(`runAfterLeaveAnimations: Not deleting: ${lView[ID]}`); // DEBUG
   }
   callback(false);
 }

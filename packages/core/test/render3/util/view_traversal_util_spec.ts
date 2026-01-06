@@ -21,9 +21,7 @@ describe('view_traversal_util', () => {
 
       @Component({
         selector: 'app-child1',
-        template: `
-          <app-grandchild />
-        `,
+        template: ` <app-grandchild /> `,
         imports: [Grandchild],
       })
       class Child1 {}
@@ -60,6 +58,7 @@ describe('view_traversal_util', () => {
       expect(descendants).toContain(
         readPatchedLView(root.query(By.css('app-grandchild')).componentInstance)!,
       );
+      expect(duplicates(descendants)).toHaveSize(0);
     });
 
     it('yields nothing for components with no descendants', () => {
@@ -75,6 +74,7 @@ describe('view_traversal_util', () => {
       const descendants = Array.from(walkDescendants(rootComponentLView));
 
       expect(descendants).toEqual([]);
+      expect(duplicates(descendants)).toHaveSize(0);
     });
 
     it('yields dynamic descendants', () => {
@@ -118,6 +118,87 @@ describe('view_traversal_util', () => {
       expect(descendants).toContain(
         readPatchedLView(root.query(By.css('app-child2')).componentInstance)!,
       );
+      expect(duplicates(descendants)).toHaveSize(0);
+    });
+
+    it('yields projected descendants', () => {
+      @Component({
+        selector: 'app-projected-child',
+        template: ``,
+      })
+      class ProjectedChild {}
+
+      @Component({
+        selector: 'app-projected',
+        template: `<app-projected-child />`,
+        imports: [ProjectedChild],
+      })
+      class Projected {}
+
+      @Component({
+        selector: 'app-child',
+        template: `<ng-content />`,
+      })
+      class Child {}
+
+      @Component({
+        selector: 'app-root',
+        template: `
+          <app-child>
+            <app-projected />
+          </app-child>
+        `,
+        imports: [Child, Projected],
+      })
+      class Root {}
+
+      const fixture = TestBed.createComponent(Root);
+      fixture.detectChanges();
+
+      const root = fixture.debugElement;
+
+      {
+        const rootLView = readPatchedLView(fixture.componentInstance)!;
+        const descendants = Array.from(walkDescendants(rootLView));
+
+        expect(descendants).toContain(
+          readPatchedLView(root.query(By.css('app-projected')).componentInstance)!,
+        );
+        expect(descendants).toContain(
+          readPatchedLView(root.query(By.css('app-projected-child')).componentInstance)!,
+        );
+        expect(duplicates(descendants)).toHaveSize(0);
+      }
+
+      // Check for views projected from ancestors outside the root.
+      {
+        const childLView = readPatchedLView(
+          fixture.debugElement.query(By.css('app-child'))!.componentInstance,
+        )!;
+        const descendants = Array.from(walkDescendants(childLView));
+
+        expect(descendants).toContain(
+          readPatchedLView(root.query(By.css('app-projected')).componentInstance)!,
+        );
+        expect(descendants).toContain(
+          readPatchedLView(root.query(By.css('app-projected-child')).componentInstance)!,
+        );
+        expect(duplicates(descendants)).toHaveSize(0);
+      }
     });
   });
 });
+
+function duplicates<T>(items: Iterable<T>): Set<T> {
+  const seen = new Set<T>();
+  const duplicates = new Set<T>();
+  for (const item of items) {
+    if (seen.has(item)) {
+      duplicates.add(item);
+    } else {
+      seen.add(item);
+    }
+  }
+
+  return duplicates;
+}
