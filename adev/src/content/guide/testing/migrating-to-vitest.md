@@ -228,7 +228,7 @@ If you set `runnerConfig` to `true`, the builder will automatically search for a
 ## `zone.js` based helpers are not supported
 
 The zone.js patches are not applied when running tests with Vitest, there for you won't be able use functions like `fakeAsync`, `flush` or `waitForAsync`.
-To migrate to Vitest you will also need to migrate your tests to native async and Vitest fake timers. See [an example here](/components-scenarios#async-test-with-a-vitest-fake-timers) for fake timers usages with Vitest.
+To migrate to Vitest you will also need to migrate your tests to native async and Vitest fake timers. See [an example here](/guide/testing/components-scenarios#async-test-with-a-vitest-fake-timers) for fake timers usages with Vitest.
 
 ## Bug reports
 
