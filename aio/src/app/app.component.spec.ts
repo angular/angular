@@ -877,6 +877,12 @@ describe('AppComponent', () => {
           testCurrentNodes.next({SideNav: {url: 'foo', view: 'SideNav', nodes: []}});
           verifyNoRedirection();
 
+          testCurrentNodes.next({'': {url: 'license', view: '', nodes: []}});
+          verifyNoRedirection();
+
+          testCurrentNodes.next({'': {url: 'community', view: '', nodes: []}});
+          verifyPossibleRedirection();
+
           testCurrentNodes.next({NoSideNav: {url: 'bar', view: 'SideNav', nodes: []}});
           verifyPossibleRedirection();
 
