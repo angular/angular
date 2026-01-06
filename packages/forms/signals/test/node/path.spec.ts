@@ -8,15 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {
-  apply,
-  applyEach,
-  applyWhen,
-  customError,
-  form,
-  requiredError,
-  validate,
-} from '../../public_api';
+import {apply, applyEach, applyWhen, form, requiredError, validate} from '../../public_api';
 
 describe('path', () => {
   describe('Active path', () => {
@@ -51,7 +43,7 @@ describe('path', () => {
           apply(path, () => {
             expect(() => {
               validate(path.last, () => {
-                return customError();
+                return {kind: 'custom'};
               });
             }).toThrowError();
           });
@@ -69,7 +61,7 @@ describe('path', () => {
           apply(path, () => {
             expect(() => {
               validate(path, () => {
-                return customError();
+                return {kind: 'custom'};
               });
             }).toThrowError();
           });
@@ -90,7 +82,7 @@ describe('path', () => {
           applyEach(path.items, () => {
             expect(() => {
               validate(path.needLastName, () => {
-                return customError();
+                return {kind: 'custom'};
               });
             }).toThrowError();
           });

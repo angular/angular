@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {customError, form, max, maxError} from '../../../../public_api';
+import {form, max, maxError} from '../../../../public_api';
 
 describe('max validator', () => {
   it('returns max error when the value is larger', () => {
@@ -58,7 +58,7 @@ describe('max validator', () => {
         (p) => {
           max(p.age, 5, {
             error: ({value}) => {
-              return customError({kind: 'special-max', message: value()?.toString()});
+              return {kind: 'special-max', message: value()?.toString()};
             },
           });
         },
@@ -66,11 +66,11 @@ describe('max validator', () => {
       );
 
       expect(f.age().errors()).toEqual([
-        customError({
+        {
           kind: 'special-max',
           message: '6',
           fieldTree: f.age,
-        }),
+        },
       ]);
     });
 
@@ -103,16 +103,14 @@ describe('max validator', () => {
             error: ({value, valueOf}) => {
               return valueOf(p.name) === 'disabled'
                 ? []
-                : customError({kind: 'special-max', message: value()?.toString()});
+                : {kind: 'special-max', message: value()?.toString()};
             },
           });
         },
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([
-        customError({kind: 'special-max', message: '6', fieldTree: f.age}),
-      ]);
+      expect(f.age().errors()).toEqual([{kind: 'special-max', message: '6', fieldTree: f.age}]);
       f.name().value.set('disabled');
       expect(f.age().errors()).toEqual([]);
     });
@@ -154,7 +152,7 @@ describe('max validator', () => {
         (p) => {
           max(p.age, 5, {
             error: ({value}) => {
-              return customError({kind: 'special-max', message: value()?.toString()});
+              return {kind: 'special-max', message: value()?.toString()};
             },
           });
         },

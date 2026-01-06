@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {customError, form, maxLength, maxLengthError} from '../../../../public_api';
+import {form, maxLength, maxLengthError} from '../../../../public_api';
 
 describe('maxLength validator', () => {
   it('returns maxLength error when the length is larger for strings', () => {
@@ -70,10 +70,10 @@ describe('maxLength validator', () => {
       (p) => {
         maxLength(p.text, 5, {
           error: ({value}) => {
-            return customError({
+            return {
               kind: 'special-maxLength',
               message: `Length is ${value().length}`,
-            });
+            };
           },
         });
       },
@@ -81,11 +81,11 @@ describe('maxLength validator', () => {
     );
 
     expect(f.text().errors()).toEqual([
-      customError({
+      {
         kind: 'special-maxLength',
         message: 'Length is 6',
         fieldTree: f.text,
-      }),
+      },
     ]);
   });
 
@@ -145,10 +145,10 @@ describe('maxLength validator', () => {
         (p) => {
           maxLength(p.text, 5, {
             error: ({value}) => {
-              return customError({
+              return {
                 kind: 'special-maxLength',
                 message: `Length is ${value().length}`,
-              });
+              };
             },
           });
         },

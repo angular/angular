@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {customError, form, pattern, patternError} from '../../../../public_api';
+import {form, pattern, patternError} from '../../../../public_api';
 
 describe('pattern validator', () => {
   it('validates whether a value matches the pattern', () => {
@@ -29,12 +29,12 @@ describe('pattern validator', () => {
     const f = form(
       cat,
       (p) => {
-        pattern(p.name, /pir.*jok/, {error: customError()});
+        pattern(p.name, /pir.*jok/, {error: {kind: 'invalid-pattern'}});
       },
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.name().errors()).toEqual([customError({fieldTree: f.name})]);
+    expect(f.name().errors()).toEqual([{kind: 'invalid-pattern', fieldTree: f.name}]);
   });
 
   it('supports custom error message', () => {

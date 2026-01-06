@@ -16,7 +16,6 @@ import type {
   SchemaPath,
   SchemaPathRules,
 } from '../../types';
-import {ensureCustomValidationResult} from './util';
 
 /**
  * Adds logic to a field to determine if the field has validation errors.
@@ -37,8 +36,6 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.builder.addSyncErrorRule((ctx) => {
-    return ensureCustomValidationResult(
-      addDefaultField(logic(ctx as FieldContext<TValue, TPathKind>), ctx.fieldTree),
-    );
+    return addDefaultField(logic(ctx as FieldContext<TValue, TPathKind>), ctx.fieldTree);
   });
 }

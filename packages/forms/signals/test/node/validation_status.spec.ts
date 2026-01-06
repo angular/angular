@@ -9,7 +9,6 @@
 import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  customError,
   FieldTree,
   form,
   NgValidationError,
@@ -22,14 +21,14 @@ import {
 } from '../../public_api';
 
 function validateValue(value: string): ValidationError[] {
-  return value === 'INVALID' ? [customError()] : [];
+  return value === 'INVALID' ? [{kind: 'custom'}] : [];
 }
 
 function validateValueForChild(
   value: string,
   fieldTree: FieldTree<unknown> | undefined,
-): ValidationError.WithField[] {
-  return value === 'INVALID' ? [customError({fieldTree})] : [];
+): ValidationError.WithOptionalField[] {
+  return value === 'INVALID' ? [{kind: 'custom', fieldTree: fieldTree}] : [];
 }
 
 describe('validation status', () => {
@@ -423,7 +422,7 @@ describe('validation status', () => {
         signal('MIXED'),
         (p) => {
           validate(p, () => []);
-          validate(p, () => [customError()]);
+          validate(p, () => [{kind: 'custom'}]);
         },
         {injector},
       );
@@ -463,7 +462,7 @@ describe('validation status', () => {
       let res!: Resource<unknown>;
       let res2!: Resource<unknown>;
 
-      const promise = Promise.resolve<ValidationError[]>([customError()]);
+      const promise = Promise.resolve<ValidationError[]>([{kind: 'custom'}]);
       const promise2 = new Promise<ValidationError[]>(() => {});
       const f = form(
         signal('MIXED'),
@@ -506,7 +505,7 @@ describe('validation status', () => {
       let res: Resource<unknown>;
       let res2: Resource<unknown>;
 
-      const invalidPromise = Promise.resolve<ValidationError[]>([customError()]);
+      const invalidPromise = Promise.resolve<ValidationError[]>([{kind: 'custom'}]);
       const validPromise = Promise.resolve<ValidationError[]>([]);
       const pendingPromise = new Promise<ValidationError[]>(() => {});
 
@@ -564,7 +563,7 @@ describe('validation status', () => {
     it('instanceof should check if structure matches a standard error type', () => {
       const e1 = requiredError();
       expect(e1 instanceof NgValidationError).toBe(true);
-      const e2 = customError({kind: 'min', min: 'two'});
+      const e2 = {kind: 'min', min: 'two'};
       expect(e2 instanceof NgValidationError).toBe(false);
       const e3 = patternError(/.*@.*\.com/);
       expect(e3 instanceof NgValidationError).toBe(true);

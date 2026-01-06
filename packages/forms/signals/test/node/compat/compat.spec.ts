@@ -11,7 +11,6 @@ import {TestBed} from '@angular/core/testing';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {compatForm, CompatValidationError} from '../../../compat/public_api';
 import {
-  customError,
   disabled,
   email,
   FieldState,
@@ -457,7 +456,7 @@ describe('Forms compat', () => {
         },
       );
 
-      expect(f().errors()).toEqual([customError({kind: 'too small', fieldTree: f})]);
+      expect(f().errors()).toEqual([{kind: 'too small', fieldTree: f}]);
     });
 
     it('supports getting control from fieldTreeOf', () => {
@@ -484,7 +483,7 @@ describe('Forms compat', () => {
         },
       );
 
-      expect(f().errors()).toEqual([customError({kind: 'too small', fieldTree: f})]);
+      expect(f().errors()).toEqual([{kind: 'too small', fieldTree: f}]);
     });
 
     it('fails for regular values', () => {
@@ -538,7 +537,7 @@ describe('Forms compat', () => {
         required(path.name);
 
         validate(path.name, ({valueOf}) => {
-          return valueOf(path.age) < 8 ? customError({kind: 'too small'}) : undefined;
+          return valueOf(path.age) < 8 ? {kind: 'too small'} : undefined;
         });
       },
       {
@@ -548,10 +547,10 @@ describe('Forms compat', () => {
 
     expect(f.name().valid()).toBe(false);
     expect(f.name().errors()).toEqual([
-      customError({
+      {
         kind: 'too small',
         fieldTree: f.name,
-      }),
+      },
     ]);
 
     control.setValue(10);
@@ -703,7 +702,7 @@ describe('Forms compat', () => {
           required(path.name);
 
           validate(path.name, ({valueOf}) => {
-            return valueOf(path.age) < 8 ? customError({kind: 'too small'}) : undefined;
+            return valueOf(path.age) < 8 ? {kind: 'too small'} : undefined;
           });
           required(path.name, {
             when: ({valueOf}) => {

@@ -155,7 +155,7 @@ export function form<TModel>(
  * ```ts
  * const nameForm = form(signal({first: '', last: ''}), (name) => {
  *   required(name.first);
- *   validate(name.last, ({value}) => !/^[a-z]+$/i.test(value()) ? customError({kind: 'alphabet-only'}) : undefined);
+ *   validate(name.last, ({value}) => !/^[a-z]+$/i.test(value()) ? {kind: 'alphabet-only'} : undefined);
  * });
  * nameForm().valid(); // false
  * nameForm().value.set({first: 'John', last: 'Doe'});

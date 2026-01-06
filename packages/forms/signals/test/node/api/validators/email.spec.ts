@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {email, form} from '../../../../public_api';
-import {customError, emailError} from '../../../../src/api/rules/validation/validation_errors';
+import {emailError} from '../../../../src/api/rules/validation/validation_errors';
 
 describe('email validator', () => {
   it('returns requiredTrue error when the value is false', () => {
@@ -35,7 +35,7 @@ describe('email validator', () => {
       cat,
       (p) => {
         email(p.email, {
-          error: (ctx) => customError({kind: `special-email-${ctx.valueOf(p.name)}`}),
+          error: (ctx) => ({kind: `special-email-${ctx.valueOf(p.name)}`}),
         });
       },
       {
@@ -44,10 +44,10 @@ describe('email validator', () => {
     );
 
     expect(f.email().errors()).toEqual([
-      customError({
+      {
         kind: 'special-email-pirojok-the-cat',
         fieldTree: f.email,
-      }),
+      },
     ]);
   });
 

@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isArray} from '../../../util/type_guards';
-import {LogicFn, OneOrMany, PathKind, ValidationResult, type FieldContext} from '../../types';
-import {customError, ValidationError} from './validation_errors';
+import {LogicFn, OneOrMany, PathKind, type FieldContext} from '../../types';
+import {ValidationError} from './validation_errors';
 
 /** Represents a value that has a length or size, such as an array or string, or set. */
 export type ValueWithLengthOrSize = {length: number} | {size: number};
@@ -58,44 +57,4 @@ export function isEmpty(value: unknown): boolean {
     return isNaN(value);
   }
   return value === '' || value === false || value == null;
-}
-
-/**
- * Whether the value is a plain object, as opposed to being an instance of Validation error.
- * @param error An error that could be a plain object, or an instance of a class implementing ValidationError.
- */
-function isPlainError(error: ValidationError) {
-  return (
-    typeof error === 'object' &&
-    (Object.getPrototypeOf(error) === Object.prototype || Object.getPrototypeOf(error) === null)
-  );
-}
-
-/**
- * If the value provided is a plain object, it wraps it into a custom error.
- * @param error An error that could be a plain object, or an instance of a class implementing ValidationError.
- */
-function ensureCustomValidationError(error: ValidationError.WithField): ValidationError.WithField {
-  if (isPlainError(error)) {
-    return customError(error);
-  }
-  return error;
-}
-
-/**
- * Makes sure every provided error is wrapped as a custom error.
- * @param result Validation result with a field.
- */
-export function ensureCustomValidationResult(
-  result: ValidationResult<ValidationError.WithField>,
-): ValidationResult<ValidationError.WithField> {
-  if (result === null || result === undefined) {
-    return result;
-  }
-
-  if (isArray(result)) {
-    return result.map(ensureCustomValidationError);
-  }
-
-  return ensureCustomValidationError(result);
 }
