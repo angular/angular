@@ -36,6 +36,7 @@ function isCloudinaryUrl(url: string): boolean {
  * https://subdomain.mysite.com
  * @returns Set of providers to configure the Cloudinary loader.
  *
+ * @see [Image Optimization Guide](guide/image-optimization)
  * @publicApi
  */
 export const provideCloudinaryLoader: (path: string) => Provider[] = createImageLoader(

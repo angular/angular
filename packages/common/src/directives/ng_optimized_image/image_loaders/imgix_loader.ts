@@ -34,6 +34,7 @@ function isImgixUrl(url: string): boolean {
  * e.g. https://somepath.imgix.net or https://images.mysite.com
  * @returns Set of providers to configure the Imgix loader.
  *
+ * @see [Image Optimization Guide](guide/image-optimization)
  * @publicApi
  */
 export const provideImgixLoader: (path: string) => Provider[] = createImageLoader(
