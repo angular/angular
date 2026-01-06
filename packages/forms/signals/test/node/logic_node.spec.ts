@@ -7,7 +7,7 @@
  */
 
 import {computed, signal} from '@angular/core';
-import {customError, FieldContext} from '../../public_api';
+import {FieldContext} from '../../public_api';
 import {DYNAMIC} from '../../src/schema/logic';
 import {LogicNodeBuilder} from '../../src/schema/logic_node';
 
@@ -32,11 +32,11 @@ describe('LogicNodeBuilder', () => {
     // };
 
     const builder = LogicNodeBuilder.newRoot();
-    builder.addSyncErrorRule(() => [customError({kind: 'root-err'})]);
+    builder.addSyncErrorRule(() => [{kind: 'root-err', fieldTree: undefined as any}]);
 
     const logicNode = builder.build();
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'root-err'}),
+      {kind: 'root-err', fieldTree: undefined as any},
     ]);
   });
 
@@ -46,11 +46,11 @@ describe('LogicNodeBuilder', () => {
     // };
 
     const builder = LogicNodeBuilder.newRoot();
-    builder.getChild('a').addSyncErrorRule(() => [customError({kind: 'root-err'})]);
+    builder.getChild('a').addSyncErrorRule(() => [{kind: 'root-err', fieldTree: undefined as any}]);
 
     const logicNode = builder.build();
     expect(logicNode.getChild('a').logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'root-err'}),
+      {kind: 'root-err', fieldTree: undefined as any},
     ]);
   });
 
@@ -61,16 +61,16 @@ describe('LogicNodeBuilder', () => {
     // };
 
     const builder = LogicNodeBuilder.newRoot();
-    builder.addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+    builder.addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
 
     const builder2 = LogicNodeBuilder.newRoot();
-    builder2.addSyncErrorRule(() => [customError({kind: 'err-2'})]);
+    builder2.addSyncErrorRule(() => [{kind: 'err-2', fieldTree: undefined as any}]);
     builder.mergeIn(builder2);
 
     const logicNode = builder.build();
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
-      customError({kind: 'err-2'}),
+      {kind: 'err-1', fieldTree: undefined as any},
+      {kind: 'err-2', fieldTree: undefined as any},
     ]);
   });
 
@@ -81,16 +81,16 @@ describe('LogicNodeBuilder', () => {
     // };
 
     const builder = LogicNodeBuilder.newRoot();
-    builder.getChild('a').addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+    builder.getChild('a').addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
 
     const builder2 = LogicNodeBuilder.newRoot();
-    builder2.getChild('a').addSyncErrorRule(() => [customError({kind: 'err-2'})]);
+    builder2.getChild('a').addSyncErrorRule(() => [{kind: 'err-2', fieldTree: undefined as any}]);
     builder.mergeIn(builder2);
 
     const logicNode = builder.build();
     expect(logicNode.getChild('a').logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
-      customError({kind: 'err-2'}),
+      {kind: 'err-1', fieldTree: undefined as any},
+      {kind: 'err-2', fieldTree: undefined as any},
     ]);
   });
 
@@ -105,12 +105,12 @@ describe('LogicNodeBuilder', () => {
 
     const pred = signal(true);
     const builder2 = LogicNodeBuilder.newRoot();
-    builder2.addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+    builder2.addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
     builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
+      {kind: 'err-1', fieldTree: undefined as any},
     ]);
 
     pred.set(false);
@@ -132,14 +132,14 @@ describe('LogicNodeBuilder', () => {
     const builder2 = LogicNodeBuilder.newRoot();
 
     const builder3 = LogicNodeBuilder.newRoot();
-    builder3.addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+    builder3.addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
 
     builder2.mergeIn(builder3);
     builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
+      {kind: 'err-1', fieldTree: undefined as any},
     ]);
 
     pred.set(false);
@@ -161,14 +161,14 @@ describe('LogicNodeBuilder', () => {
     const builder2 = LogicNodeBuilder.newRoot();
 
     const builder3 = LogicNodeBuilder.newRoot();
-    builder3.getChild('a').addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+    builder3.getChild('a').addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
 
     builder2.mergeIn(builder3);
     builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(logicNode.getChild('a').logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
+      {kind: 'err-1', fieldTree: undefined as any},
     ]);
 
     pred.set(false);
@@ -191,14 +191,14 @@ describe('LogicNodeBuilder', () => {
 
     const pred2 = signal(true);
     const builder3 = LogicNodeBuilder.newRoot();
-    builder3.addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+    builder3.addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
 
     builder2.getChild('a').mergeIn(builder3, {fn: () => pred2(), path: undefined!});
     builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(logicNode.getChild('a').logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
+      {kind: 'err-1', fieldTree: undefined as any},
     ]);
 
     pred.set(false);
@@ -230,15 +230,15 @@ describe('LogicNodeBuilder', () => {
     builder2
       .getChild('a')
       .getChild('b')
-      .addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+      .addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
 
     const pred2 = signal(true);
     const builder3 = LogicNodeBuilder.newRoot();
-    builder3.getChild('b').addSyncErrorRule(() => [customError({kind: 'err-2'})]);
+    builder3.getChild('b').addSyncErrorRule(() => [{kind: 'err-2', fieldTree: undefined as any}]);
 
     const pred3 = signal(true);
     const builder4 = LogicNodeBuilder.newRoot();
-    builder4.addSyncErrorRule(() => [customError({kind: 'err-3'})]);
+    builder4.addSyncErrorRule(() => [{kind: 'err-3', fieldTree: undefined as any}]);
     builder3.getChild('b').mergeIn(builder4, {fn: () => pred3(), path: undefined!});
     builder2.getChild('a').mergeIn(builder3, {fn: () => pred2(), path: undefined!});
     builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
@@ -247,9 +247,9 @@ describe('LogicNodeBuilder', () => {
     expect(
       logicNode.getChild('a').getChild('b').logic.syncErrors.compute(fakeFieldContext),
     ).toEqual([
-      customError({kind: 'err-1'}),
-      customError({kind: 'err-2'}),
-      customError({kind: 'err-3'}),
+      {kind: 'err-1', fieldTree: undefined as any},
+      {kind: 'err-2', fieldTree: undefined as any},
+      {kind: 'err-3', fieldTree: undefined as any},
     ]);
 
     pred.set(true);
@@ -257,14 +257,17 @@ describe('LogicNodeBuilder', () => {
     pred3.set(false);
     expect(
       logicNode.getChild('a').getChild('b').logic.syncErrors.compute(fakeFieldContext),
-    ).toEqual([customError({kind: 'err-1'}), customError({kind: 'err-2'})]);
+    ).toEqual([
+      {kind: 'err-1', fieldTree: undefined as any},
+      {kind: 'err-2', fieldTree: undefined as any},
+    ]);
 
     pred.set(true);
     pred2.set(false);
     pred3.set(true);
     expect(
       logicNode.getChild('a').getChild('b').logic.syncErrors.compute(fakeFieldContext),
-    ).toEqual([customError({kind: 'err-1'})]);
+    ).toEqual([{kind: 'err-1', fieldTree: undefined as any}]);
 
     pred.set(false);
     pred2.set(true);
@@ -289,7 +292,9 @@ describe('LogicNodeBuilder', () => {
     const builder2 = LogicNodeBuilder.newRoot();
 
     const builder3 = LogicNodeBuilder.newRoot();
-    builder3.getChild('last').addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+    builder3
+      .getChild('last')
+      .addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
 
     builder2.getChild('items').getChild(DYNAMIC).mergeIn(builder3);
     builder.mergeIn(builder2, {fn: () => pred(), path: undefined!});
@@ -301,7 +306,7 @@ describe('LogicNodeBuilder', () => {
         .getChild(DYNAMIC)
         .getChild('last')
         .logic.syncErrors.compute(fakeFieldContext),
-    ).toEqual([customError({kind: 'err-1'})]);
+    ).toEqual([{kind: 'err-1', fieldTree: undefined as any}]);
 
     pred.set(false);
     expect(
@@ -323,19 +328,19 @@ describe('LogicNodeBuilder', () => {
     // };
 
     const builder = LogicNodeBuilder.newRoot();
-    builder.addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+    builder.addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
 
     const builder2 = LogicNodeBuilder.newRoot();
-    builder2.addSyncErrorRule(() => [customError({kind: 'err-2'})]);
+    builder2.addSyncErrorRule(() => [{kind: 'err-2', fieldTree: undefined as any}]);
     builder.mergeIn(builder2);
 
-    builder.addSyncErrorRule(() => [customError({kind: 'err-3'})]);
+    builder.addSyncErrorRule(() => [{kind: 'err-3', fieldTree: undefined as any}]);
 
     const logicNode = builder.build();
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
-      customError({kind: 'err-2'}),
-      customError({kind: 'err-3'}),
+      {kind: 'err-1', fieldTree: undefined as any},
+      {kind: 'err-2', fieldTree: undefined as any},
+      {kind: 'err-3', fieldTree: undefined as any},
     ]);
   });
 
@@ -349,19 +354,19 @@ describe('LogicNodeBuilder', () => {
     // };
 
     const builder = LogicNodeBuilder.newRoot();
-    builder.getChild('a').addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+    builder.getChild('a').addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
 
     const builder2 = LogicNodeBuilder.newRoot();
-    builder2.getChild('a').addSyncErrorRule(() => [customError({kind: 'err-2'})]);
+    builder2.getChild('a').addSyncErrorRule(() => [{kind: 'err-2', fieldTree: undefined as any}]);
     builder.mergeIn(builder2);
 
-    builder.getChild('a').addSyncErrorRule(() => [customError({kind: 'err-3'})]);
+    builder.getChild('a').addSyncErrorRule(() => [{kind: 'err-3', fieldTree: undefined as any}]);
 
     const logicNode = builder.build();
     expect(logicNode.getChild('a').logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
-      customError({kind: 'err-2'}),
-      customError({kind: 'err-3'}),
+      {kind: 'err-1', fieldTree: undefined as any},
+      {kind: 'err-2', fieldTree: undefined as any},
+      {kind: 'err-3', fieldTree: undefined as any},
     ]);
   });
 
@@ -372,19 +377,19 @@ describe('LogicNodeBuilder', () => {
     // }));
 
     const builder = LogicNodeBuilder.newRoot();
-    builder.addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+    builder.addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
     builder.getChild('next').mergeIn(builder);
 
     const logicNode = builder.build();
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
+      {kind: 'err-1', fieldTree: undefined as any},
     ]);
     expect(logicNode.getChild('next').logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
+      {kind: 'err-1', fieldTree: undefined as any},
     ]);
     expect(
       logicNode.getChild('next').getChild('next').logic.syncErrors.compute(fakeFieldContext),
-    ).toEqual([customError({kind: 'err-1'})]);
+    ).toEqual([{kind: 'err-1', fieldTree: undefined as any}]);
   });
 
   it('should support circular logic structures with predicate', () => {
@@ -395,25 +400,25 @@ describe('LogicNodeBuilder', () => {
 
     const pred = signal(true);
     const builder = LogicNodeBuilder.newRoot();
-    builder.addSyncErrorRule(() => [customError({kind: 'err-1'})]);
+    builder.addSyncErrorRule(() => [{kind: 'err-1', fieldTree: undefined as any}]);
     builder.getChild('next').mergeIn(builder, {fn: () => pred(), path: undefined!});
 
     const logicNode = builder.build();
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
+      {kind: 'err-1', fieldTree: undefined as any},
     ]);
     expect(logicNode.getChild('next').logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
+      {kind: 'err-1', fieldTree: undefined as any},
     ]);
     expect(
       logicNode.getChild('next').getChild('next').logic.syncErrors.compute(fakeFieldContext),
-    ).toEqual([customError({kind: 'err-1'})]);
+    ).toEqual([{kind: 'err-1', fieldTree: undefined as any}]);
 
     // TODO: test that verifies that the same predicate can resolve with a different field context
     // on `.next` vs on `.next.next`
     pred.set(false);
     expect(logicNode.logic.syncErrors.compute(fakeFieldContext)).toEqual([
-      customError({kind: 'err-1'}),
+      {kind: 'err-1', fieldTree: undefined as any},
     ]);
     expect(logicNode.getChild('next').logic.syncErrors.compute(fakeFieldContext)).toEqual([]);
     expect(

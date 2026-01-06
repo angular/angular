@@ -15,7 +15,6 @@ import {
   applyEach,
   applyWhen,
   createManagedMetadataKey,
-  customError,
   form,
   metadata,
   required,
@@ -69,7 +68,7 @@ describe('resources', () => {
       validate(p.name, ({state}) => {
         const remote = state.metadata(RES)!;
         if (remote.hasValue()) {
-          return customError({message: remote.value()});
+          return {message: remote.value(), kind: 'custom'};
         } else {
           return undefined;
         }
@@ -82,19 +81,21 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f.name().errors()).toEqual([
-      customError({
+      {
         message: 'got: cat',
         fieldTree: f.name,
-      }),
+        kind: 'custom',
+      },
     ]);
 
     f.name().value.set('dog');
     await appRef.whenStable();
     expect(f.name().errors()).toEqual([
-      customError({
+      {
         message: 'got: dog',
         fieldTree: f.name,
-      }),
+        kind: 'custom',
+      },
     ]);
   });
 
@@ -112,7 +113,7 @@ describe('resources', () => {
         validate(p.name, ({state}) => {
           const remote = state.metadata(RES)!;
           if (remote.hasValue()) {
-            return customError({message: remote.value()});
+            return {message: remote.value(), kind: 'custom'};
           } else {
             return undefined;
           }
@@ -126,31 +127,35 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0].name().errors()).toEqual([
-      customError({
+      {
         message: 'got: cat',
         fieldTree: f[0].name,
-      }),
+        kind: 'custom',
+      },
     ]);
     expect(f[1].name().errors()).toEqual([
-      customError({
+      {
         message: 'got: dog',
         fieldTree: f[1].name,
-      }),
+        kind: 'custom',
+      },
     ]);
 
     f[0].name().value.set('bunny');
     await appRef.whenStable();
     expect(f[0].name().errors()).toEqual([
-      customError({
+      {
         message: 'got: bunny',
         fieldTree: f[0].name,
-      }),
+        kind: 'custom',
+      },
     ]);
     expect(f[1].name().errors()).toEqual([
-      customError({
+      {
         message: 'got: dog',
         fieldTree: f[1].name,
-      }),
+        kind: 'custom',
+      },
     ]);
   });
 
@@ -166,13 +171,11 @@ describe('resources', () => {
             },
           }),
         onSuccess: (cats, {fieldTreeOf}) => {
-          return cats.map((cat, index) =>
-            customError({
-              kind: 'meows_too_much',
-              name: cat.name,
-              fieldTree: fieldTreeOf(p)[index],
-            }),
-          );
+          return cats.map((cat, index) => ({
+            kind: 'meows_too_much',
+            name: cat.name,
+            fieldTree: fieldTreeOf(p)[index],
+          }));
         },
         onError: () => null,
       });
@@ -183,10 +186,14 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      customError({kind: 'meows_too_much', name: 'Fluffy', fieldTree: f[0]}),
+      jasmine.objectContaining({
+        kind: 'meows_too_much',
+        name: 'Fluffy',
+        fieldTree: f[0],
+      }),
     ]);
     expect(f[1]().errors()).toEqual([
-      customError({kind: 'meows_too_much', name: 'Ziggy', fieldTree: f[1]}),
+      jasmine.objectContaining({kind: 'meows_too_much', name: 'Ziggy', fieldTree: f[1]}),
     ]);
   });
 
@@ -202,11 +209,11 @@ describe('resources', () => {
             },
           }),
         onSuccess: (cats, {fieldTreeOf}) => {
-          return customError({
+          return {
             kind: 'meows_too_much',
             name: cats[0].name,
             fieldTree: fieldTreeOf(p)[0],
-          });
+          };
         },
         onError: () => null,
       });
@@ -217,7 +224,7 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      customError({kind: 'meows_too_much', name: 'Fluffy', fieldTree: f[0]}),
+      {kind: 'meows_too_much', name: 'Fluffy', fieldTree: f[0]} as any,
     ]);
     expect(f[1]().errors()).toEqual([]);
   });
@@ -228,8 +235,7 @@ describe('resources', () => {
       (p) => {
         validateHttp(p, {
           request: ({value}) => `/api/check?username=${value()}`,
-          onSuccess: (available: boolean) =>
-            available ? undefined : customError({kind: 'username-taken'}),
+          onSuccess: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
           onError: () => null,
         });
       },
@@ -273,8 +279,11 @@ describe('resources', () => {
       required(address.street);
       validateHttp(address, {
         request: ({value}) => ({url: '/checkaddress', params: {...value()}}),
-        onSuccess: (message: string, {fieldTreeOf}) =>
-          customError({message, fieldTree: fieldTreeOf(address.street)}),
+        onSuccess: (message: string, {fieldTreeOf}) => ({
+          message,
+          fieldTree: fieldTreeOf(address.street),
+          kind: '',
+        }),
         onError: () => null,
       });
     });
@@ -291,7 +300,7 @@ describe('resources', () => {
     await appRef.whenStable();
 
     expect(addressForm.street().errors()).toEqual([
-      customError({message: 'Invalid!', fieldTree: addressForm.street}),
+      {message: 'Invalid!', fieldTree: addressForm.street, kind: ''},
     ]);
   });
 
@@ -303,7 +312,7 @@ describe('resources', () => {
         request: ({value}) => ({url: '/checkaddress', params: {...value()}}),
         onSuccess: () => undefined,
         onError: () => [
-          customError({kind: 'address-api-failed', message: 'API is down', fieldTree: addressForm}),
+          {kind: 'address-api-failed', message: 'API is down', fieldTree: addressForm},
         ],
       });
     });
@@ -319,11 +328,11 @@ describe('resources', () => {
     expect(addressForm().pending()).toBe(false);
     expect(addressForm().invalid()).toBe(true);
     expect(addressForm().errors()).toEqual([
-      customError({
+      {
         kind: 'address-api-failed',
         message: 'API is down',
         fieldTree: addressForm,
-      }),
+      },
     ]);
   });
 
@@ -332,8 +341,7 @@ describe('resources', () => {
     const s = schema((p) => {
       validateHttp(p, {
         request: ({value}) => `/api/check?username=${value()}`,
-        onSuccess: (available: boolean) =>
-          available ? undefined : customError({kind: 'username-taken'}),
+        onSuccess: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
         onError: () => null,
       });
     });
