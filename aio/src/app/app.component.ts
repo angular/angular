@@ -168,7 +168,15 @@ export class AppComponent implements OnInit {
 
       // Redirect to docs if we are in archive mode and are not hitting a docs page
       // (i.e. we have arrived at a marketing page)
-      if (this.deployment.mode === 'archive' && !currentNodes[sideNavView]) {
+      if (this.deployment.mode === 'archive') {
+        // We allow visiting the license page.
+        if (currentNodes['']?.url === 'license') {
+          return;
+        }
+        // We allow visiting anything that we know to be a docs page.
+        if (currentNodes[sideNavView] !== undefined) {
+          return;
+        }
         this.locationService.replace('docs');
       }
     });
