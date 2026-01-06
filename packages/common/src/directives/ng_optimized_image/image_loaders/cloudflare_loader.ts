@@ -20,6 +20,7 @@ import {normalizeLoaderTransform} from './normalized_options';
  * @param path Your domain name, e.g. https://mysite.com
  * @returns Provider that provides an ImageLoader function
  *
+ * @see [Image Optimization Guide](guide/image-optimization)
  * @publicApi
  */
 export const provideCloudflareLoader: (path: string) => Provider[] = createImageLoader(
