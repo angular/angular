@@ -86,6 +86,7 @@ export class Location implements OnDestroy {
     try {
       this._stripTrailingSlash = inject(REMOVE_TRAILING_SLASH, {optional: true}) ?? true;
     } catch {
+      // failsafe against not calling constructor in injection context
       this._stripTrailingSlash = true;
     }
     const baseHref = this._locationStrategy.getBaseHref();

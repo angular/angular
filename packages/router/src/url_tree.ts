@@ -429,7 +429,9 @@ export class DefaultUrlSerializer implements UrlSerializer {
   constructor() {
     try {
       this.trailingSlash = inject(ROUTER_CONFIGURATION).trailingSlash;
-    } catch {}
+    } catch {
+      // failsafe against not calling constructor in injection context
+    }
   }
 
   /** Parses a url into a `UrlTree` */

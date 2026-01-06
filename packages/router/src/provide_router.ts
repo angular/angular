@@ -49,7 +49,6 @@ import {routeInjectorCleanup, ROUTE_INJECTOR_CLEANUP} from './route_injector_cle
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 
 import {ActivatedRoute} from './router_state';
-import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 import {afterNextNavigation} from './utils/navigations';
 import {
   CREATE_VIEW_TRANSITION,
@@ -112,7 +111,6 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
       ? {provide: ROUTER_IS_PROVIDED, useValue: true}
       : [],
     {provide: ActivatedRoute, useFactory: rootRoute},
-    {provide: UrlSerializer, useClass: DefaultUrlSerializer},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
     features.map((feature) => feature.ɵproviders),
   ]);
