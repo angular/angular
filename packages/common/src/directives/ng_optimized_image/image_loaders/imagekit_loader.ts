@@ -35,6 +35,7 @@ function isImageKitUrl(url: string): boolean {
  * https://subdomain.mysite.com
  * @returns Set of providers to configure the ImageKit loader.
  *
+ * @see [Image Optimization Guide](guide/image-optimization)
  * @publicApi
  */
 export const provideImageKitLoader: (path: string) => Provider[] = createImageLoader(
