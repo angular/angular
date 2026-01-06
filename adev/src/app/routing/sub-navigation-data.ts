@@ -459,11 +459,18 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                 label: 'Field state management',
                 path: 'guide/forms/signals/field-state-management',
                 contentPath: 'guide/forms/signals/field-state-management',
+                status: 'new',
               },
               {
                 label: 'Validation',
                 path: 'guide/forms/signals/validation',
                 contentPath: 'guide/forms/signals/validation',
+              },
+              {
+                label: 'Form logic',
+                path: 'guide/forms/signals/form-logic',
+                contentPath: 'guide/forms/signals/form-logic',
+                status: 'new',
               },
               {
                 label: 'Custom controls',
