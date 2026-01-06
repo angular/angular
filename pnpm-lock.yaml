@@ -4847,8 +4847,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@rollup/wasm-node@4.54.0':
-    resolution: {integrity: sha512-CeEdHzNY+ZIR6NWpIOiJuCrr6tTK7cRGeOf6GYg5f73+UwJLqn5a4d5Ovf/hOWDyHM1KcySbxHQESJ9krhe0+A==}
+  '@rollup/wasm-node@4.55.0':
+    resolution: {integrity: sha512-p006FFYmAU0UgSDNDKhqVNfM0Ix87nToWZ5wI+vQJXEoYxahSQTnl8cFaN8UEcvc2LPlf0sqD4z9VzNPqaiO6g==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
@@ -17669,7 +17669,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.52.5':
     optional: true
 
-  '@rollup/wasm-node@4.54.0':
+  '@rollup/wasm-node@4.55.0':
     dependencies:
       '@types/estree': 1.0.8
     optionalDependencies:
@@ -24253,7 +24253,7 @@ snapshots:
       '@ampproject/remapping': 2.3.0
       '@angular/compiler-cli': 21.0.6(@angular/compiler@21.0.6)(typescript@5.9.3)
       '@rollup/plugin-json': 6.1.0(rollup@4.52.5)
-      '@rollup/wasm-node': 4.54.0
+      '@rollup/wasm-node': 4.55.0
       ajv: 8.17.1
       ansi-colors: 4.1.3
       browserslist: 4.28.1
@@ -24283,7 +24283,7 @@ snapshots:
       '@ampproject/remapping': 2.3.0
       '@angular/compiler-cli': link:packages/compiler-cli
       '@rollup/plugin-json': 6.1.0(rollup@4.52.5)
-      '@rollup/wasm-node': 4.54.0
+      '@rollup/wasm-node': 4.55.0
       ajv: 8.17.1
       ansi-colors: 4.1.3
       browserslist: 4.28.1
