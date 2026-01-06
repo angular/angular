@@ -273,32 +273,6 @@ export function standardSchemaError(
 }
 
 /**
- * Create a custom error associated with the target field
- * @param obj The object to create an error from
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function customError<E extends Partial<ValidationError.WithField>>(
-  obj: WithField<E>,
-): CustomValidationError;
-/**
- * Create a custom error
- * @param obj The object to create an error from
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function customError<E extends Partial<ValidationError.WithField>>(
-  obj?: E,
-): WithoutField<CustomValidationError>;
-export function customError<E extends Partial<ValidationError.WithField>>(
-  obj?: E,
-): WithOptionalField<CustomValidationError> {
-  return new CustomValidationError(obj);
-}
-
-/**
  * Common interface for all validation errors.
  *
  * This can be returned from validators.
@@ -348,38 +322,7 @@ export declare namespace ValidationError {
    */
   export interface WithoutField extends ValidationError {
     /** The field associated with this error. */
-    readonly field?: never;
-  }
-}
-
-/**
- * A custom error that may contain additional properties
- *
- * @category validation
- * @experimental 21.0.0
- */
-export class CustomValidationError implements ValidationError {
-  /** Brand the class to avoid Typescript structural matching */
-  private __brand = undefined;
-
-  /**
-   * Allow the user to attach arbitrary other properties.
-   */
-  [key: PropertyKey]: unknown;
-
-  /** Identifies the kind of error. */
-  readonly kind: string = '';
-
-  /** The field associated with this error. */
-  readonly fieldTree!: FieldTree<unknown>;
-
-  /** Human readable error message. */
-  readonly message?: string;
-
-  constructor(options?: ValidationErrorOptions) {
-    if (options) {
-      Object.assign(this, options);
-    }
+    readonly fieldTree?: never;
   }
 }
 

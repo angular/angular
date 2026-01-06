@@ -90,21 +90,6 @@ export function createMetadataKey<TWrite>(): MetadataKey<Signal<TWrite | undefin
 export function createMetadataKey<TWrite, TAcc>(reducer: MetadataReducer<TAcc, TWrite>): MetadataKey<Signal<TAcc>, TWrite, TAcc>;
 
 // @public
-export function customError<E extends Partial<ValidationError.WithField>>(obj: WithField<E>): CustomValidationError;
-
-// @public
-export function customError<E extends Partial<ValidationError.WithField>>(obj?: E): WithoutField<CustomValidationError>;
-
-// @public
-export class CustomValidationError implements ValidationError {
-    constructor(options?: ValidationErrorOptions);
-    [key: PropertyKey]: unknown;
-    readonly fieldTree: FieldTree<unknown>;
-    readonly kind: string;
-    readonly message?: string;
-}
-
-// @public
 export function debounce<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, durationOrDebouncer: number | Debouncer<TValue, TPathKind>): void;
 
 // @public
@@ -613,7 +598,7 @@ export namespace ValidationError {
         readonly fieldTree?: FieldTree<unknown>;
     }
     export interface WithoutField extends ValidationError {
-        readonly field?: never;
+        readonly fieldTree?: never;
     }
 }
 

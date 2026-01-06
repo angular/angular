@@ -11,7 +11,6 @@ import {TestBed} from '@angular/core/testing';
 import {
   apply,
   applyEach,
-  customError,
   disabled,
   form,
   hidden,
@@ -921,7 +920,7 @@ describe('FieldNode', () => {
         (p) => {
           validate(p.a, ({value}) => {
             if (value() > 10) {
-              return customError({kind: 'too-damn-high'});
+              return {kind: 'too-damn-high'};
             }
             return undefined;
           });
@@ -935,7 +934,7 @@ describe('FieldNode', () => {
       expect(f().valid()).toBe(true);
 
       f.a().value.set(11);
-      expect(f.a().errors()).toEqual([customError({kind: 'too-damn-high', fieldTree: f.a})]);
+      expect(f.a().errors()).toEqual([{kind: 'too-damn-high', fieldTree: f.a}]);
       expect(f.a().valid()).toBe(false);
       expect(f().errors()).toEqual([]);
       expect(f().valid()).toBe(false);
@@ -947,7 +946,7 @@ describe('FieldNode', () => {
         (p) => {
           validate(p.a, ({value}) => {
             if (value() > 10) {
-              return [customError({kind: 'too-damn-high'}), customError({kind: 'bad'})];
+              return [{kind: 'too-damn-high'}, {kind: 'bad'}];
             }
             return undefined;
           });
@@ -960,8 +959,8 @@ describe('FieldNode', () => {
 
       f.a().value.set(11);
       expect(f.a().errors()).toEqual([
-        customError({kind: 'too-damn-high', fieldTree: f.a}),
-        customError({kind: 'bad', fieldTree: f.a}),
+        {kind: 'too-damn-high', fieldTree: f.a},
+        {kind: 'bad', fieldTree: f.a},
       ]);
       expect(f.a().valid()).toBe(false);
     });
@@ -1072,7 +1071,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          validate(p.a, ({value}) => (value() > 1 ? customError() : null));
+          validate(p.a, ({value}) => (value() > 1 ? {kind: 'error'} : null));
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -1081,7 +1080,7 @@ describe('FieldNode', () => {
       expect(f.a().valid()).toBe(true);
 
       f.a().value.set(2);
-      expect(f.a().errors()).toEqual([customError({fieldTree: f.a})]);
+      expect(f.a().errors()).toEqual([{kind: 'error', fieldTree: f.a}]);
       expect(f.a().valid()).toBe(false);
     });
 
@@ -1092,12 +1091,12 @@ describe('FieldNode', () => {
           cat,
           (p) => {
             validateTree(p, ({value, fieldTreeOf}) => {
-              const errors: ValidationError[] = [];
+              const errors: ValidationError.WithOptionalField[] = [];
               if (value().name.length > 8) {
-                errors.push(customError({kind: 'long_name', fieldTree: fieldTreeOf(p.name)}));
+                errors.push({kind: 'long_name', fieldTree: fieldTreeOf(p.name)});
               }
               if (value().age < 0) {
-                errors.push(customError({kind: 'temporal_anomaly', fieldTree: fieldTreeOf(p.age)}));
+                errors.push({kind: 'temporal_anomaly', fieldTree: fieldTreeOf(p.age)});
               }
               return errors;
             });
@@ -1111,12 +1110,10 @@ describe('FieldNode', () => {
         f.age().value.set(-10);
 
         expect(f.name().errors()).toEqual([]);
-        expect(f.age().errors()).toEqual([
-          customError({kind: 'temporal_anomaly', fieldTree: f.age}),
-        ]);
+        expect(f.age().errors()).toEqual([{kind: 'temporal_anomaly', fieldTree: f.age}]);
 
         cat.set({name: 'Fluffy McFluffington', age: 10});
-        expect(f.name().errors()).toEqual([customError({kind: 'long_name', fieldTree: f.name})]);
+        expect(f.name().errors()).toEqual([{kind: 'long_name', fieldTree: f.name}]);
         expect(f.age().errors()).toEqual([]);
       });
 
@@ -1126,12 +1123,12 @@ describe('FieldNode', () => {
           cat,
           (p) => {
             validateTree(p, ({value, fieldTreeOf}) => {
-              const errors: ValidationError[] = [];
+              const errors: ValidationError.WithOptionalField[] = [];
               if (value().name.length > 8) {
-                errors.push(customError({kind: 'long_name', fieldTree: fieldTreeOf(p.name)}));
+                errors.push({kind: 'long_name', fieldTree: fieldTreeOf(p.name)});
               }
               if (value().age < 0) {
-                errors.push(customError({kind: 'temporal_anomaly', fieldTree: fieldTreeOf(p.age)}));
+                errors.push({kind: 'temporal_anomaly', fieldTree: fieldTreeOf(p.age)});
               }
               return errors;
             });
@@ -1145,12 +1142,10 @@ describe('FieldNode', () => {
         f.age().value.set(-10);
 
         expect(f.name().errors()).toEqual([]);
-        expect(f.age().errors()).toEqual([
-          customError({kind: 'temporal_anomaly', fieldTree: f.age}),
-        ]);
+        expect(f.age().errors()).toEqual([{kind: 'temporal_anomaly', fieldTree: f.age}]);
 
         cat.set({name: 'Fluffy McFluffington', age: 10});
-        expect(f.name().errors()).toEqual([customError({kind: 'long_name', fieldTree: f.name})]);
+        expect(f.name().errors()).toEqual([{kind: 'long_name', fieldTree: f.name}]);
         expect(f.age().errors()).toEqual([]);
       });
     });
@@ -1203,24 +1198,24 @@ describe('FieldNode', () => {
       const f = form(
         data,
         (p) => {
-          validate(p, () => customError({kind: 'root'}));
-          validate(p.child, () => customError({kind: 'child'}));
-          validate(p.child.child, () => customError({kind: 'grandchild'}));
+          validate(p, () => ({kind: 'root'}));
+          validate(p.child, () => ({kind: 'child'}));
+          validate(p.child.child, () => ({kind: 'grandchild'}));
         },
         {injector: TestBed.inject(Injector)},
       );
 
       expect(f.child.child().errorSummary()).toEqual([
-        customError({kind: 'grandchild', fieldTree: f.child.child}),
+        {kind: 'grandchild', fieldTree: f.child.child},
       ]);
       expect(f.child().errorSummary()).toEqual([
-        customError({kind: 'child', fieldTree: f.child}),
-        customError({kind: 'grandchild', fieldTree: f.child.child}),
+        {kind: 'child', fieldTree: f.child},
+        {kind: 'grandchild', fieldTree: f.child.child},
       ]);
       expect(f().errorSummary()).toEqual([
-        customError({kind: 'root', fieldTree: f}),
-        customError({kind: 'child', fieldTree: f.child}),
-        customError({kind: 'grandchild', fieldTree: f.child.child}),
+        {kind: 'root', fieldTree: f},
+        {kind: 'child', fieldTree: f.child},
+        {kind: 'grandchild', fieldTree: f.child.child},
       ]);
     });
   });

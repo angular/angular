@@ -9,7 +9,6 @@
 import {Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  customError,
   form,
   required,
   requiredError,
@@ -77,15 +76,13 @@ describe('submit', () => {
     );
 
     await submit(f, (form) => {
-      return Promise.resolve(
-        customError({
-          kind: 'lastName',
-          fieldTree: form.last,
-        }),
-      );
+      return Promise.resolve({
+        kind: 'lastName',
+        fieldTree: form.last,
+      });
     });
 
-    expect(f.last().errors()).toEqual([customError({kind: 'lastName', fieldTree: f.last})]);
+    expect(f.last().errors()).toEqual([{kind: 'lastName', fieldTree: f.last}]);
   });
 
   it('maps errors to multiple fields', async () => {
@@ -94,25 +91,25 @@ describe('submit', () => {
 
     await submit(f, (form) => {
       return Promise.resolve([
-        customError({
+        {
           kind: 'firstName',
           fieldTree: form.first,
-        }),
-        customError({
+        },
+        {
           kind: 'lastName',
           fieldTree: form.last,
-        }),
-        customError({
+        },
+        {
           kind: 'lastName2',
           fieldTree: form.last,
-        }),
+        },
       ]);
     });
 
-    expect(f.first().errors()).toEqual([customError({kind: 'firstName', fieldTree: f.first})]);
+    expect(f.first().errors()).toEqual([{kind: 'firstName', fieldTree: f.first}]);
     expect(f.last().errors()).toEqual([
-      customError({kind: 'lastName', fieldTree: f.last}),
-      customError({kind: 'lastName2', fieldTree: f.last}),
+      {kind: 'lastName', fieldTree: f.last},
+      {kind: 'lastName2', fieldTree: f.last},
     ]);
   });
 
@@ -150,10 +147,10 @@ describe('submit', () => {
     );
 
     await submit(f, () => {
-      return Promise.resolve(customError());
+      return Promise.resolve({kind: 'custom'});
     });
 
-    expect(f().errors()).toEqual([customError({fieldTree: f})]);
+    expect(f().errors()).toEqual([{kind: 'custom', fieldTree: f}]);
   });
 
   it('marks the form as submitting', async () => {
@@ -233,7 +230,7 @@ describe('submit', () => {
 
     await submit(f.first, (form) => {
       submitSpy(form().value());
-      return Promise.resolve(customError({kind: 'lastName'}));
+      return Promise.resolve({kind: 'lastName'});
     });
 
     expect(submitSpy).toHaveBeenCalledWith('meow');
@@ -259,18 +256,18 @@ describe('submit', () => {
 
     await submit(f, async (form) => {
       return [
-        customError({kind: 'submit', fieldTree: f.first}),
-        customError({kind: 'submit', fieldTree: f.last}),
+        {kind: 'submit', fieldTree: f.first},
+        {kind: 'submit', fieldTree: f.last},
       ];
     });
 
-    expect(f.first().errors()).toEqual([customError({kind: 'submit', fieldTree: f.first})]);
-    expect(f.last().errors()).toEqual([customError({kind: 'submit', fieldTree: f.last})]);
+    expect(f.first().errors()).toEqual([{kind: 'submit', fieldTree: f.first}]);
+    expect(f.last().errors()).toEqual([{kind: 'submit', fieldTree: f.last}]);
 
     f.first().value.set('Hello');
 
     expect(f.first().errors()).toEqual([]);
-    expect(f.last().errors()).toEqual([customError({kind: 'submit', fieldTree: f.last})]);
+    expect(f.last().errors()).toEqual([{kind: 'submit', fieldTree: f.last}]);
   });
 });
 

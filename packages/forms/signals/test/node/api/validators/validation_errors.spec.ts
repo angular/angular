@@ -11,14 +11,8 @@ import {form} from '../../../../src/api/structure';
 
 import {TestBed} from '@angular/core/testing';
 import {validate} from '../../../../src/api/rules';
-import {
-  customError,
-  CustomValidationError,
-  minError,
-  MinValidationError,
-  ValidationError,
-} from '../../../../src/api/rules/validation/validation_errors';
-import {FieldTree, FieldValidator, PathKind} from '../../../../src/api/types';
+import {minError, ValidationError} from '../../../../public_api';
+import {FieldValidator, PathKind} from '../../../../src/api/types';
 import Root = PathKind.Root;
 
 describe('validation errors', () => {
@@ -35,7 +29,7 @@ describe('validation errors', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f().errors()[0]).toBeInstanceOf(CustomValidationError);
+    expect(f().errors()[0]).toEqual({kind: 'i am a custom error', fieldTree: f});
   });
 
   it('supports returning a list of errors', () => {
@@ -49,7 +43,7 @@ describe('validation errors', () => {
             {
               kind: 'pirojok-the-error',
             },
-            customError({kind: 'meow'}),
+            {kind: 'meow'},
             minError(4),
           ];
         });
@@ -57,9 +51,9 @@ describe('validation errors', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f().errors()[0]).toBeInstanceOf(CustomValidationError);
-    expect(f().errors()[1]).toBeInstanceOf(CustomValidationError);
-    expect(f().errors()[2]).toBeInstanceOf(MinValidationError);
+    expect(f().errors()[0]).toEqual({kind: 'pirojok-the-error', fieldTree: f});
+    expect(f().errors()[1]).toEqual({kind: 'meow', fieldTree: f});
+    expect(f().errors()[2]).toEqual(jasmine.objectContaining({kind: 'min'}));
   });
 
   it('supports creating dynamic list of errors with explicit type', () => {
@@ -83,8 +77,8 @@ describe('validation errors', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f().errors()[0]).toBeInstanceOf(CustomValidationError);
-    expect(f().errors()[1]).toBeInstanceOf(MinValidationError);
+    expect(f().errors()[0]).toEqual({kind: 'custom', fieldTree: f});
+    expect(f().errors()[1]).toEqual(jasmine.objectContaining({kind: 'min'}));
   });
 
   it('supports custom errors', () => {
@@ -121,12 +115,12 @@ describe('validation errors', () => {
 
   describe('type tests', () => {
     it('field on a validation result is not allowed', () => {
-      //  field on a validation result is not allowed
+      //  fieldTree on a validation result is not allowed
       const TBD: FieldValidator<string, Root> = () => ({
         kind: '3',
         dsdsd: 4,
         // @ts-expect-error
-        field: 3,
+        fieldTree: 3,
       });
     });
 
@@ -138,13 +132,13 @@ describe('validation errors', () => {
         (p) => {
           // @ts-expect-error
           validate(p, () => {
-            return {kind: 'i am a custom error', field: {} as FieldTree<unknown>};
+            return {kind: 'i am a custom error', fieldTree: {}};
           });
         },
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f().errors()[0]).toBeInstanceOf(CustomValidationError);
+      expect(f().errors()).toEqual([{kind: 'i am a custom error', fieldTree: {}}]);
     });
 
     it('allows returning ValidationError from a validator', () => {
@@ -154,16 +148,16 @@ describe('validation errors', () => {
         cat,
         (p) => {
           validate(p, () => {
-            return {} as ValidationError;
+            return {kind: 'custom'};
           });
         },
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f().errors()[0]).toBeInstanceOf(CustomValidationError);
+      expect(f().errors()[0]).toEqual({kind: 'custom', fieldTree: f});
     });
 
-    it('disallows pushin an error containing a field to a list of ValidationErrors', () => {
+    it('disallows pushing an error containing a field to a list of ValidationErrors', () => {
       const cat = signal('meow');
 
       form(
@@ -175,7 +169,7 @@ describe('validation errors', () => {
             array.push({
               kind: 'custom',
               // @ts-expect-error
-              field: {} as FieldTree<unknown>,
+              fieldTree: {},
             });
 
             return array;
