@@ -199,17 +199,8 @@ export class NavigationStateManager extends StateManager {
         resolve();
       });
     } else if (e instanceof NavigationCancel || e instanceof NavigationError) {
-      // If redirecting and the URL hasn't been committed yet (via precommmitHandler),
-      // the redirect will be handled by `commitUrl` using `controller.redirect` and
-      // we should retain the current NavigateEvent.
-      // Otherwise, a full cancellation and rollback is needed.
-      const redirectingBeforeUrlCommit =
-        e instanceof NavigationCancel &&
-        e.code === NavigationCancellationCode.Redirect &&
-        !!this.currentNavigation.commitUrl;
-      if (redirectingBeforeUrlCommit) {
-        return;
-      }
+      // TODO(atscott): We want to keep the navigation event on redirects if
+      // the URL wasn't committed yet rather than cancelling it.
       void this.cancel(transition, e);
     } else if (e instanceof NavigationEnd) {
       const {resolveHandler, removeAbortListener} = this.currentNavigation;
