@@ -22,7 +22,7 @@ In this example, the `selectedOption` defaults to the first option, but changes 
 
 **The `linkedSignal` function lets you create a signal to hold some state that is intrinsically _linked_ to some other state.** Revisiting the example above, `linkedSignal` can replace `signal`:
 
-```typescript
+```ts
 @Component({
   /* ... */
 })
@@ -42,7 +42,7 @@ export class ShippingMethodPicker {
 
 The following example shows how the value of a `linkedSignal` can change based on its linked state:
 
-```typescript
+```ts
 const shippingOptions = signal(['Ground', 'Air', 'Sea']);
 const selectedOption = linkedSignal(() => shippingOptions()[0]);
 console.log(selectedOption()); // 'Ground'
@@ -60,7 +60,7 @@ In some cases, the computation for a `linkedSignal` needs to account for the pre
 
 In the example above, `selectedOption` always updates back to the first option when `shippingOptions` changes. You may, however, want to preserve the user's selection if their selected option is still somewhere in the list. To accomplish this, you can create a `linkedSignal` with a separate _source_ and _computation_:
 
-```typescript
+```ts
 interface ShippingMethod {
   id: number;
   name: string;

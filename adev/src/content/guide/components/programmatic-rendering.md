@@ -20,10 +20,10 @@ chunks automatically and loaded only when necessary, based on the configured tri
 template.
 
 ```angular-ts
-@Component({ ... })
+@Component({/*...*/})
 export class AdminBio { /* ... */ }
 
-@Component({ ... })
+@Component({/*...*/})
 export class StandardBio { /* ... */ }
 
 @Component({
