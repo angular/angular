@@ -8,7 +8,6 @@
 
 import {DOCUMENT, PlatformLocation, PlatformNavigation} from '../../../index';
 import {inject, InjectionToken, Provider} from '@angular/core';
-import {PRECOMMIT_HANDLER_SUPPORTED} from '../../../src/navigation/platform_navigation';
 
 import {
   FakeNavigationPlatformLocation,
@@ -39,6 +38,5 @@ export function provideFakePlatformNavigation(): Provider[] {
       useFactory: () => inject(FAKE_NAVIGATION),
     },
     {provide: PlatformLocation, useClass: FakeNavigationPlatformLocation},
-    {provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: true},
   ];
 }
