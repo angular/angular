@@ -39,6 +39,7 @@ import {TemplateDiagnostic, TypeCheckId} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TypeCheckSourceResolver} from './tcb_util';
+import {DOC_PAGE_BASE_URL} from '../../diagnostics/src/error_details_base_url';
 
 /**
  * Collects `ts.Diagnostic`s on problems which occur in the template which aren't directly sourced
@@ -514,7 +515,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   ): void {
     const mapping = this.resolver.getTemplateSourceMapping(id);
     const errorMsg = `The property and event halves of the two-way binding '${input.name}' are not bound to the same target.
-            Find more at https://angular.dev/guide/templates/two-way-binding#how-two-way-binding-works`;
+            Find more at ${DOC_PAGE_BASE_URL}/guide/templates/two-way-binding`;
 
     const relatedMessages: {text: string; start: number; end: number; sourceFile: ts.SourceFile}[] =
       [];
