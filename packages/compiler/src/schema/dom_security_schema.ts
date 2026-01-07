@@ -119,10 +119,6 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'object|codebase',
       'object|data',
       'script|src',
-      // The below two are for Script SVG
-      // See: https://developer.mozilla.org/en-US/docs/Web/API/SVGScriptElement/href
-      'script|href',
-      'script|xlink:href',
     ]);
 
     // Keep this in sync with SECURITY_SENSITIVE_ELEMENTS in packages/core/src/sanitization/sanitization.ts

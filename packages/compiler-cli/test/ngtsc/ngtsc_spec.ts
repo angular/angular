@@ -8611,34 +8611,6 @@ runInEachFileSystem((os: string) => {
         expect(trim(jsContents)).toContain(trim(hostBindingsFn));
       });
 
-      it('should generate sanitizers for URL properties in SVG script fn in Component', () => {
-        env.write(
-          'test.ts',
-          `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'test-cmp',
-              template: \`
-                <svg>
-                  <script [attr.xlink:href]="attr" [attr.href]="attr"></script>
-                </svg>
-              \`,
-            })
-            export class TestCmp {
-              attr = './script.js';
-            }
-          `,
-        );
-
-        env.driveMain();
-
-        const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain(
-          'i0.ɵɵattribute("href", ctx.attr, i0.ɵɵsanitizeResourceUrl, "xlink")("href", ctx.attr, i0.ɵɵsanitizeResourceUrl);',
-        );
-      });
-
       it('should not generate sanitizers for URL properties in hostBindings fn in Component', () => {
         env.write(
           `test.ts`,
