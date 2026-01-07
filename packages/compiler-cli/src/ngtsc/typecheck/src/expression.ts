@@ -244,7 +244,9 @@ class AstTranslator implements AstVisitor {
       const value = this.translate(ast.values[idx]);
 
       if (key.kind === 'property') {
-        return ts.factory.createPropertyAssignment(ts.factory.createStringLiteral(key.key), value);
+        const keyNode = ts.factory.createStringLiteral(key.key);
+        addParseSpanInfo(keyNode, key.sourceSpan);
+        return ts.factory.createPropertyAssignment(keyNode, value);
       } else {
         return ts.factory.createSpreadAssignment(value);
       }
