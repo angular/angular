@@ -39,6 +39,7 @@ import {
   setAllowDuplicateNgModuleIdsForTest,
 } from '../../src/linker/ng_module_registration';
 import {stringify} from '../../src/util/stringify';
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 
 class Engine {}
 
@@ -625,7 +626,7 @@ describe('NgModule', () => {
       const errorMsg =
         'NG0201: No provider found for `SportsCar`. ' +
         'Source: SomeModule. Path: car -> SportsCar. ' +
-        'Find more at https://angular.dev/errors/NG0201';
+        `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`;
       expect(() => injector.get('car')).toThrowError(errorMsg);
     });
 
@@ -831,7 +832,7 @@ describe('NgModule', () => {
       const errorMsg =
         'NG0201: No provider found for `NonExisting`. ' +
         'Source: SomeModule. ' +
-        'Find more at https://angular.dev/errors/NG0201';
+        `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`;
       expect(() => injector.get('NonExisting')).toThrowError(errorMsg);
     });
 
@@ -839,7 +840,7 @@ describe('NgModule', () => {
       expect(() =>
         createInjector([Car, {provide: Engine, useClass: CyclicEngine}]).get(Car),
       ).toThrowError(
-        'NG0200: Circular dependency detected for `Car`. Source: SomeModule. Path: Car -> Engine -> Car. Find more at https://angular.dev/errors/NG0200',
+        `NG0200: Circular dependency detected for \`Car\`. Source: SomeModule. Path: Car -> Engine -> Car. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 

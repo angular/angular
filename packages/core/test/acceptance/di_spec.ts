@@ -62,6 +62,7 @@ import {
   DestroyRef,
   provideZoneChangeDetection,
 } from '../../src/core';
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 import {RuntimeError, RuntimeErrorCode} from '../../src/errors';
 import {ViewRef as ViewRefInternal} from '../../src/render3/view_ref';
 import {TestBed} from '../../testing';
@@ -1263,7 +1264,7 @@ describe('di', () => {
       expect(() => TestBed.createComponent(MyComp)).toThrowError(
         'NG0200: Circular dependency detected for `DirectiveA`. ' +
           'Path: DirectiveA -> DirectiveA. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -2553,7 +2554,7 @@ describe('di', () => {
 
           TestBed.configureTestingModule({declarations: [DirectiveString, MyComp, MyApp]});
           expect(() => TestBed.createComponent(MyApp)).toThrowError(
-            'NG0201: No provider for String found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
+            `NG0201: No provider for String found in NodeInjector. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
           );
         });
 
@@ -2651,7 +2652,7 @@ describe('di', () => {
 
           TestBed.configureTestingModule({declarations: [DirectiveComp, MyComp, MyApp]});
           expect(() => TestBed.createComponent(MyApp)).toThrowError(
-            'NG0201: No provider for MyApp found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
+            `NG0201: No provider for MyApp found in NodeInjector. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
           );
         });
 
@@ -6640,7 +6641,7 @@ describe('di', () => {
         'NG0200: Circular dependency detected for `InjectionToken A`. ' +
           'Source: DynamicTestModule. ' +
           'Path: InjectionToken A -> InjectionToken B -> InjectionToken A. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -6676,7 +6677,7 @@ describe('di', () => {
         'NG0200: Circular dependency detected for `InjectionToken A`. ' +
           'Source: DynamicTestModule. ' +
           'Path: InjectionToken A -> InjectionToken B -> InjectionToken A. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -6719,7 +6720,7 @@ describe('di', () => {
         'NG0200: Circular dependency detected for `InjectionToken A`. ' +
           'Source: DynamicTestModule. ' +
           'Path: InjectionToken A -> InjectionToken B -> InjectionToken A. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -6737,7 +6738,7 @@ describe('di', () => {
       expect(() => createInjector(AModule)).toThrowError(
         'NG0200: Circular dependency detected for `AModule`. ' +
           'Path: AModule -> BModule -> AModule. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -6781,7 +6782,7 @@ describe('di', () => {
         'NG0200: Circular dependency detected for `InjectionToken A`. ' +
           'Source: DynamicTestModule. ' +
           'Path: InjectionToken A -> InjectionToken B -> InjectionToken A. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -6818,7 +6819,7 @@ describe('di', () => {
       expect(() => TestBed.createComponent(App)).toThrowError(
         'NG0200: Circular dependency detected for `InjectionToken A`. ' +
           "Path: App -> ('InjectionToken A':AService) -> ('InjectionToken B':BService) -> ('InjectionToken A':AService). " +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
   });

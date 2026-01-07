@@ -13,6 +13,7 @@ import {
   ɵDomRendererFactory2 as DomRendererFactory2,
 } from '@angular/platform-browser';
 import type {ServerModule} from '@angular/platform-server';
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../src/error_details_base_url';
 import {createTemplate, dispatchEvent, getContent, isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {
@@ -586,7 +587,7 @@ describe('bootstrap', () => {
             `NG0403: The module MyModule was bootstrapped, ` +
             `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
             `Please define one of these. ` +
-            `Find more at https://angular.dev/errors/NG0403`;
+            `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0403`;
           expect(e.message).toEqual(expectedErrMsg);
           expect(mockConsole.res[0].join('#')).toEqual('ERROR#Error: ' + expectedErrMsg);
         },
