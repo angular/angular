@@ -69,7 +69,7 @@ export function getSCSSVirtualContent(sf: ts.SourceFile): string {
   return content;
 }
 
-function isInlineStyleNode(node: ts.Node) {
+export function isInlineStyleNode(node: ts.Node) {
   if (!ts.isStringLiteralLike(node)) {
     return false;
   }

@@ -39,7 +39,7 @@ import {
 
 import {readNgCompletionData, tsCompletionEntryToLspCompletionItem} from './completion';
 import {tsDiagnosticToLspDiagnostic} from './diagnostic';
-import {getHTMLVirtualContent, getSCSSVirtualContent} from './embedded_support';
+import {getHTMLVirtualContent, getSCSSVirtualContent, isInlineStyleNode} from './embedded_support';
 import {ServerHost} from './server_host';
 import {documentationToMarkdown} from './text_render';
 import {
@@ -1327,7 +1327,23 @@ export class Session {
     const offset = lspPositionToTsPosition(scriptInfo, params.position);
     const info = languageService.getQuickInfoAtPosition(scriptInfo.fileName, offset);
     if (!info) {
-      return null;
+      const sf = this.getDefaultProjectForScriptInfo(scriptInfo)?.getSourceFile(scriptInfo.path);
+      if (!sf) {
+        return null;
+      }
+      const node = getTokenAtPosition(sf, offset);
+      if (!isInlineStyleNode(node)) {
+        return null;
+      }
+      const virtualScssDocContents = getSCSSVirtualContent(sf);
+      const virtualScssDoc = TextDocument.create(
+        params.textDocument.uri.toString(),
+        'scss',
+        0,
+        virtualScssDocContents,
+      );
+      const stylesheet = scssLS.parseStylesheet(virtualScssDoc);
+      return scssLS.doHover(virtualScssDoc, params.position, stylesheet);
     }
     const {kind, kindModifiers, textSpan, displayParts, documentation, tags} = info;
     let desc = kindModifiers ? kindModifiers + ' ' : '';
@@ -1667,4 +1683,17 @@ function generateCommandAndTextEditsFromCodeActions(
     command,
     additionalTextEdits: additionalTextEdits.length ? additionalTextEdits : undefined,
   };
+}
+
+function getTokenAtPosition(sourceFile: ts.SourceFile, position: number): ts.Node {
+  let current: ts.Node = sourceFile;
+  while (true) {
+    const child = current
+      .getChildren(sourceFile)
+      .find((c) => c.getStart(sourceFile) <= position && c.getEnd() > position);
+    if (!child || child.kind === ts.SyntaxKind.EndOfFileToken) {
+      return current;
+    }
+    current = child;
+  }
 }
