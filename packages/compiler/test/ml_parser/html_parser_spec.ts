@@ -8,8 +8,8 @@
 
 import * as html from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {ParseTreeResult, TreeError} from '../../src/ml_parser/parser';
 import {TokenizeOptions} from '../../src/ml_parser/lexer';
+import {ParseTreeResult, TreeError} from '../../src/ml_parser/parser';
 import {ParseError} from '../../src/parse_util';
 
 import {
@@ -1090,6 +1090,30 @@ describe('HtmlParser', () => {
           [html.Text, ' ', 2, [' ']],
           [html.Element, 'input', 2],
           [html.Text, ' ', 2, [' ']],
+        ]);
+      });
+
+      it('should parse empty cases in a switch block', () => {
+        expect(
+          humanizeDom(
+            parser.parse(
+              `@switch (expr) {@case ('foo') {} @case ('bar') {bar} @case('baz') { baz }}`,
+              `TestComp`,
+            ),
+          ),
+        ).toEqual([
+          [html.Block, 'switch', 0],
+          [html.BlockParameter, 'expr'],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'foo'`],
+          [html.Text, ' ', 1, [' ']],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'bar'`],
+          [html.Text, 'bar', 2, ['bar']],
+          [html.Text, ' ', 1, [' ']],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'baz'`],
+          [html.Text, ' baz ', 2, [' baz ']],
         ]);
       });
 

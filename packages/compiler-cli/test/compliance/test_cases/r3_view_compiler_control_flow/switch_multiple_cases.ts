@@ -1,10 +1,11 @@
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
     template: `
     <div>
       {{message}}
       @switch (value()) {
+        @case (-1) {}
         @case (0) @case(1) {
           case 01
         }
