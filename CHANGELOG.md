@@ -1,3 +1,15 @@
+<a name="19.2.18"></a>
+
+# 19.2.18 (2026-01-07)
+
+### core
+
+| Commit                                                                                           | Type | Description                                          |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------- |
+| [26cdc53d9c](https://github.com/angular/angular/commit/26cdc53d9cf99ec41ffc0c71f58f8a14efc828d9) | fix  | sanitize sensitive attributes on SVG script elements |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.17"></a>
 
 # 19.2.17 (2025-12-01)
