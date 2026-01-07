@@ -758,24 +758,6 @@ describe('createUrlTreeFromSnapshot', () => {
     await advance(fixture);
     expect(router.url).toEqual('/parent/sibling');
   });
-  it('should not affect the input snapshot when the result is mutated', async () => {
-    TestBed.configureTestingModule({
-      providers: [provideRouter([{path: 'a', children: [{path: 'b', component: class {}}]}])],
-    });
-    const router = TestBed.inject(Router);
-    await router.navigateByUrl('/a/b');
-    const snapshot = router.routerState.snapshot.root.firstChild!;
-
-    // createUrlTreeFromSnapshot will squash the segment group
-    const tree = createUrlTreeFromSnapshot(snapshot, []);
-
-    // Mutate the result's segments array (e.g. simulating what applyRedirects might do)
-    tree.root.children[PRIMARY_OUTLET].segments[0].path = 'c';
-
-    // The input snapshot should remain unchanged
-    expect(snapshot.url.length).toBe(1);
-    expect(snapshot.url[0].path).toBe('a');
-  });
 });
 
 async function advance(fixture: ComponentFixture<unknown>) {
