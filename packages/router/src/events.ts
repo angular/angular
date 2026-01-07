@@ -630,15 +630,20 @@ export class Scroll {
 }
 
 export class BeforeActivateRoutes {}
+export class BeforeRoutesRecognized {}
 export class RedirectRequest {
   constructor(
     readonly url: UrlTree,
     readonly navigationBehaviorOptions: NavigationBehaviorOptions | undefined,
   ) {}
 }
-export type PrivateRouterEvents = BeforeActivateRoutes | RedirectRequest;
+export type PrivateRouterEvents = BeforeActivateRoutes | RedirectRequest | BeforeRoutesRecognized;
 export function isPublicRouterEvent(e: Event | PrivateRouterEvents): e is Event {
-  return !(e instanceof BeforeActivateRoutes) && !(e instanceof RedirectRequest);
+  return (
+    !(e instanceof BeforeActivateRoutes) &&
+    !(e instanceof RedirectRequest) &&
+    !(e instanceof BeforeRoutesRecognized)
+  );
 }
 
 /**

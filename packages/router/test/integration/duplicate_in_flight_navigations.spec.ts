@@ -16,10 +16,17 @@ import {
   NavigationStart,
   GuardsCheckEnd,
 } from '../../index';
-import {createRoot, SimpleCmp, advance, RootCmp, BlankCmp} from './integration_helpers';
+import {
+  createRoot,
+  SimpleCmp,
+  advance,
+  RootCmp,
+  BlankCmp,
+  simulateLocationChange,
+} from './integration_helpers';
 import {timeout} from '../helpers';
 
-export function duplicateInFlightNavigationsIntegrationSuite() {
+export function duplicateInFlightNavigationsIntegrationSuite(browserAPI: 'history' | 'navigation') {
   describe('duplicate in-flight navigations', () => {
     @Injectable()
     class RedirectingGuard {
@@ -38,6 +45,12 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
     });
 
     it('should reset location if a navigation by location is successful', async () => {
+      // we need eager URL update strategy for navigation-based routing to make the test assertions identical
+      // with deferred routing, the navigation API is able to defer the commit for the first navigation
+      // meaning that we _never_ transition to the /simple route entry.
+      TestBed.configureTestingModule({
+        providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
+      });
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
       const fixture = await createRoot(router, RootCmp);
@@ -57,8 +70,8 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
       // - location change 'simple'
       // - the first location change gets canceled, the URL gets reset to '/'
       // - the second location change gets finished, the URL should be reset to '/simple'
-      location.go('/simple');
-      location.historyGo(0);
+      simulateLocationChange('/simple', browserAPI);
+      await timeout();
       location.historyGo(0);
 
       await timeout(20);
@@ -146,8 +159,7 @@ export function duplicateInFlightNavigationsIntegrationSuite() {
       router.navigateByUrl('/home');
       await advance(fixture);
 
-      location.go('/blocked');
-      location.historyGo(0);
+      simulateLocationChange('/blocked', browserAPI);
       await advance(fixture);
       expect(location.path()).toEqual('/blocked');
       expect(fixture.nativeElement.innerHTML).toContain('simple');

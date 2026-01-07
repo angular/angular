@@ -29,6 +29,7 @@
       "BROWSER_MODULE_PROVIDERS",
       "BaseRouteReuseStrategy",
       "BeforeActivateRoutes",
+      "BeforeRoutesRecognized",
       "BehaviorSubject",
       "BrowserDomAdapter",
       "BrowserPlatformLocation",
