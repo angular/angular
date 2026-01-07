@@ -181,12 +181,12 @@ function initializeControlFirstCreatePass<T>(tView: TView, tNode: TNode, lView: 
     return;
   }
 
-  const host = describeElement(tView, tNode);
   throw new RuntimeError(
     RuntimeErrorCode.INVALID_FIELD_DIRECTIVE_HOST,
-    `${host} is an invalid [field] directive host. The host must be a native form control ` +
-      `(such as <input>', '<select>', or '<textarea>') or a custom form control with a 'value' or ` +
-      `'checked' model.`,
+    ngDevMode &&
+      `${describeElement(tView, tNode)} is an invalid [field] directive host. The host must be a native form control ` +
+        `(such as <input>', '<select>', or '<textarea>') or a custom form control with a 'value' or ` +
+        `'checked' model.`,
   );
 }
 
