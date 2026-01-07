@@ -30,6 +30,8 @@ import {
   JSACTION_BLOCK_ELEMENT_MAP,
   EVENT_REPLAY_ENABLED_DEFAULT,
   IS_EVENT_REPLAY_ENABLED,
+  EVENT_REPLAY_QUEUE,
+  EventReplayQueue,
 } from './tokens';
 import {
   sharedStashFunction,
@@ -56,11 +58,6 @@ const appsWithEventReplay = new WeakSet<ApplicationRef>();
  * The key that represents all replayable elements that are not in defer blocks.
  */
 const EAGER_CONTENT_LISTENERS_KEY = '';
-
-/**
- * A list of block events that need to be replayed
- */
-let blockEventQueue: {event: Event; currentTarget: Element}[] = [];
 
 /**
  * Determines whether Event Replay feature should be activated on the client.
@@ -295,23 +292,25 @@ function hydrateAndInvokeBlockListeners(
   event: Event,
   currentTarget: Element,
 ) {
-  blockEventQueue.push({event, currentTarget});
-  triggerHydrationFromBlockName(injector, blockName, replayQueuedBlockEvents);
+  const queue = injector.get(EVENT_REPLAY_QUEUE);
+  queue.push({event, currentTarget});
+  triggerHydrationFromBlockName(injector, blockName, createReplayQueuedBlockEventsFn(queue));
 }
 
-function replayQueuedBlockEvents(hydratedBlocks: string[]) {
-  // clone the queue
-  const queue = [...blockEventQueue];
-  const hydrated = new Set<string>(hydratedBlocks);
-  // empty it
-  blockEventQueue = [];
-  for (let {event, currentTarget} of queue) {
-    const blockName = currentTarget.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE)!;
-    if (hydrated.has(blockName)) {
-      invokeListeners(event, currentTarget);
-    } else {
-      // requeue events that weren't yet hydrated
-      blockEventQueue.push({event, currentTarget});
+function createReplayQueuedBlockEventsFn(queue: EventReplayQueue) {
+  return (hydratedBlocks: string[]) => {
+    const hydrated = new Set<string>(hydratedBlocks);
+    const newQueue: EventReplayQueue = [];
+    for (let {event, currentTarget} of queue) {
+      const blockName = currentTarget.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE)!;
+      if (hydrated.has(blockName)) {
+        invokeListeners(event, currentTarget);
+      } else {
+        // requeue events that weren't yet hydrated
+        newQueue.push({event, currentTarget});
+      }
     }
-  }
+    queue.length = 0;
+    queue.push(...newQueue);
+  };
 }
