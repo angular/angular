@@ -28,6 +28,7 @@ enum CompletionKind {
   reference = 'reference',
   variable = 'variable',
   entity = 'entity',
+  enumMember = 'enum member',
 }
 
 /**
@@ -95,6 +96,8 @@ function ngCompletionKindToLspCompletionItemKind(kind: CompletionKind): lsp.Comp
       return lsp.CompletionItemKind.Variable;
     case CompletionKind.block:
       return lsp.CompletionItemKind.Keyword;
+    case CompletionKind.enumMember:
+      return lsp.CompletionItemKind.EnumMember;
     case CompletionKind.entity:
     default:
       return lsp.CompletionItemKind.Text;
