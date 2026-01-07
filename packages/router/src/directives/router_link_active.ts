@@ -128,7 +128,9 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    *
    * @see {@link Router#isActive}
    */
-  @Input() routerLinkActiveOptions: {exact: boolean} | IsActiveMatchOptions = {exact: false};
+  @Input() routerLinkActiveOptions: {exact: boolean} | IsActiveMatchOptions | null | undefined = {
+    exact: false,
+  };
 
   /**
    * Aria-current attribute to apply when the router link is active.
@@ -198,7 +200,9 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
 
   @Input()
-  set routerLinkActive(data: string[] | string) {
+  set routerLinkActive(data: string[] | string | null | undefined) {
+    data ??= [];
+
     const classes = Array.isArray(data) ? data : data.split(' ');
     this.classes = classes.filter((c) => !!c);
   }
@@ -246,15 +250,16 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
 
   private isLinkActive(router: Router): (link: RouterLink) => boolean {
-    const options: boolean | IsActiveMatchOptions = isActiveMatchOptions(
-      this.routerLinkActiveOptions,
-    )
-      ? this.routerLinkActiveOptions
+    // Use default when null/undefined, same as not setting the option
+    const options = this.routerLinkActiveOptions ?? {exact: false};
+
+    const resolvedOptions: boolean | IsActiveMatchOptions = isActiveMatchOptions(options)
+      ? options
       : // While the types should disallow `undefined` here, it's possible without strict inputs
-        this.routerLinkActiveOptions.exact || false;
+        options.exact || false;
     return (link: RouterLink) => {
       const urlTree = link.urlTree;
-      return urlTree ? router.isActive(urlTree, options) : false;
+      return urlTree ? router.isActive(urlTree, resolvedOptions) : false;
     };
   }
 
