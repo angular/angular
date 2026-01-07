@@ -9,10 +9,13 @@
 import {AST, TmplAstBoundEvent, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
-import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
+import {
+  ErrorCode,
+  ExtendedTemplateDiagnosticName,
+  DOC_PAGE_BASE_URL,
+} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
 import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
-import {DOC_PAGE_BASE_URL} from '../../../../diagnostics/src/error_details_base_url';
 
 /**
  * Ensures the two-way binding syntax is correct.
