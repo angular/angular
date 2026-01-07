@@ -206,7 +206,7 @@
       "rawComment": "/**\n * A trigger for a menu.\n *\n * The `ngMenuTrigger` directive is used to open and close menus. It can be applied to\n * any interactive element (e.g., a button) to associate it with a `ngMenu` instance.\n * It also supports linking to sub-menus when applied to a `ngMenuItem`.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Open Menu</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem>Item 1</div>\n *   <div ngMenuItem>Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
       "implements": [],
       "isStandalone": true,
-      "selector": "button[ngMenuTrigger]",
+      "selector": "[ngMenuTrigger]",
       "exportAs": [
         "ngMenuTrigger"
       ],
