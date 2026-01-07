@@ -2335,6 +2335,49 @@ describe('field directive', () => {
     });
 
     describe('pattern', () => {
+      it('should bind to native control with single pattern', () => {
+        @Component({
+          imports: [Field],
+          template: `<input [field]="f" />`,
+        })
+        class TestCmp {
+          readonly pattern = signal(/abc/);
+          readonly f = form(signal(''), (p) => {
+            pattern(p, this.pattern);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.pattern).toBe('abc');
+
+        act(() => fixture.componentInstance.pattern.set(/def/));
+        expect(element.pattern).toBe('def');
+      });
+
+      it('should bind to native control with multiple patterns using lookahead assertions to merge regexps', () => {
+        @Component({
+          imports: [Field],
+          template: `<input [field]="f" />`,
+        })
+        class TestCmp {
+          readonly pattern1 = signal(/abc/);
+          readonly pattern2 = signal(/\d+/);
+          readonly f = form(signal(''), (p) => {
+            pattern(p, this.pattern1);
+            pattern(p, this.pattern2);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        // Multiple patterns should be combined using lookahead assertions (AND logic)
+        expect(element.pattern).toBe('(?=.*abc)(?=.*\\d+).*');
+
+        act(() => fixture.componentInstance.pattern1.set(/xyz/));
+        expect(element.pattern).toBe('(?=.*xyz)(?=.*\\d+).*');
+      });
+
       it('should bind to custom control', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<string> {
@@ -2360,6 +2403,141 @@ describe('field directive', () => {
 
         act(() => component.pattern.set(/def/));
         expect(component.customControl().pattern()).toEqual([/def/]);
+      });
+
+      it('should bind to native control host of custom control without input', () => {
+        @Component({selector: 'input[custom]', template: ``})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model('');
+        }
+
+        @Component({
+          imports: [Field, CustomControl],
+          template: `<input custom [field]="f" />`,
+        })
+        class TestCmp {
+          readonly pattern1 = signal(/abc/);
+          readonly pattern2 = signal(/[0-9]+/);
+          readonly f = form(signal(''), (p) => {
+            pattern(p, this.pattern1);
+            pattern(p, this.pattern2);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+        expect(input.pattern).toBe('(?=.*abc)(?=.*[0-9]+).*');
+
+        act(() => component.pattern1.set(/def/));
+        expect(input.pattern).toBe('(?=.*def)(?=.*[0-9]+).*');
+      });
+
+      it('should not bind to native control that does not support it', () => {
+        @Component({
+          imports: [Field],
+          template: `<select [field]="f"></select>`,
+        })
+        class TestCmp {
+          readonly f = form(signal(''), (p) => {
+            pattern(p, /abc/);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        // cast the select as HTMLInputElement to check for pattern property
+        const select = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(select.pattern).toBeUndefined();
+      });
+
+      it('should be reset when field changes on native control', () => {
+        @Component({
+          imports: [Field],
+          template: `<input [field]="field()" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal({x: 'a', y: 'b'}), (p) => {
+            pattern(p.x, /abc/);
+            pattern(p.x, /\d+/);
+          });
+          readonly field = signal(this.f.x);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        const input = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(input.pattern).toBe('(?=.*abc)(?=.*\\d+).*');
+
+        act(() => component.field.set(component.f.y));
+        expect(input.pattern).toBe('');
+      });
+
+      it('should support conditional patterns', () => {
+        @Component({
+          imports: [Field],
+          template: `<input [field]="f" />`,
+        })
+        class TestCmp {
+          readonly enablePattern = signal(true);
+          readonly f = form(signal(''), (p) => {
+            pattern(p, () => (this.enablePattern() ? /abc/ : undefined));
+            pattern(p, /[0-9]+/);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        const input = fixture.nativeElement.firstChild as HTMLInputElement;
+        // With enablePattern = true, should have both patterns combined with AND logic
+        expect(input.pattern).toBe('(?=.*abc)(?=.*[0-9]+).*');
+
+        // When first pattern becomes undefined, should only have second pattern
+        act(() => component.enablePattern.set(false));
+        expect(input.pattern).toBe('[0-9]+');
+
+        // Re-enable first pattern
+        act(() => component.enablePattern.set(true));
+        expect(input.pattern).toBe('(?=.*abc)(?=.*[0-9]+).*');
+      });
+
+      it('should validate using native HTML AND logic with multiple patterns', () => {
+        @Component({
+          imports: [Field],
+          template: `<input [field]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(''), (p) => {
+            pattern(p, /abc/); // Must contain 'abc'
+            pattern(p, /\d+/); // Must contain digits
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(input.pattern).toBe('(?=.*abc)(?=.*\\d+).*');
+
+        // Test native HTML validation behavior
+        // Valid: contains both 'abc' and digits
+        input.value = 'abc123';
+        expect(input.validity.patternMismatch).toBe(false);
+
+        input.value = '123abc';
+        expect(input.validity.patternMismatch).toBe(false);
+
+        input.value = 'abc1';
+        expect(input.validity.patternMismatch).toBe(false);
+
+        // Invalid: missing digits
+        input.value = 'abc';
+        expect(input.validity.patternMismatch).toBe(true);
+
+        // Invalid: missing 'abc'
+        input.value = '123';
+        expect(input.validity.patternMismatch).toBe(true);
+
+        // Invalid: has neither
+        input.value = 'xyz';
+        expect(input.validity.patternMismatch).toBe(true);
       });
 
       it('should be reset when field changes on custom control', () => {

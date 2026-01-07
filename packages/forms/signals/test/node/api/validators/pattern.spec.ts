@@ -95,6 +95,57 @@ describe('pattern validator', () => {
       expect(f.name().pattern()).toEqual([/pir.*jok/, /pelmeni/]);
     });
 
+    it('validates multiple patterns independently (AND logic)', () => {
+      const model = signal('abc123');
+      const f = form(
+        model,
+        (p) => {
+          pattern(p, /abc/); // matches
+          pattern(p, /\d+/); // matches
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // Both patterns match, so no errors
+      expect(f().pattern()).toEqual([/abc/, /\d+/]);
+      expect(f().errors()).toEqual([]);
+    });
+
+    it('validates multiple patterns independently - partial match produces errors', () => {
+      const model = signal('abc');
+      const f = form(
+        model,
+        (p) => {
+          pattern(p, /abc/); // matches
+          pattern(p, /\d+/); // does NOT match
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // Only one pattern matches, so we get an error from the non-matching one
+      expect(f().pattern()).toEqual([/abc/, /\d+/]);
+      expect(f().errors()).toEqual([patternError(/\d+/, {fieldTree: f})]);
+    });
+
+    it('validates multiple patterns - no match produces multiple errors', () => {
+      const model = signal('xyz');
+      const f = form(
+        model,
+        (p) => {
+          pattern(p, /abc/); // does NOT match
+          pattern(p, /\d+/); // does NOT match
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // No patterns match, so we get errors from both
+      expect(f().pattern()).toEqual([/abc/, /\d+/]);
+      expect(f().errors()).toEqual([
+        patternError(/abc/, {fieldTree: f}),
+        patternError(/\d+/, {fieldTree: f}),
+      ]);
+    });
+
     it('PATTERN property defaults to empty list', () => {
       const cat = signal({name: 'pelmeni-the-cat'});
       const f = form(

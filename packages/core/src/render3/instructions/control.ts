@@ -728,6 +728,11 @@ function updateNativeProperty(
         setOptionalAttribute(renderer, element, name, value);
       }
       break;
+    case PATTERN:
+      if (tNode.flags & TNodeFlags.isNativeTextControl) {
+        setPatternAttribute(renderer, element, name, value);
+      }
+      break;
   }
 }
 
@@ -914,6 +919,11 @@ const REQUIRED = /* @__PURE__ */ getClosureSafeProperty({
   required: getClosureSafeProperty,
 }) as 'required';
 
+/** A property-renaming safe reference to a property named 'pattern'. */
+const PATTERN = /* @__PURE__ */ getClosureSafeProperty({
+  pattern: getClosureSafeProperty,
+}) as 'pattern';
+
 /** A property-renaming safe reference to a property named 'controlValue'. */
 const CONTROL_VALUE = /* @__PURE__ */ getClosureSafeProperty({
   controlValue: getClosureSafeProperty,
@@ -1073,6 +1083,45 @@ function setOptionalAttribute(
 ) {
   if (value !== undefined) {
     renderer.setAttribute(element, name, value.toString());
+  } else {
+    renderer.removeAttribute(element, name);
+  }
+}
+
+/**
+ * Sets the pattern attribute on an element by converting an array of RegExp to a single pattern
+ * string.
+ *
+ * Multiple patterns are combined using lookahead assertions to implement AND logic, matching
+ * the framework's validation behavior where all patterns must match.
+ *
+ * @param renderer The `Renderer` instance to use.
+ * @param element The element to set the attribute on.
+ * @param name The name of the attribute.
+ * @param patterns The array of RegExp patterns. If undefined or empty, the attribute is removed.
+ */
+function setPatternAttribute(
+  renderer: Renderer,
+  element: HTMLElement,
+  name: string,
+  patterns?: readonly (RegExp | undefined)[],
+) {
+  if (patterns !== undefined && patterns.length > 0) {
+    // Filter out undefined values
+    const validPatterns = patterns.filter((p): p is RegExp => p !== undefined);
+    if (validPatterns.length > 0) {
+      let patternString: string;
+      if (validPatterns.length === 1) {
+        // Single pattern: use as-is
+        patternString = validPatterns[0].source;
+      } else {
+        // Multiple patterns: combine using lookahead assertions (AND logic)
+        // Example: /abc/ and /\d+/ becomes pattern="(?=.*abc)(?=.*\d+).*"
+        const lookaheads = validPatterns.map((p) => `(?=.*${p.source})`).join('');
+        patternString = `${lookaheads}.*`;
+      }
+      renderer.setAttribute(element, name, patternString);
+    }
   } else {
     renderer.removeAttribute(element, name);
   }
