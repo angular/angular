@@ -317,6 +317,20 @@ describe('parser', () => {
         checkAction('fn?.().add?.(1, 2)');
         checkAction('fn?.()?.(1, 2)');
       });
+
+      it('should parse rest arguments in calls', () => {
+        checkAction('fn(...foo)');
+        checkAction('fn(1, ...foo, 2)');
+        checkAction('fn(...foo, middle, ...bar)');
+        checkAction('fn(a, ...b, ...[1, 2, 3])');
+      });
+
+      it('should parse rest arguments in safe calls', () => {
+        checkAction('fn?.(...foo)');
+        checkAction('fn?.(1, ...foo, 2)');
+        checkAction('fn?.(...foo, middle, ...bar)');
+        checkAction('fn?.(a, ...b, ...[1, 2, 3])');
+      });
     });
 
     describe('keyed read', () => {
@@ -766,6 +780,21 @@ describe('parser', () => {
     it('should record span for spread elements', () => {
       expect(unparseWithSpan(parseBinding('[...foo]'))).toEqual([
         ['[...foo]', '[...foo]'],
+        ['...foo', '...foo'],
+        ['foo', 'foo'],
+        ['foo', '[nameSpan] foo'],
+        ['', ''],
+      ]);
+    });
+
+    it('should record span for rest arguments in functions', () => {
+      expect(unparseWithSpan(parseBinding('fn(1, ...foo)'))).toEqual([
+        ['fn(1, ...foo)', 'fn(1, ...foo)'],
+        ['fn(1, ...foo)', '[argumentSpan] 1, ...foo'],
+        ['fn', 'fn'],
+        ['fn', '[nameSpan] fn'],
+        ['', ''],
+        ['1', '1'],
         ['...foo', '...foo'],
         ['foo', 'foo'],
         ['foo', '[nameSpan] foo'],
