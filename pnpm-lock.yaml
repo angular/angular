@@ -1418,6 +1418,9 @@ importers:
       '@types/node':
         specifier: ^24.5.2
         version: 24.10.1
+      vscode-css-languageservice:
+        specifier: 6.3.9
+        version: 6.3.9
       vscode-html-languageservice:
         specifier: 5.6.1
         version: 5.6.1
@@ -12890,6 +12893,9 @@ packages:
     peerDependencies:
       tslint: '*'
       typescript: '*'
+
+  vscode-css-languageservice@6.3.9:
+    resolution: {integrity: sha512-1tLWfp+TDM5ZuVWht3jmaY5y7O6aZmpeXLoHl5bv1QtRsRKt4xYGRMmdJa5Pqx/FTkgRbsna9R+Gn2xE+evVuA==}
 
   vscode-html-languageservice@5.6.1:
     resolution: {integrity: sha512-5Mrqy5CLfFZUgkyhNZLA1Ye5g12Cb/v6VM7SxUzZUaRKWMDz4md+y26PrfRTSU0/eQAl3XpO9m2og+GGtDMuaA==}
@@ -27749,6 +27755,13 @@ snapshots:
     dependencies:
       tslint: 6.1.3(typescript@5.9.3)
       typescript: 5.9.3
+
+  vscode-css-languageservice@6.3.9:
+    dependencies:
+      '@vscode/l10n': 0.0.18
+      vscode-languageserver-textdocument: 1.0.12
+      vscode-languageserver-types: 3.17.5
+      vscode-uri: 3.1.0
 
   vscode-html-languageservice@5.6.1:
     dependencies:

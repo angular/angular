@@ -15,6 +15,7 @@ import {
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {promisify} from 'util';
 import {getLanguageService as getHTMLLanguageService} from 'vscode-html-languageservice';
+import {getSCSSLanguageService} from 'vscode-css-languageservice';
 import {TextDocument} from 'vscode-languageserver-textdocument';
 import * as lsp from 'vscode-languageserver/node';
 
@@ -38,7 +39,7 @@ import {
 
 import {readNgCompletionData, tsCompletionEntryToLspCompletionItem} from './completion';
 import {tsDiagnosticToLspDiagnostic} from './diagnostic';
-import {getHTMLVirtualContent} from './embedded_support';
+import {getHTMLVirtualContent, getSCSSVirtualContent} from './embedded_support';
 import {ServerHost} from './server_host';
 import {documentationToMarkdown} from './text_render';
 import {
@@ -84,6 +85,7 @@ const defaultFormatOptions: ts.FormatCodeSettings = {};
 let defaultPreferences: ts.UserPreferences = {};
 
 const htmlLS = getHTMLLanguageService();
+const scssLS = getSCSSLanguageService();
 
 const alwaysSuppressDiagnostics: number[] = [
   // Diagnostics codes whose errors should always be suppressed, regardless of the options
@@ -1059,7 +1061,18 @@ export class Session {
       0,
       virtualHtmlDocContents,
     );
-    return [...htmlLS.getFoldingRanges(virtualHtmlDoc), ...angularFoldingRanges];
+    const virtualScssDocContents = getSCSSVirtualContent(sf);
+    const virtualScssDoc = TextDocument.create(
+      params.textDocument.uri.toString(),
+      'scss',
+      0,
+      virtualScssDocContents,
+    );
+    return [
+      ...htmlLS.getFoldingRanges(virtualHtmlDoc),
+      ...scssLS.getFoldingRanges(virtualScssDoc),
+      ...angularFoldingRanges,
+    ];
   }
 
   private onDefinition(
