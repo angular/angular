@@ -114,7 +114,7 @@
     "chokidar": "^5.0.0",
     "convert-source-map": "^1.5.1",
     "d3": "^7.0.0",
-    "dagre-d3-es": "^7.0.11",
+    "dagre-d3-es": "^7.0.14",
     "diff": "^8.0.0",
     "domino": "https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b",
     "esbuild": "0.27.2",
@@ -209,9 +209,7 @@
     "saucelabs": "9.0.2"
   },
   "pnpm": {
-    "patchedDependencies": {
-      "dagre-d3-es": "tools/pnpm-patches/dagre-d3-es+7.0.11.patch"
-    },
+    "patchedDependencies": {},
     "packageExtensions": {
       "grpc-gcp": {
         "peerDependencies": {
