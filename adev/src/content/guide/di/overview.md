@@ -96,7 +96,9 @@ export class Navbar {
 You can inject dependencies during construction of a component, directive, or service. The call to [`inject`](/api/core/inject) can appear in either the `constructor` or in a field initializer. Here are some common examples:
 
 ```ts
-@Component({...})
+@Component({
+  /*...*/
+})
 export class MyComponent {
   // ✅ In class field initializer
   private service = inject(MyService);

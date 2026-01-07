@@ -451,7 +451,7 @@ import {
 } from '@angular/forms';
 
 @Component({
-  /* ... */
+  /*...*/
 })
 export class UnifiedEventsBasicComponent {
   form = new FormGroup({
@@ -601,7 +601,9 @@ When updating form controls programmatically, you have precise control over how 
 By default `emitEvent: true`, any change to a control emits events through the `valueChanges` and `statusChanges` observables. Setting `emitEvent: false` suppresses these emissions, which is useful when setting values programmatically without triggering reactive behavior like auto-save, avoiding circular updates between controls, or performing bulk updates where events should emit only once at the end.
 
 ```ts
-@Component({/* ... */})
+@Component({
+  /* ... */
+})
 export class BlogPostEditor {
   postForm = new FormGroup({
     title: new FormControl(''),
@@ -610,16 +612,15 @@ export class BlogPostEditor {
 
   constructor() {
     // Auto-save draft every time user types
-    this.postForm.valueChanges.subscribe(formValue => {
+    this.postForm.valueChanges.subscribe((formValue) => {
       this.autosaveDraft(formValue);
     });
   }
 
   loadExistingDraft(savedDraft: {title: string; content: string}) {
     // Restore draft without triggering auto-save
-    this.postForm.setValue(savedDraft, { emitEvent: false });
+    this.postForm.setValue(savedDraft, {emitEvent: false});
   }
-
 }
 ```
 

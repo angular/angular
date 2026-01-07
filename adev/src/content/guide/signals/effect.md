@@ -35,7 +35,7 @@ By default, you can only create an `effect()` within an [injection context](guid
 
 ```ts
 @Component({
-  /* ... */
+  /*...*/
 })
 export class EffectiveCounter {
   readonly count = signal(0);
@@ -52,15 +52,20 @@ export class EffectiveCounter {
 To create an effect outside the constructor, you can pass an `Injector` to `effect` via its options:
 
 ```ts
-@Component({...})
+@Component({
+  /*...*/
+})
 export class EffectiveCounterComponent {
   readonly count = signal(0);
   private injector = inject(Injector);
 
   initializeLogging(): void {
-    effect(() => {
-      console.log(`The count is: ${this.count()}`);
-    }, {injector: this.injector});
+    effect(
+      () => {
+        console.log(`The count is: ${this.count()}`);
+      },
+      {injector: this.injector},
+    );
   }
 }
 ```
@@ -117,7 +122,7 @@ For these situations, you can use `afterRenderEffect`. It functions like `effect
 
 ```ts
 @Component({
-  /* ... */
+  /*...*/
 })
 export class MyFancyChart {
   chartData = input.required<ChartData>();

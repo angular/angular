@@ -329,7 +329,7 @@ Inject and use the service in your components:
 
 ```ts
 @Component({
-  /* ... */
+  /*...*/
 })
 export class Checkout {
   private analytics = inject(AnalyticsService);

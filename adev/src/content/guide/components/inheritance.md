@@ -12,7 +12,9 @@ export class ListboxBase {
   value: string;
 }
 
-@Component({ ... })
+@Component({
+  /*...*/
+})
 export class CustomListbox extends ListboxBase {
   // CustomListbox inherits the `value` property.
 }
@@ -70,12 +72,16 @@ and their own.
 If a base class injects dependencies as constructor parameters, the child class must explicitly class these dependencies to `super`.
 
 ```ts
-@Component({ ... })
+@Component({
+  /*...*/
+})
 export class ListboxBase {
-  constructor(private element: ElementRef) { }
+  constructor(private element: ElementRef) {}
 }
 
-@Component({ ... })
+@Component({
+  /*...*/
+})
 export class CustomListbox extends ListboxBase {
   constructor(element: ElementRef) {
     super(element);
@@ -90,7 +96,9 @@ implements `ngOnInit` _overrides_ the base class's implementation. If you want t
 class's lifecycle method, explicitly call the method with `super`:
 
 ```ts
-@Component({ ... })
+@Component({
+  /*...*/
+})
 export class ListboxBase {
   protected isInitialized = false;
   ngOnInit() {
@@ -98,7 +106,9 @@ export class ListboxBase {
   }
 }
 
-@Component({ ... })
+@Component({
+  /*...*/
+})
 export class CustomListbox extends ListboxBase {
   override ngOnInit() {
     super.ngOnInit();

@@ -55,7 +55,7 @@ console.log(firstNameCapitalized()); // JAIME
 
 Use `signal` and `computed` inside your components to create and manage state:
 
-```typescript
+```ts
 @Component({
   /* ... */
 })
