@@ -322,4 +322,36 @@ describe('control flow - switch', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe(' default or case 1 ');
   });
+
+  it('should support an empty case block', () => {
+    @Component({
+      template: `
+        @switch (case) {
+          @case (0) {}
+          @case (1) {
+            case 1
+          }
+          @default {
+            default
+          }
+        }
+      `,
+    })
+    class TestComponent {
+      case = 0;
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('');
+
+    fixture.componentInstance.case = 1;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe(' case 1 ');
+
+    fixture.componentInstance.case = 5;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe(' default ');
+  });
 });

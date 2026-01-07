@@ -2342,6 +2342,7 @@ export class MyApp {
     <div>
       {{message}}
       @switch (value()) {
+        @case (-1) {}
         @case (0) @case(1) {
           case 01
         }
@@ -2362,6 +2363,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div>
       {{message}}
       @switch (value()) {
+        @case (-1) {}
         @case (0) @case(1) {
           case 01
         }
