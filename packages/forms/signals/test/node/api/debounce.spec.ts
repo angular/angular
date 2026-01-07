@@ -237,6 +237,34 @@ describe('debounce', () => {
         expect(abortSpy).toHaveBeenCalledTimes(1);
         expect(street.value()).toBe('1600 Amphitheatre Pkwy');
       });
+
+      it('should remove abort listener when debounce completes', async () => {
+        const addListenerSpy = spyOn(AbortSignal.prototype, 'addEventListener').and.callThrough();
+        const removeListenerSpy = spyOn(
+          AbortSignal.prototype,
+          'removeEventListener',
+        ).and.callThrough();
+
+        const address = signal({street: ''});
+        const addressForm = form(
+          address,
+          (address) => {
+            debounce(address.street, 1);
+          },
+          options(),
+        );
+        const street = addressForm.street();
+
+        street.setControlValue('1600 Amphitheatre Pkwy');
+        expect(addListenerSpy).toHaveBeenCalledOnceWith('abort', jasmine.any(Function), {
+          once: true,
+        });
+        expect(removeListenerSpy).not.toHaveBeenCalled();
+
+        await timeout(10);
+        expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+        expect(removeListenerSpy).toHaveBeenCalledOnceWith('abort', jasmine.any(Function));
+      });
     });
   });
 
