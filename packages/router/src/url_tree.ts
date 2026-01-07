@@ -794,10 +794,7 @@ export function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGro
       newChildren[childOutlet] = childCandidate;
     }
   }
-  const s = new UrlSegmentGroup(
-    segmentGroup.segments.map((s) => new UrlSegment(s.path, {...s.parameters})),
-    newChildren,
-  );
+  const s = new UrlSegmentGroup(segmentGroup.segments, newChildren);
   return mergeTrivialChildren(s);
 }
 
