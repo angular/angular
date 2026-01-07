@@ -932,7 +932,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
     navigationErrorsIntegrationSuite(browserAPI);
     eagerUrlUpdateStrategyIntegrationSuite();
-    duplicateInFlightNavigationsIntegrationSuite(browserAPI);
+    duplicateInFlightNavigationsIntegrationSuite();
     navigationIntegrationTestSuite(browserAPI);
     routeDataIntegrationSuite();
     routerLinkIntegrationSpec();
