@@ -13,6 +13,7 @@ import {
   InjectionToken,
   provideAppInitializer,
 } from '../src/core';
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../src/error_details_base_url';
 import {EMPTY, Observable, Subscriber} from 'rxjs';
 
 import {TestBed} from '../testing';
@@ -187,7 +188,7 @@ describe('ApplicationInitStatus', () => {
         'NG0209: Unexpected type of the `APP_INITIALIZER` token value ' +
           `(expected an array, but got string). ` +
           'Please check that the `APP_INITIALIZER` token is configured as a ' +
-          '`multi: true` provider. Find more at https://angular.dev/errors/NG0209',
+          `\`multi: true\` provider. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0209`,
       );
     });
   });

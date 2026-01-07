@@ -12,6 +12,7 @@ import {inject} from './di/injector_compatibility';
 import {formatRuntimeError, RuntimeErrorCode} from './errors';
 import {OnDestroy} from './change_detection/lifecycle_hooks';
 import {getDocument} from './render3/interfaces/document';
+import {ERROR_DETAILS_PAGE_BASE_URL} from './error_details_base_url';
 
 // A delay in milliseconds before the scan is run after onLoad, to avoid any
 // potential race conditions with other LCP-related functions. This delay
@@ -213,7 +214,7 @@ function logLazyLCPWarning(src: string) {
         `changing the loading value of the LCP image to "eager", or by using the ` +
         `NgOptimizedImage directive's prioritization utilities. For more ` +
         `information about addressing or disabling this warning, see ` +
-        `https://angular.dev/errors/NG0913`,
+        `${ERROR_DETAILS_PAGE_BASE_URL}/NG0913`,
     ),
   );
 }
@@ -225,7 +226,7 @@ function logOversizedImageWarning(src: string) {
       `An image with src ${src} has intrinsic file dimensions much larger than its ` +
         `rendered size. This can negatively impact application loading performance. ` +
         `For more information about addressing or disabling this warning, see ` +
-        `https://angular.dev/errors/NG0913`,
+        `${ERROR_DETAILS_PAGE_BASE_URL}/NG0913`,
     ),
   );
 }
