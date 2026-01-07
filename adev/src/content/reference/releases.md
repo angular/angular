@@ -72,15 +72,13 @@ HELPFUL: Approximate dates are offered as general guidance and are subject to ch
 
 ### Release schedule
 
-Release schedule for upcoming versions is TBA.
+<!-- Release schedule for upcoming versions is TBA. -->
 
-<!--
 | Version | Date               |
 | :------ | :----------------- |
-| v21.1   | Week of TBD |
-| v21.2   | Week of TBD |
-| v22.0   | Week of TBD |
--->
+| v21.1   | Week of 2026-01-12 |
+| v21.2   | Week of 2026-02-23 |
+| v22.0   | Week of 2026-05-18 |
 
 ### Support window
 
