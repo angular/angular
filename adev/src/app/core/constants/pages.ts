@@ -10,7 +10,8 @@
 
 export const DEFAULT_PAGES = {
   DOCS: 'overview',
-  REFERENCE: 'api',
+  REFERENCE: 'reference',
+  API: 'api',
   TUTORIALS: 'tutorials',
   PLAYGROUND: 'playground',
   UPDATE: 'update-guide',

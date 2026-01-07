@@ -8,7 +8,8 @@
 
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
 import {DocEntry, EntryType, FunctionEntry, JsDocTagEntry} from '@angular/compiler-cli';
-import {generateManifest, Manifest} from '../generate_manifest.mjs';
+import {generateManifest} from '../generate_manifest.mjs';
+import {Manifest} from '../interface';
 
 describe('api manifest generation', () => {
   it('should generate a manifest from multiple collections', () => {
@@ -37,49 +38,53 @@ describe('api manifest generation', () => {
     ]);
 
     // The test also makes sure that we sort modules & entries by name.
-    expect(manifest).toEqual([
-      {
-        moduleName: '@angular/core',
-        moduleLabel: 'core',
-        normalizedModuleName: 'angular_core',
-        entries: [
-          {
-            name: 'foo',
-            type: EntryType.Constant,
-            developerPreview: undefined,
-            deprecated: undefined,
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-          {
-            name: 'PI',
-            type: EntryType.Constant,
-            developerPreview: undefined,
-            deprecated: undefined,
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-        ],
-      },
-      {
-        moduleName: '@angular/router',
-        moduleLabel: 'router',
-        normalizedModuleName: 'angular_router',
-        entries: [
-          {
-            name: 'Router',
-            type: EntryType.UndecoratedClass,
-            developerPreview: undefined,
-            deprecated: undefined,
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-        ],
-      },
-    ]);
+    expect(manifest).toEqual({
+      '@angular/core': [
+        {
+          moduleName: '@angular/core',
+          moduleLabel: 'core',
+          normalizedModuleName: 'angular_core',
+          entries: [
+            {
+              name: 'foo',
+              type: EntryType.Constant,
+              developerPreview: undefined,
+              deprecated: undefined,
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+            {
+              name: 'PI',
+              type: EntryType.Constant,
+              developerPreview: undefined,
+              deprecated: undefined,
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+          ],
+        },
+      ],
+      '@angular/router': [
+        {
+          moduleName: '@angular/router',
+          moduleLabel: 'router',
+          normalizedModuleName: 'angular_router',
+          entries: [
+            {
+              name: 'Router',
+              type: EntryType.UndecoratedClass,
+              developerPreview: undefined,
+              deprecated: undefined,
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+          ],
+        },
+      ],
+    });
   });
 
   it('should generate a manifest when collections share a symbol with the same name', () => {
@@ -100,40 +105,44 @@ describe('api manifest generation', () => {
       },
     ]);
 
-    expect(manifest).toEqual([
-      {
-        moduleName: '@angular/core',
-        moduleLabel: 'core',
-        normalizedModuleName: 'angular_core',
-        entries: [
-          {
-            name: 'PI',
-            type: EntryType.Constant,
-            developerPreview: undefined,
-            deprecated: undefined,
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-        ],
-      },
-      {
-        moduleName: '@angular/router',
-        moduleLabel: 'router',
-        normalizedModuleName: 'angular_router',
-        entries: [
-          {
-            name: 'PI',
-            type: EntryType.Constant,
-            developerPreview: undefined,
-            deprecated: undefined,
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-        ],
-      },
-    ]);
+    expect(manifest).toEqual({
+      '@angular/core': [
+        {
+          moduleName: '@angular/core',
+          moduleLabel: 'core',
+          normalizedModuleName: 'angular_core',
+          entries: [
+            {
+              name: 'PI',
+              type: EntryType.Constant,
+              developerPreview: undefined,
+              deprecated: undefined,
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+          ],
+        },
+      ],
+      '@angular/router': [
+        {
+          moduleName: '@angular/router',
+          moduleLabel: 'router',
+          normalizedModuleName: 'angular_router',
+          entries: [
+            {
+              name: 'PI',
+              type: EntryType.Constant,
+              developerPreview: undefined,
+              deprecated: undefined,
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+          ],
+        },
+      ],
+    });
   });
 
   it('should union collections for the same module into one manifest', () => {
@@ -154,33 +163,35 @@ describe('api manifest generation', () => {
       },
     ]);
 
-    expect(manifest).toEqual([
-      {
-        moduleName: '@angular/core',
-        moduleLabel: 'core',
-        normalizedModuleName: 'angular_core',
-        entries: [
-          {
-            name: 'PI',
-            type: EntryType.Constant,
-            developerPreview: undefined,
-            deprecated: undefined,
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-          {
-            name: 'TAO',
-            type: EntryType.Constant,
-            developerPreview: undefined,
-            deprecated: undefined,
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-        ],
-      },
-    ]);
+    expect(manifest).toEqual({
+      '@angular/core': [
+        {
+          moduleName: '@angular/core',
+          moduleLabel: 'core',
+          normalizedModuleName: 'angular_core',
+          entries: [
+            {
+              name: 'PI',
+              type: EntryType.Constant,
+              developerPreview: undefined,
+              deprecated: undefined,
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+            {
+              name: 'TAO',
+              type: EntryType.Constant,
+              developerPreview: undefined,
+              deprecated: undefined,
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+          ],
+        },
+      ],
+    });
   });
 
   it('should mark a manifest entry as deprecated', () => {
@@ -197,33 +208,35 @@ describe('api manifest generation', () => {
       },
     ]);
 
-    expect(manifest).toEqual([
-      {
-        moduleName: '@angular/core',
-        moduleLabel: 'core',
-        normalizedModuleName: 'angular_core',
-        entries: [
-          {
-            name: 'PI',
-            type: EntryType.Constant,
-            developerPreview: undefined,
-            deprecated: {version: undefined},
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-          {
-            name: 'XI',
-            type: EntryType.Constant,
-            developerPreview: undefined,
-            deprecated: undefined,
-            experimental: {version: undefined},
-            stable: undefined,
-            category: undefined,
-          },
-        ],
-      },
-    ]);
+    expect(manifest).toEqual({
+      '@angular/core': [
+        {
+          moduleName: '@angular/core',
+          moduleLabel: 'core',
+          normalizedModuleName: 'angular_core',
+          entries: [
+            {
+              name: 'PI',
+              type: EntryType.Constant,
+              developerPreview: undefined,
+              deprecated: {version: undefined},
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+            {
+              name: 'XI',
+              type: EntryType.Constant,
+              developerPreview: undefined,
+              deprecated: undefined,
+              experimental: {version: undefined},
+              stable: undefined,
+              category: undefined,
+            },
+          ],
+        },
+      ],
+    });
   });
 
   it('should not mark a function as deprecated if only one overload is deprecated', () => {
@@ -267,24 +280,26 @@ describe('api manifest generation', () => {
       },
     ]);
 
-    expect(manifest).toEqual([
-      {
-        moduleName: '@angular/core',
-        moduleLabel: 'core',
-        normalizedModuleName: 'angular_core',
-        entries: [
-          {
-            name: 'save',
-            type: EntryType.Function,
-            developerPreview: undefined,
-            deprecated: undefined,
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-        ],
-      },
-    ]);
+    expect(manifest).toEqual({
+      '@angular/core': [
+        {
+          moduleName: '@angular/core',
+          moduleLabel: 'core',
+          normalizedModuleName: 'angular_core',
+          entries: [
+            {
+              name: 'save',
+              type: EntryType.Function,
+              developerPreview: undefined,
+              deprecated: undefined,
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+          ],
+        },
+      ],
+    });
   });
 
   it('should mark a function as deprecated if all overloads are deprecated', () => {
@@ -328,24 +343,26 @@ describe('api manifest generation', () => {
       },
     ]);
 
-    expect(manifest).toEqual([
-      {
-        moduleName: '@angular/core',
-        normalizedModuleName: 'angular_core',
-        moduleLabel: 'core',
-        entries: [
-          {
-            name: 'save',
-            type: EntryType.Function,
-            developerPreview: undefined,
-            deprecated: {version: undefined},
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-        ],
-      },
-    ]);
+    expect(manifest).toEqual({
+      '@angular/core': [
+        {
+          moduleName: '@angular/core',
+          normalizedModuleName: 'angular_core',
+          moduleLabel: 'core',
+          entries: [
+            {
+              name: 'save',
+              type: EntryType.Function,
+              developerPreview: undefined,
+              deprecated: {version: undefined},
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+          ],
+        },
+      ],
+    });
   });
 
   it("should mark a fn as deprecated if there's one w/ the same name in another collection", () => {
@@ -368,40 +385,44 @@ describe('api manifest generation', () => {
       },
     ]);
 
-    expect(manifest).toEqual([
-      {
-        moduleName: '@angular/core',
-        moduleLabel: 'core',
-        normalizedModuleName: 'angular_core',
-        entries: [
-          {
-            name: 'save',
-            type: EntryType.Function,
-            developerPreview: undefined,
-            deprecated: {version: undefined},
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-        ],
-      },
-      {
-        moduleName: '@angular/more',
-        moduleLabel: 'more',
-        normalizedModuleName: 'angular_more',
-        entries: [
-          {
-            name: 'save',
-            type: EntryType.Function,
-            developerPreview: undefined,
-            deprecated: undefined,
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-        ],
-      },
-    ]);
+    expect(manifest).toEqual({
+      '@angular/core': [
+        {
+          moduleName: '@angular/core',
+          moduleLabel: 'core',
+          normalizedModuleName: 'angular_core',
+          entries: [
+            {
+              name: 'save',
+              type: EntryType.Function,
+              developerPreview: undefined,
+              deprecated: {version: undefined},
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+          ],
+        },
+      ],
+      '@angular/more': [
+        {
+          moduleName: '@angular/more',
+          moduleLabel: 'more',
+          normalizedModuleName: 'angular_more',
+          entries: [
+            {
+              name: 'save',
+              type: EntryType.Function,
+              developerPreview: undefined,
+              deprecated: undefined,
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+          ],
+        },
+      ],
+    });
   });
 
   it('should mark a manifest entry as developerPreview', () => {
@@ -422,33 +443,35 @@ describe('api manifest generation', () => {
       },
     ]);
 
-    expect(manifest).toEqual([
-      {
-        moduleName: '@angular/core',
-        moduleLabel: 'core',
-        normalizedModuleName: 'angular_core',
-        entries: [
-          {
-            name: 'PI',
-            type: EntryType.Constant,
-            developerPreview: {version: undefined},
-            deprecated: undefined,
-            experimental: undefined,
-            stable: undefined,
-            category: undefined,
-          },
-          {
-            name: 'XI',
-            type: EntryType.Constant,
-            developerPreview: undefined,
-            deprecated: undefined,
-            experimental: {version: undefined},
-            stable: undefined,
-            category: undefined,
-          },
-        ],
-      },
-    ]);
+    expect(manifest).toEqual({
+      '@angular/core': [
+        {
+          moduleName: '@angular/core',
+          moduleLabel: 'core',
+          normalizedModuleName: 'angular_core',
+          entries: [
+            {
+              name: 'PI',
+              type: EntryType.Constant,
+              developerPreview: {version: undefined},
+              deprecated: undefined,
+              experimental: undefined,
+              stable: undefined,
+              category: undefined,
+            },
+            {
+              name: 'XI',
+              type: EntryType.Constant,
+              developerPreview: undefined,
+              deprecated: undefined,
+              experimental: {version: undefined},
+              stable: undefined,
+              category: undefined,
+            },
+          ],
+        },
+      ],
+    });
   });
 });
 

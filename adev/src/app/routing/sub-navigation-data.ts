@@ -10,12 +10,19 @@ import {isDevMode} from '@angular/core';
 import {NavigationItem} from '@angular/docs';
 
 // These imports are expected to be red because they are generated a build time
+// @ts-ignore
 import FIRST_APP_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/first-app/routes.json';
+// @ts-ignore
 import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/learn-angular/routes.json';
+// @ts-ignore
 import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/deferrable-views/routes.json';
+// @ts-ignore
 import SIGNALS_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/signals/routes.json';
+// @ts-ignore
 import SIGNAL_FORMS_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/signal-forms/routes.json';
+// @ts-ignore
 import ERRORS_NAV_DATA from '../../../src/assets/content/reference/errors/routes.json';
+// @ts-ignore
 import EXT_DIAGNOSTICS_NAV_DATA from '../../../src/assets/content/reference/extended-diagnostics/routes.json';
 
 import {getApiNavigationItems} from '../features/references/helpers/manifest.helper';
@@ -1262,10 +1269,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
   },
   {
     label: 'API Reference',
+    sortCategories: false,
     children: [
       {
         label: 'Overview',
-        path: 'api',
+        path: 'reference',
       },
       ...getApiNavigationItems(),
     ],

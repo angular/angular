@@ -1,4 +1,4 @@
-/*!
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -6,16 +6,23 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApiItemType} from './api-item-type';
-
-export interface ApiItem {
-  title: string;
-  itemType: ApiItemType;
-  url: string;
+export interface ManifestEntry {
+  name: string;
+  aliases?: string[];
+  type: string;
   category?: string;
   deprecated?: {version?: string};
   developerPreview?: {version?: string};
   experimental?: {version?: string};
   stable?: {version?: string};
-  groupName?: string;
 }
+
+export type PackageSubEntry = {
+  moduleName: string;
+  normalizedModuleName: string;
+  moduleLabel: string;
+  entries: ManifestEntry[];
+};
+
+/** Manifest that maps each module name to a list of API symbols. */
+export type Manifest = Record<string, PackageSubEntry[]>;

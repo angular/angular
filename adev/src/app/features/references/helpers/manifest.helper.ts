@@ -7,9 +7,15 @@
  */
 
 import {Route} from '@angular/router';
-import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
-import {ApiManifest, ApiManifestEntry, ApiManifestPackage} from '../interfaces/api-manifest';
-import {NavigationItem, contentResolver} from '@angular/docs';
+// @ts-ignore This file is generated at build-time, error is expected here.
+import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json' with {type: 'json'};
+import {
+  NavigationItem,
+  contentResolver,
+  Manifest as ApiManifest,
+  ManifestEntry as ApiManifestEntry,
+  PackageSubEntry as ApiPackageSubEntry,
+} from '@angular/docs';
 import {PAGE_PREFIX} from '../../../core/constants/pages';
 
 const manifest = API_MANIFEST_JSON as ApiManifest;
@@ -17,7 +23,7 @@ const manifest = API_MANIFEST_JSON as ApiManifest;
 export function mapApiManifestToRoutes(): Route[] {
   const apiRoutes: Route[] = [];
 
-  for (const packageEntry of manifest) {
+  for (const packageEntry of Object.values(manifest).flatMap((entries) => entries)) {
     for (const api of packageEntry.entries) {
       apiRoutes.push({
         path: getApiUrl(packageEntry, api.name),
@@ -40,23 +46,29 @@ export function mapApiManifestToRoutes(): Route[] {
 export function getApiNavigationItems(): NavigationItem[] {
   const apiNavigationItems: NavigationItem[] = [];
 
-  for (const packageEntry of manifest) {
-    const packageNavigationItem: NavigationItem = {
-      label: packageEntry.moduleLabel,
-      children: packageEntry.entries.map((api) => ({
-        path: getApiUrl(packageEntry, api.name),
-        label: api.name,
-        category: api.category,
-      })),
-    };
+  for (const [packageName, packageSubEntries] of Object.entries(manifest)) {
+    for (const packageEntry of packageSubEntries) {
+      const packageNavigationItem: NavigationItem = {
+        label:
+          packageSubEntries.length > 1
+            ? packageEntry.moduleLabel.replace('@angular/', '')
+            : packageEntry.moduleLabel,
+        category: packageName,
+        children: packageEntry.entries.map((api) => ({
+          path: getApiUrl(packageEntry, api.name),
+          label: api.name,
+          category: api.category,
+        })),
+      };
 
-    apiNavigationItems.push(packageNavigationItem);
+      apiNavigationItems.push(packageNavigationItem);
+    }
   }
 
   return apiNavigationItems;
 }
 
-export function getApiUrl(packageEntry: ApiManifestPackage, apiName: string): string {
+export function getApiUrl(packageEntry: ApiPackageSubEntry, apiName: string): string {
   const packageName = packageEntry.normalizedModuleName
     // packages like `angular_core` should be `core`
     // packages like `angular_animation_browser` should be `animation/browser`
@@ -66,7 +78,7 @@ export function getApiUrl(packageEntry: ApiManifestPackage, apiName: string): st
 }
 
 function getNormalizedFilename(
-  manifestPackage: ApiManifestPackage,
+  manifestPackage: ApiPackageSubEntry,
   entry: ApiManifestEntry,
 ): string {
   return `${manifestPackage.normalizedModuleName}_${entry.name}_${entry.type}.html`;
