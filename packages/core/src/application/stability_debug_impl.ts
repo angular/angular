@@ -63,7 +63,7 @@ export function provideStabilityDebugging(): EnvironmentProviders {
     provideAppInitializer(() => {
       if (typeof ngDevMode === 'undefined' || !ngDevMode) {
         console.warn(
-          'Stability debugging untility was provided in production mode. ' +
+          'Stability debugging utility was provided in production mode. ' +
             'This will cause debug code to be included in production bundles. ' +
             'If this is intentional because you are debugging stability issues in a production environment, you can ignore this warning.',
         );
