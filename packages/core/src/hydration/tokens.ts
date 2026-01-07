@@ -50,6 +50,21 @@ export const IS_EVENT_REPLAY_ENABLED = new InjectionToken<boolean>(
 export const EVENT_REPLAY_ENABLED_DEFAULT = false;
 
 /**
+ * A type of the queue that stores events occurring during the hydration process.
+ */
+export type EventReplayQueue = {
+  event: Event;
+  currentTarget: Element;
+}[];
+
+export const EVENT_REPLAY_QUEUE = new InjectionToken<EventReplayQueue>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'EVENT_REPLAY_QUEUE' : '',
+  {
+    factory: () => [],
+  },
+);
+
+/**
  * Internal token that indicates whether incremental hydration support
  * is enabled.
  */
