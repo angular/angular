@@ -3390,6 +3390,30 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should type check rest arguments in a function call', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: \`{{fn('one', ...rest)}}\`,
+        })
+        export class TestCmp {
+          rest = [2];
+          fn(first: string, ...rest: string[]) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(1);
+      expect(diags[0].messageText).toBe(
+        `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+      );
+    });
+
     describe('template literals', () => {
       it('should treat template literals as strings', () => {
         env.write(

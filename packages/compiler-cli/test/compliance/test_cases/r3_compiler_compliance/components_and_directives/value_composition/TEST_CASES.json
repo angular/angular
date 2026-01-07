@@ -60,11 +60,7 @@
           ]
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "local compile",
-        "declaration-only emit"
-      ]
+      "compilationModeFilter": ["full compile", "local compile", "declaration-only emit"]
     },
     {
       "description": "should support complex selectors",
@@ -318,6 +314,16 @@
         {
           "failureMessage": "Invalid template",
           "files": ["regular_expression_with_global_flag.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support rest arguments in a function call",
+      "inputFiles": ["call_rest.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid object literal binding",
+          "files": ["call_rest.js"]
         }
       ]
     }

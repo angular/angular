@@ -1178,12 +1178,7 @@ class _ParseAST {
 
     do {
       if (this.next.isOperator('...')) {
-        const spreadStart = this.inputIndex;
-        this.advance();
-        const expression = this.parsePipe();
-        const span = this.span(spreadStart);
-        const sourceSpan = this.sourceSpan(spreadStart);
-        elements.push(new SpreadElement(span, sourceSpan, expression));
+        elements.push(this.parseSpreadElement());
       } else if (!this.next.isCharacter(chars.$RBRACKET)) {
         elements.push(this.parsePipe());
       } else {
@@ -1330,12 +1325,30 @@ class _ParseAST {
   }
 
   private parseCallArguments(): BindingPipe[] {
-    if (this.next.isCharacter(chars.$RPAREN)) return [];
+    if (this.next.isCharacter(chars.$RPAREN)) {
+      return [];
+    }
+
     const positionals: AST[] = [];
+
     do {
-      positionals.push(this.parsePipe());
+      positionals.push(this.next.isOperator('...') ? this.parseSpreadElement() : this.parsePipe());
     } while (this.consumeOptionalCharacter(chars.$COMMA));
+
     return positionals as BindingPipe[];
+  }
+
+  private parseSpreadElement(): SpreadElement {
+    if (!this.next.isOperator('...')) {
+      this.error("Spread element must start with '...' operator");
+    }
+
+    const spreadStart = this.inputIndex;
+    this.advance();
+    const expression = this.parsePipe();
+    const span = this.span(spreadStart);
+    const sourceSpan = this.sourceSpan(spreadStart);
+    return new SpreadElement(span, sourceSpan, expression);
   }
 
   /**

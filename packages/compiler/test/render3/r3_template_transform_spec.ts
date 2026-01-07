@@ -2255,8 +2255,8 @@ describe('R3 template transform', () => {
       });
 
       it('should report syntax error in for loop expression', () => {
-        expect(() => parse(`@for (item of items..foo) {hello}`)).toThrowError(
-          /Unexpected token \./,
+        expect(() => parse(`@for (item of items#foo) {hello}`)).toThrowError(
+          /Unexpected token '#foo'/,
         );
       });
 
