@@ -150,7 +150,7 @@ In some cases, especially with `viewChild`, you know with certainty that a speci
 
 ```ts
 @Component({
-  /* ... */
+  /*...*/
 })
 export class CustomCard {
   header = viewChild.required(CustomCardHeader);

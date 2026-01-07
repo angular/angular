@@ -197,7 +197,7 @@ ensures that the value set by Angular is not overwritten.
 
 ```ts
 @Component({
-  /* ... */
+  /*...*/
 })
 export class UserProfile {
   readonly userId = input();
@@ -211,7 +211,7 @@ advice applies to output properties and queries, but not input properties.
 
 ```ts
 @Component({
-  /* ... */
+  /*...*/
 })
 export class UserProfile {
   @Output() readonly userSaved = new EventEmitter<void>();
@@ -276,7 +276,7 @@ then delegate to more specific behaviors based on the event details:
 
 ```ts
 @Component({
-  /* ... */
+  /*...*/
 })
 class RichText {
   handleKeydown(event: KeyboardEvent) {
@@ -323,7 +323,7 @@ your class, import and `implement` these interfaces to ensure that the methods a
 import {Component, OnInit} from '@angular/core';
 
 @Component({
-  /* ... */
+  /*...*/
 })
 export class UserProfile implements OnInit {
   // The `OnInit` interface ensures this method is named correctly.

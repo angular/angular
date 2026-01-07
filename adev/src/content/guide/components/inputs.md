@@ -294,7 +294,9 @@ TIP: While the Angular team recommends using the signal-based `input` function f
 You can alternatively declare component inputs by adding the `@Input` decorator to a property:
 
 ```ts {highlight:[3]}
-@Component({...})
+@Component({
+  /*...*/
+})
 export class CustomSlider {
   @Input() value = 0;
 }
@@ -315,7 +317,9 @@ The `@Input` decorator accepts a config object that lets you change the way that
 You can specify the `required` option to enforce that a given input must always have a value.
 
 ```ts {highlight:[3]}
-@Component({...})
+@Component({
+  /*...*/
+})
 export class CustomSlider {
   @Input({required: true}) value = 0;
 }
@@ -346,7 +350,9 @@ function trimString(value: string | undefined) {
 You can specify the `alias` option to change the name of an input in templates.
 
 ```ts {highlight:[3]}
-@Component({...})
+@Component({
+  /*...*/
+})
 export class CustomSlider {
   @Input({alias: 'sliderValue'}) value = 0;
 }
