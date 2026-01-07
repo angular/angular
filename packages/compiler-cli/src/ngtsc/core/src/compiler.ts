@@ -127,6 +127,7 @@ import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../
 import {coreVersionSupportsFeature} from './feature_detection';
 import {angularJitApplicationTransform} from '../../transform/jit';
 import {untagAllTsFiles} from '../../shims';
+import {DOC_PAGE_BASE_URL} from '../../diagnostics/src/error_details_base_url';
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -1777,7 +1778,7 @@ One of the following actions is required:
 2. Remove "strictTemplates" or set it to 'false'.
 
 More information about the template type checking compiler options can be found in the documentation:
-https://angular.dev/tools/cli/template-typecheck
+${DOC_PAGE_BASE_URL}/tools/cli/template-typecheck
       `.trim(),
     });
   }
