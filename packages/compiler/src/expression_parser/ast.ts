@@ -298,7 +298,7 @@ export class Binary extends AST {
     return visitor.visitBinary(this, context);
   }
 
-  static isAssignmentOperation(op: string): boolean {
+  static isAssignmentOperation(op: string): op is AssignmentOperation {
     return (
       op === '=' ||
       op === '+=' ||
