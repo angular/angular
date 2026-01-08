@@ -11,7 +11,7 @@ import {VERSION} from '@angular/compiler';
 export const DOC_PAGE_BASE_URL: string = (() => {
   const full = VERSION.full;
   const isPreRelease =
-    full.includes('-next') || full.includes('-rc') || full === '0.0.0-PLACEHOLDER';
+    full.includes('-next') || full.includes('-rc') || full === '0.0.0' + '-PLACEHOLDER';
   const prefix = isPreRelease ? 'next' : `v${VERSION.major}`;
   return `https://${prefix}.angular.dev`;
 })();
