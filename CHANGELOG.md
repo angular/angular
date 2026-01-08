@@ -1,3 +1,13 @@
+<a name="21.0.8"></a>
+# 21.0.8 (2026-01-08)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a6a2621bf9](https://github.com/angular/angular/commit/a6a2621bf9df02584e4079f4a804278fc2060a9c) | fix | fix memory leak with event replay |
+| [5239e471a1](https://github.com/angular/angular/commit/5239e471a1f887574c6703c0497e5854304cce4e) | fix | handle cancelled traversals in fake navigation |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.7"></a>
 # 21.0.7 (2026-01-07)
 ### compiler
