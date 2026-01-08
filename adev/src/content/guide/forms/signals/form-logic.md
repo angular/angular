@@ -452,7 +452,7 @@ Don't use debouncing if:
 - The performance benefit is negligible
 - Users expect real-time feedback
 
-## Provide input attributes with `metadata()`
+## Associate data with a field using `metadata()`
 
 Metadata allows you to attach computed information to fields that can be read by [custom controls](guide/forms/signals/custom-controls) or form logic. Common use cases include HTML input attributes (min, max, maxlength, pattern), custom UI hints (placeholder text, help text), and accessibility information.
 
