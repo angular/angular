@@ -613,7 +613,7 @@ Common reducer patterns include:
 - Sets: `(acc, value) => new Set([...(acc ?? new Set()), value])`
 - Objects: `(acc, value) => ({...(acc ?? {}), ...value})`
 
-### Conditional metadata
+### Reactive metadata
 
 Make metadata reactive to other field values:
 
