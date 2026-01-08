@@ -82,7 +82,7 @@ The execution of both kinds of `effect` are tied to the change detection process
 - "View effects" are executed _before_ their corresponding component is checked by the change detection process.
 - "Root effects" are executed prior to all components being checked by the change detection process.
 
-In both cases, if at least one of the effect dependencies changed during the effect execution, the effect will re-run before moving ahead on the change detection process,
+In both cases, if at least one of the effect dependencies changed during the effect execution, the effect will re-run before moving ahead on the change detection process.
 
 ### Destroying effects
 
