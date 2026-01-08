@@ -26,3 +26,12 @@
     transform: translateY(0);
   }
 }
+
+.toggle-btn {
+  background: transparent;
+  border: 1px solid var(--primary-contrast, black);
+  color: var(--primary-contrast, black);
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+}
