@@ -179,7 +179,8 @@
   --white-to-light-blue-diagonal-gradient: linear-gradient(
     132.83deg,
     hsl(from color-mix(in srgb, var(--bright-blue), white 60%) h s l / 0) 45.38%,
-    hsl(from color-mix(in srgb, var(--bright-blue), white 60%) h s l / 0.3) 159.03%);
+    hsl(from color-mix(in srgb, var(--bright-blue), white 60%) h s l / 0.3) 159.03%
+  );
 
   --white-to-light-pink-diagonal-gradient: linear-gradient(
     135deg,
@@ -230,8 +231,7 @@
   // for the "unfilled" portion of the word that hasn't
   // been highlighted by the gradient
   --gray-unfilled: var(--gray-400);
-  --webgl-page-background: var(var(--page-background))
-  --webgl-gray-unfilled: var(--gray-400);
+  --webgl-page-background: var(var(--page-background)) --webgl-gray-unfilled: var(--gray-400);
 }
 
 @mixin dark-mode-definitions() {
@@ -261,9 +261,16 @@
   --super-green: color-mix(in srgb, oklch(79.12% 0.257 155.13), var(--full-contrast) 70%);
   --light-vivid-pink-to-light-electric-violet-horizontal-gradient:
     linear-gradient(hsl(from var(--gray-1000) h s l / 0.9), hsl(from var(--gray-1000) h s l / 0.9)),
-    linear-gradient(hsl(from var(--full-contrast) h s l / 0.2), hsl(from var(--full-contrast) h s l / 0.2)),
+    linear-gradient(
+      hsl(from var(--full-contrast) h s l / 0.2),
+      hsl(from var(--full-contrast) h s l / 0.2)
+    ),
     var(--pink-to-purple-horizontal-gradient);
-  --white-to-light-pink-diagonal-gradient: color-mix(in srgb, var(--french-violet), var(--full-contrast) 60%);
+  --white-to-light-pink-diagonal-gradient: color-mix(
+    in srgb,
+    var(--french-violet),
+    var(--full-contrast) 60%
+  );
 
   --deprecated-dark: oklch(30% 0.02 304.04); // Base color
   --deprecated-docs-bg: var(--deprecated-dark); // Alias specifically for deprecated docs
@@ -301,10 +308,7 @@
   );
 
   --page-bg-radial-gradient: radial-gradient(circle, black 0%, black 100%);
-  --soft-pink-radial-gradient:
-    linear-gradient(119.77deg, 
-    hsl(from color-mix(in srgb, var(--french-violet), white 60%) h s l / 0) 24.32%,
-    hsl(from color-mix(in srgb, var(--french-violet), white 60%) h s l / 0.3) 116.25%);
+  --soft-pink-radial-gradient: var(--hot-pink-to-electric-violet-radial-gradient);
 
   // Use light values hot pink and electric violet since this gradient used for
   // the decorative header which looks the same in both modes
