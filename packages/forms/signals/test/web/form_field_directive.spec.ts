@@ -2667,6 +2667,30 @@ describe('field directive', () => {
     expect(cmp.f().value()).toBe('b');
   });
 
+  it('synchronizes with a radio group with bindings', () => {
+    const {cmp, inputA, inputB, inputC, ABC} = setupRadioWithBindingsGroup();
+
+    // All the inputs should have the same name.
+    expect(inputA.name).toBe('test');
+    expect(inputB.name).toBe('test');
+    expect(inputC.name).toBe('test');
+
+    // Model -> View
+    act(() => cmp.f().value.set(ABC.C));
+    expect(inputA.checked).toBe(false);
+    expect(inputB.checked).toBe(false);
+    expect(inputC.checked).toBe(true);
+
+    // View -> Model
+    act(() => {
+      inputB.click();
+    });
+    expect(inputA.checked).toBe(false);
+    expect(inputB.checked).toBe(true);
+    expect(inputC.checked).toBe(false);
+    expect(cmp.f().value()).toBe(ABC.B);
+  });
+
   it('synchronizes with a textarea', () => {
     @Component({
       imports: [FormField],
@@ -4319,6 +4343,39 @@ function setupRadioGroup() {
   const cmp = fix.componentInstance as TestCmp;
 
   return {cmp, inputA, inputB, inputC};
+}
+
+function setupRadioWithBindingsGroup() {
+  enum ABC {
+    A = 'a',
+    B = 'b',
+    C = 'c',
+  }
+  @Component({
+    imports: [FormField],
+    template: `
+      <form>
+        <input type="radio" [formField]="f" [value]="ABC.A" />
+        <input type="radio" [formField]="f" [value]="ABC.B" />
+        <input type="radio" [formField]="f" [value]="ABC.C" />
+      </form>
+    `,
+  })
+  class TestCmp {
+    f = form(signal(ABC.A), {
+      name: 'test',
+    });
+    ABC = ABC;
+  }
+
+  const fix = act(() => TestBed.createComponent(TestCmp));
+  const formEl = (fix.nativeElement as HTMLElement).firstChild as HTMLFormElement;
+  const inputs = Array.from(formEl.children) as HTMLInputElement[];
+
+  const [inputA, inputB, inputC] = inputs;
+  const cmp = fix.componentInstance as TestCmp;
+
+  return {cmp, inputA, inputB, inputC, ABC};
 }
 
 function act<T>(fn: () => T): T {
