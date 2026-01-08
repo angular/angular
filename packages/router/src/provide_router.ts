@@ -12,7 +12,6 @@ import {
   LocationStrategy,
   ViewportScroller,
   Location,
-  REMOVE_TRAILING_SLASH,
   ɵNavigationAdapterForLocation,
 } from '@angular/common';
 import {
@@ -676,16 +675,7 @@ export type RouterConfigurationFeature =
  * @publicApi
  */
 export function withRouterConfig(options: RouterConfigOptions): RouterConfigurationFeature {
-  const providers = [
-    {provide: ROUTER_CONFIGURATION, useValue: options},
-    {
-      provide: REMOVE_TRAILING_SLASH,
-      useFactory: () => {
-        const {trailingSlash} = options;
-        return trailingSlash === 'always' || trailingSlash === 'preserve' ? false : true;
-      },
-    },
-  ];
+  const providers = [{provide: ROUTER_CONFIGURATION, useValue: options}];
   return routerFeature(RouterFeatureKind.RouterConfigurationFeature, providers);
 }
 
