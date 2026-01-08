@@ -7,7 +7,7 @@
  */
 
 export {HashLocationStrategy} from './hash_location_strategy';
-export {Location, PopStateEvent, REMOVE_TRAILING_SLASH} from './location';
+export {Location, PopStateEvent} from './location';
 export {APP_BASE_HREF, LocationStrategy, PathLocationStrategy} from './location_strategy';
 export {
   BrowserPlatformLocation,

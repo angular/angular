@@ -11,7 +11,6 @@ import {
   Location,
   LocationStrategy,
   PathLocationStrategy,
-  REMOVE_TRAILING_SLASH,
   ViewportScroller,
 } from '@angular/common';
 import {
@@ -155,13 +154,6 @@ export class RouterModule {
             }
           : [],
         {provide: ROUTER_CONFIGURATION, useValue: config ? config : {}},
-        {
-          provide: REMOVE_TRAILING_SLASH,
-          useValue:
-            config?.trailingSlash === 'always' || config?.trailingSlash === 'preserve'
-              ? false
-              : true,
-        },
         config?.useHash ? provideHashLocationStrategy() : providePathLocationStrategy(),
         provideRouterScroller(),
         config?.preloadingStrategy ? withPreloading(config.preloadingStrategy).ɵproviders : [],

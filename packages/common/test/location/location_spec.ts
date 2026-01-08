@@ -13,7 +13,6 @@ import {
   LocationStrategy,
   PathLocationStrategy,
   PlatformLocation,
-  REMOVE_TRAILING_SLASH,
 } from '../../index';
 import {MockLocationStrategy, MockPlatformLocation} from '../../testing';
 import {TestBed} from '@angular/core/testing';
@@ -304,20 +303,6 @@ describe('Location Class', () => {
       expect(location.normalize(path)).toBe(path);
       expect(location.normalize(baseHref)).toBe('');
       expect(location.normalize(baseHref + path)).toBe(path);
-    });
-  });
-  describe('Location with REMOVE_TRAILING_SLASH', () => {
-    it('should strip trailing slash by default', () => {
-      const location = TestBed.inject(Location);
-      expect(location.normalize('/a/b/')).toBe('/a/b');
-    });
-
-    it('should NOT strip trailing slash when REMOVE_TRAILING_SLASH is false', () => {
-      TestBed.configureTestingModule({
-        providers: [{provide: REMOVE_TRAILING_SLASH, useValue: false}],
-      });
-      const location = TestBed.inject(Location);
-      expect(location.normalize('/a/b/')).toBe('/a/b/');
     });
   });
 });
