@@ -196,6 +196,13 @@ export interface ReactiveNode {
    * Used in Angular DevTools to identify the kind of signal.
    */
   kind: ReactiveNodeKind;
+
+  /**
+   * @internal
+   * A debug information, only present in dev mode.
+   * Internal reactive nodes should not be visible by default when debugging the signal graph
+   */
+  isInternal?: boolean;
 }
 
 /**

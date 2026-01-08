@@ -63,6 +63,11 @@ export interface CreateSignalOptions<T> {
    * A debug name for the signal. Used in Angular DevTools to identify the signal.
    */
   debugName?: string;
+
+  /**
+   * @internal
+   */
+  isInternal?: boolean;
 }
 
 /**
@@ -82,6 +87,7 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
   if (ngDevMode) {
     signalFn.toString = () => `[Signal: ${signalFn()}]`;
     node.debugName = options?.debugName;
+    (node as any).isInternal = options?.isInternal ?? false;
   }
 
   return signalFn as WritableSignal<T>;

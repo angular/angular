@@ -30,6 +30,7 @@ export interface DebugSignalGraphNode {
   label?: string;
   preview: Descriptor;
   debuggable: boolean;
+  isInternal: boolean;
 }
 
 export interface DebugSignalGraphEdge {

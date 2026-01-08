@@ -65,6 +65,10 @@ export const canMatchGuard: CanActivateFn = () => {
             loadChildren: () => import('./routes/routes.module').then((m) => m.RoutesModule),
           },
           {
+            path: 'forms',
+            loadComponent: () => import('./forms/forms.component').then((m) => m.FormsComponent),
+          },
+          {
             path: '**',
             redirectTo: 'app',
           },
