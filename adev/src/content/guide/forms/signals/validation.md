@@ -461,6 +461,19 @@ export class UrlFormComponent {
 }
 ```
 
+For submission errors that target specific fields, use the `fieldTree` property:
+
+```ts
+// In a submit function
+return [
+  {
+    fieldTree: registrationForm.username, // Target specific field
+    kind: 'server',
+    message: 'Username already taken',
+  },
+];
+```
+
 The validator function receives a `FieldContext` object with:
 
 | Property        | Type       | Description                                 |
