@@ -324,12 +324,18 @@ describe('control flow - switch', () => {
   });
 
   it('should support an empty case block', () => {
+    // prettier-ignore
     @Component({
       template: `
         @switch (case) {
           @case (0) {}
-          @case (1) {
-            case 1
+          @case (1) { <!-- empty --> }
+          @case (2) {
+
+          }
+          @case(3)
+          @case (4) {
+            case 3-4
           }
           @default {
             default
@@ -348,7 +354,19 @@ describe('control flow - switch', () => {
 
     fixture.componentInstance.case = 1;
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe(' case 1 ');
+    expect(fixture.nativeElement.textContent).toBe('');
+
+    fixture.componentInstance.case = 2;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('');
+
+    fixture.componentInstance.case = 3;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe(' case 3-4 ');
+
+    fixture.componentInstance.case = 4;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe(' case 3-4 ');
 
     fixture.componentInstance.case = 5;
     fixture.detectChanges();
