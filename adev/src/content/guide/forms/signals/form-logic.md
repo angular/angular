@@ -219,18 +219,6 @@ export class Profile {
 }
 ```
 
-### Hidden vs disabled
-
-Choose `hidden()` when:
-
-- The field shouldn't appear in the UI at all
-- The field is irrelevant to the current form state
-
-Choose `disabled()` when:
-
-- The field should be visible but not editable
-- Showing the disabled state provides useful context
-
 ## Display uneditable fields with `readonly()`
 
 The `readonly()` rule prevents users from updating a field. The `[field]` directive automatically binds this state to the HTML `readonly` attribute, which prevents editing while still allowing users to focus and select text.
@@ -311,25 +299,37 @@ export class Document {
 
 When `isLocked` is true, the title field becomes readonly.
 
-### Readonly vs disabled
+## Choose between hidden, disabled, and readonly
 
-Both `readonly()` and `disabled()` configure state that prevents editing in the browser. They differ in how the browser treats the field:
+These three configuration functions control field availability in different ways:
 
-**Readonly:**
+Choose `hidden()` when the field:
 
-- Field value is submitted with form
-- Users can focus, select, and copy text
-- No "reasons" feature (returns boolean only)
-- Better for displaying data users need to see or copy but not edit
+- Should not appear in the UI at all
+- Is irrelevant to the current form state
+- Example: Shipping address fields when "same as billing" is checked
 
-**Disabled:**
+Choose `disabled()` when the field:
 
-- Field value is not included in HTML form submission (per HTML spec, though Signal Forms retains the value in the model)
-- Users cannot focus or interact with the element
-- Supports "reasons" (can return string explaining why)
-- Better for temporarily unavailable fields or conditional access
+- Should be visible but not editable
+- Needs to show why it's unavailable (using disabled reasons)
+- Should be excluded from HTML form submission
+- Example: Submit button disabled until form is valid, approval fields disabled for non-admin users
 
-Both skip validation while active.
+Choose `readonly()` when the field:
+
+- Should be visible but not editable
+- Contains data users need to see, select, or copy
+- Should be included in HTML form submission
+- Example: Order confirmation number, system-generated reference codes
+
+All three skip validation and prevent user editing while active. The key differences:
+
+| Feature                          | `hidden()` | `disabled()` | `readonly()` |
+| -------------------------------- | ---------- | ------------ | ------------ |
+| Visible in UI                    | No         | Yes          | Yes          |
+| Users can focus/select           | No         | No           | Yes          |
+| Included in HTML form submission | No         | No           | Yes          |
 
 ## Delay input operations with `debounce()`
 
@@ -573,7 +573,7 @@ Custom metadata keys use a "last write wins" strategy - if you call `metadata()`
 
 ### Managed metadata with reducers
 
-All metadata keys support reducers for accumulating values when you call `metadata()` multiple times with the same key. Use `createManagedMetadataKey()` when you need to compute a new value from the accumulated result:
+All metadata keys support reducers for accumulating values when you call `metadata()` multiple times with the same key. Use `createManagedMet adataKey()` when you need to compute a new value from the accumulated result and use it as the parameters for a resource:
 
 ```angular-ts
 import { createManagedMetadataKey, metadata } from '@angular/forms/signals'
