@@ -332,7 +332,7 @@ export function applyWhenValue(
 /**
  * Submits a given `FieldTree` using the given action function and applies any submission errors
  * resulting from the action to the field. Submission errors returned by the `action` will be integrated
- * into the field as a `ValidationError` on the sub-field indicated by the `field` property of the
+ * into the field as a `ValidationError` on the sub-field indicated by the `fieldTree` property of the
  * submission error.
  *
  * @example
@@ -341,8 +341,9 @@ export function applyWhenValue(
  *   const result = await myClient.registerNewUser(registrationForm().value());
  *   if (result.errorCode === myClient.ErrorCode.USERNAME_TAKEN) {
  *     return [{
- *       field: registrationForm.username,
- *       error: {kind: 'server', message: 'Username already taken'}
+ *       fieldTree: registrationForm.username,
+ *       kind: 'server',
+ *       message: 'Username already taken'
  *     }];
  *   }
  *   return undefined;

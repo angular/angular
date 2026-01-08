@@ -109,11 +109,11 @@ When checking validity in code, use `invalid()` instead of `!valid()` if you wan
 
 Access the array of validation errors with `errors()`. Each error object contains:
 
-| Property  | Description                                                     |
-| --------- | --------------------------------------------------------------- |
-| `kind`    | The validation rule that failed (such as "required" or "email") |
-| `message` | Optional human-readable error message                           |
-| `field`   | Reference to the `FieldTree` where the error occurred           |
+| Property    | Description                                                     |
+| ----------- | --------------------------------------------------------------- |
+| `kind`      | The validation rule that failed (such as "required" or "email") |
+| `message`   | Optional human-readable error message                           |
+| `fieldTree` | Reference to the `FieldTree` where the error occurred           |
 
 NOTE: The `message` property is optional. Validators can provide custom error messages, but if not specified, you may need to map error `kind` values to your own messages.
 
