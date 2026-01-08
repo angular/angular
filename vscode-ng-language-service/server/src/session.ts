@@ -1403,7 +1403,24 @@ export class Session {
       options,
     );
     if (!completions) {
-      return null;
+      const sf = this.getDefaultProjectForScriptInfo(scriptInfo)?.getSourceFile(scriptInfo.path);
+      if (!sf) {
+        return null;
+      }
+      const node = getTokenAtPosition(sf, offset);
+      if (!isInlineStyleNode(node)) {
+        return null;
+      }
+      const virtualScssDocContents = getSCSSVirtualContent(sf);
+      const virtualScssDoc = TextDocument.create(
+        params.textDocument.uri.toString(),
+        'scss',
+        0,
+        virtualScssDocContents,
+      );
+      const stylesheet = scssLS.parseStylesheet(virtualScssDoc);
+      const scssCompletions = scssLS.doComplete(virtualScssDoc, params.position, stylesheet);
+      return scssCompletions.items;
     }
     return completions.entries.map((e) =>
       tsCompletionEntryToLspCompletionItem(e, params.position, scriptInfo),
