@@ -55,7 +55,12 @@ import {
   VIEW_TRANSITION_OPTIONS,
   ViewTransitionsFeatureOptions,
 } from './utils/view_transition';
-import {getLoadedRoutes, getRouterInstance, navigateByUrl} from './router_devtools';
+import {
+  getLoadedRoutes,
+  getRouterInstance,
+  navigateByUrl,
+  parseRoutes,
+} from './router_devtools';
 import {StateManager} from './statemanager/state_manager';
 import {NavigationStateManager} from './statemanager/navigation_state_manager';
 
@@ -102,6 +107,7 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
     ɵpublishExternalGlobalUtil('ɵgetLoadedRoutes', getLoadedRoutes);
     ɵpublishExternalGlobalUtil('ɵgetRouterInstance', getRouterInstance);
     ɵpublishExternalGlobalUtil('ɵnavigateByUrl', navigateByUrl);
+    ɵpublishExternalGlobalUtil('ɵparseRoutes', parseRoutes);
   }
 
   return makeEnvironmentProviders([
