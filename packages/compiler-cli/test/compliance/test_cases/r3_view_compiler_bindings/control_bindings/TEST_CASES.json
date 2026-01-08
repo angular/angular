@@ -9,6 +9,15 @@
           "files": ["control_bindings.js"]
         }
       ]
+    },
+    {
+      "description": "should generate control instruction for `field` property bindings on radio inputs and execute it after the value",
+      "inputFiles": ["radio_bindings.ts"],
+      "expectations": [
+        {
+          "files": ["radio_bindings.js"]
+        }
+      ]
     }
   ]
 }
