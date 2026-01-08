@@ -82,7 +82,7 @@ The execution of both kinds of `effect` are tied to the change detection process
 - "View effects" are executed _before_ their corresponding component is checked by the change detection process.
 - "Root effects" are executed prior to all components being checked by the change detection process.
 
-In both cases, if at least one of the effect dependencies changed during the effect execution, the effect will re-run before moving ahead on the change detection process,
+In both cases, if at least one of the effect dependencies changed during the effect execution, the effect will re-run before moving ahead on the change detection process.
 
 ### Destroying effects
 
@@ -133,7 +133,7 @@ export class MyFancyChart {
     // Run a single time to create the chart instance
     afterNextRender({
       write: () => {
-        this.chart = initializeChart(this.canvas().nativeElement(), this.charData());
+        this.chart = initializeChart(this.canvas().nativeElement(), this.chartData());
       },
     });
 
@@ -151,7 +151,7 @@ TIP: You often don't need `afterRenderEffect` to check for DOM changes. APIs lik
 
 ### Render phases
 
-Accessing the DOM and mutating it can impact the performance of your application, for example by triggering to many unecesary [reflows](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
+Accessing the DOM and mutating it can impact the performance of your application, for example by triggering too many unnecessary [reflows](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
 
 To optimize those operations, `afterRenderEffect` offers four phases to group the callbacks and execute them in an optimized order.
 
