@@ -66,6 +66,7 @@ const UPDATE_ORDERING: Array<Rule<ir.UpdateOp>> = [
   {test: kindWithInterpolationTest(ir.OpKind.Property, true)},
   {test: nonInterpolationPropertyKindTest},
   {test: kindWithInterpolationTest(ir.OpKind.Attribute, false)},
+  {test: kindTest(ir.OpKind.Control)},
 ];
 
 /**
@@ -97,6 +98,7 @@ const handledOpKinds = new Set([
   ir.OpKind.DomProperty,
   ir.OpKind.Attribute,
   ir.OpKind.Animation,
+  ir.OpKind.Control,
 ]);
 
 /**
