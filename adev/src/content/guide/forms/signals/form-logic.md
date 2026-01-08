@@ -619,7 +619,7 @@ Make metadata reactive to other field values:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, metadata, MAX } from '@angular/forms/signals'
+import { form, Field, max } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-inventory',
@@ -646,7 +646,7 @@ export class Inventory {
   })
 
   inventoryForm = form(this.inventoryModel, (schemaPath) => {
-    metadata(schemaPath.quantity, MAX, ({valueOf}) => {
+    max(schemaPath.quantity, ({valueOf}) => {
       const item = valueOf(schemaPath.item)
       return item === 'widget' ? 100 : 50
     })
@@ -654,7 +654,7 @@ export class Inventory {
 }
 ```
 
-The metadata updates reactively when the `item` field changes.
+The `max()` validation rule sets the MAX metadata reactively based on the selected item. This demonstrates how validation rules can have conditional values that change when other fields update.
 
 ### Using metadata in custom controls
 
