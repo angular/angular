@@ -23,9 +23,9 @@
     "zone.js": "0.15.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "21.0.4",
-    "@angular/build": "21.0.4",
-    "@angular/cli": "21.0.4",
+    "@angular-devkit/build-angular": "21.0.5",
+    "@angular/build": "21.0.5",
+    "@angular/cli": "21.0.5",
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "ts-node": "10.9.2",
     "typescript": "5.9.3"
