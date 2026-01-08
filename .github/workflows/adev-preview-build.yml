@@ -21,16 +21,16 @@ jobs:
       (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'adev: preview'))
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@87ed54ddedde42b443be7c6fe36cdaf0a907ea39
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@6084f3b53ed4a84d48047eaad984e7dd6a081c90
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@87ed54ddedde42b443be7c6fe36cdaf0a907ea39
+        uses: angular/dev-infra/github-actions/bazel/setup@6084f3b53ed4a84d48047eaad984e7dd6a081c90
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@87ed54ddedde42b443be7c6fe36cdaf0a907ea39
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@6084f3b53ed4a84d48047eaad984e7dd6a081c90
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Build adev
         run: pnpm bazel build //adev:build.production --config=snapshot-build
-      - uses: angular/dev-infra/github-actions/previews/pack-and-upload-artifact@87ed54ddedde42b443be7c6fe36cdaf0a907ea39
+      - uses: angular/dev-infra/github-actions/previews/pack-and-upload-artifact@6084f3b53ed4a84d48047eaad984e7dd6a081c90
         with:
           workflow-artifact-name: 'adev-preview'
           pull-number: '${{github.event.pull_request.number}}'
