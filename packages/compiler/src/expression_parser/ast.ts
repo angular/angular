@@ -385,7 +385,7 @@ export class Unary extends Binary {
   private constructor(
     span: ParseSpan,
     sourceSpan: AbsoluteSourceSpan,
-    public operator: string,
+    public operator: '+' | '-',
     public expr: AST,
     binaryOp: BinaryOperation,
     binaryLeft: AST,
