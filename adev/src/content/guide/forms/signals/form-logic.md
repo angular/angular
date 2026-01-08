@@ -567,13 +567,13 @@ const placeholderText = myForm.email().metadata(PLACEHOLDER)
 const helpText = myForm.email().metadata(HELP_TEXT)
 ```
 
-Custom metadata keys use a "last write wins" strategy - if you call `metadata()` multiple times with the same key, only the last value is kept.
+By default, custom metadata keys use a "last write wins" strategy - if you call `metadata()` multiple times with the same key, only the last value is kept.
 
 **Important:** Always define metadata keys at module level, never inside components. Metadata keys rely on object identity, and recreating them loses that identity.
 
 ### Managed metadata with reducers
 
-All metadata keys support reducers for accumulating values when you call `metadata()` multiple times with the same key. Use `createManagedMet adataKey()` when you need to compute a new value from the accumulated result and use it as the parameters for a resource:
+When you want to use a different strategy to manage metadata keys, there is support for reducers that accumulate values when you call `metadata()` multiple times with the same key. Use `createManagedMet adataKey()` when you need to compute a new value from the accumulated result and use it as the parameters for a resource:
 
 ```angular-ts
 import { createManagedMetadataKey, metadata } from '@angular/forms/signals'
