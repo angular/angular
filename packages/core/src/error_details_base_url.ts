@@ -11,7 +11,10 @@ import {VERSION} from './version';
 export const DOC_PAGE_BASE_URL: string = (() => {
   const full = VERSION.full;
   const isPreRelease =
-    full.includes('-next') || full.includes('-rc') || full === '0.0.0-PLACEHOLDER';
+    full.includes('-next') ||
+    full.includes('-rc') ||
+    // Avoid direct literal to prevent build stamping replacement
+    full === '0.0.0' + '-PLACEHOLDER';
   const prefix = isPreRelease ? 'next' : `v${VERSION.major}`;
   return `https://${prefix}.angular.dev`;
 })();
@@ -26,7 +29,6 @@ export const DOC_PAGE_BASE_URL: string = (() => {
 export const ERROR_DETAILS_PAGE_BASE_URL: string = (() => {
   return `${DOC_PAGE_BASE_URL}/errors`;
 })();
-
 /**
  * URL for the XSS security documentation.
  */
