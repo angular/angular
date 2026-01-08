@@ -151,7 +151,7 @@ TIP: You often don't need `afterRenderEffect` to check for DOM changes. APIs lik
 
 ### Render phases
 
-Accessing the DOM and mutating it can impact the performance of your application, for example by triggering to many unecesary [reflows](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
+Accessing the DOM and mutating it can impact the performance of your application, for example by triggering too many unnecessary [reflows](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
 
 To optimize those operations, `afterRenderEffect` offers four phases to group the callbacks and execute them in an optimized order.
 
