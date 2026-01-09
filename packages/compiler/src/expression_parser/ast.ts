@@ -268,7 +268,17 @@ export class Interpolation extends AST {
   }
 }
 
-type AssignmentOperation = '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '**=' | '&&=' | '||=' | '??=';
+export type AssignmentOperation =
+  | '='
+  | '+='
+  | '-='
+  | '*='
+  | '/='
+  | '%='
+  | '**='
+  | '&&='
+  | '||='
+  | '??=';
 type BinaryOperation =
   | AssignmentOperation
   // Logical
