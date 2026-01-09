@@ -261,12 +261,7 @@ export function createSwitchBlock(
     collectedCases.push(switchCase);
 
     // We need to take into account that some cases might have an empty body. ({})
-    const caseWithoutBody =
-      node.children.length === 0 &&
-      node.endSourceSpan !== null &&
-      node.endSourceSpan.start.offset === node.endSourceSpan.end.offset;
-
-    if (caseWithoutBody) {
+    if (node.hasNoBody) {
       if (firstCaseStart === null) {
         firstCaseStart = node.sourceSpan;
       }
