@@ -356,7 +356,7 @@ describe('DirectiveExplorerComponent', () => {
         expect(messageBusMock.emit).toHaveBeenCalledWith('log', [
           {
             level: 'warn',
-            message: `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`,
+            message: `The currently inspected frame does not have a unique URL on this page. Cannot inspect object.`,
           },
         ]);
       });

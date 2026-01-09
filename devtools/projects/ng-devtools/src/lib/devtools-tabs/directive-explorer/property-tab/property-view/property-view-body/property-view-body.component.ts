@@ -109,6 +109,7 @@ export class PropertyViewBodyComponent {
     this.controller().logValue(node);
     this._snackBar.open(`Logged value of '${node.prop.name}' to the console`, 'Dismiss', {
       duration: 2000,
+      horizontalPosition: 'left',
     });
   }
 
