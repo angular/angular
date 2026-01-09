@@ -8,7 +8,14 @@
 
 import ts from 'typescript';
 
-import {ConstantEntry, EntryType, EnumEntry, EnumMemberEntry, MemberType} from './entities';
+import {
+  ConstantEntry,
+  EntryType,
+  EnumEntry,
+  EnumMemberEntry,
+  MemberType,
+  StatementType,
+} from './entities';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 
 /** Name of the tag indicating that an object literal should be shown as an enum in docs. */
@@ -46,6 +53,7 @@ export function extractConstant(
       rawComment,
       description,
       jsdocTags: jsdocTags.filter((tag) => tag.name !== LITERAL_AS_ENUM_TAG),
+      statementType: StatementType.Enum,
     };
   }
 
@@ -56,6 +64,7 @@ export function extractConstant(
     rawComment,
     description,
     jsdocTags,
+    statementType: StatementType.Variable,
   };
 }
 

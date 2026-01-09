@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {DocEntry, EntryCollection, EntryType} from '@angular/compiler-cli/src/ngtsc/docs';
+import {
+  type StatementType,
+  type DocEntry,
+  type EntryCollection,
+  type EntryType,
+} from '@angular/compiler-cli/src/ngtsc/docs';
 import {readFileSync, writeFileSync} from 'fs';
 import {basename, join} from 'path';
 
@@ -28,6 +33,7 @@ function main() {
         endLine: 0,
       },
       entryType: 'element' as EntryType.Element,
+      statementType: 'variable' as StatementType.Variable,
       description: fileContent,
       rawComment: fileContent,
       jsdocTags: [],

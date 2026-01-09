@@ -25,6 +25,7 @@ import {
   MemberTags,
   PipeEntry,
   PropertyEntry,
+  StatementType,
 } from './entities';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {ClassDeclarationLike, PropertiesExtractor} from './properties_extractor';
@@ -50,6 +51,7 @@ class ClassExtractor extends PropertiesExtractor {
       rawComment: extractRawJsDoc(this.declaration),
       extends: this.extractInheritance(this.declaration),
       implements: this.extractInterfaceConformance(this.declaration),
+      statementType: StatementType.Class,
     };
   }
 
@@ -102,6 +104,7 @@ class DirectiveExtractor extends ClassExtractor {
       exportAs: this.metadata.exportAs ?? [],
       entryType: this.metadata.isComponent ? EntryType.Component : EntryType.Directive,
       ...(aliases.length > 0 && {aliases}),
+      statementType: StatementType.Class,
     };
   }
 
@@ -157,6 +160,7 @@ class PipeExtractor extends ClassExtractor {
       isStandalone: this.metadata.isStandalone,
       usage: extractPipeSyntax(this.metadata, this.declaration as ts.ClassDeclaration),
       isPure: this.metadata.isPure,
+      statementType: StatementType.Class,
     };
   }
 }
@@ -176,6 +180,7 @@ class NgModuleExtractor extends ClassExtractor {
     return {
       ...super.extract(),
       entryType: EntryType.NgModule,
+      statementType: StatementType.Class,
     };
   }
 }

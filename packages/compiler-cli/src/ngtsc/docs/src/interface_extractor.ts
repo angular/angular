@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {ClassDeclaration} from '../../reflection';
 
-import {EntryType, InterfaceEntry} from './entities';
+import {EntryType, InterfaceEntry, StatementType} from './entities';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {PropertiesExtractor} from './properties_extractor';
 
@@ -36,6 +36,7 @@ class InterfaceExtractor extends PropertiesExtractor {
       rawComment: extractRawJsDoc(this.declaration),
       extends: this.extractInheritance(this.declaration),
       implements: this.extractInterfaceConformance(this.declaration),
+      statementType: StatementType.Interface,
     };
   }
 

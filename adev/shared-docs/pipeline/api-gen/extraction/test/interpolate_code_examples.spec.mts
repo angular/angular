@@ -15,6 +15,7 @@ import {
   FunctionSignatureMetadata,
   MemberType,
   MethodEntry,
+  StatementType,
 } from '@angular/compiler-cli';
 import {mockReadFileSync} from './fake-examples.mjs';
 
@@ -170,6 +171,7 @@ class Baz {
         description: '',
         rawComment: '',
         entryType: EntryType.UndecoratedClass,
+        statementType: StatementType.Class,
         name: 'Test',
         jsdocTags: [],
         isAbstract: false,
@@ -185,10 +187,12 @@ class Baz {
             memberType: MemberType.Method,
             signatures: [],
             entryType: EntryType.Function,
+            statementType: StatementType.Function,
             rawComment: '',
             implementation: {
               name: 'test',
               entryType: EntryType.Function,
+              statementType: StatementType.Function,
               rawComment: '',
               params: [],
               returnType: 'void',

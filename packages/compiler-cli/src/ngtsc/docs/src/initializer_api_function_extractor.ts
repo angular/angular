@@ -13,6 +13,7 @@ import {
   FunctionDefinitionEntry,
   InitializerApiFunctionEntry,
   JsDocTagEntry,
+  StatementType,
 } from './entities';
 import {
   extractAllParams,
@@ -118,6 +119,7 @@ export function extractInitializerApiFunction(
     callFunction.implementation = {
       name,
       entryType: EntryType.Function,
+      statementType: StatementType.Function,
       isNewType: false,
       description: extractJsDocDescription(implementation),
       generics: extractGenerics(implementation),
@@ -160,6 +162,7 @@ export function extractInitializerApiFunction(
 
   return {
     entryType: EntryType.InitializerApiFunction,
+    statementType: StatementType.Function,
     name,
     description,
     jsdocTags,

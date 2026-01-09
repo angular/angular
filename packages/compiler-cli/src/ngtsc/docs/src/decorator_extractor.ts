@@ -15,6 +15,7 @@ import {
   JsDocTagEntry,
   ParameterEntry,
   PropertyEntry,
+  StatementType,
 } from './entities';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractInterface} from './interface_extractor';
@@ -49,6 +50,7 @@ export function extractorDecorator(
     jsdocTags: extractJsDocTags(documentedNode),
     members,
     signatures,
+    statementType: StatementType.Variable,
   };
 }
 
