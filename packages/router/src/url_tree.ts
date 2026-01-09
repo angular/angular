@@ -18,7 +18,7 @@ import type {Router} from './router';
  * for the current router state.
  *
  * @publicApi
- * @see {@link Router#isActive}
+ * @see {@link isActive}
  */
 export interface IsActiveMatchOptions {
   /**
@@ -84,6 +84,8 @@ const paramCompareMap: Record<ParamMatchOptions, ParamCompareFn> = {
  * Returns a computed signal of whether the given url is activated in the Router.
  *
  * As the router state changes, the signal will update to reflect whether the url is active.
+ *
+ * @see [Check if a URL is active](guide/routing/read-route-state#check-if-a-url-is-active)
  * @publicApi 21.1
  */
 export function isActive(
