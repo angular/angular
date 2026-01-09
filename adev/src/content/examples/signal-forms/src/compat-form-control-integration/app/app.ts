@@ -1,8 +1,8 @@
-import {signal, Component, computed} from '@angular/core';
-import {FormControl, Validators, AbstractControl} from '@angular/forms';
-import {Field} from '@angular/forms/signals';
-import {compatForm} from '@angular/forms/signals/compat';
 import {JsonPipe} from '@angular/common';
+import {Component, computed, signal} from '@angular/core';
+import {AbstractControl, FormControl, Validators} from '@angular/forms';
+import {FormField} from '@angular/forms/signals';
+import {compatForm} from '@angular/forms/signals/compat';
 
 // Dummy enterprisePasswordValidator for the example
 function enterprisePasswordValidator() {
@@ -16,7 +16,7 @@ function enterprisePasswordValidator() {
 
 @Component({
   selector: 'app',
-  imports: [Field, JsonPipe],
+  imports: [FormField, JsonPipe],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

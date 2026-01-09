@@ -1,12 +1,12 @@
-import {signal, Component, computed} from '@angular/core';
-import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
-import {Field} from '@angular/forms/signals';
-import {compatForm} from '@angular/forms/signals/compat';
 import {JsonPipe} from '@angular/common';
+import {Component, computed, signal} from '@angular/core';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormField} from '@angular/forms/signals';
+import {compatForm} from '@angular/forms/signals/compat';
 
 @Component({
   selector: 'app',
-  imports: [ReactiveFormsModule, Field, JsonPipe],
+  imports: [ReactiveFormsModule, FormField, JsonPipe],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

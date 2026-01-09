@@ -2,14 +2,14 @@
   <div>
     <label>
       Email:
-      <input [field]="f.email" />
+      <input [formField]="f.email" />
     </label>
   </div>
 
   <div>
     <label>
       Password:
-      <input [field]="f.password" type="password" />
+      <input [formField]="f.password" type="password" />
     </label>
 
     @if (f.password().touched() && f.password().invalid()) {

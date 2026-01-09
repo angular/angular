@@ -1,17 +1,17 @@
-import {Component, Directive, input} from '@angular/core';
+import { Component, Directive, input } from '@angular/core';
 
-@Directive({selector: '[field]'})
-export class Field {
-  readonly field = input<string>();
+@Directive({selector: '[formField]'})
+export class FormField {
+  readonly formField = input<string>();
 }
 
 @Component({
   template: `
-    <div field="Not a form control"></div>
-    <div [attr.field]="value">Not a form control either.</div>
-    <input [field]="value">
+    <div formField="Not a form control"></div>
+    <div [attr.formField]="value">Not a form control either.</div>
+    <input [formField]="value">
   `,
-  imports: [Field],
+  imports: [FormField],
 })
 export class MyComponent {
   value = 'Hello, world!';
