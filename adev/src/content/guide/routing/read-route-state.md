@@ -323,3 +323,30 @@ The RouterLinkActive directive can also be applied to an ancestor element in ord
 ```
 
 For more information, check out the [API docs for RouterLinkActive](/api/router/RouterLinkActive).
+
+## Check if a URL is active
+
+The `isActive` function returns a computed signal that tracks whether a given URL is currently active in the router. The signal automatically updates as the router state changes.
+
+```angular-ts
+import {Component, inject} from '@angular/core';
+import {isActive, Router} from '@angular/router';
+
+@Component({
+  template: `
+    <div [class.active]="isSettingsActive()">
+      <h2>Settings</h2>
+    </div>
+  `
+})
+export class Panel {
+  private router = inject(Router);
+
+  isSettingsActive = isActive('/settings', this.router, {
+    paths: 'subset',
+    queryParams: 'ignored',
+    fragment: 'ignored',
+    matrixParams: 'ignored'
+  });
+}
+```
