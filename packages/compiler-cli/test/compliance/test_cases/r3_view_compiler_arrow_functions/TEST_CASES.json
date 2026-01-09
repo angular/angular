@@ -2,7 +2,7 @@
   "$schema": "../test_case_schema.json",
   "cases": [
     {
-      "description": "should handle arrow functions that do not depend on ctext",
+      "description": "should handle arrow functions that do not depend on context",
       "inputFiles": ["arrow_function_no_context.ts"],
       "expectations": [
         {
