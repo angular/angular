@@ -8,6 +8,14 @@ ts_project(
     srcs = [
         "generate-routes.mts",
     ],
+    data = [
+        "//adev/src/assets:docs_api_manifest",
+        "//adev/src/content/tutorials/deferrable-views",
+        "//adev/src/content/tutorials/first-app",
+        "//adev/src/content/tutorials/learn-angular",
+        "//adev/src/content/tutorials/signal-forms",
+        "//adev/src/content/tutorials/signals",
+    ],
     tsconfig = {
         "compilerOptions": {
             "target": "ES2022",
@@ -23,11 +31,6 @@ ts_project(
         "//adev/src/app/routing/navigation-entries",
         "//adev/src/content/reference/errors:route-nav-items",
         "//adev/src/content/reference/extended-diagnostics:route-nav-items",
-        "//adev/src/content/tutorials/deferrable-views",
-        "//adev/src/content/tutorials/first-app",
-        "//adev/src/content/tutorials/learn-angular",
-        "//adev/src/content/tutorials/signal-forms",
-        "//adev/src/content/tutorials/signals",
     ],
 )
 

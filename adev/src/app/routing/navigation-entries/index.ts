@@ -14,17 +14,17 @@ import ERRORS_NAV_DATA from '../../../content/reference/errors/routes.json' with
 // @ts-ignore
 import EXT_DIAGNOSTICS_NAV_DATA from '../../../content/reference/extended-diagnostics/routes.json' with {type: 'json'};
 // @ts-ignore
-import FIRST_APP_TUTORIAL_NAV_DATA from '../../../assets/tutorials/first-app/routes.json' with {type: 'json'};
+import FIRST_APP_TUTORIAL_NAV_DATA from '../../../content/tutorials/first-app/first-app/routes.json' with {type: 'json'};
 // @ts-ignore
-import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../../assets/tutorials/learn-angular/routes.json' with {type: 'json'};
+import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../../content/tutorials/learn-angular/learn-angular/routes.json' with {type: 'json'};
 // @ts-ignore
-import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../../assets/tutorials/deferrable-views/routes.json' with {type: 'json'};
+import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../../content/tutorials/deferrable-views/deferrable-views/routes.json' with {type: 'json'};
 // @ts-ignore
-import SIGNALS_TUTORIAL_NAV_DATA from '../../../assets/tutorials/signals/routes.json' with {type: 'json'};
+import SIGNALS_TUTORIAL_NAV_DATA from '../../../content/tutorials/signals/signals/routes.json' with {type: 'json'};
 // @ts-ignore
-import SIGNAL_FORMS_TUTORIAL_NAV_DATA from '../../../assets/tutorials/signal-forms/routes.json' with {type: 'json'};
+import SIGNAL_FORMS_TUTORIAL_NAV_DATA from '../../../content/tutorials/signal-forms/signal-forms/routes.json' with {type: 'json'};
 // @ts-ignore
-import API_MANIFEST_JSON from '../../../assets/api/manifest.json' with {type: 'json'};
+import API_MANIFEST_JSON from '../../../assets/manifest.json' with {type: 'json'};
 
 export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   {
