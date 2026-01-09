@@ -127,7 +127,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    *
    * These options are passed to the `isActive()` function.
    *
-   * @see {@link Router#isActive}
+   * @see {@link isActive}
    */
   @Input() routerLinkActiveOptions: {exact: boolean} | IsActiveMatchOptions = {exact: false};
 
