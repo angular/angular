@@ -53,6 +53,7 @@ import {
   Unary,
   VariableBinding,
   VoidExpression,
+  type AssignmentOperation,
 } from './ast';
 import {EOF, Lexer, StringTokenKind, Token, TokenType} from './lexer';
 export interface InterpolationPiece {
@@ -727,7 +728,10 @@ class _ParseAST {
     }
   }
 
-  private isAssignmentOperator(token: Token): boolean {
+  private isAssignmentOperator(token: Token): token is Token & {
+    type: typeof TokenType.Operator;
+    strValue: AssignmentOperation;
+  } {
     return token.type === TokenType.Operator && Binary.isAssignmentOperation(token.strValue);
   }
 
