@@ -30,6 +30,7 @@
     },
     {
       "matchManagers": ["bazel", "bazel-module", "bazelisk", "npm"],
+      "matchDepNames": ["!pnpm", "!typescript", "*"],
       "postUpgradeTasks": {
         "commands": [
           "git restore .npmrc",
