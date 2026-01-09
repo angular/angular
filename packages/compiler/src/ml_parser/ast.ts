@@ -128,6 +128,8 @@ export class Comment implements BaseNode {
 }
 
 export class Block extends NodeWithI18n {
+  public hasNoBody = false; // true when the block has no curly braces.
+
   constructor(
     public name: string,
     public parameters: BlockParameter[],
@@ -139,6 +141,11 @@ export class Block extends NodeWithI18n {
     i18n?: I18nMeta,
   ) {
     super(sourceSpan, i18n);
+
+    this.hasNoBody =
+      this.children.length === 0 &&
+      this.endSourceSpan !== null &&
+      this.endSourceSpan.start.offset === this.endSourceSpan.end.offset;
   }
 
   override visit(visitor: Visitor, context: any) {
