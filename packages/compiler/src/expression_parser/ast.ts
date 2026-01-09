@@ -246,11 +246,39 @@ export class Interpolation extends AST {
   }
 }
 
+type AssignmentOperation = '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '**=' | '&&=' | '||=' | '??=';
+type BinaryOperation =
+  | AssignmentOperation
+  // Logical
+  | '&&'
+  | '||'
+  | '??'
+  // Equality
+  | '=='
+  | '!='
+  | '==='
+  | '!=='
+  // Relational
+  | '<'
+  | '>'
+  | '<='
+  | '>='
+  | 'in'
+  // Additive
+  | '+'
+  | '-'
+  // Multiplicative
+  | '*'
+  | '%'
+  | '/'
+  // Exponentiation
+  | '**';
+
 export class Binary extends AST {
   constructor(
     span: ParseSpan,
     sourceSpan: AbsoluteSourceSpan,
-    public operation: string,
+    public operation: BinaryOperation,
     public left: AST,
     public right: AST,
   ) {
@@ -327,7 +355,7 @@ export class Unary extends Binary {
     sourceSpan: AbsoluteSourceSpan,
     public operator: string,
     public expr: AST,
-    binaryOp: string,
+    binaryOp: BinaryOperation,
     binaryLeft: AST,
     binaryRight: AST,
   ) {
