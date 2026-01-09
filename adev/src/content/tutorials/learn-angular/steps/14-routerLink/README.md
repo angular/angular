@@ -2,7 +2,7 @@
 
 In the app's current state, the entire page refreshes when we click on an internal link that exists within the app. While this may not seem significant with a small app, this can have performance implications for larger pages with more content where users have to redownload assets and run calculations again.
 
-NOTE: Learn more about [adding routes to your application in the in-depth guide](/guide/routing/common-router-tasks#add-your-routes-to-your-application).
+NOTE: Learn more about [adding routes to your application in the in-depth guide](/guide/routing/define-routes#adding-the-router-to-your-application).
 
 In this activity, you'll learn how to leverage the `RouterLink` directive to make the most use of Angular Router.
 

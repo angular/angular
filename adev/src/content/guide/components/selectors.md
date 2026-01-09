@@ -140,7 +140,7 @@ without extra work. This is especially valuable for ARIA attributes such as `ari
 Angular does not report errors when it encounters custom attributes that don't match an available
 component. When using components with attribute selectors, consumers may forget to import the
 component or its NgModule, resulting in the component not rendering.
-See [Importing and using components](guide/components/importing) for more information.
+See [Importing and using components](guide/components#imports-in-the-component-decorator) for more information.
 
 Components that define attribute selectors should use lowercase, dash-case attributes. You can
 follow the same prefixing recommendation described above.

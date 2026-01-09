@@ -47,7 +47,7 @@ In this example, the template checks `registrationForm.email().invalid()` to det
 
 ### Field state signals
 
-The most commonly used signal is `value()`, a [writable signal](guide/forms/signals/models#updating-models) that provides access to the field's current value:
+The most commonly used signal is `value()`, a `WritableSignal` that provides access to the field's current value:
 
 ```ts
 const emailValue = registrationForm.email().value();

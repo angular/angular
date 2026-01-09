@@ -6,7 +6,6 @@ generate_guides(
     srcs = glob([
         "*.md",
     ]),
-    api_manifest = "//adev/src/assets:docs_api_manifest",
     data = [
         "//adev/src/content/examples",
     ],
@@ -25,6 +24,7 @@ copy_to_bin(
         "//adev/src/content/guide/forms/signals:guide_files",
         "//adev/src/content/guide/http:guide_files",
         "//adev/src/content/guide/i18n:guide_files",
+        "//adev/src/content/guide/ngmodules:guide_files",
         "//adev/src/content/guide/performance:guide_files",
         "//adev/src/content/guide/routing:guide_files",
         "//adev/src/content/guide/signals:guide_files",

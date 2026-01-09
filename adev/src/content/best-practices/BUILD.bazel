@@ -6,7 +6,6 @@ generate_guides(
     srcs = glob([
         "*.md",
     ]),
-    api_manifest = "//adev/src/assets:docs_api_manifest",
     data = [
         "//adev/src/assets/images:components.svg",
         "//adev/src/content/examples",
@@ -16,6 +15,8 @@ generate_guides(
 
 js_library(
     name = "guide_files",
-    srcs = glob(["**/*.md"]),
+    srcs = [
+        "//adev/src/content/best-practices/runtime-performance:guide_files",
+    ] + glob(["**/*.md"]),
     visibility = ["//adev:__subpackages__"],
 )

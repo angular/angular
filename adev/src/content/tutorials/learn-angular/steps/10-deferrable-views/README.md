@@ -144,4 +144,4 @@ In the activity, you've learned how to use deferrable views in your applications
 
 There's even more you can do with them, like different triggers, prefetching, and `@error` blocks.
 
-If you would like to learn more, check out the [documentation for Deferrable views](guide/defer).
+If you would like to learn more, check out the [documentation for Deferrable views](/guide/templates/defer).
