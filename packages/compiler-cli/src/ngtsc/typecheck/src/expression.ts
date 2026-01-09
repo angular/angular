@@ -129,13 +129,6 @@ class AstTranslator implements AstVisitor {
       ast = ast.ast;
     }
 
-    // The `EmptyExpr` doesn't have a dedicated method on `AstVisitor`, so it's special cased here.
-    if (ast instanceof EmptyExpr) {
-      const res = ts.factory.createIdentifier('undefined');
-      addParseSpanInfo(res, ast.sourceSpan);
-      return res;
-    }
-
     // First attempt to let any custom resolution logic provide a translation for the given node.
     const resolved = this.maybeResolve(ast);
     if (resolved !== null) {
@@ -490,6 +483,12 @@ class AstTranslator implements AstVisitor {
   visitSpreadElement(ast: SpreadElement) {
     const expression = wrapForDiagnostics(this.translate(ast.expression));
     const node = ts.factory.createSpreadElement(expression);
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
+
+  visitEmptyExpr(ast: EmptyExpr, context: any) {
+    const node = ts.factory.createIdentifier('undefined');
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }

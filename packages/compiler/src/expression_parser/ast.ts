@@ -47,7 +47,7 @@ export abstract class ASTWithName extends AST {
 
 export class EmptyExpr extends AST {
   override visit(visitor: AstVisitor, context: any = null) {
-    // do nothing
+    return visitor.visitEmptyExpr?.(this, context);
   }
 }
 
@@ -651,6 +651,7 @@ export interface AstVisitor {
   visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any): any;
   visitSpreadElement(ast: SpreadElement, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
+  visitEmptyExpr?(ast: EmptyExpr, context: any): any;
   /**
    * This function is optionally defined to allow classes that implement this
    * interface to selectively decide if the specified `ast` should be visited.
@@ -756,6 +757,7 @@ export class RecursiveAstVisitor implements AstVisitor {
   visitSpreadElement(ast: SpreadElement, context: any) {
     this.visit(ast.expression, context);
   }
+  visitEmptyExpr(ast: EmptyExpr, context: any): any {}
   // This is not part of the AstVisitor interface, just a helper method
   visitAll(asts: AST[], context: any): any {
     for (const ast of asts) {
