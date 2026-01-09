@@ -122,18 +122,20 @@ export function ɵcontrolUpdate(): void {
  */
 function updateControl<T>(lView: LView, tNode: TNode): void {
   const control = getControlDirective(tNode, lView);
-  if (control) {
-    updateControlClasses(lView, tNode, control);
+  if (!control) {
+    return;
+  }
 
-    if (tNode.flags & TNodeFlags.isFormValueControl) {
-      updateCustomControl(tNode, lView, control, 'value');
-    } else if (tNode.flags & TNodeFlags.isFormCheckboxControl) {
-      updateCustomControl(tNode, lView, control, 'checked');
-    } else if (tNode.flags & TNodeFlags.isInteropControl) {
-      updateInteropControl(tNode, lView, control);
-    } else {
-      updateNativeControl(tNode, lView, control);
-    }
+  updateControlClasses(lView, tNode, control);
+
+  if (tNode.flags & TNodeFlags.isFormValueControl) {
+    updateCustomControl(tNode, lView, control, 'value');
+  } else if (tNode.flags & TNodeFlags.isFormCheckboxControl) {
+    updateCustomControl(tNode, lView, control, 'checked');
+  } else if (tNode.flags & TNodeFlags.isInteropControl) {
+    updateInteropControl(tNode, lView, control);
+  } else {
+    updateNativeControl(tNode, lView, control);
   }
 
   // This instruction requires an additional variable slot to store control property bindings, but
