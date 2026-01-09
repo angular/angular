@@ -349,7 +349,7 @@ export class DirectiveExplorerComponent {
     const selectedFrame = this._frameManager.selectedFrame();
 
     if (!this._frameManager.activeFrameHasUniqueUrl()) {
-      const error = `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`;
+      const error = `The currently inspected frame does not have a unique URL on this page. Cannot inspect object.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
       this._messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
