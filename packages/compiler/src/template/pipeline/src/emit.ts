@@ -85,7 +85,7 @@ import {transformTwoWayBindingSet} from './phases/transform_two_way_binding_set'
 import {countVariables} from './phases/var_counting';
 import {optimizeVariables} from './phases/variable_optimization';
 import {wrapI18nIcus} from './phases/wrap_icus';
-import {storeHostBindingCallbacks, storeTemplateCallbacks} from './phases/callback_storage';
+import {generateArrowFunctions} from './phases/generate_arrow_functions';
 
 type Phase =
   | {
@@ -107,8 +107,6 @@ const phases: Phase[] = [
   {kind: Kind.Host, fn: parseHostStyleProperties},
   {kind: Kind.Tmpl, fn: emitNamespaceChanges},
   {kind: Kind.Tmpl, fn: propagateI18nBlocks},
-  {kind: Kind.Tmpl, fn: storeTemplateCallbacks},
-  {kind: Kind.Host, fn: storeHostBindingCallbacks},
   {kind: Kind.Tmpl, fn: wrapI18nIcus},
   {kind: Kind.Both, fn: deduplicateTextBindings},
   {kind: Kind.Both, fn: specializeStyleBindings},
@@ -124,6 +122,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: createPipes},
   {kind: Kind.Tmpl, fn: configureDeferInstructions},
   {kind: Kind.Tmpl, fn: createVariadicPipes},
+  {kind: Kind.Both, fn: generateArrowFunctions},
   {kind: Kind.Both, fn: generatePureLiteralStructures},
   {kind: Kind.Tmpl, fn: generateProjectionDefs},
   {kind: Kind.Tmpl, fn: generateLocalLetReferences},

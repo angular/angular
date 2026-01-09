@@ -3623,6 +3623,48 @@ describe('acceptance integration tests', () => {
       fixture.detectChanges();
       expect(fixture.componentInstance.prop).toBe(1);
     });
+
+    it('should be able to use $event in an arrow function', () => {
+      @Component({
+        template: `<button (click)="value.update(prev => $event.type + prev)">Click</button>`,
+      })
+      class TestComponent {
+        value = signal('');
+      }
+      const fixture = TestBed.createComponent(TestComponent);
+      const button = fixture.nativeElement.querySelector('button');
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value()).toBe('');
+
+      button.click();
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value()).toBe('click');
+    });
+
+    it('should be able to reference loop variables in an arrow function', () => {
+      @Component({
+        template: `
+          @for (item of items; track $index) {
+            {{ item }}: {{(() => prefix + ($even ? 'even' : 'odd'))()}}
+          }
+        `,
+      })
+      class TestComponent {
+        items = ['Zero', 'One', 'Two', 'Three'];
+        prefix = '';
+      }
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain(
+        'Zero: even  One: odd  Two: even  Three: odd',
+      );
+
+      fixture.componentInstance.prefix = 'is ';
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain(
+        'Zero: is even  One: is odd  Two: is even  Three: is odd',
+      );
+    });
   });
 });
 

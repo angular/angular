@@ -2,7 +2,7 @@
   "$schema": "../test_case_schema.json",
   "cases": [
     {
-      "description": "should reuse arrow functions that do not depend on context",
+      "description": "should handle arrow functions that do not depend on ctext",
       "inputFiles": ["arrow_function_no_context.ts"],
       "expectations": [
         {
@@ -158,6 +158,26 @@
         {
           "failureMessage": "Invalid template",
           "files": ["arrow_function_pipe.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function using $event",
+      "inputFiles": ["arrow_function_dollar_event.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_dollar_event.js"]
+        }
+      ]
+    },
+    {
+      "description": "should handle arrow function using loop variables",
+      "inputFiles": ["arrow_function_loop_variables.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid template",
+          "files": ["arrow_function_loop_variables.js"]
         }
       ]
     }

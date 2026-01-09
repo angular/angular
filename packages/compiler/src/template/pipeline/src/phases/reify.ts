@@ -91,7 +91,11 @@ function ensureNoIrForDebug(job: CompilationJob) {
 
 function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp>): void {
   for (const op of ops) {
-    ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
+    ir.transformExpressionsInOp(
+      op,
+      (expr) => reifyIrExpression(unit, expr),
+      ir.VisitorContextFlag.None,
+    );
 
     switch (op.kind) {
       case ir.OpKind.Text:
@@ -591,25 +595,6 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.ControlCreate:
         ir.OpList.replace(op, ng.controlCreate(op.sourceSpan));
         break;
-      case ir.OpKind.StoreCallback:
-        if (op.handle.slot === null) {
-          throw new Error('No slot was assigned for callback storage');
-        }
-        ir.OpList.replace(
-          op,
-          ng.storeCallback(op.handle.slot, reifyCallback(unit, op.parameters, op.callbackOps)),
-        );
-        break;
-      case ir.OpKind.ExtractCallback:
-        // This op doesn't have a corresponding instruction, we just remove it and
-        // pull the callback into the constant pool. Note that we don't go through
-        // `ConstantPool.getSharedFunctionReference`, because we need to ensure that
-        // it uses the name we defined during the earlier phases. We may end up
-        // not reusing a function that was defined outside of the unit as a result.
-        const callback = reifyCallback(unit, op.parameters, op.callbackOps);
-        unit.job.pool.statements.push(callback.toDeclStmt(op.callbackName, o.StmtModifier.Final));
-        ir.OpList.remove<ir.CreateOp>(op);
-        break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;
@@ -623,7 +608,11 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
 
 function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
-    ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
+    ir.transformExpressionsInOp(
+      op,
+      (expr) => reifyIrExpression(unit, expr),
+      ir.VisitorContextFlag.None,
+    );
 
     switch (op.kind) {
       case ir.OpKind.Advance:
@@ -765,7 +754,7 @@ function reifyControl(op: ir.ControlOp): ir.UpdateOp {
   return ng.control(op.name, op.expression, op.sanitizer, op.sourceSpan);
 }
 
-function reifyIrExpression(expr: o.Expression): o.Expression {
+function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Expression {
   if (!ir.isIrExpression(expr)) {
     return expr;
   }
@@ -822,8 +811,15 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.storeLet(expr.value, expr.sourceSpan);
     case ir.ExpressionKind.TrackContext:
       return o.variable('this');
-    case ir.ExpressionKind.CallbackReference:
-      return ng.getCallback(expr.targetSlot.slot!);
+    case ir.ExpressionKind.ArrowFunction:
+      if (expr.varOffset === null) {
+        throw new Error(`AssertionError: variable offset was not assigned to arrow function`);
+      }
+      return ng.arrowFunction(
+        expr.varOffset,
+        unit.job.pool.getSharedFunctionReference(getArrowFunctionFactory(unit, expr), 'arrowFn'),
+        o.variable('ctx'),
+      );
     default:
       throw new Error(
         `AssertionError: Unsupported reification of ir.Expression kind: ${
@@ -911,16 +907,15 @@ function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Express
   return op.trackByFn;
 }
 
-/** Reifies the body of a callback defined in the template. */
-function reifyCallback(
+/** Gets a factory for an arrow function expression. */
+function getArrowFunctionFactory(
   unit: CompilationUnit,
-  params: string[],
-  callbackOps: ir.OpList<ir.UpdateOp>,
+  expr: ir.ArrowFunctionExpr,
 ): o.ArrowFunctionExpr {
-  reifyUpdateOperations(unit, callbackOps);
+  reifyUpdateOperations(unit, expr.ops);
 
   const statements: o.Statement[] = [];
-  for (const op of callbackOps) {
+  for (const op of expr.ops) {
     if (op.kind !== ir.OpKind.Statement) {
       throw new Error(
         `AssertionError: expected reified statements, but found op ${ir.OpKind[op.kind]}`,
@@ -929,13 +924,14 @@ function reifyCallback(
     statements.push(op.statement);
   }
 
+  // If there's only one return statement as the body, we can turn it into a single-line function.
   const body =
     statements.length === 1 && statements[0] instanceof o.ReturnStatement
       ? statements[0].value
       : statements;
 
   return o.arrowFn(
-    params.map((arg) => new o.FnParam(arg)),
-    body,
+    [new o.FnParam(expr.contextName), new o.FnParam(expr.currentViewName)],
+    o.arrowFn(expr.parameters, body),
   );
 }

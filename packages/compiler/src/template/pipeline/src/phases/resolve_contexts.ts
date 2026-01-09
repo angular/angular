@@ -17,6 +17,9 @@ import {CompilationJob, CompilationUnit} from '../compilation';
  */
 export function resolveContexts(job: CompilationJob): void {
   for (const unit of job.units) {
+    for (const expr of unit.functions) {
+      processLexicalScope(unit, expr.ops);
+    }
     processLexicalScope(unit, unit.create);
     processLexicalScope(unit, unit.update);
   }
@@ -47,9 +50,6 @@ function processLexicalScope(
       case ir.OpKind.Listener:
       case ir.OpKind.TwoWayListener:
         processLexicalScope(view, op.handlerOps);
-        break;
-      case ir.OpKind.StoreCallback:
-        processLexicalScope(view, op.callbackOps);
         break;
       case ir.OpKind.RepeaterCreate:
         if (op.trackByOps !== null) {

@@ -1,4 +1,4 @@
-const $_callbackFn0$ = value => {
+const $arrowFn0$ = (ctx, view) => value => {
   let $tmp_0_0$;
   return value == null
     ? null
@@ -17,39 +17,39 @@ const $_callbackFn0$ = value => {
                 : $tmp_0_0$();
 };
 …
+const $arrowFn1$ = (ctx, view) => () => {
+  let $tmp_0_0$;
+  return ctx.componentProp == null
+    ? null
+    : ctx.componentProp.a == null
+      ? null
+      : ctx.componentProp.a.b == null
+        ? null
+        : ctx.componentProp.a.b.c == null
+          ? null
+          : ($tmp_0_0$ = ctx.componentProp.a.b.c()) == null
+            ? null
+            : ($tmp_0_0$ = $tmp_0_0$()) == null
+              ? null
+              : ($tmp_0_0$ = $tmp_0_0$()) == null
+                ? null
+                : $tmp_0_0$();
+};
+…
 $r3$.ɵɵdefineComponent({
   …
-  decls: 4,
-  vars: 2,
+  decls: 3,
+  vars: 4,
   template: function TestComp_Template(rf, ctx) {
     if (rf & 1) {
       $r3$.ɵɵtext(0);
       $r3$.ɵɵdomElement(1, "hr");
       $r3$.ɵɵtext(2);
-      $r3$.ɵɵstoreCallback(3, () => {
-        let $tmp_1_0$;
-        return ctx.componentProp == null
-          ? null
-          : ctx.componentProp.a == null
-            ? null
-            : ctx.componentProp.a.b == null
-              ? null
-              : ctx.componentProp.a.b.c == null
-                ? null
-                : ($tmp_1_0$ = ctx.componentProp.a.b.c()) == null
-                  ? null
-                  : ($tmp_1_0$ = $tmp_1_0$()) == null
-                    ? null
-                    : ($tmp_1_0$ = $tmp_1_0$()) == null
-                      ? null
-                      : $tmp_1_0$();
-      });
     }
     if (rf & 2) {
-      const $_callbackFn1_r1$ = $r3$.ɵɵgetCallback(3);
-      $r3$.ɵɵtextInterpolate1(" ", $_callbackFn0$(ctx.componentProp), " ");
+      $r3$.ɵɵtextInterpolate1(" ", $r3$.ɵɵarrowFunction(2, $arrowFn0$, ctx)(ctx.componentProp), " ");
       $r3$.ɵɵadvance(2);
-      $r3$.ɵɵtextInterpolate1(" ", $_callbackFn1_r1$, " ");
+      $r3$.ɵɵtextInterpolate1(" ", $r3$.ɵɵarrowFunction(3, $arrowFn1$, ctx), " ");
     }
   },
   …

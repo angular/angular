@@ -1,26 +1,25 @@
+const $arrowFn0$ = (ctx, view) => a => {
+  $r3$.ɵɵrestoreView(view);
+  $r3$.ɵɵnextContext();
+  const $nestedLet_r1$ = $r3$.ɵɵreadContextLet(0);
+  const $ctx_r1$ = $r3$.ɵɵnextContext();
+  const $topLevelLet_r3$ = $r3$.ɵɵreadContextLet(0);
+  return $r3$.ɵɵresetView(b => c => d => a + b + c + d + $ctx_r1$.componentProp + $topLevelLet_r3$ + $nestedLet_r1$);
+};
+…
 function TestComp_Conditional_1_Conditional_1_Template(rf, ctx) {
   if (rf & 1) {
-    const $_r1$ = $r3$.ɵɵgetCurrentView();
     $r3$.ɵɵtext(0);
-    $r3$.ɵɵstoreCallback(1, a => {
-      $r3$.ɵɵrestoreView($_r1$);
-      $r3$.ɵɵnextContext();
-      const $nestedLet_r2$ = $r3$.ɵɵreadContextLet(0);
-      const $ctx_r2$ = $r3$.ɵɵnextContext();
-      const $topLevelLet_r4$ = $r3$.ɵɵreadContextLet(0);
-      return $r3$.ɵɵresetView(b => c => d => a + b + c + d + $ctx_r2$.componentProp + $topLevelLet_r4$ + $nestedLet_r2$);
-    });
   }
   if (rf & 2) {
-    const $_callbackFn0_r5$ = $r3$.ɵɵgetCallback(1);
-    $r3$.ɵɵtextInterpolate1(" ", $_callbackFn0_r5$(1)(2)(3)(4), " ");
+    $r3$.ɵɵtextInterpolate1(" ", $r3$.ɵɵarrowFunction(1, $arrowFn0$, ctx)(1)(2)(3)(4), " ");
   }
 }
 …
 function TestComp_Conditional_1_Template(rf, ctx) {
   if (rf & 1) {
     $r3$.ɵɵdeclareLet(0);
-    $r3$.ɵɵconditionalCreate(1, TestComp_Conditional_1_Conditional_1_Template, 2, 1);
+    $r3$.ɵɵconditionalCreate(1, TestComp_Conditional_1_Conditional_1_Template, 1, 2);
   }
   if (rf & 2) {
     $r3$.ɵɵstoreLet(2);
