@@ -75,7 +75,7 @@ const formControlOptionalFields = new Set([
 ]);
 
 /**
- * A `TcbOp` which constructs an instance of the signal forms `Field` directive on a native element.
+ * A `TcbOp` which constructs an instance of the signal forms `FormField` directive on a native element.
  */
 export class TcbNativeFieldOp extends TcbOp {
   /** Bindings that aren't supported on signal form fields. */
@@ -103,14 +103,11 @@ export class TcbNativeFieldOp extends TcbOp {
   override execute(): null {
     const inputs = this.node instanceof TmplAstHostElement ? this.node.bindings : this.node.inputs;
     const fieldBinding =
-      inputs.find(
-        (input) =>
-          input.type === BindingType.Property &&
-          (input.name === 'field' || input.name === 'formField'),
-      ) ?? null;
+      inputs.find((input) => input.type === BindingType.Property && input.name === 'formField') ??
+      null;
 
-    // This should only happen if there's something like `<input field="static"/>`
-    // which will be caught by the input type checking of the `Field` directive.
+    // This should only happen if there's something like `<input formField="static"/>`
+    // which will be caught by the input type checking of the `FormField` directive.
     if (fieldBinding === null) {
       return null;
     }
@@ -231,8 +228,7 @@ export function expandBoundAttributesForField(
   customFormControlType: CustomFormControlType | null,
 ): TcbBoundAttribute[] | null {
   const fieldBinding = node.inputs.find(
-    (input) =>
-      input.type === BindingType.Property && (input.name === 'field' || input.name === 'formField'),
+    (input) => input.type === BindingType.Property && input.name === 'formField',
   );
 
   if (!fieldBinding) {
@@ -286,7 +282,7 @@ export function expandBoundAttributesForField(
 }
 
 export function isFieldDirective(meta: TypeCheckableDirectiveMeta): boolean {
-  if (meta.name !== 'Field' && meta.name !== 'FormField') {
+  if (meta.name !== 'FormField') {
     return false;
   }
 
@@ -371,7 +367,7 @@ export function isNativeField(
   node: TmplAstNode,
   allDirectiveMatches: TypeCheckableDirectiveMeta[],
 ): node is TmplAstElement & {name: 'input' | 'select' | 'textarea'} {
-  // Only applies to the `Field` directive.
+  // Only applies to the `FormField` directive.
   if (!isFieldDirective(dir)) {
     return false;
   }
@@ -464,13 +460,13 @@ function hasModelInput(name: string, meta: TypeCheckableDirectiveMeta): boolean 
 /**
  * Determines whether a node is a form control based on its matching directives.
  *
- * A node is a form control if it has a matching `Field` directive, and no other directives match
+ * A node is a form control if it has a matching `FormField` directive, and no other directives match
  * the `field` input.
  */
 export function isFormControl(allDirectiveMatches: TypeCheckableDirectiveMeta[]): boolean {
   let result = false;
   for (const match of allDirectiveMatches) {
-    if (match.inputs.hasBindingPropertyName('field')) {
+    if (match.inputs.hasBindingPropertyName('formField')) {
       if (!isFieldDirective(match)) {
         return false;
       }

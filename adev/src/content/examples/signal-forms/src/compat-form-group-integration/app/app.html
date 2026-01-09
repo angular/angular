@@ -4,7 +4,7 @@
   <div>
     <label>
       Customer Name:
-      <input [field]="f.customerName" />
+      <input [formField]="f.customerName" />
     </label>
 
     @if (f.customerName().touched() && f.customerName().invalid()) {

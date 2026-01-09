@@ -12,13 +12,13 @@ When you call any field in the field tree as a function (like `form.email()`), i
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, required, email } from '@angular/forms/signals'
+import { form, FormField, required, email } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-registration',
-  imports: [Field],
+  imports: [FormField],
   template: `
-    <input type="email" [field]="registrationForm.email" />
+    <input type="email" [formField]="registrationForm.email" />
 
     @if (registrationForm.email().invalid()) {
       <p class="error">Email has validation errors:</p>
@@ -83,7 +83,7 @@ Use `valid()` and `invalid()` to check validation status:
 ```angular-ts
 @Component({
   template: `
-    <input type="email" [field]="loginForm.email" />
+    <input type="email" [formField]="loginForm.email" />
 
     @if (loginForm.email().invalid()) {
       <p class="error">Email is invalid</p>
@@ -122,7 +122,7 @@ Here's an example of how to display errors in your template:
 ```angular-ts
 @Component({
   template: `
-    <input type="email" [field]="loginForm.email" />
+    <input type="email" [formField]="loginForm.email" />
 
     @if (loginForm.email().errors().length > 0) {
       <div class="errors">
@@ -144,7 +144,7 @@ The `pending()` signal indicates async validation is in progress:
 ```angular-ts
 @Component({
   template: `
-    <input type="email" [field]="signupForm.email" />
+    <input type="email" [formField]="signupForm.email" />
 
     @if (signupForm.email().pending()) {
       <p>Checking if email is available...</p>
@@ -177,8 +177,8 @@ The `dirty()` signal becomes `true` when the user modifies an interactive field'
 @Component({
   template: `
     <form>
-      <input [field]="profileForm.name" />
-      <input [field]="profileForm.bio" />
+      <input [formField]="profileForm.name" />
+      <input [formField]="profileForm.bio" />
 
       @if (profileForm().dirty()) {
         <p class="warning">You have unsaved changes</p>
@@ -222,14 +222,14 @@ The `disabled()` signal indicates whether a field accepts user input. Disabled f
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, disabled } from '@angular/forms/signals'
+import { form, FormField, disabled } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-order',
-  imports: [Field],
+  imports: [FormField],
   template: `
-    <!-- TIP: The `[field]` directive automatically binds the `disabled` attribute based on the field's `disabled()` state, so you don't need to manually add `[disabled]="field().disabled()"` -->
-    <input [field]="orderForm.couponCode" />
+    <!-- TIP: The `[formField]` directive automatically binds the `disabled` attribute based on the field's `disabled()` state, so you don't need to manually add `[disabled]="field().disabled()"` -->
+    <input [formField]="orderForm.couponCode" />
 
     @if (orderForm.couponCode().disabled()) {
       <p class="info">Coupon code is only available for orders over $50</p>
@@ -265,21 +265,21 @@ The `hidden()` signal indicates whether a field is conditionally hidden. Use `hi
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, hidden } from '@angular/forms/signals'
+import { form, FormField, hidden } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-profile',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
-      <input type="checkbox" [field]="profileForm.isPublic" />
+      <input type="checkbox" [formField]="profileForm.isPublic" />
       Make profile public
     </label>
 
     @if (!profileForm.publicUrl().hidden()) {
       <label>
         Public URL
-        <input [field]="profileForm.publicUrl" />
+        <input [formField]="profileForm.publicUrl" />
       </label>
     }
   `
@@ -304,20 +304,20 @@ The `readonly()` signal indicates whether a field is readonly. Readonly fields d
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, readonly } from '@angular/forms/signals'
+import { form, FormField, readonly } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-account',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
       Username (cannot be changed)
-      <input [field]="accountForm.username" />
+      <input [formField]="accountForm.username" />
     </label>
 
     <label>
       Email
-      <input [field]="accountForm.email" />
+      <input [formField]="accountForm.email" />
     </label>
   `
 })
@@ -333,7 +333,7 @@ export class Account {
 }
 ```
 
-NOTE: The `[field]` directive automatically binds the `readonly` attribute based on the field's `readonly()` state, so you don't need to manually add `[readonly]="field().readonly()"`.
+NOTE: The `[formField]` directive automatically binds the `readonly` attribute based on the field's `readonly()` state, so you don't need to manually add `[readonly]="field().readonly()"`.
 
 Like disabled and hidden fields, readonly fields are non-interactive and don't affect parent form state. The `readonly()` state affects editability and validation, but does not change the field's value.
 
@@ -355,8 +355,8 @@ The root form is also a field in the field tree. When you call it as a function,
 @Component({
   template: `
     <form>
-      <input [field]="loginForm.email" />
-      <input [field]="loginForm.password" />
+      <input [formField]="loginForm.email" />
+      <input [formField]="loginForm.password" />
 
       <button [disabled]="!loginForm().valid()">Sign In</button>
     </form>
@@ -456,15 +456,15 @@ Show errors only after a user has interacted with a field:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, email } from '@angular/forms/signals'
+import { form, FormField, email } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-signup',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
       Email
-      <input type="email" [field]="signupForm.email" />
+      <input type="email" [formField]="signupForm.email" />
     </label>
 
     @if (signupForm.email().touched() && signupForm.email().invalid()) {
@@ -489,21 +489,21 @@ Use the `hidden()` signal with `@if` to show or hide fields conditionally:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, hidden } from '@angular/forms/signals'
+import { form, FormField, hidden } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-order',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
-      <input type="checkbox" [field]="orderForm.requiresShipping" />
+      <input type="checkbox" [formField]="orderForm.requiresShipping" />
       Requires shipping
     </label>
 
     @if (!orderForm.shippingAddress().hidden()) {
       <label>
         Shipping Address
-        <input [field]="orderForm.shippingAddress" />
+        <input [formField]="orderForm.shippingAddress" />
       </label>
     }
   `
@@ -654,13 +654,13 @@ You can apply custom styles to your form by binding CSS classes based on the val
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, email } from '@angular/forms/signals'
+import { form, FormField, email } from '@angular/forms/signals'
 
 @Component({
   template: `
     <input
       type="email"
-      [field]="form.email"
+      [formField]="form.email"
       [class.is-invalid]="form.email().touched() && form.email().invalid()"
       [class.is-valid]="form.email().touched() && form.email().valid()"
     />
