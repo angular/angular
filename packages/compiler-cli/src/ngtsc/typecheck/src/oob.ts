@@ -245,6 +245,7 @@ export interface OutOfBandDiagnosticRecorder {
   formFieldUnsupportedBinding(
     id: TypeCheckId,
     node: TmplAstBoundAttribute | TmplAstTextAttribute,
+    bindingName: string,
   ): void;
 }
 
@@ -864,6 +865,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   formFieldUnsupportedBinding(
     id: TypeCheckId,
     node: TmplAstBoundAttribute | TmplAstTextAttribute,
+    bindingName: string,
   ): void {
     let message: string;
 
@@ -879,9 +881,9 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         name = node.name;
       }
 
-      message = `Binding to '${name}' is not allowed on nodes using the '[field]' directive`;
+      message = `Binding to '${name}' is not allowed on nodes using the '[${bindingName}]' directive`;
     } else {
-      message = `Setting the '${node.name}' attribute is not allowed on nodes using the '[field]' directive`;
+      message = `Setting the '${node.name}' attribute is not allowed on nodes using the '[${bindingName}]' directive`;
     }
 
     this._diagnostics.push(

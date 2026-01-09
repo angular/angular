@@ -116,7 +116,6 @@ export class TcbNativeFieldOp extends TcbOp {
     }
 
     checkUnsupportedFieldBindings(this.node, this.unsupportedBindingFields, this.tcb);
-
     const expectedType = this.getExpectedTypeFromDomNode(this.node);
     const value = extractFieldValue(fieldBinding.value, this.tcb, this.scope);
 
@@ -409,22 +408,29 @@ export function checkUnsupportedFieldBindings(
   tcb: Context,
 ) {
   const inputs = node instanceof TmplAstHostElement ? node.bindings : node.inputs;
+  const fieldBinding = inputs.find(
+    (input) =>
+      input.type === BindingType.Property && (input.name === 'field' || input.name === 'formField'),
+  );
+  // We expect the binding to be present if we're checking for unsupported bindings, but we fallback
+  // to 'field' just in case.
+  const bindingName = fieldBinding?.name ?? 'field';
 
   for (const input of inputs) {
     if (input.type === BindingType.Property && unsupportedBindingFields.has(input.name)) {
-      tcb.oobRecorder.formFieldUnsupportedBinding(tcb.id, input);
+      tcb.oobRecorder.formFieldUnsupportedBinding(tcb.id, input, bindingName);
     } else if (
       input.type === BindingType.Attribute &&
       unsupportedBindingFields.has(input.name.toLowerCase())
     ) {
-      tcb.oobRecorder.formFieldUnsupportedBinding(tcb.id, input);
+      tcb.oobRecorder.formFieldUnsupportedBinding(tcb.id, input, bindingName);
     }
   }
 
   if (!(node instanceof TmplAstHostElement)) {
     for (const attr of node.attributes) {
       if (unsupportedBindingFields.has(attr.name.toLowerCase())) {
-        tcb.oobRecorder.formFieldUnsupportedBinding(tcb.id, attr);
+        tcb.oobRecorder.formFieldUnsupportedBinding(tcb.id, attr, bindingName);
       }
     }
   }
@@ -470,7 +476,10 @@ function hasModelInput(name: string, meta: TypeCheckableDirectiveMeta): boolean 
 export function isFormControl(allDirectiveMatches: TypeCheckableDirectiveMeta[]): boolean {
   let result = false;
   for (const match of allDirectiveMatches) {
-    if (match.inputs.hasBindingPropertyName('field')) {
+    if (
+      match.inputs.hasBindingPropertyName('field') ||
+      match.inputs.hasBindingPropertyName('formField')
+    ) {
       if (!isFieldDirective(match)) {
         return false;
       }
