@@ -125,7 +125,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   /**
    * Options to configure how to determine if the router link is active.
    *
-   * These options are passed to the `Router.isActive()` function.
+   * These options are passed to the `isActive()` function.
    *
    * @see {@link Router#isActive}
    */
