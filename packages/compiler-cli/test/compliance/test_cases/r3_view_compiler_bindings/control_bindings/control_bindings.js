@@ -5,7 +5,7 @@ export class MyComponent {
     selectors: [["ng-component"]],
     decls: 4,
     vars: 3,
-    consts: [["field", "Not a form control"], [3, "field"]],
+    consts: [["formField", "Not a form control"], [3, "formField"]],
     template: function MyComponent_Template(rf, ctx) {
       if (rf & 1) {
         i0.ɵɵelement(0, "div", 0);
@@ -17,12 +17,12 @@ export class MyComponent {
       }
       if (rf & 2) {
         i0.ɵɵadvance();
-        i0.ɵɵattribute("field", ctx.value);
+        i0.ɵɵattribute("formField", ctx.value);
         i0.ɵɵadvance(2);
-        i0.ɵɵcontrol(ctx.value, "field");
+        i0.ɵɵcontrol(ctx.value, "formField");
       }
     },
-    dependencies: [Field],
+    dependencies: [FormField],
     encapsulation: 2
   });
 }

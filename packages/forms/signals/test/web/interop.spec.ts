@@ -11,18 +11,19 @@ import {
   Directive,
   inject,
   input,
+  provideZonelessChangeDetection,
   resource,
   signal,
-  provideZonelessChangeDetection,
   viewChild,
 } from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {
   debounce,
   disabled,
   DisabledReason,
-  Field,
   form,
+  FormField,
   hidden,
   max,
   maxLength,
@@ -36,7 +37,6 @@ import {
   ValidationError,
   WithOptionalField,
 } from '@angular/forms/signals';
-import {TestBed} from '@angular/core/testing';
 
 describe('ControlValueAccessor', () => {
   beforeEach(() => {
@@ -103,8 +103,8 @@ describe('ControlValueAccessor', () => {
 
   it('synchronizes value', () => {
     @Component({
-      imports: [CustomControl, Field],
-      template: `<custom-control [field]="f" />`,
+      imports: [CustomControl, FormField],
+      template: `<custom-control [formField]="f" />`,
     })
     class TestCmp {
       readonly f = form(signal('test'));
@@ -134,8 +134,8 @@ describe('ControlValueAccessor', () => {
     const {promise, resolve} = promiseWithResolvers<void>();
 
     @Component({
-      imports: [CustomControl, Field],
-      template: `<custom-control [field]="f" />`,
+      imports: [CustomControl, FormField],
+      template: `<custom-control [formField]="f" />`,
     })
     class TestCmp {
       readonly f = form(signal(''), (p) => {
@@ -160,8 +160,8 @@ describe('ControlValueAccessor', () => {
 
   it('should mark field dirty on changes', () => {
     @Component({
-      imports: [Field, CustomControl],
-      template: `<custom-control [field]="f" />`,
+      imports: [FormField, CustomControl],
+      template: `<custom-control [formField]="f" />`,
     })
     class TestCmp {
       f = form<string>(signal(''));
@@ -183,8 +183,8 @@ describe('ControlValueAccessor', () => {
 
   it('should propagate touched events to field', () => {
     @Component({
-      imports: [Field, CustomControl],
-      template: `<custom-control [field]="f" />`,
+      imports: [FormField, CustomControl],
+      template: `<custom-control [formField]="f" />`,
     })
     class TestCmp {
       f = form<string>(signal('test'));
@@ -201,8 +201,8 @@ describe('ControlValueAccessor', () => {
   it('should propagate disabled status from field', () => {
     const enabled = signal(true);
     @Component({
-      imports: [Field, CustomControl],
-      template: `<custom-control [field]="f" />`,
+      imports: [FormField, CustomControl],
+      template: `<custom-control [formField]="f" />`,
     })
     class TestCmp {
       f = form<string>(signal('test'), (p) => {
@@ -260,8 +260,8 @@ describe('ControlValueAccessor', () => {
     }
 
     @Component({
-      imports: [CustomControl, Field],
-      template: `<custom-control [field]="f" />`,
+      imports: [CustomControl, FormField],
+      template: `<custom-control [formField]="f" />`,
     })
     class TestCmp {
       readonly f = form(signal('test'));
@@ -328,8 +328,8 @@ describe('ControlValueAccessor', () => {
 
     @Component({
       selector: 'app-root',
-      imports: [CustomControl, Field],
-      template: `<signal-custom-control [field]="f" />`,
+      imports: [CustomControl, FormField],
+      template: `<signal-custom-control [formField]="f" />`,
     })
     class App {
       disabled = signal(false);
@@ -353,8 +353,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly disabled = signal(false);
@@ -375,8 +375,8 @@ describe('ControlValueAccessor', () => {
 
       it('should not bind to native property', () => {
         @Component({
-          imports: [Field, CvaDir],
-          template: `<input [field]="f" cvaDir />`,
+          imports: [FormField, CvaDir],
+          template: `<input [formField]="f" cvaDir />`,
         })
         class TestCmp {
           readonly disabled = signal(false);
@@ -403,8 +403,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly f = form(signal(''));
@@ -429,8 +429,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly f = form(signal(''));
@@ -455,8 +455,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly disabled = signal(false);
@@ -488,8 +488,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly required = signal(false);
@@ -517,8 +517,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly hidden = signal(false);
@@ -546,8 +546,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly required = signal(false);
@@ -575,8 +575,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly f = form(signal(''), {name: 'root'});
@@ -591,8 +591,8 @@ describe('ControlValueAccessor', () => {
 
       it('should bind to native property', () => {
         @Component({
-          imports: [Field, CvaDir],
-          template: `<input [field]="f" cvaDir />`,
+          imports: [FormField, CvaDir],
+          template: `<input [formField]="f" cvaDir />`,
         })
         class TestCmp {
           readonly f = form(signal(''), {name: 'root'});
@@ -615,8 +615,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly f = form(signal(''), (p) => {
@@ -653,8 +653,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly isReadonly = signal(false);
@@ -675,8 +675,8 @@ describe('ControlValueAccessor', () => {
 
       it('should bind to native property', () => {
         @Component({
-          imports: [Field, CvaDir],
-          template: `<input [field]="f" cvaDir />`,
+          imports: [FormField, CvaDir],
+          template: `<input [formField]="f" cvaDir />`,
         })
         class TestCmp {
           readonly isReadonly = signal(false);
@@ -703,8 +703,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly required = signal(false);
@@ -725,8 +725,8 @@ describe('ControlValueAccessor', () => {
 
       it('should bind to native property', () => {
         @Component({
-          imports: [Field, CvaDir],
-          template: `<input [field]="f" cvaDir />`,
+          imports: [FormField, CvaDir],
+          template: `<input [formField]="f" cvaDir />`,
         })
         class TestCmp {
           readonly required = signal(false);
@@ -753,8 +753,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly max = signal(10);
@@ -775,8 +775,8 @@ describe('ControlValueAccessor', () => {
 
       it('should bind to native property', () => {
         @Component({
-          imports: [Field, CvaDir],
-          template: `<input type="number" [field]="f" cvaDir />`,
+          imports: [FormField, CvaDir],
+          template: `<input type="number" [formField]="f" cvaDir />`,
         })
         class TestCmp {
           readonly max = signal(10);
@@ -803,8 +803,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly maxLength = signal(10);
@@ -825,8 +825,8 @@ describe('ControlValueAccessor', () => {
 
       it('should bind to native property', () => {
         @Component({
-          imports: [Field, CvaDir],
-          template: `<input [field]="f" cvaDir />`,
+          imports: [FormField, CvaDir],
+          template: `<input [formField]="f" cvaDir />`,
         })
         class TestCmp {
           readonly maxLength = signal(10);
@@ -853,8 +853,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly min = signal(10);
@@ -875,8 +875,8 @@ describe('ControlValueAccessor', () => {
 
       it('should bind to native property', () => {
         @Component({
-          imports: [Field, CvaDir],
-          template: `<input type="number" [field]="f" cvaDir />`,
+          imports: [FormField, CvaDir],
+          template: `<input type="number" [formField]="f" cvaDir />`,
         })
         class TestCmp {
           readonly min = signal(10);
@@ -903,8 +903,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly minLength = signal(10);
@@ -925,8 +925,8 @@ describe('ControlValueAccessor', () => {
 
       it('should bind to native property', () => {
         @Component({
-          imports: [Field, CvaDir],
-          template: `<input [field]="f" cvaDir />`,
+          imports: [FormField, CvaDir],
+          template: `<input [formField]="f" cvaDir />`,
         })
         class TestCmp {
           readonly minLength = signal(10);
@@ -953,8 +953,8 @@ describe('ControlValueAccessor', () => {
         }
 
         @Component({
-          imports: [Field, TestDir, CustomControl],
-          template: `<custom-control [field]="f" testDir />`,
+          imports: [FormField, TestDir, CustomControl],
+          template: `<custom-control [formField]="f" testDir />`,
         })
         class TestCmp {
           readonly pattern = signal(/a*/);

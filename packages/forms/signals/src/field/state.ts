@@ -7,7 +7,6 @@
  */
 
 import {computed, signal, Signal} from '@angular/core';
-import type {Field} from '../api/field_directive';
 import type {FormField} from '../api/form_field_directive';
 import type {Debouncer, DisabledReason} from '../api/types';
 import {DEBOUNCER} from './debounce';
@@ -64,7 +63,7 @@ export class FieldNodeState {
   }
 
   /** The {@link FormField} directives that bind this field to a UI control. */
-  readonly formFieldBindings = signal<readonly (Field<unknown> | FormField<unknown>)[]>([]);
+  readonly formFieldBindings = signal<readonly FormField<unknown>[]>([]);
 
   constructor(private readonly node: FieldNode) {}
 

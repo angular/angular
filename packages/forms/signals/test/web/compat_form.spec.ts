@@ -7,10 +7,10 @@
  */
 
 import {Component, provideZonelessChangeDetection, signal} from '@angular/core';
-import {FormControl} from '@angular/forms';
 import {TestBed} from '@angular/core/testing';
-import {Field} from '../../public_api';
+import {FormControl} from '@angular/forms';
 import {compatForm} from '../../compat';
+import {FormField} from '../../public_api';
 
 describe('compatForm with [field] directive', () => {
   beforeEach(() => {
@@ -21,10 +21,10 @@ describe('compatForm with [field] directive', () => {
 
   it('should bind compat form to input with [field] directive', () => {
     @Component({
-      imports: [Field],
+      imports: [FormField],
       template: `
-        <input [field]="f.name" />
-        <input type="number" [field]="f.age" />
+        <input [formField]="f.name" />
+        <input type="number" [formField]="f.age" />
       `,
     })
     class TestCmp {
@@ -46,8 +46,8 @@ describe('compatForm with [field] directive', () => {
 
   it('should bind root-level FormControl to input with [field] directive', () => {
     @Component({
-      imports: [Field],
-      template: `<input [field]="f" />`,
+      imports: [FormField],
+      template: `<input [formField]="f" />`,
     })
     class TestCmp {
       readonly cat = signal(new FormControl('pirojok-the-cat', {nonNullable: true}));
@@ -62,10 +62,10 @@ describe('compatForm with [field] directive', () => {
 
   it('should bind fields when FormControls are mixed with regular values', () => {
     @Component({
-      imports: [Field],
+      imports: [FormField],
       template: `
-        <input [field]="f.name" />
-        <input type="number" [field]="f.age" />
+        <input [formField]="f.name" />
+        <input type="number" [formField]="f.age" />
       `,
     })
     class TestCmp {

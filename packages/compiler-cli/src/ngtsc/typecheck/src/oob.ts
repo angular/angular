@@ -8,9 +8,11 @@
 
 import {
   AbsoluteSourceSpan,
-  BindingPipe,
-  PropertyRead,
   AST,
+  BindingPipe,
+  BindingType,
+  ParseSourceSpan,
+  PropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstComponent,
@@ -28,8 +30,6 @@ import {
   TmplAstTextAttribute,
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
-  ParseSourceSpan,
-  BindingType,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -240,7 +240,7 @@ export interface OutOfBandDiagnosticRecorder {
   ): void;
 
   /**
-   * Reports an unsupported binding on a form `Field` node.
+   * Reports an unsupported binding on a form `FormField` node.
    */
   formFieldUnsupportedBinding(
     id: TypeCheckId,
@@ -879,9 +879,9 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         name = node.name;
       }
 
-      message = `Binding to '${name}' is not allowed on nodes using the '[field]' directive`;
+      message = `Binding to '${name}' is not allowed on nodes using the '[formField]' directive`;
     } else {
-      message = `Setting the '${node.name}' attribute is not allowed on nodes using the '[field]' directive`;
+      message = `Setting the '${node.name}' attribute is not allowed on nodes using the '[formField]' directive`;
     }
 
     this._diagnostics.push(

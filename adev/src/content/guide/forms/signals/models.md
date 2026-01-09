@@ -16,14 +16,14 @@ A form model is a writable signal created with Angular's `signal()` function. Th
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field } from '@angular/forms/signals'
+import { form, FormField } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-login',
-  imports: [Field],
+  imports: [FormField],
   template: `
-    <input type="email" [field]="loginForm.email" />
-    <input type="password" [field]="loginForm.password" />
+    <input type="email" [formField]="loginForm.email" />
+    <input type="password" [formField]="loginForm.password" />
   `
 })
 export class LoginComponent {
@@ -38,7 +38,7 @@ export class LoginComponent {
 
 The `form()` function accepts the model signal and creates a **field tree** - a special object structure that mirrors your model's shape. The field tree is both navigable (access child fields with dot notation like `loginForm.email`) and callable (call a field as a function to access its state).
 
-The `[field]` directive binds each input element to its corresponding field in the field tree, enabling automatic two-way synchronization between the UI and model.
+The `[formField]` directive binds each input element to its corresponding field in the field tree, enabling automatic two-way synchronization between the UI and model.
 
 ### Using TypeScript types
 
@@ -230,7 +230,7 @@ The form fields automatically update when the model changes, displaying the fetc
 
 ## Two-way data binding
 
-The `[field]` directive creates automatic two-way synchronization between the model, form state, and UI.
+The `[formField]` directive creates automatic two-way synchronization between the model, form state, and UI.
 
 ### How data flows
 
@@ -239,7 +239,7 @@ Changes flow bidirectionally:
 **User input → Model:**
 
 1. User types in an input element
-2. The `[field]` directive detects the change
+2. The `[formField]` directive detects the change
 3. Field state updates
 4. Model signal updates
 
@@ -248,7 +248,7 @@ Changes flow bidirectionally:
 1. Code updates the model with `set()` or `update()`
 2. Model signal notifies subscribers
 3. Field state updates
-4. The `[field]` directive updates the input element
+4. The `[formField]` directive updates the input element
 
 This synchronization happens automatically. You don't write subscriptions or event handlers to keep the model and UI in sync.
 
@@ -257,7 +257,7 @@ This synchronization happens automatically. You don't write subscriptions or eve
 ```angular-ts
 @Component({
   template: `
-    <input type="text" [field]="userForm.name" />
+    <input type="text" [formField]="userForm.name" />
     <button (click)="setName('Bob')">Set Name to Bob</button>
     <p>Current name: {{ userModel().name }}</p>
   `
@@ -351,10 +351,10 @@ In templates, you bind nested fields the same way as top-level fields:
 ```angular-ts
 @Component({
   template: `
-    <input [field]="userForm.profile.firstName" />
-    <input [field]="userForm.profile.lastName" />
+    <input [formField]="userForm.profile.firstName" />
+    <input [formField]="userForm.profile.lastName" />
 
-    <select [field]="userForm.settings.theme">
+    <select [formField]="userForm.settings.theme">
       <option value="light">Light</option>
       <option value="dark">Dark</option>
     </select>
