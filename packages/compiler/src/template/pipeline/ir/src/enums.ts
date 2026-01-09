@@ -312,16 +312,6 @@ export enum OpKind {
    * bound to a specialized field directive.
    */
   ControlCreate,
-
-  /**
-   * An operation that will extract a callback into the constant pool once it is reified.
-   */
-  ExtractCallback,
-
-  /**
-   * An operation that stores a callback on the current view for later usage.
-   */
-  StoreCallback,
 }
 
 /**
@@ -459,9 +449,9 @@ export enum ExpressionKind {
   TwoWayBindingSet,
 
   /**
-   * A reference to a stored callback function declaration.
+   * Definition of an arrow function inside of an expression.
    */
-  CallbackReference,
+  ArrowFunction,
 }
 
 export enum VariableFlags {

@@ -421,8 +421,7 @@ export class Identifiers {
   static storeLet: o.ExternalReference = {name: 'ɵɵstoreLet', moduleName: CORE};
   static readContextLet: o.ExternalReference = {name: 'ɵɵreadContextLet', moduleName: CORE};
 
-  static storeCallback: o.ExternalReference = {name: 'ɵɵstoreCallback', moduleName: CORE};
-  static getCallback: o.ExternalReference = {name: 'ɵɵgetCallback', moduleName: CORE};
+  static arrowFunction: o.ExternalReference = {name: 'ɵɵarrowFunction', moduleName: CORE};
 
   static attachSourceLocations: o.ExternalReference = {
     name: 'ɵɵattachSourceLocations',

@@ -1,6 +1,3 @@
-const $_callbackFn0$ = value => value + 1;
-const $_callbackFn1$ = value => value - 1;
-…
 $r3$.ɵɵdefineComponent({
   …
   decls: 6,
@@ -9,15 +6,15 @@ $r3$.ɵɵdefineComponent({
   template: function TestComp_Template(rf, ctx) {
     if (rf & 1) {
       $r3$.ɵɵdomElementStart(0, "button", 0);
-      $r3$.ɵɵdomListener("click", function TestComp_Template_button_click_0_listener() { return ctx.sigA.update($_callbackFn0$); });
+      $r3$.ɵɵdomListener("click", function TestComp_Template_button_click_0_listener() { return ctx.sigA.update(value => value + 1); });
       $r3$.ɵɵtext(1, "Increment A");
       $r3$.ɵɵdomElementEnd();
       $r3$.ɵɵdomElementStart(2, "button", 0);
-      $r3$.ɵɵdomListener("click", function TestComp_Template_button_click_2_listener() { return ctx.sigA.update($_callbackFn1$); });
+      $r3$.ɵɵdomListener("click", function TestComp_Template_button_click_2_listener() { return ctx.sigA.update(value => value - 1); });
       $r3$.ɵɵtext(3, "Decrement A");
       $r3$.ɵɵdomElementEnd();
       $r3$.ɵɵdomElementStart(4, "button", 0);
-      $r3$.ɵɵdomListener("click", function TestComp_Template_button_click_4_listener() { return ctx.sigB.update($_callbackFn0$); });
+      $r3$.ɵɵdomListener("click", function TestComp_Template_button_click_4_listener() { return ctx.sigB.update(value => value + 1); });
       $r3$.ɵɵtext(5, "Increment B");
       $r3$.ɵɵdomElementEnd();
     }

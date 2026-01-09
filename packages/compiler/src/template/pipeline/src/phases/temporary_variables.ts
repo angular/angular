@@ -23,6 +23,10 @@ export function generateTemporaryVariables(job: CompilationJob): void {
   for (const unit of job.units) {
     unit.create.prepend(generateTemporaries(unit.create) as Array<ir.StatementOp<ir.CreateOp>>);
     unit.update.prepend(generateTemporaries(unit.update) as Array<ir.StatementOp<ir.UpdateOp>>);
+
+    for (const expr of unit.functions) {
+      expr.ops.prepend(generateTemporaries(expr.ops) as Array<ir.StatementOp<ir.UpdateOp>>);
+    }
   }
 }
 
@@ -88,8 +92,6 @@ function generateTemporaries(
       op.kind === ir.OpKind.TwoWayListener
     ) {
       op.handlerOps.prepend(generateTemporaries(op.handlerOps) as ir.UpdateOp[]);
-    } else if (op.kind === ir.OpKind.StoreCallback || op.kind === ir.OpKind.ExtractCallback) {
-      op.callbackOps.prepend(generateTemporaries(op.callbackOps) as ir.UpdateOp[]);
     } else if (op.kind === ir.OpKind.RepeaterCreate && op.trackByOps !== null) {
       op.trackByOps.prepend(generateTemporaries(op.trackByOps) as ir.UpdateOp[]);
     }

@@ -12,8 +12,9 @@ import type {ParseSourceSpan} from '../../../../parse_util';
 import * as t from '../../../../render3/r3_ast';
 import {ExpressionKind, OpKind} from './enums';
 import {SlotHandle} from './handle';
-import type {XrefId} from './operations';
+import {OpList, type XrefId} from './operations';
 import type {CreateOp} from './ops/create';
+import {createStatementOp} from './ops/shared';
 import {Interpolation, type UpdateOp} from './ops/update';
 import {
   ConsumesVarsTrait,
@@ -52,7 +53,7 @@ export type Expression =
   | ContextLetReferenceExpr
   | StoreLetExpr
   | TrackContextExpr
-  | CallbackReferenceExpr;
+  | ArrowFunctionExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -276,10 +277,6 @@ export class NextContextExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.NextContext;
 
   steps = 1;
-
-  constructor() {
-    super();
-  }
 
   override visitExpression(): void {}
 
@@ -1040,30 +1037,68 @@ export class ConstCollectedExpr extends ExpressionBase {
   }
 }
 
-export class CallbackReferenceExpr extends ExpressionBase {
-  override readonly kind = ExpressionKind.CallbackReference;
+export class ArrowFunctionExpr
+  extends ExpressionBase
+  implements ConsumesVarsTrait, UsesVarOffsetTrait
+{
+  override readonly kind = ExpressionKind.ArrowFunction;
+  readonly [ConsumesVarsTrait] = true;
+  readonly [UsesVarOffset] = true;
+  readonly contextName = 'ctx';
+  readonly currentViewName = 'view';
+
+  varOffset: number | null = null;
+
+  ops: OpList<UpdateOp>;
 
   constructor(
-    readonly target: XrefId,
-    readonly targetSlot: SlotHandle,
+    readonly parameters: o.FnParam[],
+    readonly body: o.Expression,
   ) {
     super();
+    this.ops = new OpList();
+    this.ops.push([createStatementOp(new o.ReturnStatement(body, body.sourceSpan))]);
   }
 
-  override visitExpression(): void {}
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): void {
+    for (const op of this.ops) {
+      visitExpressionsInOp(op, (expr) => {
+        expr.visitExpression(visitor, context);
+      });
+    }
+  }
 
-  override isEquivalent(): boolean {
-    return false;
+  override isEquivalent(e: o.Expression): boolean {
+    return (
+      e instanceof ArrowFunctionExpr &&
+      e.parameters.length === this.parameters.length &&
+      e.parameters.every((param, index) => param.isEquivalent(this.parameters[index])) &&
+      e.body.isEquivalent(this.body)
+    );
   }
 
   override isConstant(): boolean {
     return false;
   }
 
-  override transformInternalExpressions(): void {}
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
+    for (const op of this.ops) {
+      transformExpressionsInOp(
+        op,
+        transform,
+        flags | (VisitorContextFlag.InChildOperation | VisitorContextFlag.InArrowFunctionOperation),
+      );
+    }
+  }
 
-  override clone(): CallbackReferenceExpr {
-    return new CallbackReferenceExpr(this.target, this.targetSlot);
+  override clone(): ArrowFunctionExpr {
+    const expr = new ArrowFunctionExpr(this.parameters, this.body);
+    expr.varOffset = this.varOffset;
+    expr.ops = this.ops;
+    return expr;
   }
 }
 
@@ -1087,6 +1122,7 @@ export function visitExpressionsInOp(
 export enum VisitorContextFlag {
   None = 0b0000,
   InChildOperation = 0b0001,
+  InArrowFunctionOperation = 0b0010,
 }
 
 function transformExpressionsInInterpolation(
@@ -1232,12 +1268,6 @@ export function transformExpressionsInOp(
       break;
     case OpKind.StoreLet:
       op.value = transformExpressionsInExpression(op.value, transform, flags);
-      break;
-    case OpKind.StoreCallback:
-    case OpKind.ExtractCallback:
-      for (const innerOp of op.callbackOps) {
-        transformExpressionsInOp(innerOp, transform, flags | VisitorContextFlag.InChildOperation);
-      }
       break;
     case OpKind.Advance:
     case OpKind.Container:

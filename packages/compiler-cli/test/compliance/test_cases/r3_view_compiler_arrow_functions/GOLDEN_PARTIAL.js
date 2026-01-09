@@ -604,3 +604,94 @@ export declare class TestComp {
     static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: arrow_function_dollar_event.js
+ ****************************************************************************************************/
+import { Component, signal } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestComp {
+    componentProp = 0;
+    result = signal('', ...(ngDevMode ? [{ debugName: "result" }] : []));
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @let topLevelLet = 1;
+
+    @if (true) {
+      @let innerLet = 2;
+
+      <button (click)="signal.update(prev => $event.type + prev + innerLet + topLevelLet + componentProp)"></button>
+    }
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @let topLevelLet = 1;
+
+    @if (true) {
+      @let innerLet = 2;
+
+      <button (click)="signal.update(prev => $event.type + prev + innerLet + topLevelLet + componentProp)"></button>
+    }
+  `
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: arrow_function_dollar_event.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestComp {
+    componentProp: number;
+    result: import("@angular/core").WritableSignal<string>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: arrow_function_loop_variables.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestComp {
+    items = [
+        { name: 'one', subItems: ['sub one', 'sub two', 'sub three'] },
+        { name: 'two', subItems: ['sub one', 'sub two', 'sub three'] },
+        { name: 'three', subItems: ['sub one', 'sub two', 'sub three'] },
+    ];
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @for (item of items; track $index; let outerEven = $even) {
+      @for (subitem of item.subItems; track $index) {
+        {{(() => outerEven || $even || $index)()}}
+      }
+    }
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @for (item of items; track $index; let outerEven = $even) {
+      @for (subitem of item.subItems; track $index) {
+        {{(() => outerEven || $even || $index)()}}
+      }
+    }
+  `
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: arrow_function_loop_variables.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestComp {
+    items: {
+        name: string;
+        subItems: string[];
+    }[];
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+

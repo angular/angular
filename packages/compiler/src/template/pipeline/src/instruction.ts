@@ -940,12 +940,14 @@ export function attachSourceLocation(
   return call(Identifiers.attachSourceLocations, [o.literal(templatePath), locations], null);
 }
 
-export function storeCallback(slotOffset: number, expression: o.Expression): ir.CreateOp {
-  return call(Identifiers.storeCallback, [o.literal(slotOffset), expression], null);
-}
-
-export function getCallback(slotOffset: number): o.Expression {
-  return o.importExpr(Identifiers.getCallback).callFn([o.literal(slotOffset)]);
+export function arrowFunction(
+  slotOffset: number,
+  factory: o.Expression,
+  contextRef: o.Expression,
+): o.Expression {
+  return o
+    .importExpr(Identifiers.arrowFunction)
+    .callFn([o.literal(slotOffset), factory, contextRef]);
 }
 
 /**

@@ -188,6 +188,7 @@ function varsUsedByIrExpression(expr: ir.Expression & ir.ConsumesVarsTrait): num
     case ir.ExpressionKind.PipeBindingVariadic:
       return 1 + expr.numArgs;
     case ir.ExpressionKind.StoreLet:
+    case ir.ExpressionKind.ArrowFunction:
       return 1;
     default:
       throw new Error(

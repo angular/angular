@@ -172,6 +172,13 @@ export abstract class CompilationUnit {
   readonly update = new ir.OpList<ir.UpdateOp>();
 
   /**
+   * Function definition expressions that can be found in this unit.
+   *
+   * This is a shortcut so we don't need to traverse all the ops to find functions.
+   */
+  readonly functions = new Set<ir.ArrowFunctionExpr>();
+
+  /**
    * The enclosing job, which might contain several individual compilation units.
    */
   abstract readonly job: CompilationJob;
@@ -195,6 +202,11 @@ export abstract class CompilationUnit {
    * Some operations may have child operations, which this iterator will visit.
    */
   *ops(): Generator<ir.CreateOp | ir.UpdateOp> {
+    for (const expr of this.functions) {
+      for (const op of expr.ops) {
+        yield op;
+      }
+    }
     for (const op of this.create) {
       yield op;
       if (
@@ -209,10 +221,6 @@ export abstract class CompilationUnit {
       } else if (op.kind === ir.OpKind.RepeaterCreate && op.trackByOps !== null) {
         for (const trackOp of op.trackByOps) {
           yield trackOp;
-        }
-      } else if (op.kind === ir.OpKind.StoreCallback || op.kind === ir.OpKind.ExtractCallback) {
-        for (const callbackOp of op.callbackOps) {
-          yield callbackOp;
         }
       }
     }
