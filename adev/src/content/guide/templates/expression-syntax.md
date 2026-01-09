@@ -78,6 +78,9 @@ Angular supports the following operators from standard JavaScript.
 | Logical AND Assignment        | `a &&= b`                                      |
 | Logical OR Assignment         | `a \|\|= b`                                    |
 | Nullish Coalescing Assignment | `a ??= b`                                      |
+| Spread in object literals     | `{...obj, foo: 'bar'}`                         |
+| Spread in array literals      | `[...arr, 1, 2, 3]`                            |
+| Rest in function calls        | `fn(...args)`                                  |
 
 Angular expressions additionally also support the following non-standard operators:
 
