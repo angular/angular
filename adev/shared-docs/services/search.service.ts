@@ -228,16 +228,19 @@ function matched(snippet: SnippetResult | undefined): boolean {
  */
 function wait(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    const timeout = setTimeout(() => resolve(), ms);
+    let timeout: ReturnType<typeof setTimeout> | undefined;
 
-    signal.addEventListener(
-      'abort',
-      () => {
-        clearTimeout(timeout);
-        reject(new Error('Operation aborted'));
-      },
-      {once: true},
-    );
+    const onAbort = () => {
+      clearTimeout(timeout);
+      reject(new Error('Operation aborted'));
+    };
+
+    timeout = setTimeout(() => {
+      signal.removeEventListener('abort', onAbort);
+      resolve();
+    }, ms);
+
+    signal.addEventListener('abort', onAbort, {once: true});
   });
 }
 
