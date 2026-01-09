@@ -296,6 +296,7 @@ type BinaryOperation =
   | '<='
   | '>='
   | 'in'
+  | 'instanceof'
   // Additive
   | '+'
   | '-'

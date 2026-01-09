@@ -31,6 +31,7 @@ export const BINARY_OPERATORS = new Map([
   ['||', o.BinaryOperator.Or],
   ['+', o.BinaryOperator.Plus],
   ['in', o.BinaryOperator.In],
+  ['instanceof', o.BinaryOperator.InstanceOf],
   ['+=', o.BinaryOperator.AdditionAssignment],
   ['-=', o.BinaryOperator.SubtractionAssignment],
   ['*=', o.BinaryOperator.MultiplicationAssignment],

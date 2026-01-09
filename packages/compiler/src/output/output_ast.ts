@@ -143,6 +143,7 @@ export enum BinaryOperator {
   NullishCoalesce,
   Exponentiation,
   In,
+  InstanceOf,
   AdditionAssignment,
   SubtractionAssignment,
   MultiplicationAssignment,

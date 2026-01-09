@@ -114,6 +114,15 @@ describe('type check blocks', () => {
     expect(tcb(`{{!('bar' in {bar: 'bar'}) }}`)).toContain(`!((("bar") in ({ "bar": "bar" })))`);
   });
 
+  it('should handle "instanceof" expressions', () => {
+    expect(tcb(`{{obj instanceof MyClass}}`)).toContain(
+      `((((this).obj)) instanceof (((this).MyClass)))`,
+    );
+    expect(tcb(`{{!(obj instanceof MyClass)}}`)).toContain(
+      `!(((((this).obj)) instanceof (((this).MyClass)))))`,
+    );
+  });
+
   it('should handle attribute values for directive inputs', () => {
     const TEMPLATE = `<div dir inputA="value"></div>`;
     const DIRECTIVES: TestDeclaration[] = [

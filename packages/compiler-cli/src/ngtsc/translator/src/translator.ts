@@ -47,6 +47,7 @@ const BINARY_OPERATORS = /* @__PURE__ */ new Map<o.BinaryOperator, BinaryOperato
   [o.BinaryOperator.NullishCoalesce, '??'],
   [o.BinaryOperator.Exponentiation, '**'],
   [o.BinaryOperator.In, 'in'],
+  [o.BinaryOperator.InstanceOf, 'instanceof'],
   [o.BinaryOperator.Assign, '='],
   [o.BinaryOperator.AdditionAssignment, '+='],
   [o.BinaryOperator.SubtractionAssignment, '-='],

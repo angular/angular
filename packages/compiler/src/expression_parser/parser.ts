@@ -964,10 +964,14 @@ class _ParseAST {
   }
 
   private parseRelational(): AST {
-    // '<', '>', '<=', '>=', 'in'
+    // '<', '>', '<=', '>=', 'in', 'instanceof'
     const start = this.inputIndex;
     let result = this.parseAdditive();
-    while (this.next.type == TokenType.Operator || this.next.isKeywordIn) {
+    while (
+      this.next.type == TokenType.Operator ||
+      this.next.isKeywordIn() || // Should be invoked. This is bug here that will be fixed by #65249 when the breaking change window opens.
+      this.next.isKeywordInstanceOf()
+    ) {
       const operator = this.next.strValue;
       switch (operator) {
         case '<':
@@ -975,6 +979,7 @@ class _ParseAST {
         case '<=':
         case '>=':
         case 'in':
+        case 'instanceof':
           this.advance();
           const right = this.parseAdditive();
           result = new Binary(this.span(start), this.sourceSpan(start), operator, result, right);

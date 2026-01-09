@@ -6,30 +6,30 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {expect} from '@angular/private/testing/matchers';
 import {
   AbsoluteSourceSpan,
+  ArrowFunction,
   ASTWithSource,
   BindingPipe,
+  BindingPipeType,
   Call,
   EmptyExpr,
   Interpolation,
   LiteralMap,
+  LiteralMapPropertyKey,
+  ParseSpan,
   PropertyRead,
   TemplateBinding,
   VariableBinding,
-  BindingPipeType,
-  ParseSpan,
-  LiteralMapPropertyKey,
-  ArrowFunction,
 } from '../../src/expression_parser/ast';
-import {ParseError} from '../../src/parse_util';
 import {Lexer} from '../../src/expression_parser/lexer';
 import {Parser, SplitInterpolation} from '../../src/expression_parser/parser';
-import {expect} from '@angular/private/testing/matchers';
+import {ParseError} from '../../src/parse_util';
 
+import {getFakeSpan} from './utils/span';
 import {unparse, unparseWithSpan} from './utils/unparser';
 import {validate} from './utils/validator';
-import {getFakeSpan} from './utils/span';
 
 describe('parser', () => {
   describe('parseAction', () => {
@@ -88,6 +88,8 @@ describe('parser', () => {
       checkAction('2 > 3');
       checkAction('2 <= 2');
       checkAction('2 >= 2');
+      checkAction(`"key" in obj`);
+      checkAction(`foo instanceof Foo`);
     });
 
     it('should parse equality expressions', () => {
@@ -128,6 +130,11 @@ describe('parser', () => {
 
     it('should ignore comments in expressions', () => {
       checkAction('a //comment', 'a');
+    });
+
+    it('should parse instanceof expressions', () => {
+      checkAction(`obj instanceof MyClass`, `obj instanceof MyClass`);
+      checkAction(`(obj instanceof MyClass) || false`, `(obj instanceof MyClass) || false`);
     });
 
     it('should retain // in string literals', () => {
