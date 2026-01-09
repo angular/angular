@@ -74,7 +74,7 @@ Next, update the template to include a button with the label "Show all comments"
 }
 ```
 
-NOTE: for more information on [template variables check the documentation](/guide/templates/reference-variables).
+NOTE: for more information on [template variables check the documentation](/guide/templates/variables#declaring-a-template-reference-variable).
 
 </docs-step>
 
@@ -105,5 +105,5 @@ You can reload the page to try out different triggers to render the comments sec
 </docs-step>
 </docs-workflow>
 
-If you would like to learn more, check out the documentation for [Deferrable View](/guide/defer).
+If you would like to learn more, check out the documentation for [Deferrable View](/guide/templates/defer).
 Keep learning to unlock more of Angular's great features.

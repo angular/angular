@@ -7,7 +7,6 @@ generate_guides(
         "error.md",
         "kitchen-sink.md",
     ],
-    api_manifest = "//adev/src/assets:docs_api_manifest",
     data = [
         "//adev/src/assets/images:components.svg",
         "//adev/src/content/examples",
@@ -19,11 +18,15 @@ generate_guides(
 js_library(
     name = "guide_files",
     srcs = [
+        "//adev/src/content/ai:guide_files",
         "//adev/src/content/best-practices:guide_files",
         "//adev/src/content/ecosystem:guide_files",
+        "//adev/src/content/events:guide_files",
         "//adev/src/content/guide:guide_files",
         "//adev/src/content/introduction:guide_files",
         "//adev/src/content/reference:guide_files",
+        "//adev/src/content/tools:guide_files",
+        "//adev/src/content/tutorials:guide_files",
     ] + glob(["**/*.md"]),
     visibility = ["//visibility:public"],
 )

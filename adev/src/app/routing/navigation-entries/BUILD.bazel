@@ -1,0 +1,32 @@
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "navigation-entries",
+    srcs = ["index.ts"],
+    declaration = True,
+    tsconfig = {
+        "compilerOptions": {
+            "target": "ES2022",
+            "moduleResolution": "node",
+            "types": ["node"],
+            "rootDir": ".",
+            "skipLibCheck": True,
+        },
+    },
+    deps = [
+        "//adev:node_modules/@angular/compiler-cli",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/docs",
+        "//adev:node_modules/@types/node",
+        "//adev/src/content/reference/errors:route-nav-items",
+        "//adev/src/content/reference/extended-diagnostics:route-nav-items",
+    ],
+)
+
+filegroup(
+    name = "navigation_types",
+    srcs = [":navigation-entries"],
+    output_group = "types",
+)

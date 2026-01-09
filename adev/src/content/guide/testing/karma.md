@@ -186,7 +186,7 @@ If your tests aren't working as you expect, you can inspect and debug them in th
 
 To debug an application with the Karma test runner:
 
-1.  Reveal the Karma browser window. See [Set up for testing](guide/testing/overview#set-up-for-testing) if you need help with this step.
+1.  Reveal the Karma browser window. See [Set up for testing](guide/testing#set-up-for-testing) if you need help with this step.
 2.  Click the **DEBUG** button to open a new browser tab and re-run the tests.
 3.  Open the browser's **Developer Tools**. On Windows, press `Ctrl-Shift-I`. On macOS, press `Command-Option-I`.
 4.  Pick the **Sources** section.

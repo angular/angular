@@ -1,6 +1,6 @@
 # Deriving state with computed signals
 
-Now that you've learned [how to create and update signals](/tutorials/signals/1-creating-and-updating-your-first-signal), let's learn about computed signals. Computed signals are derived values that automatically update when their dependencies change. They're perfect for creating reactive calculations based on other signals.
+Now that you've learned [how to create and update signals](/tutorials/signals/1-creating-your-first-signal), let's learn about computed signals. Computed signals are derived values that automatically update when their dependencies change. They're perfect for creating reactive calculations based on other signals.
 
 In this activity, you'll learn how to use the `computed()` function to create derived state that updates automatically when the underlying signals change.
 

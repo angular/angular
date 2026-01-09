@@ -1176,8 +1176,8 @@ Focus on the `overrideComponent` method.
 });
 ```
 
-It takes two arguments: the component type to override (`HeroDetail`) and an override metadata object.
-The [override metadata object](guide/testing/utility-apis#metadata-override-object) is a generic defined as follows:
+It takes two arguments: the component type to override \(`HeroDetail`\) and an override metadata object.
+The [override metadata object](/guide/testing/utility-apis#testbed-class-summary) is a generic defined as follows:
 
 ```ts
 type MetadataOverride<T> = {

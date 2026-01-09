@@ -38,7 +38,7 @@ To use two-way binding with native form controls, you need to:
 
 Once that is set up, Angular will ensure that any updates in the text input will reflect correctly inside of the component state!
 
-Learn more about [`NgModel`](guide/directives#displaying-and-updating-properties-with-ngmodel) in the official docs.
+Learn more about [`NgModel`](/api/forms/NgModel) in the official docs.
 
 ## Two-way binding between components
 

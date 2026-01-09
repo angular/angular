@@ -155,6 +155,6 @@ In this example, the `getHeroes()` method uses the `Logger` service by logging a
 ## What's next
 
 <docs-pill-row>
-  <docs-pill href="/guide/di/dependency-injection-providers" title="Configuring dependency providers"/>
-  <docs-pill href="/guide/di/dependency-injection-providers#using-an-injectiontoken-object" title="`InjectionTokens`"/>
+  <docs-pill href="guide/di/defining-dependency-providers" title="Configuring dependency providers"/>
+  <docs-pill href="guide/di/defining-dependency-providers#automatic-provision-for-non-class-dependencies" title="`InjectionTokens`"/>
 </docs-pill-row>
