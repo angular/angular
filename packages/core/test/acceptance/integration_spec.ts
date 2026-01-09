@@ -9,6 +9,8 @@ import {animate, AnimationEvent, state, style, transition, trigger} from '@angul
 import {AnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
   Component,
   ContentChild,
@@ -38,8 +40,6 @@ import {isLView} from '../../src/render3/interfaces/type_checks';
 import {ID, LView, PARENT, TVIEW} from '../../src/render3/interfaces/view';
 import {getLView} from '../../src/render3/state';
 import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('acceptance integration tests', () => {
   beforeEach(() => {
@@ -3094,6 +3094,26 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toContain('OK');
 
     fixture.componentInstance.obj = {bar: 'foo'};
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('KO');
+  });
+
+  it('should support "instanceof" expressions', () => {
+    class MyClass {}
+
+    @Component({
+      template: `{{ obj instanceof MyClass ? 'OK' : 'KO' }}`,
+    })
+    class TestComponent {
+      MyClass = MyClass;
+      obj: any = new MyClass();
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('OK');
+
+    fixture.componentInstance.obj = {};
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('KO');
   });

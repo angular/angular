@@ -41,6 +41,7 @@ const KEYWORDS = [
   'typeof',
   'void',
   'in',
+  'instanceof',
 ];
 
 export class Lexer {
@@ -124,6 +125,10 @@ export class Token {
 
   isKeywordIn(): boolean {
     return this.type === TokenType.Keyword && this.strValue === 'in';
+  }
+
+  isKeywordInstanceOf(): boolean {
+    return this.type === TokenType.Keyword && this.strValue === 'instanceof';
   }
 
   isError(): boolean {

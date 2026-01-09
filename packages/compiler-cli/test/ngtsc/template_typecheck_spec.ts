@@ -816,6 +816,26 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toContain(`Type 'string' is not assignable to type 'object'`);
     });
 
+    it('should error on invalid instanceof binary expressions', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        @Component({
+          template: \` {{'foo' instanceof String}} \`,
+        })
+        class TestCmp {
+        }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(2);
+      expect(diags[0].messageText).toContain(
+        `The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.`,
+      );
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write(

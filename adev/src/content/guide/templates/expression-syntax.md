@@ -68,6 +68,7 @@ Angular supports the following operators from standard JavaScript.
 | typeof                        | `typeof 42`                                    |
 | void                          | `void 1`                                       |
 | in                            | `'model' in car`                               |
+| instanceof                    | `car instanceof Automobile`                    |
 | Assignment                    | `a = b`                                        |
 | Addition Assignment           | `a += b`                                       |
 | Subtraction Assignment        | `a -= b`                                       |
@@ -100,7 +101,6 @@ NOTE: Optional chaining behaves differently from the standard JavaScript version
 | Object destructuring  | `const { name } = person`         |
 | Array destructuring   | `const [firstItem] = items`       |
 | Comma operator        | `x = (x++, x)`                    |
-| instanceof            | `car instanceof Automobile`       |
 | new                   | `new Car()`                       |
 
 ## Lexical context for expressions
