@@ -201,5 +201,10 @@ export function noLeftoversInUrl(
   segments: UrlSegment[],
   outlet: string,
 ): boolean {
-  return segments.length === 0 && !segmentGroup.children[outlet];
+  return (
+    (segments.length === 0 ||
+      // Do not require the trailing slash to be consumed
+      (segments.length === 1 && segments[0].path === '')) &&
+    !segmentGroup.children[outlet]
+  );
 }
