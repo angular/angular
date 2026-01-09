@@ -161,12 +161,12 @@ createAccountForm = form<CreateAccountFormModel>(
 );
 ```
 
-Using this representation, all of the subfields we need now exist, and we can bind them using the `[field]` directive in our template.
+Using this representation, all of the subfields we need now exist, and we can bind them using the `[formField]` directive in our template.
 
 ```html
-First: <input [field]="createAccountForm.name.first" /> Last:
-<input [field]="createAccountForm.name.last" /> Username:
-<input [field]="createAccountForm.username" />
+First: <input [formField]="createAccountForm.name.first" /> Last:
+<input [formField]="createAccountForm.name.last" /> Username:
+<input [formField]="createAccountForm.username" />
 ```
 
 #### Fields that are conditionally hidden or unavailable
@@ -289,8 +289,8 @@ interface UserProfileFormModel {
 In the template, we bind the `location` field directly to our custom control:
 
 ```html
-Username: <input [field]="userForm.username" /> Location:
-<location-picker [field]="userForm.location"></location-picker>
+Username: <input [formField]="userForm.username" /> Location:
+<location-picker [formField]="userForm.location"></location-picker>
 ```
 
 Here, `<location-picker>` consumes and produces the entire `Location` object (or `null`), and doesn't access `userForm.location.lat` or `userForm.location.lng`. Therefore, `location` can safely have a dynamic shape without violating the principles of model-driven forms.

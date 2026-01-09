@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {WritableSignal} from '../core_reactivity_export_internal';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type, Writable} from '../interface/type';
 import {assertNotDefined} from '../util/assert';
 import {bindingUpdated} from './bindings';
+import {markViewDirty} from './instructions/mark_view_dirty';
 import {setDirectiveInput, storePropertyBindingMetadata} from './instructions/shared';
 import {ɵCONTROL} from './interfaces/control';
 import {TNode} from './interfaces/node';
 import {TVIEW} from './interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, nextBindingIndex} from './state';
 import {stringifyForError} from './util/stringify_utils';
-import {createOutputListener} from './view/directive_outputs';
-import {markViewDirty} from './instructions/mark_view_dirty';
 import {getComponentLViewByIndex} from './util/view_utils';
-import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
+import {createOutputListener} from './view/directive_outputs';
 
 /** Symbol used to store and retrieve metadata about a binding. */
 export const BINDING: unique symbol = /* @__PURE__ */ Symbol('BINDING');
@@ -112,7 +112,7 @@ interface ControlBinding {
 }
 
 /**
- * Returns a {@link ControlBinding} for the target directive if it is a 'Field' directive.
+ * Returns a {@link ControlBinding} for the target directive if it is a 'FormField' directive.
  */
 function controlBinding(binding: BindingInternal, tNode: TNode): ControlBinding | undefined {
   const lView = getLView();
@@ -140,18 +140,18 @@ function controlBinding(binding: BindingInternal, tNode: TNode): ControlBinding 
  * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export function inputBinding(publicName: string, value: () => unknown): Binding {
-  if (publicName === 'field') {
+  if (publicName === 'formField') {
     const binding: BindingInternal = {
       [BINDING]: FIELD_BINDING_METADATA,
       create: () => {
-        // Set up the form control bindings, if this is a 'Field' directive bound to a form control.
+        // Set up the form control bindings, if this is a 'FormField' directive bound to a form control.
         controlBinding(binding, getCurrentTNode()!)?.create();
       },
       update: () => {
-        // Update the [field] input binding, regardless of whether this targets a 'Field' directive.
+        // Update the [formField] input binding, regardless of whether this targets a 'FormField' directive.
         inputBindingUpdate(binding.targetIdx!, publicName, value());
 
-        // Update the form control bindings, if this is a 'Field' directive bound to a form control.
+        // Update the form control bindings, if this is a 'FormField' directive bound to a form control.
         controlBinding(binding, getSelectedTNode()!)?.update();
       },
     };

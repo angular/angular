@@ -2679,14 +2679,14 @@ describe('type check blocks', () => {
 
       FieldMock = {
         type: 'directive',
-        name: 'Field',
-        selector: '[field]',
+        name: 'FormField',
+        selector: '[formField]',
         bestGuessOwningModule: {
           specifier: '@angular/forms/signals',
           resolutionContext: '',
         },
         inputs: {
-          field: 'field',
+          field: 'formField',
         },
       };
     });

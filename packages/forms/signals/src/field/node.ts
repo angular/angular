@@ -7,7 +7,6 @@
  */
 
 import {computed, linkedSignal, type Signal, untracked, type WritableSignal} from '@angular/core';
-import type {Field} from '../api/field_directive';
 import type {FormField} from '../api/form_field_directive';
 import {
   MAX,
@@ -157,7 +156,7 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.readonly;
   }
 
-  get formFieldBindings(): Signal<readonly (Field<unknown> | FormField<unknown>)[]> {
+  get formFieldBindings(): Signal<readonly FormField<unknown>[]> {
     return this.nodeState.formFieldBindings;
   }
 

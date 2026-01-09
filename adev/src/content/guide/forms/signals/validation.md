@@ -62,21 +62,21 @@ The `required()` validation rule ensures a field has a value:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, required } from '@angular/forms/signals'
+import { form, FormField, required } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-registration',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <form>
       <label>
         Username
-        <input [field]="registrationForm.username" />
+        <input [formField]="registrationForm.username" />
       </label>
 
       <label>
         Email
-        <input type="email" [field]="registrationForm.email" />
+        <input type="email" [formField]="registrationForm.email" />
       </label>
 
       <button type="submit">Register</button>
@@ -123,16 +123,16 @@ The `email()` validation rule checks for valid email format:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, email } from '@angular/forms/signals'
+import { form, FormField, email } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-contact',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <form>
       <label>
         Your Email
-        <input type="email" [field]="contactForm.email" />
+        <input type="email" [formField]="contactForm.email" />
       </label>
     </form>
   `
@@ -154,21 +154,21 @@ The `min()` and `max()` validation rules work with numeric values:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, min, max } from '@angular/forms/signals'
+import { form, FormField, min, max } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-age-form',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <form>
       <label>
         Age
-        <input type="number" [field]="ageForm.age" />
+        <input type="number" [formField]="ageForm.age" />
       </label>
 
       <label>
         Rating (1-5)
-        <input type="number" [field]="ageForm.rating" />
+        <input type="number" [formField]="ageForm.rating" />
       </label>
     </form>
   `
@@ -205,21 +205,21 @@ The `minLength()` and `maxLength()` validation rules work with strings and array
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, minLength, maxLength } from '@angular/forms/signals'
+import { form, FormField, minLength, maxLength } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-password-form',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <form>
       <label>
         Password
-        <input type="password" [field]="passwordForm.password" />
+        <input type="password" [formField]="passwordForm.password" />
       </label>
 
       <label>
         Bio
-        <textarea [field]="passwordForm.bio"></textarea>
+        <textarea [formField]="passwordForm.bio"></textarea>
       </label>
     </form>
   `
@@ -247,21 +247,21 @@ The `pattern()` validation rule validates against a regular expression:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, pattern } from '@angular/forms/signals'
+import { form, FormField, pattern } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-phone-form',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <form>
       <label>
         Phone Number
-        <input [field]="phoneForm.phone" placeholder="555-123-4567" />
+        <input [formField]="phoneForm.phone" placeholder="555-123-4567" />
       </label>
 
       <label>
         Postal Code
-        <input [field]="phoneForm.postalCode" placeholder="12345" />
+        <input [formField]="phoneForm.postalCode" placeholder="12345" />
       </label>
     </form>
   `
@@ -299,7 +299,7 @@ Forms can include arrays of nested objects (for example, a list of order items).
 
 ```ts
 import {Component, signal} from '@angular/core';
-import {applyEach, Field, form, min, required, SchemaPathTree} from '@angular/forms/signals';
+import {applyEach, FormField, form, min, required, SchemaPathTree} from '@angular/forms/signals';
 
 type Item = {name: string; quantity: number};
 
@@ -356,21 +356,21 @@ All built-in validation rules accept a `message` option for custom error text:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, required, minLength } from '@angular/forms/signals'
+import { form, FormField, required, minLength } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-signup',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <form>
       <label>
         Username
-        <input [field]="signupForm.username" />
+        <input [formField]="signupForm.username" />
       </label>
 
       <label>
         Password
-        <input type="password" [field]="signupForm.password" />
+        <input type="password" [formField]="signupForm.password" />
       </label>
     </form>
   `
@@ -429,16 +429,16 @@ The `validate()` function creates custom validation rules. It receives a validat
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, validate } from '@angular/forms/signals'
+import { form, FormField, validate } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-url-form',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <form>
       <label>
         Website URL
-        <input [field]="urlForm.website" />
+        <input [formField]="urlForm.website" />
       </label>
     </form>
   `
@@ -542,21 +542,21 @@ A common scenario for cross-field validation is password confirmation:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, required, minLength, validate } from '@angular/forms/signals'
+import { form, FormField, required, minLength, validate } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-password-change',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <form>
       <label>
         New Password
-        <input type="password" [field]="passwordForm.password" />
+        <input type="password" [formField]="passwordForm.password" />
       </label>
 
       <label>
         Confirm Password
-        <input type="password" [field]="passwordForm.confirmPassword" />
+        <input type="password" [formField]="passwordForm.confirmPassword" />
       </label>
 
       <button type="submit">Change Password</button>
@@ -605,16 +605,16 @@ The `validateHttp()` function performs HTTP-based validation:
 ```angular-ts
 import { Component, signal, inject } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { form, Field, required, validateHttp } from '@angular/forms/signals'
+import { form, FormField, required, validateHttp } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-username-form',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <form>
       <label>
         Username
-        <input [field]="usernameForm.username" />
+        <input [formField]="usernameForm.username" />
 
         @if (usernameForm.username().pending()) {
           <span class="checking">Checking availability...</span>

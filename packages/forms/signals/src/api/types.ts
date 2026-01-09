@@ -8,7 +8,6 @@
 
 import {Signal, ɵFieldState} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
-import type {Field} from './field_directive';
 import type {FormField} from './form_field_directive';
 import type {MetadataKey, ValidationError} from './rules';
 
@@ -293,9 +292,9 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly keyInParent: Signal<TKey>;
   /**
-   * The {@link Field} directives that bind this field to a UI control.
+   * The {@link FormField} directives that bind this field to a UI control.
    */
-  readonly formFieldBindings: Signal<readonly (Field<unknown> | FormField<unknown>)[]>;
+  readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
 
   /**
    * Reads a metadata value from the field.
