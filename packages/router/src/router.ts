@@ -70,7 +70,7 @@ import {afterNextNavigation} from './utils/navigations';
 import {RouterState} from './router_state';
 
 /**
- * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `true`
+ * The equivalent `IsActiveMatchOptions` options for `isActive` is called with `true`
  * (exact = true).
  */
 export const exactMatchOptions: IsActiveMatchOptions = {
@@ -81,7 +81,7 @@ export const exactMatchOptions: IsActiveMatchOptions = {
 };
 
 /**
- * The equivalent `IsActiveMatchOptions` options for `Router.isActive` is called with `false`
+ * The equivalent `IsActiveMatchOptions` options for `isActive` is called with `false`
  * (exact = false).
  */
 export const subsetMatchOptions: IsActiveMatchOptions = {

@@ -122,7 +122,7 @@ Use this callback to customize transition behavior based on navigation context. 
 
 ```ts
 import {inject} from '@angular/core';
-import {Router, withViewTransitions} from '@angular/router';
+import {Router, withViewTransitions, isActive} from '@angular/router';
 
 withViewTransitions({
   onViewTransitionCreated: ({transition}) => {
@@ -137,7 +137,9 @@ withViewTransitions({
       queryParams: 'ignored',
     };
 
-    if (router.isActive(targetUrl, config)) {
+    const isTargetRouteCurrent = isActive(targetUrl, router, config);
+
+    if (isTargetRouteCurrent()) {
       transition.skipTransition();
     }
   },
