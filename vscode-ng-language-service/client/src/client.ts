@@ -35,7 +35,7 @@ interface GetTcbResponse {
 }
 
 export class AngularLanguageClient implements vscode.Disposable {
-  private client: lsp.LanguageClient | null = null;
+  client: lsp.LanguageClient | null = null;
   private readonly disposables: vscode.Disposable[] = [];
   private readonly outputChannel: vscode.OutputChannel;
   private readonly clientOptions: lsp.LanguageClientOptions;
@@ -431,6 +431,11 @@ export class AngularLanguageClient implements vscode.Disposable {
     );
     if (suppressAngularDiagnosticCodes) {
       args.push('--suppressAngularDiagnosticCodes', suppressAngularDiagnosticCodes);
+    }
+
+    const referencesCodeLensEnabled = config.get<boolean>('angular.referencesCodeLens.enabled');
+    if (referencesCodeLensEnabled) {
+      args.push('--referencesCodeLensEnabled');
     }
 
     const tsdk = config.get('typescript.tsdk', '');
