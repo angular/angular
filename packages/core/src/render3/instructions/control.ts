@@ -103,7 +103,7 @@ export function ɵɵcontrol<T>(value: T, name: string, sanitizer?: SanitizerFn |
  * Calls {@link updateControl} with the current `LView` and selected `TNode`.
  *
  * NOTE: This instruction exists solely to accommodate tree-shakeable, dynamic control bindings.
- * It's intended to be referenced exclusively by the Signal Forms `Field` directive and should not
+ * It's intended to be referenced exclusively by the Signal Forms `FormField` directive and should not
  * be referenced by any other means.
  */
 export function ɵcontrolUpdate(): void {
@@ -146,12 +146,12 @@ function updateControl<T>(lView: LView, tNode: TNode): void {
 function initializeControlFirstCreatePass<T>(tView: TView, tNode: TNode, lView: LView): void {
   ngDevMode && assertFirstCreatePass(tView);
 
-  const directiveIndices = tNode.inputs?.['field'] ?? tNode.inputs?.['formField'];
+  const directiveIndices = tNode.inputs?.['formField'];
   if (!directiveIndices) {
-    return; // There are no matching inputs for the `[field]` property binding.
+    return; // There are no matching inputs for the `[formField]` property binding.
   }
 
-  // If component has a `field` input, we assume that it will handle binding the field to the
+  // If component has a `formField` input, we assume that it will handle binding the field to the
   // appropriate native/custom control in its template, so we do not attempt to bind any inputs
   // on this component.
   if (
@@ -161,16 +161,16 @@ function initializeControlFirstCreatePass<T>(tView: TView, tNode: TNode, lView: 
     return;
   }
 
-  // Check if the `Field` directive is present.
+  // Check if the `FormField` directive is present.
   const controlIndex = directiveIndices.find((index) => ɵCONTROL in lView[index]);
   if (controlIndex === undefined) {
     return;
   }
 
-  // Cache the index of the `Field` directive.
+  // Cache the index of the `FormField` directive.
   tNode.fieldIndex = controlIndex;
 
-  // First check if the `Field` directive is bound to an interop control (e.g. a Reactive Forms
+  // First check if the `FormField` directive is bound to an interop control (e.g. a Reactive Forms
   // control using `ControlValueAccessor`). If not, look for a custom control.
   const foundControl =
     isInteropControlFirstCreatePass(tNode, lView) || isCustomControlFirstCreatePass(tView, tNode);
@@ -184,7 +184,7 @@ function initializeControlFirstCreatePass<T>(tView: TView, tNode: TNode, lView: 
   throw new RuntimeError(
     RuntimeErrorCode.INVALID_FIELD_DIRECTIVE_HOST,
     ngDevMode &&
-      `${describeElement(tView, tNode)} is an invalid [field] directive host. The host must be a native form control ` +
+      `${describeElement(tView, tNode)} is an invalid [formField] directive host. The host must be a native form control ` +
         `(such as <input>', '<select>', or '<textarea>') or a custom form control with a 'value' or ` +
         `'checked' model.`,
   );

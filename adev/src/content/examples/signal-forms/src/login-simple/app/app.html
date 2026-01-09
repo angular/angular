@@ -1,12 +1,12 @@
 <form>
   <label>
     Email:
-    <input type="email" [field]="loginForm.email" />
+    <input type="email" [formField]="loginForm.email" />
   </label>
 
   <label>
     Password:
-    <input type="password" [field]="loginForm.password" />
+    <input type="password" [formField]="loginForm.password" />
   </label>
 
   <p>Hello {{ loginForm.email().value() }}!</p>

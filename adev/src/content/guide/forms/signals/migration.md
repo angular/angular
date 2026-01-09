@@ -55,14 +55,14 @@ In the template, use standard reactive syntax by binding the underlying control:
   <div>
     <label>
       Email:
-      <input [field]="f.email">
+      <input [formField]="f.email">
     </label>
   </div>
 
   <div>
     <label>
       Password:
-      <input [field]="f.password" type="password">
+      <input [formField]="f.password" type="password">
     </label>
 
     @if (f.password().touched() && f.password().invalid()) {
@@ -118,7 +118,7 @@ template by accessing the underlying legacy controls via `.control()`:
   <div>
     <label>
       Customer Name:
-      <input [field]="f.customerName">
+      <input [formField]="f.customerName">
     </label>
 
     @if (f.customerName().touched() && f.customerName().invalid()) {

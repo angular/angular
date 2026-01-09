@@ -18,10 +18,10 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {
   disabled,
-  Field,
   FieldTree,
   form,
   FormCheckboxControl,
+  FormField,
   FormValueControl,
   required,
 } from '@angular/forms/signals';
@@ -41,8 +41,8 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<string>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<string>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
@@ -81,8 +81,8 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<string>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<string>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
@@ -111,8 +111,8 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<boolean>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<boolean>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
@@ -151,8 +151,8 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<boolean>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<boolean>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
@@ -167,10 +167,10 @@ describe('createComponent', () => {
     });
   });
 
-  it(`should not treat component with '[field]' input as a control`, () => {
+  it(`should not treat component with '[formField]' input as a control`, () => {
     @Component({template: ''})
     class TestCmp {
-      readonly field = input.required<FieldTree<string>>();
+      readonly formField = input.required<FieldTree<string>>();
       readonly value = model.required<string>();
     }
 
@@ -183,8 +183,8 @@ describe('createComponent', () => {
       environmentInjector,
       directives: [
         {
-          type: Field<string>,
-          bindings: [inputBinding('field', () => control)],
+          type: FormField<string>,
+          bindings: [inputBinding('formField', () => control)],
         },
       ],
     });
@@ -207,11 +207,11 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<string>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<string>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       }),
-    ).toThrowError(/Component InvalidFieldHost (.+) is an invalid \[field\] directive host\./);
+    ).toThrowError(/Component InvalidFieldHost (.+) is an invalid \[formField\] directive host\./);
   });
 });
