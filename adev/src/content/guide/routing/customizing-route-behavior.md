@@ -127,6 +127,22 @@ provideRouter(routes, withRouterConfig({defaultQueryParamsHandling: 'merge'}));
 
 This is especially helpful for search and filter pages to automatically retain existing filters when additional parameters are provided.
 
+### Configure trailing slash handling
+
+`trailingSlash` configures how the router and location service handle trailing slashes in URLs.
+
+- `'always'`: Forces a trailing slash on all URLs, both during serialization and during parsing.
+- `'never'`: Removes trailing slashes from all URLs.
+- `'preserve'`: Keeps the trailing slash if present, and omits it if not.
+
+Both 'always' and 'preserve' instruct the `Route` matching logic to consume the trailing slash segment. A route with `path: 'a'` will consume both the 'a' segment and the terminating empty segment for the path 'a/'.
+
+NOTE: By default, the `DefaultUrlSerializer` preserves trailing slashes, but `Location.path()` and `Location.normalize()` strip them. Route matching also prevents trailing slashes from matching route configs other than wildcard routes.
+
+```ts
+provideRouter(routes, withRouterConfig({trailingSlash: 'preserve'}));
+```
+
 Angular Router exposes four main areas for customization:
 
   <docs-pill-row>
@@ -224,7 +240,7 @@ When implementing a custom `RouteReuseStrategy`, you may need to manually destro
 Since `DetachedRouteHandle` is an opaque type, you cannot call a destroy method directly on it. Instead, use the `destroyDetachedRouteHandle` function provided by the Router.
 
 ```ts
-import { destroyDetachedRouteHandle } from '@angular/router';
+import {destroyDetachedRouteHandle} from '@angular/router';
 
 // ... inside your strategy
 if (this.handles.size > MAX_CACHE_SIZE) {
@@ -245,12 +261,10 @@ By default, Angular does not destroy the injectors of detached routes, even if t
 To enable automatic cleanup of unused route injectors, you can use the `withExperimentalAutoCleanupInjectors` feature in your router configuration. This feature checks which routes are currently stored by the strategy after navigations and destroys the injectors of any detached routes that are not currently stored by the reuse strategy.
 
 ```ts
-import { provideRouter, withExperimentalAutoCleanupInjectors } from '@angular/router';
+import {provideRouter, withExperimentalAutoCleanupInjectors} from '@angular/router';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes, withExperimentalAutoCleanupInjectors())
-  ]
+  providers: [provideRouter(routes, withExperimentalAutoCleanupInjectors())],
 };
 ```
 

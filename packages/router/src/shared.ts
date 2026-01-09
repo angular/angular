@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {inject} from '@angular/core';
 import type {Route, UrlMatchResult} from './models';
+import {ROUTER_CONFIGURATION} from './router_config';
 import type {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 /**
@@ -155,20 +157,34 @@ export function defaultUrlMatcher(
   segmentGroup: UrlSegmentGroup,
   route: Route,
 ): UrlMatchResult | null {
+  let trailingSlashConfig: 'never' | 'preserve' | 'always' | undefined = undefined;
+  try {
+    trailingSlashConfig = inject(ROUTER_CONFIGURATION).trailingSlash;
+  } catch {
+    // running outside injection context
+  }
   const parts = route.path!.split('/');
   const wildcardIndex = parts.indexOf('**');
   if (wildcardIndex === -1) {
+    const consumeTrailingSlash =
+      trailingSlashConfig === 'always' || trailingSlashConfig === 'preserve';
     // No wildcard, use original logic
     if (parts.length > segments.length) {
       // The actual URL is shorter than the config, no match
       return null;
     }
 
+    const terminatedByTrailingSlash =
+      parts.length + 1 === segments.length && segments[parts.length].path === '';
     if (
       route.pathMatch === 'full' &&
-      (segmentGroup.hasChildren() || parts.length < segments.length)
+      (segmentGroup.hasChildren() || parts.length < segments.length) &&
+      (!consumeTrailingSlash || !terminatedByTrailingSlash)
     ) {
-      // The config is longer than the actual URL but we are looking for a full match, return null
+      // The config is longer than the actual URL but we are looking for a full match, return null.
+      // We allow the actual URL to be longer than the config if it has exactly one trailing empty
+      // segment (representing a trailing slash). This is because we want to allow `path: 'a'` to match
+      // `/a/` if the global configuration allows it.
       return null;
     }
 
@@ -177,6 +193,13 @@ export function defaultUrlMatcher(
     if (!matchParts(parts, consumed, posParams)) {
       return null;
     }
+
+    // If we matched the whole route and there is one remaining segment which is empty, consume it.
+    // This allows `path: 'a'` to match `/a/`.
+    if (consumeTrailingSlash && terminatedByTrailingSlash) {
+      consumed.push(segments[segments.length - 1]);
+    }
+
     return {consumed, posParams};
   }
 

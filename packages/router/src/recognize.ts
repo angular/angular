@@ -329,7 +329,7 @@ export class Recognizer {
     parentRoute: ActivatedRouteSnapshot,
   ): Promise<TreeNode<ActivatedRouteSnapshot> | NoLeftoversInUrl> {
     const {matched, parameters, consumedSegments, positionalParamSegments, remainingSegments} =
-      match(segmentGroup, route, segments);
+      match(segmentGroup, route, segments, parentRoute._environmentInjector);
     if (!matched) throw new NoMatch(segmentGroup);
 
     // TODO(atscott): Move all of this under an if(ngDevMode) as a breaking change and allow stack
