@@ -68,7 +68,6 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
       '||': ts.SyntaxKind.BarBarToken,
       '+': ts.SyntaxKind.PlusToken,
       '??': ts.SyntaxKind.QuestionQuestionToken,
-      'in': ts.SyntaxKind.InKeyword,
       '=': ts.SyntaxKind.EqualsToken,
       '+=': ts.SyntaxKind.PlusEqualsToken,
       '-=': ts.SyntaxKind.MinusEqualsToken,
@@ -79,6 +78,8 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
       '&&=': ts.SyntaxKind.AmpersandAmpersandEqualsToken,
       '||=': ts.SyntaxKind.BarBarEqualsToken,
       '??=': ts.SyntaxKind.QuestionQuestionEqualsToken,
+      'in': ts.SyntaxKind.InKeyword,
+      'instanceof': ts.SyntaxKind.InstanceOfKeyword,
     }))();
 
   private readonly VAR_TYPES: Record<VariableDeclarationType, ts.NodeFlags> =

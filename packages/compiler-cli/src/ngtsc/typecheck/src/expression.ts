@@ -104,7 +104,6 @@ class AstTranslator implements AstVisitor {
     ['&', ts.SyntaxKind.AmpersandToken],
     ['|', ts.SyntaxKind.BarToken],
     ['??', ts.SyntaxKind.QuestionQuestionToken],
-    ['in', ts.SyntaxKind.InKeyword],
     ['=', ts.SyntaxKind.EqualsToken],
     ['+=', ts.SyntaxKind.PlusEqualsToken],
     ['-=', ts.SyntaxKind.MinusEqualsToken],
@@ -115,6 +114,8 @@ class AstTranslator implements AstVisitor {
     ['&&=', ts.SyntaxKind.AmpersandAmpersandEqualsToken],
     ['||=', ts.SyntaxKind.BarBarEqualsToken],
     ['??=', ts.SyntaxKind.QuestionQuestionEqualsToken],
+    ['in', ts.SyntaxKind.InKeyword],
+    ['instanceof', ts.SyntaxKind.InstanceOfKeyword],
   ]);
 
   constructor(

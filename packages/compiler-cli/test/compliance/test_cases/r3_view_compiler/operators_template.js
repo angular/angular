@@ -31,7 +31,8 @@ template: function MyApp_Template(rf, $ctx$) {
 		$r3$.ɵɵpipeBind1(1, 10, typeof ($ctx$.foo == null ? null : $ctx$.foo.bar)), " ",
 		void "test", " ",
 		(-1) ** 3, " ",
-		"bar" in $ctx$.foo, " "
+		"bar" in $ctx$.foo, " ",
+		$ctx$.bar instanceof $ctx$.Bar, " "
 	  ]);	
 	}
 }
