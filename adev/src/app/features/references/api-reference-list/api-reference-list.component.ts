@@ -21,7 +21,7 @@ import {
   viewChild,
 } from '@angular/core';
 import {Select, SelectOption, TextField} from '@angular/docs';
-import {Field, form} from '@angular/forms/signals';
+import {FormField, form} from '@angular/forms/signals';
 import {MatChipsModule} from '@angular/material/chips';
 import {Params, Router} from '@angular/router';
 import ApiItemLabel from '../api-item-label/api-item-label.component';
@@ -52,7 +52,7 @@ export const DEFAULT_STATUS = STATUSES.stable | STATUSES.developerPreview | STAT
     MatChipsModule,
     KeyValuePipe,
     Select,
-    Field,
+    FormField,
   ],
   templateUrl: './api-reference-list.component.html',
   styleUrls: ['./api-reference-list.component.scss'],

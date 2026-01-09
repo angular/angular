@@ -4,12 +4,12 @@
 
 <div class="adev-reference-list-filter">
   <div class="adev-reference-list-query-filter">
-    <docs-text-field placeholder="Filter" [field]="form.query" />
+    <docs-text-field placeholder="Filter" [formField]="form.query" />
 
     <docs-select
       selectId="package-entry-filter"
       [options]="packageOptions()"
-      [field]="form.selectedPackage"
+      [formField]="form.selectedPackage"
     />
   </div>
 
