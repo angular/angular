@@ -436,7 +436,7 @@ export enum ErrorCode {
    */
   DEFER_TRIGGER_MISCONFIGURATION = 8021,
 
-  /** Raised when the user has an unsupported binding on a `Field` directive. */
+  /** Raised when the user has an unsupported binding on a `FormField` directive. */
   FORM_FIELD_UNSUPPORTED_BINDING = 8022,
 
   /**
