@@ -2449,6 +2449,16 @@ describe('TestBed', () => {
       expect(fixture.nativeElement.tagName).toBe('MY-TEST-COMP');
     });
 
+    it('should not override the inferTagName option when calling configureTestingModule multiple times', () => {
+      @Component({selector: 'my-test-comp', template: ''})
+      class TestComp {}
+
+      TestBed.configureTestingModule({inferTagName: true});
+      TestBed.configureTestingModule({providers: []});
+      const fixture = TestBed.createComponent(TestComp);
+      expect(fixture.nativeElement.tagName).toBe('MY-TEST-COMP');
+    });
+
     it('should give precedence to inferTagName from createComponent over configureTestingModule', () => {
       @Component({selector: 'my-test-comp', template: ''})
       class TestComp {}
@@ -2523,6 +2533,22 @@ describe('TestBed module teardown', () => {
     expect(TestBedImpl.INSTANCE.shouldTearDownTestingModule()).toBe(false);
     TestBed.resetTestingModule();
     expect(TestBedImpl.INSTANCE.shouldTearDownTestingModule()).toBe(true);
+  });
+
+  it('should not reset test module configuration when TestBed.configureTestingModule is called multiple times', () => {
+    TestBed.configureTestingModule({
+      animationsEnabled: true,
+      deferBlockBehavior: DeferBlockBehavior.Manual,
+      errorOnUnknownElements: true,
+      errorOnUnknownProperties: true,
+      teardown: {destroyAfterEach: false},
+    });
+    TestBed.configureTestingModule({providers: [SimpleService]});
+    expect(TestBedImpl.INSTANCE.getAnimationsEnabled()).toBe(true);
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Manual);
+    expect(TestBedImpl.INSTANCE.shouldTearDownTestingModule()).toBe(false);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownElements()).toBe(true);
+    expect(TestBedImpl.INSTANCE.shouldThrowErrorOnUnknownProperties()).toBe(true);
   });
 
   it('should destroy test module providers when test module teardown is enabled', () => {
