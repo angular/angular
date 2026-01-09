@@ -321,6 +321,32 @@ describe('control flow - if', () => {
     expect(fixture.nativeElement.textContent.trim()).toBe('no 42');
   });
 
+  it('should support a condition with the instanceof keyword', () => {
+    class Foo {}
+
+    // prettier-ignore
+    @Component({
+      template: `
+        @if (value instanceof Foo) {
+          is Foo
+        } @else {
+          is not Foo
+        }
+      `,
+    })
+    class TestComponent {
+      Foo = Foo;
+      value: string | Foo = new Foo();
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('is Foo');
+    fixture.componentInstance.value = 'not a Foo';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('is not Foo');
+  });
+
   it('should expose expression value through alias on @else if', () => {
     @Component({
       template: `

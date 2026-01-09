@@ -44,6 +44,7 @@ const BINARY_OPERATORS = new Map([
   [o.BinaryOperator.Or, '||'],
   [o.BinaryOperator.Plus, '+'],
   [o.BinaryOperator.In, 'in'],
+  [o.BinaryOperator.InstanceOf, 'instanceof'],
   [o.BinaryOperator.AdditionAssignment, '+='],
   [o.BinaryOperator.SubtractionAssignment, '-='],
   [o.BinaryOperator.MultiplicationAssignment, '*='],

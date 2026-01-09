@@ -222,6 +222,12 @@ describe('lexer', () => {
       expect(tokens[0].isKeywordIn()).toBe(true);
     });
 
+    it('should tokenize instanceof keyword', () => {
+      const tokens: Token[] = lex('instanceof');
+      expectKeywordToken(tokens[0], 0, 10, 'instanceof');
+      expect(tokens[0].isKeywordInstanceOf()).toBe(true);
+    });
+
     it('should ignore whitespace', () => {
       const tokens: Token[] = lex('a \t \n \r b');
       expectIdentifierToken(tokens[0], 0, 1, 'a');
