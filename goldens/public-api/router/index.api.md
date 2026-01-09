@@ -809,10 +809,14 @@ export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHa
 // @public
 class RouterLink implements OnChanges, OnDestroy {
     constructor(router: Router, route: ActivatedRoute, tabIndexAttribute: string | null | undefined, renderer: Renderer2, el: ElementRef, locationStrategy?: LocationStrategy | undefined);
-    fragment?: string;
+    set fragment(value: string | undefined);
+    // (undocumented)
+    get fragment(): string | undefined;
     get href(): string | null;
     set href(value: string | null);
-    info?: unknown;
+    set info(value: unknown);
+    // (undocumented)
+    get info(): unknown;
     // (undocumented)
     static ngAcceptInputType_preserveFragment: unknown;
     // (undocumented)
@@ -822,19 +826,36 @@ class RouterLink implements OnChanges, OnDestroy {
     ngOnChanges(changes?: SimpleChanges): void;
     ngOnDestroy(): any;
     onClick(button: number, ctrlKey: boolean, shiftKey: boolean, altKey: boolean, metaKey: boolean): boolean;
-    preserveFragment: boolean;
-    queryParams?: Params | null;
-    queryParamsHandling?: QueryParamsHandling | null;
+    set preserveFragment(value: boolean);
     // (undocumented)
+    get preserveFragment(): boolean;
+    set queryParams(value: Params | null | undefined);
+    // (undocumented)
+    get queryParams(): Params | null | undefined;
+    set queryParamsHandling(value: QueryParamsHandling | null | undefined);
+    // (undocumented)
+    get queryParamsHandling(): QueryParamsHandling | null | undefined;
     protected readonly reactiveHref: i0.WritableSignal<string | null>;
-    relativeTo?: ActivatedRoute | null;
-    replaceUrl: boolean;
+    set relativeTo(value: ActivatedRoute | null | undefined);
+    // (undocumented)
+    get relativeTo(): ActivatedRoute | null | undefined;
+    set replaceUrl(value: boolean);
+    // (undocumented)
+    get replaceUrl(): boolean;
     set routerLink(commandsOrUrlTree: readonly any[] | string | UrlTree | null | undefined);
-    skipLocationChange: boolean;
-    state?: {
+    set skipLocationChange(value: boolean);
+    // (undocumented)
+    get skipLocationChange(): boolean;
+    set state(value: {
         [k: string]: any;
-    };
-    target?: string;
+    } | undefined);
+    // (undocumented)
+    get state(): {
+        [k: string]: any;
+    } | undefined;
+    set target(value: string | undefined);
+    // (undocumented)
+    get target(): string | undefined;
     // (undocumented)
     get urlTree(): UrlTree | null;
     // (undocumented)
