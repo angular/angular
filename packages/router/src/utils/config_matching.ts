@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EnvironmentInjector} from '@angular/core';
+import {EnvironmentInjector, runInInjectionContext} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -41,7 +41,7 @@ export function matchWithChecks(
   urlSerializer: UrlSerializer,
   abortSignal: AbortSignal,
 ): Observable<MatchResult> {
-  const result = match(segmentGroup, route, segments);
+  const result = match(segmentGroup, route, segments, injector);
   if (!result.matched) {
     return of(result);
   }
@@ -58,6 +58,7 @@ export function match(
   segmentGroup: UrlSegmentGroup,
   route: Route,
   segments: UrlSegment[],
+  injector: EnvironmentInjector,
 ): MatchResult {
   if (route.path === '') {
     if (route.pathMatch === 'full' && (segmentGroup.hasChildren() || segments.length > 0)) {
@@ -74,7 +75,7 @@ export function match(
   }
 
   const matcher = route.matcher || defaultUrlMatcher;
-  const res = matcher(segments, segmentGroup, route);
+  const res = runInInjectionContext(injector, () => matcher(segments, segmentGroup, route))
   if (!res) return {...noMatch};
 
   const posParams: {[n: string]: string} = {};
