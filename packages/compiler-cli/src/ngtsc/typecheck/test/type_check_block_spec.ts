@@ -2692,26 +2692,26 @@ describe('type check blocks', () => {
     });
 
     it('should generate a string field for an input without a type', () => {
-      const block = tcb('<input [field]="f"/>', [FieldMock]);
+      const block = tcb('<input [formField]="f"/>', [FieldMock]);
       expect(block).toContain('var _t1 = null! as string;');
       expect(block).toContain('_t1 = ((this).f)().value();');
-      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
     it('should generate all possible type for input with a dynamic `type`', () => {
-      const block = tcb('<input [type]="expr" [field]="f"/>', [FieldMock]);
+      const block = tcb('<input [type]="expr" [formField]="f"/>', [FieldMock]);
       expect(block).toContain('var _t1 = null! as string | number | boolean | Date | null;');
       expect(block).toContain('_t1 = ((this).f)().value();');
-      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
     it('should generate all possible type for input with a dynamic attribute `type` binding', () => {
-      const block = tcb('<input [attr.type]="expr" [field]="f"/>', [FieldMock]);
+      const block = tcb('<input [attr.type]="expr" [formField]="f"/>', [FieldMock]);
       expect(block).toContain('var _t1 = null! as string | number | boolean | Date | null;');
       expect(block).toContain('_t1 = ((this).f)().value();');
-      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
@@ -2729,42 +2729,42 @@ describe('type check blocks', () => {
       {inputType: 'unknown', expectedType: 'string'},
     ].forEach(({inputType, expectedType}) => {
       it(`should generate a '${expectedType}' field for an input with a '${inputType}' type`, () => {
-        const block = tcb(`<input type="${inputType}" [field]="f"/>`, [FieldMock]);
+        const block = tcb(`<input type="${inputType}" [formField]="f"/>`, [FieldMock]);
         expect(block).toContain(`var _t1 = null! as ${expectedType};`);
         expect(block).toContain('_t1 = ((this).f)().value();');
-        expect(block).toContain('var _t2 = null! as i0.Field;');
+        expect(block).toContain('var _t2 = null! as i0.FormField;');
         expect(block).toContain('_t2.field = (((this).f));');
       });
     });
 
     it('should generate expressions to check the field and value bindings of a radio input', () => {
-      const block = tcb('<input type="radio" [field]="f" [value]="expr"/>', [FieldMock]);
+      const block = tcb('<input type="radio" [formField]="f" [value]="expr"/>', [FieldMock]);
       expect(block).toContain('var _t1 = null! as string;');
       expect(block).toContain('_t1 = ((this).f)().value();');
       expect(block).toContain('var _t2 = null! as string;');
       expect(block).toContain('_t2 = ((this).expr);');
-      expect(block).toContain('var _t3 = null! as i0.Field;');
+      expect(block).toContain('var _t3 = null! as i0.FormField;');
       expect(block).toContain('_t3.field = (((this).f));');
     });
 
     it('should generate a string field for a textarea', () => {
-      const block = tcb('<textarea [field]="f"></textarea>', [FieldMock]);
+      const block = tcb('<textarea [formField]="f"></textarea>', [FieldMock]);
       expect(block).toContain('var _t1 = null! as string;');
       expect(block).toContain('_t1 = ((this).f)().value();');
-      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
     it('should generate a string field for a select', () => {
-      const block = tcb('<select [field]="f"></select>', [FieldMock]);
+      const block = tcb('<select [formField]="f"></select>', [FieldMock]);
       expect(block).toContain('var _t1 = null! as string;');
       expect(block).toContain('_t1 = ((this).f)().value();');
-      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
     it('should generate a custom value control', () => {
-      const block = tcb('<custom-control [field]="f"/>', [
+      const block = tcb('<custom-control [formField]="f"/>', [
         FieldMock,
         {
           type: 'directive',
@@ -2789,12 +2789,12 @@ describe('type check blocks', () => {
       expect(block).toContain(
         '_t1.value[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
       );
-      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
     it('should generate a custom checkbox control', () => {
-      const block = tcb('<custom-control [field]="f"/>', [
+      const block = tcb('<custom-control [formField]="f"/>', [
         FieldMock,
         {
           type: 'directive',
@@ -2819,12 +2819,12 @@ describe('type check blocks', () => {
       expect(block).toContain(
         '_t1.checked[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
       );
-      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
     it('should add implicit bindings to other field-related inputs on a custom control', () => {
-      const block = tcb('<custom-control [field]="f"/>', [
+      const block = tcb('<custom-control [formField]="f"/>', [
         FieldMock,
         {
           type: 'directive',
@@ -2879,12 +2879,12 @@ describe('type check blocks', () => {
       expect(block).toContain(
         '_t1.name[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = ((((this).f)()).name());',
       );
-      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
 
     it('should produce safe reads for the fields that are optional', () => {
-      const block = tcb('<custom-control [field]="f"/>', [
+      const block = tcb('<custom-control [formField]="f"/>', [
         FieldMock,
         {
           type: 'directive',
@@ -2919,7 +2919,7 @@ describe('type check blocks', () => {
       expect(block).toContain(
         '_t1.max[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = ((0 as any ? (((((this).f)()).max))!() : undefined));',
       );
-      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
   });
