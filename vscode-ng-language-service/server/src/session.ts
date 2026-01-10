@@ -15,6 +15,7 @@ import {
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {promisify} from 'util';
 import {getLanguageService as getHTMLLanguageService} from 'vscode-html-languageservice';
+import {getSCSSLanguageService} from 'vscode-css-languageservice';
 import {TextDocument} from 'vscode-languageserver-textdocument';
 import * as lsp from 'vscode-languageserver/node';
 
@@ -38,7 +39,7 @@ import {
 
 import {readNgCompletionData, tsCompletionEntryToLspCompletionItem} from './completion';
 import {tsDiagnosticToLspDiagnostic} from './diagnostic';
-import {getHTMLVirtualContent} from './embedded_support';
+import {getHTMLVirtualContent, getSCSSVirtualContent, isInlineStyleNode} from './embedded_support';
 import {ServerHost} from './server_host';
 import {documentationToMarkdown} from './text_render';
 import {
@@ -84,6 +85,7 @@ const defaultFormatOptions: ts.FormatCodeSettings = {};
 let defaultPreferences: ts.UserPreferences = {};
 
 const htmlLS = getHTMLLanguageService();
+const scssLS = getSCSSLanguageService();
 
 const alwaysSuppressDiagnostics: number[] = [
   // Diagnostics codes whose errors should always be suppressed, regardless of the options
@@ -1059,7 +1061,18 @@ export class Session {
       0,
       virtualHtmlDocContents,
     );
-    return [...htmlLS.getFoldingRanges(virtualHtmlDoc), ...angularFoldingRanges];
+    const virtualScssDocContents = getSCSSVirtualContent(sf);
+    const virtualScssDoc = TextDocument.create(
+      params.textDocument.uri.toString(),
+      'scss',
+      0,
+      virtualScssDocContents,
+    );
+    return [
+      ...htmlLS.getFoldingRanges(virtualHtmlDoc),
+      ...scssLS.getFoldingRanges(virtualScssDoc),
+      ...angularFoldingRanges,
+    ];
   }
 
   private onDefinition(
@@ -1314,7 +1327,23 @@ export class Session {
     const offset = lspPositionToTsPosition(scriptInfo, params.position);
     const info = languageService.getQuickInfoAtPosition(scriptInfo.fileName, offset);
     if (!info) {
-      return null;
+      const sf = this.getDefaultProjectForScriptInfo(scriptInfo)?.getSourceFile(scriptInfo.path);
+      if (!sf) {
+        return null;
+      }
+      const node = getTokenAtPosition(sf, offset);
+      if (!isInlineStyleNode(node)) {
+        return null;
+      }
+      const virtualScssDocContents = getSCSSVirtualContent(sf);
+      const virtualScssDoc = TextDocument.create(
+        params.textDocument.uri.toString(),
+        'scss',
+        0,
+        virtualScssDocContents,
+      );
+      const stylesheet = scssLS.parseStylesheet(virtualScssDoc);
+      return scssLS.doHover(virtualScssDoc, params.position, stylesheet);
     }
     const {kind, kindModifiers, textSpan, displayParts, documentation, tags} = info;
     let desc = kindModifiers ? kindModifiers + ' ' : '';
@@ -1374,7 +1403,24 @@ export class Session {
       options,
     );
     if (!completions) {
-      return null;
+      const sf = this.getDefaultProjectForScriptInfo(scriptInfo)?.getSourceFile(scriptInfo.path);
+      if (!sf) {
+        return null;
+      }
+      const node = getTokenAtPosition(sf, offset);
+      if (!isInlineStyleNode(node)) {
+        return null;
+      }
+      const virtualScssDocContents = getSCSSVirtualContent(sf);
+      const virtualScssDoc = TextDocument.create(
+        params.textDocument.uri.toString(),
+        'scss',
+        0,
+        virtualScssDocContents,
+      );
+      const stylesheet = scssLS.parseStylesheet(virtualScssDoc);
+      const scssCompletions = scssLS.doComplete(virtualScssDoc, params.position, stylesheet);
+      return scssCompletions.items;
     }
     return completions.entries.map((e) =>
       tsCompletionEntryToLspCompletionItem(e, params.position, scriptInfo),
@@ -1654,4 +1700,17 @@ function generateCommandAndTextEditsFromCodeActions(
     command,
     additionalTextEdits: additionalTextEdits.length ? additionalTextEdits : undefined,
   };
+}
+
+function getTokenAtPosition(sourceFile: ts.SourceFile, position: number): ts.Node {
+  let current: ts.Node = sourceFile;
+  while (true) {
+    const child = current
+      .getChildren(sourceFile)
+      .find((c) => c.getStart(sourceFile) <= position && c.getEnd() > position);
+    if (!child || child.kind === ts.SyntaxKind.EndOfFileToken) {
+      return current;
+    }
+    current = child;
+  }
 }
