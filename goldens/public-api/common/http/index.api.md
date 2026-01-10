@@ -2680,7 +2680,9 @@ export enum HttpFeatureKind {
     // (undocumented)
     NoXsrfProtection = 3,
     // (undocumented)
-    RequestsMadeViaParent = 5
+    RequestsMadeViaParent = 5,
+    // (undocumented)
+    Xhr = 7
 }
 
 // @public
@@ -3329,7 +3331,7 @@ export class JsonpInterceptor {
 // @public
 export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): EnvironmentProviders;
 
-// @public
+// @public @deprecated
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch>;
 
 // @public
@@ -3346,6 +3348,9 @@ export function withNoXsrfProtection(): HttpFeature<HttpFeatureKind.NoXsrfProtec
 
 // @public
 export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.RequestsMadeViaParent>;
+
+// @public
+export function withXhr(): HttpFeature<HttpFeatureKind.Xhr>;
 
 // @public
 export function withXsrfConfiguration({ cookieName, headerName, }: {
