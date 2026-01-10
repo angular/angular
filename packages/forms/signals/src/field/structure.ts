@@ -11,10 +11,10 @@ import {
   DestroyableInjector,
   Injector,
   linkedSignal,
+  ɵRuntimeError as RuntimeError,
   Signal,
   untracked,
   WritableSignal,
-  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
 import {SignalFormsErrorCode} from '../errors';
@@ -100,7 +100,7 @@ export abstract class FieldNodeStructure {
   }
 
   /** Gets the child fields of this field. */
-  children(): Iterable<FieldNode> {
+  children(): readonly FieldNode[] {
     const map = this.childrenMap();
     if (map === undefined) {
       return [];

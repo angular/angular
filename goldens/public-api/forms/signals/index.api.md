@@ -130,6 +130,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     // (undocumented)
     readonly errors: Signal<ValidationError.WithField[]>;
     readonly errorSummary: Signal<ValidationError.WithField[]>;
+    focusBoundControl(): void;
     readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
@@ -174,6 +175,7 @@ export class FormField<T> {
     };
     // (undocumented)
     readonly element: HTMLElement;
+    focus?(): void;
     // (undocumented)
     readonly formField: i0.InputSignal<FieldTree<T>>;
     protected getOrCreateNgControl(): InteropNgControl;
