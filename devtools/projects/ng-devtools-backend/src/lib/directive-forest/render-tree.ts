@@ -9,29 +9,46 @@
 import {
   ɵFrameworkAgnosticGlobalUtils as FrameworkAgnosticGlobalUtils,
   ɵDeferBlockData as DeferBlockData,
+  ɵForLoopBlockData as ForLoopBlockData,
   ɵHydratedNode as HydrationNode,
 } from '@angular/core';
 import {CurrentDeferBlock, HydrationStatus} from '../../../../protocol';
 
 import {ComponentTreeNode} from '../interfaces';
 import {ngDebugClient} from '../ng-debug-api/ng-debug-api';
+import {serializeValue} from '../state-serializer/state-serializer';
 import {isCustomElement} from '../utils';
+
+interface TreeExtractionContext {
+  deferBlocks: DeferBlocksIterator;
+  forLoopBlocks: ForLoopBlocksIterator;
+  rootId: number;
+  getComponent?: FrameworkAgnosticGlobalUtils['getComponent'];
+  getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'];
+  getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'];
+}
+
+function extractChildrenFromNodes(
+  rootNodes: Node[],
+  result: ComponentTreeNode[],
+  ctx: TreeExtractionContext,
+): void {
+  for (const child of rootNodes) {
+    extractViewTree(child, result, ctx);
+  }
+}
 
 const extractViewTree = (
   domNode: Node | Element,
   result: ComponentTreeNode[],
-  deferBlocks: DeferBlocksIterator,
-  rootId: number,
-  getComponent?: FrameworkAgnosticGlobalUtils['getComponent'],
-  getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'],
-  getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'],
+  ctx: TreeExtractionContext,
 ): ComponentTreeNode[] => {
   // Ignore DOM Node if it came from a different frame. Use instanceof Node to check this.
   if (!(domNode instanceof Node)) {
     return result;
   }
 
-  const directives = getDirectives?.(domNode) ?? [];
+  const directives = ctx.getDirectives?.(domNode) ?? [];
   if (!directives.length && !(domNode instanceof Element)) {
     return result;
   }
@@ -48,6 +65,7 @@ const extractViewTree = (
     nativeElement: domNode,
     hydration: hydrationStatus(domNode),
     defer: null,
+    forLoop: null,
   };
 
   if (!(domNode instanceof Element)) {
@@ -57,12 +75,12 @@ const extractViewTree = (
   }
 
   const isDehydratedElement = componentTreeNode.hydration?.status === 'dehydrated';
-  const component = getComponent?.(domNode);
+  const component = ctx.getComponent?.(domNode);
   if (component) {
     componentTreeNode.component = {
       instance: component,
       isElement: isCustomElement(domNode),
-      name: getDirectiveMetadata?.(component)?.name ?? domNode.nodeName.toLowerCase(),
+      name: ctx.getDirectiveMetadata?.(component)?.name ?? domNode.nodeName.toLowerCase(),
     };
   }
 
@@ -71,103 +89,154 @@ const extractViewTree = (
     result.push(componentTreeNode);
   }
 
-  // Nodes that are part of a defer block will be added as children of the defer block
+  // Nodes that are part of a defer block or for loop will be added as children of the block
   // and should be skipped from the regular code path
-  const deferredNodesToSkip = new Set<Node>();
+  const nodesToSkip = new Set<Node>();
   const appendTo = isDisplayableNode ? componentTreeNode.children : result;
 
   domNode.childNodes.forEach((node) => {
-    groupDeferChildrenIfNeeded(
-      node,
-      deferredNodesToSkip,
-      appendTo,
-      deferBlocks,
-      rootId,
-      getComponent,
-      getDirectives,
-      getDirectiveMetadata,
-    );
-
-    if (!deferredNodesToSkip.has(node)) {
-      extractViewTree(
-        node,
-        appendTo,
-        deferBlocks,
-        rootId,
-        getComponent,
-        getDirectives,
-        getDirectiveMetadata,
-      );
+    if (nodesToSkip.has(node)) {
+      return;
     }
+
+    if (groupDeferChildrenIfNeeded(node, nodesToSkip, appendTo, ctx)) {
+      return;
+    }
+
+    if (groupForLoopChildrenIfNeeded(node, nodesToSkip, appendTo, ctx)) {
+      return;
+    }
+
+    extractViewTree(node, appendTo, ctx);
   });
 
   return result;
 };
 
 /**
- * Group Nodes under a defer block if they are part of it.
- *
- * @param node
- * @param deferredNodesToSkip Will mutate the set with the nodes that are grouped into the created deferblock.
- * @param deferBlocks
- * @param appendTo
- * @param getComponent
- * @param getDirectives
- * @param getDirectiveMetadata
+ * Creates a synthetic ComponentTreeNode for control flow blocks (@defer, @for).
+ */
+function createControlFlowTreeNode(
+  element: '@defer' | '@for',
+  children: ComponentTreeNode[],
+  defer: ComponentTreeNode['defer'] = null,
+  forLoop: ComponentTreeNode['forLoop'] = null,
+): ComponentTreeNode {
+  return {
+    children,
+    component: null,
+    directives: [],
+    element,
+    nativeElement: undefined,
+    hydration: null,
+    defer,
+    forLoop,
+  };
+}
+
+/**
+ * Groups nodes under a @defer block if the given node is the first child of one.
+ * @returns true if a defer block was created, false otherwise.
  */
 function groupDeferChildrenIfNeeded(
   node: Node,
-  deferredNodesToSkip: Set<Node>,
+  nodesToSkip: Set<Node>,
   appendTo: ComponentTreeNode[],
-  deferBlocks: DeferBlocksIterator,
-  rootId: number,
-  getComponent?: FrameworkAgnosticGlobalUtils['getComponent'],
-  getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'],
-  getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'],
-) {
-  const currentDeferBlock = deferBlocks.currentBlock;
-  const isFirstDefferedChild = node === currentDeferBlock?.rootNodes[0];
-  if (isFirstDefferedChild) {
-    deferBlocks.advance();
-
-    // When encountering the first child of a defer block
-    // We create a synthetic TreeNode reprensenting the defer block
-    const childrenTree: ComponentTreeNode[] = [];
-    currentDeferBlock.rootNodes.forEach((child) => {
-      extractViewTree(
-        child,
-        childrenTree,
-        deferBlocks,
-        rootId,
-        getComponent,
-        getDirectives,
-        getDirectiveMetadata,
-      );
-    });
-
-    const deferBlockTreeNode = {
-      children: childrenTree,
-      component: null,
-      directives: [],
-      element: '@defer',
-      nativeElement: undefined,
-      hydration: null,
-      defer: {
-        id: `deferId-${rootId}-${deferBlocks.currentIndex}`,
-        state: currentDeferBlock.state,
-        currentBlock: currentBlock(currentDeferBlock),
-        triggers: groupTriggers(currentDeferBlock.triggers),
-        blocks: {
-          hasErrorBlock: currentDeferBlock.hasErrorBlock,
-          placeholderBlock: currentDeferBlock.placeholderBlock,
-          loadingBlock: currentDeferBlock.loadingBlock,
-        },
-      },
-    } satisfies ComponentTreeNode;
-
-    currentDeferBlock?.rootNodes.forEach((child) => deferredNodesToSkip.add(child));
-    appendTo.push(deferBlockTreeNode);
+  ctx: TreeExtractionContext,
+): boolean {
+  const currentDeferBlock = ctx.deferBlocks.currentBlock;
+  if (node !== currentDeferBlock?.rootNodes[0]) {
+    return false;
   }
+
+  ctx.deferBlocks.advance();
+
+  const childrenTree: ComponentTreeNode[] = [];
+  extractChildrenFromNodes(currentDeferBlock.rootNodes, childrenTree, ctx);
+
+  const deferBlockTreeNode = createControlFlowTreeNode('@defer', childrenTree, {
+    id: `deferId-${ctx.rootId}-${ctx.deferBlocks.currentIndex}`,
+    state: currentDeferBlock.state,
+    currentBlock: currentBlock(currentDeferBlock),
+    triggers: groupTriggers(currentDeferBlock.triggers),
+    blocks: {
+      hasErrorBlock: currentDeferBlock.hasErrorBlock,
+      placeholderBlock: currentDeferBlock.placeholderBlock,
+      loadingBlock: currentDeferBlock.loadingBlock,
+    },
+  });
+
+  currentDeferBlock.rootNodes.forEach((child) => nodesToSkip.add(child));
+  appendTo.push(deferBlockTreeNode);
+  return true;
+}
+
+/**
+ * Groups nodes under a @for loop if the given node is the first child of one.
+ * @returns true if a for loop block was created, false otherwise.
+ */
+function groupForLoopChildrenIfNeeded(
+  node: Node,
+  nodesToSkip: Set<Node>,
+  appendTo: ComponentTreeNode[],
+  ctx: TreeExtractionContext,
+): boolean {
+  const matchingForLoop = ctx.forLoopBlocks.findBlockForNode(node);
+  if (!matchingForLoop) {
+    return false;
+  }
+
+  const childrenTree: ComponentTreeNode[] = [];
+  const processedNodes = new Set<Node>();
+  processForLoopChildren(matchingForLoop.rootNodes, childrenTree, processedNodes, ctx);
+
+  const forLoopTreeNode = createForLoopTreeNode(matchingForLoop, childrenTree, ctx);
+
+  matchingForLoop.rootNodes.forEach((child) => nodesToSkip.add(child));
+  appendTo.push(forLoopTreeNode);
+  return true;
+}
+
+function processForLoopChildren(
+  rootNodes: Node[],
+  result: ComponentTreeNode[],
+  processedNodes: Set<Node>,
+  ctx: TreeExtractionContext,
+): void {
+  for (const child of rootNodes) {
+    if (processedNodes.has(child)) {
+      continue;
+    }
+
+    // Check if this child starts a nested @for loop
+    const nestedForLoop = ctx.forLoopBlocks.findBlockForNode(child);
+    if (nestedForLoop) {
+      nestedForLoop.rootNodes.forEach((n) => processedNodes.add(n));
+
+      const nestedChildren: ComponentTreeNode[] = [];
+      processForLoopChildren(nestedForLoop.rootNodes, nestedChildren, new Set<Node>(), ctx);
+      result.push(createForLoopTreeNode(nestedForLoop, nestedChildren, ctx));
+    } else {
+      processedNodes.add(child);
+      extractViewTree(child, result, ctx);
+    }
+  }
+}
+
+function createForLoopTreeNode(
+  forLoop: ForLoopBlockData,
+  children: ComponentTreeNode[],
+  ctx: TreeExtractionContext,
+): ComponentTreeNode {
+  const serializedItems = forLoop.items.map((item) => serializeValue(item, 5));
+
+  return createControlFlowTreeNode('@for', children, null, {
+    id: `forId-${ctx.rootId}-${ctx.forLoopBlocks.currentIndex}`,
+    itemCount: forLoop.itemCount,
+    hasEmptyBlock: forLoop.hasEmptyBlock,
+    items: serializedItems,
+    trackExpression: forLoop.trackExpression,
+  });
 }
 
 function hydrationStatus(element: Node): HydrationStatus {
@@ -229,16 +298,17 @@ export class RTreeStrategy {
   build(element: Element, rootId: number = 0): ComponentTreeNode[] {
     const ng = ngDebugClient();
     const deferBlocks = ng.ɵgetDeferBlocks?.(element) ?? [];
-
-    return extractViewTree(
-      element,
-      [],
-      new DeferBlocksIterator(deferBlocks),
+    const forLoopBlocks = ng.ɵgetForLoopBlocks?.(element) ?? [];
+    const ctx: TreeExtractionContext = {
+      deferBlocks: new DeferBlocksIterator(deferBlocks),
+      forLoopBlocks: new ForLoopBlocksIterator(forLoopBlocks),
       rootId,
-      ng.getComponent,
-      ng.getDirectives,
-      ng.getDirectiveMetadata,
-    );
+      getComponent: ng.getComponent,
+      getDirectives: ng.getDirectives,
+      getDirectiveMetadata: ng.getDirectiveMetadata,
+    };
+
+    return extractViewTree(element, [], ctx);
   }
 }
 
@@ -251,6 +321,39 @@ class DeferBlocksIterator {
 
   advance() {
     this.currentIndex++;
+  }
+
+  get currentBlock() {
+    return this.blocks[this.currentIndex];
+  }
+}
+
+class ForLoopBlocksIterator {
+  public currentIndex = 0;
+  private blocks: ForLoopBlockData[] = [];
+  private usedBlocks = new Set<number>();
+
+  constructor(blocks: ForLoopBlockData[]) {
+    this.blocks = blocks;
+  }
+
+  advance() {
+    this.currentIndex++;
+  }
+
+  findBlockForNode(node: Node): ForLoopBlockData | null {
+    for (let i = 0; i < this.blocks.length; i++) {
+      if (this.usedBlocks.has(i)) {
+        continue;
+      }
+      const block = this.blocks[i];
+      if (block.rootNodes[0] === node) {
+        this.usedBlocks.add(i);
+        this.currentIndex = i;
+        return block;
+      }
+    }
+    return null;
   }
 
   get currentBlock() {

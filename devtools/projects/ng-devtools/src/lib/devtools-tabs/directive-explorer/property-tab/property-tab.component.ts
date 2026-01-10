@@ -12,6 +12,7 @@ import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../protoco
 import {IndexedNode} from '../directive-forest/index-forest';
 import {PropertyTabHeaderComponent} from './property-tab-header/property-tab-header.component';
 import {DeferViewComponent} from './defer-view/defer-view.component';
+import {ForViewComponent} from './for-view/for-view.component';
 import {PropertyViewComponent} from './property-view/property-view.component';
 import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
 
@@ -19,7 +20,12 @@ import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
   selector: 'ng-property-tab',
   templateUrl: './property-tab.component.html',
   styleUrls: ['./property-tab.component.scss'],
-  imports: [PropertyTabHeaderComponent, PropertyViewComponent, DeferViewComponent],
+  imports: [
+    PropertyTabHeaderComponent,
+    PropertyViewComponent,
+    DeferViewComponent,
+    ForViewComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyTabComponent {

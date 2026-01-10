@@ -82,6 +82,21 @@ export const diff = <T>(
     removedItems.push(record.item);
   });
 
+  // Handle items with same identity but changed content (e.g., @for itemCount changes)
+  // These items are not moved, added, or removed - they stayed in place but their
+  // properties may have updated.
+  differ.forEachIdentityChange((record) => {
+    if (record.currentIndex === null) {
+      return;
+    }
+    Object.keys(b[record.currentIndex] as unknown as {}).forEach((prop) => {
+      if (record.currentIndex === null) {
+        return;
+      }
+      (a[record.currentIndex] as any)[prop] = (b[record.currentIndex] as any)[prop];
+    });
+  });
+
   for (let i = a.length - 1; i >= 0; i--) {
     if (a[i] === null) {
       a.splice(i, 1);
