@@ -825,6 +825,8 @@ export class PristineChangeEvent extends ControlEvent {
     readonly pristine: boolean;
     // (undocumented)
     readonly source: AbstractControl;
+    // (undocumented)
+    readonly all: boolean;
 }
 
 // @public
@@ -923,6 +925,8 @@ export class TouchedChangeEvent extends ControlEvent {
     readonly source: AbstractControl;
     // (undocumented)
     readonly touched: boolean;
+    // (undocumented)
+    readonly all: boolean;
 }
 
 // @public
