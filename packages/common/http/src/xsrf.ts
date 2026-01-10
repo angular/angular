@@ -41,7 +41,6 @@ export const XSRF_DEFAULT_HEADER_NAME = 'X-XSRF-TOKEN';
 export const XSRF_HEADER_NAME = new InjectionToken<string>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'XSRF_HEADER_NAME' : '',
   {
-    providedIn: 'root',
     factory: () => XSRF_DEFAULT_HEADER_NAME,
   },
 );

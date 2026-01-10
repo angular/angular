@@ -31,6 +31,7 @@ import {
 } from './zoneless_scheduling';
 import {TracingService} from '../../application/tracing';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
+import {OnDestroy} from '../lifecycle_hooks';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
 let consecutiveMicrotaskNotifications = 0;
@@ -56,7 +57,7 @@ function trackMicrotaskNotificationForDebugging() {
 }
 
 @Injectable({providedIn: 'root'})
-export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
+export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, OnDestroy {
   private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly appRef = inject(ApplicationRef);
   private readonly taskService = inject(PendingTasksInternal);
