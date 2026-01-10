@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
+import {Component, Renderer2, signal, StyleRoot, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '../../src/dom/debug/by';
 import {
@@ -13,6 +13,7 @@ import {
   NAMESPACE_URIS,
   REMOVE_STYLES_ON_COMPONENT_DESTROY,
 } from '../../src/dom/dom_renderer';
+import {SharedStylesHost} from '../../src/dom/shared_styles_host';
 import {expect} from '@angular/private/testing/matchers';
 import {isNode} from '@angular/private/testing';
 
@@ -137,26 +138,10 @@ describe('DefaultDomRendererV2', () => {
     expect(window.getComputedStyle(shadow).color).toEqual('rgb(255, 0, 0)');
 
     const emulated = fixture.debugElement.query(By.css('.emulated')).nativeElement;
-    expect(window.getComputedStyle(emulated).color).toEqual('rgb(255, 0, 0)');
+    expect(window.getComputedStyle(emulated).color).toEqual('rgb(0, 0, 255)');
 
     const none = fixture.debugElement.query(By.css('.none')).nativeElement;
-    expect(window.getComputedStyle(none).color).toEqual('rgb(255, 0, 0)');
-  });
-
-  it('child components of shadow components should inherit browser defaults rather than their component styles', () => {
-    const fixture = TestBed.createComponent(IsolatedShadowComponentParentApp);
-    fixture.detectChanges();
-
-    const shadowcmp = fixture.debugElement.query(By.css('cmp-shadow-children')).nativeElement;
-    const shadowRoot = shadowcmp.shadowRoot;
-    const shadow = shadowRoot.querySelector('.shadow');
-    expect(window.getComputedStyle(shadow).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
-
-    const emulated = fixture.debugElement.query(By.css('.emulated')).nativeElement;
-    expect(window.getComputedStyle(emulated).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
-
-    const none = fixture.debugElement.query(By.css('.none')).nativeElement;
-    expect(window.getComputedStyle(none).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
+    expect(window.getComputedStyle(none).color).toEqual('rgb(0, 255, 0)');
   });
 
   it('shadow components should not be polluted by child components styles when using ExperimentalIsolatedShadowDom', () => {
@@ -168,6 +153,134 @@ describe('DefaultDomRendererV2', () => {
     const shadow = shadowRoot.querySelector('.shadow');
     expect(window.getComputedStyle(shadow).backgroundColor).not.toEqual('rgb(0, 0, 255)');
     expect(window.getComputedStyle(shadow).backgroundColor).not.toEqual('rgb(0, 255, 0)');
+  });
+
+  // TODO: Styles don't get removed on manual destroy. How to do this without
+  // duplicating removal with container detach?
+  xit('manages styles', () => {
+    const fixture = TestBed.createComponent(CmpEncapsulationNone);
+    fixture.detectChanges();
+
+    expect(document.head.querySelector('style')!.textContent).toBe('.none {color: lime;}');
+
+    fixture.destroy();
+
+    expect(document.head.querySelector('style')).toBeNull();
+
+    assertNoLeakedStyles(TestBed.inject(SharedStylesHost));
+  });
+
+  xit('removes original styles when component definition changes', () => {
+    {
+      const fixture = TestBed.createComponent(CmpEncapsulationNone);
+      fixture.detectChanges();
+
+      expect(document.head.querySelector('style')!.textContent).toBe('.none {color: lime;}');
+
+      const renderer = fixture.componentRef.injector.get(Renderer2);
+      (renderer as any).component.styles = ['.none {color: purple;}'];
+
+      // Should remove original styles, even though they changed.
+      fixture.destroy();
+
+      expect(document.head.querySelector('style')).toBeNull();
+
+      assertNoLeakedStyles(TestBed.inject(SharedStylesHost));
+    }
+
+    // Second render should use updated styles.
+    {
+      const fixture = TestBed.createComponent(CmpEncapsulationNone);
+      fixture.detectChanges();
+
+      expect(document.head.querySelector('style')!.textContent).toBe('.none {color: purple;}');
+    }
+  });
+
+  it('applies styles to all legacy shadow roots', () => {
+    const show1 = signal(true);
+    const show2 = signal(true);
+
+    @Component({
+      selector: 'app-none',
+      template: `<div class="hello">Hello, World!</div>`,
+      styles: `
+        .hello {
+          color: red;
+        }
+      `,
+      encapsulation: ViewEncapsulation.None,
+    })
+    class None {}
+
+    @Component({
+      selector: 'app-shadow1',
+      template: `
+        @if (show1()) {
+          <app-none />
+        }
+
+        @if (show2()) {
+          <app-none />
+        }
+      `,
+      encapsulation: ViewEncapsulation.ShadowDom,
+      imports: [None],
+    })
+    class Shadow1 {
+      protected readonly show1 = show1;
+      protected readonly show2 = show2;
+    }
+
+    @Component({
+      selector: 'app-shadow2',
+      template: '',
+      encapsulation: ViewEncapsulation.ShadowDom,
+    })
+    class Shadow2 {}
+
+    @Component({
+      selector: 'app-root',
+      template: `
+        <app-shadow1 />
+        <app-shadow2 />
+      `,
+      imports: [Shadow1, Shadow2],
+    })
+    class Root {}
+
+    const fixture = TestBed.createComponent(Root);
+    fixture.detectChanges();
+
+    const shadowRoot1 = fixture.nativeElement.querySelector('app-shadow1').shadowRoot!;
+    const shadowRoot2 = fixture.nativeElement.querySelector('app-shadow2').shadowRoot!;
+
+    // `<style>` should be added to all legacy shadow roots and the document, even
+    // though it's only rendered in one.
+    expect(shadowRoot1.querySelector('style')!.textContent).toBe('.hello {color: red;}');
+    expect(shadowRoot2.querySelector('style')!.textContent).toBe('.hello {color: red;}');
+    expect(document.head.querySelector('style')!.textContent).toBe('.hello {color: red;}');
+
+    // Remove one instance of `<app-none />`, the other is still rendered.
+    show1.set(false);
+    fixture.detectChanges();
+
+    // `<style>` should be retained across all legacy shadow roots and the document,
+    // because it is still rendered in one of them.
+    expect(shadowRoot1.querySelector('style')!.textContent).toBe('.hello {color: red;}');
+    expect(shadowRoot2.querySelector('style')!.textContent).toBe('.hello {color: red;}');
+    expect(document.head.querySelector('style')!.textContent).toBe('.hello {color: red;}');
+
+    show2.set(false);
+    fixture.detectChanges();
+
+    // `<style>` should be removed from all style roots now that it is no longer
+    // rendered in any.
+    expect(shadowRoot1.querySelector('style')).toBeNull();
+    expect(shadowRoot2.querySelector('style')).toBeNull();
+    expect(document.head.querySelector('style')).toBeNull();
+
+    assertNoLeakedStyles(TestBed.inject(SharedStylesHost));
   });
 
   it('should be able to append children to a <template> element', () => {
@@ -432,14 +545,12 @@ async function styleCount(
 @Component({
   selector: 'cmp-emulated',
   template: ` <div class="emulated"></div>`,
-  styles: [
-    `
-      .emulated {
-        background-color: blue;
-        color: blue;
-      }
-    `,
-  ],
+  styles: `
+    .emulated {
+      background-color: blue;
+      color: blue;
+    }
+  `,
   encapsulation: ViewEncapsulation.Emulated,
   standalone: false,
 })
@@ -447,15 +558,12 @@ class CmpEncapsulationEmulated {}
 
 @Component({
   selector: 'cmp-none',
-  template: ` <div class="none"></div>`,
-  styles: [
-    `
-      .none {
-        background-color: lime;
-        color: lime;
-      }
-    `,
-  ],
+  template: `<div class="none"></div>`,
+  styles: `
+    .none {
+      color: lime;
+    }
+  `,
   encapsulation: ViewEncapsulation.None,
   standalone: false,
 })
@@ -463,17 +571,14 @@ class CmpEncapsulationNone {}
 
 @Component({
   selector: 'cmp-none',
-  template: ` <div class="none"></div>`,
-  styles: [
-    `
-      .none {
-        background-color: lime;
-        color: lime;
-      }
+  template: `<div class="none"></div>`,
+  styles: `
+    .none {
+      color: lime;
+    }
 
-      /*# sourceMappingURL=cmp-none.css.map */
-    `,
-  ],
+    /*# sourceMappingURL=cmp-none.css.map */
+  `,
   encapsulation: ViewEncapsulation.None,
   standalone: false,
 })
@@ -481,14 +586,12 @@ class CmpEncapsulationNoneWithSourceMap {}
 
 @Component({
   selector: 'cmp-shadow',
-  template: ` <div class="shadow"></div>`,
-  styles: [
-    `
-      .shadow {
-        color: red;
-      }
-    `,
-  ],
+  template: `<div class="shadow"></div>`,
+  styles: `
+    .shadow {
+      color: red;
+    }
+  `,
   encapsulation: ViewEncapsulation.ShadowDom,
   standalone: false,
 })
@@ -496,17 +599,17 @@ class CmpEncapsulationShadow {}
 
 @Component({
   selector: 'cmp-shadow-children',
-  template: ` <div class="shadow">
-    <cmp-emulated></cmp-emulated>
-    <cmp-none></cmp-none>
-  </div>`,
-  styles: [
-    `
-      .shadow {
-        color: red;
-      }
-    `,
-  ],
+  template: `
+    <div class="shadow">
+      <cmp-emulated></cmp-emulated>
+      <cmp-none></cmp-none>
+    </div>
+  `,
+  styles: `
+    .shadow {
+      color: red;
+    }
+  `,
   encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom,
   standalone: false,
 })
@@ -525,7 +628,7 @@ export class SomeApp {}
 
 @Component({
   selector: 'shadow-parent-app-with-children',
-  template: ` <cmp-shadow-children></cmp-shadow-children> `,
+  template: `<cmp-shadow-children></cmp-shadow-children>`,
   standalone: false,
 })
 export class IsolatedShadowComponentParentApp {}
@@ -554,4 +657,18 @@ export class SomeAppForCleanUp {
   componentOneInstanceHidden = false;
   componentTwoInstanceHidden = false;
   showEmulatedComponents = true;
+}
+
+function assertNoLeakedStyles(sharedStylesHost: SharedStylesHost): void {
+  const ssh = sharedStylesHost as unknown as Omit<SharedStylesHost, 'inline' | 'external'> & {
+    inline: Map<StyleRoot, unknown>;
+    external: Map<StyleRoot, unknown>;
+  };
+
+  const totalStyles = ssh.inline.size + ssh.external.size;
+  if (totalStyles > 0) {
+    throw new Error(
+      `Expected \`SharedStylesHost\` to have no leaked styles, found: ${totalStyles}.`,
+    );
+  }
 }

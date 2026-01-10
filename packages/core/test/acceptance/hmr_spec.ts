@@ -23,6 +23,7 @@ import {
   provideZoneChangeDetection,
   QueryList,
   SimpleChanges,
+  StyleRoot,
   Type,
   ViewChild,
   ViewChildren,
@@ -39,6 +40,7 @@ import {clearTranslations, loadTranslations} from '@angular/localize';
 import {computeMsgId} from '@angular/compiler';
 import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
 import {ComponentType} from '../../src/render3';
+import {ɵSharedStylesHost as SharedStylesHost} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
 
 describe('hot module replacement', () => {
@@ -46,7 +48,10 @@ describe('hot module replacement', () => {
     TestBed.configureTestingModule({
       providers: [provideZoneChangeDetection()],
     });
+
+    for (const child of document.body.childNodes) child.remove();
   });
+
   it('should recreate a single usage of a basic component', () => {
     let instance!: ChildCmp;
     const initialMetadata: Component = {
@@ -285,11 +290,11 @@ describe('hot module replacement', () => {
     const getShadowRoot = () => fixture.nativeElement.querySelector('child-cmp').shadowRoot;
 
     markNodesAsCreatedInitially(getShadowRoot());
-    expectHTML(getShadowRoot(), `<style>strong {color: red;}</style>Hello <strong>0</strong>`);
+    expectHTML(getShadowRoot(), `Hello <strong>0</strong><style>strong {color: red;}</style>`);
 
     instance.state = 1;
     fixture.detectChanges();
-    expectHTML(getShadowRoot(), `<style>strong {color: red;}</style>Hello <strong>1</strong>`);
+    expectHTML(getShadowRoot(), `Hello <strong>1</strong><style>strong {color: red;}</style>`);
 
     replaceMetadata(ChildCmp, {
       ...initialMetadata,
@@ -307,6 +312,103 @@ describe('hot module replacement', () => {
       getShadowRoot(),
       `<style>strong {background: pink;}</style>Changed <strong>1</strong>!`,
     );
+
+    fixture.destroy();
+    assertNoLeakedStyles(TestBed.inject(SharedStylesHost));
+  });
+
+  // TODO: `NoneEncapsulationDomRenderer.prototype.removeStyles` skips when animations are running, breaks in full test suite in headless mode.
+  // Don't *think* it's related to rAF throttling.
+  it("should replace a component child's styles within shadow DOM encapsulation", async () => {
+    // Domino doesn't support shadow DOM.
+    if (isNode) {
+      return;
+    }
+
+    const initialMetadata: Component = {
+      selector: 'child-cmp',
+      template: 'Hello <strong>World</strong>!',
+      styles: `strong {color: red;}`,
+      encapsulation: ViewEncapsulation.None,
+    };
+
+    @Component(initialMetadata)
+    class ChildCmp {}
+
+    @Component({
+      template: '<child-cmp/>',
+      encapsulation: ViewEncapsulation.ShadowDom,
+      imports: [ChildCmp],
+    })
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+    const getShadowRoot = () => fixture.nativeElement.shadowRoot;
+
+    expect(getShadowRoot().innerHTML).toContain(`<style>strong {color: red;}</style>`);
+
+    replaceMetadata(ChildCmp, {
+      ...initialMetadata,
+      styles: `strong {background: pink;}`,
+    });
+    fixture.detectChanges();
+
+    expect(getShadowRoot().innerHTML).toContain('<style>strong {background: pink;}</style>');
+    expect(getShadowRoot().innerHTML).not.toContain(`<style>strong {color: red;}</style>`);
+
+    fixture.destroy();
+    assertNoLeakedStyles(TestBed.inject(SharedStylesHost));
+  });
+
+  it('should support components within nested shadow DOM', () => {
+    // Domino doesn't support shadow DOM.
+    if (isNode) {
+      return;
+    }
+
+    @Component({
+      selector: 'child-cmp',
+      template: 'Hello <strong>{{state}}</strong>',
+      styles: `
+        strong {
+          color: red;
+        }
+      `,
+      encapsulation: ViewEncapsulation.ShadowDom,
+    })
+    class ChildCmp {}
+
+    const initialMetadata: Component = {
+      template: '<child-cmp />',
+      styles: `:host {color: red;}`,
+      encapsulation: ViewEncapsulation.ShadowDom,
+      imports: [ChildCmp],
+    };
+
+    @Component(initialMetadata)
+    class RootCmp {}
+
+    const fixture = TestBed.createComponent(RootCmp);
+    fixture.detectChanges();
+
+    // Can't use `fixture.nativeElement` because the host element is recreated
+    // during HMR and `fixture` is not updated.
+    const getShadowRoot = () => document.querySelector('[ng-version]')!.shadowRoot!;
+
+    expect(getShadowRoot().innerHTML).toContain(`<style>:host {color: red;}</style>`);
+
+    replaceMetadata(RootCmp, {
+      ...initialMetadata,
+      styles: `:host {background: pink;}`,
+    });
+    fixture.detectChanges();
+
+    expect(getShadowRoot().innerHTML).toContain('<style>:host {background: pink;}</style>');
+    expect(getShadowRoot().innerHTML).not.toContain(`<style>:host {color: red;}</style>`);
+
+    fixture.destroy();
+    assertNoLeakedStyles(TestBed.inject(SharedStylesHost));
   });
 
   it('should continue binding inputs to a component that is replaced', () => {
@@ -2171,6 +2273,20 @@ describe('hot module replacement', () => {
       if (hasMarker(node)) {
         throw new Error(`Unexpected state: node was *not* re-created: ${(node as any).innerHTML}`);
       }
+    }
+  }
+
+  function assertNoLeakedStyles(sharedStylesHost: SharedStylesHost): void {
+    const ssh = sharedStylesHost as unknown as Omit<SharedStylesHost, 'inline' | 'external'> & {
+      inline: Map<StyleRoot, unknown>;
+      external: Map<StyleRoot, unknown>;
+    };
+
+    const totalStyles = ssh.inline.size + ssh.external.size;
+    if (totalStyles > 0) {
+      throw new Error(
+        `Expected \`SharedStylesHost\` to have no leaked styles, found: ${totalStyles}.`,
+      );
     }
   }
 });

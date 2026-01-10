@@ -15,6 +15,7 @@ import {
   OnDestroy,
   Optional,
   PLATFORM_ID,
+  StyleRoot,
 } from '@angular/core';
 
 /** The style elements attribute name used to set value of `APP_ID` token. */
@@ -25,18 +26,8 @@ const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
  * that contain a given style.
  */
 interface UsageRecord<T> {
-  elements: T[];
+  element: T;
   usage: number;
-}
-
-/**
- * Removes all provided elements from the document.
- * @param elements An array of HTML Elements.
- */
-function removeElements(elements: Iterable<HTMLElement>): void {
-  for (const element of elements) {
-    element.remove();
-  }
 }
 
 /**
@@ -56,15 +47,19 @@ function createStyleElement(style: string, doc: Document): HTMLStyleElement {
  * Searches a DOM document's head element for style elements with a matching application
  * identifier attribute (`ng-app-id`) to the provide identifier and adds usage records for each.
  * @param doc An HTML DOM document instance.
- * @param appId A string containing an Angular application identifer.
- * @param inline A Map object for tracking inline (defined via `styles` in component decorator) style usage.
- * @param external A Map object for tracking external (defined via `styleUrls` in component decorator) style usage.
+ * @param appId A string containing an Angular application identifier.
+ * @param inline Maps individual {@link StyleRoot} objects to a map of CSS style
+ *     source to its `<style>` tag for tracking inline (defined via `styles`
+ *     in component decorator) style usage.
+ * @param external Maps individual {@link StyleRoot} objects to a map of CSS style
+ *     source to its `<link>` tag for tracking external (defined via `styleUrls`
+ *     in component decorator) style usage.
  */
 function addServerStyles(
   doc: Document,
   appId: string,
-  inline: Map<string, UsageRecord<HTMLStyleElement>>,
-  external: Map<string, UsageRecord<HTMLLinkElement>>,
+  inline: Map<StyleRoot, Map<string, UsageRecord<HTMLStyleElement>>>,
+  external: Map<StyleRoot, Map<string, UsageRecord<HTMLLinkElement>>>,
 ): void {
   const elements = doc.head?.querySelectorAll<HTMLStyleElement | HTMLLinkElement>(
     `style[${APP_ID_ATTRIBUTE_NAME}="${appId}"],link[${APP_ID_ATTRIBUTE_NAME}="${appId}"]`,
@@ -74,14 +69,20 @@ function addServerStyles(
     for (const styleElement of elements) {
       styleElement.removeAttribute(APP_ID_ATTRIBUTE_NAME);
       if (styleElement instanceof HTMLLinkElement) {
+        const externalUsages = external.get(doc) ?? new Map<string, UsageRecord<HTMLLinkElement>>();
+        external.set(doc, externalUsages);
+
         // Only use filename from href
         // The href is build time generated with a unique value to prevent duplicates.
-        external.set(styleElement.href.slice(styleElement.href.lastIndexOf('/') + 1), {
+        externalUsages.set(styleElement.href.slice(styleElement.href.lastIndexOf('/') + 1), {
           usage: 0,
-          elements: [styleElement],
+          element: styleElement,
         });
       } else if (styleElement.textContent) {
-        inline.set(styleElement.textContent, {usage: 0, elements: [styleElement]});
+        const inlineUsages = inline.get(doc) ?? new Map<string, UsageRecord<HTMLStyleElement>>();
+        inline.set(doc, inlineUsages);
+
+        inlineUsages.set(styleElement.textContent, {usage: 0, element: styleElement});
       }
     }
   }
@@ -104,21 +105,24 @@ export function createLinkElement(url: string, doc: Document): HTMLLinkElement {
 @Injectable()
 export class SharedStylesHost implements OnDestroy {
   /**
-   * Provides usage information for active inline style content and associated HTML <style> elements.
+   * Provides usage information for active inline style content and associated HTML <style> elements
+   * within a specific {@link StyleRoot}.
    * Embedded styles typically originate from the `styles` metadata of a rendered component.
    */
-  private readonly inline = new Map<string /** content */, UsageRecord<HTMLStyleElement>>();
+  private readonly inline = new Map<
+    StyleRoot,
+    Map<string /** content */, UsageRecord<HTMLStyleElement>>
+  >();
 
   /**
-   * Provides usage information for active external style URLs and the associated HTML <link> elements.
+   * Provides usage information for active external style URLs and the associated HTML <link> elements
+   * within a specific {@link StyleRoot}.
    * External styles typically originate from the `ɵɵExternalStylesFeature` of a rendered component.
    */
-  private readonly external = new Map<string /** URL */, UsageRecord<HTMLLinkElement>>();
-
-  /**
-   * Set of host DOM nodes that will have styles attached.
-   */
-  private readonly hosts = new Set<Node>();
+  private readonly external = new Map<
+    StyleRoot,
+    Map<string /** URL */, UsageRecord<HTMLLinkElement>>
+  >();
 
   constructor(
     @Inject(DOCUMENT) private readonly doc: Document,
@@ -129,103 +133,100 @@ export class SharedStylesHost implements OnDestroy {
     @Inject(PLATFORM_ID) platformId: object = {},
   ) {
     addServerStyles(doc, appId, this.inline, this.external);
-    this.hosts.add(doc.head);
   }
 
   /**
    * Adds embedded styles to the DOM via HTML `style` elements.
    * @param styles An array of style content strings.
    */
-  addStyles(styles: string[], urls?: string[]): void {
+  addStyles(styleRoot: StyleRoot, styles: string[], urls?: string[]): void {
     for (const value of styles) {
-      this.addUsage(value, this.inline, createStyleElement);
+      this.addUsage(styleRoot, value, this.inline, createStyleElement);
     }
 
-    urls?.forEach((value) => this.addUsage(value, this.external, createLinkElement));
+    urls?.forEach((value) => this.addUsage(styleRoot, value, this.external, createLinkElement));
   }
 
   /**
    * Removes embedded styles from the DOM that were added as HTML `style` elements.
    * @param styles An array of style content strings.
    */
-  removeStyles(styles: string[], urls?: string[]): void {
+  removeStyles(styleRoot: StyleRoot, styles: string[], urls?: string[]): void {
     for (const value of styles) {
-      this.removeUsage(value, this.inline);
+      this.removeUsage(styleRoot, value, this.inline);
     }
 
-    urls?.forEach((value) => this.removeUsage(value, this.external));
+    urls?.forEach((value) => this.removeUsage(styleRoot, value, this.external));
   }
 
   protected addUsage<T extends HTMLElement>(
+    styleRoot: StyleRoot,
     value: string,
-    usages: Map<string, UsageRecord<T>>,
+    usages: Map<StyleRoot, Map<string, UsageRecord<T>>>,
     creator: (value: string, doc: Document) => T,
   ): void {
     // Attempt to get any current usage of the value
-    const record = usages.get(value);
+    const rootMap = usages.get(styleRoot) ?? new Map<string, UsageRecord<T>>();
+    usages.set(styleRoot, rootMap);
+    const record = rootMap.get(value);
 
     // If existing, just increment the usage count
     if (record) {
       if ((typeof ngDevMode === 'undefined' || ngDevMode) && record.usage === 0) {
         // A usage count of zero indicates a preexisting server generated style.
         // This attribute is solely used for debugging purposes of SSR style reuse.
-        record.elements.forEach((element) => element.setAttribute('ng-style-reused', ''));
+        record.element.setAttribute('ng-style-reused', '');
       }
       record.usage++;
     } else {
       // Otherwise, create an entry to track the elements and add element for each host
-      usages.set(value, {
+      const styleRootElement = styleRoot instanceof Document ? styleRoot.head : styleRoot;
+      rootMap.set(value, {
         usage: 1,
-        elements: [...this.hosts].map((host) => this.addElement(host, creator(value, this.doc))),
+        element: this.addElement(styleRootElement, creator(value, this.doc)),
       });
     }
   }
 
   protected removeUsage<T extends HTMLElement>(
+    styleRoot: StyleRoot,
     value: string,
-    usages: Map<string, UsageRecord<T>>,
+    usages: Map<StyleRoot, Map<string, UsageRecord<T>>>,
   ): void {
     // Attempt to get any current usage of the value
-    const record = usages.get(value);
+    const rootMap = usages.get(styleRoot);
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && !rootMap) {
+      const styleRootName = styleRoot instanceof ShadowRoot ? styleRoot.host.tagName : 'document';
+      throw new Error(
+        `Attempting to remove styles which are not in the provided \`StyleRoot\`: ${styleRootName}`,
+      );
+    }
+    const record = rootMap!.get(value);
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && !record) {
+      const styleRootName = styleRoot instanceof ShadowRoot ? styleRoot.host.tagName : 'document';
+      throw new Error(
+        `Attempting to remove styles which are not in the provided \`StyleRoot\`: ${styleRootName}`,
+      );
+    }
 
     // If there is a record, reduce the usage count and if no longer used,
     // remove from DOM and delete usage record.
-    if (record) {
-      record.usage--;
-      if (record.usage <= 0) {
-        removeElements(record.elements);
-        usages.delete(value);
-      }
+    record!.usage--;
+    if (record!.usage <= 0) {
+      record!.element.remove();
+      rootMap!.delete(value);
+      if (rootMap!.size === 0) usages.delete(styleRoot);
     }
   }
 
   ngOnDestroy(): void {
-    for (const [, {elements}] of [...this.inline, ...this.external]) {
-      removeElements(elements);
+    for (const usages of [...this.inline.values(), ...this.external.values()]) {
+      for (const {element} of usages.values()) {
+        element.remove();
+      }
     }
-    this.hosts.clear();
-  }
-
-  /**
-   * Adds a host node to the set of style hosts and adds all existing style usage to
-   * the newly added host node.
-   *
-   * This is currently only used for Shadow DOM encapsulation mode.
-   */
-  addHost(hostNode: Node): void {
-    this.hosts.add(hostNode);
-
-    // Add existing styles to new host
-    for (const [style, {elements}] of this.inline) {
-      elements.push(this.addElement(hostNode, createStyleElement(style, this.doc)));
-    }
-    for (const [url, {elements}] of this.external) {
-      elements.push(this.addElement(hostNode, createLinkElement(url, this.doc)));
-    }
-  }
-
-  removeHost(hostNode: Node): void {
-    this.hosts.delete(hostNode);
+    this.inline.clear();
+    this.external.clear();
   }
 
   private addElement<T extends HTMLElement>(host: Node, element: T): T {

@@ -14,6 +14,35 @@ import {getComponentLViewByIndex} from '../render3/util/view_utils';
 import {RendererStyleFlags2, RendererType2} from './api_flags';
 
 /**
+ * A location where CSS stylesheets may be added.
+ *
+ * @publicApi
+ */
+export type StyleRoot = Document | ShadowRoot;
+
+/**
+ * Asserts that the given node is a {@link StyleRoot}. Useful for converting the return value of
+ * {@link Node.prototype.getRootNode} into a {@link StyleRoot}. If the root is a detached node,
+ * this returns `undefined` as there is no meaningful style root to attach styles to.
+ *
+ * @param root The root node of a DOM tree to convert to a {@link StyleRoot}.
+ * @returns The given root as a {@link StyleRoot} if it is a valid root for styles. Otherwise
+ *     returns `undefined`.
+ */
+export function asStyleRoot(root: Node): StyleRoot | undefined {
+  // Need to feature-detect `ShadowRoot` for Node environments where DOM emulation does not
+  // support it.
+  if (
+    root instanceof Document ||
+    (typeof ShadowRoot !== 'undefined' && root instanceof ShadowRoot)
+  ) {
+    return root;
+  }
+
+  return undefined;
+}
+
+/**
  * Creates and initializes a custom renderer that implements the `Renderer2` base class.
  *
  * @publicApi
@@ -240,6 +269,23 @@ export abstract class Renderer2 {
     callback: (event: any) => boolean | void,
     options?: ListenerOptions,
   ): () => void;
+
+  /** The component's internal shadow root if one is used. */
+  shadowRoot?: ShadowRoot;
+
+  /**
+   * Attach any required stylesheets for the associated component to the provided
+   * {@link StyleRoot}. This is called when the component is initially rendered
+   * xor attached to a view.
+   */
+  abstract applyStyles?(styleRoot: StyleRoot): void;
+
+  /**
+   * Detach any required stylesheets for the associated component from the
+   * provided {@link StyleRoot}. This is called when the component is destroyed
+   * xor detached from a view.
+   */
+  abstract removeStyles?(styleRoot: StyleRoot): void;
 
   /**
    * @internal

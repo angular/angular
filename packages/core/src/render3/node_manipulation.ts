@@ -250,6 +250,7 @@ export function detachViewFromDOM(tView: TView, lView: LView) {
  *  - Destroy only called on movement to sibling or movement to parent (laterally or up)
  *
  *  @param rootView The view to destroy
+ * TODO: Relevant?
  */
 export function destroyViewTree(rootView: LView): void {
   // If the view has no children, we can clean it up and return early.

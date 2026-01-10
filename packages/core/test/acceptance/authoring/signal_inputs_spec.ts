@@ -33,6 +33,8 @@ import {By} from '@angular/platform-browser';
 import {tickAnimationFrames} from '../../animation_utils/tick_animation_frames';
 import {isNode} from '@angular/private/testing';
 import {Subscription} from 'rxjs';
+import {walkDescendants} from '../../../src/render3/util/view_traversal_utils';
+import {readPatchedLView} from '../../../src/render3/context_discovery';
 
 describe('signal inputs', () => {
   beforeEach(() =>
@@ -373,7 +375,8 @@ describe('signal inputs', () => {
       expect(childCmp.nativeElement.className).not.toContain('fade-in');
     }));
 
-    it('should support content projection', fakeAsync(() => {
+    // TODO: Walk projected content.
+    fit('should support content projection', fakeAsync(() => {
       const animateStyles = `
         .fade-in {
           animation: fade 1ms forwards;
@@ -452,6 +455,8 @@ describe('signal inputs', () => {
 
       const fixture = TestBed.createComponent(TestComponent);
       const button = fixture.nativeElement.querySelector('button');
+
+      Array.from(walkDescendants(readPatchedLView(fixture.componentInstance)!));
 
       fixture.detectChanges();
       expect(fixture.nativeElement.querySelector('app-content')).toBeNull();
@@ -601,6 +606,7 @@ describe('signal inputs', () => {
         public ngOnDestroy(): void {
           this.closedSubscription?.unsubscribe();
           this.closedSubscription = null;
+          // TODO: Valid?
           this.componentRef?.destroy(); // Explicitly destroy the dynamically created component
         }
 

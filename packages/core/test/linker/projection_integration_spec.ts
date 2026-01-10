@@ -496,8 +496,8 @@ describe('projection', () => {
       const main = TestBed.createComponent(MainComp);
 
       const childNodes = main.nativeElement.childNodes;
-      expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
-      expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
+      expect(childNodes[0]).toHaveText('SIMPLE1(A)div {color: red}');
+      expect(childNodes[1]).toHaveText('SIMPLE2(B)div {color: blue}');
       main.destroy();
     });
   }
