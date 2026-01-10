@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {initMockFileSystem} from '@angular/compiler-cli/private/testing';
 import {LanguageServiceTestEnv, OpenBuffer} from '../testing';
 import {TokenEncodingConsts, TokenType, TokenModifier} from '../src/semantic_tokens';
 
