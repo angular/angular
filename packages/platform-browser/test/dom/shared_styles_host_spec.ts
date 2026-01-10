@@ -62,6 +62,15 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).toEqual('<style nonce="{% nonce %}">a {};</style>');
     });
 
+    it('should not add duplicate style nodes', () => {
+      ssh.addHost(someHost);
+      const styles = ['a {};'];
+      ssh.addStyles(styles);
+      ssh.disableStyles(styles);
+      ssh.addStyles(styles);
+      expect(someHost.innerHTML).toEqual('<style>a {};</style>');
+    });
+
     it(`should reuse SSR generated element`, () => {
       const style = doc.createElement('style');
       style.setAttribute('ng-app-id', 'app-id');
