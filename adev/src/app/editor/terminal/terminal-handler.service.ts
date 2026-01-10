@@ -28,7 +28,15 @@ export class TerminalHandler {
     // Because colors are parsed
     // See https://github.com/xtermjs/xterm.js/blob/854e2736f66ca3e5d3ab5a7b65bf3fd6fba8b707/src/browser/services/ThemeService.ts#L125
     [TerminalType.READONLY]: signal({
-      instance: new Terminal({convertEol: true, disableStdin: true}),
+      instance: new Terminal({
+        convertEol: true,
+        disableStdin: true,
+        theme: {
+          background: '#00000000',
+        },
+        fontFamily: 'courier-new, courier, monospace',
+        fontSize: 15
+      }),
       fitAddon: new FitAddon(),
     }),
     [TerminalType.INTERACTIVE]: signal({
