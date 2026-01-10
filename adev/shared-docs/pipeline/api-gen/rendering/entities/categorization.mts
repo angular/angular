@@ -7,6 +7,7 @@
  */
 
 import {
+  BlockEntry,
   ClassEntry,
   ConstantEntry,
   DecoratorEntry,
@@ -27,6 +28,7 @@ import {
 import {CliCommand} from '../cli-entities.mjs';
 
 import {
+  BlockEntryRenderable,
   ClassEntryRenderable,
   ConstantEntryRenderable,
   DecoratorEntryRenderable,
@@ -105,6 +107,13 @@ export function isFunctionEntry(entry: DocEntryRenderable): entry is FunctionEnt
 export function isFunctionEntry(entry: DocEntry): entry is FunctionEntry;
 export function isFunctionEntry(entry: DocEntry): entry is FunctionEntry {
   return entry.entryType === EntryType.Function;
+}
+
+/** Gets whether the given entry represents a block */
+export function isBlockEntry(entry: DocEntryRenderable): entry is BlockEntryRenderable;
+export function isBlockEntry(entry: DocEntry): entry is BlockEntry;
+export function isBlockEntry(entry: DocEntry): entry is BlockEntry {
+  return entry.entryType === EntryType.Block;
 }
 
 export function isInitializerApiFunctionEntry(
