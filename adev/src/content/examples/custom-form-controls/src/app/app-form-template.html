@@ -1,0 +1,17 @@
+<section class="example-section">
+  <h2>Template-Driven Forms</h2>
+  <form #templateForm="ngForm" (ngSubmit)="submitTemplateReview()">
+    <div class="form-group">
+      <label>Service Rating:</label>
+      <app-rating-input [(ngModel)]="templateRating" name="rating" required />
+    </div>
+
+    <div class="button-group">
+      <button type="submit" [disabled]="templateForm.invalid">Submit Rating</button>
+    </div>
+
+    <div class="form-state">
+      <p>Model Value: {{ templateRating() }}</p>
+    </div>
+  </form>
+</section>

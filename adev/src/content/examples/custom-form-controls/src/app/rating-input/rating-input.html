@@ -1,0 +1,16 @@
+<!-- #docregion -->
+<div class="rating-container">
+  <div class="stars">
+    @for (star of stars; track star) {
+    <button
+      class="star"
+      [class.filled]="star <= rating()"
+      [disabled]="disabled()"
+      (click)="setRating(star)"
+    >
+      {{ star <= rating() ? '★' : '☆' }}
+    </button>
+    }
+  </div>
+</div>
+<!-- #enddocregion -->

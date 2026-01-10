@@ -537,6 +537,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/forms/dynamic-forms',
             category: 'Reactive Forms',
           },
+          {
+            label: 'Custom form controls',
+            path: 'guide/forms/custom-form-controls',
+            contentPath: 'guide/forms/custom-form-controls',
+          },
         ],
       },
       {
