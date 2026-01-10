@@ -169,7 +169,7 @@ TypeScript checks the assignment according to its type system, obeying flags suc
 
 Avoid run-time type errors by providing more specific in-template type requirements to the template type checker.
 Make the input type requirements for your own directives as specific as possible by providing template-guard functions in the directive definition.
-See [Improving template type checking for custom directives](guide/directives/structural-directives#directive-type-checks) in this guide.
+See [Improving template type checking for custom directives](/guide/directives/structural-directives#improving-template-type-checking-for-custom-directives) in this guide.
 
 ### Strict null checks
 
@@ -214,7 +214,7 @@ In the case of the `async` pipe, notice that the expression needs to be wrapped 
 As a library author, you can take several measures to provide an optimal experience for your users.
 First, enabling `strictNullChecks` and including `null` in an input's type, as appropriate, communicates to your consumers whether they can provide a nullable value or not.
 Additionally, it is possible to provide type hints that are specific to the template type checker.
-See [Improving template type checking for custom directives](guide/directives/structural-directives#directive-type-checks), and [Input setter coercion](#input-setter-coercion).
+See [Improving template type checking for custom directives](/guide/directives/structural-directives#improving-template-type-checking-for-custom-directives), and [Input setter coercion](#input-setter-coercion).
 
 ## Input setter coercion
 

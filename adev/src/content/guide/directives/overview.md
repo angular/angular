@@ -32,7 +32,7 @@ HELPFUL: Built-in directives use only public APIs. They do not have special acce
 
 Add or remove multiple CSS classes simultaneously with `ngClass`.
 
-HELPFUL: To add or remove a _single_ class, use [class binding](guide/templates/class-binding) rather than `NgClass`.
+HELPFUL: To add or remove a _single_ class, use [class binding](/guide/templates/binding#css-class-and-style-property-bindings) rather than `NgClass`.
 
 ### Import `NgClass` in the component
 

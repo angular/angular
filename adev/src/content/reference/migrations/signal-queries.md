@@ -2,7 +2,7 @@
 
 Angular introduced improved APIs for queries that are considered
 production ready as of v19.
-Read more about signal queries and their benefits in the [dedicated guide](guide/signals/queries).
+Read more about signal queries and their benefits in the [dedicated guide](guide/components/queries).
 
 To support existing teams that would like to use signal queries, the Angular team
 provides an automated migration that converts existing decorator query fields to the new API.

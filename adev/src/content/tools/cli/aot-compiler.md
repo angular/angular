@@ -297,7 +297,7 @@ The compiler can only create instances of certain classes, supports only core de
 | Compiler action      | Details                                                                                                                                                |
 | :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | New instances        | The compiler only allows metadata that create instances of the class `InjectionToken` from `@angular/core`.                                            |
-| Supported decorators | The compiler only supports metadata for the [Angular decorators in the `@angular/core` module](api/core#decorators).                                   |
+| Supported decorators | The compiler only supports metadata for the [Angular decorators in the `@angular/core` module](/api?type=decorator).                                   |
 | Function calls       | Factory functions must be exported, named functions. The AOT compiler does not support lambda expressions \("arrow functions"\) for factory functions. |
 
 ### Functions and static method calls
@@ -449,7 +449,7 @@ class MyComponent {
 
 Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in the binding expression will never be `undefined`.
 
-For more information about input type narrowing, see [Improving template type checking for custom directives](guide/directives/structural-directives#directive-type-checks).
+For more information about input type narrowing, see [Improving template type checking for custom directives](/guide/directives/structural-directives#improving-template-type-checking-for-custom-directives).
 
 ### Non-null type assertion operator
 

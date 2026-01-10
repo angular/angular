@@ -156,7 +156,7 @@ To provide better customization of our Angular Material components and enable Ma
 
 In v17.2 we shared experimental support for Angular Material 3 and in v18 we graduated it to stable.
 </docs-card>
-<docs-card title="Introduce deferred loading" link="Completed in Q2 2024" href="https://next.angular.dev/guide/defer">
+<docs-card title="Introduce deferred loading" link="Completed in Q2 2024" href="https://next.angular.dev/guide/templates/defer">
 In v17 we shipped deferrable views in developer preview, which provide an ergonomic API for deferred code loading. In v18 we enabled deferrable views for library developers and graduated the API to stable.
 </docs-card>
 <docs-card title="iframe support in Angular DevTools" link="Completed in Q2 2024" href="">

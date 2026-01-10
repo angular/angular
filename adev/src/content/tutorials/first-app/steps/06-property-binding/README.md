@@ -15,7 +15,7 @@ In this lesson, you'll continue the process of sharing data from the parent comp
 
 Property binding enables you to connect a variable to an `Input` in an Angular template. The data is then dynamically bound to the `Input`.
 
-For a more in depth explanation, please refer to the [Property binding](guide/templates/property-binding) guide.
+For a more in depth explanation, please refer to the [Property binding](/guide/templates/binding#css-class-and-style-property-bindings) guide.
 
 <docs-workflow>
 
@@ -46,5 +46,5 @@ SUMMARY: In this lesson, you added a new property binding and passed in a refere
 For more information about the topics covered in this lesson, visit:
 
 <docs-pill-row>
-  <docs-pill href="/guide/templates/property-binding" title="Property binding"/>
+  <docs-pill href="/guide/templates/binding#css-class-and-style-property-bindings" title="Property binding"/>
 </docs-pill-row>

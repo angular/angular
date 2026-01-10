@@ -34,6 +34,12 @@ export function linkRender(this: AdevDocsRenderer, {href, title, tokens}: Tokens
     );
   }
 
+  if (!this.isKnownRoute(href)) {
+    throw new Error(
+      `Link target "${href}" in ${this.context.markdownFilePath} does not exist in the defined guide routes.`,
+    );
+  }
+
   if (insideLink) {
     return this.parser.parseInline(tokens);
   }

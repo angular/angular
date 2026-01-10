@@ -1,0 +1,52 @@
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "js_binary", "js_run_binary")
+
+package(default_visibility = ["//adev:__subpackages__"])
+
+ts_project(
+    name = "generate_routes_lib",
+    srcs = [
+        "generate-routes.mts",
+    ],
+    data = [
+        "//adev/src/assets:docs_api_manifest",
+        "//adev/src/content/tutorials/deferrable-views",
+        "//adev/src/content/tutorials/first-app",
+        "//adev/src/content/tutorials/learn-angular",
+        "//adev/src/content/tutorials/signal-forms",
+        "//adev/src/content/tutorials/signals",
+    ],
+    tsconfig = {
+        "compilerOptions": {
+            "target": "ES2022",
+            "moduleResolution": "node",
+            "types": ["node"],
+            "rootDir": ".",
+            "skipLibCheck": True,
+        },
+    },
+    deps = [
+        "//adev:node_modules/@angular/docs",
+        "//adev:node_modules/@types/node",
+        "//adev/src/app/routing/navigation-entries",
+        "//adev/src/content/reference/errors:route-nav-items",
+        "//adev/src/content/reference/extended-diagnostics:route-nav-items",
+    ],
+)
+
+js_binary(
+    name = "generate_route",
+    data = [
+        "generate-routes.mjs",
+        ":generate_routes_lib",
+        "//adev/src/content:guide_files",
+    ],
+    entry_point = ":generate-routes.mjs",
+)
+
+js_run_binary(
+    name = "run_generate_route",
+    outs = ["defined-routes.json"],
+    chdir = package_name(),
+    tool = ":generate_route",
+)

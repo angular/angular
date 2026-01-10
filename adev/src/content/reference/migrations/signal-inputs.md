@@ -2,7 +2,7 @@
 
 Angular introduced an improved API for inputs that is considered
 production ready as of v19.
-Read more about signal inputs and their benefits in the [dedicated guide](guide/signals/inputs).
+Read more about signal inputs and their benefits in the [dedicated guide](guide/components/inputs).
 
 To support existing teams that would like to use signal inputs, the Angular team
 provides an automated migration that converts `@Input` fields to the new `input()` API.

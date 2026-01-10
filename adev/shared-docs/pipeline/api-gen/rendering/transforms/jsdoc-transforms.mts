@@ -109,6 +109,7 @@ function getHtmlForJsDocText(text: string): string {
   const parsed = parseMarkdown(mdToParse, {
     apiEntries: getSymbolsAsApiEntries(),
     highlighter: getHighlighterInstance(),
+    definedRoutes: [],
   });
   return addApiLinksToHtml(parsed);
 }

@@ -60,4 +60,4 @@ prefetch configurations with a semicolon.
 }
 ```
 
-Learn more in the [defer loading guide](guide/defer).
+Learn more in the [defer loading guide](/guide/templates/defer).

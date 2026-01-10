@@ -25,7 +25,7 @@ Put these main concepts into practice with our in-browser tutorial or build your
 Here are some in-depth guides you might be interested in reading:
 
 <docs-pill-row>
-  <docs-pill title="Components In-depth Guide" href="guide/components/importing" />
+  <docs-pill title="Components In-depth Guide" href="guide/components" />
   <docs-pill title="Template In-depth Guide" href="guide/templates" />
   <docs-pill title="Forms In-depth Guide" href="/guide/forms" />
 </docs-pill-row>
