@@ -2077,10 +2077,10 @@ describe('type check blocks', () => {
 
       const result = tcb(TEMPLATE);
 
-      expect(result).toContain(`if (((this).expr) === 1) { (this).one(); }`);
-      expect(result).toContain(`if (((this).expr) === 2) { (this).two(); }`);
+      expect(result).toContain(`if ((((this).expr)) === 1) { (this).one(); }`);
+      expect(result).toContain(`if ((((this).expr)) === 2) { (this).two(); }`);
       expect(result).toContain(
-        `if (((this).expr) !== 1 && ((this).expr) !== 2) { (this).default(); }`,
+        `if ((((this).expr)) !== 1 && (((this).expr)) !== 2) { (this).default(); }`,
       );
     });
 
@@ -2130,6 +2130,48 @@ describe('type check blocks', () => {
 
       expect(tcb(TEMPLATE, undefined, {checkControlFlowBodies: false})).toContain(
         'switch (((this).expr)) { ' + 'case 1: break; ' + 'case 2: break; ' + 'default: break; }',
+      );
+    });
+
+    it('should generate a switch block with exhaustiveness checking', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @case (2) {
+            {{two()}}
+          }
+          @default {}
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: "" + ((this).one()); break; ' +
+          'case 2: "" + ((this).two()); break; ' +
+          'default: const tcbExhaustive_1: never = ((this).expr); break; }',
+      );
+    });
+
+    it('should not generate exhaustiveness checking when there is a consecutive default case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @case (2)
+          @default {
+            {{default()}}
+          }
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: "" + ((this).one()); break; ' +
+          'case 2: ' +
+          'default: "" + ((this).default()); break; }',
       );
     });
   });

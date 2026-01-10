@@ -7913,8 +7913,11 @@ suppress
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
+        expect(diags.length).toBe(2);
         expect(diags[0].messageText).toBe(
+          `Cannot read @let declaration 'value' before it has been defined.`,
+        );
+        expect(diags[1].messageText).toBe(
           `Cannot read @let declaration 'value' before it has been defined.`,
         );
       });
