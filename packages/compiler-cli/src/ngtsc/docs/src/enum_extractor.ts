@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EntryType, EnumEntry, EnumMemberEntry, MemberType} from './entities';
+import {EntryType, EnumEntry, EnumMemberEntry, MemberType, StatementType} from './entities';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractResolvedTypeString} from './type_extractor';
 import ts from 'typescript';
@@ -23,6 +23,7 @@ export function extractEnum(
     rawComment: extractRawJsDoc(declaration),
     description: extractJsDocDescription(declaration),
     jsdocTags: extractJsDocTags(declaration),
+    statementType: StatementType.Enum,
   };
 }
 

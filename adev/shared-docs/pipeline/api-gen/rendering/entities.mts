@@ -28,6 +28,14 @@ export enum EntryType {
   InitializerApiFunction = 'initializer_api_function',
 }
 
+export enum StatementType {
+  Class = 'class',
+  Interface = 'interface',
+  Function = 'function',
+  Variable = 'variable',
+  Enum = 'enum',
+}
+
 /** Types of class members */
 export enum MemberType {
   Property = 'property',
@@ -88,6 +96,7 @@ export interface DocEntry {
   description: string;
   rawComment: string;
   jsdocTags: JsDocTagEntry[];
+  statementType: StatementType;
 }
 
 /** Documentation entity for a constant. */

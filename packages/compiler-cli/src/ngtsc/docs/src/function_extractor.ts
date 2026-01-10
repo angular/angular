@@ -8,7 +8,13 @@
 
 import ts from 'typescript';
 
-import {EntryType, FunctionEntry, FunctionSignatureMetadata, ParameterEntry} from './entities';
+import {
+  EntryType,
+  FunctionEntry,
+  FunctionSignatureMetadata,
+  ParameterEntry,
+  StatementType,
+} from './entities';
 import {extractGenerics} from './generics_extractor';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractResolvedTypeString} from './type_extractor';
@@ -57,10 +63,12 @@ export class FunctionExtractor {
         name: this.name,
         description,
         entryType: EntryType.Function,
+        statementType: StatementType.Function,
         jsdocTags: jsdocsTags,
         rawComment: extractRawJsDoc(implementation),
       },
       entryType: EntryType.Function,
+      statementType: StatementType.Function,
       description,
       jsdocTags: jsdocsTags,
       rawComment: extractRawJsDoc(implementation),
@@ -90,6 +98,7 @@ function constructorOverloads(
       rawComment: extractRawJsDoc(n),
       generics: extractGenerics(n),
       isNewType: false,
+      statementType: StatementType.Function,
     };
   });
 }
@@ -132,7 +141,11 @@ function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
   return result;
 }
 
-export function extractCallSignatures(name: string, typeChecker: ts.TypeChecker, type: ts.Type) {
+export function extractCallSignatures(
+  name: string,
+  typeChecker: ts.TypeChecker,
+  type: ts.Type,
+): FunctionSignatureMetadata[] {
   return filterSignatureDeclarations(type.getCallSignatures()).map(({decl, signature}) => ({
     name,
     entryType: EntryType.Function,
@@ -143,6 +156,7 @@ export function extractCallSignatures(name: string, typeChecker: ts.TypeChecker,
     params: extractAllParams(decl.parameters, typeChecker),
     rawComment: extractRawJsDoc(decl),
     returnType: extractReturnType(signature, typeChecker),
+    statementType: StatementType.Function,
   }));
 }
 

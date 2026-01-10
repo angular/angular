@@ -7,12 +7,12 @@
  */
 import ts from 'typescript';
 
-import {EntryType} from './entities';
+import {EntryType, StatementType, TypeAliasEntry} from './entities';
 import {extractGenerics} from './generics_extractor';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 
 /** Extract the documentation entry for a type alias. */
-export function extractTypeAlias(declaration: ts.TypeAliasDeclaration) {
+export function extractTypeAlias(declaration: ts.TypeAliasDeclaration): TypeAliasEntry {
   // TODO: this does not yet resolve type queries (`typeof`). We may want to
   //     fix this eventually, but for now it does not appear that any type aliases in
   //     Angular's public API rely on this.
@@ -20,6 +20,7 @@ export function extractTypeAlias(declaration: ts.TypeAliasDeclaration) {
   return {
     name: declaration.name.getText(),
     type: declaration.type.getText(),
+    statementType: StatementType.TypeAlias,
     entryType: EntryType.TypeAlias,
     generics: extractGenerics(declaration),
     rawComment: extractRawJsDoc(declaration),

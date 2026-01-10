@@ -40,6 +40,17 @@ export enum EntryType {
   Namespace = 'namespace',
 }
 
+/** Types of statements */
+export enum StatementType {
+  Class = 'class',
+  Interface = 'interface',
+  Function = 'function',
+  Variable = 'variable',
+  Enum = 'enum',
+  Namespace = 'namespace',
+  TypeAlias = 'type_alias',
+}
+
 /** Types of class members */
 export enum MemberType {
   Property = 'property',
@@ -100,6 +111,7 @@ export interface DocEntry {
   description: string;
   rawComment: string;
   jsdocTags: JsDocTagEntry[];
+  statementType: StatementType;
 }
 
 /** Documentation entity for a constant. */
@@ -166,7 +178,7 @@ export interface FunctionSignatureMetadata extends DocEntry {
   params: ParameterEntry[];
   returnType: string;
   returnDescription?: string;
-
+  statementType: StatementType.Function;
   generics: GenericEntry[];
   isNewType: boolean;
 }

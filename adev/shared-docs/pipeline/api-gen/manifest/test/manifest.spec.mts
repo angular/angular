@@ -7,7 +7,13 @@
  */
 
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
-import {DocEntry, EntryType, FunctionEntry, JsDocTagEntry} from '@angular/compiler-cli';
+import {
+  DocEntry,
+  EntryType,
+  FunctionEntry,
+  JsDocTagEntry,
+  StatementType,
+} from '@angular/compiler-cli';
 import {generateManifest, Manifest} from '../generate_manifest.mjs';
 
 describe('api manifest generation', () => {
@@ -243,6 +249,7 @@ describe('api manifest generation', () => {
                 jsdocTags: [],
                 description: '',
                 entryType: EntryType.Function,
+                statementType: StatementType.Function,
                 params: [],
                 generics: [],
                 isNewType: false,
@@ -254,6 +261,7 @@ describe('api manifest generation', () => {
                 jsdocTags: jsdocTags('deprecated'),
                 description: '',
                 entryType: EntryType.Function,
+                statementType: StatementType.Function,
                 params: [],
                 generics: [],
                 isNewType: false,
@@ -304,6 +312,7 @@ describe('api manifest generation', () => {
                 jsdocTags: jsdocTags('deprecated'),
                 description: '',
                 entryType: EntryType.Function,
+                statementType: StatementType.Function,
                 params: [],
                 generics: [],
                 isNewType: false,
@@ -315,6 +324,7 @@ describe('api manifest generation', () => {
                 jsdocTags: jsdocTags('deprecated'),
                 description: '',
                 entryType: EntryType.Function,
+                statementType: StatementType.Function,
                 params: [],
                 generics: [],
                 isNewType: false,
@@ -458,6 +468,7 @@ function entry(patch: Partial<DocEntry>): DocEntry {
     name: '',
     description: '',
     entryType: EntryType.Constant,
+    statementType: StatementType.Variable,
     jsdocTags: [],
     rawComment: '',
     ...patch,

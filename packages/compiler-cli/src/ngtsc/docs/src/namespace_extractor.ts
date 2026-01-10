@@ -7,7 +7,7 @@
  */
 
 import ts from 'typescript';
-import {DocEntry, EntryType, NamespaceEntry} from './entities';
+import {DocEntry, EntryType, NamespaceEntry, StatementType} from './entities';
 import {FunctionExtractor} from './function_extractor';
 import {extractInterface} from './interface_extractor';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
@@ -61,5 +61,6 @@ export function extractNamespace(
     rawComment: extractRawJsDoc(node),
     jsdocTags: extractJsDocTags(node),
     members,
+    statementType: StatementType.Namespace,
   };
 }

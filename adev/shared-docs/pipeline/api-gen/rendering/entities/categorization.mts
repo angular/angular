@@ -45,15 +45,7 @@ import {HasJsDocTags} from './traits.mjs';
 export function isClassEntry(entry: DocEntryRenderable): entry is ClassEntryRenderable;
 export function isClassEntry(entry: DocEntry): entry is ClassEntry;
 export function isClassEntry(entry: DocEntry): entry is ClassEntry {
-  // TODO: add something like `statementType` to extraction so we don't have to check so many
-  //     entry types here.
-  return (
-    entry.entryType === EntryType.UndecoratedClass ||
-    entry.entryType === EntryType.Component ||
-    entry.entryType === EntryType.Pipe ||
-    entry.entryType === EntryType.NgModule ||
-    entry.entryType === EntryType.Directive
-  );
+  return entry.statementType === 'class';
 }
 
 export function isDecoratorEntry(entry: DocEntryRenderable): entry is DecoratorEntryRenderable;

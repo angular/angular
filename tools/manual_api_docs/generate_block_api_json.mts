@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {
-  DocEntry,
-  DocEntryWithSourceInfo,
-  EntryType,
-  EntryCollection,
+import {
+  type DocEntry,
+  type DocEntryWithSourceInfo,
+  type EntryType,
+  type EntryCollection,
+  type StatementType,
 } from '@angular/compiler-cli/src/ngtsc/docs';
 import {readFileSync, writeFileSync} from 'fs';
 import {basename, join} from 'path';
@@ -33,6 +34,7 @@ function main() {
     return {
       name: `@${basename(sourceFilePath, '.md')}`,
       entryType: 'block' as EntryType.Block,
+      statementType: 'variable' as StatementType.Variable,
       description: filteredContent,
       rawComment: filteredContent,
       source: {
