@@ -411,7 +411,7 @@ export class ImportManager
       namespaceImports.forEach((namespaceImport, moduleName) => {
         const newImport = ts.factory.createImportDeclaration(
           undefined,
-          ts.factory.createImportClause(false, undefined, namespaceImport),
+          ts.factory.createImportClause(undefined, undefined, namespaceImport),
           ts.factory.createStringLiteral(moduleName, useSingleQuotes),
         );
 
@@ -435,7 +435,7 @@ export class ImportManager
           const newImport = ts.factory.createImportDeclaration(
             undefined,
             ts.factory.createImportClause(
-              false,
+              undefined,
               undefined,
               ts.factory.createNamedImports(filteredSpecifiers),
             ),
