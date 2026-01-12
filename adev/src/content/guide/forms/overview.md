@@ -325,3 +325,9 @@ To learn more about template-driven forms, see the following guides:
   <docs-pill href="guide/forms/form-validation#validating-input-in-template-driven-forms" title="Form validation" />
   <docs-pill href="api/forms/NgForm" title="NgForm directive API reference" />
 </docs-pill-row>
+
+To learn more about advanced form topics, see the following guide:
+
+<docs-pill-row>
+  <docs-pill href="guide/forms/custom-form-controls" title="Custom form controls" />
+</docs-pill-row>

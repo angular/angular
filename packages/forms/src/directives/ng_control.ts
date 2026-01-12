@@ -15,6 +15,8 @@ import {ControlValueAccessor} from './control_value_accessor';
  * A base class that all `FormControl`-based directives extend. It binds a `FormControl`
  * object to a DOM element.
  *
+ * @see [Using NgControl](guide/forms/custom-form-controls#using-ngcontrol)
+ *
  * @publicApi
  */
 export abstract class NgControl extends AbstractControlDirective {

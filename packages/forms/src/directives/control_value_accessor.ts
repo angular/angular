@@ -17,6 +17,7 @@ import {Directive, ElementRef, InjectionToken, Renderer2} from '@angular/core';
  * that integrates with Angular forms.
  *
  * @see {@link DefaultValueAccessor}
+ * @see [Custom form controls](guide/forms/custom-form-controls)
  *
  * @publicApi
  */
@@ -208,6 +209,7 @@ export class BuiltInControlValueAccessor extends BaseControlValueAccessor {}
  * Used to provide a `ControlValueAccessor` for form controls.
  *
  * See `DefaultValueAccessor` for how to implement one.
+ * @see [Custom form controls](guide/forms/custom-form-controls)
  *
  * @publicApi
  */

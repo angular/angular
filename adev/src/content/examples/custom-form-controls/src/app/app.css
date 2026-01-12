@@ -1,0 +1,85 @@
+h1 {
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+h2 {
+  color: #555;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.example-section {
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #444;
+}
+
+.error-message {
+  margin-top: 0.5rem;
+  color: #d32f2f;
+  font-size: 0.875rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #1976d2;
+  background-color: #1976d2;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+button:hover:not(:disabled) {
+  background-color: #1565c0;
+}
+
+button:disabled {
+  background-color: #ccc;
+  border-color: #ccc;
+  cursor: not-allowed;
+}
+
+button[type='button'] {
+  background-color: #fff;
+  color: #1976d2;
+}
+
+button[type='button']:hover:not(:disabled) {
+  background-color: #f5f5f5;
+}
+
+.form-state {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+.form-state p {
+  margin: 0.5rem 0;
+}

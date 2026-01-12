@@ -1,0 +1,21 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()"> 
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input id="email" type="email" formControlName="email" class="form-control" />
+    <!-- Error is automatically displayed by the directive -->
+  </div>
+
+  <div class="form-group">
+    <label for="username">Username</label>
+    <input
+      id="username"
+      type="text"
+      formControlName="username"
+      [customErrors]="{minlength: 'Username must be at least 3 characters'}"
+      class="form-control"
+    />
+    <!-- Error is automatically displayed with custom message -->
+  </div>
+
+  <button type="submit" [disabled]="form.invalid">Submit</button>
+</form>

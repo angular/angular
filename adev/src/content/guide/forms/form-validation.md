@@ -344,3 +344,11 @@ new FormControl('', {updateOn: 'blur'});
 By default, Angular disables [native HTML form validation](https://developer.mozilla.org/docs/Web/Guide/HTML/Constraint_validation) by adding the `novalidate` attribute on the enclosing `<form>` and uses directives to match these attributes with validator functions in the framework.
 If you want to use native validation **in combination** with Angular-based validation, you can re-enable it with the `ngNativeValidate` directive.
 See the [API docs](api/forms/NgForm#native-dom-validation-ui) for details.
+
+## Next steps
+
+<docs-pill-row>
+  <docs-pill href="guide/forms/reactive-forms" title="Reactive forms"/>
+  <docs-pill href="guide/forms/dynamic-forms" title="Dynamic forms"/>
+  <docs-pill href="guide/forms/custom-form-controls" title="Custom form controls"/>
+</docs-pill-row>
