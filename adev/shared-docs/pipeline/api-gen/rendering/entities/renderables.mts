@@ -75,7 +75,11 @@ export type PipeEntryRenderable = PipeEntry &
     members: MemberEntryRenderable[];
   };
 
-export type DecoratorEntryRenderable = DecoratorEntry & DocEntryRenderable & HasRenderableToc;
+export type DecoratorEntryRenderable = Omit<DecoratorEntry, 'members'> &
+  DocEntryRenderable &
+  HasRenderableToc & {
+    members: PropertyEntryRenderable[];
+  };
 
 /** Documentation entity for a TypeScript enum augmented transformed content for rendering. */
 export type EnumEntryRenderable = EnumEntry &
@@ -114,6 +118,10 @@ export interface MemberEntryRenderable extends MemberEntry {
   deprecated: {version: string | undefined} | undefined;
   developerPreview: {version: string | undefined} | undefined;
   experimental: {version: string | undefined} | undefined;
+}
+
+export interface PropertyEntryRenderable extends MemberEntryRenderable {
+  type: string;
 }
 
 /** Sub-entry for a class method augmented transformed content for rendering. */
