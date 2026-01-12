@@ -339,9 +339,9 @@ With reactive forms, set the property in the `FormControl` instance.
 new FormControl('', {updateOn: 'blur'});
 ```
 
-## Managing validators dynamically
+## Managing validators dynamically in reactive forms
 
-In complex forms, you may need to add, remove, or modify validators based on user input or application state.
+In complex reactive forms, you may need to add, remove, or modify validators based on user input or application state.
 Angular provides several methods on `AbstractControl` to manage validators at runtime without recreating form controls.
 
 ### Adding and removing validators
