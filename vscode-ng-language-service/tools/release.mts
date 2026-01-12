@@ -241,13 +241,39 @@ async function prepareReleasePullRequest(
  */
 async function generateChangelog(fromVersion: string, toVersion: string): Promise<string> {
   const previousTag = await getPreviousTag(fromVersion);
-  let {stdout: commits} = await exec(
-    `git log --left-only FETCH_HEAD...${previousTag} -E ` +
+
+  // Get all subjects from the previous release to filter out duplicates (cherry-picks).
+  const {stdout: existingSubjectsOutput} = await exec(
+    `git log ${previousTag} -E ` +
       '--grep="^(feat|fix|perf)\\((vscode-extension|language-server|language-service)\\):" ' +
-      '--format="format:- %s ([%h](https://github.com/angular/angular/commit/%H))"',
+      '--format="%s"',
+  );
+  const existingSubjects = new Set(
+    existingSubjectsOutput
+      .trim()
+      .split('\n')
+      .map((s) => s.trim()),
   );
 
-  commits = commits.trim();
+  const {stdout: newCommitsRaw} = await exec(
+    `git log --left-only FETCH_HEAD...${previousTag} -E ` +
+      '--grep="^(feat|fix|perf)\\((vscode-extension|language-server|language-service)\\):" ' +
+      '--format="%s|%h|%H"',
+  );
+
+  const commits = newCommitsRaw
+    .trim()
+    .split('\n')
+    .filter((line) => {
+      if (!line) return false;
+      const [subject, shortHash, hash] = line.split('|');
+      return !existingSubjects.has(subject.trim());
+    })
+    .map((line) => {
+      const [subject, shortHash, hash] = line.split('|');
+      return `- ${subject} ([${shortHash}](https://github.com/angular/angular/commit/${hash}))`;
+    })
+    .join('\n');
 
   const now = new Date();
   const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
