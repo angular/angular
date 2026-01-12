@@ -13,5 +13,5 @@
     "rxjs": "^7.0.0",
     "zone.js": "0.16.0"
   },
-  "packageManager": "pnpm@10.27.0"
+  "packageManager": "pnpm@10.28.0"
 }
