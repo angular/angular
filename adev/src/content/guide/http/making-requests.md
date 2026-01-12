@@ -659,7 +659,7 @@ import { AsyncPipe } from '@angular/common';
     }
   `,
 })
-export class UserProfileComponent {
+export class UserProfile {
   userId = input.required<string>();
   user$!: Observable<User>;
 
