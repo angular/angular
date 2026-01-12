@@ -107,7 +107,7 @@ By default, content queries find only _direct_ children of the component and do 
 
 You can also query for multiple results with the `contentChildren` function.
 
-```angular-ts {highlight: [14, 16, 17, 18, 19, 20]}
+```angular-ts {highlight: [15, 16]}
 @Component({
   selector: 'custom-menu-item',
   /*...*/
