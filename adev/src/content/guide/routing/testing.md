@@ -63,6 +63,7 @@ The following example tests an `authGuard` that allows navigation for authentica
 
 ```ts
 // auth.guard.spec.ts
+import {vi, type Mocked} from 'vitest';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {provideRouter, Router} from '@angular/router';
 import {authGuard} from './auth.guard';
@@ -77,12 +78,11 @@ class ProtectedComponent {}
 class LoginComponent {}
 
 describe('authGuard', () => {
-  let authStore: jasmine.SpyObj<AuthStore>;
+  let authStore: Mocked<AuthStore>;
   let harness: RouterTestingHarness;
 
   async function setup(isAuthenticated: boolean) {
-    authStore = jasmine.createSpyObj('AuthStore', ['isAuthenticated']);
-    authStore.isAuthenticated.and.returnValue(isAuthenticated);
+    authStore = {isAuthenticated: vi.fn().mockReturnValue(isAuthenticated)} as Mocked<AuthStore>;
 
     TestBed.configureTestingModule({
       providers: [
