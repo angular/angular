@@ -9,4 +9,5 @@ export const github = {
   name: 'angular',
   mainBranchName: 'main',
   mergeMode: 'caretaker-only',
+  requireReleaseModeForRelease: true,
 };
