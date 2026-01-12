@@ -12,15 +12,18 @@ import {
   ParameterEntryRenderable,
 } from '../entities/renderables.mjs';
 import {PARAM_KEYWORD_CLASS_NAME, REFERENCE_MEMBER_CARD_ITEM} from '../styling/css-classes.mjs';
+import {CodeSymbol} from './code-symbols';
 import {DeprecatedLabel} from './deprecated-label';
 import {Parameter} from './parameter';
 import {RawHtml} from './raw-html';
-import {CodeSymbol} from './code-symbols';
 
 /**
  * Component to render the method-specific parts of a class's API reference.
  */
-export function ClassMethodInfo(props: {entry: FunctionSignatureMetadataRenderable}) {
+export function ClassMethodInfo(props: {
+  entry: FunctionSignatureMetadataRenderable;
+  hideUsageNotes?: boolean;
+}) {
   const entry = props.entry;
 
   return (
@@ -43,7 +46,7 @@ export function ClassMethodInfo(props: {entry: FunctionSignatureMetadataRenderab
         <span className={PARAM_KEYWORD_CLASS_NAME}>@returns</span>
         <CodeSymbol code={entry.returnType} />
       </div>
-      {entry.htmlUsageNotes ? (
+      {entry.htmlUsageNotes && !props.hideUsageNotes ? (
         <div className={'docs-usage-notes'}>
           <span className={'docs-usage-notes-heading'}>Usage notes</span>
           <RawHtml value={entry.htmlUsageNotes} />
