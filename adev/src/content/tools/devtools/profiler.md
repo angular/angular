@@ -13,7 +13,7 @@ Interact with your application to trigger change detection and generate data Ang
 To finish recording, click the circle again to **Stop recording**.
 
 You can also import an existing recording.
-Read more about this feature in the [Import recording](tools/devtools#import-and-export-recordings) section.
+Read more about this feature in the [Import recording](tools/devtools/profiler#import-and-export-recordings) section.
 
 ## Understand your application's execution
 

@@ -8,8 +8,8 @@
 
 import {readFile, writeFile} from 'fs/promises';
 import path from 'path';
-import {initHighlighter} from '../shared/shiki.mjs';
 import {parseMarkdownAsync} from '../shared/marked/parse.mjs';
+import {initHighlighter} from '../shared/shiki.mjs';
 import {hasUnknownAnchors} from './helpers.mjs';
 
 type ApiManifest = ApiManifestPackage[];
@@ -21,11 +21,32 @@ interface ApiManifestPackage {
 async function main() {
   const [paramFilePath] = process.argv.slice(2);
   const rawParamLines = (await readFile(paramFilePath, {encoding: 'utf8'})).split('\n');
-  const [srcs, outputFilenameExecRootRelativePath, apiManifestPath] = rawParamLines;
+  const [srcs, outputFilenameExecRootRelativePath, apiManifestPath, definedRoutesAsStr] =
+    rawParamLines;
 
   // The highlighter needs to be setup asynchronously
   // so we're doing it at the start of the pipeline
   const highlighter = await initHighlighter();
+
+  let apiManifest: ApiManifest = [];
+  if (!apiManifestPath) {
+    throw new Error(
+      'No API manifest path provided to the markdown parser. Check the failing generate_guides target.',
+    );
+  }
+
+  const apiManifestStr = await readFile(apiManifestPath, {encoding: 'utf8'});
+  apiManifest = JSON.parse(apiManifestStr);
+
+  let definedRoutes: string[] = [];
+  if (!definedRoutesAsStr) {
+    throw new Error(
+      'No defined routes path provided to the markdown parser. Check the failing generate_guides target.',
+    );
+  }
+
+  const definedGuideRoutes = await readFile(definedRoutesAsStr, {encoding: 'utf8'});
+  definedRoutes = JSON.parse(definedGuideRoutes) as string[];
 
   await Promise.all(
     srcs.split(',').map(async (filePath) => {
@@ -33,21 +54,12 @@ async function main() {
         throw new Error(`Input file "${filePath}" does not end in a ".md" file extension.`);
       }
 
-      let apiManifest: ApiManifest = [];
-      if (apiManifestPath) {
-        try {
-          const apiManifestStr = await readFile(apiManifestPath, {encoding: 'utf8'});
-          apiManifest = JSON.parse(apiManifestStr);
-        } catch (error) {
-          console.warn('Failed to load API entries:', error);
-        }
-      }
-
       const markdownContent = await readFile(filePath, {encoding: 'utf8'});
       const htmlOutputContent = await parseMarkdownAsync(markdownContent, {
         markdownFilePath: filePath,
         apiEntries: mapManifestToEntries(apiManifest),
         highlighter,
+        definedRoutes,
       });
 
       // The expected file name structure is the [name of the file].md.html.
