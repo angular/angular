@@ -834,7 +834,7 @@ describe('standalone components, directives, and pipes', () => {
     });
 
     it('should allow extending a regular component and turn it into a standalone one', () => {
-      @Component({selector: 'standalone', template: 'standalone: {{in}}'})
+      @Component({selector: 'standalone', template: 'standalone: {{input}}'})
       class StandaloneCmp {
         @Input() input: string | undefined;
       }
