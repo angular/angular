@@ -23,11 +23,11 @@ Instead of defining each state-to-state transition pair, any transition to `clos
 
 This allows the addition of new states without having to include separate transitions for each one.
 
-<docs-code header="open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" region="trigger-wildcard1"/>
+<docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="trigger-wildcard1"/>
 
 Use a double arrow syntax to specify state-to-state transitions in both directions.
 
-<docs-code header="open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" region="trigger-wildcard2"/>
+<docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="trigger-wildcard2"/>
 
 ### Use wildcard state with multiple transition states
 
@@ -37,7 +37,7 @@ If the button can change from `open` to either `closed` or something like `inPro
 
 <img alt="wildcard state with 3 states" src="assets/images/guide/animations/wildcard-3-states.png">
 
-<docs-code header="open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" region="trigger-transition"/>
+<docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="trigger-transition"/>
 
 The `* => *` transition applies when any change between two states takes place.
 
@@ -52,7 +52,7 @@ To do this, list the more specific transitions _before_ `* => *`.
 Use the wildcard `*` with a style to tell the animation to use whatever the current style value is, and animate with that.
 Wildcard is a fallback value that's used if the state being animated isn't declared within the trigger.
 
-<docs-code header="open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" region="transition4"/>
+<docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="transition4"/>
 
 ### Void state
 
@@ -76,7 +76,7 @@ Add a new behavior:
 - When you add a hero to the list of heroes, it appears to fly onto the page from the left
 - When you remove a hero from the list, it appears to fly out to the right
 
-<docs-code header="hero-list-enter-leave.component.ts" path="adev/src/content/examples/animations/src/app/hero-list-enter-leave.component.ts" region="animationdef"/>
+<docs-code header="hero-list-enter-leave.ts" path="adev/src/content/examples/animations/src/app/hero-list-enter-leave.ts" region="animationdef"/>
 
 In the preceding code, you applied the `void` state when the HTML element isn't attached to a view.
 
@@ -105,11 +105,11 @@ As a rule of thumb consider that any element being added to the DOM by Angular p
 This example has a special trigger for the enter and leave animation called `myInsertRemoveTrigger`.
 The HTML template contains the following code.
 
-<docs-code header="insert-remove.component.html" path="adev/src/content/examples/animations/src/app/insert-remove.component.html" region="insert-remove"/>
+<docs-code header="insert-remove.html" path="adev/src/content/examples/animations/src/app/insert-remove.html" region="insert-remove"/>
 
 In the component file, the `:enter` transition sets an initial opacity of 0. It then animates it to change that opacity to 1 as the element is inserted into the view.
 
-<docs-code header="insert-remove.component.ts" path="adev/src/content/examples/animations/src/app/insert-remove.component.ts" region="enter-leave-trigger"/>
+<docs-code header="insert-remove.ts" path="adev/src/content/examples/animations/src/app/insert-remove.ts" region="enter-leave-trigger"/>
 
 Note that this example doesn't need to use [`state()`](api/animations/state).
 
@@ -121,13 +121,13 @@ Use these to kick off a transition when a numeric value has increased or decreas
 HELPFUL: The following example uses `query()` and `stagger()` methods.
 For more information on these methods, see the [complex sequences](guide/legacy-animations/complex-sequences) page.
 
-<docs-code header="hero-list-page.component.ts" path="adev/src/content/examples/animations/src/app/hero-list-page.component.ts" region="increment"/>
+<docs-code header="hero-list-page.ts" path="adev/src/content/examples/animations/src/app/hero-list-page.ts" region="increment"/>
 
 ## Boolean values in transitions
 
 If a trigger contains a Boolean value as a binding value, then this value can be matched using a `transition()` expression that compares `true` and `false`, or `1` and `0`.
 
-<docs-code header="open-close.component.html" path="adev/src/content/examples/animations/src/app/open-close.component.2.html" region="trigger-boolean"/>
+<docs-code header="open-close.html" path="adev/src/content/examples/animations/src/app/open-close.2.html" region="trigger-boolean"/>
 
 In the code snippet above, the HTML template binds a `<div>` element to a trigger named `openClose` with a status expression of `isOpen`, and with possible values of `true` and `false`.
 This pattern is an alternative to the practice of creating two named states like `open` and `close`.
@@ -136,7 +136,7 @@ Inside the `@Component` metadata under the `animations:` property, when the stat
 In this case, the animation uses whatever height the element already had before the animation started.
 When the element is `closed`, the element gets animated to a height of 0, which makes it invisible.
 
-<docs-code header="open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.2.ts" region="trigger-boolean"/>
+<docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.2.ts" region="trigger-boolean"/>
 
 ## Multiple animation triggers
 
@@ -156,8 +156,8 @@ When true, the `@.disabled` binding prevents all animations from rendering.
 The following code sample shows how to use this feature.
 
 <docs-code-multifile>
-    <docs-code header="open-close.component.html" path="adev/src/content/examples/animations/src/app/open-close.component.4.html" region="toggle-animation"/>
-    <docs-code header="open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.4.ts" region="toggle-animation" language="typescript"/>
+    <docs-code header="open-close.html" path="adev/src/content/examples/animations/src/app/open-close.4.html" region="toggle-animation"/>
+    <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.4.ts" region="toggle-animation" language="typescript"/>
 </docs-code-multifile>
 
 When the `@.disabled` binding is true, the `@childAnimation` trigger doesn't kick off.
@@ -177,7 +177,7 @@ Those elements can still animate.
 
 To turn off all animations for an Angular application, place the `@.disabled` host binding on the topmost Angular component.
 
-<docs-code header="app.component.ts" path="adev/src/content/examples/animations/src/app/app.component.ts" region="toggle-app-animations"/>
+<docs-code header="app.ts" path="adev/src/content/examples/animations/src/app/app.ts" region="toggle-app-animations"/>
 
 HELPFUL: Disabling animations application-wide is useful during end-to-end \(E2E\) testing.
 
@@ -186,12 +186,12 @@ HELPFUL: Disabling animations application-wide is useful during end-to-end \(E2E
 The animation `trigger()` function emits _callbacks_ when it starts and when it finishes.
 The following example features a component that contains an `openClose` trigger.
 
-<docs-code header="open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" region="events1"/>
+<docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="events1"/>
 
 In the HTML template, the animation event is passed back via `$event`, as `@triggerName.start` and `@triggerName.done`, where `triggerName` is the name of the trigger being used.
 In this example, the trigger `openClose` appears as follows.
 
-<docs-code header="open-close.component.html" path="adev/src/content/examples/animations/src/app/open-close.component.3.html" region="callbacks"/>
+<docs-code header="open-close.html" path="adev/src/content/examples/animations/src/app/open-close.3.html" region="callbacks"/>
 
 A potential use for animation callbacks could be to cover for a slow API call, such as a database lookup.
 For example, an **InProgress** button can be set up to have its own looping animation while the backend system operation finishes.
@@ -204,7 +204,7 @@ An animation can influence an end user to _perceive_ the operation as faster, ev
 Callbacks can serve as a debugging tool, for example in conjunction with `console.warn()` to view the application's progress in a browser's Developer JavaScript Console.
 The following code snippet creates console log output for the original example, a button with the two states of `open` and `closed`.
 
-<docs-code header="open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" region="events"/>
+<docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="events"/>
 
 ## Keyframes
 
@@ -217,7 +217,7 @@ For example, the button, instead of fading, could change color several times ove
 
 The code for this color change might look like this.
 
-<docs-code header="status-slider.component.ts" path="adev/src/content/examples/animations/src/app/status-slider.component.ts" region="keyframes"/>
+<docs-code header="status-slider.ts" path="adev/src/content/examples/animations/src/app/status-slider.ts" region="keyframes"/>
 
 ### Offset
 
@@ -233,7 +233,7 @@ Specifying an offset of 0.8 for the middle transition in the preceding example m
 
 The code with offsets specified would be as follows.
 
-<docs-code header="status-slider.component.ts" path="adev/src/content/examples/animations/src/app/status-slider.component.ts" region="keyframesWithOffsets"/>
+<docs-code header="status-slider.ts" path="adev/src/content/examples/animations/src/app/status-slider.ts" region="keyframesWithOffsets"/>
 
 You can combine keyframes with `duration`, `delay`, and `easing` within a single animation.
 
@@ -250,7 +250,7 @@ Here's an example of using keyframes to create a pulse effect:
 
 The code snippet for this animation might look like this.
 
-<docs-code header="open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.1.ts" region="trigger"/>
+<docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.1.ts" region="trigger"/>
 
 ### Animatable properties and units
 
@@ -285,7 +285,7 @@ In these cases, you can use a special wildcard `*` property value under `style()
 The following example has a trigger called `shrinkOut`, used when an HTML element leaves the page.
 The animation takes whatever height the element has before it leaves, and animates from that height to zero.
 
-<docs-code header="hero-list-auto.component.ts" path="adev/src/content/examples/animations/src/app/hero-list-auto.component.ts" region="auto-calc"/>
+<docs-code header="hero-list-auto.ts" path="adev/src/content/examples/animations/src/app/hero-list-auto.ts" region="auto-calc"/>
 
 ### Keyframes summary
 
