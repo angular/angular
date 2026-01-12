@@ -40,7 +40,7 @@
   --symbolic-pink: oklch(63.67% 0.254 13.47); // #ff025c
   --symbolic-orange: oklch(64.73% 0.23769984683784018 33.18328352127882); // #fe3700
   --symbolic-yellow: oklch(78.09% 0.163 65.69); // #fd9f28
-  --symbolic-green: oklch(67.83% 0.229 142.73); // #00b80a
+  --symbolic-green: oklch(48% 0.16 145); // #008B38
   --symbolic-cyan: oklch(67.05% 0.1205924489987394 181.34025902203868); // #00ad9a
   --symbolic-magenta: oklch(51.74% 0.25453048882711515 315.26261625862725); // #9c00c8
   --symbolic-teal: oklch(57.59% 0.083 230.58); // #3f82a1
@@ -288,7 +288,7 @@
     var(--full-contrast) 65%
   );
   --symbolic-yellow: color-mix(in srgb, oklch(78.09% 0.163 65.69), var(--full-contrast) 65%);
-  --symbolic-green: color-mix(in srgb, oklch(67.83% 0.229 142.73), var(--full-contrast) 65%);
+  --symbolic-green: color-mix(in srgb, oklch(48% 0.16 145), var(--full-contrast) 65%);
   --symbolic-cyan: color-mix(
     in srgb,
     oklch(67.05% 0.1205924489987394 181.34025902203868),
