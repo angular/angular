@@ -27,5 +27,5 @@
   "scripts": {
     "test": "tsc"
   },
-  "packageManager": "pnpm@10.27.0"
+  "packageManager": "pnpm@10.28.0"
 }
