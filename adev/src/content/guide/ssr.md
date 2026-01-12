@@ -71,11 +71,11 @@ When using the [App shell pattern](ecosystem/service-workers/app-shell), you mus
 
 ```typescript
 import {provideServerRendering, withRoutes, withAppShell} from '@angular/ssr';
-import {AppShellComponent} from './app-shell/app-shell.component';
+import {AppShell} from './app-shell';
 
 const serverConfig: ApplicationConfig = {
   providers: [
-    provideServerRendering(withRoutes(serverRoutes), withAppShell(AppShellComponent)),
+    provideServerRendering(withRoutes(serverRoutes), withAppShell(AppShell)),
     // ... other providers ...
   ],
 };
@@ -433,7 +433,7 @@ By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contai
 import {bootstrapApplication} from '@angular/platform-browser';
 import {provideClientHydration, withHttpTransferCacheOptions} from '@angular/platform-browser';
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [
     provideClientHydration(
       withHttpTransferCacheOptions({
@@ -516,7 +516,7 @@ import {
   withNoHttpTransferCache,
 } from '@angular/platform-browser';
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [provideClientHydration(withNoHttpTransferCache())],
 });
 ```
@@ -532,7 +532,7 @@ import {
   withHttpTransferCacheOptions,
 } from '@angular/platform-browser';
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [
     provideClientHydration(
       withHttpTransferCacheOptions({

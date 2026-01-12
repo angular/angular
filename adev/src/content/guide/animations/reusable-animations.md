@@ -23,7 +23,7 @@ For example, the following snippet exports the animation `trigger`.
 From this point, you can import reusable animation variables in your component class.
 For example, the following code snippet imports the `transitionAnimation` variable and uses it via the `useAnimation()` function.
 
-<docs-code header="open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.3.ts" region="reusable"/>
+<docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.3.ts" region="reusable"/>
 
 ## More on Angular animations
 
