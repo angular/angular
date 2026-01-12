@@ -437,6 +437,7 @@ const prepareForestForSerialization = (
       children: prepareForestForSerialization(node.children, includeResolutionPath),
       hydration: node.hydration,
       defer: node.defer,
+      forLoop: node.forLoop,
       onPush: node.component ? isOnPushDirective(node.component) : false,
 
       // native elements are not serializable
