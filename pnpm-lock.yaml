@@ -342,8 +342,8 @@ importers:
         specifier: 0.2101.0-rc.0
         version: 0.2101.0-rc.0(chokidar@5.0.0)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#5e6b5c157aa13f92ef88a51d87874607f517d30c
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5e6b5c157aa13f92ef88a51d87874607f517d30c(@modelcontextprotocol/sdk@1.25.2)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#50fe5451525482cef45fa98d953f899e92d618ce
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/50fe5451525482cef45fa98d953f899e92d618ce(@modelcontextprotocol/sdk@1.25.2)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.5)
@@ -1698,9 +1698,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5e6b5c157aa13f92ef88a51d87874607f517d30c':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5e6b5c157aa13f92ef88a51d87874607f517d30c}
-    version: 0.0.0-977bc9d747d9ddfe610fc96009212dd14c645ef6
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/50fe5451525482cef45fa98d953f899e92d618ce':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/50fe5451525482cef45fa98d953f899e92d618ce}
+    version: 0.0.0-3ec78dc98edefbf3a324b84d093e66577ea30b29
     hasBin: true
 
   '@angular/ssr@21.1.0-rc.0':
@@ -9404,6 +9404,7 @@ packages:
 
   json-ptr@3.1.1:
     resolution: {integrity: sha512-SiSJQ805W1sDUCD1+/t1/1BIrveq2Fe9HJqENxZmMCILmrPI7WhS/pePpIOx85v6/H2z1Vy7AI08GV2TzfXocg==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
@@ -13951,7 +13952,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5e6b5c157aa13f92ef88a51d87874607f517d30c(@modelcontextprotocol/sdk@1.25.2)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/50fe5451525482cef45fa98d953f899e92d618ce(@modelcontextprotocol/sdk@1.25.2)':
     dependencies:
       '@actions/core': 2.0.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
