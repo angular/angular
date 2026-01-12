@@ -126,9 +126,9 @@ The animations package offered the previously mentioned pattern matching for ent
     <docs-code header="insert-remove.component.css" path="adev/src/content/examples/animations/src/app/animations-package/insert-remove.component.css" />
 </docs-code-multifile>
 
-Here's how the same thing can be accomplished without the animations package using `animate.enter`.
-
 #### With Native CSS
+
+Here's how the same thing can be accomplished without the animations package using `animate.enter`.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/insert.component.ts">
     <docs-code header="insert.component.ts" path="adev/src/content/examples/animations/src/app/native-css/insert.component.ts" />
@@ -136,9 +136,9 @@ Here's how the same thing can be accomplished without the animations package usi
     <docs-code header="insert.component.css" path="adev/src/content/examples/animations/src/app/native-css/insert.component.css"  />
 </docs-code-multifile>
 
-Use `animate.leave` to animate elements as they leave the view, which will apply the specified CSS classes to the element as it leaves the view.
-
 #### With Native CSS
+
+Use `animate.leave` to animate elements as they leave the view, which will apply the specified CSS classes to the element as it leaves the view.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/remove.component.ts">
     <docs-code header="remove.component.ts" path="adev/src/content/examples/animations/src/app/native-css/remove.component.ts" />
