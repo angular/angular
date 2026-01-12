@@ -335,7 +335,7 @@ export class TypicalModule {}
 
 The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
 Review the [source code](https://github.com/angular/angular/blob/main/packages/router/src/router_module.ts#L139 'RouterModule.forRoot source code')
-for these methods to see how macros can simplify configuration of complex [NgModules](guide/ngmodules).
+for these methods to see how macros can simplify configuration of complex [NgModules](guide/ngmodules/overview).
 
 ### Metadata rewriting
 
