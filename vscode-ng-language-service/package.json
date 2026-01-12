@@ -257,7 +257,7 @@
     "test:inspect-common": "bazel run --config=debug //vscode-ng-language-service/common/tests:test",
     "test:inspect-server": "bazel run --config=debug //vscode-ng-language-service/server/src/tests:test",
     "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test",
-    "release": "node tools/release.mts"
+    "release": "tsx tools/release.mts"
   },
   "dependencies": {
     "@angular/language-service": "workspace:*",
