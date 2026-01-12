@@ -10,7 +10,14 @@ import {MemberEntry, MemberTags, MemberType, type DocEntry} from '../entities.mj
 import {isHiddenEntry} from '../entities/categorization.mjs';
 import type {MemberEntryRenderable} from '../entities/renderables.mjs';
 
-import {HasMembers, HasModuleName, HasRenderableMembers, HasRepo} from '../entities/traits.mjs';
+import {
+  HasMembers,
+  HasModuleName,
+  HasPropertyMembers,
+  HasRenderableMembers,
+  HasRenderablePropertyMembers,
+  HasRepo,
+} from '../entities/traits.mjs';
 import {addRenderableCodeToc} from './code-transforms.mjs';
 
 import {
@@ -85,8 +92,7 @@ export async function addRenderableMembers<T extends HasMembers & HasModuleName 
 ): Promise<T & HasRenderableMembers> {
   const members = (
     await Promise.all(
-      // TODO: remove `?? []` when components repo is updated to include members array on type aliases.
-      (entry.members ?? [])
+      entry.members
         .filter((member) => !isHiddenEntry(member))
         .map((member) => {
           if (member.memberType === MemberType.Interface) {
@@ -110,5 +116,13 @@ export async function addRenderableMembers<T extends HasMembers & HasModuleName 
   return {
     ...entry,
     members,
+  };
+}
+
+export async function addRenderablePropertyMembers<
+  T extends HasPropertyMembers & HasModuleName & HasRepo,
+>(entry: T, parentName: string): Promise<T & HasRenderablePropertyMembers> {
+  return {
+    ...((await addRenderableMembers(entry, parentName)) as T & HasRenderablePropertyMembers),
   };
 }
