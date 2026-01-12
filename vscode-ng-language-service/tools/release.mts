@@ -80,7 +80,7 @@ async function main(): Promise<void> {
   }
 
   console.log(chalk.blue(`Releasing from ${branchToReleaseFrom}.`));
-  await exec(`git fetch ${angularRepoRemote} ${branchToReleaseFrom}`);
+  await exec(`git fetch ${angularRepoRemote} ${branchToReleaseFrom} --tags`);
 
   const currentVersion = await getCurrentVersion();
   const newVersion = await getNewVersion(currentVersion);
@@ -240,8 +240,9 @@ async function prepareReleasePullRequest(
  * @param toVersion The version to generate the changelog for.
  */
 async function generateChangelog(fromVersion: string, toVersion: string): Promise<string> {
+  const previousTag = await getPreviousTag(fromVersion);
   let {stdout: commits} = await exec(
-    `git log --left-only FETCH_HEAD...${getTagName(fromVersion)} -E ` +
+    `git log --left-only FETCH_HEAD...${previousTag} -E ` +
       '--grep="^(feat|fix|perf)\\((vscode-extension|language-server|language-service)\\):" ' +
       '--format="format:- %s ([%h](https://github.com/angular/angular/commit/%H))"',
   );
@@ -517,6 +518,40 @@ function getRepoDetails(remoteUrl: string): {owner: string; repo: string} {
     owner: match ? match[1] : 'angular',
     repo: match ? match[2] : 'angular',
   };
+}
+
+/**
+ * Gets the previous tag to version from.
+ *
+ * It checks if the tag for the `currentVersion` exists. If it does, returning it.
+ * If not, it finds the latest tag that adheres to the semver versioning of the extension.
+ */
+async function getPreviousTag(currentVersion: string): Promise<string> {
+  const currentTag = getTagName(currentVersion);
+  try {
+    await exec(`git rev-parse "${currentTag}"`);
+    return currentTag;
+  } catch {
+    // Tag does not exist.
+  }
+
+  const {stdout: tags} = await exec(`git tag --list "${tagPrefix}*"`);
+  const versions = tags
+    .trim()
+    .split('\n')
+    .map((t) => t.trim())
+    .filter((t) => t.startsWith(tagPrefix))
+    .map((t) => t.slice(tagPrefix.length))
+    .filter((v) => semver.valid(v));
+
+  if (versions.length === 0) {
+    throw new Error('No previous release tags found.');
+  }
+
+  // Sort versions in descending order
+  versions.sort((a, b) => semver.rcompare(a, b));
+
+  return getTagName(versions[0]);
 }
 
 /**
