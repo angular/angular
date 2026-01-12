@@ -391,7 +391,10 @@ function notFoundValueOrThrow<T>(
   if (flags & InternalInjectFlags.Optional || notFoundValue !== undefined) {
     return notFoundValue;
   } else {
-    throwProviderNotFoundError(token, 'NodeInjector');
+    throwProviderNotFoundError(
+      token,
+      typeof ngDevMode !== 'undefined' && ngDevMode ? 'NodeInjector' : '',
+    );
   }
 }
 

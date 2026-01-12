@@ -125,7 +125,7 @@ export function ɵcontrolUpdate(): void {
  * @param lView The `LView` that contains the control.
  * @param tNode The `TNode` of the control.
  */
-function updateControl<T>(lView: LView, tNode: TNode): void {
+function updateControl(lView: LView, tNode: TNode): void {
   const fieldDirective = getFieldDirective(tNode, lView);
   if (fieldDirective) {
     updateControlClasses(lView, tNode, fieldDirective);
@@ -148,7 +148,7 @@ function updateControl<T>(lView: LView, tNode: TNode): void {
   nextBindingIndex();
 }
 
-function initializeControlFirstCreatePass<T>(tView: TView, tNode: TNode, lView: LView): void {
+function initializeControlFirstCreatePass(tView: TView, tNode: TNode, lView: LView): void {
   ngDevMode && assertFirstCreatePass(tView);
 
   const directiveIndices = tNode.inputs?.['formField'];
@@ -552,7 +552,6 @@ function updateControlClasses(lView: LView, tNode: TNode, control: ɵFormFieldDi
   if (control.classes) {
     const bindings = getControlBindings(lView);
     bindings.classes ??= {};
-    const state = control.state();
     const renderer = lView[RENDERER];
     const element = getNativeByTNode(tNode, lView) as HTMLElement;
 
