@@ -273,7 +273,7 @@ See [Custom events with outputs](guide/components/outputs) for more details on o
 
 ### Customizing model inputs
 
-You can mark a model input as required or provide an alias in the same way as a [standard input](guide/signals/inputs).
+You can mark a model input as required or provide an alias in the same way as a [standard input](guide/components/inputs).
 
 Model inputs do not support input transforms.
 

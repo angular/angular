@@ -91,7 +91,7 @@ Although tokens used only as type specifiers are removed when converted to JavaS
 When using `inject(CustomOther)`, `CustomOther` is passed as a value argument.
 The token is now in a value position, which causes the tree-shaker to keep the reference.
 
-HELPFUL: Libraries should use [tree-shakable providers](guide/di/dependency-injection#providing-dependency) for all services, providing dependencies at the root level rather than in components or modules.
+HELPFUL: Libraries should use [tree-shakable providers](guide/di/defining-dependency-providers) for all services, providing dependencies at the root level rather than in components or modules.
 
 ## Using lightweight injection tokens
 

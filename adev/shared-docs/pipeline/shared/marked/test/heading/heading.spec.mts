@@ -43,19 +43,26 @@ describe('markdown to html', () => {
     }
   });
 
-  it('increments when multiple duplicate header names are found', () => {
+  // In case there is a valid usecase for duplicate header ids, we should use custom ids (as demonstrated below)
+  it('uses same id when multiple duplicate header names are found', () => {
+    const markdownDocument = JSDOM.fragment(
+      parseMarkdown(
+        `
+## Duplicate Anchor
+## Duplicate Anchor`,
+        rendererContext,
+      ),
+    );
+
     const headers = markdownDocument.querySelectorAll('a.docs-anchor');
-    const knownRefs = new Set<string>();
-    for (const el of headers) {
-      const href = el.getAttribute('href');
-      expect(knownRefs.has(href!)).toBeFalse();
-      knownRefs.add(href!);
-    }
+    expect(headers[0].getAttribute('href')).toBe(headers[1].getAttribute('href'));
   });
 
   it('should remove code block markups', () => {
-    const h2List = markdownDocument.querySelectorAll('h2');
-    const h2 = h2List[3];
+    const markdownDocument = JSDOM.fragment(
+      parseMarkdown('## `myClass.myMethod` is the best', rendererContext),
+    );
+    const h2 = markdownDocument.querySelector('h2')!;
     const h2Anchor = h2?.firstElementChild;
 
     const h2HeaderId = h2?.getAttribute('id');
@@ -66,8 +73,13 @@ describe('markdown to html', () => {
   });
 
   it('should be able to extract non-ascii ids', () => {
-    const h2List = markdownDocument.querySelectorAll('h2');
-    const h2 = h2List[4];
+    const markdownDocument = JSDOM.fragment(
+      parseMarkdown(
+        '## ステップ 2 - アプリケーションのレイアウトに新しいコンポーネントを追加',
+        rendererContext,
+      ),
+    );
+    const h2 = markdownDocument.querySelector('h2')!;
     const h2Anchor = h2?.firstElementChild;
 
     const h2HeaderId = h2?.getAttribute('id');
@@ -80,8 +92,11 @@ describe('markdown to html', () => {
   });
 
   it('should be able to extract custom ids', () => {
-    const h2List = markdownDocument.querySelectorAll('h2');
-    const h2 = h2List[5];
+    const markdownDocument = JSDOM.fragment(
+      parseMarkdown('## My heading {# my-custom-id }', rendererContext),
+    );
+
+    const h2 = markdownDocument.querySelector('h2')!;
     const h2Anchor = h2?.firstElementChild;
 
     const h2HeaderId = h2?.getAttribute('id');
@@ -92,8 +107,10 @@ describe('markdown to html', () => {
   });
 
   it('should be able to parse heading with a valid tag in a code block', () => {
-    const h2List = markdownDocument.querySelectorAll('h2');
-    const h2 = h2List[6];
+    const markdownDocument = JSDOM.fragment(
+      parseMarkdown('## Query for the `<h1>`', rendererContext),
+    );
+    const h2 = markdownDocument.querySelector('h2')!;
 
     // The anchor element should be to only child
     expect(h2.children.length).toBe(1);

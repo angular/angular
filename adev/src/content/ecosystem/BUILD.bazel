@@ -6,12 +6,14 @@ generate_guides(
     srcs = glob([
         "*.md",
     ]),
-    api_manifest = "//adev/src/assets:docs_api_manifest",
     visibility = ["//adev:__subpackages__"],
 )
 
 js_library(
     name = "guide_files",
-    srcs = ["//adev/src/content/ecosystem/rxjs-interop:guide_files"] + glob(["**/*.md"]),
+    srcs = [
+        "//adev/src/content/ecosystem/rxjs-interop:guide_files",
+        "//adev/src/content/ecosystem/service-workers:guide_files",
+    ] + glob(["**/*.md"]),
     visibility = ["//adev:__subpackages__"],
 )

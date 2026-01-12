@@ -22,6 +22,11 @@ def _generate_guides(ctx):
     else:
         args.add("")
 
+    if ctx.attr.defined_routes:
+        args.add(ctx.file.defined_routes.path)
+    else:
+        args.add("")
+
     # Determine the set of html output files. For each input markdown file, produce an html
     # file with the same name (replacing the markdown extension with `.html`).
     html_outputs = []
@@ -39,6 +44,8 @@ def _generate_guides(ctx):
     inputs = ctx.files.srcs + ctx.files.data
     if ctx.attr.api_manifest:
         inputs.append(ctx.file.api_manifest)
+    if ctx.attr.defined_routes:
+        inputs.append(ctx.file.defined_routes)
 
     if (ctx.attr.mermaid_blocks):
         ctx.actions.run(
@@ -84,6 +91,10 @@ generate_guides = rule(
         "api_manifest": attr.label(
             doc = """A file containing API entries to be used in the markdown.""",
             allow_single_file = True,
+        ),
+        "defined_routes": attr.label(
+            doc = """List of defined routes.""",
+            allow_single_file = [".json"],
         ),
         "mermaid_blocks": attr.bool(
             doc = """Whether to transform mermaid blocks.""",
