@@ -131,6 +131,9 @@
       "exportAs": [
         "ngComboboxDialog"
       ],
+      "aliases": [
+        "ngComboboxDialog"
+      ],
       "source": {
         "filePath": "src/aria/combobox/combobox-dialog.ts",
         "startLine": 34,
@@ -208,6 +211,9 @@
       "exportAs": [
         "ngComboboxInput"
       ],
+      "aliases": [
+        "ngComboboxInput"
+      ],
       "source": {
         "filePath": "src/aria/combobox/combobox-input.ts",
         "startLine": 44,
@@ -263,6 +269,9 @@
       "isStandalone": true,
       "selector": "[ngComboboxPopup]",
       "exportAs": [
+        "ngComboboxPopup"
+      ],
+      "aliases": [
         "ngComboboxPopup"
       ],
       "source": {
