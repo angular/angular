@@ -132,6 +132,9 @@
       "exportAs": [
         "ngOption"
       ],
+      "aliases": [
+        "ngOption"
+      ],
       "source": {
         "filePath": "/src/aria/listbox/option.ts",
         "startLine": 34,

@@ -697,6 +697,9 @@
       "isStandalone": true,
       "selector": "ng-template[cdkDragPlaceholder]",
       "exportAs": [],
+      "aliases": [
+        "cdkDragPlaceholder"
+      ],
       "source": {
         "filePath": "/src/cdk/drag-drop/directives/drag-placeholder.ts",
         "startLine": 23,
