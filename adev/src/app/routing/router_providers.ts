@@ -133,7 +133,13 @@ const initializeNavigationAdapter = () => {
     }
     if (e instanceof NavigationStart) {
       intercept = true;
-      window.history.replaceState(window.history.state, '', window.location.href);
+
+      const href = window.location.href;
+
+      if (!href.includes(':~:text=') && window?.history?.replaceState) {
+        window.history.replaceState(window.history.state, '', href);
+      }
+
       intercept = false;
     } else if (
       // viewtransition happens before NavigateEnd
