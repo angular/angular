@@ -132,7 +132,11 @@ function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
   return result;
 }
 
-export function extractCallSignatures(name: string, typeChecker: ts.TypeChecker, type: ts.Type) {
+export function extractCallSignatures(
+  name: string,
+  typeChecker: ts.TypeChecker,
+  type: ts.Type,
+): FunctionSignatureMetadata[] {
   return filterSignatureDeclarations(type.getCallSignatures()).map(({decl, signature}) => ({
     name,
     entryType: EntryType.Function,
