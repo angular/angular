@@ -64,6 +64,9 @@
       "exportAs": [
         "ngTabs"
       ],
+      "aliases": [
+        "ngTabs"
+      ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
         "startLine": 45,
@@ -402,6 +405,9 @@
       "exportAs": [
         "ngTab"
       ],
+      "aliases": [
+        "ngTab"
+      ],
       "source": {
         "filePath": "/src/aria/tabs/tab.ts",
         "startLine": 41,
@@ -662,6 +668,9 @@
       "isStandalone": true,
       "selector": "[ngTabList]",
       "exportAs": [
+        "ngTabList"
+      ],
+      "aliases": [
         "ngTabList"
       ],
       "source": {

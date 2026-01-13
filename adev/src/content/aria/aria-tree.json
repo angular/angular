@@ -382,6 +382,9 @@
       "exportAs": [
         "ngTreeItem"
       ],
+      "aliases": [
+        "ngTreeItem"
+      ],
       "source": {
         "filePath": "/src/aria/tree/tree-item.ts",
         "startLine": 45,
