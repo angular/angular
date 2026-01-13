@@ -2,7 +2,7 @@
   "name": "ng-template",
   "displayName": "Angular Language Service",
   "description": "Editor services for Angular templates",
-  "version": "21.1.0-rc.0",
+  "version": "21.1.0",
   "private": true,
   "publisher": "Angular",
   "icon": "angular.png",
