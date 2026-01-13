@@ -30,6 +30,8 @@ export interface DebugSignalGraphNode {
   label?: string;
   value?: unknown;
   debuggableFn?: () => unknown;
+
+  isInternal?: boolean;
 }
 
 export interface DebugSignalGraphEdge {
@@ -115,6 +117,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         epoch: consumer.version,
         debuggableFn: consumer.computation,
         id,
+        isInternal: (consumer as any).isInternal ?? false,
       });
     } else if (isSignalNode(consumer)) {
       debugSignalGraphNodes.push({
@@ -123,6 +126,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         kind: consumer.kind,
         epoch: consumer.version,
         id,
+        isInternal: (consumer as any).isInternal ?? false,
       });
     } else if (isTemplateEffectNode(consumer)) {
       debugSignalGraphNodes.push({
@@ -133,6 +137,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         // We get the constructor so that `inspect(.constructor)` shows the component class.
         debuggableFn: consumer.lView?.[CONTEXT]?.constructor as (() => unknown) | undefined,
         id,
+        isInternal: (consumer as any).isInternal ?? false,
       });
     } else {
       debugSignalGraphNodes.push({
@@ -140,6 +145,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         kind: consumer.kind,
         epoch: consumer.version,
         id,
+        isInternal: (consumer as any).isInternal ?? false,
       });
     }
 
@@ -148,7 +154,6 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
       edges.push({consumer: consumerIndex, producer: nodes.indexOf(producer)});
     }
   }
-
   return {nodes: debugSignalGraphNodes, edges};
 }
 
