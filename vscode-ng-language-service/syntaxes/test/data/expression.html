@@ -104,3 +104,16 @@ as i }}
 
 <!-- Rest -->
 {{ someFn(1, ...foo, 2, ...bar, 3, ...baz) }}
+
+<!-- Arrow functions -->
+{{ foo => foo + 1 }}
+{{ (foo, bar, baz) => foo + bar + baz }}
+{{ (foo, bar) => [foo, bar, 1, 2] }}
+{{ (foo, bar) => ({foo: 1, bar: 2}) }}
+{{ a => (b, c) => (d, e) => f => a + b + c + d + e + f }}
+{{ ((a, b) => a * b)(2, 3) }}
+{{ [a => a + 1, (b, c) => b + c] }}
+{{ (a, b) =>
+    a / b + 123
+}}
+{{ someSignal.update(prev => prev + 1) }}
