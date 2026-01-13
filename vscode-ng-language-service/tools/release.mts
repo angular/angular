@@ -13,7 +13,7 @@
  */
 
 // tslint:disable:no-console
-import {input} from '@inquirer/prompts';
+import {input, select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import semver from 'semver';
 import {writeFile, readFile} from 'node:fs/promises';
@@ -68,6 +68,8 @@ async function main(): Promise<void> {
 
   // Ensure the user has a clean working directory before starting the release process.
   await checkCleanWorkingDirectory();
+  // Ensure there is a github token before starting the release process.
+  ensureGithubToken();
 
   let branchToReleaseFrom: string | undefined = process.env['BRANCH_TO_RELEASE'];
   if (!branchToReleaseFrom) {
@@ -91,10 +93,13 @@ async function main(): Promise<void> {
   await installDependencies();
   await buildExtension();
 
-  await prepareReleasePullRequest(releaseBranch, `${releaseCommitPrefix}${newVersion}`, [
-    packageJsonPath,
-    changelogPath,
-  ]);
+  const forkRemote = await getForkRemoteName();
+  await prepareReleasePullRequest(
+    releaseBranch,
+    `${releaseCommitPrefix}${newVersion}`,
+    [packageJsonPath, changelogPath],
+    forkRemote,
+  );
   await waitForPRToBeMergedAndTag(newVersion, branchToReleaseFrom);
 
   await publishExtension();
@@ -102,7 +107,7 @@ async function main(): Promise<void> {
   await createGithubRelease(newVersion, changelog);
 
   if (branchToReleaseFrom !== 'main') {
-    await cherryPickChangelog(changelog, newVersion);
+    await cherryPickChangelog(changelog, newVersion, forkRemote);
   }
 
   console.log(chalk.green('VSCode extension release process complete!'));
@@ -216,10 +221,11 @@ async function prepareReleasePullRequest(
   branch: string,
   commitMessage: string,
   files: string[],
+  forkRemote: string,
 ): Promise<void> {
   await exec(`git commit -m "${commitMessage}" "${files.join('" "')}"`);
-  await exec(`git push origin ${branch} --force-with-lease`);
-  const {stdout: remoteUrl} = await exec('git remote get-url origin');
+  await exec(`git push ${forkRemote} ${branch} --force-with-lease`);
+  const {stdout: remoteUrl} = await exec(`git remote get-url ${forkRemote}`);
   const {owner, repo} = getRepoDetails(remoteUrl);
 
   console.log(
@@ -382,6 +388,17 @@ async function buildExtension(): Promise<void> {
   console.log(chalk.green(`VSCode extension packaged at ${extensionPath}`));
 }
 
+function ensureGithubToken(): string {
+  // https://github.com/angular/dev-infra/blob/8ce8257f740613a7291256173e2706fb2ed8aefa/ng-dev/utils/git/github-yargs.ts#L45
+  const token = process.env['GITHUB_TOKEN'] ?? process.env['TOKEN'];
+  if (!token) {
+    throw new Error(
+      'GITHUB_TOKEN nor TOKEN environment variable is not set. Cannot create GitHub release.',
+    );
+  }
+  return token;
+}
+
 /**
  * Creates a GitHub release and uploads the extension asset.
  *
@@ -389,10 +406,7 @@ async function buildExtension(): Promise<void> {
  * @param changelog The changelog content for the release.
  */
 async function createGithubRelease(version: string, changelog: string): Promise<void> {
-  const token = process.env['GITHUB_TOKEN'];
-  if (!token) {
-    throw new Error('GITHUB_TOKEN environment variable is not set. Cannot create GitHub release.');
-  }
+  const token = ensureGithubToken();
 
   console.log(chalk.blue('Creating GitHub release...'));
 
@@ -478,7 +492,11 @@ async function publishExtension(): Promise<void> {
  * @param changelog The changelog content to add.
  * @param newVersion The new version number.
  */
-async function cherryPickChangelog(changelog: string, newVersion: string): Promise<void> {
+async function cherryPickChangelog(
+  changelog: string,
+  newVersion: string,
+  forkRemote: string,
+): Promise<void> {
   console.log(chalk.blue('Cherry-picking changelog to main...'));
 
   await exec(`git fetch ${angularRepoRemote} main`);
@@ -496,6 +514,7 @@ async function cherryPickChangelog(changelog: string, newVersion: string): Promi
     cherryPickBranch,
     `docs: release notes for the vscode extension ${newVersion} release`,
     [changelogPath],
+    forkRemote,
   );
 }
 
@@ -588,6 +607,56 @@ async function getPreviousTag(currentVersion: string): Promise<string> {
  */
 function getTagName(version: string): string {
   return `${tagPrefix}${version}`;
+}
+
+/**
+ * Gets the name of the remote to use as the user's fork.
+ *
+ * This function lists all configured remotes and attempts to identify the user's fork.
+ * - If 'origin' exists and is not the upstream angular repo, it is used.
+ * - If there are other candidates (remotes that are not the upstream angular repo),
+ *   it asks the user to select one if there are multiple.
+ *
+ * @returns The name of the remote to use.
+ */
+async function getForkRemoteName(): Promise<string> {
+  const {stdout} = await exec('git remote -v');
+  const remotes = new Map<string, string>();
+  for (const line of stdout.split('\n')) {
+    const parts = line.split(/\s+/);
+    if (parts.length >= 2) {
+      const [name, url] = parts;
+      remotes.set(name, url);
+    }
+  }
+
+  const candidates: string[] = [];
+  for (const [name, url] of remotes) {
+    if (getRepoDetails(url).owner !== 'angular') {
+      candidates.push(name);
+    }
+  }
+
+  // If origin is a candidate, we prefer it appropriately IF it's likely the user's fork.
+  // The check `getRepoDetails(url).owner !== 'angular'` already filters out upstream.
+  // So if `origin` is in candidates, it's safe to use?
+  // User wanted: "If origin exists and is a candidate ... return 'origin'".
+  if (candidates.includes('origin')) {
+    return 'origin';
+  }
+
+  if (candidates.length === 0) {
+    throw new Error('No suitable fork remote found. Please add a remote for your fork.');
+  }
+
+  if (candidates.length === 1) {
+    return candidates[0];
+  }
+
+  return await select({
+    message: 'Which remote should be used as your fork (to push the release commit to for the PR)?',
+    choices: candidates.map((c) => ({value: c})),
+  });
 }
 
 // Start the release process.
