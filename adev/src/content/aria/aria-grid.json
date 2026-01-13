@@ -52,6 +52,9 @@
       "exportAs": [
         "ngGridRow"
       ],
+      "aliases": [
+        "ngGridRow"
+      ],
       "source": {
         "filePath": "/src/aria/grid/grid-row.ts",
         "startLine": 35,
@@ -266,6 +269,9 @@
       "exportAs": [
         "ngGridCellWidget"
       ],
+      "aliases": [
+        "ngGridCellWidget"
+      ],
       "source": {
         "filePath": "src/aria/grid/grid-cell-widget.ts",
         "startLine": 42,
@@ -432,6 +438,9 @@
       "isStandalone": true,
       "selector": "[ngGrid]",
       "exportAs": [
+        "ngGrid"
+      ],
+      "aliases": [
         "ngGrid"
       ],
       "source": {
@@ -651,6 +660,9 @@
       "isStandalone": true,
       "selector": "[ngGridCell]",
       "exportAs": [
+        "ngGridCell"
+      ],
+      "aliases": [
         "ngGridCell"
       ],
       "source": {
