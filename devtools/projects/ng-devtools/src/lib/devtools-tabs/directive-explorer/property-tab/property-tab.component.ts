@@ -7,13 +7,14 @@
  */
 
 import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
-import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../protocol';
+import {DirectivePosition} from '../../../../../../protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
 import {PropertyTabHeaderComponent} from './property-tab-header/property-tab-header.component';
 import {DeferViewComponent} from './defer-view/defer-view.component';
 import {PropertyViewComponent} from './property-view/property-view.component';
 import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
+import {DevtoolsSignalGraphNode} from '../signal-graph';
 
 @Component({
   selector: 'ng-property-tab',
@@ -27,7 +28,7 @@ export class PropertyTabComponent {
 
   readonly viewSource = output<string>();
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
-  readonly showSignalGraph = output<DebugSignalGraphNode | null>();
+  readonly showSignalGraph = output<DevtoolsSignalGraphNode | null>();
 
   readonly currentDirectives = computed(() => {
     const selected = this.currentSelectedElement();

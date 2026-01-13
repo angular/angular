@@ -9,15 +9,17 @@
 import {ApplicationRef, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {SignalGraphManager} from './signal-graph-manager';
-import {DebugSignalGraph, ElementPosition, Events, MessageBus} from '../../../../../../protocol';
+import {DevtoolsSignalGraph} from './signal-graph-types';
+import {ElementPosition, Events, MessageBus} from '../../../../../../protocol';
 
 type PartialRecord<K extends keyof any, T> = {
   [P in K]?: T;
 };
 
-const dummyGraph: DebugSignalGraph = {
+const dummyGraph: DevtoolsSignalGraph = {
   nodes: [],
   edges: [],
+  clusters: {},
 };
 
 class SgmMockMessageBus extends MessageBus<Events> {

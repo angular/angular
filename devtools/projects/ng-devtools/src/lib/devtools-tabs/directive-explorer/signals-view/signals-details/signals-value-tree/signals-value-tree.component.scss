@@ -4,6 +4,13 @@
   width: 200px;
   display: block;
   overflow-x: auto;
+  padding-inline: 0.5rem;
+  border-radius: 0.25rem;
+  margin-top: 0.75rem;
+  background: var(--nonary-contrast);
+  padding-block: 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--quaternary-contrast) transparent;
 
   mat-tree {
     margin-left: 0.625rem;
@@ -25,7 +32,6 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
   }
 
   .expandable-node {
@@ -49,6 +55,7 @@
 
   .name {
     color: var(--color-tree-node-element-name);
+    margin-right: 0.25rem;
 
     &::after {
       content: ':';

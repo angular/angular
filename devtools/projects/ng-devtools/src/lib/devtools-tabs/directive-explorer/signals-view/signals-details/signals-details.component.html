@@ -1,16 +1,26 @@
 @let node = this.node();
+@let isSignalNode = this.isSignalNode(node);
+@let isClusterNode = this.isClusterNode(node);
 
 <div class="header">
-  <button
-    ng-button
-    size="compact"
-    class="action-btn"
-    (click)="gotoSource.emit(node)"
-    [disabled]="!node.debuggable"
-  >
-    <mat-icon> arrow_outward </mat-icon>
-    View Source
-  </button>
+  @if (isSignalNode) {
+    <button
+      ng-button
+      size="compact"
+      class="action-btn"
+      (click)="gotoSource.emit(node)"
+      [disabled]="!node.debuggable"
+    >
+      <mat-icon> arrow_outward </mat-icon>
+      View Source
+    </button>
+  }
+  @if (isClusterNode) {
+    <button ng-button size="compact" class="action-btn" (click)="expandCluster.emit(node.id)">
+      <mat-icon> expand_content </mat-icon>
+      Expand
+    </button>
+  }
   <button
     ng-button
     btnType="icon"
@@ -27,18 +37,55 @@
     <dt>Name:</dt>
     <dd class="node-name">{{ node.label }}</dd>
   }
-  <dt>Type:</dt>
-  <dd>
-    <span [class]="TYPE_CLASS_MAP[node.kind]" [class.type]="true">{{ node.kind }}</span>
-  </dd>
-  <dt>Epoch:</dt>
-  <dd>{{ node.epoch }}</dd>
+  @if (isSignalNode) {
+    <dt>Type:</dt>
+    <dd>
+      <span [class]="TYPE_CLASS_MAP[node.kind]" class="type">{{ node.kind }}</span>
+    </dd>
+  }
+  @if (isClusterNode) {
+    <dt>Type:</dt>
+    <dd>
+      <span [class]="CLUSTER_TYPE_CLASS_MAP[node.clusterType]" class="type">{{
+        node.clusterType
+      }}</span>
+    </dd>
+  }
+
+  @if (cluster(); as cluster) {
+    <dt>Compound of:</dt>
+    <dd>{{ cluster.name }}</dd>
+    <dt>Compound type:</dt>
+    <dd>
+      <span [class]="CLUSTER_TYPE_CLASS_MAP[cluster.type]" class="type">{{ cluster.type }}</span>
+    </dd>
+  }
+  @if (isSignalNode) {
+    <dt>Epoch:</dt>
+    <dd>{{ node.epoch }}</dd>
+  }
+
+  <!-- Cluster-type-specific properties -->
+  @if (resourceCluster(); as resource) {
+    <dt>Is loading:</dt>
+    <dd>{{ resource.isLoading }}</dd>
+
+    <dt>Status:</dt>
+    <dd>{{ resource.status }}</dd>
+
+    @if (resource.errored) {
+      <dt>Errored:</dt>
+      <dd>{{ resource.errored }}</dd>
+    }
+  }
 </dl>
 
-@if (node.kind === 'signal' || node.kind === 'computed') {
-  @if (node.preview.preview === 'undefined') {
-    <div class="value">undefined</div>
-  } @else {
-    <ng-signals-value-tree [dataSource]="dataSource()" [treeControl]="treeControl()" />
+@let isPreviewable =
+  isSignalNode &&
+  (node.kind === 'signal' || node.kind === 'computed' || node.kind === 'linkedSignal');
+
+@if (isPreviewable || resourceCluster()) {
+  @if (previewableNode(); as previewableNode) {
+    <ng-signals-value-tree [node]="previewableNode" />
   }
 }

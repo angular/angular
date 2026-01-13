@@ -1,0 +1,252 @@
+@use '../../../../../styles/typography' as tg;
+
+/* Keep in sync with signals-visualizer.ts */
+$node-width: 100px;
+$node-height: 60px;
+$node-epoch-anim-duration: 250ms;
+$cluster-expand-anim-duration: 1s;
+
+%animated {
+  opacity: 0;
+  animation-name: fade-in;
+  animation-duration: 200ms;
+  animation-timing-function: ease;
+  animation-delay: $cluster-expand-anim-duration;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+:host {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: white;
+
+    ::ng-deep {
+      foreignObject {
+        overflow: visible;
+      }
+
+      .cluster {
+        & > rect {
+          fill: none;
+          stroke: var(--yellow-01);
+          stroke-width: 1px;
+          rx: 10;
+          ry: 10;
+        }
+
+        text {
+          fill: var(--color-text);
+          font-weight: 500;
+        }
+
+        .cluster-close-btn {
+          cursor: pointer;
+
+          rect {
+            fill: transparent;
+          }
+
+          path {
+            fill: var(--color-text);
+          }
+        }
+      }
+
+      .edge {
+        .path {
+          stroke: var(--gray-500);
+          fill: none;
+          stroke-width: 1px;
+          stroke-dasharray: 5, 5;
+        }
+
+        &.cluster-edge {
+          .path {
+            @extend %animated;
+          }
+        }
+
+        marker > path {
+          fill: var(--gray-500);
+        }
+      }
+
+      .node-label {
+        position: relative;
+        box-sizing: border-box;
+        contain: paint;
+        width: $node-width;
+        height: $node-height;
+        text-align: center;
+        word-wrap: break-word;
+        border-radius: 8px;
+        background-color: var(--gray-400);
+        cursor: pointer;
+        transition: outline-width $node-epoch-anim-duration ease-in-out;
+        outline: 0px solid var(--purple-03);
+
+        &.node-epoch-anim {
+          outline-width: 5px;
+        }
+
+        .header {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          padding: 3px 5px;
+          background-color: var(--gray-500);
+
+          &.special {
+            font-style: italic;
+          }
+        }
+
+        &.cluster-child {
+          @extend %animated;
+
+          &::before {
+            position: absolute;
+            border-radius: 50%;
+            width: 13px;
+            height: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 11px;
+            bottom: 4px;
+            right: 4px;
+          }
+
+          &.resource-child::before {
+            content: 'R';
+            background-color: var(--yellow-02);
+            color: black;
+          }
+        }
+
+        .body {
+          font-family: tg.$font-family-mono;
+          font-size: 11px;
+          padding: 5px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      .selected rect {
+        stroke: var(--dynamic-blue-02);
+        stroke-width: 3px;
+        ry: 8px;
+        rx: 8px;
+      }
+
+      .kind-signal {
+        background-color: var(--blue-02);
+
+        .header {
+          background-color: var(--blue-01);
+        }
+      }
+
+      .kind-computed {
+        background-color: var(--green-02);
+
+        .header {
+          background-color: var(--green-01);
+        }
+      }
+
+      .kind-effect {
+        background-color: var(--purple-02);
+
+        .header {
+          background-color: var(--purple-01);
+        }
+      }
+
+      .kind-template {
+        background-color: var(--gray-400);
+
+        .header {
+          background-color: var(--gray-700);
+        }
+      }
+
+      .kind-linked-signal {
+        background-color: var(--red-04);
+
+        .header {
+          background-color: var(--red-03);
+        }
+      }
+
+      .kind-resource {
+        background-color: var(--yellow-02);
+        color: black;
+        outline: 1.5px solid var(--yellow-01);
+        outline-offset: 3px;
+
+        .header {
+          background-color: var(--yellow-01);
+        }
+      }
+    }
+  }
+
+  .visible-clusters {
+    position: absolute;
+    top: 0.2rem;
+    left: 0.2rem;
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.375rem;
+    background-color: color-mix(in srgb, var(--color-background) 30%, transparent 70%);
+    backdrop-filter: blur(5px);
+
+    p {
+      @extend %body-bold-01;
+      margin: 0;
+      padding: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      margin-bottom: 0.375rem;
+      background-color: var(--yellow-02);
+      max-width: 100px;
+
+      mat-icon {
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+      }
+
+      span {
+        flex: 1;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+    }
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
