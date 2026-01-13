@@ -1203,4 +1203,84 @@
 #        ^ template.ng expression.ng
 #         ^^ template.ng punctuation.definition.block.ts
 >
+><!-- Spread -->
+#^^^^^^^^^^^^^^^^ template.ng
+>{{ [1, ...foo, 2, ...bar, 3] }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#    ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#     ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#      ^ template.ng expression.ng meta.array.literal.ts
+#       ^^^ template.ng expression.ng meta.array.literal.ts keyword.operator.spread.ts
+#          ^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#             ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#              ^ template.ng expression.ng meta.array.literal.ts
+#               ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#                ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                 ^ template.ng expression.ng meta.array.literal.ts
+#                  ^^^ template.ng expression.ng meta.array.literal.ts keyword.operator.spread.ts
+#                     ^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#                        ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                         ^ template.ng expression.ng meta.array.literal.ts
+#                          ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#                           ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                            ^ template.ng expression.ng
+#                             ^^ template.ng punctuation.definition.block.ts
+>{{ {{a: 1, ...foo, b: 2, ...bar, c: 3}} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^^ template.ng expression.ng
+#     ^ template.ng expression.ng variable.other.readwrite.ts
+#      ^^ template.ng expression.ng
+#        ^ template.ng expression.ng constant.numeric.decimal.ts
+#         ^ template.ng expression.ng punctuation.separator.comma.ts
+#          ^ template.ng expression.ng
+#           ^^^ template.ng expression.ng keyword.operator.spread.ts
+#              ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                 ^ template.ng expression.ng punctuation.separator.comma.ts
+#                  ^ template.ng expression.ng
+#                   ^ template.ng expression.ng variable.other.readwrite.ts
+#                    ^^ template.ng expression.ng
+#                      ^ template.ng expression.ng constant.numeric.decimal.ts
+#                       ^ template.ng expression.ng punctuation.separator.comma.ts
+#                        ^ template.ng expression.ng
+#                         ^^^ template.ng expression.ng keyword.operator.spread.ts
+#                            ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                               ^ template.ng expression.ng punctuation.separator.comma.ts
+#                                ^ template.ng expression.ng
+#                                 ^ template.ng expression.ng variable.other.readwrite.ts
+#                                  ^^ template.ng expression.ng
+#                                    ^ template.ng expression.ng constant.numeric.decimal.ts
+#                                     ^^ template.ng punctuation.definition.block.ts
+#                                       ^^^^ template.ng
+>
+><!-- Rest -->
+#^^^^^^^^^^^^^^ template.ng
+>{{ someFn(1, ...foo, 2, ...bar, 3, ...baz) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^ template.ng expression.ng entity.name.function.ts
+#         ^ template.ng expression.ng meta.brace.round.ts
+#          ^ template.ng expression.ng constant.numeric.decimal.ts
+#           ^ template.ng expression.ng punctuation.separator.comma.ts
+#            ^ template.ng expression.ng
+#             ^^^ template.ng expression.ng keyword.operator.spread.ts
+#                ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                   ^ template.ng expression.ng punctuation.separator.comma.ts
+#                    ^ template.ng expression.ng
+#                     ^ template.ng expression.ng constant.numeric.decimal.ts
+#                      ^ template.ng expression.ng punctuation.separator.comma.ts
+#                       ^ template.ng expression.ng
+#                        ^^^ template.ng expression.ng keyword.operator.spread.ts
+#                           ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                              ^ template.ng expression.ng punctuation.separator.comma.ts
+#                               ^ template.ng expression.ng
+#                                ^ template.ng expression.ng constant.numeric.decimal.ts
+#                                 ^ template.ng expression.ng punctuation.separator.comma.ts
+#                                  ^ template.ng expression.ng
+#                                   ^^^ template.ng expression.ng keyword.operator.spread.ts
+#                                      ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                                         ^ template.ng expression.ng meta.brace.round.ts
+#                                          ^ template.ng expression.ng
+#                                           ^^ template.ng punctuation.definition.block.ts
 >

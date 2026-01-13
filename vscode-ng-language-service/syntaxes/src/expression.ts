@@ -170,6 +170,10 @@ export const Expression: GrammarDefinition = {
           match: /<<|>>>|>>/,
         },
         {
+          name: 'keyword.operator.spread.ts',
+          match: /\.\.\./,
+        },
+        {
           name: 'keyword.operator.comparison.ts',
           match: /===|!==|==|!=/,
         },
