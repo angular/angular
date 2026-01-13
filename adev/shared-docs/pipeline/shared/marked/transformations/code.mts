@@ -10,7 +10,22 @@ import {Tokens} from 'marked';
 import {AdevDocsRenderer} from '../renderer.mjs';
 import {getSymbolUrl} from '../../linking.mjs';
 
+/**
+ * Tracks whether the current renderer is inside a heading.
+ *
+ * This is necessary to prevent API autolinking in headings.
+ */
+let insideHeading = false;
+export function setInsideHeading(value: boolean) {
+  insideHeading = value;
+}
+
 export function codespanRender(this: AdevDocsRenderer, token: Tokens.Codespan) {
+  // Skip API autolinking inside headings
+  if (insideHeading) {
+    return this.defaultRenderer.codespan(token);
+  }
+
   const apiLink = getSymbolUrl(token.text, this.context.apiEntries ?? {});
   if (apiLink) {
     const htmlToken: Tokens.HTML = {

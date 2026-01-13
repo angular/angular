@@ -8,12 +8,16 @@
 
 import {Tokens} from 'marked';
 import {AdevDocsRenderer} from '../renderer.mjs';
+import {setInsideHeading} from './code.mjs';
 
 export function headingRender(
   this: AdevDocsRenderer,
-  {depth, tokens, text: headingText, raw}: Tokens.Heading,
+  {depth, tokens, text: headingText}: Tokens.Heading,
 ): string {
+  setInsideHeading(true);
   const parsedText = this?.parser.parseInline(tokens);
+  setInsideHeading(false);
+
   if (depth === 1) {
     return `
     <header class="docs-header">

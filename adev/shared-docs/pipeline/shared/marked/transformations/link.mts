@@ -7,7 +7,7 @@
  */
 
 import {anchorTarget} from '../helpers.mjs';
-import {Renderer, Tokens} from 'marked';
+import {Tokens} from 'marked';
 import {AdevDocsRenderer} from '../renderer.mjs';
 
 /**
