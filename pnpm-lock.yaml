@@ -338,9 +338,6 @@ importers:
       '@actions/github':
         specifier: ^6.0.0
         version: 6.0.1
-      '@angular-devkit/architect-cli':
-        specifier: 0.2101.0-rc.0
-        version: 0.2101.0-rc.0(chokidar@5.0.0)
       '@angular/ng-dev':
         specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#486b075a283ef0c169475b981de1bd229114a000
         version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/486b075a283ef0c169475b981de1bd229114a000(@modelcontextprotocol/sdk@1.25.2)
@@ -1460,6 +1457,9 @@ packages:
   '@actions/http-client@3.0.0':
     resolution: {integrity: sha512-1s3tXAfVMSz9a4ZEBkXXRQD4QhY3+GAsWSbaYpeknPOKEeyRiU3lH+bHiLMZdo2x/fIeQ/hscL1wCkDLVM2DZQ==}
 
+  '@actions/http-client@3.0.1':
+    resolution: {integrity: sha512-SbGS8c/vySbNO3kjFgSW77n83C4MQx/Yoe+b1hAdpuvfHxnkHzDq2pWljUpAA56Si1Gae/7zjeZsV0CYjmLo/w==}
+
   '@actions/io@1.1.3':
     resolution: {integrity: sha512-wi9JjgKLYS7U/z8PPbco+PvTb/nRWjeoFlJ1Qer83k/3C5PHQi28hiVdeE2kHXmIL99mQFawx8qt/JPjZilJ8Q==}
 
@@ -1529,11 +1529,6 @@ packages:
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
-
-  '@angular-devkit/architect-cli@0.2101.0-rc.0':
-    resolution: {integrity: sha512-hNCHyH1FjrTtZFHAmTH5tLPNo26+3xWwv64H0fQiiLsmdnKkONqJDJMw9YqjxOpjxzLnhyIuaAg4RJnYMLvRSA==}
-    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
-    hasBin: true
 
   '@angular-devkit/architect@0.2101.0-rc.0':
     resolution: {integrity: sha512-QohNOLzTorQejqb4Kr5GFB9gCiaTuarmTza53g8oYjSMzB/zLDDN6O5e7SW6lp+wdfIla2mnUWyVBJSTNOa+Hg==}
@@ -11085,7 +11080,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
@@ -13409,7 +13403,7 @@ snapshots:
   '@actions/core@2.0.1':
     dependencies:
       '@actions/exec': 2.0.0
-      '@actions/http-client': 3.0.0
+      '@actions/http-client': 3.0.1
 
   '@actions/exec@1.1.1':
     dependencies:
@@ -13435,6 +13429,11 @@ snapshots:
       undici: 5.29.0
 
   '@actions/http-client@3.0.0':
+    dependencies:
+      tunnel: 0.0.6
+      undici: 5.29.0
+
+  '@actions/http-client@3.0.1':
     dependencies:
       tunnel: 0.0.6
       undici: 5.29.0
@@ -13533,12 +13532,6 @@ snapshots:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
-
-  '@angular-devkit/architect-cli@0.2101.0-rc.0(chokidar@5.0.0)':
-    dependencies:
-      '@angular-devkit/architect': 0.2101.0-rc.0(chokidar@5.0.0)
-    transitivePeerDependencies:
-      - chokidar
 
   '@angular-devkit/architect@0.2101.0-rc.0(chokidar@5.0.0)':
     dependencies:
@@ -19600,7 +19593,7 @@ snapshots:
       parse5: 7.3.0
       parse5-htmlparser2-tree-adapter: 7.1.0
       parse5-parser-stream: 7.1.2
-      undici: 7.16.0
+      undici: 7.18.0
       whatwg-mimetype: 4.0.0
 
   chevrotain-allstar@0.3.1(chevrotain@11.0.3):
