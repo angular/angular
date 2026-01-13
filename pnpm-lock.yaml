@@ -338,9 +338,6 @@ importers:
       '@actions/github':
         specifier: ^7.0.0
         version: 7.0.0
-      '@angular-devkit/architect-cli':
-        specifier: 0.2101.0-rc.0
-        version: 0.2101.0-rc.0(chokidar@5.0.0)
       '@angular/ng-dev':
         specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#486b075a283ef0c169475b981de1bd229114a000
         version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/486b075a283ef0c169475b981de1bd229114a000(@modelcontextprotocol/sdk@1.25.2)
@@ -1532,11 +1529,6 @@ packages:
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
-
-  '@angular-devkit/architect-cli@0.2101.0-rc.0':
-    resolution: {integrity: sha512-hNCHyH1FjrTtZFHAmTH5tLPNo26+3xWwv64H0fQiiLsmdnKkONqJDJMw9YqjxOpjxzLnhyIuaAg4RJnYMLvRSA==}
-    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
-    hasBin: true
 
   '@angular-devkit/architect@0.2101.0-rc.0':
     resolution: {integrity: sha512-QohNOLzTorQejqb4Kr5GFB9gCiaTuarmTza53g8oYjSMzB/zLDDN6O5e7SW6lp+wdfIla2mnUWyVBJSTNOa+Hg==}
@@ -13539,12 +13531,6 @@ snapshots:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
-
-  '@angular-devkit/architect-cli@0.2101.0-rc.0(chokidar@5.0.0)':
-    dependencies:
-      '@angular-devkit/architect': 0.2101.0-rc.0(chokidar@5.0.0)
-    transitivePeerDependencies:
-      - chokidar
 
   '@angular-devkit/architect@0.2101.0-rc.0(chokidar@5.0.0)':
     dependencies:
