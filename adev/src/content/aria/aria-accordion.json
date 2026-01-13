@@ -382,6 +382,9 @@
       "exportAs": [
         "ngAccordionTrigger"
       ],
+      "aliases": [
+        "ngAccordionTrigger"
+      ],
       "source": {
         "filePath": "/src/aria/accordion/accordion-trigger.ts",
         "startLine": 42,
@@ -549,6 +552,9 @@
       "isStandalone": true,
       "selector": "[ngAccordionGroup]",
       "exportAs": [
+        "ngAccordionGroup"
+      ],
+      "aliases": [
         "ngAccordionGroup"
       ],
       "source": {
