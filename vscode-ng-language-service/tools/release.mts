@@ -481,6 +481,7 @@ async function publishExtension(): Promise<void> {
 async function cherryPickChangelog(changelog: string, newVersion: string): Promise<void> {
   console.log(chalk.blue('Cherry-picking changelog to main...'));
 
+  await exec(`git stash`);
   await exec(`git fetch ${angularRepoRemote} main`);
   const cherryPickBranch = `vscode-changelog-cherry-pick${newVersion}`;
   await exec(`git branch -D ${cherryPickBranch}`).catch(() => {});
