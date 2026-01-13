@@ -10,14 +10,14 @@
   'use strict';
   /**
    *@license
-   *Copyright Google Inc. All Rights Reserved.
+   *Copyright Google LLC. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
    *found in the LICENSE file at https://angular.dev/license
    */
   /**
    *@license
-   *Copyright Google Inc. All Rights Reserved.
+   *Copyright Google LLC. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
    *found in the LICENSE file at https://angular.dev/license
@@ -37,7 +37,7 @@
   ViewEncapsulation || (ViewEncapsulation = {});
   /**
    *@license
-   *Copyright Google Inc. All Rights Reserved.
+   *Copyright Google LLC. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
    *found in the LICENSE file at https://angular.dev/license
@@ -48,15 +48,15 @@
    *
    * Use of this source code is governed by an MIT-style license that can be
    * found in the LICENSE file at https://angular.dev/license
-   */ 'undefined' != typeof window && window,
+   */ ('undefined' != typeof window && window,
     'undefined' != typeof self &&
       'undefined' != typeof WorkerGlobalScope &&
       self instanceof WorkerGlobalScope &&
       self,
-    'undefined' != typeof global && global;
+    'undefined' != typeof global && global);
   /**
    *@license
-   *Copyright Google Inc. All Rights Reserved.
+   *Copyright Google LLC. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
    *found in the LICENSE file at https://angular.dev/license
@@ -64,7 +64,7 @@
   String;
   /**
    *@license
-   *Copyright Google Inc. All Rights Reserved.
+   *Copyright Google LLC. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
    *found in the LICENSE file at https://angular.dev/license
@@ -88,12 +88,12 @@
   Error;
   var RendererStyleFlags2,
     Symbol$1 = _root.Symbol;
-  'function' == typeof Symbol$1 &&
+  ('function' == typeof Symbol$1 &&
     'function' == typeof Symbol$1.for &&
     Symbol$1.for('rxSubscriber'),
     (function () {
       Object.setPrototypeOf || Array;
-    })();
+    })());
   !(function (context) {
     var $$observable,
       Symbol = _root.Symbol;
@@ -105,16 +105,16 @@
       }
     else $$observable = '@@observable';
   })();
-  (function () {
+  ((function () {
     Object.setPrototypeOf || Array;
   })(),
     (function () {
       Object.setPrototypeOf || Array;
-    })();
+    })());
   !(function () {
     Object.setPrototypeOf || Array;
   })();
-  (function (root) {
+  ((function (root) {
     var Symbol = root.Symbol;
     if ('function' == typeof Symbol) {
       Symbol.iterator || (Symbol.iterator = Symbol('iterator polyfill'));
@@ -132,17 +132,17 @@
   })(_root),
     (function () {
       Object.setPrototypeOf || Array;
-    })();
-  (function () {
+    })());
+  ((function () {
     Object.setPrototypeOf || Array;
   })(),
     (function () {
       Object.setPrototypeOf || Array;
-    })();
+    })());
   !(function () {
     Object.setPrototypeOf || Array;
   })();
-  Error,
+  (Error,
     (function () {
       Object.setPrototypeOf || Array;
     })(),
@@ -151,7 +151,7 @@
     })(),
     (function () {
       Object.setPrototypeOf || Array;
-    })();
+    })());
   !(function () {
     Object.setPrototypeOf || Array;
   })();
@@ -205,7 +205,7 @@
   };
   /**
    *@license
-   *Copyright Google Inc. All Rights Reserved.
+   *Copyright Google LLC. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
    *found in the LICENSE file at https://angular.dev/license
@@ -255,7 +255,7 @@
   }
   /**
    *@license
-   *Copyright Google Inc. All Rights Reserved.
+   *Copyright Google LLC. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
    *found in the LICENSE file at https://angular.dev/license
@@ -469,28 +469,28 @@
   }
   /**
    *@license
-   *Copyright Google Inc. All Rights Reserved.
+   *Copyright Google LLC. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
    *found in the LICENSE file at https://angular.dev/license
    */
   /**
    *@license
-   *Copyright Google Inc. All Rights Reserved.
+   *Copyright Google LLC. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
    *found in the LICENSE file at https://angular.dev/license
    */
   /**
    *@license
-   *Copyright Google Inc. All Rights Reserved.
+   *Copyright Google LLC. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
    *found in the LICENSE file at https://angular.dev/license
    */
   /**
    *@license
-   *Copyright Google Inc. All Rights Reserved.
+   *Copyright Google LLC. All Rights Reserved.
    *
    *Use of this source code is governed by an MIT-style license that can be
    *found in the LICENSE file at https://angular.dev/license
