@@ -98,3 +98,9 @@ as i }}
 {{ (let param of params?.get('value')!.property | async).anotherProperty | translate: ['language1', 'language2']; let i
 = index; }}
 
+<!-- Spread -->
+{{ [1, ...foo, 2, ...bar, 3] }}
+{{ {{a: 1, ...foo, b: 2, ...bar, c: 3}} }}
+
+<!-- Rest -->
+{{ someFn(1, ...foo, 2, ...bar, 3, ...baz) }}
