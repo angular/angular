@@ -40,5 +40,8 @@ export function enableProdMode(): void {
   // `global['ngDevMode'] = false;` is also dropped.
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     global['ngDevMode'] = false;
+    // The ngGlobal might already be init, for because initNgDevMode() is invoked from the top level,
+    // an this function might executed later. So we need to clean up the global.ng as well.
+    global['ng'] = undefined;
   }
 }
