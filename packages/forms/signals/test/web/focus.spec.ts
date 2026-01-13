@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Component, input, model, signal} from '@angular/core';
+import {
+  ApplicationRef,
+  Component,
+  inject,
+  input,
+  model,
+  signal,
+  viewChild,
+  type ElementRef,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormControl} from '@angular/forms';
 import {compatForm} from '../../compat';
@@ -181,6 +190,38 @@ describe('FieldState focus behavior', () => {
     const focusedEl = document.activeElement;
     await act(() => fixture.componentInstance.f().focusBoundControl());
     expect(document.activeElement).toBe(focusedEl);
+  });
+
+  it('should focus a manually registered custom control', async () => {
+    @Component({
+      selector: 'custom-control',
+      template: `<input #input />`,
+    })
+    class CustomControl {
+      formField = input.required<FieldTree<string>>();
+      input = viewChild.required<ElementRef<HTMLInputElement>>('input');
+
+      constructor() {
+        inject(FormField, {self: true, optional: true})?.registerCustomControl({
+          focus: () => this.input().nativeElement.focus(),
+        });
+      }
+    }
+
+    @Component({
+      imports: [FormField, CustomControl],
+      template: `<custom-control [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal(''));
+    }
+
+    const fixture = await act(() => TestBed.createComponent(TestCmp));
+    const nativeInput = fixture.nativeElement.querySelector('custom-control > input');
+    expect(nativeInput).toBeTruthy();
+
+    await act(() => fixture.componentInstance.f().focusBoundControl());
+    expect(document.activeElement).toBe(nativeInput);
   });
 });
 

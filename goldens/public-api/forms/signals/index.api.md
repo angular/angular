@@ -28,6 +28,7 @@ import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 import { ɵCONTROL } from '@angular/core';
 import { ɵcontrolUpdate } from '@angular/core';
+import { ɵCustomControl } from '@angular/core';
 import { ɵFieldState } from '@angular/core';
 import { ɵɵcontrolCreate } from '@angular/core';
 
@@ -175,12 +176,13 @@ export class FormField<T> {
     };
     // (undocumented)
     readonly element: HTMLElement;
-    focus?(): void;
+    focus(): void;
     // (undocumented)
     readonly formField: i0.InputSignal<FieldTree<T>>;
     protected getOrCreateNgControl(): InteropNgControl;
     // (undocumented)
     readonly injector: Injector;
+    registerCustomControl(uiControl?: FormUiControlBase): void;
     // (undocumented)
     readonly state: i0.Signal<[T] extends [_angular_forms.AbstractControl<any, any, any>] ? CompatFieldState<T, string | number> : FieldState<T, string | number>>;
     // (undocumented)
@@ -198,7 +200,7 @@ export interface FormOptions {
 }
 
 // @public
-export interface FormUiControl {
+export interface FormUiControl extends FormUiControlBase {
     readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabledReasons?: InputSignal<readonly WithOptionalField<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalField<DisabledReason>[], unknown>;
@@ -215,6 +217,11 @@ export interface FormUiControl {
     readonly readonly?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly required?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly touched?: ModelSignal<boolean> | InputSignal<boolean> | InputSignalWithTransform<boolean, unknown> | OutputRef<boolean>;
+}
+
+// @public
+export interface FormUiControlBase extends ɵCustomControl {
+    focus?(): void;
 }
 
 // @public

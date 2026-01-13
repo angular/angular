@@ -3310,6 +3310,33 @@ describe('field directive', () => {
       const fixture = act(() => TestBed.createComponent(TestCmp));
       expect(fixture.componentInstance.f().formFieldBindings()).toHaveSize(0);
     });
+
+    it(`should register pass-through instance as a form field binding when registered`, () => {
+      @Component({
+        selector: 'complex-control',
+        template: ``,
+      })
+      class ComplexControl {
+        readonly formField = input.required<FieldTree<string>>();
+
+        constructor() {
+          inject(FormField, {optional: true, self: true})?.registerCustomControl();
+        }
+      }
+
+      @Component({
+        template: `<complex-control [formField]="f" />`,
+        imports: [ComplexControl, FormField],
+      })
+      class TestCmp {
+        f = form(signal('test'));
+        formField = viewChild.required(FormField);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const instance = fixture.componentInstance;
+      expect(instance.f().formFieldBindings()).toEqual([instance.formField()]);
+    });
   });
 
   it('should synchronize disabled reasons', () => {

@@ -76,7 +76,7 @@ export function ɵɵcontrolCreate(): void {
     initializeNativeControl(lView, tNode, fieldDirective);
   }
 
-  fieldDirective.ɵregister();
+  fieldDirective.registerCustomControl(getCustomControl(tNode, lView));
 }
 
 /**
@@ -291,14 +291,14 @@ function isNativeControlFirstCreatePass(tNode: TNode): boolean {
  * @param tNode The `TNode` of the element to check.
  * @param lView The `LView` that contains the element.
  */
-function getFieldDirective<T>(tNode: TNode, lView: LView): ɵFormFieldDirective<T> | null {
+function getFieldDirective<T>(tNode: TNode, lView: LView): ɵFormFieldDirective<T> | undefined {
   const index = tNode.fieldIndex;
-  return index === -1 ? null : lView[index];
+  return index === -1 ? undefined : lView[index];
 }
 
-function getCustomControl(tNode: TNode, lView: LView): ɵCustomControl | null {
+function getCustomControl(tNode: TNode, lView: LView): ɵCustomControl | undefined {
   const index = tNode.customControlIndex;
-  return index === -1 ? null : lView[index];
+  return index === -1 ? undefined : lView[index];
 }
 
 /**
@@ -361,10 +361,6 @@ function initializeCustomControl(
       wrapListener(tNode, lView, () => fieldDirective.state().markAsTouched()),
     );
   }
-
-  const customControl = lView[directiveIndex] as ɵCustomControl;
-  fieldDirective.focus = () =>
-    customControl.focus ? customControl.focus() : fieldDirective.element.focus();
 }
 
 /**
@@ -379,7 +375,6 @@ function initializeInteropControl(fieldDirective: ɵFormFieldDirective<unknown>)
     fieldDirective.state().setControlValue(value),
   );
   interopControl.registerOnTouched(() => fieldDirective.state().markAsTouched());
-  fieldDirective.focus = () => fieldDirective.element.focus();
 }
 
 /**
@@ -472,8 +467,6 @@ function initializeNativeControl(
 
     storeCleanupWithContext(tView, lView, observer, observer.disconnect);
   }
-
-  fieldDirective.focus = () => element.focus();
 }
 
 /**

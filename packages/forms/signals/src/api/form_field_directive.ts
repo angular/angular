@@ -16,6 +16,8 @@ import {
   InjectionToken,
   Injector,
   input,
+  signal,
+  untracked,
   ɵcontrolUpdate as updateControlBinding,
   ɵCONTROL,
   ɵInteropControl,
@@ -25,6 +27,7 @@ import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
+import type {FormUiControlBase} from './control';
 import type {FieldTree} from './types';
 
 /**
@@ -79,6 +82,7 @@ export class FormField<T> {
   readonly injector = inject(Injector);
   readonly formField = input.required<FieldTree<T>>();
   readonly state = computed(() => this.formField()());
+  private readonly uiControl = signal<FormUiControlBase | undefined>(undefined);
 
   readonly [ɵCONTROL] = controlInstructions;
 
@@ -109,8 +113,19 @@ export class FormField<T> {
     return (this.interopNgControl ??= new InteropNgControl(this.state));
   }
 
-  /** @internal */
-  ɵregister() {
+  /**
+   * Registers a custom control as bound to this `FormField`.
+   *
+   * This method should be called at most once for a given `FormField`. A `FormField` placed on a
+   * Directive or Component that implements the `FormUiControl` interface automatically registers
+   * that Directive/Component with as the custom control.
+   */
+  registerCustomControl(uiControl?: FormUiControlBase) {
+    if (untracked(this.uiControl)) {
+      throw Error('Custom control already registered on this FormField.');
+    }
+
+    this.uiControl.set(uiControl);
     // Register this control on the field state it is currently bound to. We do this at the end of
     // initialization so that it only runs if we are actually syncing with this control
     // (as opposed to just passing the field state through to its `formField` input).
@@ -132,7 +147,14 @@ export class FormField<T> {
   }
 
   /** Focuses this UI control. */
-  focus?(): void;
+  focus() {
+    const uiControl = untracked(this.uiControl);
+    if (uiControl?.focus) {
+      uiControl.focus();
+    } else {
+      this.element.focus();
+    }
+  }
 }
 
 // We can't add `implements ɵFormFieldDirective<T>` to `Field` even though it should conform to the interface.

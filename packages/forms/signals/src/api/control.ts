@@ -6,9 +6,30 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InputSignal, InputSignalWithTransform, ModelSignal, OutputRef} from '@angular/core';
+import {
+  InputSignal,
+  InputSignalWithTransform,
+  ModelSignal,
+  OutputRef,
+  ɵCustomControl,
+} from '@angular/core';
 import {ValidationError, type WithOptionalField} from './rules/validation/validation_errors';
 import type {DisabledReason} from './types';
+
+/**
+ * Base class of `FormUiControl` consisting of only the properties and methods that specify state
+ * and behavior of the custom control _to_ signal forms. It does not include any properties that
+ * bind state _from_ signal forms to the custom control.
+ */
+export interface FormUiControlBase extends ɵCustomControl {
+  /**
+   * Focuses the UI control.
+   *
+   * If the focus method is not implemented, Signal Forms will attempt to focus the host element
+   * when asked to focus this control.
+   */
+  focus?(): void;
+}
 
 /**
  * The base set of properties shared by all form control contracts.
@@ -16,11 +37,7 @@ import type {DisabledReason} from './types';
  * @category control
  * @experimental 21.0.0
  */
-export interface FormUiControl {
-  // TODO: `ValidationError` and `DisabledReason` are inherently tied to the signal forms system.
-  // They don't make sense when using a control separately from the forms system and setting the
-  // inputs individually. Given that, should they still be part of this interface?
-
+export interface FormUiControl extends FormUiControlBase {
   /**
    * An input to receive the errors for the field. If implemented, the `Field` directive will
    * automatically bind errors from the bound field to this input.
