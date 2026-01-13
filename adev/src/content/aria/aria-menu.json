@@ -210,6 +210,9 @@
       "exportAs": [
         "ngMenuTrigger"
       ],
+      "aliases": [
+        "ngMenuTrigger"
+      ],
       "source": {
         "filePath": "/src/aria/menu/menu-trigger.ts",
         "startLine": 43,
@@ -432,6 +435,9 @@
       "exportAs": [
         "ngMenuItem"
       ],
+      "aliases": [
+        "ngMenuItem"
+      ],
       "source": {
         "filePath": "/src/aria/menu/menu-item.ts",
         "startLine": 33,
@@ -600,6 +606,9 @@
       "isStandalone": true,
       "selector": "[ngMenuBar]",
       "exportAs": [
+        "ngMenuBar"
+      ],
+      "aliases": [
         "ngMenuBar"
       ],
       "source": {
