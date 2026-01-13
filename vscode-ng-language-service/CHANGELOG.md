@@ -1,3 +1,9 @@
+## 21.1.0 (2026-01-12)
+
+- fix(vscode-extension): convert enum member kind in completions correctly ([50674f8c28](https://github.com/angular/angular/commit/50674f8c28c970e6a9cfe222f9f55bace4e16321))
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 21.0.1 (2025-12-17)
 
 - fix(language-service): Prevent language service from crashing on suggestion diagnostic errors ([5047be4bc1](https://github.com/angular/angular/commit/5047be4bc1c6f6016263703c743f8033f669f0ee))
