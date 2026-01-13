@@ -3311,7 +3311,7 @@ describe('field directive', () => {
       expect(fixture.componentInstance.f().formFieldBindings()).toHaveSize(0);
     });
 
-    it(`should register pass-through instance as a form field binding when registered`, () => {
+    it(`should manually register pass-through instance as a form field binding`, () => {
       @Component({
         selector: 'complex-control',
         template: ``,
@@ -3320,7 +3320,7 @@ describe('field directive', () => {
         readonly formField = input.required<FieldTree<string>>();
 
         constructor() {
-          inject(FormField, {optional: true, self: true})?.registerCustomControl();
+          inject(FormField, {optional: true, self: true})?.registerAsBinding();
         }
       }
 

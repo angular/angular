@@ -50,11 +50,11 @@ export interface ɵFormFieldDirective<T> {
    * the component will forward the bound field to another field directive in its own template,
    * and do nothing.
    */
-  registerCustomControl(uiControl?: ɵCustomControl): void;
+  registerAsBinding(bindingOptions?: ɵFormFieldBindingOptions): void;
 }
 
 /** A custom UI control for signal forms. */
-export interface ɵCustomControl {
+export interface ɵFormFieldBindingOptions {
   /** Focuses the custom control. */
   focus?(): void;
 }

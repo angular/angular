@@ -252,8 +252,8 @@ export {CONTAINER_HEADER_OFFSET as ɵCONTAINER_HEADER_OFFSET} from './render3/in
 export {LContext as ɵLContext} from './render3/interfaces/context';
 export {
   ɵCONTROL,
-  ɵCustomControl,
   ɵFieldState,
+  ɵFormFieldBindingOptions,
   ɵFormFieldDirective,
   ɵInteropControl,
 } from './render3/interfaces/control';

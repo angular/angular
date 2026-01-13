@@ -14,7 +14,7 @@ import {
   ɵCONTROL,
   ɵFieldState,
   ɵFormFieldDirective,
-  type ɵCustomControl,
+  type ɵFormFieldBindingOptions,
 } from '../interfaces/control';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
@@ -76,7 +76,7 @@ export function ɵɵcontrolCreate(): void {
     initializeNativeControl(lView, tNode, fieldDirective);
   }
 
-  fieldDirective.registerCustomControl(getCustomControl(tNode, lView));
+  fieldDirective.registerAsBinding(getCustomControl(tNode, lView));
 }
 
 /**
@@ -296,7 +296,7 @@ function getFieldDirective<T>(tNode: TNode, lView: LView): ɵFormFieldDirective<
   return index === -1 ? undefined : lView[index];
 }
 
-function getCustomControl(tNode: TNode, lView: LView): ɵCustomControl | undefined {
+function getCustomControl(tNode: TNode, lView: LView): ɵFormFieldBindingOptions | undefined {
   const index = tNode.customControlIndex;
   return index === -1 ? undefined : lView[index];
 }

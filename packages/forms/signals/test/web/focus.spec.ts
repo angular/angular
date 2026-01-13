@@ -192,7 +192,7 @@ describe('FieldState focus behavior', () => {
     expect(document.activeElement).toBe(focusedEl);
   });
 
-  it('should focus a manually registered custom control', async () => {
+  it('should focus a manually registered form field binding', async () => {
     @Component({
       selector: 'custom-control',
       template: `<input #input />`,
@@ -202,7 +202,7 @@ describe('FieldState focus behavior', () => {
       input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
       constructor() {
-        inject(FormField, {self: true, optional: true})?.registerCustomControl({
+        inject(FormField, {self: true, optional: true})?.registerAsBinding({
           focus: () => this.input().nativeElement.focus(),
         });
       }
