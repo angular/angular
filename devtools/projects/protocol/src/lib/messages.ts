@@ -78,12 +78,12 @@ export type HydrationStatus =
       actualNodeDetails: string | null;
     };
 
-export type CurrentDeferBlock = 'placeholder' | 'loading' | 'error';
+export type RenderedDeferBlock = 'defer' | 'placeholder' | 'loading' | 'error';
 
 export interface DeferInfo {
   id: string;
   state: 'placeholder' | 'loading' | 'complete' | 'error' | 'initial';
-  currentBlock: CurrentDeferBlock | null;
+  renderedBlock: RenderedDeferBlock | null;
   triggers: {
     defer: string[];
     hydrate: string[];
@@ -94,8 +94,8 @@ export interface DeferInfo {
 
 export interface BlockDetails {
   hasErrorBlock: boolean;
-  placeholderBlock: null | {minimumTime: number | null};
-  loadingBlock: null | {minimumTime: number | null; afterTime: number | null};
+  placeholderBlock: {exists: boolean; minimumTime: number | null};
+  loadingBlock: {exists: boolean; minimumTime: number | null; afterTime: number | null};
 }
 
 // TODO: refactor to remove nativeElement as it is not serializable
