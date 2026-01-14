@@ -54,6 +54,7 @@ export class SearchDialog {
   readonly onClose = output();
   readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDialog');
   readonly items = viewChildren(SearchItem);
+  readonly textField = viewChild(TextField);
 
   readonly history = inject(SearchHistory);
   private readonly search = inject(Search);
@@ -97,7 +98,7 @@ export class SearchDialog {
         }
         // We want to select the pre-existing text on opening
         // In order to change the search input with minimal user interaction.
-        this.searchForm().focusBoundControl();
+        this.textField()?.input().nativeElement.select();
       },
     });
 

@@ -18,6 +18,7 @@ import {
   inject,
   input,
   linkedSignal,
+  viewChild,
 } from '@angular/core';
 import {Select, SelectOption, TextField} from '@angular/docs';
 import {FormField, form} from '@angular/forms/signals';
@@ -61,6 +62,7 @@ export default class ApiReferenceList {
   // services
   private readonly apiReferenceManager = inject(ApiReferenceManager);
   private readonly router = inject(Router);
+  private readonly filterInput = viewChild.required(TextField);
   private readonly injector = inject(EnvironmentInjector);
 
   // inputs
@@ -135,12 +137,13 @@ export default class ApiReferenceList {
 
   constructor() {
     effect(() => {
-      const filterInput = this.form.query();
+      const filterInput = this.filterInput();
       afterNextRender(
         {
           write: () => {
+            // Why not improve this once https://github.com/orgs/angular/projects/60?pane=issue&itemId=143488813 is done
             if (matchMedia('(hover: hover) and (pointer:fine)').matches) {
-              scheduleOnIdle(() => filterInput.focusBoundControl());
+              scheduleOnIdle(() => filterInput.focus());
             }
           },
         },
