@@ -16,6 +16,7 @@ import {
   InjectionToken,
   Injector,
   input,
+  ɵRuntimeError as RuntimeError,
   signal,
   untracked,
   ɵcontrolUpdate as updateControlBinding,
@@ -26,6 +27,7 @@ import {
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
+import {SignalFormsErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
 import type {FieldTree} from './types';
@@ -131,7 +133,10 @@ export class FormField<T> {
    */
   registerAsBinding(bindingOptions?: FormFieldBindingOptions) {
     if (untracked(this.bindingOptions)) {
-      throw Error('FormField is already registered as a binding.');
+      throw new RuntimeError(
+        SignalFormsErrorCode.BINDING_ALREADY_REGISTERED,
+        ngDevMode && 'FormField already registered as a binding',
+      );
     }
 
     this.bindingOptions.set(bindingOptions);
