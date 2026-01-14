@@ -205,7 +205,7 @@ export interface FormOptions {
 }
 
 // @public
-export interface FormUiControl extends FormFieldBindingOptions {
+export interface FormUiControl {
     readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabledReasons?: InputSignal<readonly WithOptionalField<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalField<DisabledReason>[], unknown>;
