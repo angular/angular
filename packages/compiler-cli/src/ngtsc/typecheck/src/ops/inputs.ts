@@ -18,24 +18,24 @@ import {
   TransplantedType,
 } from '@angular/compiler';
 import ts from 'typescript';
-import type {Context} from './context';
-import type {Scope} from './scope';
-import {TypeCheckableDirectiveMeta} from '../../api';
-import {TcbOp} from './base';
 import {BindingPropertyName, ClassPropertyName} from '../../../metadata';
-import {addParseSpanInfo, wrapForDiagnostics} from '../diagnostics';
+import {TypeCheckableDirectiveMeta} from '../../api';
 import {markIgnoreDiagnostics} from '../comments';
+import {addParseSpanInfo, wrapForDiagnostics} from '../diagnostics';
 import {REGISTRY} from '../dom';
-import {tcbExpression, unwrapWritableSignal} from './expression';
 import {tsCreateTypeQueryForCoercedInput, tsDeclareVariable} from '../ts_util';
+import {TcbOp} from './base';
+import {getBoundAttributes, widenBinding} from './bindings';
+import type {Context} from './context';
+import {tcbExpression, unwrapWritableSignal} from './expression';
+import {LocalSymbol} from './references';
+import type {Scope} from './scope';
 import {
   checkUnsupportedFieldBindings,
-  CustomFormControlType,
   customFormControlBannedInputFields,
+  CustomFormControlType,
   expandBoundAttributesForField,
 } from './signal_forms';
-import {getBoundAttributes, widenBinding} from './bindings';
-import {LocalSymbol} from './references';
 
 /**
  * Translates the given attribute binding to a `ts.Expression`.
@@ -101,6 +101,10 @@ export class TcbDirectiveInputsOp extends TcbOp {
 
       let assignment: ts.Expression = wrapForDiagnostics(expr);
 
+      // With this variable we make sure to follow the pattern where multiple targets assign a single expression.
+      // This is a significant requirement for language service auto-completion.
+      let statement;
+
       for (const {fieldName, required, transformType, isSignal, isTwoWayBinding} of attr.inputs) {
         let target: ts.LeftHandSideExpression;
 
@@ -143,10 +147,12 @@ export class TcbDirectiveInputsOp extends TcbOp {
           // If no coercion declaration is present nor is the field declared (i.e. the input is
           // declared in a `@Directive` or `@Component` decorator's `inputs` property) there is no
           // assignment target available, so this field is skipped.
+          statement = ts.factory.createExpressionStatement(assignment);
           continue;
         } else if (
           !this.tcb.env.config.honorAccessModifiersForInputBindings &&
-          this.dir.restrictedInputFields.has(fieldName)
+          this.dir.restrictedInputFields.has(fieldName) &&
+          !isSignal
         ) {
           // If strict checking of access modifiers is disabled and the field is restricted
           // (i.e. private/protected/readonly), generate an assignment into a temporary variable
@@ -189,52 +195,128 @@ export class TcbDirectiveInputsOp extends TcbOp {
               );
         }
 
-        // For signal inputs, we unwrap the target `InputSignal`. Note that
-        // we intentionally do the following things:
-        //   1. keep the direct access to `dir.[field]` so that modifiers are honored.
-        //   2. follow the existing pattern where multiple targets assign a single expression.
-        //      This is a significant requirement for language service auto-completion.
-        if (isSignal) {
-          const inputSignalBrandWriteSymbol = this.tcb.env.referenceExternalSymbol(
-            R3Identifiers.InputSignalBrandWriteType.moduleName,
-            R3Identifiers.InputSignalBrandWriteType.name,
-          );
-          if (
-            !ts.isIdentifier(inputSignalBrandWriteSymbol) &&
-            !ts.isPropertyAccessExpression(inputSignalBrandWriteSymbol)
-          ) {
-            throw new Error(
-              `Expected identifier or property access for reference to ${R3Identifiers.InputSignalBrandWriteType.name}`,
-            );
-          }
-
-          target = ts.factory.createElementAccessExpression(target, inputSignalBrandWriteSymbol);
-        }
-
-        if (attr.keySpan !== null) {
-          addParseSpanInfo(target, attr.keySpan);
-        }
-
         // Two-way bindings accept `T | WritableSignal<T>` so we have to unwrap the value.
         if (isTwoWayBinding && this.tcb.env.config.allowSignalsInTwoWayBindings) {
           assignment = unwrapWritableSignal(assignment, this.tcb);
         }
 
-        // Finally the assignment is extended by assigning it into the target expression.
-        assignment = ts.factory.createBinaryExpression(
-          target,
-          ts.SyntaxKind.EqualsToken,
-          assignment,
-        );
+        if (isSignal) {
+          // TL;DR: For signal inputs, this block generates the type-checking code by:
+          // 1. Extracting the "write type" of the signal (which includes any transformations)
+          //    using the `ɵInputSignalWriteType` helper.
+          // 2. Creating a temporary variable in the Type Check Block (TCB) explicitly typed
+          //    with that extracted write type.
+          // 3. Assigning the binding expression to this variable.
+          //
+          // This forces TypeScript to check if the bound value is valid for the signal's *input*
+          // side (the `WriteT`), effectively validating transforms and types for signal inputs.
+
+          const value = this.tcb.allocateId();
+          if (attr.keySpan !== null) {
+            addParseSpanInfo(value, attr.keySpan);
+          }
+
+          const propAccess = target;
+          if (
+            !ts.isPropertyAccessExpression(propAccess) &&
+            !ts.isElementAccessExpression(propAccess)
+          ) {
+            throw new Error('Unsupported symbol in signal input type extraction');
+          }
+
+          let inputType: ts.TypeNode;
+          if (ts.isPropertyAccessExpression(propAccess) && ts.isIdentifier(propAccess.name)) {
+            inputType = ts.factory.createIndexedAccessTypeNode(
+              ts.factory.createTypeQueryNode(propAccess.expression as ts.Identifier),
+              ts.factory.createLiteralTypeNode(
+                ts.factory.createStringLiteral(propAccess.name.text),
+              ),
+            );
+          } else if (
+            ts.isElementAccessExpression(propAccess) &&
+            ts.isStringLiteral(propAccess.argumentExpression)
+          ) {
+            inputType = ts.factory.createIndexedAccessTypeNode(
+              ts.factory.createTypeQueryNode(propAccess.expression as ts.Identifier),
+              ts.factory.createLiteralTypeNode(propAccess.argumentExpression),
+            );
+          } else {
+            throw new Error('Unsupported symbol in signal input type extraction');
+          }
+
+          // For restricted inputs (like private/protected) we still need to add a statement
+          // to trigger diagnostics.
+          if (
+            this.dir.restrictedInputFields.has(fieldName) &&
+            this.tcb.env.config.honorAccessModifiersForInputBindings
+          ) {
+            addParseSpanInfo(propAccess, attr.keySpan!);
+            this.scope.addStatement(ts.factory.createExpressionStatement(propAccess));
+          }
+
+          const inputSignalWriteType = this.tcb.env.referenceExternalSymbol(
+            R3Identifiers.InputSignalWriteType.moduleName,
+            R3Identifiers.InputSignalWriteType.name,
+          );
+          if (
+            !ts.isIdentifier(inputSignalWriteType) &&
+            !ts.isPropertyAccessExpression(inputSignalWriteType)
+          ) {
+            throw new Error(
+              `Expected identifier or property access for reference to ${R3Identifiers.InputSignalWriteType.name}`,
+            );
+          }
+
+          let typeName: ts.EntityName;
+          if (ts.isIdentifier(inputSignalWriteType)) {
+            typeName = inputSignalWriteType;
+          } else {
+            typeName = ts.factory.createQualifiedName(
+              inputSignalWriteType.expression as ts.Identifier,
+              inputSignalWriteType.name as ts.Identifier,
+            );
+          }
+
+          const type = ts.factory.createTypeReferenceNode(typeName, [inputType]);
+          addParseSpanInfo(type, attr.keySpan!);
+
+          // RHS Express
+          const inputVar = ts.factory.createVariableDeclaration(value, undefined, type, assignment);
+          addParseSpanInfo(inputVar, attr.sourceSpan);
+
+          const inputVarList = ts.factory.createVariableDeclarationList(
+            [inputVar],
+            ts.NodeFlags.Const,
+          );
+          statement = ts.factory.createVariableStatement(undefined, inputVarList);
+
+          // Ignore diagnostics for text attributes if configured to do so.
+          if (!this.tcb.env.config.checkTypeOfAttributes && typeof attr.value === 'string') {
+            markIgnoreDiagnostics(inputVar);
+          }
+        } else {
+          assignment = ts.factory.createBinaryExpression(
+            target,
+            ts.SyntaxKind.EqualsToken,
+            assignment,
+          );
+          statement = ts.factory.createExpressionStatement(assignment);
+
+          addParseSpanInfo(assignment, attr.sourceSpan);
+          // Ignore diagnostics for text attributes if configured to do so.
+          if (!this.tcb.env.config.checkTypeOfAttributes && typeof attr.value === 'string') {
+            markIgnoreDiagnostics(assignment);
+          }
+        }
+
+        if (attr.keySpan !== null) {
+          addParseSpanInfo(target, attr.keySpan);
+        }
       }
 
-      addParseSpanInfo(assignment, attr.sourceSpan);
-      // Ignore diagnostics for text attributes if configured to do so.
-      if (!this.tcb.env.config.checkTypeOfAttributes && typeof attr.value === 'string') {
-        markIgnoreDiagnostics(assignment);
+      if (statement) {
+        this.scope.addStatement(statement);
       }
-
-      this.scope.addStatement(ts.factory.createExpressionStatement(assignment));
     }
 
     this.checkRequiredInputs(seenRequiredInputs);

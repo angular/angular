@@ -880,6 +880,29 @@ describe('type check blocks', () => {
     expect(block).toContain('_t2 = $event;');
   });
 
+  it('should handle narrowing down a signal input passed down to a child component', () => {
+    const TEMPLATE = `@if(value(); as value) {<child [input]="value"></child>}`;
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Child',
+        selector: 'child',
+        inputs: {
+          input: {
+            classPropertyName: 'input',
+            bindingPropertyName: 'input',
+            required: false,
+            isSignal: true,
+            transform: null,
+          },
+        },
+      },
+    ];
+    const block = tcb(TEMPLATE, DIRECTIVES);
+    expect(block).toContain('var _t2 = null! as i0.Child;');
+    expect(block).toContain('const _t3: i1.ɵInputSignalWriteType<(typeof _t2)["input"]> = (_t1);');
+  });
+
   it('should handle a two-way binding to a model()', () => {
     const TEMPLATE = `<div twoWay [(input)]="value"></div>`;
     const DIRECTIVES: TestDeclaration[] = [
@@ -902,10 +925,10 @@ describe('type check blocks', () => {
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('var _t1 = null! as i0.TwoWay;');
     expect(block).toContain(
-      '_t1.input[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((this).value)));',
+      'const _t2: i1.ɵInputSignalWriteType<(typeof _t1)["input"]> = i1.ɵunwrapWritableSignal((((this).value)));',
     );
-    expect(block).toContain('var _t2 = i1.ɵunwrapWritableSignal(((this).value));');
-    expect(block).toContain('_t2 = $event;');
+    expect(block).toContain('var _t3 = i1.ɵunwrapWritableSignal(((this).value));');
+    expect(block).toContain('_t3 = $event;');
   });
 
   it('should handle a two-way binding to an input with a transform', () => {
@@ -2432,7 +2455,7 @@ describe('type check blocks', () => {
       const result = tcb(TEMPLATE, [DIRECTIVE]);
 
       expect(result).toContain(`import * as i1 from '@angular/core';`);
-      expect(result).toContain(`[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]`);
+      expect(result).toContain(`i1.ɵInputSignalWriteType`);
     });
 
     it('should re-use existing imports from original source files', () => {
@@ -2460,9 +2483,9 @@ describe('type check blocks', () => {
 
       const testSf = getSourceFileOrError(programStrategy.getProgram(), absoluteFrom('/test.ts'));
       expect(testSf.text).toContain(
-        `import { Component, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE } from '@angular/core'; // should be re-used`,
+        `import { Component, ɵInputSignalWriteType } from '@angular/core'; // should be re-used`,
       );
-      expect(testSf.text).toContain(`[ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]`);
+      expect(testSf.text).toContain(`ɵInputSignalWriteType`);
     });
   });
 
@@ -2879,10 +2902,10 @@ describe('type check blocks', () => {
 
       expect(block).toContain('var _t1 = null! as i0.CustomControl;');
       expect(block).toContain(
-        '_t1.value[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
+        'const _t2: i1.ɵInputSignalWriteType<(typeof _t1)["value"]> = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
       );
-      expect(block).toContain('var _t2 = null! as i0.FormField;');
-      expect(block).toContain('_t2.field = (((this).f));');
+      expect(block).toContain('var _t3 = null! as i0.FormField;');
+      expect(block).toContain('_t3.field = (((this).f));');
     });
 
     it('should generate a custom checkbox control', () => {
@@ -2909,10 +2932,10 @@ describe('type check blocks', () => {
 
       expect(block).toContain('var _t1 = null! as i0.CustomControl;');
       expect(block).toContain(
-        '_t1.checked[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
+        'const _t2: i1.ɵInputSignalWriteType<(typeof _t1)["checked"]> = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
       );
-      expect(block).toContain('var _t2 = null! as i0.FormField;');
-      expect(block).toContain('_t2.field = (((this).f));');
+      expect(block).toContain('var _t3 = null! as i0.FormField;');
+      expect(block).toContain('_t3.field = (((this).f));');
     });
 
     it('should add implicit bindings to other field-related inputs on a custom control', () => {
@@ -2960,19 +2983,18 @@ describe('type check blocks', () => {
 
       expect(block).toContain('var _t1 = null! as i0.CustomControl;');
       expect(block).toContain(
-        '_t1.value[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
+        'const _t2: i1.ɵInputSignalWriteType<(typeof _t1)["value"]> = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
       );
       expect(block).toContain(
-        '_t1.required[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = ((((this).f)()).required());',
+        'const _t3: i1.ɵInputSignalWriteType<(typeof _t1)["disabled"]> = ((((this).f)()).disabled());',
       );
       expect(block).toContain(
-        '_t1.disabled[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = ((((this).f)()).disabled());',
+        'const _t4: i1.ɵInputSignalWriteType<(typeof _t1)["name"]> = ((((this).f)()).name());',
       );
       expect(block).toContain(
-        '_t1.name[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = ((((this).f)()).name());',
+        'const _t5: i1.ɵInputSignalWriteType<(typeof _t1)["required"]> = ((((this).f)()).required());',
       );
-      expect(block).toContain('var _t2 = null! as i0.FormField;');
-      expect(block).toContain('_t2.field = (((this).f));');
+      expect(block).toContain('_t6.field = (((this).f));');
     });
 
     it('should produce safe reads for the fields that are optional', () => {
@@ -3006,13 +3028,13 @@ describe('type check blocks', () => {
 
       expect(block).toContain('var _t1 = null! as i0.CustomControl;');
       expect(block).toContain(
-        '_t1.value[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
+        'const _t2: i1.ɵInputSignalWriteType<(typeof _t1)["value"]> = i1.ɵunwrapWritableSignal((((((this).f)()).value)));',
       );
       expect(block).toContain(
-        '_t1.max[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = ((0 as any ? (((((this).f)()).max))!() : undefined));',
+        'const _t3: i1.ɵInputSignalWriteType<(typeof _t1)["max"]> = ((0 as any ? (((((this).f)()).max))!() : undefined));',
       );
-      expect(block).toContain('var _t2 = null! as i0.FormField;');
-      expect(block).toContain('_t2.field = (((this).f));');
+      expect(block).toContain('var _t4 = null! as i0.FormField;');
+      expect(block).toContain('_t4.field = (((this).f));');
     });
   });
 });

@@ -62,6 +62,9 @@ export type InputOptionsWithTransform<T, TransformT> = Required<
 export const ɵINPUT_SIGNAL_BRAND_READ_TYPE: unique symbol = /* @__PURE__ */ Symbol();
 export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE: unique symbol = /* @__PURE__ */ Symbol();
 
+export type ɵInputSignalWriteType<T> =
+  T extends InputSignalWithTransform<any, infer TransformT> ? TransformT : never;
+
 /**
  * `InputSignalWithTransform` represents a special `Signal` for a
  * directive/component input with a `transform` function.
@@ -89,7 +92,7 @@ export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE: unique symbol = /* @__PURE__ */ Sy
 export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
   [SIGNAL]: InputSignalNode<T, TransformT>;
   [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
-  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: TransformT;
+  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: (value: TransformT) => void;
 }
 
 /**
