@@ -19,7 +19,7 @@ import {
   ɵcontrolUpdate as updateControlBinding,
   ɵCONTROL,
   ɵInteropControl,
-  type ɵControl,
+  type ɵFormFieldDirective,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
@@ -71,7 +71,7 @@ const controlInstructions = {
     {provide: NgControl, useFactory: () => inject(FormField).getOrCreateNgControl()},
   ],
 })
-// This directive should `implements ɵControl<T>`, but actually adding that breaks people's
+// This directive should `implements ɵFormFieldDirective<T>`, but actually adding that breaks people's
 // builds because part of the public API is marked `@internal` and stripped.
 // Instead we have an type check below that enforces this in a non-breaking way.
 export class FormField<T> {
@@ -130,9 +130,14 @@ export class FormField<T> {
       {injector: this.injector},
     );
   }
+
+  /** Focuses this UI control. */
+  focus?(): void;
 }
 
-// We can't add `implements ɵControl<T>` to `Field` even though it should conform to the interface.
+// We can't add `implements ɵFormFieldDirective<T>` to `Field` even though it should conform to the interface.
 // Instead we enforce it here through some utility types.
 type Check<T extends true> = T;
-type FieldImplementsɵControl = Check<FormField<any> extends ɵControl<any> ? true : false>;
+type FormFieldImplementsɵFormFieldDirective = Check<
+  FormField<any> extends ɵFormFieldDirective<any> ? true : false
+>;
