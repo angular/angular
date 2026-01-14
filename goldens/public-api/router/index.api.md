@@ -711,7 +711,7 @@ export class RouteConfigLoadStart {
 }
 
 // @public
-export class Router {
+export class Router implements OnDestroy {
     constructor();
     readonly componentInputBindingEnabled: boolean;
     // (undocumented)

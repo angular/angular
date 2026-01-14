@@ -19,6 +19,7 @@ import {
   untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
   ɵformatRuntimeError as formatRuntimeError,
+  OnDestroy,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
@@ -106,7 +107,7 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  * @publicApi
  */
 @Injectable({providedIn: 'root'})
-export class Router {
+export class Router implements OnDestroy {
   private get currentUrlTree() {
     return this.stateManager.getCurrentUrlTree();
   }
