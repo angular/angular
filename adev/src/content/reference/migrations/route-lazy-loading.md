@@ -34,15 +34,15 @@ The migration will check all the components in the routes, check if they are sta
 
 ```typescript
 // app.module.ts
-import {HomeComponent} from './home/home.component';
+import {Home} from './home';
 
 @NgModule({
   imports: [
     RouterModule.forRoot([
       {
         path: 'home',
-        // HomeComponent is standalone and eagerly loaded
-        component: HomeComponent,
+        // Home is standalone and eagerly loaded
+        component: Home,
       },
     ]),
   ],
@@ -59,8 +59,8 @@ export class AppModule {}
     RouterModule.forRoot([
       {
         path: 'home',
-        // ↓ HomeComponent is now lazy loaded
-        loadComponent: () => import('./home/home.component').then((m) => m.HomeComponent),
+        // ↓ Home is now lazy loaded
+        loadComponent: () => import('./home').then((m) => m.Home),
       },
     ]),
   ],
