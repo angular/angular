@@ -1,3 +1,17 @@
+<a name="21.0.9"></a>
+# 21.0.9 (2026-01-14)
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [82d556a8fb](https://github.com/angular/angular/commit/82d556a8fb38cd2024e3d098c55254305ba12b6b) | fix | Ensure the control instruction comes after the other bindings |
+| [0055f3cc79](https://github.com/angular/angular/commit/0055f3cc79f387b8dec6ce5e1a33fad5486f9341) | fix | Rename signal form [field] to [formField] |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e4bfa5c9e7](https://github.com/angular/angular/commit/e4bfa5c9e7feec48d3c4e9425a21a2ccf6532bdb) | fix | prevent duplicate imports in common-to-standalone migration |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.1.0-rc.0"></a>
 # 21.1.0-rc.0 (2026-01-08)
 ### common
