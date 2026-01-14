@@ -336,8 +336,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#7f29a07e259169c1eb3f1659b75faa164f017972
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7f29a07e259169c1eb3f1659b75faa164f017972(@modelcontextprotocol/sdk@1.25.2)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#0b9654158d79ed9bf68866d619ea3a12700ed385
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0b9654158d79ed9bf68866d619ea3a12700ed385(@modelcontextprotocol/sdk@1.25.2)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.5)
@@ -1678,9 +1678,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7f29a07e259169c1eb3f1659b75faa164f017972':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7f29a07e259169c1eb3f1659b75faa164f017972}
-    version: 0.0.0-1ce250a660eca5f613794a32cbae6d0f7a449918
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0b9654158d79ed9bf68866d619ea3a12700ed385':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0b9654158d79ed9bf68866d619ea3a12700ed385}
+    version: 0.0.0-b816685b6260ab760f1a24fc6f79db9bd1cb4921
     hasBin: true
 
   '@angular/ssr@21.1.0-rc.0':
@@ -13285,7 +13285,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/7f29a07e259169c1eb3f1659b75faa164f017972(@modelcontextprotocol/sdk@1.25.2)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0b9654158d79ed9bf68866d619ea3a12700ed385(@modelcontextprotocol/sdk@1.25.2)':
     dependencies:
       '@actions/core': 2.0.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
