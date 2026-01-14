@@ -22,7 +22,7 @@ export class DeferViewComponent {
 
   readonly loadingBlockInfo = computed(() => {
     const loadingBlock = this.defer().blocks.loadingBlock;
-    if (!loadingBlock) {
+    if (!loadingBlock.exists) {
       return null;
     }
 
@@ -34,5 +34,10 @@ export class DeferViewComponent {
       info.push(`after ${loadingBlock.afterTime}ms`);
     }
     return info.length ? `(${info.join(', ')})` : null;
+  });
+
+  readonly hasDeclaredBlocks = computed(() => {
+    const blocks = this.defer().blocks;
+    return blocks.hasErrorBlock || blocks.placeholderBlock.exists || blocks.loadingBlock.exists;
   });
 }

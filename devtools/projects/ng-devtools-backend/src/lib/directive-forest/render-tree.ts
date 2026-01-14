@@ -11,7 +11,7 @@ import {
   ɵDeferBlockData as DeferBlockData,
   ɵHydratedNode as HydrationNode,
 } from '@angular/core';
-import {CurrentDeferBlock, HydrationStatus} from '../../../../protocol';
+import {RenderedDeferBlock, HydrationStatus} from '../../../../protocol';
 
 import {ComponentTreeNode} from '../interfaces';
 import {ngDebugClient} from '../ng-debug-api/ng-debug-api';
@@ -126,14 +126,19 @@ function groupDeferChildrenIfNeeded(
   getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'],
 ) {
   const currentDeferBlock = deferBlocks.currentBlock;
-  const isFirstDefferedChild = node === currentDeferBlock?.rootNodes[0];
-  if (isFirstDefferedChild) {
+  const isFirstDeferredChild = node === currentDeferBlock?.rootNodes[0];
+  // Handles the case where the @defer is still unresolved but doesn't
+  // have a placeholder, for instance, by which children we mark
+  // the position of the block normally. In this case, we use the host.
+  const isHostNode = node === currentDeferBlock?.hostNode;
+
+  if (isFirstDeferredChild || isHostNode) {
     deferBlocks.advance();
 
-    // When encountering the first child of a defer block
-    // We create a synthetic TreeNode reprensenting the defer block
+    // When encountering the first child of a defer block (or the host node),
+    // we create a synthetic TreeNode representing the defer block.
     const childrenTree: ComponentTreeNode[] = [];
-    currentDeferBlock.rootNodes.forEach((child) => {
+    for (const child of currentDeferBlock.rootNodes) {
       extractViewTree(
         child,
         childrenTree,
@@ -143,7 +148,7 @@ function groupDeferChildrenIfNeeded(
         getDirectives,
         getDirectiveMetadata,
       );
-    });
+    }
 
     const deferBlockTreeNode = {
       children: childrenTree,
@@ -155,7 +160,7 @@ function groupDeferChildrenIfNeeded(
       defer: {
         id: `deferId-${rootId}-${deferBlocks.currentIndex}`,
         state: currentDeferBlock.state,
-        currentBlock: currentBlock(currentDeferBlock),
+        renderedBlock: getRenderedBlock(currentDeferBlock),
         triggers: groupTriggers(currentDeferBlock.triggers),
         blocks: {
           hasErrorBlock: currentDeferBlock.hasErrorBlock,
@@ -213,12 +218,16 @@ function groupTriggers(triggers: string[]) {
   return {defer, hydrate, prefetch};
 }
 
-function currentBlock(deferBlock: DeferBlockData): CurrentDeferBlock | null {
+function getRenderedBlock(deferBlock: DeferBlockData): RenderedDeferBlock | null {
   if (['placeholder', 'loading', 'error'].includes(deferBlock.state)) {
     return deferBlock.state as 'placeholder' | 'loading' | 'error';
   }
+  if (deferBlock.state === 'complete') {
+    return 'defer';
+  }
   return null;
 }
+
 export class RTreeStrategy {
   supports(): boolean {
     return (['getDirectiveMetadata', 'getComponent'] as const).every(
@@ -253,7 +262,7 @@ class DeferBlocksIterator {
     this.currentIndex++;
   }
 
-  get currentBlock() {
+  get currentBlock(): DeferBlockData | undefined {
     return this.blocks[this.currentIndex];
   }
 }
