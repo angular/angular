@@ -17,7 +17,7 @@ import type {DisabledReason} from './types';
  * @category control
  * @experimental 21.0.0
  */
-export interface FormUiControl extends FormFieldBindingOptions {
+export interface FormUiControl {
   /**
    * An input to receive the errors for the field. If implemented, the `Field` directive will
    * automatically bind errors from the bound field to this input.
@@ -124,6 +124,14 @@ export interface FormUiControl extends FormFieldBindingOptions {
    */
   focus?(): void;
 }
+
+// Verify that `FormUiControl` implements `FormFieldBindingOptions`.
+// We intend for this to be the case so that a `FormUiControl` can act as its own `FormFieldBindingOptions`.
+// However, we don't want to add it as an actual `extends` clause to avoid confusing users.
+type Check<T extends true> = T;
+type FormUiControlImplementsFormFieldBindingOptions = Check<
+  FormUiControl extends FormFieldBindingOptions ? true : false
+>;
 
 /**
  * A contract for a form control that edits a `FieldTree` of type `TValue`. Any component that
