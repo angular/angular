@@ -7,7 +7,7 @@
  */
 
 import {algoliasearch} from 'algoliasearch';
-import synonyms from './algolia-synonyms.mjs';
+import synonyms from './algolia-synonyms.mts';
 
 /** The name of the index being updated. */
 const INDEX_NAME = 'angular_v17';
