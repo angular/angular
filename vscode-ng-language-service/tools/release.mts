@@ -17,7 +17,7 @@ import {input, select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import semver from 'semver';
 import {writeFile, readFile} from 'node:fs/promises';
-import {exec as nodeExec, spawn, SpawnOptions} from 'node:child_process';
+import {exec as nodeExec, spawn, type SpawnOptions} from 'node:child_process';
 import {promisify} from 'node:util';
 import {join} from 'node:path';
 
