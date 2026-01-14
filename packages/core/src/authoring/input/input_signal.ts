@@ -89,7 +89,7 @@ export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE: unique symbol = /* @__PURE__ */ Sy
 export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
   [SIGNAL]: InputSignalNode<T, TransformT>;
   [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
-  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: TransformT;
+  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: (value: TransformT) => void;
 }
 
 /**
