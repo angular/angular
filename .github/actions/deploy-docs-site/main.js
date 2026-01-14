@@ -1500,7 +1500,7 @@ var require_summary = __commonJS({
     exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
     var os_1 = __require("os");
     var fs_1 = __require("fs");
-    var { access, appendFile, writeFile: writeFile3 } = fs_1.promises;
+    var { access, appendFile, writeFile: writeFile4 } = fs_1.promises;
     exports.SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY";
     exports.SUMMARY_DOCS_URL = "https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary";
     var Summary = class {
@@ -1558,7 +1558,7 @@ var require_summary = __commonJS({
         return __awaiter(this, void 0, void 0, function* () {
           const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
           const filePath = yield this.filePath();
-          const writeFunc = overwrite ? writeFile3 : appendFile;
+          const writeFunc = overwrite ? writeFile4 : appendFile;
           yield writeFunc(filePath, this._buffer, { encoding: "utf8" });
           return this.emptyBuffer();
         });
@@ -8549,7 +8549,7 @@ var require_lockfile = __commonJS({
               }
               const file = _ref22;
               if (yield exists(file)) {
-                return readFile2(file);
+                return readFile3(file);
               }
             }
             return null;
@@ -8568,7 +8568,7 @@ var require_lockfile = __commonJS({
         })();
         let readJsonAndFile = exports2.readJsonAndFile = (() => {
           var _ref24 = (0, (_asyncToGenerator2 || _load_asyncToGenerator()).default)(function* (loc) {
-            const file = yield readFile2(loc);
+            const file = yield readFile3(loc);
             try {
               return {
                 object: (0, (_map || _load_map()).default)(JSON.parse(stripBOM(file))),
@@ -8712,7 +8712,7 @@ var require_lockfile = __commonJS({
             if (eol !== "\n") {
               data = data.replace(/\n/g, eol);
             }
-            yield writeFile3(path, data);
+            yield writeFile4(path, data);
           });
           return function writeFilePreservingEol2(_x30, _x31) {
             return _ref31.apply(this, arguments);
@@ -8724,7 +8724,7 @@ var require_lockfile = __commonJS({
             const file = (_path || _load_path()).default.join(dir, filename);
             const fileLink = (_path || _load_path()).default.join(dir, filename + "-link");
             try {
-              yield writeFile3(file, "test");
+              yield writeFile4(file, "test");
               yield link(file, fileLink);
             } catch (err) {
               return false;
@@ -8814,7 +8814,7 @@ var require_lockfile = __commonJS({
           };
         })();
         exports2.copy = copy;
-        exports2.readFile = readFile2;
+        exports2.readFile = readFile3;
         exports2.readFileRaw = readFileRaw;
         exports2.normalizeOS = normalizeOS;
         var _fs;
@@ -8879,7 +8879,7 @@ var require_lockfile = __commonJS({
         const lockQueue = exports2.lockQueue = new (_blockingQueue || _load_blockingQueue()).default("fs lock");
         const readFileBuffer = exports2.readFileBuffer = (0, (_promise2 || _load_promise2()).promisify)((_fs || _load_fs()).default.readFile);
         const open = exports2.open = (0, (_promise2 || _load_promise2()).promisify)((_fs || _load_fs()).default.open);
-        const writeFile3 = exports2.writeFile = (0, (_promise2 || _load_promise2()).promisify)((_fs || _load_fs()).default.writeFile);
+        const writeFile4 = exports2.writeFile = (0, (_promise2 || _load_promise2()).promisify)((_fs || _load_fs()).default.writeFile);
         const readlink = exports2.readlink = (0, (_promise2 || _load_promise2()).promisify)((_fs || _load_fs()).default.readlink);
         const realpath = exports2.realpath = (0, (_promise2 || _load_promise2()).promisify)((_fs || _load_fs()).default.realpath);
         const readdir = exports2.readdir = (0, (_promise2 || _load_promise2()).promisify)((_fs || _load_fs()).default.readdir);
@@ -8913,7 +8913,7 @@ var require_lockfile = __commonJS({
             });
           });
         }
-        function readFile2(loc) {
+        function readFile3(loc) {
           return _readFile(loc, "utf8").then(normalizeOS);
         }
         function readFileRaw(loc) {
@@ -35356,28 +35356,42 @@ async function getDeployments() {
 }
 
 // .github/actions/deploy-docs-site/lib/sitemap.mjs
-import { join as join4 } from "path";
-import { readFileSync as readFileSync4, writeFileSync } from "fs";
+import { join as join4 } from "node:path";
+import { readFile as readFile2, writeFile as writeFile3 } from "node:fs/promises";
 async function generateSitemap(deployment, distDir) {
-  const servingUrlWithoutEndingSlash = deployment.servingUrl.endsWith("/") ? deployment.servingUrl.slice(0, -1) : deployment.servingUrl;
   const lastModifiedTimestamp = (/* @__PURE__ */ new Date()).toISOString();
-  const routes = JSON.parse(readFileSync4(join4(distDir, "prerendered-routes.json"), "utf-8"));
+  const { routes } = JSON.parse(await readFile2(join4(distDir, "prerendered-routes.json"), "utf-8"));
+  const routePaths = Object.keys(routes);
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${Object.keys(routes.routes).map((route) => {
-    const routeWithoutLeadingSlash = route.startsWith("/") ? route.slice(1) : route;
-    return `
-    <url>
-      <loc>${servingUrlWithoutEndingSlash}/${routeWithoutLeadingSlash}</loc>
+  ${routePaths.map((route) => `<url>
+      <loc>${joinUrlParts(deployment.servingUrl, route)}</loc>
       <lastmod>${lastModifiedTimestamp}</lastmod>
       <changefreq>daily</changefreq>
       <priority>1.0</priority>
-    </url>
-        `;
-  }).join("")}
+    </url>`).join("")}
   </urlset>`;
-  writeFileSync(join4(distDir, "browser", "sitemap.xml"), sitemap, "utf-8");
-  console.log(`Generated sitemap with ${Object.keys(routes.routes).length} entries.`);
+  await writeFile3(join4(distDir, "browser", "sitemap.xml"), sitemap, "utf-8");
+  console.log(`Generated sitemap with ${routePaths.length} entries.`);
+}
+function joinUrlParts(...parts) {
+  const normalizeParts = [];
+  for (const part of parts) {
+    if (part === "") {
+      continue;
+    }
+    let normalizedPart = part;
+    if (part[0] === "/") {
+      normalizedPart = normalizedPart.slice(1);
+    }
+    if (part.at(-1) === "/") {
+      normalizedPart = normalizedPart.slice(0, -1);
+    }
+    if (normalizedPart !== "") {
+      normalizeParts.push(normalizedPart);
+    }
+  }
+  return normalizeParts.join("/");
 }
 
 // .github/actions/deploy-docs-site/lib/main.mts
