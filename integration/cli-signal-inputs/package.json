@@ -25,8 +25,8 @@
     "zone.js": "0.16.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "21.1.0-rc.0",
-    "@angular/cli": "21.1.0-rc.0",
+    "@angular-devkit/build-angular": "21.1.0",
+    "@angular/cli": "21.1.0",
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "@types/jasmine": "^5.0.0",
     "@types/jasminewd2": "^2.0.8",
