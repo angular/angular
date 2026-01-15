@@ -47,6 +47,7 @@ js_binary(
         "//adev:node_modules/jsdom",
         "//adev:node_modules/mermaid",
         "//adev:node_modules/playwright-core",
+        "//adev:node_modules/typescript",
         "@rules_browsers//browsers/chromium",
     ],
     entry_point = "//adev/shared-docs/pipeline/guides:guides.mjs",
@@ -61,6 +62,7 @@ js_binary(
     name = "markdown_no_mermaid",
     data = [
         "//adev:node_modules/jsdom",
+        "//adev:node_modules/typescript",
     ],
     entry_point = "//adev/shared-docs/pipeline/guides:guides-no-mermaid.mjs",
     visibility = ["//visibility:public"],
