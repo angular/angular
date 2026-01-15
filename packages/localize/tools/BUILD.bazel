@@ -4,6 +4,7 @@ load("//tools:defaults.bzl", "npm_package", "ts_config", "ts_project")
 ts_config(
     name = "tsconfig_build",
     src = "tsconfig.json",
+    visibility = ["//packages/localize/tools:__subpackages__"],
     deps = [
         "//:node_modules/@types/node",
         "//packages:tsconfig_build",

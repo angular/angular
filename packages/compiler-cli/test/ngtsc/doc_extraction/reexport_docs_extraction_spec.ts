@@ -85,7 +85,7 @@ runInEachFileSystem(() => {
       env.write(
         'middle.ts',
         `
-        export * from 'implementation';
+        export * from './implementation';
       `,
       );
 

@@ -43,7 +43,7 @@ import {
   initializeServer,
   openTextDocument,
   ServerOptions,
-} from './test_utils';
+} from './test_utils.js';
 
 describe('Angular language server', () => {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000; /* 10 seconds */

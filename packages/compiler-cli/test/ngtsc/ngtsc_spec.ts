@@ -2213,9 +2213,8 @@ runInEachFileSystem((os: string) => {
         JSON.stringify({
           extends: './tsconfig-base.json',
           compilerOptions: {
-            baseUrl: '.',
             paths: {
-              '*': ['*', 'shared/*'],
+              'foo': ['./shared/foo/index'],
             },
           },
         }),
@@ -2388,6 +2387,18 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should use absolute import for forward references that were resolved from an absolute file', () => {
+      env.write(
+        'tsconfig.json',
+        JSON.stringify({
+          extends: './tsconfig-base.json',
+          compilerOptions: {
+            paths: {
+              'dir': ['./dir.ts'],
+            },
+          },
+        }),
+      );
+
       env.write(
         'dir.ts',
         `

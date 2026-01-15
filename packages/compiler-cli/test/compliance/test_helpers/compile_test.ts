@@ -126,7 +126,6 @@ function getOptions(
     strictNullChecks: true,
     outDir,
     rootDir,
-    baseUrl: '.',
     allowJs: true,
     declaration: true,
     target: ts.ScriptTarget.ES2022,

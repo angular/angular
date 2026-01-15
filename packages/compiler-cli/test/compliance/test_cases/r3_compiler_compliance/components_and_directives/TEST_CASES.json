@@ -194,7 +194,6 @@
         }
       ],
       "compilerOptions": {
-        "baseUrl": ".",
         "paths": {
           "external_library": [
             "./external_library"
