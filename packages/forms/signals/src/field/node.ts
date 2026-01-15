@@ -229,9 +229,10 @@ export class FieldNode implements FieldState<unknown> {
    * Marks this specific field as touched.
    */
   markAsTouched(): void {
-    this.nodeState.markAsTouched();
-    this.pendingSync()?.abort();
-    this.sync();
+    untracked(() => {
+      this.nodeState.markAsTouched();
+      this.flushSync();
+    });
   }
 
   /**
@@ -270,9 +271,11 @@ export class FieldNode implements FieldState<unknown> {
    * the field's {@link value} signal, depending on the debounce configuration.
    */
   setControlValue(newValue: unknown): void {
-    this._controlValue.set(newValue);
-    this.markAsDirty();
-    this.debounceSync();
+    untracked(() => {
+      this._controlValue.set(newValue);
+      this.markAsDirty();
+      this.debounceSync();
+    });
   }
 
   /**
@@ -280,6 +283,17 @@ export class FieldNode implements FieldState<unknown> {
    */
   private sync() {
     this.value.set(this.controlValue());
+  }
+
+  /**
+   * If there is a pending sync, abort it and sync immediately.
+   */
+  private flushSync() {
+    const pending = this.pendingSync();
+    if (pending && !pending.signal.aborted) {
+      pending.abort();
+      this.sync();
+    }
   }
 
   /**
