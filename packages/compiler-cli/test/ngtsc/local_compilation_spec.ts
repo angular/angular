@@ -23,10 +23,6 @@ runInEachFileSystem(() => {
     function tsconfig(extraOpts: TsConfigOptions = {}) {
       const tsconfig: {[key: string]: any} = {
         extends: '../tsconfig-base.json',
-        compilerOptions: {
-          baseUrl: '.',
-          rootDirs: ['/app'],
-        },
         angularCompilerOptions: {
           compilationMode: 'experimental-local',
           ...extraOpts,
@@ -58,10 +54,6 @@ runInEachFileSystem(() => {
       beforeEach(() => {
         const tsconfig: {[key: string]: any} = {
           extends: '../tsconfig-base.json',
-          compilerOptions: {
-            baseUrl: '.',
-            rootDirs: ['/app'],
-          },
           angularCompilerOptions: {
             compilationMode: 'experimental-local',
             generateExtraImportsInLocalMode: true,
@@ -86,7 +78,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from 'comp1';
+        import {Comp1} from './comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -100,7 +92,7 @@ runInEachFileSystem(() => {
         import {SomeExternalStuff} from '/some_external_file';
         import {SomeExternalStuff2} from '/some_external_file2';
 
-        import {BModule} from 'b';
+        import {BModule} from './b';
 
         @NgModule({imports: [SomeExternalStuff, BModule]})
         export class AModule {
@@ -131,7 +123,7 @@ runInEachFileSystem(() => {
           .not.toContain('import "/some_external_file2"');
         expect(Comp1Contents)
           .withContext('NgModule internal import should not be included in the global import')
-          .not.toContain('import "b"');
+          .not.toContain('import "./b"');
       });
 
       it('should include global imports only in the eligible files', () => {
@@ -174,7 +166,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from 'comp1';
+        import {Comp1} from './comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -188,7 +180,7 @@ runInEachFileSystem(() => {
         import {SomeExternalStuff} from '/some_external_file';
         import {SomeExternalStuff2} from '/some_external_file2';
 
-        import {BModule} from 'b';
+        import {BModule} from './b';
 
         @NgModule({imports: [SomeExternalStuff, BModule]})
         export class AModule {
@@ -251,7 +243,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from 'comp1';
+        import {Comp1} from './comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -264,7 +256,7 @@ runInEachFileSystem(() => {
         import {NgModule} from '@angular/core';
         import * as n from '/some_external_file';
 
-        import {BModule} from 'b';
+        import {BModule} from './b';
 
         @NgModule({imports: [n.SomeExternalStuff]})
         export class AModule {
@@ -299,7 +291,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from 'comp1';
+        import {Comp1} from './comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -312,7 +304,7 @@ runInEachFileSystem(() => {
         import {NgModule} from '@angular/core';
         import {SomeExternalStuff} from '/some_external_file';
 
-        import {BModule} from 'b';
+        import {BModule} from './b';
 
         @NgModule({imports: [[[SomeExternalStuff]]]})
         export class AModule {
@@ -341,7 +333,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from 'comp1';
+        import {Comp1} from './comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -354,7 +346,7 @@ runInEachFileSystem(() => {
         import {NgModule} from '@angular/core';
         import * as n from '/some_external_file';
 
-        import {BModule} from 'b';
+        import {BModule} from './b';
 
         @NgModule({imports: [[[n.SomeExternalStuff]]]})
         export class AModule {
@@ -383,7 +375,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {Comp1} from 'comp1';
+        import {Comp1} from './comp1';
 
         @NgModule({declarations:[Comp1]})
         export class Module1 {
@@ -397,7 +389,7 @@ runInEachFileSystem(() => {
         import {SomeExternalStuff} from '/some_external_file';
         import * as n from '/some_external_file2';
 
-        import {BModule} from 'b';
+        import {BModule} from './b';
 
         @NgModule({imports: [[SomeExternalStuff], [n.SomeExternalStuff]]})
         export class AModule {
@@ -460,9 +452,9 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {InternalComp} from 'internal_comp';
-        import {InternalDir} from 'internal_dir';
-        import {InternalPipe} from 'internal_pipe';
+        import {InternalComp} from './internal_comp';
+        import {InternalDir} from './internal_dir';
+        import {InternalPipe} from './internal_pipe';
 
         @NgModule({declarations: [InternalComp, InternalDir, InternalPipe], exports: [InternalComp, InternalDir, InternalPipe]})
         export class InternalModule {
@@ -484,8 +476,8 @@ runInEachFileSystem(() => {
           `
         import {NgModule} from '@angular/core';
 
-        import {MainComp} from 'main_comp';
-        import {InternalModule} from 'internal_module';
+        import {MainComp} from './main_comp';
+        import {InternalModule} from './internal_module';
 
         @NgModule({declarations: [MainComp], imports: [InternalModule]})
         export class MainModule {
@@ -495,9 +487,9 @@ runInEachFileSystem(() => {
 
         env.driveMain();
 
-        expect(env.getContents('main_comp.js')).toContain('import "internal_comp"');
-        expect(env.getContents('main_comp.js')).toContain('import "internal_dir"');
-        expect(env.getContents('main_comp.js')).toContain('import "internal_pipe"');
+        expect(env.getContents('main_comp.js')).toContain('import "./internal_comp"');
+        expect(env.getContents('main_comp.js')).toContain('import "./internal_dir"');
+        expect(env.getContents('main_comp.js')).toContain('import "./internal_pipe"');
       });
 
       it('should not include extra import and remote scope runtime for the local component dependencies when cycle is produced', () => {
