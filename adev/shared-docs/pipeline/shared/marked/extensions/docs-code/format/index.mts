@@ -50,7 +50,7 @@ export function formatCode(token: CodeToken, context: RendererContext): string {
   }
 
   extractRegions(token);
-  highlightCode(context.highlighter, token);
+  highlightCode(context.highlighter, token, context);
 
   const containerEl = JSDOM.fragment(`
   <div class="docs-code${token.style ? ' docs-code-' + token.style : ''}">
