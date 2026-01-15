@@ -13,7 +13,9 @@ export function headingRender(
   this: AdevDocsRenderer,
   {depth, tokens, text: headingText, raw}: Tokens.Heading,
 ): string {
-  const parsedText = this?.parser.parseInline(tokens);
+  this.context.disableAutoLinking = true;
+  const parsedText = this?.parser.parseInline(tokens, this);
+  this.context.disableAutoLinking = false;
   if (depth === 1) {
     return `
     <header class="docs-header">

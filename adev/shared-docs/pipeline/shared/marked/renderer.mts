@@ -31,6 +31,8 @@ export interface RendererContext {
   apiEntries?: Record<string, {moduleName: string; aliases?: string[]}>;
   highlighter: HighlighterGeneric<any, any>;
   headerIds: Map<string, number>;
+  /** In the case we want to disable auto-linking because anchor blocks might be incompatible where some code blocks are being rendered */
+  disableAutoLinking: boolean;
 }
 
 /**

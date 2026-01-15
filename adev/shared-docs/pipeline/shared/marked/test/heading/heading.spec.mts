@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {parseMarkdown} from '../../parse.mjs';
-import {resolve} from 'node:path';
 import {readFile} from 'fs/promises';
 import {JSDOM} from 'jsdom';
+import {resolve} from 'node:path';
+import {parseMarkdown} from '../../parse.mjs';
 import {rendererContext} from '../renderer-context.mjs';
 
 describe('markdown to html', () => {
@@ -117,5 +117,18 @@ describe('markdown to html', () => {
     expect(h2.firstElementChild?.tagName).toBe('A');
 
     expect(h2.firstElementChild!.innerHTML).toBe('Query for the <code>&lt;h1&gt;</code>');
+  });
+
+  it('shoud now link symbols in headings', () => {
+    const markdownDocument = JSDOM.fragment(
+      parseMarkdown('## Hello **NEW** `Router` ', rendererContext),
+    );
+    const h2 = markdownDocument.querySelector('h2')!;
+
+    // The anchor element should be to only child, no nested anchor
+    expect(h2.children.length).toBe(1);
+
+    // We ensure that we still style the heading content
+    expect(markdownDocument.querySelector('strong')).toBeDefined();
   });
 });
