@@ -62,9 +62,6 @@ export class SignalsVisualizerComponent {
     return Array.from(clusterIds).map((id) => graph.clusters[id]);
   });
 
-  private onResize = () => this.signalsVisualizer?.resize();
-  private observer = new ResizeObserver(this.onResize);
-
   constructor() {
     const injector = inject(Injector);
 
@@ -73,9 +70,18 @@ export class SignalsVisualizerComponent {
         this.setUpSignalsVisualizer();
 
         runInInjectionContext(injector, () => {
+          let lastElement: ElementPosition | undefined;
+
           effect(() => {
             const graph = this.graph();
             this.signalsVisualizer!.render(graph!);
+            const currElement = untracked(this.element);
+
+            // Snap to root node only if the element changes.
+            if (lastElement !== currElement) {
+              this.signalsVisualizer!.snapToRootNode();
+            }
+            lastElement = currElement;
           });
 
           effect(() => {
@@ -92,12 +98,10 @@ export class SignalsVisualizerComponent {
             untracked(() => this.signalsVisualizer!.reset());
           });
         });
-        this.observer.observe(this.svgHost().nativeElement);
       },
     });
 
     inject(DestroyRef).onDestroy(() => {
-      this.observer.disconnect();
       this.signalsVisualizer?.cleanup();
     });
   }
