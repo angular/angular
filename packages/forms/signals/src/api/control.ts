@@ -7,6 +7,7 @@
  */
 
 import {InputSignal, InputSignalWithTransform, ModelSignal, OutputRef} from '@angular/core';
+import type {FormFieldBindingOptions} from './form_field_directive';
 import {ValidationError, type WithOptionalField} from './rules/validation/validation_errors';
 import type {DisabledReason} from './types';
 
@@ -17,10 +18,6 @@ import type {DisabledReason} from './types';
  * @experimental 21.0.0
  */
 export interface FormUiControl {
-  // TODO: `ValidationError` and `DisabledReason` are inherently tied to the signal forms system.
-  // They don't make sense when using a control separately from the forms system and setting the
-  // inputs individually. Given that, should they still be part of this interface?
-
   /**
    * An input to receive the errors for the field. If implemented, the `Field` directive will
    * automatically bind errors from the bound field to this input.
@@ -119,7 +116,22 @@ export interface FormUiControl {
   readonly pattern?:
     | InputSignal<readonly RegExp[]>
     | InputSignalWithTransform<readonly RegExp[], unknown>;
+  /**
+   * Focuses the UI control.
+   *
+   * If the focus method is not implemented, Signal Forms will attempt to focus the host element
+   * when asked to focus this control.
+   */
+  focus?(): void;
 }
+
+// Verify that `FormUiControl` implements `FormFieldBindingOptions`.
+// We intend for this to be the case so that a `FormUiControl` can act as its own `FormFieldBindingOptions`.
+// However, we don't want to add it as an actual `extends` clause to avoid confusing users.
+type Check<T extends true> = T;
+type FormUiControlImplementsFormFieldBindingOptions = Check<
+  FormUiControl extends FormFieldBindingOptions ? true : false
+>;
 
 /**
  * A contract for a form control that edits a `FieldTree` of type `TValue`. Any component that

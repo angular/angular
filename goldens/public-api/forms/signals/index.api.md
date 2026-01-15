@@ -29,6 +29,7 @@ import { WritableSignal } from '@angular/core';
 import { ɵCONTROL } from '@angular/core';
 import { ɵcontrolUpdate } from '@angular/core';
 import { ɵFieldState } from '@angular/core';
+import { ɵFormFieldBindingOptions } from '@angular/core';
 import { ɵɵcontrolCreate } from '@angular/core';
 
 // @public
@@ -175,18 +176,24 @@ export class FormField<T> {
     };
     // (undocumented)
     readonly element: HTMLElement;
-    focus?(): void;
+    focus(): void;
     // (undocumented)
     readonly formField: i0.InputSignal<FieldTree<T>>;
     protected getOrCreateNgControl(): InteropNgControl;
     // (undocumented)
     readonly injector: Injector;
+    registerAsBinding(bindingOptions?: FormFieldBindingOptions): void;
     // (undocumented)
     readonly state: i0.Signal<[T] extends [_angular_forms.AbstractControl<any, any, any>] ? CompatFieldState<T, string | number> : FieldState<T, string | number>>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormField<any>, "[formField]", never, { "formField": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormField<any>, never>;
+}
+
+// @public (undocumented)
+export interface FormFieldBindingOptions extends ɵFormFieldBindingOptions {
+    focus?: VoidFunction;
 }
 
 // @public
@@ -203,6 +210,7 @@ export interface FormUiControl {
     readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabledReasons?: InputSignal<readonly WithOptionalField<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalField<DisabledReason>[], unknown>;
     readonly errors?: InputSignal<readonly WithOptionalField<ValidationError>[]> | InputSignalWithTransform<readonly WithOptionalField<ValidationError>[], unknown>;
+    focus?(): void;
     readonly hidden?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly invalid?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly max?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
