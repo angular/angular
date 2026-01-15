@@ -316,16 +316,6 @@ function ingestElement(unit: ViewCompilationUnit, element: t.Element): void {
   const endOp = ir.createElementEndOp(id, element.endSourceSpan ?? element.startSourceSpan);
   unit.create.push(endOp);
 
-  // We want to ensure that the controlCreateOp is after the ops that create the element
-  const fieldInput = element.inputs.find(
-    (input) => input.name === 'formField' && input.type === e.BindingType.Property,
-  );
-  if (fieldInput) {
-    // If the input name is 'formField', this could be a form control binding which requires a
-    // `ControlCreateOp` to properly initialize.
-    unit.create.push(ir.createControlCreateOp(fieldInput.sourceSpan));
-  }
-
   // If there is an i18n message associated with this element, insert i18n start and end ops.
   if (i18nBlockId !== null) {
     ir.OpList.insertBefore<ir.CreateOp>(

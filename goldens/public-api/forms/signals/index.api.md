@@ -26,11 +26,6 @@ import { StandardSchemaV1 } from '@standard-schema/spec';
 import { ValidationErrors } from '@angular/forms';
 import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
-import { ɵCONTROL } from '@angular/core';
-import { ɵcontrolUpdate } from '@angular/core';
-import { ɵFieldState } from '@angular/core';
-import { ɵFormFieldBindingOptions } from '@angular/core';
-import { ɵɵcontrolCreate } from '@angular/core';
 
 // @public
 export function apply<TValue>(path: SchemaPath<TValue>, schema: NoInfer<SchemaOrSchemaFn<TValue>>): void;
@@ -132,8 +127,10 @@ export class EmailValidationError extends BaseNgValidationError {
 export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = TPathKind extends PathKind.Item ? ItemFieldContext<TValue> : TPathKind extends PathKind.Child ? ChildFieldContext<TValue> : RootFieldContext<TValue>;
 
 // @public
-export interface FieldState<TValue, TKey extends string | number = string | number> extends ɵFieldState<TValue> {
+export interface FieldState<TValue, TKey extends string | number = string | number> {
+    readonly controlValue: Signal<TValue>;
     readonly dirty: Signal<boolean>;
+    readonly disabled: Signal<boolean>;
     // (undocumented)
     readonly disabledReasons: Signal<readonly DisabledReason[]>;
     // (undocumented)
@@ -144,11 +141,24 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
     readonly keyInParent: Signal<TKey>;
+    markAsDirty(): void;
+    markAsTouched(): void;
+    readonly max?: Signal<number | undefined>;
+    readonly maxLength?: Signal<number | undefined>;
     metadata<M>(key: MetadataKey<M, any, any>): M | undefined;
+    readonly min?: Signal<number | undefined>;
+    readonly minLength?: Signal<number | undefined>;
+    readonly name: Signal<string>;
+    readonly pattern: Signal<readonly RegExp[]>;
     readonly pending: Signal<boolean>;
+    readonly readonly: Signal<boolean>;
+    readonly required: Signal<boolean>;
     reset(value?: TValue): void;
+    setControlValue(value: TValue): void;
     readonly submitting: Signal<boolean>;
+    readonly touched: Signal<boolean>;
     readonly valid: Signal<boolean>;
+    readonly value: WritableSignal<TValue>;
 }
 
 // @public
@@ -177,22 +187,15 @@ export interface FormCheckboxControl extends FormUiControl<boolean> {
 
 // @public
 export class FormField<T> {
-    // (undocumented)
-    readonly [ɵCONTROL]: {
-        readonly create: typeof ɵɵcontrolCreate;
-        readonly update: typeof ɵcontrolUpdate;
-    };
-    // (undocumented)
+    readonly [ɵNgFieldDirective]: true;
     readonly element: HTMLElement;
     readonly errors: Signal<ValidationError.WithFieldTree[]>;
     // (undocumented)
     readonly fieldTree: i0.InputSignal<FieldTree<T>>;
     focus(options?: FocusOptions): void;
-    protected getOrCreateNgControl(): InteropNgControl;
-    // (undocumented)
     readonly injector: Injector;
-    registerAsBinding(bindingOptions?: FormFieldBindingOptions<T>): void;
-    // (undocumented)
+    protected get interopNgControl(): InteropNgControl;
+    registerAsBinding(bindingOptions?: FormFieldBindingOptions): void;
     readonly state: Signal<[T] extends [_angular_forms.AbstractControl<any, any, any>] ? CompatFieldState<T, string | number> : FieldState<T, string | number>>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormField<any>, "[formField]", ["formField"], { "fieldTree": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
@@ -201,9 +204,8 @@ export class FormField<T> {
 }
 
 // @public (undocumented)
-export interface FormFieldBindingOptions<TValue> extends ɵFormFieldBindingOptions {
-    focus?(options?: FocusOptions): void;
-    // (undocumented)
+export interface FormFieldBindingOptions {
+    readonly focus?: (focusOptions?: FocusOptions) => void;
     readonly parseErrors?: Signal<ValidationError.WithoutFieldTree[]>;
 }
 

@@ -41,6 +41,7 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵresetView': r3.ɵɵresetView,
   'ɵɵHostDirectivesFeature': r3.ɵɵHostDirectivesFeature,
   'ɵɵNgOnChangesFeature': r3.ɵɵNgOnChangesFeature,
+  'ɵɵControlFeature': r3.ɵɵControlFeature,
   'ɵɵProvidersFeature': r3.ɵɵProvidersFeature,
   'ɵɵInheritDefinitionFeature': r3.ɵɵInheritDefinitionFeature,
   'ɵɵExternalStylesFeature': r3.ɵɵExternalStylesFeature,

@@ -752,7 +752,7 @@ function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
 }
 
 function reifyControl(op: ir.ControlOp): ir.UpdateOp {
-  return ng.control(op.name, op.expression, op.sanitizer, op.sourceSpan);
+  return ng.control(op.sourceSpan);
 }
 
 function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Expression {

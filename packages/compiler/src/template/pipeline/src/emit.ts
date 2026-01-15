@@ -87,6 +87,7 @@ import {countVariables} from './phases/var_counting';
 import {optimizeVariables} from './phases/variable_optimization';
 import {wrapI18nIcus} from './phases/wrap_icus';
 import {generateArrowFunctions} from './phases/generate_arrow_functions';
+import {specializeControlProperties} from './phases/control_directives';
 
 type Phase =
   | {
@@ -112,6 +113,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: deduplicateTextBindings},
   {kind: Kind.Both, fn: specializeStyleBindings},
   {kind: Kind.Both, fn: specializeBindings},
+  {kind: Kind.Tmpl, fn: specializeControlProperties},
   {kind: Kind.Both, fn: convertAnimations},
   {kind: Kind.Both, fn: extractAttributes},
   {kind: Kind.Tmpl, fn: createI18nContexts},
