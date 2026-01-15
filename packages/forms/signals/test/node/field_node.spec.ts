@@ -11,6 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {
   apply,
   applyEach,
+  debounce,
   disabled,
   form,
   hidden,
@@ -593,6 +594,34 @@ describe('FieldNode', () => {
       isHidden.set(false);
       expect(f().hidden()).toBe(false);
       expect(f().touched()).toBe(true);
+    });
+
+    it('should flush pending control value sync on touch', () => {
+      const product = {
+        id: 'a',
+        name: 'a',
+        displayName: 'A',
+        imgUrl: 'https://a.png',
+      };
+      const myForm = form(
+        signal(product),
+        (p) => {
+          debounce(p.name, () => new Promise(() => {}));
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      myForm.name().markAsTouched();
+      // Same object identity because there was no change to flush to the name.
+      expect(myForm().value()).toBe(product);
+
+      myForm.name().setControlValue('b');
+      // Same object identity because the name change is still pending.
+      expect(myForm().value()).toBe(product);
+
+      myForm.name().markAsTouched();
+      // Different object identity because the name change was flushed.
+      expect(myForm().value()).not.toBe(product);
     });
   });
 
