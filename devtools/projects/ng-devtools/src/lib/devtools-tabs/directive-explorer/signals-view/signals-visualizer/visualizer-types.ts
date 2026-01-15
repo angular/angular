@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {graphlib} from 'dagre-d3-es';
-
 // Non-exhaustive; Alter based on Dagre D3 docs if required
-export interface DagreGraphNode {
+export interface DagreRegularNode {
   label: HTMLDivElement;
   labelType: string;
   shape: string;
@@ -21,24 +19,19 @@ export interface DagreGraphNode {
 }
 
 // Non-exhaustive; Alter based on Dagre D3 docs if required
-export interface DagreGraphCluster {
+export interface DagreCluster {
   label: string;
   clusterLabelPos: string;
   class?: string;
   style?: string;
 }
 
+export type DagreNode = DagreRegularNode | DagreCluster;
+
 // Non-exhaustive; Alter based on Dagre D3 docs if required
-export interface DagreGraphEdge {
+export interface DagreEdge {
   curve: any;
   style?: string;
   arrowheadStyle?: string;
   class?: string;
-}
-
-// Improve Graphlib types
-export declare class DagreGraph extends graphlib.Graph {
-  override setNode(id: string, value: DagreGraphNode | DagreGraphCluster, ...args: any[]): this;
-  override node(id: string): DagreGraphNode | DagreGraphCluster;
-  override edges(): {v: string; w: string}[];
 }

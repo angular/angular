@@ -17,7 +17,7 @@ import {
   DevtoolsSignalNode,
 } from '../../signal-graph';
 import {DebugSignalGraphNode} from '../../../../../../../protocol';
-import type {DagreGraph, DagreGraphCluster, DagreGraphNode} from './dagre-d3-types';
+import type {DagreCluster, DagreEdge, DagreNode, DagreRegularNode} from './visualizer-types';
 
 const KIND_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
   'signal': 'kind-signal',
@@ -65,7 +65,7 @@ const CLUSTER_EXPAND_ANIM_DURATION = 1100; // Empirical value based on Dagre's b
 // - Standard cluster node – A cluster node, visualized as a standard node (i.e. collapsed)
 // - Expanded cluster node – A cluster node, visualized as a container of its child nodes (i.e. expanded)
 export class SignalsGraphVisualizer {
-  private graph: DagreGraph;
+  private graph: graphlib.Graph<any, DagreNode, DagreEdge>;
   private drender: ReturnType<typeof dagreRender>;
 
   zoomController: d3.ZoomBehavior<SVGSVGElement, unknown>;
@@ -302,7 +302,7 @@ export class SignalsGraphVisualizer {
     // Add new/update existing nodes
     for (const n of signalGraph.nodes) {
       const isSignal = isSignalNode(n);
-      const existingNode = this.graph.node(n.id) as DagreGraphNode | undefined;
+      const existingNode = this.graph.node(n.id) as DagreRegularNode | undefined;
 
       if (existingNode) {
         if (isSignal && n.epoch !== existingNode.epoch) {
@@ -408,7 +408,7 @@ export class SignalsGraphVisualizer {
 
   private updateDagreNode(
     newNode: DevtoolsSignalNode,
-    existingNode: DagreGraphNode,
+    existingNode: DagreRegularNode,
     signalGraph: DevtoolsSignalGraph,
   ) {
     const count = this.animatedNodesMap.get(newNode.id) ?? 0;
@@ -548,7 +548,7 @@ export class SignalsGraphVisualizer {
       .each((nodeId, idx, group) => {
         const node = group[idx];
         const d3Node = d3.select(node);
-        const {width, height} = this.graph.node(nodeId as string) as DagreGraphNode;
+        const {width, height} = this.graph.node(nodeId as string) as DagreRegularNode;
 
         d3Node
           .select('g')
@@ -600,8 +600,6 @@ function convertNodesToMap(nodes: DevtoolsSignalGraphNode[]): Map<string, Devtoo
   return new Map(nodes.map((n) => [n.id, n]));
 }
 
-function isDagreClusterNode(
-  node: DagreGraphCluster | DagreGraphNode | undefined,
-): node is DagreGraphCluster {
-  return !!(node as DagreGraphCluster)?.clusterLabelPos;
+function isDagreClusterNode(node: DagreNode | undefined): node is DagreCluster {
+  return !!(node as DagreCluster)?.clusterLabelPos;
 }
