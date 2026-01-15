@@ -16,16 +16,31 @@ import {
   InjectionToken,
   Injector,
   input,
+  ɵRuntimeError as RuntimeError,
+  signal,
+  untracked,
   ɵcontrolUpdate as updateControlBinding,
   ɵCONTROL,
   ɵInteropControl,
+  type ɵFormFieldBindingOptions,
   type ɵFormFieldDirective,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
+import {SignalFormsErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
 import type {FieldTree} from './types';
+
+export interface FormFieldBindingOptions extends ɵFormFieldBindingOptions {
+  /**
+   * Focuses the binding.
+   *
+   * If not specified, Signal Forms will attempt to focus the host element of the `FormField` when
+   * asked to focus this binding.
+   */
+  focus?: VoidFunction;
+}
 
 /**
  * Lightweight DI token provided by the {@link FormField} directive.
@@ -79,6 +94,7 @@ export class FormField<T> {
   readonly injector = inject(Injector);
   readonly formField = input.required<FieldTree<T>>();
   readonly state = computed(() => this.formField()());
+  private readonly bindingOptions = signal<FormFieldBindingOptions | undefined>(undefined);
 
   readonly [ɵCONTROL] = controlInstructions;
 
@@ -109,8 +125,21 @@ export class FormField<T> {
     return (this.interopNgControl ??= new InteropNgControl(this.state));
   }
 
-  /** @internal */
-  ɵregister() {
+  /**
+   * Registers this `FormField` as a binding on its associated `FieldState`.
+   *
+   * This method should be called at most once for a given `FormField`. A `FormField` placed on a
+   * custom control (`FormUiControl`) automatically registers that custom control as a binding.
+   */
+  registerAsBinding(bindingOptions?: FormFieldBindingOptions) {
+    if (untracked(this.bindingOptions)) {
+      throw new RuntimeError(
+        SignalFormsErrorCode.BINDING_ALREADY_REGISTERED,
+        ngDevMode && 'FormField already registered as a binding',
+      );
+    }
+
+    this.bindingOptions.set(bindingOptions);
     // Register this control on the field state it is currently bound to. We do this at the end of
     // initialization so that it only runs if we are actually syncing with this control
     // (as opposed to just passing the field state through to its `formField` input).
@@ -132,7 +161,14 @@ export class FormField<T> {
   }
 
   /** Focuses this UI control. */
-  focus?(): void;
+  focus() {
+    const bindingOptions = untracked(this.bindingOptions);
+    if (bindingOptions?.focus) {
+      bindingOptions.focus();
+    } else {
+      this.element.focus();
+    }
+  }
 }
 
 // We can't add `implements ɵFormFieldDirective<T>` to `Field` even though it should conform to the interface.

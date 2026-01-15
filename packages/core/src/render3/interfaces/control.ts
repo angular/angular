@@ -42,8 +42,6 @@ export interface ɵFormFieldDirective<T> {
   /** A reference to the interoperable control, if one is present. */
   readonly ɵinteropControl: ɵInteropControl | undefined;
 
-  focus?(): void;
-
   /**
    * Registers this directive as a control of its associated form field.
    *
@@ -52,10 +50,12 @@ export interface ɵFormFieldDirective<T> {
    * the component will forward the bound field to another field directive in its own template,
    * and do nothing.
    */
-  ɵregister(): void;
+  registerAsBinding(bindingOptions?: ɵFormFieldBindingOptions): void;
 }
 
-export interface ɵCustomControl {
+/** A custom UI control for signal forms. */
+export interface ɵFormFieldBindingOptions {
+  /** Focuses the custom control. */
   focus?(): void;
 }
 

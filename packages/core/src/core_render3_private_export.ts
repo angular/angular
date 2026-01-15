@@ -252,6 +252,7 @@ export {LContext as ɵLContext} from './render3/interfaces/context';
 export {
   ɵCONTROL,
   ɵFieldState,
+  ɵFormFieldBindingOptions,
   ɵFormFieldDirective,
   ɵInteropControl,
 } from './render3/interfaces/control';

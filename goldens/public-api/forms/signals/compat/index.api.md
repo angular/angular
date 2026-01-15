@@ -19,6 +19,7 @@ import { WritableSignal } from '@angular/core';
 import { ɵCONTROL } from '@angular/core';
 import { ɵcontrolUpdate } from '@angular/core';
 import { ɵFieldState } from '@angular/core';
+import { ɵFormFieldBindingOptions } from '@angular/core';
 import { ɵɵcontrolCreate } from '@angular/core';
 
 // @public
