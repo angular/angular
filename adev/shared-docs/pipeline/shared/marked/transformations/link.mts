@@ -6,19 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Tokens} from 'marked';
 import {anchorTarget} from '../helpers.mjs';
-import {Renderer, Tokens} from 'marked';
 import {AdevDocsRenderer} from '../renderer.mjs';
-
-/**
- * Tracks whether the current renderer is inside a link.
- *
- * This is necessary because nested links are invalid HTML and can cause rendering issues.
- */
-let insideLink = false;
-export function setInsideLink(value: boolean) {
-  insideLink = value;
-}
 
 export function linkRender(this: AdevDocsRenderer, {href, title, tokens}: Tokens.Link) {
   // We have render-time check that we don't create absolute links (which are rendered as external links)
@@ -40,7 +30,7 @@ export function linkRender(this: AdevDocsRenderer, {href, title, tokens}: Tokens
     );
   }
 
-  if (insideLink) {
+  if (this.context.disableAutoLinking) {
     return this.parser.parseInline(tokens);
   }
 
