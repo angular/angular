@@ -53,6 +53,8 @@ const NODE_WIDTH = 100;
 const NODE_HEIGHT = 60;
 const NODE_EPOCH_UPDATE_ANIM_DURATION = 250;
 
+const TEMPL_NODE_ZOOM_SCALE = 0.8;
+
 const CLUSTER_EXPAND_ANIM_DURATION = 1100; // Empirical value based on Dagre's behavior with an included leeway
 
 // Terminology:
@@ -88,7 +90,6 @@ export class SignalsGraphVisualizer {
 
     const d3svg = d3.select(this.svg);
     d3svg.attr('height', '100%').attr('width', '100%');
-    this.resize();
 
     const g = d3svg.append('g');
 
@@ -98,6 +99,36 @@ export class SignalsGraphVisualizer {
     });
 
     d3svg.call(this.zoomController);
+  }
+
+  /** Snaps to the root node – either the template or the first node depending which exists. */
+  snapToRootNode() {
+    let node =
+      this.inputGraph?.nodes.find((n) => isSignalNode(n) && n.kind === 'template') ??
+      this.inputGraph?.nodes[0];
+
+    if (!node) {
+      return;
+    }
+
+    // TODO(Georgi): Drop `any` when Dagre is updated.
+    const dagreNode = this.graph.node(node.id) as any;
+    if (!dagreNode) {
+      return;
+    }
+
+    const contWidth = this.svg.clientWidth;
+    const contHeight = this.svg.clientHeight;
+    const x = contWidth / 2 - dagreNode.x * TEMPL_NODE_ZOOM_SCALE;
+    const y = contHeight / 2 - dagreNode.y * TEMPL_NODE_ZOOM_SCALE;
+
+    d3.select(this.svg)
+      .transition()
+      .duration(500)
+      .call(
+        this.zoomController.transform,
+        d3.zoomIdentity.translate(x, y).scale(TEMPL_NODE_ZOOM_SCALE),
+      );
   }
 
   setSelected(selected: string | null) {
@@ -144,26 +175,10 @@ export class SignalsGraphVisualizer {
 
     this.drender(g, this.graph);
 
-    // if there are no nodes, we reset the transform to 0
-    const {width, height} = this.graph.graph();
-    const xTransform = isFinite(width) ? -width / 2 : 0;
-    const yTransform = isFinite(height) ? -height / 2 : 0;
-    g.select('.output').attr('transform', `translate(${xTransform}, ${yTransform})`);
-
     this.addCloseButtonsToClusters(g);
     this.reinforceNodeDimensions();
 
     this.inputGraph = signalGraph;
-  }
-
-  resize() {
-    const svg = d3.select(this.svg);
-    svg.attr('viewBox', [
-      -this.svg.clientWidth / 2,
-      -this.svg.clientHeight / 2,
-      this.svg.clientWidth,
-      this.svg.clientHeight,
-    ]);
   }
 
   setClusterState(clusterId: string, expanded: boolean) {
