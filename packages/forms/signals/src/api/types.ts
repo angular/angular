@@ -225,8 +225,10 @@ export type MaybeFieldTree<TModel, TKey extends string | number = string | numbe
  * @category structure
  * @experimental 21.0.0
  */
-export interface FieldState<TValue, TKey extends string | number = string | number>
-  extends ɵFieldState<TValue> {
+export interface FieldState<
+  TValue,
+  TKey extends string | number = string | number,
+> extends ɵFieldState<TValue> {
   /**
    * A signal indicating whether field value has been changed by user.
    */
@@ -314,8 +316,9 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   /**
    * Focuses the first UI control in the DOM that is bound to this field state.
    * If no UI control is bound, does nothing.
+   * @param options Optional focus options to pass to the native focus() method.
    */
-  focusBoundControl(): void;
+  focusBoundControl(options?: FocusOptions): void;
 }
 
 /**

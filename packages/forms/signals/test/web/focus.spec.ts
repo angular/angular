@@ -223,6 +223,53 @@ describe('FieldState focus behavior', () => {
     await act(() => fixture.componentInstance.f().focusBoundControl());
     expect(document.activeElement).toBe(nativeInput);
   });
+
+  it('should pass focus options to native control', async () => {
+    @Component({
+      imports: [FormField],
+      template: `<input [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal(''));
+    }
+
+    const fixture = await act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.firstChild as HTMLInputElement;
+
+    const focusSpy = spyOn(input, 'focus');
+
+    await act(() => fixture.componentInstance.f().focusBoundControl({preventScroll: true}));
+    expect(focusSpy).toHaveBeenCalledWith({preventScroll: true});
+  });
+
+  it('should pass focus options to custom control with focus method', async () => {
+    let receivedOptions: FocusOptions | undefined;
+
+    @Component({
+      selector: 'custom-control',
+      host: {'tabindex': '-1'},
+      template: '',
+    })
+    class CustomControl {
+      readonly value = model<string>();
+      focus(options?: FocusOptions) {
+        receivedOptions = options;
+      }
+    }
+
+    @Component({
+      imports: [FormField, CustomControl],
+      template: `<custom-control [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal(''));
+    }
+
+    const fixture = await act(() => TestBed.createComponent(TestCmp));
+
+    await act(() => fixture.componentInstance.f().focusBoundControl({preventScroll: true}));
+    expect(receivedOptions).toEqual({preventScroll: true});
+  });
 });
 
 async function act<T>(fn: () => T): Promise<T> {

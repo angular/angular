@@ -39,7 +39,7 @@ export interface FormFieldBindingOptions extends ɵFormFieldBindingOptions {
    * If not specified, Signal Forms will attempt to focus the host element of the `FormField` when
    * asked to focus this binding.
    */
-  focus?: VoidFunction;
+  focus?(options?: FocusOptions): void;
 }
 
 /**
@@ -161,12 +161,12 @@ export class FormField<T> {
   }
 
   /** Focuses this UI control. */
-  focus() {
+  focus(options?: FocusOptions) {
     const bindingOptions = untracked(this.bindingOptions);
     if (bindingOptions?.focus) {
-      bindingOptions.focus();
+      bindingOptions.focus(options);
     } else {
-      this.element.focus();
+      this.element.focus(options);
     }
   }
 }

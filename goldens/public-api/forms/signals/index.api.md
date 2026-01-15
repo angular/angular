@@ -131,7 +131,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     // (undocumented)
     readonly errors: Signal<ValidationError.WithField[]>;
     readonly errorSummary: Signal<ValidationError.WithField[]>;
-    focusBoundControl(): void;
+    focusBoundControl(options?: FocusOptions): void;
     readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
@@ -176,7 +176,7 @@ export class FormField<T> {
     };
     // (undocumented)
     readonly element: HTMLElement;
-    focus(): void;
+    focus(options?: FocusOptions): void;
     // (undocumented)
     readonly formField: i0.InputSignal<FieldTree<T>>;
     protected getOrCreateNgControl(): InteropNgControl;
@@ -193,7 +193,7 @@ export class FormField<T> {
 
 // @public (undocumented)
 export interface FormFieldBindingOptions extends ɵFormFieldBindingOptions {
-    focus?: VoidFunction;
+    focus?(options?: FocusOptions): void;
 }
 
 // @public
@@ -210,7 +210,7 @@ export interface FormUiControl {
     readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabledReasons?: InputSignal<readonly WithOptionalField<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalField<DisabledReason>[], unknown>;
     readonly errors?: InputSignal<readonly WithOptionalField<ValidationError>[]> | InputSignalWithTransform<readonly WithOptionalField<ValidationError>[], unknown>;
-    focus?(): void;
+    focus?(options?: FocusOptions): void;
     readonly hidden?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly invalid?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly max?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
