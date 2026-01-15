@@ -293,7 +293,7 @@ export function isOnPushDirective(dir: any): boolean {
     case Framework.Wiz:
       return false;
     default:
-      throw new Error(`Unknown framework: "${metadata.framework}".`);
+      throw new Error(`Unknown framework: "${(metadata as {framework: string}).framework}".`);
   }
 }
 

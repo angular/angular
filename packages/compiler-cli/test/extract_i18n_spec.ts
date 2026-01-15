@@ -223,7 +223,6 @@ describe('extract_i18n command line', () => {
         "types": [],
         "outDir": "built",
         "rootDir": ".",
-        "baseUrl": ".",
         "declaration": true,
         "target": "es2015",
         "module": "es2015",
