@@ -12,10 +12,9 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type, Writable} from '../interface/type';
 import {assertNotDefined} from '../util/assert';
 import {bindingUpdated} from './bindings';
+import {controlCreateInternal, controlUpdateInternal} from './instructions/control';
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {setDirectiveInput, storePropertyBindingMetadata} from './instructions/shared';
-import {ɵCONTROL} from './interfaces/control';
-import {TNode} from './interfaces/node';
 import {TVIEW} from './interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, nextBindingIndex} from './state';
 import {stringifyForError} from './util/stringify_utils';
@@ -43,10 +42,10 @@ export interface BindingInternal extends Binding {
   targetIdx?: number;
 
   /** Callback that will be invoked during creation. */
-  create?(): void;
+  create?(slot?: number): void;
 
   /** Callback that will be invoked during updates. */
-  update?(): void;
+  update?(slot?: number): void;
 }
 
 /**
@@ -61,9 +60,14 @@ export interface DirectiveWithBindings<T> {
 }
 
 // These are constant between all the bindings so we can reuse the objects.
-const INPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'input', requiredVars: 1};
-const FIELD_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'field', requiredVars: 2};
-const OUTPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'output', requiredVars: 0};
+const INPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {
+  kind: 'input',
+  requiredVars: 1,
+};
+const OUTPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {
+  kind: 'output',
+  requiredVars: 0,
+};
 
 // TODO(pk): this is a sketch of an input binding instruction that still needs some cleanups
 // - take an index of a directive on TNode (as matched), review all the index mappings that we need to do
@@ -104,23 +108,6 @@ function inputBindingUpdate(targetDirectiveIdx: number, publicName: string, valu
 }
 
 /**
- * Instructions for dynamically binding a `Field` to a form control.
- */
-interface ControlBinding {
-  create: () => void;
-  update: () => void;
-}
-
-/**
- * Returns a {@link ControlBinding} for the target directive if it is a 'FormField' directive.
- */
-function controlBinding(binding: BindingInternal, tNode: TNode): ControlBinding | undefined {
-  const lView = getLView();
-  const directive = lView[tNode.directiveStart + binding.targetIdx!];
-  return directive[ɵCONTROL];
-}
-
-/**
  * Creates an input binding.
  * @param publicName Public name of the input to bind to.
  * @param value Callback that returns the current value for the binding. Can be either a signal or
@@ -142,17 +129,14 @@ function controlBinding(binding: BindingInternal, tNode: TNode): ControlBinding 
 export function inputBinding(publicName: string, value: () => unknown): Binding {
   if (publicName === 'formField') {
     const binding: BindingInternal = {
-      [BINDING]: FIELD_BINDING_METADATA,
+      [BINDING]: INPUT_BINDING_METADATA,
       create: () => {
-        // Set up the form control bindings, if this is a 'FormField' directive bound to a form control.
-        controlBinding(binding, getCurrentTNode()!)?.create();
+        controlCreateInternal();
       },
       update: () => {
         // Update the [formField] input binding, regardless of whether this targets a 'FormField' directive.
         inputBindingUpdate(binding.targetIdx!, publicName, value());
-
-        // Update the form control bindings, if this is a 'FormField' directive bound to a form control.
-        controlBinding(binding, getSelectedTNode()!)?.update();
+        controlUpdateInternal();
       },
     };
     return binding;

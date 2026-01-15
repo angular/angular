@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Signal, ɵFieldState} from '@angular/core';
+import {Signal, WritableSignal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
-import type {FormField} from './form_field_directive';
+import type {FormField} from '../directive/form_field_directive';
 import type {MetadataKey, ValidationError} from './rules';
 
 /**
@@ -217,10 +217,75 @@ export type MaybeFieldTree<TModel, TKey extends string | number = string | numbe
  * @category structure
  * @experimental 21.0.0
  */
-export interface FieldState<
-  TValue,
-  TKey extends string | number = string | number,
-> extends ɵFieldState<TValue> {
+export interface FieldState<TValue, TKey extends string | number = string | number> {
+  /**
+   * A writable signal containing the value for this field.
+   *
+   * Updating this signal will update the data model that the field is bound to.
+   *
+   * While updates from the UI control are eventually reflected here, they may be delayed if
+   * debounced.
+   */
+  readonly value: WritableSignal<TValue>;
+
+  /**
+   * A signal indicating whether the field is currently disabled.
+   */
+  readonly disabled: Signal<boolean>;
+
+  /**
+   * A signal indicating the field's maximum value, if applicable.
+   *
+   * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
+   */
+  readonly max?: Signal<number | undefined>;
+
+  /**
+   * A signal indicating the field's maximum string length, if applicable.
+   *
+   * Applies to `<input>`, `<textarea>`, and custom controls.
+   */
+  readonly maxLength?: Signal<number | undefined>;
+
+  /**
+   * A signal indicating the field's minimum value, if applicable.
+   *
+   * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
+   */
+  readonly min?: Signal<number | undefined>;
+
+  /**
+   * A signal indicating the field's minimum string length, if applicable.
+   *
+   * Applies to `<input>`, `<textarea>`, and custom controls.
+   */
+  readonly minLength?: Signal<number | undefined>;
+
+  /**
+   * A signal of a unique name for the field, by default based on the name of its parent field.
+   */
+  readonly name: Signal<string>;
+
+  /**
+   * A signal indicating the patterns the field must match.
+   */
+  readonly pattern: Signal<readonly RegExp[]>;
+
+  /**
+   * A signal indicating whether the field is currently readonly.
+   */
+  readonly readonly: Signal<boolean>;
+
+  /**
+   * A signal indicating whether the field is required.
+   */
+  readonly required: Signal<boolean>;
+
+  /**
+   * A signal indicating whether the field has been touched by the user.
+   */
+  readonly touched: Signal<boolean>;
+
   /**
    * A signal indicating whether field value has been changed by user.
    */
@@ -289,6 +354,30 @@ export interface FieldState<
    * The {@link FormField} directives that bind this field to a UI control.
    */
   readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
+
+  /**
+   * A signal containing the value of the control to which this field is bound.
+   *
+   * This differs from {@link value} in that it's not subject to debouncing, and thus is used to
+   * buffer debounced updates from the control to the field. This will also not take into account
+   * the {@link controlValue} of children.
+   */
+  readonly controlValue: Signal<TValue>;
+
+  /**
+   * Sets {@link controlValue} immediately and triggers synchronization to {@link value}.
+   */
+  setControlValue(value: TValue): void;
+
+  /**
+   * Sets the dirty status of the field to `true`.
+   */
+  markAsDirty(): void;
+
+  /**
+   * Sets the touched status of the field to `true`.
+   */
+  markAsTouched(): void;
 
   /**
    * Reads a metadata value from the field.

@@ -1168,7 +1168,6 @@ export function transformExpressionsInOp(
     case OpKind.Property:
     case OpKind.DomProperty:
     case OpKind.Attribute:
-    case OpKind.Control:
       if (op.expression instanceof Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);
       } else {
@@ -1299,6 +1298,7 @@ export function transformExpressionsInOp(
     case OpKind.SourceLocation:
     case OpKind.ConditionalCreate:
     case OpKind.ConditionalBranchCreate:
+    case OpKind.Control:
     case OpKind.ControlCreate:
       // These operations contain no expressions.
       break;

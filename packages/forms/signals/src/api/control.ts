@@ -6,15 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  InputSignal,
-  InputSignalWithTransform,
-  ModelSignal,
-  OutputRef,
-  type Signal,
-} from '@angular/core';
-import type {FormFieldBindingOptions} from './form_field_directive';
-import {ValidationError, type WithOptionalFieldTree} from './rules/validation/validation_errors';
+import {InputSignal, InputSignalWithTransform, ModelSignal, OutputRef, Signal} from '@angular/core';
+import type {FormFieldBindingOptions} from '../directive/form_field_directive';
+import type {ValidationError, WithOptionalFieldTree} from './rules/validation/validation_errors';
 import type {DisabledReason} from './types';
 
 /**
@@ -72,6 +66,7 @@ export interface FormUiControl<TValue> {
     | InputSignal<boolean>
     | InputSignalWithTransform<boolean, unknown>
     | OutputRef<boolean>;
+
   /**
    * An input to receive the dirty status for the field. If implemented, the `Field` directive
    * will automatically bind the dirty status from the bound field to this input.
@@ -142,7 +137,7 @@ export interface FormUiControl<TValue> {
 // However, we don't want to add it as an actual `extends` clause to avoid confusing users.
 type Check<T extends true> = T;
 type FormUiControlImplementsFormFieldBindingOptions = Check<
-  FormUiControl<unknown> extends FormFieldBindingOptions<unknown> ? true : false
+  FormUiControl<unknown> extends FormFieldBindingOptions ? true : false
 >;
 
 /**

@@ -8,7 +8,7 @@
 
 import {type Provider} from '@angular/core';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
-import type {FormField} from './form_field_directive';
+import type {FormField} from '../directive/form_field_directive';
 
 /**
  * Configuration options for signal forms.
