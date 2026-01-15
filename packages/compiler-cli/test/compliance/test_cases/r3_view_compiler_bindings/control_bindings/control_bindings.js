@@ -4,7 +4,7 @@ export class MyComponent {
     type: MyComponent,
     selectors: [["ng-component"]],
     decls: 4,
-    vars: 3,
+    vars: 2,
     consts: [["formField", "Not a form control"], [3, "formField"]],
     template: function MyComponent_Template(rf, ctx) {
       if (rf & 1) {
@@ -12,14 +12,16 @@ export class MyComponent {
         i0.ɵɵelementStart(1, "div");
         i0.ɵɵtext(2, "Not a form control either.");
         i0.ɵɵelementEnd();
-        i0.ɵɵelement(3, "input", 1);
+        i0.ɵɵelementStart(3, "input", 1);
         i0.ɵɵcontrolCreate();
+        i0.ɵɵelementEnd();
       }
       if (rf & 2) {
         i0.ɵɵadvance();
         i0.ɵɵattribute("formField", ctx.value);
         i0.ɵɵadvance(2);
-        i0.ɵɵcontrol(ctx.value, "formField");
+        i0.ɵɵproperty("formField", ctx.value);
+        i0.ɵɵcontrol();
       }
     },
     dependencies: [FormField],

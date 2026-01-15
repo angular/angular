@@ -7,7 +7,7 @@
  */
 
 import {computed, signal, Signal} from '@angular/core';
-import type {FormField} from '../api/form_field_directive';
+import type {FormField} from '../directive/form_field_directive';
 import type {Debouncer, DisabledReason} from '../api/types';
 import {DEBOUNCER} from './debounce';
 import type {FieldNode} from './node';

@@ -44,7 +44,7 @@ import {
  */
 export function wrapListener(
   tNode: TNode,
-  lView: LView<{} | null>,
+  lView: LView,
   listenerFn: EventCallback,
 ): WrappedEventCallback {
   // Note: we are performing most of the work in the listener function itself
@@ -72,13 +72,13 @@ export function wrapListener(
 
 function executeListenerWithErrorHandling(
   lView: LView,
-  context: {} | null,
+  context: unknown,
   listenerFn: EventCallback,
   e: any,
 ): boolean {
   const prevConsumer = setActiveConsumer(null);
   try {
-    profiler(ProfilerEvent.OutputStart, context, listenerFn);
+    profiler(ProfilerEvent.OutputStart, context as {} | null, listenerFn);
     // Only explicitly returning false from a listener should preventDefault
     return listenerFn(e) !== false;
   } catch (error) {

@@ -1964,7 +1964,11 @@ export interface ControlCreateOp extends Op<CreateOp> {
 
 /** Creates a {@link ControlCreateOp}. */
 export function createControlCreateOp(sourceSpan: ParseSourceSpan): ControlCreateOp {
-  return {kind: OpKind.ControlCreate, sourceSpan, ...NEW_OP};
+  return {
+    kind: OpKind.ControlCreate,
+    sourceSpan,
+    ...NEW_OP,
+  };
 }
 
 /**

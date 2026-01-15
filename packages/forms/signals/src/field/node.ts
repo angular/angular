@@ -7,7 +7,7 @@
  */
 
 import {computed, linkedSignal, type Signal, untracked, type WritableSignal} from '@angular/core';
-import type {FormField} from '../api/form_field_directive';
+import type {FormField} from '../directive/form_field_directive';
 import {
   MAX,
   MAX_LENGTH,

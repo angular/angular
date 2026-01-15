@@ -318,6 +318,38 @@ export function extractDirectiveMetadata(
       !member.isStatic && member.kind === ClassMemberKind.Method && member.name === 'ngOnChanges',
   );
 
+  const controlCreateMember = members.find(
+    (member) =>
+      !member.isStatic &&
+      member.kind === ClassMemberKind.Method &&
+      member.name === 'ɵngControlCreate',
+  );
+
+  let controlCreate: R3DirectiveMetadata['controlCreate'] = null;
+  if (
+    controlCreateMember !== undefined &&
+    controlCreateMember.node !== null &&
+    ts.isMethodDeclaration(controlCreateMember.node)
+  ) {
+    const {node} = controlCreateMember;
+    let passThroughInput: string | null = null;
+    if (
+      node.parameters.length > 0 &&
+      node.parameters[0].type !== undefined &&
+      ts.isTypeReferenceNode(node.parameters[0].type)
+    ) {
+      const type = node.parameters[0].type;
+      if (
+        type.typeArguments?.length === 1 &&
+        ts.isLiteralTypeNode(type.typeArguments[0]) &&
+        ts.isStringLiteral(type.typeArguments[0].literal)
+      ) {
+        passThroughInput = type.typeArguments[0].literal.text;
+      }
+    }
+    controlCreate = {passThroughInput};
+  }
+
   // Parse exportAs.
   let exportAs: string[] | null = null;
   if (directive.has('exportAs')) {
@@ -442,6 +474,7 @@ export function extractDirectiveMetadata(
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: createSourceSpan(clazz.name),
     usesInheritance,
+    controlCreate,
     exportAs,
     providers,
     isStandalone,

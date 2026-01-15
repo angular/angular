@@ -299,7 +299,7 @@ export function isFieldDirective(meta: TypeCheckableDirectiveMeta): boolean {
         ts.isPropertyDeclaration(member) &&
         ts.isComputedPropertyName(member.name) &&
         ts.isIdentifier(member.name.expression) &&
-        member.name.expression.text === 'ɵCONTROL',
+        member.name.expression.text === 'ɵNgFieldDirective',
     )
   );
 }
