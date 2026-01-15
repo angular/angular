@@ -13,7 +13,7 @@
 }
 
 .listing-location::before {
-  content: url('/assets/location-pin.svg') / '';
+  content: url('/public/location-pin.svg') / '';
 }
 
 .listing-location {
@@ -44,7 +44,8 @@ li {
   margin-bottom: 15px;
 }
 
-label, input {
+label,
+input {
   display: block;
 }
 label {
@@ -61,7 +62,7 @@ input {
   border-top: none;
   border-right: none;
   border-left: none;
-  border-bottom: solid .3px;
+  border-bottom: solid 0.3px;
 }
 @media (max-width: 1024px) {
   .listing-photo {
