@@ -17,7 +17,9 @@ ts_project(
         "//adev/shared-docs/pipeline:__subpackages__",
     ],
     deps = [
+        ":linking",
         "//adev:node_modules/shiki",
+        "//adev:node_modules/typescript",
     ],
 )
 

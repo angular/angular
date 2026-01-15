@@ -39,7 +39,7 @@ import {
   insertParenthesesForDecoratorInShikiHtml,
   replaceKeywordFromShikiHtml,
 } from '../shiki/shiki.mjs';
-import {getSymbolUrl} from '../symbol-context.mjs';
+import {getSymbolsAsApiEntries, getSymbolUrl} from '../symbol-context.mjs';
 
 import {codeToHtml} from '../../../shared/shiki.mjs';
 import {formatJs} from './format-code.mjs';
@@ -92,7 +92,10 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   let codeWithSyntaxHighlighting = codeToHtml(
     getHighlighterInstance(),
     formattedCode ?? metadata?.contents,
-    {language: 'typescript'},
+    {
+      language: 'typescript',
+      apiEntries: getSymbolsAsApiEntries(),
+    },
   );
 
   if (isDecoratorEntry(entry)) {
@@ -110,11 +113,6 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
     );
     // }
   }
-
-  // Note: Don't expect enum value in signatures to be linked correctly
-  // as shiki already splits them into separate span blocks.
-  // Only the enum itself will recieve a link
-  codeWithSyntaxHighlighting = addApiLinksToHtml(codeWithSyntaxHighlighting);
 
   // shiki returns the lines wrapped by 2 node : 1 pre node, 1 code node.
   // As leveraging jsdom isn't trivial here, we rely on a regex to extract the line nodes
