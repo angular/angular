@@ -13,9 +13,9 @@ sass_binary(
 ng_project(
     name = "signals-visualizer",
     srcs = [
-        "dagre-d3-types.ts",
         "signals-visualizer.component.ts",
         "signals-visualizer.ts",
+        "visualizer-types.ts",
     ],
     angular_assets = [
         "signals-visualizer.component.html",
