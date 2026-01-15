@@ -9,7 +9,7 @@ import {NgOptimizedImage} from '@angular/common';
     <ul>
       <li>
         Static Image:
-        <img ngSrc="/assets/logo.svg" alt="Angular logo" width="32" height="32" />
+        <img ngSrc="/public/logo.svg" alt="Angular logo" width="32" height="32" />
       </li>
       <li>
         Dynamic Image:
@@ -20,7 +20,7 @@ import {NgOptimizedImage} from '@angular/common';
   imports: [NgOptimizedImage],
 })
 export class User {
-  logoUrl = '/assets/logo.svg';
+  logoUrl = '/public/logo.svg';
   logoAlt = 'Angular logo';
   username = 'youngTech';
 }

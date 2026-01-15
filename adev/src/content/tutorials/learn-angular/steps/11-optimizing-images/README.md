@@ -38,7 +38,7 @@ import { NgOptimizedImage } from '@angular/common';
 template: `     ...
     <li>
       Static Image:
-      <img ngSrc="/assets/logo.svg" alt="Angular logo" width="32" height="32" />
+      <img ngSrc="/public/logo.svg" alt="Angular logo" width="32" height="32" />
     </li>
     <li>
       Dynamic Image:
