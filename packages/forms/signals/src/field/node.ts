@@ -80,8 +80,8 @@ export class FieldNode implements FieldState<unknown> {
     this.submitState = new FieldSubmitState(this);
   }
 
-  focusBoundControl(): void {
-    this.getBindingForFocus()?.focus();
+  focusBoundControl(options?: FocusOptions): void {
+    this.getBindingForFocus()?.focus(options);
   }
 
   /**
@@ -92,11 +92,19 @@ export class FieldNode implements FieldState<unknown> {
    * the first one in the DOM. If no focusable bindings exist on this node, it will return the
    * first focusable binding in the DOM for any descendant node of this one.
    */
-  private getBindingForFocus(): (FormField<unknown> & {focus: VoidFunction}) | undefined {
+  private getBindingForFocus():
+    | (FormField<unknown> & {focus: (options?: FocusOptions) => void})
+    | undefined {
     // First try to focus one of our own bindings.
     const own = this.formFieldBindings()
-      .filter((b): b is FormField<unknown> & {focus: VoidFunction} => b.focus !== undefined)
-      .reduce(firstInDom<FormField<unknown> & {focus: VoidFunction}>, undefined);
+      .filter(
+        (b): b is FormField<unknown> & {focus: (options?: FocusOptions) => void} =>
+          b.focus !== undefined,
+      )
+      .reduce(
+        firstInDom<FormField<unknown> & {focus: (options?: FocusOptions) => void}>,
+        undefined,
+      );
     if (own) return own;
     // Fallback to focusing the bound control for one of our children.
     return this.structure

@@ -56,7 +56,7 @@ export interface ɵFormFieldDirective<T> {
 /** A custom UI control for signal forms. */
 export interface ɵFormFieldBindingOptions {
   /** Focuses the custom control. */
-  focus?(): void;
+  focus?(options?: FocusOptions): void;
 }
 
 /** Mirrors the `ControlValueAccessor` interface for interoperability.  */

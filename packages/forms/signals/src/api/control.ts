@@ -122,7 +122,7 @@ export interface FormUiControl {
    * If the focus method is not implemented, Signal Forms will attempt to focus the host element
    * when asked to focus this control.
    */
-  focus?(): void;
+  focus?(options?: FocusOptions): void;
 }
 
 // Verify that `FormUiControl` implements `FormFieldBindingOptions`.
