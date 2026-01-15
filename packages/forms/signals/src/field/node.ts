@@ -235,10 +235,30 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   /**
+   * Marks this field and all descendant fields as touched.
+   */
+  markAllAsTouched(): void {
+    this.markAsTouched();
+    for (const child of this.structure.children()) {
+      child.markAllAsTouched();
+    }
+  }
+
+  /**
    * Marks this specific field as dirty.
    */
   markAsDirty(): void {
     this.nodeState.markAsDirty();
+  }
+
+  /**
+   * Marks this field and all descendant fields as dirty.
+   */
+  markAllAsDirty(): void {
+    this.markAsDirty();
+    for (const child of this.structure.children()) {
+      child.markAllAsDirty();
+    }
   }
 
   /**

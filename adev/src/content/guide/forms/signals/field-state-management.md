@@ -648,6 +648,26 @@ export class Contact {
 
 This two-step reset ensures the form is ready for new input without showing stale error messages or dirty state indicators.
 
+### Marking all fields as touched
+
+Fields and forms can be marked as touched using the `markAllAsTouched()` method.
+This method sets the touched state on the field where it is called and on all of its descendants.
+
+```ts
+//  Mark the entire form and all nested fields as touched
+this.registrationForm().markAllAsTouched()
+```
+
+### Marking all fields as dirty
+
+Fields and forms can be marked as dirty using the `markAllAsDirty()` method.
+This method sets the dirty state on the field where it is called and on all of its descendants.
+
+```ts
+//  Mark the entire form and all nested fields as dirty
+this.registrationForm().markAllAsDirty()
+```
+
 ## Styling based on validation state
 
 You can apply custom styles to your form by binding CSS classes based on the validation state:
