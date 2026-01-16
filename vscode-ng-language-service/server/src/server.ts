@@ -54,6 +54,7 @@ function main() {
     angularCoreVersion: options.angularCoreVersion ?? null,
     suppressAngularDiagnosticCodes: options.suppressAngularDiagnosticCodes ?? null,
     defaultFileWatcher: options.defaultFileWatcher ?? null,
+    watchOptions: options.watchOptions ? JSON.parse(options.watchOptions) : undefined,
   });
 
   // Log initialization info

@@ -71,6 +71,7 @@ interface CommandLineOptions {
   angularCoreVersion?: string;
   suppressAngularDiagnosticCodes?: string;
   defaultFileWatcher?: string;
+  watchOptions?: string;
 }
 
 export function parseCommandLine(argv: string[]): CommandLineOptions {
@@ -97,6 +98,7 @@ export function parseCommandLine(argv: string[]): CommandLineOptions {
     angularCoreVersion: findArgument(argv, '--angularCoreVersion'),
     suppressAngularDiagnosticCodes: findArgument(argv, '--suppressAngularDiagnosticCodes'),
     defaultFileWatcher: findArgument(argv, '--defaultFileWatcher'),
+    watchOptions: findArgument(argv, '--watchOptions'),
   };
 }
 

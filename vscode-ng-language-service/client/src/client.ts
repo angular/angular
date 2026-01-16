@@ -445,6 +445,14 @@ export class AngularLanguageClient implements vscode.Disposable {
     const tsProbeLocations = [...getProbeLocations(this.context.extensionPath)];
     args.push('--tsProbeLocations', tsProbeLocations.join(','));
 
+    const watchOptions = config.get('typescript.tsserver.watchOptions');
+
+    if (watchOptions === 'vscode') {
+      // TODO(atscott): Support client side file watching optimization
+    } else if (watchOptions) {
+      args.push('--watchOptions', JSON.stringify(watchOptions));
+    }
+
     return args;
   }
 

@@ -72,6 +72,7 @@ export interface SessionOptions {
   angularCoreVersion: string | null;
   suppressAngularDiagnosticCodes: string | null;
   defaultFileWatcher: string | null;
+  watchOptions?: ts.WatchOptions;
 }
 
 enum LanguageId {
@@ -107,6 +108,7 @@ export class Session {
   private readonly includeAutomaticOptionalChainCompletions: boolean;
   private readonly includeCompletionsWithSnippetText: boolean;
   private readonly includeCompletionsForModuleExports: boolean;
+  private readonly watchOptions?: ts.WatchOptions;
   private snippetSupport: boolean | undefined;
   private diagnosticsTimeout: NodeJS.Timeout | null = null;
   private isProjectLoading = false;
@@ -124,6 +126,7 @@ export class Session {
       options.includeAutomaticOptionalChainCompletions;
     this.includeCompletionsWithSnippetText = options.includeCompletionsWithSnippetText;
     this.includeCompletionsForModuleExports = options.includeCompletionsForModuleExports;
+    this.watchOptions = options.watchOptions;
     this.logger = options.logger;
     this.logToConsole = options.logToConsole;
     defaultPreferences = {
@@ -175,6 +178,11 @@ export class Session {
       session: undefined,
     });
 
+    // If watchOptions is passed as a string (e.g. "vscode"), it's likely a configuration
+    // that we don't fully support or should just use our safe defaults for.
+    const watchOptions =
+      typeof this.watchOptions === 'object' && this.watchOptions !== null ? this.watchOptions : {};
+
     projSvc.setHostConfiguration({
       formatOptions: projSvc.getHostFormatCodeOptions(),
       extraFileExtensions: [
@@ -196,7 +204,7 @@ export class Session {
       watchOptions: {
         // Used as watch options when not specified by user's `tsconfig`.
         watchFile:
-          options.defaultFileWatcher === 'UseFsEventsOnParentDirectory'
+          (watchOptions.watchFile ?? options.defaultFileWatcher === 'UseFsEventsOnParentDirectory')
             ? ts.WatchFileKind.UseFsEventsOnParentDirectory
             : ts.WatchFileKind.UseFsEvents,
         // On Windows, fs.watch() can hold a lock on the watched directory, which
@@ -205,10 +213,11 @@ export class Session {
         // https://github.com/angular/vscode-ng-language-service/issues/1398
         // More history here: https://github.com/angular/vscode-ng-language-service/commit/6eb2984cbe2112d9f4284192ffa11d40ee6b2f74
         watchDirectory:
-          process.platform === 'win32'
+          watchOptions.watchDirectory ??
+          (process.platform === 'win32'
             ? ts.WatchDirectoryKind.DynamicPriorityPolling
-            : ts.WatchDirectoryKind.UseFsEvents,
-        fallbackPolling: ts.PollingWatchKind.DynamicPriority,
+            : ts.WatchDirectoryKind.UseFsEvents),
+        fallbackPolling: watchOptions.fallbackPolling ?? ts.PollingWatchKind.DynamicPriority,
       },
     });
 
