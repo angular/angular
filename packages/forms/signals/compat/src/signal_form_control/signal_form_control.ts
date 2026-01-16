@@ -26,6 +26,7 @@ import {signalErrorsToValidationErrors} from '../../../src/api/rules';
 import {FormOptions} from '../../../src/api/structure';
 import {FieldState, FieldTree, SchemaFn} from '../../../src/api/types';
 import {normalizeFormArgs} from '../../../src/util/normalize_form_args';
+import {removeListItem} from '../../../../src/util';
 
 /** Options used to update the control value. */
 export type ValueUpdateOptions = {
@@ -51,6 +52,8 @@ export class SignalFormControl<T> extends AbstractControl {
 
   private readonly fieldState: FieldState<T>;
   private pendingParentNotifications = 0;
+  private readonly onChangeCallbacks: Array<(value?: any, emitModelEvent?: boolean) => void> = [];
+  private readonly onDisabledChangeCallbacks: Array<(isDisabled: boolean) => void> = [];
   override readonly valueChanges = new EventEmitter<T>();
   override readonly statusChanges = new EventEmitter<FormControlStatus>();
 
@@ -94,6 +97,17 @@ export class SignalFormControl<T> extends AbstractControl {
         const status = this.status;
         this.statusChanges.emit(status);
         this.emitControlEvent(new StatusChangeEvent(status, this));
+      },
+      {injector},
+    );
+
+    // Disabled changes effect
+    effect(
+      () => {
+        const isDisabled = this.disabled;
+        for (const fn of this.onDisabledChangeCallbacks) {
+          fn(isDisabled);
+        }
       },
       {injector},
     );
@@ -153,6 +167,30 @@ export class SignalFormControl<T> extends AbstractControl {
     if (parent) {
       this.updateParentValueAndValidity(parent, options?.emitEvent);
     }
+    if (options?.emitModelToViewChange !== false) {
+      const emitModelEvent = options?.emitViewToModelChange !== false;
+      for (const fn of this.onChangeCallbacks) {
+        fn(value, emitModelEvent);
+      }
+    }
+  }
+
+  registerOnChange(fn: (value?: any, emitModelEvent?: boolean) => void): void {
+    this.onChangeCallbacks.push(fn);
+  }
+
+  /** @internal */
+  _unregisterOnChange(fn: (value?: any, emitModelEvent?: boolean) => void): void {
+    removeListItem(this.onChangeCallbacks, fn);
+  }
+
+  registerOnDisabledChange(fn: (isDisabled: boolean) => void): void {
+    this.onDisabledChangeCallbacks.push(fn);
+  }
+
+  /** @internal */
+  _unregisterOnDisabledChange(fn: (isDisabled: boolean) => void): void {
+    removeListItem(this.onDisabledChangeCallbacks, fn);
   }
 
   override getRawValue(): T {
