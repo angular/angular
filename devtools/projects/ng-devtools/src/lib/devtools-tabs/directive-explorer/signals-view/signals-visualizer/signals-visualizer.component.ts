@@ -48,6 +48,7 @@ export class SignalsVisualizerComponent {
 
   protected readonly graph = input.required<DevtoolsSignalGraph | null>();
   protected readonly selectedNodeId = input.required<string | null>();
+  protected readonly externallySelectedNodeId = input<string | null>(null);
   protected readonly element = input.required<ElementPosition | undefined>();
   protected readonly nodeClick = output<DevtoolsSignalGraphNode>();
   protected readonly clusterCollapse = output<void>();
@@ -70,7 +71,7 @@ export class SignalsVisualizerComponent {
         this.setUpSignalsVisualizer();
 
         runInInjectionContext(injector, () => {
-          let lastElement: ElementPosition | undefined;
+          let lastGraphUpdateElement: ElementPosition | undefined;
 
           effect(() => {
             const graph = this.graph();
@@ -78,10 +79,10 @@ export class SignalsVisualizerComponent {
             const currElement = untracked(this.element);
 
             // Snap to root node only if the element changes.
-            if (lastElement !== currElement) {
+            if (lastGraphUpdateElement !== currElement) {
               this.signalsVisualizer!.snapToRootNode();
             }
-            lastElement = currElement;
+            lastGraphUpdateElement = currElement;
           });
 
           effect(() => {
@@ -89,13 +90,28 @@ export class SignalsVisualizerComponent {
             this.signalsVisualizer!.setSelected(selected);
           });
 
+          let lastElement: ElementPosition | undefined;
+
           effect(() => {
-            this.element();
-            // Reset the visualizer when the element changes.
-            //
-            // Since `reset` triggers callbacks that
-            // use signals, we untrack the call.
-            untracked(() => this.signalsVisualizer!.reset());
+            const currElement = this.element();
+            if (lastElement && lastElement !== currElement) {
+              // Reset the visualizer when the element changes.
+              // Since `reset` triggers callbacks that
+              // use signals, we untrack the call.
+              untracked(() => this.signalsVisualizer!.reset());
+            }
+            lastElement = currElement;
+          });
+
+          effect(() => {
+            const id = this.externallySelectedNodeId();
+
+            // Only snap to externally selected node ID.
+            // We don't want to snap to nodes that were
+            // selected via the visualization itself.
+            if (id) {
+              this.signalsVisualizer!.snapToNode(id);
+            }
           });
         });
       },

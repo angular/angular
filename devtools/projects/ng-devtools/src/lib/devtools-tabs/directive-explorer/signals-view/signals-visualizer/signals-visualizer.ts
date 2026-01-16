@@ -101,26 +101,19 @@ export class SignalsGraphVisualizer {
     d3svg.call(this.zoomController);
   }
 
-  /** Snaps to the root node – either the template or the first node depending which exists. */
-  snapToRootNode() {
-    let node =
-      this.inputGraph?.nodes.find((n) => isSignalNode(n) && n.kind === 'template') ??
-      this.inputGraph?.nodes[0];
-
-    if (!node) {
-      return;
-    }
-
-    // TODO(Georgi): Drop `any` when Dagre is updated.
-    const dagreNode = this.graph.node(node.id) as any;
+  snapToNode(nodeId: string): void;
+  snapToNode(node: DevtoolsSignalGraphNode): void;
+  snapToNode(node: string | DevtoolsSignalGraphNode) {
+    const nodeId = typeof node === 'string' ? node : node.id;
+    const dagreNode = this.graph.node(nodeId);
     if (!dagreNode) {
       return;
     }
 
     const contWidth = this.svg.clientWidth;
     const contHeight = this.svg.clientHeight;
-    const x = contWidth / 2 - dagreNode.x * TEMPL_NODE_ZOOM_SCALE;
-    const y = contHeight / 2 - dagreNode.y * TEMPL_NODE_ZOOM_SCALE;
+    const x = contWidth / 2 - dagreNode.x! * TEMPL_NODE_ZOOM_SCALE;
+    const y = contHeight / 2 - dagreNode.y! * TEMPL_NODE_ZOOM_SCALE;
 
     d3.select(this.svg)
       .transition()
@@ -131,11 +124,22 @@ export class SignalsGraphVisualizer {
       );
   }
 
-  setSelected(selected: string | null) {
+  /** Snaps to the root node – either the template or the first node depending which exists. */
+  snapToRootNode() {
+    const node =
+      this.inputGraph?.nodes.find((n) => isSignalNode(n) && n.kind === 'template') ??
+      this.inputGraph?.nodes[0];
+
+    if (node) {
+      this.snapToNode(node);
+    }
+  }
+
+  setSelected(selectedId: string | null) {
     d3.select(this.svg)
       .select('.output .nodes')
       .selectAll<SVGGElement, string>('g.node')
-      .classed('selected', (d) => d === selected);
+      .classed('selected', (d) => d === selectedId);
   }
 
   zoomScale(scale: number) {
