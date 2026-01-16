@@ -148,9 +148,8 @@ default-src 'self'; style-src 'self' 'nonce-randomNonceGoesHere'; script-src 'se
 
 When serving your Angular application, the server should include a randomly-generated nonce in the HTTP header for each request.
 You must provide this nonce to Angular so that the framework can render `<style>` elements.
-The nonce for Angular can be setup in one of two ways:
 
-1. Using build time methods
+### Adding a CSP nonce with build time methods
 
 The angular-cli can assist you with correctly appending the nonce to every `<script>` and `<style>` element of your application.
 There are two methods of preparing your app to support nonce declaration on your elements:
@@ -169,7 +168,7 @@ The next step is to replace the placeholder, with an actual, randomly generated 
 
 This can be done with for example an express middleware, modifying the response body of the SSR handler or an ingress middleware.
 
-2. Using an injection token
+### Adding a CSP nonce with an injection token
 
 <docs-callout important title="Providing the nonce via the injection token does not work with SSR">
   Due to the way the server side renderer handles features like event-replay and hydration, token only injection is not supported.
