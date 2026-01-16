@@ -10,8 +10,10 @@ import {EventEmitter, inject, Injector, signal, WritableSignal, effect} from '@a
 import {
   AbstractControl,
   ControlEvent,
+  FormArray,
   FormControlStatus,
   FormControlState,
+  FormGroup,
   PristineChangeEvent,
   StatusChangeEvent,
   TouchedChangeEvent,
@@ -24,6 +26,14 @@ import {signalErrorsToValidationErrors} from '../../../src/api/rules';
 import {FormOptions} from '../../../src/api/structure';
 import {FieldState, FieldTree, SchemaFn} from '../../../src/api/types';
 import {normalizeFormArgs} from '../../../src/util/normalize_form_args';
+
+/** Options used to update the control value. */
+export type ValueUpdateOptions = {
+  onlySelf?: boolean;
+  emitEvent?: boolean;
+  emitModelToViewChange?: boolean;
+  emitViewToModelChange?: boolean;
+};
 
 /**
  * A `FormControl` that is backed by signal forms rules.
@@ -40,6 +50,7 @@ export class SignalFormControl<T> extends AbstractControl {
   public readonly sourceValue: WritableSignal<T>;
 
   private readonly fieldState: FieldState<T>;
+  private pendingParentNotifications = 0;
   override readonly valueChanges = new EventEmitter<T>();
   override readonly statusChanges = new EventEmitter<FormControlStatus>();
 
@@ -66,6 +77,7 @@ export class SignalFormControl<T> extends AbstractControl {
     effect(
       () => {
         const value = this.sourceValue();
+        this.notifyParentUnlessPending();
         this.valueChanges.emit(value);
         this.emitControlEvent(new ValueChangeEvent(value, this));
       },
@@ -87,6 +99,15 @@ export class SignalFormControl<T> extends AbstractControl {
       () => {
         const isTouched = this.fieldState.touched();
         this.emitControlEvent(new TouchedChangeEvent(isTouched, this));
+        const parent = this.parent;
+        if (!parent) {
+          return;
+        }
+        if (!isTouched) {
+          parent.markAsUntouched();
+        } else {
+          parent.markAsTouched();
+        }
       },
       {injector},
     );
@@ -96,6 +117,15 @@ export class SignalFormControl<T> extends AbstractControl {
       () => {
         const isDirty = this.fieldState.dirty();
         this.emitControlEvent(new PristineChangeEvent(!isDirty, this));
+        const parent = this.parent;
+        if (!parent) {
+          return;
+        }
+        if (isDirty) {
+          parent.markAsDirty();
+        } else {
+          parent.markAsPristine();
+        }
       },
       {injector},
     );
@@ -105,19 +135,27 @@ export class SignalFormControl<T> extends AbstractControl {
     (this as any)._events.next(event);
   }
 
-  override setValue(value: any): void {
-    this.sourceValue.set(value);
+  override setValue(value: any, options?: ValueUpdateOptions): void {
+    this.updateValue(value, options);
   }
 
-  override patchValue(value: any): void {
+  override patchValue(value: any, options?: ValueUpdateOptions): void {
+    this.updateValue(value, options);
+  }
+
+  private updateValue(value: any, options?: ValueUpdateOptions): void {
+    const parent = this.scheduleParentUpdate(options);
     this.sourceValue.set(value);
+    if (parent) {
+      this.updateParentValueAndValidity(parent, options?.emitEvent);
+    }
   }
 
   override getRawValue(): T {
     return this.value;
   }
 
-  override reset(value?: T | FormControlState<T>, options?: {emitEvent?: boolean}): void {
+  override reset(value?: T | FormControlState<T>, options?: ValueUpdateOptions): void {
     if (isFormControlState(value)) {
       value = value.value;
     }
@@ -126,11 +164,49 @@ export class SignalFormControl<T> extends AbstractControl {
     this.fieldState.reset(resetValue as any);
 
     if (value !== undefined) {
-      this.sourceValue.set(value);
+      this.updateValue(value, options);
+    } else if (!options?.onlySelf) {
+      const parent = this.parent;
+      if (parent) {
+        this.updateParentValueAndValidity(parent, options?.emitEvent);
+      }
     }
 
     if (options?.emitEvent !== false) {
       this.emitControlEvent(new FormResetEvent(this));
+    }
+  }
+
+  private scheduleParentUpdate(options?: ValueUpdateOptions): FormGroup | FormArray | null {
+    const parent = options?.onlySelf ? null : this.parent;
+    if (options?.onlySelf || parent) {
+      this.pendingParentNotifications++;
+    }
+    return parent;
+  }
+
+  private notifyParentUnlessPending(): void {
+    if (this.pendingParentNotifications > 0) {
+      this.pendingParentNotifications--;
+      return;
+    }
+    const parent = this.parent;
+    if (parent) {
+      this.updateParentValueAndValidity(parent);
+    }
+  }
+
+  private updateParentValueAndValidity(parent: AbstractControl, emitEvent?: boolean): void {
+    parent.updateValueAndValidity({emitEvent, sourceControl: this} as any);
+  }
+
+  private propagateToParent(
+    opts: {onlySelf?: boolean} | undefined,
+    fn: (parent: AbstractControl) => void,
+  ) {
+    const parent = this.parent;
+    if (parent && !opts?.onlySelf) {
+      fn(parent);
     }
   }
 
@@ -185,10 +261,12 @@ export class SignalFormControl<T> extends AbstractControl {
 
   override markAsTouched(opts?: {onlySelf?: boolean}): void {
     this.fieldState.markAsTouched();
+    this.propagateToParent(opts, (parent) => parent.markAsTouched(opts));
   }
 
   override markAsDirty(opts?: {onlySelf?: boolean}): void {
     this.fieldState.markAsDirty();
+    this.propagateToParent(opts, (parent) => parent.markAsDirty(opts));
   }
 
   override markAsPristine(opts?: {onlySelf?: boolean}): void {
@@ -197,6 +275,7 @@ export class SignalFormControl<T> extends AbstractControl {
     if (wasTouched) {
       this.fieldState.markAsTouched();
     }
+    this.propagateToParent(opts, (parent) => parent.markAsPristine(opts));
   }
 
   override markAsUntouched(opts?: {onlySelf?: boolean}): void {
@@ -205,6 +284,7 @@ export class SignalFormControl<T> extends AbstractControl {
     if (wasDirty) {
       this.fieldState.markAsDirty();
     }
+    this.propagateToParent(opts, (parent) => parent.markAsUntouched(opts));
   }
 
   override updateValueAndValidity(_opts?: Object): void {}
