@@ -6,20 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ApplyRefactoringResult,
-  isNgLanguageService,
-  NgLanguageService,
-  PluginConfig,
-} from '@angular/language-service/api';
+import {isNgLanguageService, NgLanguageService, PluginConfig} from '@angular/language-service/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {promisify} from 'util';
-import {getLanguageService as getHTMLLanguageService} from 'vscode-html-languageservice';
-import {getSCSSLanguageService} from 'vscode-css-languageservice';
-import {TextDocument} from 'vscode-languageserver-textdocument';
 import * as lsp from 'vscode-languageserver/node';
 
-import {ServerOptions} from '../../common/initialize';
 import {
   ProjectLanguageService,
   ProjectLoadingFinish,
@@ -28,30 +19,19 @@ import {
 } from '../../common/notifications';
 import {
   GetComponentsWithTemplateFile,
-  GetTcbParams,
   GetTcbRequest,
-  GetTcbResponse,
   GetTemplateLocationForComponent,
-  GetTemplateLocationForComponentParams,
   IsInAngularProject,
-  IsInAngularProjectParams,
 } from '../../common/requests';
 
 import {tsDiagnosticToLspDiagnostic} from './diagnostic';
-import {getHTMLVirtualContent, getSCSSVirtualContent, isInlineStyleNode} from './embedded_support';
 import {ServerHost} from './server_host';
-import {documentationToMarkdown} from './text_render';
 import {
   filePathToUri,
-  getMappedDefinitionInfo,
   isConfiguredProject,
   isDebugMode,
-  lspPositionToTsPosition,
   lspRangeToTsPositions,
   MruTracker,
-  tsDisplayPartsToText,
-  tsFileTextChangesToLspWorkspaceEdit,
-  tsTextSpanToLspRange,
   uriToFilePath,
 } from './utils';
 import {onCodeAction, onCodeActionResolve} from './handlers/code_actions';
@@ -65,6 +45,7 @@ import {onRenameRequest, onPrepareRename} from './handlers/rename';
 import {onSignatureHelp} from './handlers/signature';
 import {onGetTcb} from './handlers/tcb';
 import {onGetTemplateLocationForComponent, isInAngularProject} from './handlers/template_info';
+import {onDidChangeWatchedFiles} from './handlers/did_change_watched_files';
 
 export interface SessionOptions {
   host: ServerHost;
@@ -87,8 +68,6 @@ enum LanguageId {
   HTML = 'html',
 }
 
-// Empty definition range for files without `scriptInfo`
-const EMPTY_RANGE = lsp.Range.create(0, 0, 0, 0);
 const setImmediateP = promisify(setImmediate);
 
 const alwaysSuppressDiagnostics: number[] = [
@@ -104,6 +83,7 @@ export class Session {
   readonly connection: lsp.Connection;
   readonly projectService: ts.server.ProjectService;
   readonly logger: ts.server.Logger;
+  private readonly host: ServerHost;
   private readonly logToConsole: boolean;
   private readonly openFiles = new MruTracker();
   readonly includeAutomaticOptionalChainCompletions: boolean;
@@ -128,6 +108,7 @@ export class Session {
     this.includeCompletionsWithSnippetText = options.includeCompletionsWithSnippetText;
     this.includeCompletionsForModuleExports = options.includeCompletionsForModuleExports;
     this.logger = options.logger;
+    this.host = options.host;
     this.logToConsole = options.logToConsole;
     this.defaultPreferences = {
       ...this.defaultPreferences,
@@ -243,6 +224,7 @@ export class Session {
 
   private addProtocolHandlers(conn: lsp.Connection) {
     conn.onInitialize((p) => onInitialize(this, p));
+    conn.onDidChangeWatchedFiles((p) => onDidChangeWatchedFiles(p, this.logger, this.host));
     conn.onDidOpenTextDocument((p) => this.onDidOpenTextDocument(p));
     conn.onDidCloseTextDocument((p) => this.onDidCloseTextDocument(p));
     conn.onDidChangeTextDocument((p) => this.onDidChangeTextDocument(p));
