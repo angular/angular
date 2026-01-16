@@ -100,6 +100,46 @@ export class SignalFormControl<T> extends AbstractControl {
     return !this.disabled;
   }
 
+  override get dirty(): boolean {
+    return this.fieldState.dirty();
+  }
+
+  override get pristine(): boolean {
+    return !this.dirty;
+  }
+
+  override get touched(): boolean {
+    return this.fieldState.touched();
+  }
+
+  override get untouched(): boolean {
+    return !this.touched;
+  }
+
+  override markAsTouched(opts?: {onlySelf?: boolean}): void {
+    this.fieldState.markAsTouched();
+  }
+
+  override markAsDirty(opts?: {onlySelf?: boolean}): void {
+    this.fieldState.markAsDirty();
+  }
+
+  override markAsPristine(opts?: {onlySelf?: boolean}): void {
+    const wasTouched = this.touched;
+    this.fieldState.reset(this.sourceValue());
+    if (wasTouched) {
+      this.fieldState.markAsTouched();
+    }
+  }
+
+  override markAsUntouched(opts?: {onlySelf?: boolean}): void {
+    const wasDirty = this.dirty;
+    this.fieldState.reset(this.sourceValue());
+    if (wasDirty) {
+      this.fieldState.markAsDirty();
+    }
+  }
+
   override updateValueAndValidity(_opts?: Object): void {}
 
   /** @internal */
