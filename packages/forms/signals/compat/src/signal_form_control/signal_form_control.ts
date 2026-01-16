@@ -68,6 +68,9 @@ export class SignalFormControl<T> extends AbstractControl {
   }
 
   override get status(): FormControlStatus {
+    if (this.fieldState.disabled()) {
+      return 'DISABLED';
+    }
     if (this.fieldState.valid()) {
       return 'VALID';
     }
@@ -85,6 +88,18 @@ export class SignalFormControl<T> extends AbstractControl {
     return this.fieldState.invalid();
   }
 
+  override get pending(): boolean {
+    return this.fieldState.pending();
+  }
+
+  override get disabled(): boolean {
+    return this.fieldState.disabled();
+  }
+
+  override get enabled(): boolean {
+    return !this.disabled;
+  }
+
   override updateValueAndValidity(_opts?: Object): void {}
 
   /** @internal */
@@ -100,7 +115,7 @@ export class SignalFormControl<T> extends AbstractControl {
 
   /** @internal */
   _allControlsDisabled(): boolean {
-    return false;
+    return this.disabled;
   }
 
   /** @internal */
