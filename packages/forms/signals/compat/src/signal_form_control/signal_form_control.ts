@@ -7,7 +7,17 @@
  */
 
 import {EventEmitter, inject, Injector, signal, WritableSignal, effect} from '@angular/core';
-import {AbstractControl, FormControlStatus, FormControlState} from '@angular/forms';
+import {
+  AbstractControl,
+  ControlEvent,
+  FormControlStatus,
+  FormControlState,
+  PristineChangeEvent,
+  StatusChangeEvent,
+  TouchedChangeEvent,
+  ValueChangeEvent,
+  FormResetEvent,
+} from '@angular/forms';
 
 import {compatForm} from '../api/compat_form';
 import {signalErrorsToValidationErrors} from '../../../src/api/rules';
@@ -57,6 +67,7 @@ export class SignalFormControl<T> extends AbstractControl {
       () => {
         const value = this.sourceValue();
         this.valueChanges.emit(value);
+        this.emitControlEvent(new ValueChangeEvent(value, this));
       },
       {injector},
     );
@@ -66,9 +77,32 @@ export class SignalFormControl<T> extends AbstractControl {
       () => {
         const status = this.status;
         this.statusChanges.emit(status);
+        this.emitControlEvent(new StatusChangeEvent(status, this));
       },
       {injector},
     );
+
+    // Touched changes effect
+    effect(
+      () => {
+        const isTouched = this.fieldState.touched();
+        this.emitControlEvent(new TouchedChangeEvent(isTouched, this));
+      },
+      {injector},
+    );
+
+    // Dirty changes effect
+    effect(
+      () => {
+        const isDirty = this.fieldState.dirty();
+        this.emitControlEvent(new PristineChangeEvent(!isDirty, this));
+      },
+      {injector},
+    );
+  }
+
+  private emitControlEvent(event: ControlEvent): void {
+    (this as any)._events.next(event);
   }
 
   override setValue(value: any): void {
@@ -83,7 +117,7 @@ export class SignalFormControl<T> extends AbstractControl {
     return this.value;
   }
 
-  override reset(value?: T | FormControlState<T>): void {
+  override reset(value?: T | FormControlState<T>, options?: {emitEvent?: boolean}): void {
     if (isFormControlState(value)) {
       value = value.value;
     }
@@ -93,6 +127,10 @@ export class SignalFormControl<T> extends AbstractControl {
 
     if (value !== undefined) {
       this.sourceValue.set(value);
+    }
+
+    if (options?.emitEvent !== false) {
+      this.emitControlEvent(new FormResetEvent(this));
     }
   }
 
