@@ -26,7 +26,7 @@ import { CurrencyPipe, DatePipe, TitleCasePipe } from '@angular/common';
     </main>
   `,
 })
-export class ShoppingCartComponent {
+export class ShoppingCart {
   amount = 123.45;
   company = 'acme corporation';
   purchasedOn = '2024-07-08';

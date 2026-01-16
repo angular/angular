@@ -319,7 +319,7 @@ import { Component, input, model, output } from "@angular/core";
       }
   `
 })
-export class AppWarningComponent {
+export class AppWarning {
   readonly canClose = input.required<boolean>();
   readonly isExpanded = model<boolean>();
   readonly close = output<boolean>();
@@ -342,13 +342,13 @@ import {ThemeDirective} from '../theme.directive';
 @Component({
   template: `<ng-container #container />`,
 })
-export class HostComponent {
+export class Host {
   private vcr = inject(ViewContainerRef);
   readonly canClose = signal(true);
   readonly isExpanded = signal(true);
 
   showWarning() {
-    const compRef = this.vcr.createComponent(AppWarningComponent, {
+    const compRef = this.vcr.createComponent(AppWarning, {
       bindings: [
         inputBinding('canClose', this.canClose),
         twoWayBinding('isExpanded', this.isExpanded),
@@ -365,7 +365,7 @@ export class HostComponent {
 }
 ```
 
-In the example above, the dynamic **AppWarningComponent** is created with its `canClose` input bound to a reactive signal, a two-way binding on its `isExpanded` state, and an output listener for `close`. The `FocusTrap` and `ThemeDirective` are attached to the host element via `directives`.
+In the example above, the dynamic **AppWarning** is created with its `canClose` input bound to a reactive signal, a two-way binding on its `isExpanded` state, and an output listener for `close`. The `FocusTrap` and `ThemeDirective` are attached to the host element via `directives`.
 
 ### Popup attached to `document.body` with `createComponent` + `hostElement`
 
@@ -381,7 +381,7 @@ import {
   inputBinding,
   outputBinding,
 } from '@angular/core';
-import {PopupComponent} from './popup.component';
+import {Popup} from './popup';
 
 @Injectable({providedIn: 'root'})
 export class PopupService {
@@ -393,7 +393,7 @@ export class PopupService {
     const host = document.createElement('popup-host');
 
     // Create the component and bind in one call
-    const ref = createComponent(PopupComponent, {
+    const ref = createComponent(Popup, {
       environmentInjector: this.injector,
       hostElement: host,
       bindings: [
