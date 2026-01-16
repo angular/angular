@@ -8,35 +8,19 @@
 
 import {ChangeDetectionStrategy, Component, computed, inject, input} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {
-  MatTree,
-  MatTreeFlattener,
-  MatTreeNode,
-  MatTreeNodeDef,
-  MatTreeNodePadding,
-} from '@angular/material/tree';
-import {MatIcon} from '@angular/material/icon';
-import {Descriptor, MessageBus, PropType} from '../../../../../../../../protocol';
+import {MatTreeFlattener} from '@angular/material/tree';
 import {DataSource} from '@angular/cdk/collections';
+
+import {MessageBus, PropType} from '../../../../../../../../protocol';
 import {DevtoolsSignalNode, SignalGraphManager} from '../../../signal-graph';
 import {arrayifyProps, SignalDataSource} from './signal-data-source';
-
-export interface FlatNode {
-  expandable: boolean;
-  prop: Property;
-  level: number;
-}
-
-export interface Property {
-  name: string;
-  descriptor: Descriptor;
-  parent: Property | null;
-}
+import {ObjectTreeExplorerComponent} from '../../../../../shared/object-tree-explorer/object-tree-explorer.component';
+import {FlatNode, Property} from '../../../../../shared/object-tree-explorer/object-tree-types';
 
 @Component({
   selector: 'ng-signals-value-tree',
   templateUrl: './signals-value-tree.component.html',
-  imports: [MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatIcon],
+  imports: [ObjectTreeExplorerComponent],
   styleUrl: './signals-value-tree.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -79,10 +63,4 @@ export class SignalsValueTreeComponent {
       this.messageBus,
     );
   });
-
-  toggle(node: FlatNode) {
-    this.treeControl().toggle(node);
-  }
-
-  hasChild = (_: number, node: FlatNode) => node.expandable;
 }
