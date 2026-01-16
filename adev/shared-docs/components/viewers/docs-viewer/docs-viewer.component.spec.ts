@@ -72,7 +72,7 @@ describe('DocViewer', () => {
 
   const exampleContentWithDocsAnchor = `
     <h2 id="test-section">
-      <a href="#test-section" class="docs-anchor" tabindex="-1" aria-label="Link to Test Section">Test Section</a>
+      <a href="#test-section" class="docs-anchor" tabindex="-1">Test Section</a>
     </h2>
   `;
 

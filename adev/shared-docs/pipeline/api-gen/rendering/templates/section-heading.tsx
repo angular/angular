@@ -13,11 +13,10 @@ import {SECTION_HEADING} from '../styling/css-classes.mjs';
 /** Component to render the API section. */
 export function SectionHeading(props: {name: string}) {
   const id = convertSectionNameToId(props.name);
-  const label = 'Link to ' + props.name + ' section';
 
   return (
     <h2 id={id} class={SECTION_HEADING}>
-      <a class="docs-anchor" href={'#' + id} aria-label={label} tabIndex={-1}>
+      <a class="docs-anchor" href={'#' + id} tabIndex={-1}>
         {props.name}
       </a>
     </h2>

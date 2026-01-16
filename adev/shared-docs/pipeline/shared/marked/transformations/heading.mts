@@ -35,11 +35,10 @@ export function headingRender(
   const link = customId ?? getIdFromHeading(headingText);
 
   const label = parsedText.replace(/`(.*?)`/g, '<code>$1</code>');
-  const normalizedLabel = label.replace(/<\/?code>/g, '');
 
   return `
   <h${depth} id="${link}">
-    <a href="#${link}" class="docs-anchor" tabindex="-1" aria-label="Link to ${normalizedLabel}">${label}</a>
+    <a href="#${link}" class="docs-anchor" tabindex="-1">${label}</a>
   </h${depth}>
   `;
 }
