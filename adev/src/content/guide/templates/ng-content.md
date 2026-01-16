@@ -5,7 +5,7 @@
 Here is an example of a `BaseButton` component that accepts any markup from its parent.
 
 ```angular-ts
-// ./base-button/base-button.component.ts
+// ./base-button/base-button.ts
 import { Component } from '@angular/core';
 
 @Component({
@@ -18,9 +18,9 @@ export class BaseButton {}
 ```
 
 ```angular-ts
-// ./app.component.ts
+// ./app.ts
 import { Component } from '@angular/core';
-import { BaseButton } from './base-button/base-button.component';
+import { BaseButton } from './base-button';
 
 @Component({
   selector: 'app-root',
@@ -31,7 +31,7 @@ import { BaseButton } from './base-button/base-button.component';
     </button>
   `,
 })
-export class AppComponent {}
+export class App {}
 ```
 
 For more detail, check out the [`<ng-content>` in-depth guide](/guide/components/content-projection) for other ways you can leverage this pattern.

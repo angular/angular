@@ -319,9 +319,9 @@ it('should render a defer block in different states', async () => {
       }
     `
   })
-  class ComponentA {}
+  class ExampleA {}
   // Create component fixture.
-  const componentFixture = TestBed.createComponent(ComponentA);
+  const componentFixture = TestBed.createComponent(ExampleA);
   // Retrieve the list of all defer block fixtures and get the first block.
   const deferBlockFixture = (await componentFixture.getDeferBlocks())[0];
   // Renders placeholder state by default.

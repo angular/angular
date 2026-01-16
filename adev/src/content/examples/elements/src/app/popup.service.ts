@@ -6,7 +6,7 @@ import {
   Injectable,
 } from '@angular/core';
 import {NgElement, WithProperties} from '@angular/elements';
-import {PopupComponent} from './popup.component';
+import {Popup} from './popup';
 
 @Injectable()
 export class PopupService {
@@ -20,7 +20,7 @@ export class PopupService {
     const popup = document.createElement('popup-component');
 
     // Create the component and wire it up with the element
-    const popupComponentRef = createComponent(PopupComponent, {
+    const popupComponentRef = createComponent(Popup, {
       environmentInjector: this.injector,
       hostElement: popup,
     });
@@ -35,7 +35,7 @@ export class PopupService {
     });
 
     // Set the message
-    popupComponentRef.instance.message = message;
+    popupComponentRef.setInput('message', message);
 
     // Add to the DOM
     document.body.appendChild(popup);
@@ -44,7 +44,7 @@ export class PopupService {
   // This uses the new custom-element method to add the popup to the DOM.
   showAsElement(message: string) {
     // Create element
-    const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement(
+    const popupEl: NgElement & WithProperties<Popup> = document.createElement(
       'popup-element',
     ) as any;
 
@@ -52,8 +52,7 @@ export class PopupService {
     popupEl.addEventListener('closed', () => document.body.removeChild(popupEl));
 
     // Set the message
-    popupEl.message = message;
-
+    popupEl.setAttribute('message', message);
     // Add to the DOM
     document.body.appendChild(popupEl);
   }
