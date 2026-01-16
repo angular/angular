@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EventEmitter, inject, Injector, signal, WritableSignal, effect} from '@angular/core';
+import {
+  EventEmitter,
+  inject,
+  Injector,
+  signal,
+  WritableSignal,
+  effect,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 import {
   AbstractControl,
   ControlEvent,
@@ -25,6 +33,7 @@ import {compatForm} from '../api/compat_form';
 import {signalErrorsToValidationErrors} from '../../../src/api/rules';
 import {FormOptions} from '../../../src/api/structure';
 import {FieldState, FieldTree, SchemaFn} from '../../../src/api/types';
+import {SignalFormsErrorCode} from '../../../src/errors';
 import {normalizeFormArgs} from '../../../src/util/normalize_form_args';
 import {removeListItem} from '../../../../src/util';
 
@@ -41,6 +50,31 @@ export type ValueUpdateOptions = {
  *
  * This class provides a bridge between Signal Forms and Reactive Forms, allowing
  * signal-based controls to be used within a standard `FormGroup` or `FormArray`.
+ *
+ * A control could be created using signal forms, and integrated with an existing FormGroup
+ * propagating all the statuses and validity.
+ *
+ * @usageNotes
+ *
+ * ### Basic usage
+ *
+ * ```angular-ts
+ * const form = new FormGroup({
+ *   // You can create SignalFormControl with signal form rules, and add it to a FormGroup.
+ *   name: new SignalFormControl('Alice', p => {
+ *     required(p);
+ *   }),
+ *   age: new FormControl(25),
+ * });
+ * ```
+ * In the template you can get the underlying `fieldTree` and bind it:
+ *
+ * ```angular-html
+ *  <form [formGroup]="form">
+ *    <input [formField]="nameControl.fieldTree" />
+ *    <input formControlName="age" />
+ *  </form>
+ * ```
  *
  * @experimental
  */
@@ -289,16 +323,40 @@ export class SignalFormControl<T> extends AbstractControl {
     return this.fieldState.dirty();
   }
 
+  override set dirty(_: boolean) {
+    throw unsupportedFeatureError(
+      'Setting dirty directly is not supported. Instead use markAsDirty().',
+    );
+  }
+
   override get pristine(): boolean {
     return !this.dirty;
+  }
+
+  override set pristine(_: boolean) {
+    throw unsupportedFeatureError(
+      'Setting pristine directly is not supported. Instead use reset().',
+    );
   }
 
   override get touched(): boolean {
     return this.fieldState.touched();
   }
 
+  override set touched(_: boolean) {
+    throw unsupportedFeatureError(
+      'Setting touched directly is not supported. Instead use markAsTouched() or reset().',
+    );
+  }
+
   override get untouched(): boolean {
     return !this.touched;
+  }
+
+  override set untouched(_: boolean) {
+    throw unsupportedFeatureError(
+      'Setting untouched directly is not supported. Instead use reset().',
+    );
   }
 
   override markAsTouched(opts?: {onlySelf?: boolean}): void {
@@ -350,6 +408,58 @@ export class SignalFormControl<T> extends AbstractControl {
   /** @internal */
   _syncPendingControls(): boolean {
     return false;
+  }
+
+  override disable(_opts?: {onlySelf?: boolean; emitEvent?: boolean}): void {
+    throw unsupportedDisableEnableError();
+  }
+
+  override enable(_opts?: {onlySelf?: boolean; emitEvent?: boolean}): void {
+    throw unsupportedDisableEnableError();
+  }
+
+  override setValidators(_validators: any): void {
+    throw unsupportedValidatorsError();
+  }
+
+  override setAsyncValidators(_validators: any): void {
+    throw unsupportedValidatorsError();
+  }
+
+  override addValidators(_validators: any): void {
+    throw unsupportedValidatorsError();
+  }
+
+  override addAsyncValidators(_validators: any): void {
+    throw unsupportedValidatorsError();
+  }
+
+  override removeValidators(_validators: any): void {
+    throw unsupportedValidatorsError();
+  }
+
+  override removeAsyncValidators(_validators: any): void {
+    throw unsupportedValidatorsError();
+  }
+
+  override clearValidators(): void {
+    throw unsupportedValidatorsError();
+  }
+
+  override clearAsyncValidators(): void {
+    throw unsupportedValidatorsError();
+  }
+
+  override setErrors(_errors: any, _opts?: {emitEvent?: boolean}): void {
+    throw unsupportedFeatureError(
+      'Imperatively setting errors is not supported in signal forms. Errors are derived from validation rules.',
+    );
+  }
+
+  override markAsPending(_opts?: {onlySelf?: boolean; emitEvent?: boolean}): void {
+    throw unsupportedFeatureError(
+      'Imperatively marking as pending is not supported in signal forms. Pending state is derived from async validation status.',
+    );
   }
 }
 
@@ -417,5 +527,21 @@ function isFormControlState(formState: unknown): formState is {value: any; disab
     Object.keys(formState).length === 2 &&
     'value' in formState &&
     'disabled' in formState
+  );
+}
+
+function unsupportedFeatureError(message: string): RuntimeError {
+  return new RuntimeError(SignalFormsErrorCode.UNSUPPORTED_FEATURE as any, ngDevMode && message);
+}
+
+function unsupportedDisableEnableError(): RuntimeError {
+  return unsupportedFeatureError(
+    'Imperatively changing enabled/disabled status in form control is not supported in signal forms. Instead use a "disabled" rule to derive the disabled status from a signal.',
+  );
+}
+
+function unsupportedValidatorsError(): RuntimeError {
+  return unsupportedFeatureError(
+    'Dynamically adding and removing validators is not supported in signal forms. Instead use the "applyWhen" rule to conditionally apply validators based on a signal.',
   );
 }
