@@ -51,6 +51,20 @@ export class AngularLanguageClient implements vscode.Disposable {
       },
     });
 
+    const config = vscode.workspace.getConfiguration();
+    const useClientSideWatching = config.get('angular.server.useClientSideFileWatcher');
+    const fileEvents = [
+      // Notify the server about file changes to tsconfig.json contained in the workspace
+      vscode.workspace.createFileSystemWatcher('**/tsconfig.json'),
+    ];
+    if (useClientSideWatching) {
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/*.ts'));
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/*.html'));
+      // While we don't need general JSON watching, TypeScript relies on package.json for module resolution, type acquisition, and auto-imports.
+      // If we don't watch it, npm install changes or dependency updates might be missed by the Language Service
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/package.json'));
+    }
+
     this.outputChannel = vscode.window.createOutputChannel(this.name);
     // Options to control the language client
     this.clientOptions = {
@@ -62,10 +76,7 @@ export class AngularLanguageClient implements vscode.Disposable {
         {scheme: 'file', language: 'typescript'},
       ],
       synchronize: {
-        fileEvents: [
-          // Notify the server about file changes to tsconfig.json contained in the workspace
-          vscode.workspace.createFileSystemWatcher('**/tsconfig.json'),
-        ],
+        fileEvents,
       },
       // Don't let our output console pop open
       revealOutputChannelOn: lsp.RevealOutputChannelOn.Never,
@@ -438,6 +449,12 @@ export class AngularLanguageClient implements vscode.Disposable {
     }
     const tsProbeLocations = [...getProbeLocations(this.context.extensionPath)];
     args.push('--tsProbeLocations', tsProbeLocations.join(','));
+
+    const supportClientSide = config.get('angular.server.useClientSideFileWatcher');
+
+    if (supportClientSide) {
+      args.push('--useClientSideFileWatcher');
+    }
 
     return args;
   }
