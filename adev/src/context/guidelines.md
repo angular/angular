@@ -111,7 +111,6 @@ Here is a link to the most recent Angular style guide https://angular.dev/style-
 - Keep templates simple and avoid complex logic
 - Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
 - Do not assume globals like (`new Date()`) are available.
-- Do not write arrow functions in templates (they are not supported).
 - Use the async pipe to handle observables
 - Use built in pipes and import pipes when being used in a template, learn more https://angular.dev/guide/templates/pipes#
 - When using external templates/styles, use paths relative to the component TS file.
