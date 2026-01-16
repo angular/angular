@@ -59,14 +59,6 @@ export declare namespace PathKind {
 }
 
 /**
- * A status indicating whether a field is unsubmitted, submitted, or currently submitting.
- *
- * @category types
- * @experimental 21.0.0
- */
-export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
-
-/**
  * A reason for a field's disablement.
  *
  * @category logic
@@ -225,8 +217,10 @@ export type MaybeFieldTree<TModel, TKey extends string | number = string | numbe
  * @category structure
  * @experimental 21.0.0
  */
-export interface FieldState<TValue, TKey extends string | number = string | number>
-  extends ɵFieldState<TValue> {
+export interface FieldState<
+  TValue,
+  TKey extends string | number = string | number,
+> extends ɵFieldState<TValue> {
   /**
    * A signal indicating whether field value has been changed by user.
    */
