@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {EventCallback, WrappedEventCallback} from '../../event_delegation_utils';
-import {TNode, TNodeType} from '../interfaces/node';
-import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
-import {LView, RENDERER, TView} from '../interfaces/view';
-import {assertTNodeType} from '../node_assert';
-import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../state';
+import type { EventCallback, WrappedEventCallback } from '../../event_delegation_utils';
+import { TNode, TNodeType } from '../interfaces/node';
+import { GlobalTargetResolver, Renderer } from '../interfaces/renderer';
+import { LView, RENDERER, TView } from '../interfaces/view';
+import { assertTNodeType } from '../node_assert';
+import { getCurrentDirectiveDef, getCurrentTNode, getLView, getTView } from '../state';
 
-import {listenToOutput} from '../view/directive_outputs';
-import {listenToDomEvent, wrapListener} from '../view/listeners';
-import {loadComponentRenderer} from './shared';
+import { listenToOutput } from '../view/directive_outputs';
+import { listenToDomEvent, wrapListener } from '../view/listeners';
+import { loadComponentRenderer } from './shared';
 
 /**
  * Adds an event listener to the current node.
@@ -152,6 +152,12 @@ export function listenerInternal(
 
     // Context: https://github.com/angular/angular/pull/30144
     if (hasCoalescedDomEvent) {
+      processOutputs = false;
+    }
+  }
+
+  if (processOutputs) {
+    if (getCurrentDirectiveDef(tView.data)) {
       processOutputs = false;
     }
   }
