@@ -2,7 +2,10 @@ load("//tools:defaults.bzl", "ts_project")
 
 ts_project(
     name = "src",
-    srcs = glob(["*.ts"]),
+    srcs = glob([
+        "*.ts",
+        "handlers/*.ts",
+    ]),
     visibility = [
         "//vscode-ng-language-service/server:__subpackages__",
     ],
