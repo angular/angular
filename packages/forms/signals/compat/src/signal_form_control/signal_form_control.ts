@@ -7,7 +7,7 @@
  */
 
 import {inject, Injector, signal, WritableSignal} from '@angular/core';
-import {AbstractControl, FormControlStatus} from '@angular/forms';
+import {AbstractControl, FormControlStatus, FormControlState} from '@angular/forms';
 
 import {compatForm} from '../api/compat_form';
 import {signalErrorsToValidationErrors} from '../../../src/api/rules';
@@ -63,8 +63,17 @@ export class SignalFormControl<T> extends AbstractControl {
     return this.value;
   }
 
-  override reset(): void {
-    this.fieldState.reset(this.sourceValue());
+  override reset(value?: T | FormControlState<T>): void {
+    if (isFormControlState(value)) {
+      value = value.value;
+    }
+
+    const resetValue = value ?? this.sourceValue();
+    this.fieldState.reset(resetValue as any);
+
+    if (value !== undefined) {
+      this.sourceValue.set(value);
+    }
   }
 
   override get status(): FormControlStatus {
@@ -162,4 +171,14 @@ export class SignalFormControl<T> extends AbstractControl {
   _syncPendingControls(): boolean {
     return false;
   }
+}
+
+function isFormControlState(formState: unknown): formState is {value: any; disabled: boolean} {
+  return (
+    typeof formState === 'object' &&
+    formState !== null &&
+    Object.keys(formState).length === 2 &&
+    'value' in formState &&
+    'disabled' in formState
+  );
 }
