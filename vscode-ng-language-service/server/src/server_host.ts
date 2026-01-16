@@ -7,10 +7,17 @@
  */
 
 import * as ts from 'typescript/lib/tsserverlibrary';
+import * as path from 'path';
 
 const NOOP_WATCHER: ts.FileWatcher = {
   close() {},
 };
+
+enum FileChangeType {
+  Created = 1,
+  Changed = 2,
+  Deleted = 3,
+}
 
 /**
  * `ServerHost` is a wrapper around `ts.sys` for the Node system. In Node, all
@@ -22,8 +29,16 @@ export class ServerHost implements ts.server.ServerHost {
   readonly args: string[];
   readonly newLine: string;
   readonly useCaseSensitiveFileNames: boolean;
+  private readonly fileWatchers = new Map<string, Set<ts.FileWatcherCallback>>();
+  private readonly directoryWatchers = new Map<
+    string,
+    Set<{callback: ts.DirectoryWatcherCallback; recursive: boolean}>
+  >();
 
-  constructor(readonly isG3: boolean) {
+  constructor(
+    readonly isG3: boolean,
+    private readonly supportClientSideFileChanges: boolean,
+  ) {
     this.args = ts.sys.args;
     this.newLine = ts.sys.newLine;
     this.useCaseSensitiveFileNames = ts.sys.useCaseSensitiveFileNames;
@@ -59,6 +74,22 @@ export class ServerHost implements ts.server.ServerHost {
     pollingInterval?: number,
     options?: ts.WatchOptions,
   ): ts.FileWatcher {
+    if (this.supportClientSideFileChanges) {
+      const callbacks = this.fileWatchers.get(path) ?? new Set();
+      callbacks.add(callback);
+      this.fileWatchers.set(path, callbacks);
+      return {
+        close: () => {
+          const callbacks = this.fileWatchers.get(path);
+          if (callbacks) {
+            callbacks.delete(callback);
+            if (callbacks.size === 0) {
+              this.fileWatchers.delete(path);
+            }
+          }
+        },
+      };
+    }
     return ts.sys.watchFile!(path, callback, pollingInterval, options);
   }
 
@@ -71,7 +102,56 @@ export class ServerHost implements ts.server.ServerHost {
     if (this.isG3 && path.startsWith('/google/src')) {
       return NOOP_WATCHER;
     }
+    if (this.supportClientSideFileChanges) {
+      const callbacks = this.directoryWatchers.get(path) ?? new Set();
+      const watcher = {callback, recursive: !!recursive};
+      callbacks.add(watcher);
+      this.directoryWatchers.set(path, callbacks);
+      return {
+        close: () => {
+          const callbacks = this.directoryWatchers.get(path);
+          if (callbacks) {
+            callbacks.delete(watcher);
+            if (callbacks.size === 0) {
+              this.directoryWatchers.delete(path);
+            }
+          }
+        },
+      };
+    }
     return ts.sys.watchDirectory!(path, callback, recursive, options);
+  }
+
+  notifyFileChange(fileName: string, type: FileChangeType): void {
+    if (!this.supportClientSideFileChanges) {
+      return;
+    }
+
+    const callbacks = this.fileWatchers.get(fileName);
+    if (callbacks) {
+      callbacks.forEach((callback) =>
+        callback(
+          fileName,
+          type === FileChangeType.Deleted
+            ? ts.FileWatcherEventKind.Deleted
+            : ts.FileWatcherEventKind.Changed,
+        ),
+      );
+    }
+
+    for (const [dirPath, watchers] of this.directoryWatchers) {
+      if (fileName.startsWith(dirPath)) {
+        // If it's a direct child or recursive watch
+        const relative = path.relative(dirPath, fileName);
+        const isDirectChild = !relative.includes(path.sep);
+
+        for (const watcher of watchers) {
+          if (watcher.recursive || isDirectChild) {
+            watcher.callback(fileName);
+          }
+        }
+      }
+    }
   }
 
   resolvePath(path: string): string {

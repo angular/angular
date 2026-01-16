@@ -42,7 +42,6 @@ import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {getHTMLVirtualContent, getSCSSVirtualContent, isInlineStyleNode} from './embedded_support';
 import {ServerHost} from './server_host';
 import {documentationToMarkdown} from './text_render';
-import {parseWatchFileKind} from './watch_file_kind';
 import {
   filePathToUri,
   getMappedDefinitionInfo,
@@ -103,6 +102,7 @@ export class Session {
   private readonly connection: lsp.Connection;
   private readonly projectService: ts.server.ProjectService;
   private readonly logger: ts.server.Logger;
+  private readonly host: ServerHost;
   private readonly logToConsole: boolean;
   private readonly openFiles = new MruTracker();
   private readonly includeAutomaticOptionalChainCompletions: boolean;
@@ -128,6 +128,7 @@ export class Session {
     this.includeCompletionsForModuleExports = options.includeCompletionsForModuleExports;
     this.watchOptions = options.watchOptions;
     this.logger = options.logger;
+    this.host = options.host;
     this.logToConsole = options.logToConsole;
     defaultPreferences = {
       ...defaultPreferences,
@@ -252,6 +253,7 @@ export class Session {
 
   private addProtocolHandlers(conn: lsp.Connection) {
     conn.onInitialize((p) => this.onInitialize(p));
+    conn.onDidChangeWatchedFiles((p) => this.onDidChangeWatchedFiles(p));
     conn.onDidOpenTextDocument((p) => this.onDidOpenTextDocument(p));
     conn.onDidCloseTextDocument((p) => this.onDidCloseTextDocument(p));
     conn.onDidChangeTextDocument((p) => this.onDidChangeTextDocument(p));
@@ -276,6 +278,14 @@ export class Session {
     conn.onSignatureHelp((p) => this.onSignatureHelp(p));
     conn.onCodeAction((p) => this.onCodeAction(p));
     conn.onCodeActionResolve(async (p) => await this.onCodeActionResolve(p));
+  }
+
+  private onDidChangeWatchedFiles(params: lsp.DidChangeWatchedFilesParams) {
+    for (const change of params.changes) {
+      const filePath = uriToFilePath(change.uri);
+      this.logger.info(`Received file change event for ${filePath} type ${change.type}`);
+      this.host.notifyFileChange(filePath, change.type);
+    }
   }
 
   private onCodeAction(params: lsp.CodeActionParams): lsp.CodeAction[] | null {

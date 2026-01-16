@@ -35,7 +35,7 @@ function main() {
   const isG3 = ts.resolvedPath.includes('/google3/');
 
   // ServerHost provides native OS functionality
-  const host = new ServerHost(isG3);
+  const host = new ServerHost(isG3, options.supportClientSideFileChanges ?? false);
 
   // Establish a new server session that encapsulates lsp connection.
   const session = new Session({

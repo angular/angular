@@ -72,6 +72,7 @@ interface CommandLineOptions {
   suppressAngularDiagnosticCodes?: string;
   defaultFileWatcher?: string;
   watchOptions?: string;
+  supportClientSideFileChanges?: boolean;
 }
 
 export function parseCommandLine(argv: string[]): CommandLineOptions {
@@ -99,6 +100,7 @@ export function parseCommandLine(argv: string[]): CommandLineOptions {
     suppressAngularDiagnosticCodes: findArgument(argv, '--suppressAngularDiagnosticCodes'),
     defaultFileWatcher: findArgument(argv, '--defaultFileWatcher'),
     watchOptions: findArgument(argv, '--watchOptions'),
+    supportClientSideFileChanges: hasArgument(argv, '--supportClientSideFileChanges'),
   };
 }
 

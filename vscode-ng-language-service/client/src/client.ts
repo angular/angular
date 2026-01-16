@@ -51,6 +51,22 @@ export class AngularLanguageClient implements vscode.Disposable {
       },
     });
 
+    const config = vscode.workspace.getConfiguration();
+    const useClientSideWatching =
+      config.get('typescript.tsserver.watchOptions') === 'vscode' &&
+      config.get('angular.server.supportClientSideFileChanges');
+    const fileEvents = [
+      // Notify the server about file changes to tsconfig.json contained in the workspace
+      vscode.workspace.createFileSystemWatcher('**/tsconfig.json'),
+    ];
+    if (useClientSideWatching) {
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/*.ts'));
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/*.html'));
+      // While we don't need general JSON watching, TypeScript relies on package.json for module resolution, type acquisition, and auto-imports.
+      // If we don't watch it, npm install changes or dependency updates might be missed by the Language Service
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/package.json'));
+    }
+
     this.outputChannel = vscode.window.createOutputChannel(this.name);
     // Options to control the language client
     this.clientOptions = {
@@ -62,10 +78,7 @@ export class AngularLanguageClient implements vscode.Disposable {
         {scheme: 'file', language: 'typescript'},
       ],
       synchronize: {
-        fileEvents: [
-          // Notify the server about file changes to tsconfig.json contained in the workspace
-          vscode.workspace.createFileSystemWatcher('**/tsconfig.json'),
-        ],
+        fileEvents,
       },
       // Don't let our output console pop open
       revealOutputChannelOn: lsp.RevealOutputChannelOn.Never,
@@ -446,10 +459,13 @@ export class AngularLanguageClient implements vscode.Disposable {
     args.push('--tsProbeLocations', tsProbeLocations.join(','));
 
     const watchOptions = config.get('typescript.tsserver.watchOptions');
+    const supportClientSide = config.get('angular.server.supportClientSideFileChanges');
 
-    if (watchOptions === 'vscode') {
-      // TODO(atscott): Support client side file watching optimization
-    } else if (watchOptions) {
+    if (watchOptions === 'vscode' && supportClientSide) {
+      args.push('--supportClientSideFileChanges');
+    }
+
+    if (watchOptions && watchOptions !== 'vscode') {
       args.push('--watchOptions', JSON.stringify(watchOptions));
     }
 

@@ -162,6 +162,11 @@
           ],
           "default": "UseFsEvents",
           "markdownDescription": "Specifies the default file watching strategy used by the Angular Language Service when a `tsconfig.json` does not specify watch options. 'UseFsEvents' creates a watch for each file while 'UseFsEventsOnParentDirectory' consolidates these watchers into a single watcher per directory"
+        },
+        "angular.server.supportClientSideFileChanges": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "When enabled, the Angular Language Service will delegate file watching to VS Code when `typescript.tsserver.watchOptions` is set to `vscode` instead of creating its own internal file watchers. This can significantly improve performance and reduce resource usage in large repositories."
         }
       }
     },
