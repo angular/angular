@@ -252,6 +252,20 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   /**
+   * Marks this specific field as pristine.
+   */
+  markAsPristine(): void {
+    this.nodeState.markAsPristine();
+  }
+
+  /**
+   * Marks this specific field as untouched.
+   */
+  markAsUntouched(): void {
+    this.nodeState.markAsUntouched();
+  }
+
+  /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
    *
    * Note this does not change the data model, which can be reset directly if desired.
