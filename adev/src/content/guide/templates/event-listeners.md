@@ -13,7 +13,7 @@ When you want to add event listeners to an HTML element, you wrap the event with
   `,
   ...
 })
-export class AppComponent{
+export class App{
   updateField(): void {
     console.log('Field is updated!');
   }
@@ -35,7 +35,7 @@ In every template event listener, Angular provides a variable named `$event` tha
   `,
   ...
 })
-export class AppComponent {
+export class App {
   updateField(event: KeyboardEvent): void {
     console.log(`The user pressed: ${event.key}`);
   }
@@ -53,7 +53,7 @@ When you want to capture specific keyboard events for a specific key, you might 
   `,
   ...
 })
-export class AppComponent {
+export class App {
   updateField(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       console.log('The user pressed enter in the text field.');
@@ -71,7 +71,7 @@ However, since this is a common scenario, Angular lets you filter the events by 
   `,
   ...
 })
-export class AppComponent{
+export class App{
   updateField(event: KeyboardEvent): void {
     console.log('The user pressed enter in the text field.');
   }
@@ -109,7 +109,7 @@ If your event handler should replace the native browser behavior, you can use th
   `,
   ...
 })
-export class AppComponent{
+export class App{
   showOverlay(event: PointerEvent): void {
     event.preventDefault();
     console.log('Show overlay without updating the URL!');
@@ -173,10 +173,10 @@ Register your custom plugin using the `EVENT_MANAGER_PLUGINS` token in your appl
 ```ts
 import {bootstrapApplication} from '@angular/platform-browser';
 import {EVENT_MANAGER_PLUGINS} from '@angular/platform-browser';
-import {AppComponent} from './app/app.component';
+import {App} from './app';
 import {DebounceEventPlugin} from './debounce-event-plugin';
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [
     {
       provide: EVENT_MANAGER_PLUGINS,

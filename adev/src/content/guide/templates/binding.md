@@ -13,7 +13,7 @@ You can bind dynamic text in templates with double curly braces, which tells Ang
   `,
   ...
 })
-export class AppComponent {
+export class App {
   theme = 'dark';
 }
 ```
@@ -37,7 +37,7 @@ Bindings that change over time should read values from [signals](/guide/signals)
   `
   ...
 })
-export class AppComponent {
+export class App {
   welcomeMessage = "Welcome, enjoy this app that we built for you";
   theme = signal('dark');
 }

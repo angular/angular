@@ -55,7 +55,7 @@ To create an effect outside the constructor, you can pass an `Injector` to `effe
 @Component({
   /*...*/
 })
-export class EffectiveCounterComponent {
+export class EffectiveCounter {
   readonly count = signal(0);
   private injector = inject(Injector);
 

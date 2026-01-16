@@ -5,8 +5,8 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 @Component({
   selector: 'my-popup',
   template: `
-    <span>Popup: {{ message }}</span>
-    <button type="button" (click)="closed.next()">&#x2716;</button>
+    <span>Popup: {{ message() }}</span>
+    <button type="button" (click)="closed.emit()">&#x2716;</button>
   `,
   animations: [
     trigger('state', [
@@ -41,7 +41,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
     '[@state]': 'state()',
   },
 })
-export class PopupComponent {
+export class Popup {
   readonly message = input('');
   readonly closed = output<void>();
 
