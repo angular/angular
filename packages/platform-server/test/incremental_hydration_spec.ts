@@ -1117,6 +1117,7 @@ describe('platform-server partial hydration integration', () => {
           root = null;
           rootMargin = null!;
           thresholds = null!;
+          scrollMargin = null!;
 
           observedElements = new Set<Element>();
           private elementsInView = new Set<Element>();

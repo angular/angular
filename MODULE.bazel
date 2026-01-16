@@ -118,9 +118,9 @@ use_repo(npm, "npm")
 rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext")
 rules_ts_ext.deps(
     name = "angular_npm_typescript",
-    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.9.3 | jq -r '.dist.integrity'
-    ts_integrity = "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==",
-    ts_version = "5.9.3",
+    # Obtained by: curl --silent https://registry.npmjs.org/typescript/6.0.0-dev.20260115 | jq -r '.dist.integrity'
+    ts_integrity = "sha512-JPdZ1SJJKbob+OR/eXsUud3b5l48g8m6TaeH4OdiJjiHjE8Rxs7Tft5X187durAFrKzyvwoKyAzxj9vZLEusAw==",
+    ts_version = "6.0.0-dev.20260115",
 )
 use_repo(rules_ts_ext, **{"npm_typescript": "angular_npm_typescript"})
 

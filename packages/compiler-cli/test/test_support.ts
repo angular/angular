@@ -51,7 +51,6 @@ function createTestSupportFor(basePath: string) {
     'types': Object.freeze([] as string[]) as string[],
     'outDir': path.resolve(basePath, 'built'),
     'rootDir': basePath,
-    'baseUrl': basePath,
     'declaration': true,
     'target': ts.ScriptTarget.ES5,
     'newLine': ts.NewLineKind.LineFeed,

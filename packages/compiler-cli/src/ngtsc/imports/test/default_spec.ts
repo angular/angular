@@ -79,8 +79,7 @@ runInEachFileSystem(() => {
         before: [addReferenceTransformer(fooId), tracker.importPreservingTransformer()],
       });
       const testContents = host.readFile('/test.js')!;
-      expect(testContents).toContain(`var dep_1 = require("./dep");`);
-      expect(testContents).toContain(`var ref = dep_1.default;`);
+      expect(testContents).toContain(`var dep_1 = __importDefault(require("./dep"));`);
     });
 
     it('should prevent a default import from being elided if used in an isolated transform', () => {

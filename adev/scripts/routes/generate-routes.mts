@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ALL_ITEMS} from '../../src/app/routing/navigation-entries';
+import {ALL_ITEMS} from '../../src/app/routing/navigation-entries/index.js';
 import {NavigationItem} from '@angular/docs';
 import {writeFileSync, readFileSync} from 'fs';
 import {join, resolve} from 'path';

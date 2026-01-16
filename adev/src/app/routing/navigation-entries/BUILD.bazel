@@ -9,7 +9,8 @@ ts_project(
     tsconfig = {
         "compilerOptions": {
             "target": "ES2022",
-            "moduleResolution": "node",
+            "module": "nodenext",
+            "moduleResolution": "nodenext",
             "types": ["node"],
             "rootDir": ".",
             "skipLibCheck": True,

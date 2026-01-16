@@ -574,7 +574,7 @@
     "@@aspect_rules_ts+//ts:extensions.bzl%ext": {
       "general": {
         "bzlTransitiveDigest": "gyALvLdd/1AuLPFXhzNeabk2DMLHf32oxn8qKfEK8UA=",
-        "usagesDigest": "BIPOUwqzuuYqLOw/0p3h5GwHIDeBVXvNcxNoG5YlsHQ=",
+        "usagesDigest": "Tji0KrXnxGIwPoujNQER5cHE/WfMY3TsdvEucxFs67E=",
         "recordedFileInputs": {
           "@@rules_browsers+//package.json": "84dc1ba9b1c667a25894e97218bd8f247d54f24bb694efb397a881be3c06a4c5"
         },
@@ -584,8 +584,8 @@
           "angular_npm_typescript": {
             "repoRuleId": "@@aspect_rules_ts+//ts/private:npm_repositories.bzl%http_archive_version",
             "attributes": {
-              "version": "5.9.3",
-              "integrity": "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==",
+              "version": "6.0.0-dev.20260115",
+              "integrity": "sha512-JPdZ1SJJKbob+OR/eXsUud3b5l48g8m6TaeH4OdiJjiHjE8Rxs7Tft5X187durAFrKzyvwoKyAzxj9vZLEusAw==",
               "urls": [
                 "https://registry.npmjs.org/typescript/-/typescript-{}.tgz"
               ]
