@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injector, signal, WritableSignal} from '@angular/core';
+import {EventEmitter, inject, Injector, signal, WritableSignal, effect} from '@angular/core';
 import {AbstractControl, FormControlStatus, FormControlState} from '@angular/forms';
 
 import {compatForm} from '../api/compat_form';
@@ -30,6 +30,8 @@ export class SignalFormControl<T> extends AbstractControl {
   public readonly sourceValue: WritableSignal<T>;
 
   private readonly fieldState: FieldState<T>;
+  override readonly valueChanges = new EventEmitter<T>();
+  override readonly statusChanges = new EventEmitter<FormControlStatus>();
 
   constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions, options?: FormOptions) {
     super(null, null);
@@ -49,6 +51,24 @@ export class SignalFormControl<T> extends AbstractControl {
     Object.defineProperty(this, 'errors', {
       get: () => signalErrorsToValidationErrors(this.fieldState.errors()),
     });
+
+    // Value changes effect
+    effect(
+      () => {
+        const value = this.sourceValue();
+        this.valueChanges.emit(value);
+      },
+      {injector},
+    );
+
+    // Status changes effect
+    effect(
+      () => {
+        const status = this.status;
+        this.statusChanges.emit(status);
+      },
+      {injector},
+    );
   }
 
   override setValue(value: any): void {
