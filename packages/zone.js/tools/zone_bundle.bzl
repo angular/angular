@@ -1,3 +1,4 @@
+load("@aspect_bazel_lib//lib:copy_file.bzl", "copy_file")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
 load("@npm//:typescript/package_json.bzl", tsc = "bin")
 
@@ -72,13 +73,16 @@ def zone_bundle(
     )
 
     # es5
+    es5_out_dir = "es5"
+    es5_out_file = "%s/%s.es2015.js" % (es5_out_dir, name)
+
     tsc.tsc(
         name = name,
-        outs = [
-            name + ".js",
-        ],
+        outs = [es5_out_file],
+        srcs = [name + ".es2015.js"],
+        chdir = native.package_name(),
         args = [
-            "$(rootpath :%s.es2015.js)" % name,
+            "%s.es2015.js" % name,
             "--types",
             "--skipLibCheck",
             "--target",
@@ -86,13 +90,17 @@ def zone_bundle(
             "--lib",
             "es2015,dom",
             "--allowJS",
-            "--outFile",
-            "$(rootpath :%s.js)" % name,
-        ],
-        srcs = [
-            name + ".es2015.js",
+            "--outDir",
+            es5_out_dir,
         ],
     )
+
+    copy_file(
+        name = name + ".es5",
+        src = es5_out_file,
+        out = name + ".js",
+    )
+
     esbuild(
         name = name + ".min",
         entry_point = name + ".js",
@@ -130,13 +138,23 @@ def zone_bundle(
         minify = True,
     )
 
+    # es5 umd downleveling
+    es5_umd_dir = "dist/es5umd"
+    es5_umd_file = "%s/%s.umd.js" % (es5_umd_dir, name)
+
+    # First we use TS to downlevel to es5. A couple of notes:
+    # 1. We can't use esbuild for this, because they don't support es5 fully.
+    # 2. The file is generated in a sub-directory using --outDir,
+    # because --outFile will be removed in an upcoming TS version.
+    # 3. Since --outDir creates a sub-directory, we have to copy the file back out.
+    # That happens in the `copy_file` call below.
     tsc.tsc(
-        name = name + ".es5umd",
-        outs = [
-            name + ".es5umd.js",
-        ],
+        name = name + ".es5umd_downlevel",
+        outs = [es5_umd_file],
+        chdir = native.package_name(),
+        srcs = [name + ".umd.js"],
         args = [
-            "$(rootpath :%s.umd.js)" % name,
+            "%s.umd.js" % name,
             "--types",
             "--skipLibCheck",
             "--target",
@@ -144,21 +162,22 @@ def zone_bundle(
             "--lib",
             "es2015,dom",
             "--allowJS",
-            "--outFile",
-            "$(rootpath :%s.es5umd.js)" % name,
+            "--outDir",
+            es5_umd_dir,
         ],
-        srcs = [
-            name + ".umd.js",
-        ],
+    )
+
+    copy_file(
+        name = name + ".es5umd",
+        src = es5_umd_file,
+        out = name + ".es5umd.js",
     )
 
     esbuild(
         name = name + ".min.es5umd",
-        entry_point = name + ".es5umd.js",
+        entry_point = es5_umd_file,
         config = "//packages/zone.js/tools:umd",
         target = "es5",
-        srcs = [
-            name + ".es5umd.js",
-        ],
+        srcs = [es5_umd_file],
         minify = True,
     )
