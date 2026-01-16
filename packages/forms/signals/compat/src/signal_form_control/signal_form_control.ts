@@ -61,9 +61,13 @@ export class SignalFormControl<T> extends AbstractControl {
     this.sourceValue = model;
     const injector = opts?.injector ?? inject(Injector);
 
-    this.fieldTree = schema
+    const rawTree = schema
       ? compatForm(this.sourceValue, schema, {injector})
       : compatForm(this.sourceValue, {injector});
+
+    this.fieldTree = wrapFieldTreeForSyncUpdates(rawTree, () =>
+      this.parent?.updateValueAndValidity({sourceControl: this} as any),
+    );
     this.fieldState = this.fieldTree();
 
     Object.defineProperty(this, 'value', {
@@ -309,6 +313,63 @@ export class SignalFormControl<T> extends AbstractControl {
   _syncPendingControls(): boolean {
     return false;
   }
+}
+
+class CachingWeakMap<K extends object, V> {
+  private readonly map = new WeakMap<K, V>();
+
+  getOrCreate(key: K, create: () => V): V {
+    const cached = this.map.get(key);
+    if (cached) {
+      return cached;
+    }
+    const value = create();
+    this.map.set(key, value);
+    return value;
+  }
+}
+
+function wrapFieldTreeForSyncUpdates<T>(tree: FieldTree<T>, onUpdate: () => void): FieldTree<T> {
+  const treeCache = new CachingWeakMap<FieldTree<unknown>, FieldTree<unknown>>();
+  const stateCache = new CachingWeakMap<FieldState<unknown>, FieldState<unknown>>();
+
+  const wrapState = (state: FieldState<unknown>): FieldState<unknown> => {
+    const {value} = state;
+    const wrappedValue = Object.assign((...a: unknown[]) => (value as Function)(...a), {
+      set: (v: unknown) => {
+        value.set(v);
+        onUpdate();
+      },
+      update: (fn: (v: unknown) => unknown) => {
+        value.update(fn);
+        onUpdate();
+      },
+    }) as WritableSignal<unknown>;
+    return Object.create(state, {value: {get: () => wrappedValue}});
+  };
+
+  const wrapTree = (t: FieldTree<unknown>): FieldTree<unknown> => {
+    return treeCache.getOrCreate(t, () => {
+      return new Proxy(t, {
+        // When getting a prop, wrap FieldTree if it's a function
+        get(target, prop, receiver) {
+          const val = Reflect.get(target, prop, receiver);
+          // Some of FieldTree children are not function, e.g. length.
+          if (typeof val === 'function' && typeof prop === 'string') {
+            return wrapTree(val);
+          }
+          return val;
+        },
+        // When calling the tree, wrap the returned state
+        apply(target, _, args) {
+          const state: FieldState<unknown> = (target as Function)(...args);
+          return stateCache.getOrCreate(state, () => wrapState(state));
+        },
+      }) as FieldTree<unknown>;
+    });
+  };
+
+  return wrapTree(tree) as FieldTree<T>;
 }
 
 function isFormControlState(formState: unknown): formState is {value: any; disabled: boolean} {
