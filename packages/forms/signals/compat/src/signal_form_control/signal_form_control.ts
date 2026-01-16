@@ -35,7 +35,7 @@ import {FormOptions} from '../../../src/api/structure';
 import {FieldState, FieldTree, SchemaFn} from '../../../src/api/types';
 import {SignalFormsErrorCode} from '../../../src/errors';
 import {normalizeFormArgs} from '../../../src/util/normalize_form_args';
-import {removeListItem} from '../../../../src/util';
+import {FieldNode} from '../../../src/field/node';
 
 /** Options used to update the control value. */
 export type ValueUpdateOptions = {
@@ -228,6 +228,7 @@ export class SignalFormControl<T> extends AbstractControl {
   }
 
   override getRawValue(): T {
+    // TODO: Should this throw or drop disabled components?
     return this.value;
   }
 
@@ -370,43 +371,40 @@ export class SignalFormControl<T> extends AbstractControl {
   }
 
   override markAsPristine(opts?: {onlySelf?: boolean}): void {
-    const wasTouched = this.touched;
-    this.fieldState.reset(this.sourceValue());
-    if (wasTouched) {
-      this.fieldState.markAsTouched();
-    }
+    (this.fieldState as FieldNode).markAsPristine();
     this.propagateToParent(opts, (parent) => parent.markAsPristine(opts));
   }
 
   override markAsUntouched(opts?: {onlySelf?: boolean}): void {
-    const wasDirty = this.dirty;
-    this.fieldState.reset(this.sourceValue());
-    if (wasDirty) {
-      this.fieldState.markAsDirty();
-    }
+    (this.fieldState as FieldNode).markAsUntouched();
     this.propagateToParent(opts, (parent) => parent.markAsUntouched(opts));
   }
 
   override updateValueAndValidity(_opts?: Object): void {}
 
   /** @internal */
-  _updateValue(): void {}
+  // @ts-ignore
+  override _updateValue(): void {}
 
   /** @internal */
-  _forEachChild(_cb: (c: AbstractControl) => void): void {}
+  // @ts-ignore
+  override _forEachChild(_cb: (c: AbstractControl) => void): void {}
 
   /** @internal */
-  _anyControls(_condition: (c: AbstractControl) => boolean): boolean {
+  // @ts-ignore
+  override _anyControls(_condition: (c: AbstractControl) => boolean): boolean {
     return false;
   }
 
   /** @internal */
-  _allControlsDisabled(): boolean {
+  // @ts-ignore
+  override _allControlsDisabled(): boolean {
     return this.disabled;
   }
 
   /** @internal */
-  _syncPendingControls(): boolean {
+  // @ts-ignore
+  override _syncPendingControls(): boolean {
     return false;
   }
 
@@ -544,4 +542,9 @@ function unsupportedValidatorsError(): RuntimeError {
   return unsupportedFeatureError(
     'Dynamically adding and removing validators is not supported in signal forms. Instead use the "applyWhen" rule to conditionally apply validators based on a signal.',
   );
+}
+
+function removeListItem<T>(list: T[], el: T): void {
+  const index = list.indexOf(el);
+  if (index > -1) list.splice(index, 1);
 }

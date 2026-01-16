@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Injector, resource} from '@angular/core';
+import {ApplicationRef, effect, Injector, resource} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ControlEvent, FormArray, FormControlStatus, FormGroup} from '@angular/forms';
+import {ControlEvent, FormControlStatus, FormGroup, FormResetEvent} from '@angular/forms';
 import {disabled, required, validateAsync, ValidationError} from '@angular/forms/signals';
 import {SchemaFn} from '../../../src/api/types';
-import {SignalFormControl} from '../../../compat/src/signal_form_control/signal_form_control';
+import {SignalFormControl} from '../../../compat';
 
 function createSignalFormControl<T>(initialValue: T, schema?: SchemaFn<T>) {
   const injector = TestBed.inject(Injector);
+
   return new SignalFormControl(initialValue, schema, {injector});
 }
 
@@ -285,8 +286,7 @@ describe('SignalFormControl', () => {
       expect(group.dirty).toBe(false);
       child.fieldTree().markAsDirty();
       TestBed.tick();
-      // TODO: kirjs
-      //expect(group.dirty).toBe(true);
+      expect(group.dirty).toBe(true);
     });
   });
 
@@ -437,7 +437,7 @@ describe('SignalFormControl', () => {
 
       form.reset(20);
       expect(events.length).toBe(1);
-      // TODO check event
+      expect(events[0] instanceof FormResetEvent).toBe(true);
     });
 
     it('should NOT emit FormResetEvent on reset when emitEvent is false', () => {
@@ -581,6 +581,52 @@ describe('SignalFormControl', () => {
       TestBed.inject(ApplicationRef).tick();
 
       expect(callback).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe('effects and loops', () => {
+    it('should NOT cause an infinite loop when an effect reads dirty and calls markAsUntouched', () => {
+      const form = createSignalFormControl(10);
+      const appRef = TestBed.inject(ApplicationRef);
+
+      form.markAsDirty();
+      appRef.tick();
+
+      effect(
+        () => {
+          if (form.dirty) {
+            form.markAsUntouched();
+          }
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // In current implementation this will loop because markAsUntouched calls reset()
+      // which sets dirty=false and then back to true.
+      appRef.tick();
+    });
+
+    it('should NOT cause an infinite loop when an effect reads touched and calls markAsPristine', () => {
+      const form = createSignalFormControl(10);
+      const appRef = TestBed.inject(ApplicationRef);
+
+      form.markAsTouched();
+      appRef.tick();
+
+      effect(
+        () => {
+          if (form.touched) {
+            form.markAsPristine();
+          }
+
+          form.markAsPristine();
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // In current implementation this will loop because markAsPristine calls reset()
+      // which sets touched=false and then back to true.
+      appRef.tick();
     });
   });
 });
