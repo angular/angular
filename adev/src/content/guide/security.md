@@ -156,7 +156,7 @@ The angular-cli can assist you with correctly appending the nonce to every `<scr
 There are two methods of preparing your app to support nonce declaration on your elements:
 
 Set the `autoCsp` option of the `security` option to `true` in your [workspace configuration](reference/configs/workspace-config#extra-build-and-test-options).
-This will setup nonce declaration for you. This is not compatible with server side rendering though. 
+This will setup nonce declaration for you. This is not compatible with server side rendering though.
 
 Another more manual, but SSR supported method would be:
 
