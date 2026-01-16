@@ -153,6 +153,15 @@
           "type": "string",
           "default": "",
           "markdownDescription": "A comma-separated list of error codes in templates whose diagnostics should be ignored."
+        },
+        "angular.server.defaultFileWatcher": {
+          "type": "string",
+          "enum": [
+            "UseFsEvents",
+            "UseFsEventsOnParentDirectory"
+          ],
+          "default": "UseFsEvents",
+          "markdownDescription": "Specifies the default file watching strategy used by the Angular Language Service when a `tsconfig.json` does not specify watch options. 'UseFsEvents' creates a watch for each file while 'UseFsEventsOnParentDirectory' consolidates these watchers into a single watcher per directory"
         }
       }
     },

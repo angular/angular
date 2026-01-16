@@ -70,6 +70,7 @@ interface CommandLineOptions {
   disableLetSyntax: boolean;
   angularCoreVersion?: string;
   suppressAngularDiagnosticCodes?: string;
+  defaultFileWatcher?: string;
 }
 
 export function parseCommandLine(argv: string[]): CommandLineOptions {
@@ -95,6 +96,7 @@ export function parseCommandLine(argv: string[]): CommandLineOptions {
     disableLetSyntax: hasArgument(argv, '--disableLetSyntax'),
     angularCoreVersion: findArgument(argv, '--angularCoreVersion'),
     suppressAngularDiagnosticCodes: findArgument(argv, '--suppressAngularDiagnosticCodes'),
+    defaultFileWatcher: findArgument(argv, '--defaultFileWatcher'),
   };
 }
 
@@ -114,6 +116,7 @@ export function generateHelpMessage(argv: string[]) {
     --includeCompletionsWithSnippetText: Enables snippet completions from Angular language server;
     --forceStrictTemplates: Forces the language service to use strictTemplates and ignore the user settings in the 'tsconfig.json'.
     --suppressAngularDiagnosticCodes: A comma-separated list of error codes in templates whose diagnostics should be ignored.
+    --defaultFileWatcher: The default file watcher to use. See ts.WatchFileKind (only supports UseFsEvents and UseFsEventsOnParentDirectory).
 
   Additional options supported by vscode-languageserver:
     --clientProcessId=<number>: Automatically kills the server if the client process dies.

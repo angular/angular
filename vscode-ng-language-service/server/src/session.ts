@@ -42,6 +42,7 @@ import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {getHTMLVirtualContent, getSCSSVirtualContent, isInlineStyleNode} from './embedded_support';
 import {ServerHost} from './server_host';
 import {documentationToMarkdown} from './text_render';
+import {parseWatchFileKind} from './watch_file_kind';
 import {
   filePathToUri,
   getMappedDefinitionInfo,
@@ -70,6 +71,7 @@ export interface SessionOptions {
   disableLetSyntax: boolean;
   angularCoreVersion: string | null;
   suppressAngularDiagnosticCodes: string | null;
+  defaultFileWatcher: string | null;
 }
 
 enum LanguageId {
@@ -193,7 +195,10 @@ export class Session {
       },
       watchOptions: {
         // Used as watch options when not specified by user's `tsconfig`.
-        watchFile: ts.WatchFileKind.UseFsEvents,
+        watchFile:
+          options.defaultFileWatcher === 'UseFsEventsOnParentDirectory'
+            ? ts.WatchFileKind.UseFsEventsOnParentDirectory
+            : ts.WatchFileKind.UseFsEvents,
         // On Windows, fs.watch() can hold a lock on the watched directory, which
         // causes problems when users try to rename/move/delete folders.
         // It's better to use polling instead.
