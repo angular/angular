@@ -545,9 +545,6 @@ export type Subfields<TModel> = {
 export function submit<TModel>(form: FieldTree<TModel>, action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>): Promise<void>;
 
 // @public
-export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
-
-// @public
 export type TreeValidationResult<E extends ValidationError.WithOptionalField = ValidationError.WithOptionalField> = ValidationSuccess | OneOrMany<E>;
 
 // @public

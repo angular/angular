@@ -59,14 +59,6 @@ export declare namespace PathKind {
 }
 
 /**
- * A status indicating whether a field is unsubmitted, submitted, or currently submitting.
- *
- * @category types
- * @experimental 21.0.0
- */
-export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
-
-/**
  * A reason for a field's disablement.
  *
  * @category logic
