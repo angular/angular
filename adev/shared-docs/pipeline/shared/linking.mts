@@ -23,6 +23,9 @@ const LINK_EXEMPT = new Set([
   'animation',
   'transition',
   'trigger',
+  'group()',
+  'keyframes',
+  '@keyframes',
 ]);
 
 export function shouldLinkSymbol(symbol: string): boolean {
