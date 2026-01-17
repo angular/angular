@@ -25,6 +25,10 @@ import {
 import {collectMemberMethods, findTightestNode} from './utils/ts_utils';
 import {getTypeCheckInfoAtPosition, TypeCheckInfo} from './utils';
 
+export interface ReferenceEntry extends ts.ReferenceEntry {
+  isTemplateReference?: boolean;
+}
+
 export class ReferencesBuilder {
   private readonly ttc: TemplateTypeChecker;
 
@@ -67,13 +71,13 @@ export class ReferencesBuilder {
   private getReferencesAtTypescriptPosition(
     fileName: string,
     position: number,
-  ): ts.ReferenceEntry[] | undefined {
+  ): ReferenceEntry[] | undefined {
     const refs = this.tsLS.getReferencesAtPosition(fileName, position);
     if (refs === undefined) {
       return undefined;
     }
 
-    const entries: ts.ReferenceEntry[] = [];
+    const entries: ReferenceEntry[] = [];
     for (const ref of refs) {
       if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(ref.fileName))) {
         const entry = convertToTemplateDocumentSpan(
@@ -82,7 +86,7 @@ export class ReferencesBuilder {
           this.compiler.getCurrentProgram(),
         );
         if (entry !== null) {
-          entries.push(entry);
+          entries.push({...entry, isTemplateReference: true});
         }
       } else {
         entries.push(ref);

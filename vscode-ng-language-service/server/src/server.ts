@@ -53,6 +53,7 @@ function main() {
     disableLetSyntax: options.disableLetSyntax,
     angularCoreVersion: options.angularCoreVersion ?? null,
     suppressAngularDiagnosticCodes: options.suppressAngularDiagnosticCodes ?? null,
+    referencesCodeLensEnabled: options.referencesCodeLensEnabled ?? false,
   });
 
   // Log initialization info

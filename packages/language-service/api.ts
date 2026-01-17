@@ -76,6 +76,16 @@ export type GetComponentLocationsForTemplateResponse = ts.DocumentSpan[];
 export type GetTemplateLocationForComponentResponse = ts.DocumentSpan | undefined;
 
 /**
+ * A reference to a location in a file.
+ */
+export interface ReferenceEntry extends ts.ReferenceEntry {
+  /**
+   * True if the reference is in a template file.
+   */
+  isTemplateReference?: boolean;
+}
+
+/**
  * Function that can be invoked to show progress when computing
  * refactoring edits.
  *
@@ -94,6 +104,7 @@ export interface ApplyRefactoringResult extends Omit<ts.RefactorEditInfo, 'notAp
  * whose API surface is a strict superset of TypeScript's language service.
  */
 export interface NgLanguageService extends ts.LanguageService {
+  getReferencesAtPosition(fileName: string, position: number): ReferenceEntry[] | undefined;
   getTcb(fileName: string, position: number): GetTcbResponse | undefined;
   getComponentLocationsForTemplate(fileName: string): GetComponentLocationsForTemplateResponse;
   getTemplateLocationForComponent(

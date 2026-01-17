@@ -70,6 +70,7 @@ interface CommandLineOptions {
   disableLetSyntax: boolean;
   angularCoreVersion?: string;
   suppressAngularDiagnosticCodes?: string;
+  referencesCodeLensEnabled: boolean;
 }
 
 export function parseCommandLine(argv: string[]): CommandLineOptions {
@@ -95,6 +96,7 @@ export function parseCommandLine(argv: string[]): CommandLineOptions {
     disableLetSyntax: hasArgument(argv, '--disableLetSyntax'),
     angularCoreVersion: findArgument(argv, '--angularCoreVersion'),
     suppressAngularDiagnosticCodes: findArgument(argv, '--suppressAngularDiagnosticCodes'),
+    referencesCodeLensEnabled: hasArgument(argv, '--referencesCodeLensEnabled'),
   };
 }
 

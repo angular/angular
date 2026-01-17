@@ -19,7 +19,11 @@ import {getSCSSLanguageService} from 'vscode-css-languageservice';
 import {TextDocument} from 'vscode-languageserver-textdocument';
 import * as lsp from 'vscode-languageserver/node';
 
-import {ServerOptions} from '../../common/initialize';
+import {
+  ServerOptions,
+  ShowReferencesCommand_Args,
+  ShowReferencesCommandId,
+} from '../../common/initialize';
 import {
   ProjectLanguageService,
   ProjectLoadingFinish,
@@ -65,6 +69,7 @@ export interface SessionOptions {
   includeAutomaticOptionalChainCompletions: boolean;
   includeCompletionsWithSnippetText: boolean;
   includeCompletionsForModuleExports: boolean;
+  referencesCodeLensEnabled: boolean;
   forceStrictTemplates: boolean;
   disableBlockSyntax: boolean;
   disableLetSyntax: boolean;
@@ -105,6 +110,7 @@ export class Session {
   private readonly includeAutomaticOptionalChainCompletions: boolean;
   private readonly includeCompletionsWithSnippetText: boolean;
   private readonly includeCompletionsForModuleExports: boolean;
+  private readonly referencesCodeLensEnabled: boolean;
   private snippetSupport: boolean | undefined;
   private diagnosticsTimeout: NodeJS.Timeout | null = null;
   private isProjectLoading = false;
@@ -122,6 +128,7 @@ export class Session {
       options.includeAutomaticOptionalChainCompletions;
     this.includeCompletionsWithSnippetText = options.includeCompletionsWithSnippetText;
     this.includeCompletionsForModuleExports = options.includeCompletionsForModuleExports;
+    this.referencesCodeLensEnabled = options.referencesCodeLensEnabled;
     this.logger = options.logger;
     this.logToConsole = options.logToConsole;
     defaultPreferences = {
@@ -553,7 +560,17 @@ export class Session {
   }
 
   private onCodeLens(params: lsp.CodeLensParams): lsp.CodeLens[] | null {
-    if (!params.textDocument.uri.endsWith('.html') || !this.isInAngularProject(params)) {
+    const goToComponentCodeLens = this.getGoToComponentCodeLens(params);
+    const referencesCodeLenses = this.getReferencesCodeLenses(params);
+    return [...(goToComponentCodeLens ?? []), ...(referencesCodeLenses ?? [])];
+  }
+
+  private getGoToComponentCodeLens(params: lsp.CodeLensParams): lsp.CodeLens[] | null {
+    if (!params.textDocument.uri.endsWith('.html')) {
+      return null;
+    }
+
+    if (!this.isInAngularProject(params)) {
       return null;
     }
     const position = lsp.Position.create(0, 0);
@@ -567,17 +584,85 @@ export class Session {
     return [codeLens];
   }
 
+  private getReferencesCodeLenses(params: lsp.CodeLensParams): lsp.CodeLens[] | null {
+    if (!this.referencesCodeLensEnabled) {
+      return null;
+    }
+
+    const lsInfo = this.getLSAndScriptInfo(params.textDocument);
+    if (lsInfo === null) {
+      return null;
+    }
+    const {languageService, scriptInfo} = lsInfo;
+
+    if (!params.textDocument.uri.endsWith('.ts')) {
+      return null;
+    }
+
+    const navigationTree = languageService.getNavigationTree(scriptInfo.fileName);
+    const codeLenses: lsp.CodeLens[] = [];
+    for (const item of navigationTree.childItems ?? []) {
+      if (item.kind === ts.ScriptElementKind.classElement) {
+        this.addCodeLenses(item, scriptInfo, params.textDocument, codeLenses);
+      }
+    }
+    return codeLenses;
+  }
+
+  private addCodeLenses(
+    item: ts.NavigationTree,
+    scriptInfo: ts.server.ScriptInfo,
+    textDocument: lsp.TextDocumentIdentifier,
+    codeLenses: lsp.CodeLens[],
+  ) {
+    const acceptedKinds: ts.ScriptElementKind[] = [
+      ts.ScriptElementKind.memberFunctionElement,
+      ts.ScriptElementKind.memberVariableElement,
+    ];
+    for (const child of item.childItems ?? []) {
+      if (
+        acceptedKinds.includes(child.kind) &&
+        !child.kindModifiers.includes(ts.ScriptElementKindModifier.privateMemberModifier)
+      ) {
+        for (const span of child.spans) {
+          const range = tsTextSpanToLspRange(scriptInfo, span);
+          // We only want to show the codelens on the line of the property/method declaration,
+          // not the entire block.
+          range.end = range.start;
+          codeLenses.push({
+            range,
+            data: {
+              textDocument,
+              range,
+            },
+          });
+        }
+      }
+    }
+  }
+
   private onCodeLensResolve(params: lsp.CodeLens): lsp.CodeLens {
-    const components = this.onGetComponentsWithTemplateFile({textDocument: params.data});
+    const data = params.data as
+      | lsp.TextDocumentIdentifier
+      | {textDocument: lsp.TextDocumentIdentifier; range: lsp.Range};
+    if (lsp.TextDocumentIdentifier.is(data)) {
+      return this.resolveGoToComponentCodeLens(params, data);
+    }
+    return this.resolveReferencesCodeLens(params, data);
+  }
+
+  private resolveGoToComponentCodeLens(
+    params: lsp.CodeLens,
+    data: lsp.TextDocumentIdentifier,
+  ): lsp.CodeLens {
+    const components = this.onGetComponentsWithTemplateFile({textDocument: data});
     if (components === null || components.length === 0) {
       // While the command is supposed to be optional, vscode will show `!!MISSING: command!!` that
       // fails if you click on it when a command is not provided. Instead, throwing an error will
       // make vscode show the text "no commands" (and it's not a link).
       // It is documented that code lens resolution can throw an error:
       // https://microsoft.github.io/language-server-protocol/specification#codeLens_resolve
-      throw new Error(
-        'Could not determine component for ' + (params.data as lsp.TextDocumentIdentifier).uri,
-      );
+      throw new Error('Could not determine component for ' + data.uri);
     }
     params.command = {
       command: 'angular.goToComponentWithTemplateFile',
@@ -585,6 +670,49 @@ export class Session {
         components.length > 1
           ? `Used as templateUrl in ${components.length} components`
           : 'Go to component',
+    };
+    return params;
+  }
+
+  private resolveReferencesCodeLens(
+    params: lsp.CodeLens,
+    data: {textDocument: lsp.TextDocumentIdentifier; range: lsp.Range},
+  ): lsp.CodeLens {
+    params.command = {title: '0 template references', command: ''};
+    const {textDocument, range} = data;
+    const lsInfo = this.getLSAndScriptInfo(data.textDocument);
+    if (lsInfo === null) {
+      return params;
+    }
+    const {languageService, scriptInfo} = lsInfo;
+    const offset = lspPositionToTsPosition(scriptInfo, range.start);
+    const references = languageService.getReferencesAtPosition(scriptInfo.fileName, offset);
+    if (references === undefined) {
+      return params;
+    }
+    const templateReferences = references.filter((ref) => (ref as any).isTemplateReference);
+    if (templateReferences.length === 0) {
+      return params;
+    }
+
+    params.command = {
+      command: ShowReferencesCommandId,
+      title:
+        templateReferences.length === 1
+          ? `1 template reference`
+          : `${templateReferences.length} template references`,
+      arguments: [
+        {
+          file: textDocument.uri,
+          position: data.range.start,
+          references: templateReferences.map((ref) => {
+            return lsp.Location.create(
+              filePathToUri(ref.fileName),
+              tsTextSpanToLspRange(this.projectService.getScriptInfo(ref.fileName)!, ref.textSpan),
+            );
+          }),
+        } satisfies ShowReferencesCommand_Args,
+      ],
     };
     return params;
   }
@@ -829,8 +957,8 @@ export class Session {
   getDefaultProjectForScriptInfo(scriptInfo: ts.server.ScriptInfo): ts.server.Project | null {
     let project = this.projectService.getDefaultProjectForFile(
       scriptInfo.fileName,
-      // ensureProject tries to find a default project for the scriptInfo if
-      // it does not already have one. It is not needed here because we are
+      // ensureProject tries to find a default project for the scriptInfo if it
+      // does not already have one. It is not needed here because we are
       // going to assign it a project below if it does not have one.
       false, // ensureProject
     );
@@ -1588,7 +1716,7 @@ type CodeActionResolveData =
   | {
       refactor?: undefined;
       fixId?: string;
-      document: lsp.TextDocumentIdentifier;
+      document: lsp.TextDocumentIdentifier & {isAngularTemplate?: boolean};
     }
   | {
       refactor: true;
