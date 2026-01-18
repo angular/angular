@@ -393,12 +393,12 @@ export async function submit<TModel>(
  */
 function setSubmissionErrors(
   submittedField: FieldNode,
-  errors: OneOrMany<ValidationError.WithOptionalField>,
+  errors: OneOrMany<ValidationError.WithOptionalFieldTree>,
 ) {
   if (!isArray(errors)) {
     errors = [errors];
   }
-  const errorsByField = new Map<FieldNode, ValidationError.WithField[]>();
+  const errorsByField = new Map<FieldNode, ValidationError.WithFieldTree[]>();
   for (const error of errors) {
     const errorWithField = addDefaultField(error, submittedField.fieldProxy);
     const field = errorWithField.fieldTree() as FieldNode;

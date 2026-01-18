@@ -1120,7 +1120,7 @@ describe('FieldNode', () => {
           cat,
           (p) => {
             validateTree(p, ({value, fieldTreeOf}) => {
-              const errors: ValidationError.WithOptionalField[] = [];
+              const errors: ValidationError.WithOptionalFieldTree[] = [];
               if (value().name.length > 8) {
                 errors.push({kind: 'long_name', fieldTree: fieldTreeOf(p.name)});
               }
@@ -1152,7 +1152,7 @@ describe('FieldNode', () => {
           cat,
           (p) => {
             validateTree(p, ({value, fieldTreeOf}) => {
-              const errors: ValidationError.WithOptionalField[] = [];
+              const errors: ValidationError.WithOptionalFieldTree[] = [];
               if (value().name.length > 8) {
                 errors.push({kind: 'long_name', fieldTree: fieldTreeOf(p.name)});
               }

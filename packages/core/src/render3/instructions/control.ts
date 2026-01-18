@@ -568,19 +568,19 @@ function updateControlClasses(lView: LView, tNode: TNode, control: ɵFormFieldDi
  * @param lView The `LView` that contains the custom form control.
  * @param componentIndex The index of the custom form control component in the `LView`.
  * @param modelName The name of the model property on the custom form control.
- * @param control The `ɵFormFieldDirective` instance.
+ * @param fieldDirective The `ɵFormFieldDirective` instance.
  */
 function updateCustomControl(
   tNode: TNode,
   lView: LView,
-  control: ɵFormFieldDirective<unknown>,
+  fieldDirective: ɵFormFieldDirective<unknown>,
   modelName: string,
 ) {
   const tView = getTView();
   const directiveIndex = tNode.customControlIndex;
   const directive = lView[directiveIndex];
   const directiveDef = tView.data[directiveIndex] as DirectiveDef<{}>;
-  const state = control.state();
+  const state = fieldDirective.state();
   const bindings = getControlBindings(lView);
 
   // Bind custom form control model ('value' or 'checked').
@@ -595,9 +595,9 @@ function updateCustomControl(
 
   // Bind remaining field state properties.
   for (const key of CONTROL_BINDING_KEYS) {
-    const value = state[key]?.();
+    const inputName = CONTROL_BINDING_NAMES[key];
+    const value = getValue(fieldDirective, state, key, inputName);
     if (controlBindingUpdated(bindings, key, value)) {
-      const inputName = CONTROL_BINDING_NAMES[key];
       updateDirectiveInputs(tNode, lView, inputName, value);
 
       // If the host node is a native control, we can bind field state properties to native
@@ -614,16 +614,16 @@ function updateCustomControl(
  *
  * @param tNode The `TNode` of the form control.
  * @param lView The `LView` that contains the native form control.
- * @param control The `ɵFormFieldDirective` instance.
+ * @param fieldDirective The `ɵFormFieldDirective` instance.
  */
 function updateInteropControl(
   tNode: TNode,
   lView: LView,
-  control: ɵFormFieldDirective<unknown>,
+  fieldDirective: ɵFormFieldDirective<unknown>,
 ): void {
-  const interopControl = control.ɵinteropControl!;
+  const interopControl = fieldDirective.ɵinteropControl!;
   const bindings = getControlBindings(lView);
-  const state = control.state();
+  const state = fieldDirective.state();
 
   const isNative = (tNode.flags & TNodeFlags.isNativeControl) !== 0;
   const element = isNative ? (getNativeByTNode(tNode, lView) as NativeControlElement) : null;
@@ -637,9 +637,9 @@ function updateInteropControl(
   }
 
   for (const key of CONTROL_BINDING_KEYS) {
-    const value = state[key]?.();
+    const inputName = CONTROL_BINDING_NAMES[key];
+    const value = getValue(fieldDirective, state, key, inputName);
     if (controlBindingUpdated(bindings, key, value)) {
-      const inputName = CONTROL_BINDING_NAMES[key];
       const didUpdateInput = updateDirectiveInputs(tNode, lView, inputName, value);
 
       // We never fallback to the native property for `disabled` since it's handled directly by
@@ -662,16 +662,16 @@ function updateInteropControl(
  *
  * @param tNode The `TNode` of the native form control.
  * @param lView The `LView` that contains the native form control.
- * @param control The `ɵFormFieldDirective` instance.
+ * @param fieldDirective The `ɵFormFieldDirective` instance.
  */
 function updateNativeControl(
   tNode: TNode,
   lView: LView,
-  control: ɵFormFieldDirective<unknown>,
+  fieldDirective: ɵFormFieldDirective<unknown>,
 ): void {
   const element = getNativeByTNode(tNode, lView) as NativeControlElement;
   const renderer = lView[RENDERER];
-  const state = control.state();
+  const state = fieldDirective.state();
   const bindings = getControlBindings(lView);
 
   const controlValue = state.controlValue();
@@ -680,13 +680,32 @@ function updateNativeControl(
   }
 
   for (const key of CONTROL_BINDING_KEYS) {
-    const value = state[key]?.();
+    const inputName = CONTROL_BINDING_NAMES[key];
+    const value = getValue(fieldDirective, state, key, inputName);
     if (controlBindingUpdated(bindings, key, value)) {
-      const inputName = CONTROL_BINDING_NAMES[key];
       updateNativeProperty(tNode, renderer, element, key, value, inputName);
       updateDirectiveInputs(tNode, lView, inputName, value);
     }
   }
+}
+
+/**
+ * Gets the value of the given field state key to bind to the form UI control associated with the
+ * given form field directive. In most cases this value is obtained by reading it off the field state.
+ * However, in the case of the `errors` property, we only want to report parse errors that are
+ * relevant for this particular UI control, so we read from the directive instead, which contains
+ * only the filtered errors that pertain to this binding.
+ */
+function getValue(
+  fieldDirective: ɵFormFieldDirective<unknown>,
+  state: ɵFieldState<unknown>,
+  fieldStateKey: ControlBindingKeys,
+  inputName: ControlBindingKeys,
+): unknown {
+  if (inputName === 'errors') {
+    return fieldDirective[fieldStateKey as 'errors']();
+  }
+  return state[fieldStateKey]?.();
 }
 
 /**

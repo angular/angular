@@ -22,6 +22,7 @@ import {
   ɵcontrolUpdate as updateControlBinding,
   ɵCONTROL,
   ɵInteropControl,
+  type Signal,
   type ɵFormFieldBindingOptions,
   type ɵFormFieldDirective,
 } from '@angular/core';
@@ -30,9 +31,10 @@ import {InteropNgControl} from '../controls/interop_ng_control';
 import {SignalFormsErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
+import type {ValidationError} from './rules';
 import type {FieldTree} from './types';
 
-export interface FormFieldBindingOptions extends ɵFormFieldBindingOptions {
+export interface FormFieldBindingOptions<TValue> extends ɵFormFieldBindingOptions {
   /**
    * Focuses the binding.
    *
@@ -40,6 +42,8 @@ export interface FormFieldBindingOptions extends ɵFormFieldBindingOptions {
    * asked to focus this binding.
    */
   focus?(options?: FocusOptions): void;
+
+  readonly parseErrors?: Signal<ValidationError.WithoutFieldTree[]>;
 }
 
 /**
@@ -81,6 +85,7 @@ const controlInstructions = {
  */
 @Directive({
   selector: '[formField]',
+  exportAs: 'formField',
   providers: [
     {provide: FORM_FIELD, useExisting: FormField},
     {provide: NgControl, useFactory: () => inject(FormField).getOrCreateNgControl()},
@@ -92,9 +97,28 @@ const controlInstructions = {
 export class FormField<T> {
   readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   readonly injector = inject(Injector);
-  readonly formField = input.required<FieldTree<T>>();
-  readonly state = computed(() => this.formField()());
-  private readonly bindingOptions = signal<FormFieldBindingOptions | undefined>(undefined);
+  readonly fieldTree = input.required<FieldTree<T>>({alias: 'formField'});
+  readonly state = computed(() => this.fieldTree()());
+  private readonly bindingOptions = signal<FormFieldBindingOptions<T> | undefined>(undefined);
+
+  /** @internal */
+  readonly parseErrors = computed<ValidationError.WithFormField[]>(
+    () =>
+      this.bindingOptions()
+        ?.parseErrors?.()
+        .map((err) => ({
+          ...err,
+          fieldTree: this.fieldTree(),
+          formField: this as FormField<unknown>,
+        })) ?? [],
+  );
+
+  /** Errors associated with this form field. */
+  readonly errors = computed(() =>
+    this.state()
+      .errors()
+      .filter((err) => !err.formField || err.formField === this),
+  );
 
   readonly [ɵCONTROL] = controlInstructions;
 
@@ -131,7 +155,7 @@ export class FormField<T> {
    * This method should be called at most once for a given `FormField`. A `FormField` placed on a
    * custom control (`FormUiControl`) automatically registers that custom control as a binding.
    */
-  registerAsBinding(bindingOptions?: FormFieldBindingOptions) {
+  registerAsBinding(bindingOptions?: FormFieldBindingOptions<T>) {
     if (untracked(this.bindingOptions)) {
       throw new RuntimeError(
         SignalFormsErrorCode.BINDING_ALREADY_REGISTERED,

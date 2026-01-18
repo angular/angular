@@ -21,12 +21,12 @@ export class FieldSubmitState {
   readonly selfSubmitting = signal<boolean>(false);
 
   /** Submission errors that are associated with this field. */
-  readonly submissionErrors: WritableSignal<readonly ValidationError.WithField[]>;
+  readonly submissionErrors: WritableSignal<readonly ValidationError.WithFieldTree[]>;
 
   constructor(private readonly node: FieldNode) {
     this.submissionErrors = linkedSignal({
       source: this.node.structure.value,
-      computation: () => [] as readonly ValidationError.WithField[],
+      computation: () => [] as readonly ValidationError.WithFieldTree[],
     });
   }
 

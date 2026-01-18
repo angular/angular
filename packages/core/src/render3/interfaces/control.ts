@@ -39,6 +39,13 @@ export interface ɵFormFieldDirective<T> {
   /** Options for the control. */
   readonly classes: ReadonlyArray<readonly [string, Signal<boolean>]>;
 
+  /**
+   * A subset of the field state errors that apply specifically to this binding directive.
+   * While standard validation errors produced by the schema apply to all binding directives that
+   * bind that particular field, parse errors belong to a specific binding directive.
+   */
+  readonly errors: Signal<unknown[]>;
+
   /** A reference to the interoperable control, if one is present. */
   readonly ɵinteropControl: ɵInteropControl | undefined;
 

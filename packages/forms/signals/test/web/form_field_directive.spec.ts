@@ -51,7 +51,7 @@ import {
   type FormCheckboxControl,
   type FormValueControl,
   type ValidationError,
-  type WithOptionalField,
+  type WithOptionalFieldTree,
 } from '../../public_api';
 
 @Component({
@@ -414,7 +414,8 @@ describe('field directive', () => {
         })
         class CustomControl implements FormValueControl<string> {
           readonly value = model.required<string>();
-          readonly disabledReasons = input.required<readonly WithOptionalField<DisabledReason>[]>();
+          readonly disabledReasons =
+            input.required<readonly WithOptionalFieldTree<DisabledReason>[]>();
         }
 
         @Component({
@@ -439,7 +440,8 @@ describe('field directive', () => {
       it('should bind to directive input on native control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly disabledReasons = input.required<readonly WithOptionalField<DisabledReason>[]>();
+          readonly disabledReasons =
+            input.required<readonly WithOptionalFieldTree<DisabledReason>[]>();
         }
 
         @Component({
@@ -470,7 +472,8 @@ describe('field directive', () => {
       it('should bind to directive input on custom control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly disabledReasons = input.required<readonly WithOptionalField<DisabledReason>[]>();
+          readonly disabledReasons =
+            input.required<readonly WithOptionalFieldTree<DisabledReason>[]>();
         }
 
         @Component({
@@ -510,7 +513,8 @@ describe('field directive', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<string> {
           readonly value = model.required<string>();
-          readonly disabledReasons = input.required<readonly WithOptionalField<DisabledReason>[]>();
+          readonly disabledReasons =
+            input.required<readonly WithOptionalFieldTree<DisabledReason>[]>();
         }
 
         @Component({
@@ -545,7 +549,7 @@ describe('field directive', () => {
         })
         class CustomControl implements FormValueControl<string> {
           readonly value = model.required<string>();
-          readonly errors = input.required<readonly WithOptionalField<ValidationError>[]>();
+          readonly errors = input.required<readonly WithOptionalFieldTree<ValidationError>[]>();
         }
 
         @Component({
@@ -570,7 +574,7 @@ describe('field directive', () => {
       it('should bind to directive input on native control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly errors = input.required<readonly WithOptionalField<ValidationError>[]>();
+          readonly errors = input.required<readonly WithOptionalFieldTree<ValidationError>[]>();
         }
 
         @Component({
@@ -597,7 +601,7 @@ describe('field directive', () => {
       it('should bind to directive input on custom control', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly errors = input.required<readonly WithOptionalField<ValidationError>[]>();
+          readonly errors = input.required<readonly WithOptionalFieldTree<ValidationError>[]>();
         }
 
         @Component({
@@ -633,7 +637,7 @@ describe('field directive', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<string> {
           readonly value = model.required<string>();
-          readonly errors = input.required<readonly WithOptionalField<ValidationError>[]>();
+          readonly errors = input.required<readonly WithOptionalFieldTree<ValidationError>[]>();
         }
 
         @Component({
@@ -2541,10 +2545,10 @@ describe('field directive', () => {
         readonly pattern = input<readonly RegExp[], unknown>([], {
           transform: (v: unknown) => (Array.isArray(v) ? v : []),
         });
-        readonly errors = input<readonly WithOptionalField<ValidationError>[], unknown>([], {
+        readonly errors = input<readonly WithOptionalFieldTree<ValidationError>[], unknown>([], {
           transform: (v: unknown) => (Array.isArray(v) ? v : []),
         });
-        readonly disabledReasons = input<readonly WithOptionalField<DisabledReason>[], unknown>(
+        readonly disabledReasons = input<readonly WithOptionalFieldTree<DisabledReason>[], unknown>(
           [],
           {
             transform: (v: unknown) => (Array.isArray(v) ? v : []),
@@ -3346,7 +3350,7 @@ describe('field directive', () => {
     })
     class CustomInput implements FormValueControl<string> {
       value = model('');
-      disabledReasons = input<readonly WithOptionalField<DisabledReason>[]>([]);
+      disabledReasons = input<readonly WithOptionalFieldTree<DisabledReason>[]>([]);
     }
 
     @Component({
@@ -3571,8 +3575,8 @@ describe('field directive', () => {
     })
     class CustomInput implements FormValueControl<string> {
       value = model('');
-      disabledReasons = input<readonly WithOptionalField<DisabledReason>[]>([]);
-      errors = input<readonly WithOptionalField<ValidationError>[]>([]);
+      disabledReasons = input<readonly WithOptionalFieldTree<DisabledReason>[]>([]);
+      errors = input<readonly WithOptionalFieldTree<ValidationError>[]>([]);
     }
 
     @Component({
