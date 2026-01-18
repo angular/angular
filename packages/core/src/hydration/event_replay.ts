@@ -18,13 +18,13 @@ import {
   EventPhase,
 } from '../../primitives/event-dispatch';
 
-import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application/application_ref';
-import {ENVIRONMENT_INITIALIZER, Injector} from '../di';
-import {inject} from '../di/injector_compatibility';
-import {Provider} from '../di/interface/provider';
-import {RElement, RNode} from '../render3/interfaces/renderer_dom';
-import {CLEANUP, LView, TView} from '../render3/interfaces/view';
-import {unwrapRNode} from '../render3/util/view_utils';
+import { APP_BOOTSTRAP_LISTENER, ApplicationRef } from '../application/application_ref';
+import { ENVIRONMENT_INITIALIZER, Injector } from '../di';
+import { inject } from '../di/injector_compatibility';
+import { Provider } from '../di/interface/provider';
+import { RElement, RNode } from '../render3/interfaces/renderer_dom';
+import { CLEANUP, LView, TView } from '../render3/interfaces/view';
+import { unwrapRNode } from '../render3/util/view_utils';
 
 import {
   JSACTION_BLOCK_ELEMENT_MAP,
@@ -44,10 +44,10 @@ import {
   enableStashEventListenerImpl,
   setStashFn,
 } from '../event_delegation_utils';
-import {APP_ID} from '../application/application_tokens';
-import {performanceMarkFeature} from '../util/performance';
-import {triggerHydrationFromBlockName} from '../defer/triggering';
-import {isIncrementalHydrationEnabled} from './utils';
+import { APP_ID } from '../application/application_tokens';
+import { performanceMarkFeature } from '../util/performance';
+import { triggerHydrationFromBlockName } from '../defer/triggering';
+import { isIncrementalHydrationEnabled } from './utils';
 
 /** Apps in which we've enabled event replay.
  *  This is to prevent initializing event replay more than once per app.
@@ -100,7 +100,7 @@ export function withEventReplay(): Provider[] {
         provide: ENVIRONMENT_INITIALIZER,
         useValue: () => {
           const appRef = inject(ApplicationRef);
-          const {injector} = appRef;
+          const { injector } = appRef;
           // We have to check for the appRef here due to the possibility of multiple apps
           // being present on the same page. We only want to enable event replay for the
           // apps that actually want it.
@@ -120,10 +120,13 @@ export function withEventReplay(): Provider[] {
                   sharedMapFunction(rEl as RElement, jsActionMap);
                 },
               );
+              // The app becomes stable after hydration is done.
               // Clean up the reference to the function set by the environment initializer,
               // as the function closure may capture injected elements and prevent them
               // from being properly garbage collected.
-              appRef.onDestroy(clearStashFn);
+              appRef.whenStable().then(() => {
+                clearStashFn();
+              });
             }
           }
         },
@@ -133,7 +136,7 @@ export function withEventReplay(): Provider[] {
         provide: APP_BOOTSTRAP_LISTENER,
         useFactory: () => {
           const appRef = inject(ApplicationRef);
-          const {injector} = appRef;
+          const { injector } = appRef;
 
           return () => {
             // We have to check for the appRef here due to the possibility of multiple apps
@@ -230,7 +233,7 @@ const initEventReplay = (eventDelegation: EventContractDetails, injector: Inject
 export function collectDomEventsInfo(
   tView: TView,
   lView: LView,
-  eventTypesToReplay: {regular: Set<string>; capture: Set<string>},
+  eventTypesToReplay: { regular: Set<string>; capture: Set<string> },
 ): Map<Element, string[]> {
   const domEventsInfo = new Map<Element, string[]>();
   const lCleanup = lView[CLEANUP];
@@ -238,7 +241,7 @@ export function collectDomEventsInfo(
   if (!tCleanup || !lCleanup) {
     return domEventsInfo;
   }
-  for (let i = 0; i < tCleanup.length; ) {
+  for (let i = 0; i < tCleanup.length;) {
     const firstParam = tCleanup[i++];
     const secondParam = tCleanup[i++];
     if (typeof firstParam !== 'string') {
@@ -293,7 +296,7 @@ function hydrateAndInvokeBlockListeners(
   currentTarget: Element,
 ) {
   const queue = injector.get(EVENT_REPLAY_QUEUE);
-  queue.push({event, currentTarget});
+  queue.push({ event, currentTarget });
   triggerHydrationFromBlockName(injector, blockName, createReplayQueuedBlockEventsFn(queue));
 }
 
@@ -301,13 +304,13 @@ function createReplayQueuedBlockEventsFn(queue: EventReplayQueue) {
   return (hydratedBlocks: string[]) => {
     const hydrated = new Set<string>(hydratedBlocks);
     const newQueue: EventReplayQueue = [];
-    for (let {event, currentTarget} of queue) {
+    for (let { event, currentTarget } of queue) {
       const blockName = currentTarget.getAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE)!;
       if (hydrated.has(blockName)) {
         invokeListeners(event, currentTarget);
       } else {
         // requeue events that weren't yet hydrated
-        newQueue.push({event, currentTarget});
+        newQueue.push({ event, currentTarget });
       }
     }
     queue.length = 0;
