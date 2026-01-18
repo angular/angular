@@ -35,7 +35,7 @@ export interface ValidationState {
    * The full set of synchronous tree errors visible to this field. This includes ones that are
    * targeted at a descendant field rather than at this field.
    */
-  rawSyncTreeErrors: Signal<ValidationError.WithField[]>;
+  rawSyncTreeErrors: Signal<ValidationError.WithFieldTree[]>;
 
   /**
    * The full set of synchronous errors for this field, including synchronous tree errors and submission
@@ -43,7 +43,7 @@ export interface ValidationState {
    * the perspective of the field state they are either there or not, they are never in a pending
    * state.
    */
-  syncErrors: Signal<ValidationError.WithField[]>;
+  syncErrors: Signal<ValidationError.WithFieldTree[]>;
 
   /**
    * Whether the field is considered valid according solely to its synchronous validators.
@@ -56,24 +56,26 @@ export interface ValidationState {
    * targeted at a descendant field rather than at this field, as well as sentinel 'pending' values
    * indicating that the validator is still running and an error could still occur.
    */
-  rawAsyncErrors: Signal<(ValidationError.WithField | 'pending')[]>;
+  rawAsyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]>;
 
   /**
    * The asynchronous tree errors visible to this field that are specifically targeted at this field
    * rather than a descendant. This also includes all 'pending' sentinel values, since those could
    * theoretically result in errors for this field.
    */
-  asyncErrors: Signal<(ValidationError.WithField | 'pending')[]>;
+  asyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]>;
 
   /**
    * The combined set of all errors that currently apply to this field.
    */
-  errors: Signal<ValidationError.WithField[]>;
+  errors: Signal<ValidationError.WithFieldTree[]>;
+
+  parseErrors: Signal<ValidationError.WithFormField[]>;
 
   /**
    * The combined set of all errors that currently apply to this field and its descendants.
    */
-  errorSummary: Signal<ValidationError.WithField[]>;
+  errorSummary: Signal<ValidationError.WithFieldTree[]>;
 
   /**
    * Whether this field has any asynchronous validators still pending.
@@ -151,7 +153,7 @@ export class FieldValidationState implements ValidationState {
    * The full set of synchronous tree errors visible to this field. This includes ones that are
    * targeted at a descendant field rather than at this field.
    */
-  readonly rawSyncTreeErrors: Signal<ValidationError.WithField[]> = computed(() => {
+  readonly rawSyncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(() => {
     if (this.shouldSkipValidation()) {
       return [];
     }
@@ -168,7 +170,7 @@ export class FieldValidationState implements ValidationState {
    * added. From the perspective of the field state they are either there or not, they are never in a
    * pending state.
    */
-  readonly syncErrors: Signal<ValidationError.WithField[]> = computed(() => {
+  readonly syncErrors: Signal<ValidationError.WithFieldTree[]> = computed(() => {
     // Short-circuit running validators if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return [];
@@ -202,7 +204,7 @@ export class FieldValidationState implements ValidationState {
    * The synchronous tree errors visible to this field that are specifically targeted at this field
    * rather than a descendant.
    */
-  readonly syncTreeErrors: Signal<ValidationError.WithField[]> = computed(() =>
+  readonly syncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(() =>
     this.rawSyncTreeErrors().filter((err) => err.fieldTree === this.node.fieldProxy),
   );
 
@@ -211,7 +213,7 @@ export class FieldValidationState implements ValidationState {
    * targeted at a descendant field rather than at this field, as well as sentinel 'pending' values
    * indicating that the validator is still running and an error could still occur.
    */
-  readonly rawAsyncErrors: Signal<(ValidationError.WithField | 'pending')[]> = computed(() => {
+  readonly rawAsyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = computed(() => {
     // Short-circuit running validators if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return [];
@@ -230,7 +232,7 @@ export class FieldValidationState implements ValidationState {
    * rather than a descendant. This also includes all 'pending' sentinel values, since those could
    * theoretically result in errors for this field.
    */
-  readonly asyncErrors: Signal<(ValidationError.WithField | 'pending')[]> = computed(() => {
+  readonly asyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = computed(() => {
     if (this.shouldSkipValidation()) {
       return [];
     }
@@ -239,10 +241,15 @@ export class FieldValidationState implements ValidationState {
     );
   });
 
+  readonly parseErrors: Signal<ValidationError.WithFormField[]> = computed(() =>
+    this.node.formFieldBindings().flatMap((field) => field.parseErrors()),
+  );
+
   /**
    * The combined set of all errors that currently apply to this field.
    */
   readonly errors = computed(() => [
+    ...this.parseErrors(),
     ...this.syncErrors(),
     ...this.asyncErrors().filter((err) => err !== 'pending'),
   ]);
@@ -354,7 +361,7 @@ function normalizeErrors<T extends ValidationResult>(error: T | readonly T[]): r
  * @param fieldTree The default field to add
  * @returns The passed in error(s), with its field set.
  */
-export function addDefaultField<E extends ValidationError.WithOptionalField>(
+export function addDefaultField<E extends ValidationError.WithOptionalFieldTree>(
   error: E,
   fieldTree: FieldTree<unknown>,
 ): E & {fieldTree: FieldTree<unknown>};
@@ -368,10 +375,10 @@ export function addDefaultField<E extends ValidationError>(
 ): ValidationResult<E & {fieldTree: FieldTree<unknown>}> {
   if (isArray(errors)) {
     for (const error of errors) {
-      (error as ɵWritable<ValidationError.WithOptionalField>).fieldTree ??= fieldTree;
+      (error as ɵWritable<ValidationError.WithOptionalFieldTree>).fieldTree ??= fieldTree;
     }
   } else if (errors) {
-    (errors as ɵWritable<ValidationError.WithOptionalField>).fieldTree ??= fieldTree;
+    (errors as ɵWritable<ValidationError.WithOptionalFieldTree>).fieldTree ??= fieldTree;
   }
   return errors as ValidationResult<E & {fieldTree: FieldTree<unknown>}>;
 }

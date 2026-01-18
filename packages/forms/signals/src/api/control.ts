@@ -6,9 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InputSignal, InputSignalWithTransform, ModelSignal, OutputRef} from '@angular/core';
+import {
+  InputSignal,
+  InputSignalWithTransform,
+  ModelSignal,
+  OutputRef,
+  type Signal,
+} from '@angular/core';
 import type {FormFieldBindingOptions} from './form_field_directive';
-import {ValidationError, type WithOptionalField} from './rules/validation/validation_errors';
+import {ValidationError, type WithOptionalFieldTree} from './rules/validation/validation_errors';
 import type {DisabledReason} from './types';
 
 /**
@@ -17,14 +23,14 @@ import type {DisabledReason} from './types';
  * @category control
  * @experimental 21.0.0
  */
-export interface FormUiControl {
+export interface FormUiControl<TValue> {
   /**
    * An input to receive the errors for the field. If implemented, the `Field` directive will
    * automatically bind errors from the bound field to this input.
    */
   readonly errors?:
-    | InputSignal<readonly WithOptionalField<ValidationError>[]>
-    | InputSignalWithTransform<readonly WithOptionalField<ValidationError>[], unknown>;
+    | InputSignal<readonly ValidationError.WithOptionalFieldTree[]>
+    | InputSignalWithTransform<readonly ValidationError.WithOptionalFieldTree[], unknown>;
   /**
    * An input to receive the disabled status for the field. If implemented, the `Field` directive
    * will automatically bind the disabled status from the bound field to this input.
@@ -35,8 +41,8 @@ export interface FormUiControl {
    * directive will automatically bind the disabled reason from the bound field to this input.
    */
   readonly disabledReasons?:
-    | InputSignal<readonly WithOptionalField<DisabledReason>[]>
-    | InputSignalWithTransform<readonly WithOptionalField<DisabledReason>[], unknown>;
+    | InputSignal<readonly WithOptionalFieldTree<DisabledReason>[]>
+    | InputSignalWithTransform<readonly WithOptionalFieldTree<DisabledReason>[], unknown>;
   /**
    * An input to receive the readonly status for the field. If implemented, the `Field` directive
    * will automatically bind the readonly status from the bound field to this input.
@@ -117,6 +123,12 @@ export interface FormUiControl {
     | InputSignal<readonly RegExp[]>
     | InputSignalWithTransform<readonly RegExp[], unknown>;
   /**
+   * A signal containing the current parse errors for the control.
+   * This allows the control to communicate to the form that there are additional validation errors
+   * beyond those produced by the schema, due to being unable to parse the user's input.
+   */
+  readonly parseErrors?: Signal<ValidationError.WithoutFieldTree[]>;
+  /**
    * Focuses the UI control.
    *
    * If the focus method is not implemented, Signal Forms will attempt to focus the host element
@@ -130,7 +142,7 @@ export interface FormUiControl {
 // However, we don't want to add it as an actual `extends` clause to avoid confusing users.
 type Check<T extends true> = T;
 type FormUiControlImplementsFormFieldBindingOptions = Check<
-  FormUiControl extends FormFieldBindingOptions ? true : false
+  FormUiControl<unknown> extends FormFieldBindingOptions<unknown> ? true : false
 >;
 
 /**
@@ -146,7 +158,7 @@ type FormUiControlImplementsFormFieldBindingOptions = Check<
  * @category control
  * @experimental 21.0.0
  */
-export interface FormValueControl<TValue> extends FormUiControl {
+export interface FormValueControl<TValue> extends FormUiControl<TValue> {
   /**
    * The value is the only required property in this contract. A component that wants to integrate
    * with the `Field` directive via this contract, *must* provide a `model()` that will be kept in
@@ -175,7 +187,8 @@ export interface FormValueControl<TValue> extends FormUiControl {
  * @category control
  * @experimental 21.0.0
  */
-export interface FormCheckboxControl extends FormUiControl {
+// TODO: should we make this generic extends `boolean | null` so people can use `null` for parse error?
+export interface FormCheckboxControl extends FormUiControl<boolean> {
   /**
    * The checked is the only required property in this contract. A component that wants to integrate
    * with the `Field` directive, *must* provide a `model()` that will be kept in sync with the

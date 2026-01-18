@@ -94,7 +94,7 @@ export type ValidationSuccess = null | undefined | void;
  * @experimental 21.0.0
  */
 export type TreeValidationResult<
-  E extends ValidationError.WithOptionalField = ValidationError.WithOptionalField,
+  E extends ValidationError.WithOptionalFieldTree = ValidationError.WithOptionalFieldTree,
 > = ValidationSuccess | OneOrMany<E>;
 
 /**
@@ -240,12 +240,12 @@ export interface FieldState<
    */
   readonly hidden: Signal<boolean>;
   readonly disabledReasons: Signal<readonly DisabledReason[]>;
-  readonly errors: Signal<ValidationError.WithField[]>;
+  readonly errors: Signal<ValidationError.WithFieldTree[]>;
 
   /**
    * A signal containing the {@link errors} of the field and its descendants.
    */
-  readonly errorSummary: Signal<ValidationError.WithField[]>;
+  readonly errorSummary: Signal<ValidationError.WithFieldTree[]>;
 
   /**
    * A signal indicating whether the field's value is currently valid.
@@ -542,7 +542,7 @@ export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root>
  */
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
-  ValidationResult<ValidationError.WithoutField>,
+  ValidationResult<ValidationError.WithoutFieldTree>,
   TPathKind
 >;
 
