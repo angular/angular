@@ -9,6 +9,14 @@
 import {getRouterCallableConstructRef, parseRoutes} from './router-tree';
 
 describe('parseRoutes', () => {
+  beforeEach(() => {
+    if ((window as any).ng) {
+      // test the legacy parseRoutes implementation, the
+      // modern one is tested in framework tests
+      delete (window as any).ng.ɵparseRoutes;
+    }
+  });
+
   it('should work without any routes', () => {
     const routes: any[] = [];
     const parsedRoutes = parseRoutes(routes as any);

@@ -94,7 +94,10 @@ ts_test_library(
 
 ts_project(
     name = "router_tree",
-    srcs = ["router-tree.ts"],
+    srcs = [
+        "legacy-parse-routes.ts",
+        "router-tree.ts",
+    ],
     deps = [
         "//:node_modules/@angular/router",
         "//devtools/projects/protocol",
