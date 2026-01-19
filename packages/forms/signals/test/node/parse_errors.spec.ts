@@ -20,6 +20,7 @@ import {TestBed} from '@angular/core/testing';
 import {
   form,
   FormField,
+  validate,
   type FieldTree,
   type FormValueControl,
   type ValidationError,
@@ -150,6 +151,67 @@ describe('parse errors', () => {
     await act(() => cmp.state.set('ERROR'));
     expect(cmp.f().errors().length).toBe(1);
     expect(cmp.f().errors()[0]).toEqual(jasmine.objectContaining({kind: 'parse'}));
+  });
+
+  it('should sort parse errors mixed with validation errors by DOM position', async () => {
+    @Component({
+      imports: [TestNumberInput, FormField],
+      template: `
+        <test-number-input id="input1" [formField]="f.a" />
+        <test-number-input id="input2" [formField]="f.b" />
+      `,
+    })
+    class TestCmp {
+      state = signal({a: 5, b: 5});
+      f = form(this.state, (p) => {
+        validate(p.b, () => ({kind: 'val-error', message: 'validation error on b'}));
+      });
+    }
+
+    const fix = await act(() => TestBed.createComponent(TestCmp));
+    const comp = fix.componentInstance;
+    const input1: HTMLInputElement = fix.nativeElement.querySelector('#input1 input')!;
+
+    input1.value = 'joe';
+    await act(() => input1.dispatchEvent(new Event('input')));
+
+    // a has parse error "joe is not numeric" (from TestNumberInput logic)
+    // b has validation error "validation error on b"
+    // a is before b in DOM
+    expect(comp.f().errorSummary()).toEqual([
+      jasmine.objectContaining({message: 'joe is not numeric'}),
+      jasmine.objectContaining({message: 'validation error on b'}),
+    ]);
+  });
+
+  it('should sort parse errors mixed with validation errors by DOM position (swapped)', async () => {
+    @Component({
+      imports: [TestNumberInput, FormField],
+      template: `
+        <test-number-input id="input2" [formField]="f.b" />
+        <test-number-input id="input1" [formField]="f.a" />
+      `,
+    })
+    class TestCmp {
+      state = signal({a: 5, b: 5});
+      f = form(this.state, (p) => {
+        validate(p.b, () => ({kind: 'val-error', message: 'validation error on b'}));
+      });
+    }
+
+    const fix = await act(() => TestBed.createComponent(TestCmp));
+    const comp = fix.componentInstance;
+    const input1: HTMLInputElement = fix.nativeElement.querySelector('#input1 input')!;
+
+    input1.value = 'joe';
+    await act(() => input1.dispatchEvent(new Event('input')));
+
+    // b (validation error) is first in DOM
+    // a (parse error) is second
+    expect(comp.f().errorSummary()).toEqual([
+      jasmine.objectContaining({message: 'validation error on b'}),
+      jasmine.objectContaining({message: 'joe is not numeric'}),
+    ]);
   });
 });
 

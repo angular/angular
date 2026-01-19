@@ -254,12 +254,14 @@ export class FieldValidationState implements ValidationState {
     ...this.asyncErrors().filter((err) => err !== 'pending'),
   ]);
 
-  readonly errorSummary = computed(() =>
-    this.node.structure.reduceChildren(this.errors(), (child, result) => [
+  readonly errorSummary = computed(() => {
+    const errors = this.node.structure.reduceChildren(this.errors(), (child, result) => [
       ...result,
       ...child.errorSummary(),
-    ]),
-  );
+    ]);
+    errors.sort(compareErrorPosition);
+    return errors;
+  });
 
   /**
    * Whether this field has any asynchronous validators still pending.
@@ -381,4 +383,28 @@ export function addDefaultField<E extends ValidationError>(
     (errors as ɵWritable<ValidationError.WithOptionalFieldTree>).fieldTree ??= fieldTree;
   }
   return errors as ValidationResult<E & {fieldTree: FieldTree<unknown>}>;
+}
+
+function getFirstBoundElement(error: ValidationError.WithFieldTree) {
+  if (error.formField) return error.formField.element;
+  return error
+    .fieldTree()
+    .formFieldBindings()
+    .reduce<HTMLElement | undefined>((el: HTMLElement | undefined, binding) => {
+      if (!el || !binding.element) return el ?? binding.element;
+      return el.compareDocumentPosition(binding.element) & Node.DOCUMENT_POSITION_PRECEDING
+        ? binding.element
+        : el;
+    }, undefined);
+}
+
+function compareErrorPosition(
+  a: ValidationError.WithFieldTree,
+  b: ValidationError.WithFieldTree,
+): number {
+  const aEl = getFirstBoundElement(a);
+  const bEl = getFirstBoundElement(b);
+  if (aEl === bEl) return 0;
+  if (aEl === undefined || bEl === undefined) return aEl === undefined ? 1 : -1;
+  return aEl.compareDocumentPosition(bEl) & Node.DOCUMENT_POSITION_PRECEDING ? 1 : -1;
 }
