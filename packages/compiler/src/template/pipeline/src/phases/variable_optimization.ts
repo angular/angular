@@ -51,15 +51,8 @@ export function optimizeVariables(job: CompilationJob): void {
 
     for (const expr of unit.functions) {
       optimizeVariablesInOpList(expr.ops, job.compatibility, null);
+      optimizeSaveRestoreView(expr.ops);
     }
-
-    // Note that we skip over arrow function operations, because they are considered
-    // separate boundaries that should not influence the surrounding create/update
-    // operations. This is a side-effect of not being able to control which nested
-    // ops `visitExpressionsInOp` will visit. Without this logic, variable references
-    // inside the arrow function can throw off usage counting for things like view references.
-    optimizeVariablesInOpList(unit.create, job.compatibility, skipArrowFunctionOps);
-    optimizeVariablesInOpList(unit.update, job.compatibility, skipArrowFunctionOps);
 
     for (const op of unit.create) {
       if (
@@ -69,10 +62,19 @@ export function optimizeVariables(job: CompilationJob): void {
         op.kind === ir.OpKind.TwoWayListener
       ) {
         optimizeVariablesInOpList(op.handlerOps, job.compatibility, skipArrowFunctionOps);
+        optimizeSaveRestoreView(op.handlerOps);
       } else if (op.kind === ir.OpKind.RepeaterCreate && op.trackByOps !== null) {
         optimizeVariablesInOpList(op.trackByOps, job.compatibility, skipArrowFunctionOps);
       }
     }
+
+    // Note that we skip over arrow function operations, because they are considered
+    // separate boundaries that should not influence the surrounding create/update
+    // operations. This is a side-effect of not being able to control which nested
+    // ops `visitExpressionsInOp` will visit. Without this logic, variable references
+    // inside the arrow function can throw off usage counting for things like view references.
+    optimizeVariablesInOpList(unit.create, job.compatibility, skipArrowFunctionOps);
+    optimizeVariablesInOpList(unit.update, job.compatibility, skipArrowFunctionOps);
   }
 }
 
@@ -561,5 +563,33 @@ function allowConservativeInlining(
       return target.kind === ir.OpKind.Variable;
     default:
       return true;
+  }
+}
+
+/**
+ * After variables have been optimized in nested ops (e.g. handlers or functions), we may end up
+ * with `saveView`/`restoreView` calls that aren't necessary since all the references to the view
+ * were optimized away. This function removes the ops related to the view restoration.
+ */
+function optimizeSaveRestoreView(ops: ir.OpList<ir.UpdateOp>): void {
+  const head = ops.head.next;
+  const tail = ops.tail.prev;
+
+  // We can only optimize if we have two ops:
+  // 1. A call to `restoreView`.
+  // 2. A return statement with a `resetView` in it.
+  if (
+    head !== null &&
+    tail !== null &&
+    head.next === tail &&
+    head.kind === ir.OpKind.Statement &&
+    head.statement instanceof o.ExpressionStatement &&
+    head.statement.expr instanceof ir.RestoreViewExpr &&
+    tail.kind === ir.OpKind.Statement &&
+    tail.statement instanceof o.ReturnStatement &&
+    tail.statement.value instanceof ir.ResetViewExpr
+  ) {
+    ir.OpList.remove<ir.UpdateOp>(head);
+    tail.statement.value = tail.statement.value.expr;
   }
 }
