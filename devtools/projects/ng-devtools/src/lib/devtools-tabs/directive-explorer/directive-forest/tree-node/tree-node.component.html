@@ -41,7 +41,7 @@
 
   @if (defer) {
     @if (defer.renderedBlock && defer.renderedBlock !== 'defer') {
-      <span class="trait">(&#64;{{ defer.renderedBlock }})</span>
+      <span class="trait">(@{{ defer.renderedBlock }})</span>
     } @else if (!defer.renderedBlock) {
       <span class="trait">(non-rendered)</span>
     }
