@@ -43,11 +43,11 @@ describe('UserProfile', () => {
 
 ```angular-ts
 // user-profile.component.ts
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component, inject} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
-  template: '<h1>User Profile: {{userId}}</h1>'
+  template: '<h1>User Profile: {{userId}}</h1>',
 })
 export class UserProfile {
   private route = inject(ActivatedRoute);
@@ -183,8 +183,8 @@ describe('App Router Outlet', () => {
 
 ```angular-ts
 // app.component.ts
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterOutlet, RouterLink} from '@angular/router';
 
 @Component({
   imports: [RouterOutlet, RouterLink],
@@ -194,7 +194,7 @@ import { RouterOutlet, RouterLink } from '@angular/router';
       <a routerLink="/about">About</a>
     </nav>
     <router-outlet />
-  `
+  `,
 })
 export class App {}
 ```
@@ -249,20 +249,20 @@ describe('Nested Routes', () => {
 
 ```angular-ts
 // nested-components.ts
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
   imports: [RouterOutlet],
   template: `
     <h1>Parent Component</h1>
     <router-outlet />
-  `
+  `,
 })
 export class Parent {}
 
 @Component({
-  template: '<h2>Child Component</h2>'
+  template: '<h2>Child Component</h2>',
 })
 export class Child {}
 ```
@@ -305,16 +305,16 @@ describe('Search', () => {
 
 ```angular-ts
 // search.component.ts
-import { Component, inject, computed } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import {Component, inject, computed} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Component({
-  template: '<div>Search term: {{searchTerm()}}</div>'
+  template: '<div>Search term: {{searchTerm()}}</div>',
 })
 export class Search {
   private route = inject(ActivatedRoute);
-  private queryParams = toSignal(this.route.queryParams, { initialValue: {} });
+  private queryParams = toSignal(this.route.queryParams, {initialValue: {}});
 
   searchTerm = computed(() => this.queryParams()['q'] || null);
 }

@@ -13,15 +13,11 @@ ng generate @angular/core:self-closing-tag
 #### Before
 
 ```angular-html
-
 <hello-world></hello-world>
-
 ```
 
 #### After
 
 ```angular-html
-
 <hello-world />
-
 ```

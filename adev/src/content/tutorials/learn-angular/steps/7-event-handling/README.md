@@ -43,7 +43,7 @@ showSecretMessage() {
 Update the template code in `app.ts` to bind to the `mouseover` event of the `section` element.
 
 ```angular-html
-<section (mouseover)="showSecretMessage()">
+<section (mouseover)="showSecretMessage()"></section>
 ```
 
 </docs-step>

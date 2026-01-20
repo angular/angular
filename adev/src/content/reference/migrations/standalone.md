@@ -105,7 +105,7 @@ export class SharedModule {}
 @Component({
   selector: 'greeter',
   template: '<div *ngIf="showGreeting">Hello</div>',
-  imports: [NgIf]
+  imports: [NgIf],
 })
 export class GreeterComponent {
   showGreeting = true;

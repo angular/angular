@@ -189,7 +189,7 @@
     "karma-coverage": "^2.2.1",
     "karma-jasmine-html-reporter": "^2.1.0",
     "karma-sauce-launcher": "^4.3.6",
-    "prettier": "^3.0.0",
+    "prettier": "^3.8.0",
     "rollup-plugin-sourcemaps2": "^0.5.1",
     "semver": "^7.3.5",
     "tmp": "^0.2.3",

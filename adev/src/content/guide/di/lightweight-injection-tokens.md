@@ -23,10 +23,7 @@ To better explain the condition under which token retention occurs, consider a l
 This component contains a body and can contain an optional header:
 
 ```angular-html
-
-<lib-card>;
-<lib-header>…</lib-header>;
-</lib-card>;
+<lib-card>; <lib-header>…</lib-header>; </lib-card>;
 ```
 
 In a likely implementation, the `<lib-card>` component uses `contentChild` or `contentChildren` to get `<lib-header>` and `<lib-body>`, as in the following:

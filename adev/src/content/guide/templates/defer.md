@@ -317,7 +317,7 @@ it('should render a defer block in different states', async () => {
       } @loading {
         Loading...
       }
-    `
+    `,
   })
   class ExampleA {}
   // Create component fixture.

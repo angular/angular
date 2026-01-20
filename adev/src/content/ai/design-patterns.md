@@ -80,14 +80,14 @@ The following example demonstrates how to create a responsive UI to dynamically 
   <div class="img-placeholder">
     <mat-spinner [diameter]="50" />
   </div>
-<!-- Dynamically populates the src attribute with the generated image URL -->
+  <!-- Dynamically populates the src attribute with the generated image URL -->
 } @else if (imgResource.hasValue()) {
   <img [src]="imgResource.value()" />
-<!-- Provides a retry option if the request fails  -->
+  <!-- Provides a retry option if the request fails  -->
 } @else {
   <div class="img-placeholder" (click)="imgResource.reload()">
     <mat-icon fontIcon="refresh" />
-      <p>Failed to load image. Click to retry.</p>
+    <p>Failed to load image. Click to retry.</p>
   </div>
 }
 ```
@@ -130,9 +130,9 @@ The `characters` member is updated asynchronously and can be displayed in the te
 @if (characters.isLoading()) {
   <p>Loading...</p>
 } @else if (characters.hasValue()) {
-  <p>{{characters.value()}}</p>
+  <p>{{ characters.value() }}</p>
 } @else {
-  <p>{{characters.error()}}</p>
+  <p>{{ characters.error() }}</p>
 }
 ```
 

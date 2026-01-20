@@ -88,7 +88,7 @@ You can bind to directive properties as well.
 
 ```angular-html
 <!-- Bind to the `ngSrc` property of the `NgOptimizedImage` directive  -->
-<img [ngSrc]="profilePhotoUrl()" alt="The current user's profile photo">
+<img [ngSrc]="profilePhotoUrl()" alt="The current user's profile photo" />
 ```
 
 ### Attributes
@@ -97,7 +97,7 @@ When you need to set HTML attributes that do not have corresponding DOM properti
 
 ```angular-html
 <!-- Bind the `role` attribute on the `<ul>` element to the component's `listRole` property. -->
-<ul [attr.role]="listRole()">
+<ul [attr.role]="listRole()"></ul>
 ```
 
 In this example, every time `listRole` changes, Angular automatically sets the `role` attribute of the `<ul>` element by calling `setAttribute`.
@@ -110,7 +110,7 @@ You can also use text interpolation syntax in properties and attributes by using
 
 ```angular-html
 <!-- Binds a value to the `alt` property of the image element's DOM object. -->
-<img src="profile-photo.jpg" alt="Profile photo of {{ firstName() }}" >
+<img src="profile-photo.jpg" alt="Profile photo of {{ firstName() }}" />
 ```
 
 ## CSS class and style property bindings
@@ -123,7 +123,7 @@ You can create a CSS class binding to conditionally add or remove a CSS class on
 
 ```angular-html
 <!-- When `isExpanded` is truthy, add the `expanded` CSS class. -->
-<ul [class.expanded]="isExpanded()">
+<ul [class.expanded]="isExpanded()"></ul>
 ```
 
 You can also bind directly to the `class` property. Angular accepts three types of value:
@@ -156,9 +156,11 @@ export class UserProfile {
 The above example renders the following DOM:
 
 ```angular-html
-<ul class="full-width outlined"> ... </ul>
-<section class="expandable elevated"> ... </section>
-<button class="highlighted"> ... </button>
+<ul class="full-width outlined">
+  ...
+</ul>
+<section class="expandable elevated">...</section>
+<button class="highlighted">...</button>
 ```
 
 Angular ignores any string values that are not valid CSS class names.
@@ -179,7 +181,7 @@ export class Listbox {
 In the example above, Angular renders the `ul` element with all three CSS classes.
 
 ```angular-html
-<ul class="list box expanded">
+<ul class="list box expanded"></ul>
 ```
 
 Angular does not guarantee any specific order of CSS classes on rendered elements.
@@ -196,14 +198,14 @@ You can also bind to CSS style properties directly on an element.
 
 ```angular-html
 <!-- Set the CSS `display` property based on the `isExpanded` property. -->
-<section [style.display]="isExpanded() ? 'block' : 'none'">
+<section [style.display]="isExpanded() ? 'block' : 'none'"></section>
 ```
 
 You can further specify units for CSS properties that accept units.
 
 ```angular-html
 <!-- Set the CSS `height` property to a pixel value based on the `sectionHeightInPixels` property. -->
-<section [style.height.px]="sectionHeightInPixels()">
+<section [style.height.px]="sectionHeightInPixels()"></section>
 ```
 
 You can also set multiple style values in one binding. Angular accepts the following types of value:
@@ -233,8 +235,10 @@ export class UserProfile {
 The above example renders the following DOM.
 
 ```angular-html
-<ul style="display: flex; padding: 8px"> ... </ul>
-<section style="border: 1px solid black; font-weight: bold"> ... </section>
+<ul style="display: flex; padding: 8px">
+  ...
+</ul>
+<section style="border: 1px solid black; font-weight: bold">...</section>
 ```
 
 When binding `style` to an object, Angular compares the previous value to the current value with the triple-equals operator (`===`). You must create a new object instance when you modify these values in order to Angular to apply any updates.

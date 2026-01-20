@@ -60,8 +60,7 @@ By explicitly specifying the inputs and outputs, consumers of the component with
 bind them in a template:
 
 ```angular-html
-
-<admin-menu menuId="top-menu" (menuClosed)="logMenuClosed()">
+<admin-menu menuId="top-menu" (menuClosed)="logMenuClosed()"></admin-menu>
 ```
 
 Furthermore, you can alias inputs and outputs from `hostDirective` to customize the API of your
@@ -83,8 +82,7 @@ export class AdminMenu {}
 ```
 
 ```angular-html
-
-<admin-menu id="top-menu" (closed)="logMenuClosed()">
+<admin-menu id="top-menu" (closed)="logMenuClosed()"></admin-menu>
 ```
 
 ## Adding directives to another directive

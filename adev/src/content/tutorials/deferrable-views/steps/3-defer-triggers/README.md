@@ -63,9 +63,8 @@ Next, update the template to include a button with the label "Show all comments"
 <button type="button" #showComments>Show all comments</button>
 
 @defer (on hover) {
-<article-comments />
+  <article-comments />
 } @placeholder (minimum 1s) {
-
   <p>Placeholder for comments</p>
 } @loading (minimum 1s; after 500ms) {
   <p>Loading comments...</p>
@@ -85,9 +84,8 @@ Update the `@defer` block in the template to use the `on interaction` trigger. P
 <button type="button" #showComments>Show all comments</button>
 
 @defer (on hover; on interaction(showComments)) {
-<article-comments />
+  <article-comments />
 } @placeholder (minimum 1s) {
-
   <p>Placeholder for comments</p>
 } @loading (minimum 1s; after 500ms) {
   <p>Loading comments...</p>

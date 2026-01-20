@@ -11,7 +11,7 @@ Most developers prefer to format their templates with newlines and indentation t
   <h3>User profile</h3>
   <label>
     User name
-    <input>
+    <input />
   </label>
 </section>
 ```
@@ -20,7 +20,11 @@ This template contains whitespace between all of the elements. The following sni
 
 ```angular-html
 <!-- Total Whitespace: 20 -->
-<section>###<h3>User profile</h3>###<label>#####User name#####<input>###</label>#</section>
+<section>
+  ###
+  <h3>User profile</h3>
+  ###<label>#####User name#####<input />###</label>#
+</section>
 ```
 
 Preserving the whitespace as written in the template would result in many unnecessary [text nodes](https://developer.mozilla.org/en-US/docs/Web/API/Text) and increase page rendering overhead. By ignoring this whitespace between elements, Angular performs less work when rendering the template on the page, improving overall performance.
@@ -31,7 +35,7 @@ When your web browser renders HTML on a page, it collapses multiple consecutive 
 
 ```angular-html
 <!-- What it looks like in the template -->
-<p>Hello         world</p>
+<p>Hello world</p>
 ```
 
 In this example, the browser displays only a single space between "Hello" and "world".
