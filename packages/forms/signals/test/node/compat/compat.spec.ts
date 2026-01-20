@@ -347,8 +347,10 @@ describe('Forms compat', () => {
 
       const {promise, resolve} = promiseWithResolvers<TreeValidationResult>();
 
-      const result = submit(f as unknown as FieldTree<void>, () => {
-        return promise;
+      const result = submit(f as unknown as FieldTree<void>, {
+        action: () => {
+          return promise;
+        },
       });
 
       expect(f().submitting()).toBe(true);

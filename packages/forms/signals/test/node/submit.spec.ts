@@ -11,16 +11,22 @@ import {TestBed} from '@angular/core/testing';
 import {
   disabled,
   form,
+  hidden,
+  readonly,
   required,
   requiredError,
   submit,
   validateAsync,
   ValidationError,
-  hidden,
-  readonly,
 } from '../../public_api';
 
 describe('submit', () => {
+  let injector: Injector;
+
+  beforeEach(() => {
+    injector = TestBed.inject(Injector);
+  });
+
   it('fails fast on invalid form', async () => {
     const data = signal({first: '', last: ''});
     const f = form(
@@ -28,12 +34,16 @@ describe('submit', () => {
       (name) => {
         required(name.first);
       },
-      {injector: TestBed.inject(Injector)},
+      {injector},
     );
 
-    await submit(f, async (form) => {
-      fail('Submit action should run not on invalid form');
-    });
+    expect(
+      await submit(f, {
+        action: async (form) => {
+          fail('Submit action should run not on invalid form');
+        },
+      }),
+    ).toBe(false);
 
     expect(f.first().errors()).toEqual([requiredError({fieldTree: f.first})]);
   });
@@ -56,13 +66,13 @@ describe('submit', () => {
             onError: () => {},
           });
         },
-        {injector: TestBed.inject(Injector)},
+        {injector},
       );
 
       expect(f().pending()).toBe(true);
 
       const submitSpy = jasmine.createSpy();
-      await submit(f, submitSpy);
+      expect(await submit(f, {action: submitSpy})).toBe(true);
 
       expect(f().pending()).toBe(true);
       expect(submitSpy).toHaveBeenCalled();
@@ -89,7 +99,7 @@ describe('submit', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      await submit(f, async () => ({kind: 'submit'}));
+      await submit(f, {action: async () => ({kind: 'submit'})});
       expect(f().errorSummary()).toEqual([jasmine.objectContaining({kind: 'submit'})]);
 
       resolve(true);
@@ -118,7 +128,7 @@ describe('submit', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      await submit(f, async () => ({kind: 'submit'}));
+      await submit(f, {action: async () => ({kind: 'submit'})});
       expect(f().errorSummary()).toEqual([jasmine.objectContaining({kind: 'submit'})]);
 
       resolve(true);
@@ -150,7 +160,7 @@ describe('submit', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      await submit(f, async () => undefined);
+      await submit(f, {action: async () => undefined});
       expect(f().errorSummary()).toEqual([]);
 
       resolve(true);
@@ -167,39 +177,47 @@ describe('submit', () => {
         // first name required if last name specified
         required(name.first, {when: ({valueOf}) => valueOf(name.last) !== ''});
       },
-      {injector: TestBed.inject(Injector)},
+      {injector},
     );
 
-    await submit(f, (form) => {
-      return Promise.resolve({
-        kind: 'lastName',
-        fieldTree: form.last,
-      });
-    });
+    expect(
+      await submit(f, {
+        action: (form) => {
+          return Promise.resolve({
+            kind: 'lastName',
+            fieldTree: form.last,
+          });
+        },
+      }),
+    ).toBe(false);
 
     expect(f.last().errors()).toEqual([{kind: 'lastName', fieldTree: f.last}]);
   });
 
   it('maps errors to multiple fields', async () => {
     const data = signal({first: '', last: ''});
-    const f = form(data, {injector: TestBed.inject(Injector)});
+    const f = form(data, {injector});
 
-    await submit(f, (form) => {
-      return Promise.resolve([
-        {
-          kind: 'firstName',
-          fieldTree: form.first,
+    expect(
+      await submit(f, {
+        action: (form) => {
+          return Promise.resolve([
+            {
+              kind: 'firstName',
+              fieldTree: form.first,
+            },
+            {
+              kind: 'lastName',
+              fieldTree: form.last,
+            },
+            {
+              kind: 'lastName2',
+              fieldTree: form.last,
+            },
+          ]);
         },
-        {
-          kind: 'lastName',
-          fieldTree: form.last,
-        },
-        {
-          kind: 'lastName2',
-          fieldTree: form.last,
-        },
-      ]);
-    });
+      }),
+    ).toBe(false);
 
     expect(f.first().errors()).toEqual([{kind: 'firstName', fieldTree: f.first}]);
     expect(f.last().errors()).toEqual([
@@ -217,15 +235,19 @@ describe('submit', () => {
         // first name required if last name specified
         required(name.first, {when: ({valueOf}) => valueOf(name.last) !== ''});
       },
-      {injector: TestBed.inject(Injector)},
+      {injector},
     );
 
     const submitSpy = jasmine.createSpy('submit');
 
-    await submit(f, (form) => {
-      submitSpy(form().value());
-      return Promise.resolve();
-    });
+    expect(
+      await submit(f, {
+        action: (form) => {
+          submitSpy(form().value());
+          return Promise.resolve();
+        },
+      }),
+    ).toBe(true);
 
     expect(submitSpy).toHaveBeenCalledWith(initialValue);
   });
@@ -238,12 +260,16 @@ describe('submit', () => {
         // first name required if last name specified
         required(name.first, {when: ({valueOf}) => valueOf(name.last) !== ''});
       },
-      {injector: TestBed.inject(Injector)},
+      {injector},
     );
 
-    await submit(f, () => {
-      return Promise.resolve({kind: 'custom'});
-    });
+    expect(
+      await submit(f, {
+        action: () => {
+          return Promise.resolve({kind: 'custom'});
+        },
+      }),
+    ).toBe(false);
 
     expect(f().errors()).toEqual([{kind: 'custom', fieldTree: f}]);
   });
@@ -257,40 +283,40 @@ describe('submit', () => {
         // first name required if last name specified
         required(name.first, {when: ({valueOf}) => valueOf(name.last) !== ''});
       },
-      {injector: TestBed.inject(Injector)},
+      {injector},
     );
     expect(f().submitting()).toBe(false);
 
     const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
-    const result = submit(f, () => promise);
+    const result = submit(f, {action: () => promise});
     expect(f().submitting()).toBe(true);
 
     resolve([]);
-    await result;
+    expect(await result).toBe(true);
   });
 
   it('marks descendants as submitting', async () => {
     const initialValue = {a: {b: 12}};
     const data = signal(initialValue);
-    const f = form(data, {injector: TestBed.inject(Injector)});
+    const f = form(data, {injector});
     expect(f.a.b().submitting()).toBe(false);
 
     const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
-    const result = submit(f, () => promise);
+    const result = submit(f, {action: () => promise});
     expect(f.a.b().submitting()).toBe(true);
 
     resolve([]);
-    await result;
+    expect(await result).toBe(true);
   });
 
   it('marks the form as touched', async () => {
     const initialValue = {first: 'meow', last: 'wuf'};
     const data = signal(initialValue);
-    const f = form(data, {injector: TestBed.inject(Injector)});
+    const f = form(data, {injector});
 
     expect(f().touched()).toBe(false);
 
-    await submit(f, async () => []);
+    expect(await submit(f, {action: async () => []})).toBe(true);
 
     expect(f().touched()).toBe(true);
   });
@@ -298,11 +324,11 @@ describe('submit', () => {
   it('marks descendants as touched', async () => {
     const initialValue = {a: {b: 12}};
     const data = signal(initialValue);
-    const f = form(data, {injector: TestBed.inject(Injector)});
+    const f = form(data, {injector});
 
     expect(f.a.b().touched()).toBe(false);
 
-    await submit(f, async () => []);
+    expect(await submit(f, {action: async () => []})).toBe(true);
 
     expect(f.a.b().touched()).toBe(true);
   });
@@ -318,25 +344,29 @@ describe('submit', () => {
           when: ({valueOf}) => valueOf(name.last) !== '',
         });
       },
-      {injector: TestBed.inject(Injector)},
+      {injector},
     );
 
     const submitSpy = jasmine.createSpy('submit');
 
-    await submit(f.first, (form) => {
-      submitSpy(form().value());
-      return Promise.resolve({kind: 'lastName'});
-    });
+    expect(
+      await submit(f.first, {
+        action: (form) => {
+          submitSpy(form().value());
+          return Promise.resolve({kind: 'lastName'});
+        },
+      }),
+    ).toBe(false);
 
     expect(submitSpy).toHaveBeenCalledWith('meow');
   });
 
   it('recovers from errors thrown by submit action', async () => {
-    const f = form(signal(0), {injector: TestBed.inject(Injector)});
+    const f = form(signal(0), {injector});
     expect(f().submitting()).toBe(false);
 
     const {promise, reject} = promiseWithResolvers<ValidationError[]>();
-    const submitPromise = submit(f, () => promise);
+    const submitPromise = submit(f, {action: () => promise});
     expect(f().submitting()).toBe(true);
 
     const error = new Error('submit failed');
@@ -347,14 +377,18 @@ describe('submit', () => {
 
   it('errors are cleared on edit', async () => {
     const data = signal({first: '', last: ''});
-    const f = form(data, {injector: TestBed.inject(Injector)});
+    const f = form(data, {injector});
 
-    await submit(f, async (form) => {
-      return [
-        {kind: 'submit', fieldTree: f.first},
-        {kind: 'submit', fieldTree: f.last},
-      ];
-    });
+    expect(
+      await submit(f, {
+        action: async (form) => {
+          return [
+            {kind: 'submit', fieldTree: f.first},
+            {kind: 'submit', fieldTree: f.last},
+          ];
+        },
+      }),
+    ).toBe(false);
 
     expect(f.first().errors()).toEqual([{kind: 'submit', fieldTree: f.first}]);
     expect(f.last().errors()).toEqual([{kind: 'submit', fieldTree: f.last}]);
@@ -380,7 +414,7 @@ describe('submit', () => {
     expect(f.first().touched()).toBe(false);
     expect(f.last().touched()).toBe(false);
 
-    await submit(f, async () => []);
+    await submit(f, {action: async () => []});
     expect(f.first().touched()).toBe(false);
     expect(f.last().touched()).toBe(true);
 
@@ -405,7 +439,7 @@ describe('submit', () => {
     expect(f.first().touched()).toBe(false);
     expect(f.last().touched()).toBe(false);
 
-    await submit(f, async () => []);
+    await submit(f, {action: async () => []});
     expect(f.first().touched()).toBe(false);
     expect(f.last().touched()).toBe(true);
 
@@ -430,7 +464,7 @@ describe('submit', () => {
     expect(f.first().touched()).toBe(false);
     expect(f.last().touched()).toBe(false);
 
-    await submit(f, async () => []);
+    await submit(f, {action: async () => []});
     expect(f.first().touched()).toBe(false);
     expect(f.last().touched()).toBe(true);
 
@@ -438,6 +472,86 @@ describe('submit', () => {
     f.last().value.set('Doe');
     expect(f.first().readonly()).toBe(false);
     expect(f.first().touched()).toBe(false);
+  });
+
+  it('calls onInvalid when form is invalid', async () => {
+    const data = signal({first: '', last: ''});
+    const f = form(
+      data,
+      (name) => {
+        required(name.first);
+      },
+      {injector},
+    );
+
+    const onInvalidSpy = jasmine.createSpy('onInvalid');
+
+    expect(
+      await submit(f, {
+        action: async () => {
+          fail('Submit action should run not on invalid form');
+        },
+        onInvalid: onInvalidSpy,
+      }),
+    ).toBe(false);
+
+    expect(onInvalidSpy).toHaveBeenCalledWith(f);
+  });
+
+  it('runs action on invalid form with ignoreValidators: all', async () => {
+    const data = signal({first: '', last: ''});
+    const f = form(
+      data,
+      (name) => {
+        required(name.first);
+      },
+      {injector},
+    );
+
+    const submitSpy = jasmine.createSpy('submit');
+    expect(
+      await submit(f, {
+        action: submitSpy,
+        ignoreValidators: 'all',
+      }),
+    ).toBe(true);
+
+    expect(submitSpy).toHaveBeenCalled();
+    expect(f.first().errors()).toEqual([requiredError({fieldTree: f.first})]);
+  });
+
+  it('fails with pending validators with ignoreValidators: none', async () => {
+    const data = signal('');
+    const resolvers = promiseWithResolvers();
+    const f = form(
+      data,
+      (p) => {
+        validateAsync(p, {
+          params: ({value}) => value(),
+          factory: (params) =>
+            resource({
+              params,
+              loader: () => resolvers.promise,
+            }),
+          onSuccess: () => {},
+          onError: () => {},
+        });
+      },
+      {injector},
+    );
+
+    const submitSpy = jasmine.createSpy('submit');
+    const submitPromise = submit(f, {
+      action: submitSpy,
+      ignoreValidators: 'none',
+    });
+
+    expect(f().submitting()).toBe(false);
+    expect(submitSpy).not.toHaveBeenCalled();
+    expect(await submitPromise).toBe(false);
+
+    // Resolve as valid
+    resolvers.resolve(undefined);
   });
 });
 
