@@ -180,6 +180,7 @@ class ElementAttributes {
         throw Error('ngProjectAs must have a string literal value');
       }
       this.projectAs = value.value.toString();
+      return;
       // TODO: TemplateDefinitionBuilder allows `ngProjectAs` to also be assigned as a literal
       // attribute. Is this sane?
     }

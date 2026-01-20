@@ -1853,7 +1853,12 @@ function ingestControlFlowInsertionPoint(
   for (const child of node.children) {
     // Skip over comment nodes and @let declarations since
     // it doesn't matter where they end up in the DOM.
-    if (child instanceof t.Comment || child instanceof t.LetDeclaration) {
+    // Also skip over whitespace-only text nodes.
+    if (
+      child instanceof t.Comment ||
+      child instanceof t.LetDeclaration ||
+      (child instanceof t.Text && child.value.trim().length === 0)
+    ) {
       continue;
     }
 

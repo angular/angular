@@ -170,6 +170,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support ngProjectAs in control flow blocks",
+      "inputFiles": [
+        "ng_project_as_control_flow.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect MyApp definition",
+          "files": [
+            "ng_project_as_control_flow.js"
+          ]
+        }
+      ]
     }
   ]
 }
