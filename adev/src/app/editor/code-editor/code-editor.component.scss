@@ -195,7 +195,7 @@
   background: transparent;
   outline: none;
   transition: color 0.3s ease;
-  &:focus {
+  &:focus-visible {
     background: transparent;
     border-block-end: 1px solid var(--primary-contrast);
   }
