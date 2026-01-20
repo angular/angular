@@ -8,7 +8,7 @@
 
 import {NgTemplateOutlet} from '@angular/common';
 import {ChangeDetectionStrategy, Component, inject, input, output} from '@angular/core';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatTooltip} from '@angular/material/tooltip';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 import {NavigationItem} from '../../interfaces/index';
 import {IsActiveNavigationItem} from '../../pipes';
@@ -23,7 +23,7 @@ import {IconComponent} from '../icon/icon.component';
     IconComponent,
     IsActiveNavigationItem,
     NgTemplateOutlet,
-    MatTooltipModule,
+    MatTooltip,
   ],
   templateUrl: './navigation-list.component.html',
   styleUrls: ['./navigation-list.component.scss'],

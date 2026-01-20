@@ -9,12 +9,9 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {Step, RECOMMENDATIONS, ApplicationComplexity} from './recommendations';
 import {Clipboard} from '@angular/cdk/clipboard';
-import {CdkMenuModule} from '@angular/cdk/menu';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatInputModule} from '@angular/material/input';
-import {MatCardModule} from '@angular/material/card';
-import {MatGridListModule} from '@angular/material/grid-list';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
 import {IconComponent} from '@angular/docs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {marked} from 'marked';
@@ -33,12 +30,12 @@ const isWindows = typeof window !== 'undefined' && window.navigator.userAgent.in
   templateUrl: './update.component.html',
   styleUrl: './update.component.scss',
   imports: [
-    MatCheckboxModule,
-    MatInputModule,
-    MatCardModule,
-    MatGridListModule,
-    MatButtonToggleModule,
-    CdkMenuModule,
+    MatCheckbox,
+    MatButtonToggleGroup,
+    MatButtonToggle,
+    CdkMenuTrigger,
+    CdkMenu,
+    CdkMenuItem,
     IconComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
