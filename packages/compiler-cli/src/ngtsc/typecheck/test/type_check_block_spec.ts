@@ -2141,6 +2141,72 @@ describe('type check blocks', () => {
         'switch (((this).expr)) { ' + 'case 1: break; ' + 'case 2: break; ' + 'default: break; }',
       );
     });
+
+    it('should generate a switch block with exhaustiveness checking', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @case (2) {
+            {{two()}}
+          }
+          @default never;
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: "" + ((this).one()); break; ' +
+          'case 2: "" + ((this).two()); break; ' +
+          'default: const tcbExhaustive_1: never = ((this).expr);',
+      );
+    });
+
+    it('should not generate exhaustiveness checking when there is a consecutive default case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @case (2)
+          @default {
+            {{default()}}
+          }
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: "" + ((this).one()); break; ' +
+          'case 2: ' +
+          'default: "" + ((this).default()); break; }',
+      );
+    });
+
+    it('should generate the right TCB if default is not the last case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @default
+          @case (3) {
+            {{default()}}
+          }
+          @case (2) {
+            {{two()}}
+          }
+        }
+      `;
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: "" + ((this).one()); break; ' +
+          'default: ' +
+          'case 3: "" + ((this).default()); break; ' +
+          'case 2: "" + ((this).two()); break; }',
+      );
+    });
   });
 
   describe('for loop blocks', () => {
