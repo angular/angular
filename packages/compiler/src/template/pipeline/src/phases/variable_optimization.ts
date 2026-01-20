@@ -7,6 +7,7 @@
  */
 
 import * as o from '../../../../output/output_ast';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as ir from '../../ir';
 import {CompilationJob} from '../compilation';
 
@@ -550,7 +551,7 @@ function allowConservativeInlining(
   // that behavior here.
   switch (decl.variable.kind) {
     case ir.SemanticVariableKind.Identifier:
-      if (decl.initializer instanceof o.ReadVarExpr && decl.initializer.name === 'ctx') {
+      if (decl.initializer instanceof o.ReadVarExpr && decl.initializer.name === CONTEXT_NAME) {
         // Although TemplateDefinitionBuilder is cautious about inlining, we still want to do so
         // when the variable is the context, to imitate its behavior with aliases in control flow
         // blocks. This quirky behavior will become dead code once compatibility mode is no longer

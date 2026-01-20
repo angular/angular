@@ -7,6 +7,7 @@
  */
 
 import {sanitizeIdentifier} from '../../../../parse_util';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as ir from '../../ir';
 
 import {hyphenate} from './parse_extracted_styles';
@@ -214,7 +215,7 @@ function getVariableName(
           // TODO: Prefix increment and `_r` are for compatibility with the old naming scheme.
           // This has the potential to cause collisions when `ctx` is the identifier, so we need a
           // special check for that as well.
-          const compatPrefix = variable.identifier === 'ctx' ? 'i' : '';
+          const compatPrefix = variable.identifier === CONTEXT_NAME ? 'i' : '';
           variable.name = `${variable.identifier}_${compatPrefix}r${++state.index}`;
         } else {
           variable.name = `${variable.identifier}_i${state.index++}`;
