@@ -63,7 +63,7 @@ export class UserGreeting {
 @Component({
   selector: 'profile-view',
   imports: [NgComponentOutlet],
-  template: ` <ng-container *ngComponentOutlet="greetingComponent; inputs: greetingInputs()" /> `,
+  template: `<ng-container *ngComponentOutlet="greetingComponent; inputs: greetingInputs()" />`,
 })
 export class ProfileView {
   greetingComponent = UserGreeting;
@@ -137,7 +137,7 @@ export class ThemedPanel {
 @Component({
   selector: 'dynamic-panel',
   imports: [NgComponentOutlet],
-  template: ` <ng-container *ngComponentOutlet="panelComponent; injector: customInjector" /> `,
+  template: `<ng-container *ngComponentOutlet="panelComponent; injector: customInjector" />`,
 })
 export class DynamicPanel {
   panelComponent = ThemedPanel;
@@ -195,7 +195,7 @@ DOM as the next sibling of the component or directive that injected the `ViewCon
 ```angular-ts
 @Component({
   selector: 'leaf-content',
-  template: ` This is the leaf content `,
+  template: `This is the leaf content`,
 })
 export class LeafContent {}
 
@@ -211,7 +211,7 @@ export class OuterContainer {}
 
 @Component({
   selector: 'inner-item',
-  template: ` <button (click)="loadContent()">Load content</button> `,
+  template: `<button (click)="loadContent()">Load content</button>`,
 })
 export class InnerItem {
   private viewContainer = inject(ViewContainerRef);

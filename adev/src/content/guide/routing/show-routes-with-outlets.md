@@ -2,9 +2,10 @@
 
 The `RouterOutlet` directive is a placeholder that marks the location where the router should render the component for the current URL.
 
-```angular-html
-<app-header /> <router-outlet />
+```html
+<app-header />
 <!-- Angular inserts your route content here -->
+<router-outlet />
 <app-footer />
 ```
 

@@ -75,7 +75,7 @@ import {AnalyticsLogger} from './analytics-logger';
 
 @Component({
   selector: 'app-navbar',
-  template: ` <a href="#" (click)="navigateToDetail($event)">Detail Page</a> `,
+  template: `<a href="#" (click)="navigateToDetail($event)">Detail Page</a>`,
 })
 export class Navbar {
   private router = inject(Router);

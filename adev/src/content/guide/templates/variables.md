@@ -69,25 +69,25 @@ Since `@let` declarations are not hoisted, they **cannot** be accessed by parent
   @let insideDiv = value;
 </div>
 
+<!-- Valid -->
 {{ topLevel }}
 <!-- Valid -->
 {{ insideDiv }}
-<!-- Valid -->
 
 @if (condition) {
-  {{ topLevel + insideDiv }}
   <!-- Valid -->
+  {{ topLevel + insideDiv }}
 
   @let nested = value;
 
   @if (condition) {
-    {{ topLevel + insideDiv + nested }}
     <!-- Valid -->
+    {{ topLevel + insideDiv + nested }}
   }
 }
 
-{{ nested }}
 <!-- Error, not hoisted from @if -->
+{{ nested }}
 ```
 
 ### Full syntax

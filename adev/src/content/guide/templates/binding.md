@@ -95,9 +95,10 @@ You can bind to directive properties as well.
 
 When you need to set HTML attributes that do not have corresponding DOM properties, such as SVG attributes, you can bind attributes to elements in your template with the `attr.` prefix.
 
+<!-- prettier-ignore -->
 ```angular-html
 <!-- Bind the `role` attribute on the `<ul>` element to the component's `listRole` property. -->
-<ul [attr.role]="listRole()"></ul>
+<ul [attr.role]="listRole()">
 ```
 
 In this example, every time `listRole` changes, Angular automatically sets the `role` attribute of the `<ul>` element by calling `setAttribute`.
@@ -121,9 +122,10 @@ Angular supports additional features for binding CSS classes and CSS style prope
 
 You can create a CSS class binding to conditionally add or remove a CSS class on an element based on whether the bound value is [truthy or falsy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy).
 
+<!-- prettier-ignore -->
 ```angular-html
 <!-- When `isExpanded` is truthy, add the `expanded` CSS class. -->
-<ul [class.expanded]="isExpanded()"></ul>
+<ul [class.expanded]="isExpanded()">
 ```
 
 You can also bind directly to the `class` property. Angular accepts three types of value:
@@ -155,12 +157,11 @@ export class UserProfile {
 
 The above example renders the following DOM:
 
+<!-- prettier-ignore -->
 ```angular-html
-<ul class="full-width outlined">
-  ...
-</ul>
-<section class="expandable elevated">...</section>
-<button class="highlighted">...</button>
+<ul class="full-width outlined"> ... </ul>
+<section class="expandable elevated"> ... </section>
+<button class="highlighted"> ... </button>
 ```
 
 Angular ignores any string values that are not valid CSS class names.
@@ -180,8 +181,9 @@ export class Listbox {
 
 In the example above, Angular renders the `ul` element with all three CSS classes.
 
+<!-- prettier-ignore -->
 ```angular-html
-<ul class="list box expanded"></ul>
+<ul class="list box expanded">
 ```
 
 Angular does not guarantee any specific order of CSS classes on rendered elements.
@@ -196,16 +198,18 @@ NOTE: Class bindings do not support space-separated class names in a single key.
 
 You can also bind to CSS style properties directly on an element.
 
+<!-- prettier-ignore -->
 ```angular-html
 <!-- Set the CSS `display` property based on the `isExpanded` property. -->
-<section [style.display]="isExpanded() ? 'block' : 'none'"></section>
+<section [style.display]="isExpanded() ? 'block' : 'none'">
 ```
 
 You can further specify units for CSS properties that accept units.
 
+<!-- prettier-ignore -->
 ```angular-html
 <!-- Set the CSS `height` property to a pixel value based on the `sectionHeightInPixels` property. -->
-<section [style.height.px]="sectionHeightInPixels()"></section>
+<section [style.height.px]="sectionHeightInPixels()">
 ```
 
 You can also set multiple style values in one binding. Angular accepts the following types of value:
@@ -234,11 +238,10 @@ export class UserProfile {
 
 The above example renders the following DOM.
 
+<!-- prettier-ignore -->
 ```angular-html
-<ul style="display: flex; padding: 8px">
-  ...
-</ul>
-<section style="border: 1px solid black; font-weight: bold">...</section>
+<ul style="display: flex; padding: 8px"> ... </ul>
+<section style="border: 1px solid black; font-weight: bold"> ... </section>
 ```
 
 When binding `style` to an object, Angular compares the previous value to the current value with the triple-equals operator (`===`). You must create a new object instance when you modify these values in order to Angular to apply any updates.
