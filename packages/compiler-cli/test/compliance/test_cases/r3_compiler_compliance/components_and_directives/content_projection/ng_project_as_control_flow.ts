@@ -18,7 +18,7 @@ export class SimpleComponent {
       }
     </simple>
   `,
-    imports: [SimpleComponent],
+    standalone: false
 })
 export class MyApp {
 }
