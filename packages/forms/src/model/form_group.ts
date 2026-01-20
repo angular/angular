@@ -614,7 +614,7 @@ export class FormGroup<
 
   /** @internal */
   override _updateValue(): void {
-    (this as Writable<this>).value = this._reduceValue() as any;
+    this._value = this._reduceValue() as any;
   }
 
   /** @internal */

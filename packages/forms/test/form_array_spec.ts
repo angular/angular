@@ -1609,7 +1609,9 @@ import {asyncValidator} from './util';
         describe('can be extended', () => {
           it('by a simple strongly-typed array', () => {
             abstract class StringFormArray extends FormArray {
-              override value: string[] = [];
+              override get value(): string[] {
+                return [];
+              }
             }
           });
 
@@ -1618,7 +1620,9 @@ import {asyncValidator} from './util';
               TControls extends Array<AbstractControl<unknown>>,
             > extends FormArray {
               override controls: TControls = {} as TControls;
-              override value: string[] = [];
+              override get value(): string[] {
+                return [];
+              }
             }
           });
         });

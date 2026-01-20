@@ -526,7 +526,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
 
   /** @internal */
   override _updateValue(): void {
-    (this as Writable<this>).value = this.controls
+    this._value = this.controls
       .filter((control) => control.enabled || this.disabled)
       .map((control) => control.value);
   }
