@@ -45,7 +45,7 @@ You can use `animate.leave` to animate elements as they _leave_ the DOM. You can
 
 When the animation completes, Angular automatically removes the animated element from the DOM.
 
-NOTE: When using multiple keyframe animations or transition properties on a an element, Angular waits to remove the element only _after_ the longest of those animations has completed.
+NOTE: When using multiple keyframe animations or transition properties on an element, Angular waits to remove the element only _after_ the longest of those animations has completed.
 
 `animate.leave` can also be used with signals, and other bindings. You can use `animate.leave` with a single class or multiple classes. Either specify it as a simple string with spaces or a string array.
 
