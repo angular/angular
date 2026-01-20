@@ -121,6 +121,8 @@ export class DynamicCard {
 }
 ```
 
+NOTE: Hydration does not support projecting DOM nodes created with native DOM APIs. This causes an [NG0503 error](/errors/NG0503). Use Angular APIs to create projected content or add `ngSkipHydration` to the component.
+
 ### Providing injectors
 
 You can provide a custom injector to the dynamically created component using `ngComponentOutletInjector`. This is useful for providing component-specific services or configuration.
@@ -178,7 +180,7 @@ export class Counter {
   imports: [NgComponentOutlet],
   template: `
     <ng-container
-      *ngComponentOutlet="counterComponent"
+      [ngComponentOutlet]="counterComponent"
       #outlet="ngComponentOutlet"
     />
 
