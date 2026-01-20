@@ -7,7 +7,6 @@
 import { AbstractControl } from '@angular/forms';
 import * as _angular_forms from '@angular/forms';
 import { ControlValueAccessor } from '@angular/forms';
-import { DestroyableInjector } from '@angular/core';
 import { FormControlStatus } from '@angular/forms';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
@@ -201,10 +200,15 @@ export interface FormFieldBindingOptions<TValue> extends ɵFormFieldBindingOptio
 
 // @public
 export interface FormOptions {
-    adapter?: FieldAdapter;
     injector?: Injector;
-    // (undocumented)
     name?: string;
+}
+
+// @public
+export interface FormSubmitOptions<TModel> {
+    action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>;
+    ignoreValidators?: 'pending' | 'none' | 'all';
+    onInvalid?: (form: FieldTree<TModel>) => void;
 }
 
 // @public
@@ -546,7 +550,7 @@ export type Subfields<TModel> = {
 };
 
 // @public
-export function submit<TModel>(form: FieldTree<TModel>, action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>): Promise<void>;
+export function submit<TModel>(form: FieldTree<TModel>, options: FormSubmitOptions<TModel>): Promise<boolean>;
 
 // @public
 export type TreeValidationResult<E extends ValidationError.WithOptionalFieldTree = ValidationError.WithOptionalFieldTree> = ValidationSuccess | OneOrMany<E>;
