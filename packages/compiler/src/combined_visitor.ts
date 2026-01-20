@@ -101,6 +101,8 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
     this.visitAllTemplateNodes(block.children);
   }
 
+  visitSwitchExhaustiveCheck(block: t.SwitchExhaustiveCheck): void {}
+
   visitForLoopBlock(block: t.ForLoopBlock): void {
     block.item.visit(this);
     this.visitAllTemplateNodes(block.contextVariables);

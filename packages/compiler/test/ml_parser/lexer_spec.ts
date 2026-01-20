@@ -3366,6 +3366,24 @@ describe('HtmlLexer', () => {
       expect(tokenizeAndHumanizeParts('@if(){hello}')).toEqual(expected);
     });
 
+    it('should parse @default never;', () => {
+      expect(tokenizeAndHumanizeParts('@default never;')).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'default never'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should parse @default never ;', () => {
+      expect(tokenizeAndHumanizeParts('@default never ;')).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'default never'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should parse a block with parameters', () => {
       expect(tokenizeAndHumanizeParts('@for (item of items; track item.id) {hello}')).toEqual([
         [TokenType.BLOCK_OPEN_START, 'for'],

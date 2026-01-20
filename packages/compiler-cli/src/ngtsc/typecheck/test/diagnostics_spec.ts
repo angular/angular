@@ -1372,6 +1372,65 @@ class TestComponent {
     });
   });
 
+  describe('switch exhaustiveness', () => {
+    it('should report an error when a case is missing in a switch block', () => {
+      const messages = diagnose(
+        `
+          @switch (value) {
+            @case ('a') {}
+            @default never;
+          }
+        `,
+        `
+          export class TestComponent {
+            value: 'a' | 'b';
+          }
+        `,
+      );
+
+      expect(messages).toEqual([
+        `TestComponent.html(2, 20): Type '"b"' is not assignable to type 'never'.`,
+      ]);
+    });
+
+    it('should not report an error when all cases are handled', () => {
+      const messages = diagnose(
+        `
+          @switch (value) {
+            @case ('a') {}
+            @case ('b') {}
+            @default never;
+          }
+        `,
+        `
+          export class TestComponent {
+            value: 'a' | 'b';
+          }
+        `,
+      );
+
+      expect(messages).toEqual([]);
+    });
+
+    it('should not report an error when a default case is provided', () => {
+      const messages = diagnose(
+        `
+          @switch (value) {
+            @case ('a') {}
+            @default {}
+          }
+        `,
+        `
+          export class TestComponent {
+            value: 'a' | 'b';
+          }
+        `,
+      );
+
+      expect(messages).toEqual([]);
+    });
+  });
+
   // https://github.com/angular/angular/issues/43970
   describe('template parse failures', () => {
     afterEach(resetParseTemplateAsSourceFileForTest);
