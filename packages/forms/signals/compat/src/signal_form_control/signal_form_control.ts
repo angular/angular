@@ -7,36 +7,36 @@
  */
 
 import {
+  effect,
   EventEmitter,
   inject,
   Injector,
-  signal,
-  WritableSignal,
-  effect,
-  untracked,
   ɵRuntimeError as RuntimeError,
+  signal,
+  untracked,
+  WritableSignal,
 } from '@angular/core';
 import {
   AbstractControl,
   ControlEvent,
   FormArray,
-  FormControlStatus,
   FormControlState,
+  FormControlStatus,
   FormGroup,
+  FormResetEvent,
   PristineChangeEvent,
   StatusChangeEvent,
   TouchedChangeEvent,
   ValueChangeEvent,
-  FormResetEvent,
 } from '@angular/forms';
 
-import {compatForm} from '../api/compat_form';
-import {signalErrorsToValidationErrors} from '../../../src/compat/validation_errors';
 import {FormOptions} from '../../../src/api/structure';
 import {FieldState, FieldTree, SchemaFn} from '../../../src/api/types';
+import {signalErrorsToValidationErrors} from '../../../src/compat/validation_errors';
 import {RuntimeErrorCode} from '../../../src/errors';
-import {normalizeFormArgs} from '../../../src/util/normalize_form_args';
 import {FieldNode} from '../../../src/field/node';
+import {normalizeFormArgs} from '../../../src/util/normalize_form_args';
+import {compatForm} from '../api/compat_form';
 
 /** Options used to update the control value. */
 export type ValueUpdateOptions = {
@@ -93,7 +93,7 @@ export class SignalFormControl<T> extends AbstractControl {
   override readonly valueChanges = new EventEmitter<T>();
   override readonly statusChanges = new EventEmitter<FormControlStatus>();
 
-  constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions, options?: FormOptions) {
+  constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions<T>, options?: FormOptions<T>) {
     super(null, null);
 
     const [model, schema, opts] = normalizeFormArgs<T>([signal(value), schemaOrOptions, options]);
