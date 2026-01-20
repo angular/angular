@@ -372,4 +372,32 @@ describe('control flow - switch', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toBe(' default ');
   });
+
+  it('should support exhaustive switch checking', () => {
+    @Component({
+      template: `
+        Between here
+        @switch (case) {
+          @case (0) {
+            case 0
+          }
+          @case (1) {
+            case 1
+          }
+          @default never; 
+        }
+        and there.
+      `,
+    })
+    class TestComponent {
+      case: 0 | 1 = 2 as 1; // Intentionally incorrect to test exhaustive checking at runtime
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe(' Between here  and there. ');
+    fixture.componentInstance.case = 0;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe(' Between here  case 0  and there. ');
+  });
 });

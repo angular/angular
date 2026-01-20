@@ -137,6 +137,7 @@ class R3AstSourceSpans implements t.Visitor<void> {
       humanizeSpan(block.endSourceSpan),
     ]);
     this.visitAll([block.groups]);
+    block.exhaustiveCheck?.visit(this);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase): void {
@@ -154,6 +155,14 @@ class R3AstSourceSpans implements t.Visitor<void> {
       humanizeSpan(block.startSourceSpan),
     ]);
     this.visitAll([block.cases, block.children]);
+  }
+
+  visitSwitchExhaustiveCheck(block: t.SwitchExhaustiveCheck): void {
+    this.result.push([
+      'SwitchExhaustiveCheck',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+    ]);
   }
 
   visitForLoopBlock(block: t.ForLoopBlock): void {
@@ -876,6 +885,23 @@ describe('R3 AST source spans', () => {
         ['SwitchBlockCaseGroup', '@default {No case matched}', '@default {'],
         ['SwitchBlockCase', '@default {No case matched}', '@default {'],
         ['Text', 'No case matched'],
+      ]);
+    });
+
+    it('is correct for switch blocks with exhaustive checking', () => {
+      const html = `@switch (cond.kind) {` + `@case (x()) {X case}` + `@default never;` + `}`;
+
+      expectFromHtml(html).toEqual([
+        [
+          'SwitchBlock',
+          '@switch (cond.kind) {@case (x()) {X case}@default never;}',
+          '@switch (cond.kind) {',
+          '}',
+        ],
+        ['SwitchBlockCaseGroup', '@case (x()) {X case}', '@case (x()) {'],
+        ['SwitchBlockCase', '@case (x()) {X case}', '@case (x()) {'],
+        ['Text', 'X case'],
+        ['SwitchExhaustiveCheck', '@default never;', '@default never;'],
       ]);
     });
   });

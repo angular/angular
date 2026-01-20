@@ -169,6 +169,7 @@ export {
   SwitchBlock as TmplAstSwitchBlock,
   SwitchBlockCase as TmplAstSwitchBlockCase,
   SwitchBlockCaseGroup as TmplAstSwitchBlockCaseGroup,
+  SwitchExhaustiveCheck as TmplAstSwitchExhaustiveCheck,
   Template as TmplAstTemplate,
   Text as TmplAstText,
   TextAttribute as TmplAstTextAttribute,

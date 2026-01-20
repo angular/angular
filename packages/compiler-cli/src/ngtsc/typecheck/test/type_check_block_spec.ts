@@ -12,7 +12,7 @@ import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {initMockFileSystem} from '../../file_system/testing';
 import {Reference} from '../../imports';
 import {OptimizeFor, TypeCheckingConfig} from '../api';
-import {ALL_ENABLED_CONFIG, setup, tcb, TestDeclaration, TestDirective} from '../testing';
+import {ALL_ENABLED_CONFIG, diagnose, setup, tcb, TestDeclaration, TestDirective} from '../testing';
 
 describe('type check blocks', () => {
   beforeEach(() => initMockFileSystem('Native'));
@@ -2139,6 +2139,89 @@ describe('type check blocks', () => {
 
       expect(tcb(TEMPLATE, undefined, {checkControlFlowBodies: false})).toContain(
         'switch (((this).expr)) { ' + 'case 1: break; ' + 'case 2: break; ' + 'default: break; }',
+      );
+    });
+
+    it('should generate a switch block with exhaustiveness checking', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @case (2) {
+            {{two()}}
+          }
+          @default never;
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: "" + ((this).one()); break; ' +
+          'case 2: "" + ((this).two()); break; ' +
+          'default: const tcbExhaustive_1: never = ((this).expr);',
+      );
+    });
+
+    it('should not report unused locals for exhaustiveness check variable', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {}
+          @default never;
+        }
+      `;
+      const SOURCE = `
+        export class TestComponent {
+          expr!: 1|2; 
+        }
+      `;
+      expect(diagnose(TEMPLATE, SOURCE, undefined, [], undefined, {noUnusedLocals: true})).toEqual([
+        `TestComponent.html(2, 18): Type '2' is not assignable to type 'never'.`,
+      ]);
+    });
+
+    it('should not generate exhaustiveness checking when there is a consecutive default case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @case (2)
+          @default {
+            {{default()}}
+          }
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: "" + ((this).one()); break; ' +
+          'case 2: ' +
+          'default: "" + ((this).default()); break; }',
+      );
+    });
+
+    it('should generate the right TCB if default is not the last case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @default
+          @case (3) {
+            {{default()}}
+          }
+          @case (2) {
+            {{two()}}
+          }
+        }
+      `;
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: "" + ((this).one()); break; ' +
+          'default: ' +
+          'case 3: "" + ((this).default()); break; ' +
+          'case 2: "" + ((this).two()); break; }',
       );
     });
   });

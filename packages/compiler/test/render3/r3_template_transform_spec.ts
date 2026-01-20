@@ -99,6 +99,7 @@ class R3AstHumanizer implements t.Visitor<void> {
   visitSwitchBlock(block: t.SwitchBlock): void {
     this.result.push(['SwitchBlock', unparse(block.expression)]);
     this.visitAll([block.groups]);
+    block.exhaustiveCheck?.visit(this);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase): void {
@@ -111,6 +112,10 @@ class R3AstHumanizer implements t.Visitor<void> {
   visitSwitchBlockCaseGroup(block: t.SwitchBlockCaseGroup): void {
     this.result.push(['SwitchBlockCaseGroup']);
     this.visitAll([block.cases, block.children]);
+  }
+
+  visitSwitchExhaustiveCheck(block: t.SwitchExhaustiveCheck): void {
+    this.result.push(['SwitchExhaustiveCheck']);
   }
 
   visitForLoopBlock(block: t.ForLoopBlock): void {
@@ -1685,6 +1690,14 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse a switch block with a default never case', () => {
+      expectFromHtml(`
+          @switch (cond.kind) {
+            @default never;
+          }
+        `).toEqual([['SwitchBlock', 'cond.kind'], ['SwitchExhaustiveCheck']]);
+    });
+
     // This is a special case for `switch` blocks, because `preserveWhitespaces` will cause
     // some text nodes with whitespace to be preserve in the primary block.
     it('should parse a switch block when preserveWhitespaces is enabled', () => {
@@ -1973,6 +1986,50 @@ describe('R3 template transform', () => {
           }
         `),
         ).toThrowError(/@default block cannot have parameters/);
+      });
+
+      it('should report if in a @switch block a @default never block has a body', () => {
+        expect(() =>
+          parse(`
+          @switch (cond) {
+            @default never {nope}
+          }
+        `),
+        ).toThrowError(/@default block with "never" parameter cannot have a body/);
+      });
+
+      it('should report if a switch fallthrough case is followed by a @default never block', () => {
+        expect(() =>
+          parse(`
+          @switch (cond) {
+            @case (foo)
+            @default never;
+          }
+        `),
+        ).toThrowError(
+          /A @case block with no body cannot be followed by a @default block with "never" parameter/,
+        );
+      });
+
+      it('should throw if @default never is not the last case in a switch block', () => {
+        expect(() =>
+          parse(`
+          @switch (cond) {
+            @default never;
+            @case (foo) {foo}
+          }
+        `),
+        ).toThrowError(/@default block with "never" parameter must be the last case in a switch/);
+      });
+
+      it('should throw if a semicolon is missing after @default never', () => {
+        expect(() =>
+          parse(`
+          @switch (cond) {
+            @default never
+          }
+        `),
+        ).toThrowError(/Incomplete block "default never"/);
       });
     });
   });

@@ -39,6 +39,7 @@ import {
   SafePropertyRead,
   TmplAstSwitchBlock as SwitchBlock,
   TmplAstSwitchBlockCase as SwitchBlockCase,
+  TmplAstSwitchExhaustiveCheck as SwitchExhaustiveCheck,
   TmplAstTemplate as Template,
   TmplAstTextAttribute as TextAttribute,
   TmplAstTimerDeferredTrigger as TimerDeferredTrigger,
@@ -1058,6 +1059,14 @@ describe('blocks', () => {
     const {node} = context as SingleNodeTarget;
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(SwitchBlockCase);
+  });
+
+  it('should visit exhautive default block on switch', () => {
+    const {nodes, position} = parse(`@switch (foo) { @d¦efault never; }`);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isTemplateNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(SwitchExhaustiveCheck);
   });
 
   it('should visit if block main branch', () => {

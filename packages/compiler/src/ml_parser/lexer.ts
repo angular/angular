@@ -299,6 +299,14 @@ class _Tokenizer {
     this._beginToken(TokenType.BLOCK_OPEN_START, start);
     const startToken = this._endToken([this._getBlockName()]);
 
+    if (startToken.parts[0] === 'default never' && this._attemptCharCode(chars.$SEMICOLON)) {
+      this._beginToken(TokenType.BLOCK_OPEN_END);
+      this._endToken([]);
+      this._beginToken(TokenType.BLOCK_CLOSE);
+      this._endToken([]);
+      return;
+    }
+
     if (this._cursor.peek() === chars.$LPAREN) {
       // Advance past the opening paren.
       this._cursor.advance();
