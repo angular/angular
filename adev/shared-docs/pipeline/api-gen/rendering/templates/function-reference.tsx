@@ -73,13 +73,14 @@ export function FunctionReference(entry: FunctionEntryRenderable) {
       <DeprecationWarning entry={entry} />
       <SectionApi entry={entry} />
       <div className={REFERENCE_MEMBERS}>
-        {entry.signatures.map((s, i) =>
-          signatureCard(s.name, getFunctionMetadataRenderable(s, entry.moduleName, entry.repo), {
-            id: `${s.name}_${i}`,
-            printSignaturesAsHeader,
-            hideUsageNotes: true,
-          }),
-        )}
+        {entry.signatures.length > 1 &&
+          entry.signatures.map((s, i) =>
+            signatureCard(s.name, getFunctionMetadataRenderable(s, entry.moduleName, entry.repo), {
+              id: `${s.name}_${i}`,
+              printSignaturesAsHeader,
+              hideUsageNotes: true,
+            }),
+          )}
       </div>
 
       <SectionDescription entry={entry} />
