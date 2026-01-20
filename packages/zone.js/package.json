@@ -22,7 +22,7 @@
     "jest": "30.2.0",
     "mocha": "11.7.5",
     "mock-require": "3.0.3",
-    "jasmine": "5.13.0",
+    "jasmine": "6.0.0",
     "source-map-support": "0.5.21",
     "jasmine-core": "5.13.0",
     "jasmine-reporters": "2.5.2",

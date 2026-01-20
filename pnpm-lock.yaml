@@ -221,8 +221,8 @@ importers:
         specifier: ^14.0.0
         version: 14.1.1
       jasmine:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.0
+        version: 6.0.0
       jasmine-core:
         specifier: 5.13.0
         version: 5.13.0
@@ -1253,8 +1253,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       jasmine:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.0
+        version: 6.0.0
       jasmine-core:
         specifier: 5.13.0
         version: 5.13.0
@@ -1339,8 +1339,8 @@ importers:
         specifier: ~3.7.0
         version: 3.7.1
       jasmine:
-        specifier: ~5.13.0
-        version: 5.13.0
+        specifier: ~6.0.0
+        version: 6.0.0
       jasmine-core:
         specifier: ~5.13.0
         version: 5.13.0

@@ -120,7 +120,7 @@
     "esbuild": "0.27.2",
     "esbuild-plugin-umd-wrapper": "^3.0.0",
     "http-server": "^14.0.0",
-    "jasmine": "5.13.0",
+    "jasmine": "6.0.0",
     "jasmine-core": "5.13.0",
     "jasmine-reporters": "^2.5.2",
     "karma": "~6.4.0",
