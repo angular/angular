@@ -10,6 +10,7 @@
 import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
 import * as ir from '../ir';
+import {CONTEXT_NAME, RENDER_FLAGS} from '../../../render3/view/util';
 
 import {
   CompilationJob,
@@ -244,7 +245,7 @@ function emitView(view: ViewCompilationUnit): o.FunctionExpr {
   const createCond = maybeGenerateRfBlock(1, createStatements);
   const updateCond = maybeGenerateRfBlock(2, updateStatements);
   return o.fn(
-    [new o.FnParam('rf'), new o.FnParam('ctx')],
+    [new o.FnParam(RENDER_FLAGS), new o.FnParam(CONTEXT_NAME)],
     [...createCond, ...updateCond],
     /* type */ undefined,
     /* sourceSpan */ undefined,
@@ -259,7 +260,11 @@ function maybeGenerateRfBlock(flag: number, statements: o.Statement[]): o.Statem
 
   return [
     o.ifStmt(
-      new o.BinaryOperatorExpr(o.BinaryOperator.BitwiseAnd, o.variable('rf'), o.literal(flag)),
+      new o.BinaryOperatorExpr(
+        o.BinaryOperator.BitwiseAnd,
+        o.variable(RENDER_FLAGS),
+        o.literal(flag),
+      ),
       statements,
     ),
   ];
@@ -300,7 +305,7 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
   const createCond = maybeGenerateRfBlock(1, createStatements);
   const updateCond = maybeGenerateRfBlock(2, updateStatements);
   return o.fn(
-    [new o.FnParam('rf'), new o.FnParam('ctx')],
+    [new o.FnParam(RENDER_FLAGS), new o.FnParam(CONTEXT_NAME)],
     [...createCond, ...updateCond],
     /* type */ undefined,
     /* sourceSpan */ undefined,

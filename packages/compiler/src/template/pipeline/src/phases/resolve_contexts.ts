@@ -7,6 +7,7 @@
  */
 
 import * as o from '../../../../output/output_ast';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as ir from '../../ir';
 import {CompilationJob, CompilationUnit} from '../compilation';
 
@@ -34,7 +35,7 @@ function processLexicalScope(
   const scope = new Map<ir.XrefId, o.Expression>();
 
   // The current view's context is accessible via the `ctx` parameter.
-  scope.set(view.xref, o.variable('ctx'));
+  scope.set(view.xref, o.variable(CONTEXT_NAME));
 
   for (const op of ops) {
     switch (op.kind) {
@@ -61,7 +62,7 @@ function processLexicalScope(
 
   if (view === view.job.root) {
     // Prefer `ctx` of the root view to any variables which happen to contain the root context.
-    scope.set(view.xref, o.variable('ctx'));
+    scope.set(view.xref, o.variable(CONTEXT_NAME));
   }
 
   for (const op of ops) {

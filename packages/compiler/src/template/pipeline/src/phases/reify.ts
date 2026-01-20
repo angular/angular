@@ -7,6 +7,7 @@
  */
 
 import * as o from '../../../../output/output_ast';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 import {
@@ -818,7 +819,7 @@ function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Express
       return ng.arrowFunction(
         expr.varOffset,
         unit.job.pool.getSharedFunctionReference(getArrowFunctionFactory(unit, expr), 'arrowFn'),
-        o.variable('ctx'),
+        o.variable(CONTEXT_NAME),
       );
     default:
       throw new Error(
