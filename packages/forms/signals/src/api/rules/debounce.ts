@@ -46,6 +46,7 @@ function debounceForDuration(durationInMilliseconds: number): Debouncer<unknown>
 
       const onAbort = () => {
         clearTimeout(timeoutId);
+        resolve();
       };
 
       timeoutId = setTimeout(() => {
