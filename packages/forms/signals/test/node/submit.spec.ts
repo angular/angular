@@ -553,6 +553,43 @@ describe('submit', () => {
     // Resolve as valid
     resolvers.resolve(undefined);
   });
+
+  it('falls back to form-level submit options', async () => {
+    const data = signal({first: '', last: ''});
+    const submitSpy = jasmine.createSpy('submit');
+    const f = form(
+      data,
+      (name) => {
+        required(name.first);
+      },
+      {injector, submission: {action: submitSpy}},
+    );
+
+    f.first().value.set('John');
+    expect(await submit(f)).toBe(true);
+    expect(submitSpy).toHaveBeenCalled();
+  });
+
+  it('throws when no submit options are provided', async () => {
+    const data = signal({first: ''});
+    const f = form(data, {injector});
+
+    await expectAsync(submit(f)).toBeRejectedWithError(
+      /Cannot submit form with no submit action\. Specify the action when creating the form, or as an additional argument to `submit\(\)`\./,
+    );
+  });
+
+  it('overrides form-level submit options', async () => {
+    const data = signal({first: ''});
+    const defaultSpy = jasmine.createSpy('defaultSpy');
+    const overrideSpy = jasmine.createSpy('overrideSpy');
+    const f = form(data, {injector, submission: {action: defaultSpy}});
+
+    expect(await submit(f, {action: overrideSpy})).toBe(true);
+
+    expect(defaultSpy).not.toHaveBeenCalled();
+    expect(overrideSpy).toHaveBeenCalled();
+  });
 });
 
 /**

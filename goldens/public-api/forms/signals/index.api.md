@@ -152,10 +152,10 @@ export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> =
 export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 
 // @public
-export function form<TModel>(model: WritableSignal<TModel>, schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions): FieldTree<TModel>;
+export function form<TModel>(model: WritableSignal<TModel>, schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions<TModel>): FieldTree<TModel>;
 
 // @public
-export function form<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: FormOptions): FieldTree<TModel>;
+export function form<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: FormOptions<TModel>): FieldTree<TModel>;
 
 // @public
 export const FORM_FIELD: InjectionToken<FormField<unknown>>;
@@ -199,9 +199,10 @@ export interface FormFieldBindingOptions<TValue> extends ɵFormFieldBindingOptio
 }
 
 // @public
-export interface FormOptions {
+export interface FormOptions<TModel> {
     injector?: Injector;
     name?: string;
+    submission?: FormSubmitOptions<TModel>;
 }
 
 // @public
@@ -550,7 +551,7 @@ export type Subfields<TModel> = {
 };
 
 // @public
-export function submit<TModel>(form: FieldTree<TModel>, options: FormSubmitOptions<TModel>): Promise<boolean>;
+export function submit<TModel>(form: FieldTree<TModel>, options?: FormSubmitOptions<TModel>): Promise<boolean>;
 
 // @public
 export type TreeValidationResult<E extends ValidationError.WithOptionalFieldTree = ValidationError.WithOptionalFieldTree> = ValidationSuccess | OneOrMany<E>;

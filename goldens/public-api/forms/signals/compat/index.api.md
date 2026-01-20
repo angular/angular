@@ -25,13 +25,13 @@ import { ɵɵcontrolCreate } from '@angular/core';
 export function compatForm<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 
 // @public
-export function compatForm<TModel>(model: WritableSignal<TModel>, schemaOrOptions: SchemaOrSchemaFn<TModel> | CompatFormOptions): FieldTree<TModel>;
+export function compatForm<TModel>(model: WritableSignal<TModel>, schemaOrOptions: SchemaOrSchemaFn<TModel> | CompatFormOptions<TModel>): FieldTree<TModel>;
 
 // @public
-export function compatForm<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: CompatFormOptions): FieldTree<TModel>;
+export function compatForm<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: CompatFormOptions<TModel>): FieldTree<TModel>;
 
 // @public
-export type CompatFormOptions = Omit<FormOptions, 'adapter'>;
+export type CompatFormOptions<TModel> = Omit<FormOptions<TModel>, 'adapter'>;
 
 // @public
 export class CompatValidationError<T = unknown> implements ValidationError {
