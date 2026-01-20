@@ -8,6 +8,9 @@
 | `NG0200`  | [Circular Dependency in DI](errors/NG0200)                                           |
 | `NG0201`  | [No Provider Found](errors/NG0201)                                                   |
 | `NG0203`  | [`inject()` must be called from an injection context](errors/NG0203)                 |
+| `NG0204`  | [Invalid Injection Token](errors/NG0204)                                             |
+| `NG0205`  | [Injector has already been destroyed](errors/NG0205)                                 |
+| `NG0207`  | [EnvironmentProviders in wrong context](errors/NG0207)                               |
 | `NG0209`  | [Invalid multi provider](errors/NG0209)                                              |
 | `NG0300`  | [Selector Collision](errors/NG0300)                                                  |
 | `NG0301`  | [Export Not Found](errors/NG0301)                                                    |
