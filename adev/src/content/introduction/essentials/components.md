@@ -8,10 +8,14 @@ Components are the main building blocks of Angular applications. Each component 
 
 Every component has a few main parts:
 
-1. A `@Component`[decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) that contains some configuration used by Angular.
+
+1. A `@Component` decorator that contains some configuration used by Angular.
 2. An HTML template that controls what renders into the DOM.
 3. A [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors) that defines how the component is used in HTML.
 4. A TypeScript class with behaviors, such as handling user input or making requests to a server.
+
+NOTE: Angular uses decorator syntax for core APIs like `@Component`. You don’t need to understand decorator proposal “stages” to follow this guide.
+
 
 Here is a simplified example of a `UserProfile` component.
 
