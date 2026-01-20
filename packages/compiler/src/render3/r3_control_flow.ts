@@ -232,6 +232,7 @@ export function createSwitchBlock(
   const unknownBlocks: t.UnknownBlock[] = [];
   let collectedCases: t.SwitchBlockCase[] = [];
   let firstCaseStart: ParseSourceSpan | null = null;
+  let exhaustiveCheck: t.SwitchExhaustiveCheck | null = null;
 
   // Here we assume that all the blocks are valid given that we validated them above.
   for (const node of ast.children) {
@@ -244,11 +245,62 @@ export function createSwitchBlock(
       continue;
     }
 
+    if (exhaustiveCheck !== null) {
+      errors.push(
+        new ParseError(
+          node.sourceSpan,
+          '@default block with "never" parameter must be the last case in a switch',
+        ),
+      );
+    }
+
     const isCase = node.name === 'case';
     let expression: AST | null = null;
 
     if (isCase) {
       expression = parseBlockParameterToBinding(node.parameters[0], bindingParser);
+    } else if (node.name === 'default' && node.parameters.length === 1) {
+      const parameter = node.parameters[0];
+      const result = stripOptionalParentheses(parameter, errors);
+
+      if (result !== 'never') {
+        errors.push(
+          new ParseError(
+            parameter.sourceSpan,
+            `@default block parameter must be "never", got "${parameter.expression}"`,
+          ),
+        );
+      }
+
+      if (
+        node.children.length > 0 ||
+        (node.endSourceSpan !== null &&
+          node.endSourceSpan.start.offset !== node.endSourceSpan.end.offset)
+      ) {
+        errors.push(
+          new ParseError(
+            node.sourceSpan,
+            '@default block with "never" parameter cannot have a body',
+          ),
+        );
+      }
+
+      if (collectedCases.length > 0) {
+        errors.push(
+          new ParseError(
+            node.sourceSpan,
+            'A @case block with no body cannot be followed by a @default block with "never" parameter',
+          ),
+        );
+      }
+
+      exhaustiveCheck = new t.SwitchExhaustiveCheck(
+        node.sourceSpan,
+        node.startSourceSpan,
+        node.endSourceSpan,
+        node.nameSpan,
+      );
+      continue;
     }
 
     const switchCase = new t.SwitchBlockCase(
@@ -300,6 +352,7 @@ export function createSwitchBlock(
     primaryExpression,
     groups,
     unknownBlocks,
+    exhaustiveCheck,
     ast.sourceSpan,
     ast.startSourceSpan,
     ast.endSourceSpan,
@@ -578,11 +631,13 @@ function validateSwitchBlock(ast: html.Block): ParseError[] {
     }
 
     if (node.name === 'default') {
+      const isExaustiveCheck =
+        node.parameters.length === 1 && node.parameters[0].expression.trim() === 'never';
       if (hasDefault) {
         errors.push(
           new ParseError(node.startSourceSpan, '@switch block can only have one @default block'),
         );
-      } else if (node.parameters.length > 0) {
+      } else if (node.parameters.length > 0 && !isExaustiveCheck) {
         errors.push(new ParseError(node.startSourceSpan, '@default block cannot have parameters'));
       }
       hasDefault = true;
