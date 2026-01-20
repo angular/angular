@@ -24,6 +24,8 @@ export function extractJsDocTags(node: ts.HasJSDoc): JsDocTagEntry[] {
   return ts.getJSDocTags(escapedNode).map((t) => {
     return {
       name: t.tagName.getText(),
+      // In TS 5.9, ts.getTextOfJSDocComment still strips "http" from comments breaking any absolute links in @see blocks.
+      // eg: @see https://angular.dev
       comment: unescapeAngularDecorators(ts.getTextOfJSDocComment(t.comment) ?? ''),
     };
   });

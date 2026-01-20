@@ -8,12 +8,12 @@
 
 import {readFile} from 'fs/promises';
 import {JSDOM} from 'jsdom';
-import {getRenderable} from '../processing.mjs';
-import {renderEntry} from '../rendering.mjs';
-import {setSymbols} from '../symbol-context.mjs';
 import {resolve} from 'path';
 import {initHighlighter} from '../../../shared/shiki.mjs';
+import {getRenderable} from '../processing.mjs';
+import {renderEntry} from '../rendering.mjs';
 import {setHighlighterInstance} from '../shiki/shiki.mjs';
+import {setSymbols} from '../symbol-context.mjs';
 
 // Note: The tests will probably break if the schema of the api extraction changes.
 // All entries in the fake-entries are extracted from Angular's api.
@@ -69,7 +69,7 @@ describe('markdown to html', () => {
   it('should render multiple {@link} blocks', () => {
     const provideClientHydrationEntry = entries.get('provideClientHydration')!;
     expect(provideClientHydrationEntry).toBeDefined();
-    const cardItem = provideClientHydrationEntry.querySelector('.docs-reference-card-item')!;
+    const cardItem = provideClientHydrationEntry.querySelector('.docs-api')!;
     expect(cardItem.innerHTML).not.toContain('@link');
   });
 

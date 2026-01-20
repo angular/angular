@@ -22,6 +22,7 @@ import {
   HasModuleName,
   HasRenderableJsDocTags,
   HasStableFlag,
+  MaybeJsDocTags,
 } from '../entities/traits.mjs';
 
 import {parseMarkdown} from '../../../shared/marked/parse.mjs';
@@ -43,7 +44,7 @@ const jsDoclinkRegex = /\{\s*@link\s+([^}]+)\s*\}/;
 const jsDoclinkRegexGlobal = new RegExp(jsDoclinkRegex.source, 'g');
 
 /** Given an entity with a description, gets the entity augmented with an `htmlDescription`. */
-export function addHtmlDescription<T extends HasDescription & HasModuleName>(
+export function addHtmlDescription<T extends HasDescription & HasModuleName & MaybeJsDocTags>(
   entry: T,
 ): T & HasHtmlDescription {
   const firstParagraphRule = /(.*?)(?:\n\n|$)/s;
@@ -56,10 +57,17 @@ export function addHtmlDescription<T extends HasDescription & HasModuleName>(
         ?.comment ?? '';
   }
 
-  const description = !!entry.description ? entry.description : jsDocDescription;
-  const shortTextMatch = description.match(firstParagraphRule);
+  let description = entry.description || jsDocDescription;
+  let shortDescription = description.match(firstParagraphRule)?.[0] ?? '';
+
+  // For the cases where the @description tag is after a short description
+  if (jsDocDescription && description !== jsDocDescription) {
+    shortDescription = entry.description;
+    description = jsDocDescription;
+  }
+
   const htmlDescription = getHtmlForJsDocText(description).trim();
-  const shortHtmlDescription = getHtmlForJsDocText(shortTextMatch ? shortTextMatch[0] : '').trim();
+  const shortHtmlDescription = getHtmlForJsDocText(shortDescription).trim();
 
   return {...entry, htmlDescription, shortHtmlDescription};
 }
@@ -137,6 +145,9 @@ function getHtmlAdditionalLinks<T extends HasJsDocTags>(entry: T): LinkEntryRend
     .filter((tag) => tag.name === JS_DOC_SEE_TAG)
     .map((tag) => tag.comment)
     .map((comment) => {
+      // TODO: Throw when the comment is an absolute link.
+      // With TS 5.9 this is not possible as the ts api that extracts comments from tags strips the "http" part of links.
+
       const markdownLinkMatch = comment.match(markdownLinkRule);
 
       if (markdownLinkMatch) {
