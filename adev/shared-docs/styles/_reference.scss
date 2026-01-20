@@ -260,7 +260,7 @@
           background-color: var(--septenary-contrast);
         }
 
-        &:focus {
+        &:focus-visible {
           background-color: var(--senary-contrast);
 
           span {

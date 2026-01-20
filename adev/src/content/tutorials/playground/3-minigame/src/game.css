@@ -61,7 +61,12 @@
   width: 100%;
   left: 0;
   top: 0;
-  background: linear-gradient(90deg, var(--orange-red) 0%, var(--vivid-pink) 50%, var(--electric-violet) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--orange-red) 0%,
+    var(--vivid-pink) 50%,
+    var(--electric-violet) 100%
+  );
 }
 
 .gradient-button span:nth-of-type(2) {
@@ -70,19 +75,19 @@
   background: white;
   margin: 1px;
   border-radius: 0.2rem;
-  transition: all .3s ease;
+  transition: all 0.3s ease;
   opacity: 1;
   display: flex;
   align-items: center;
 }
 
-.gradient-button:enabled:hover span:nth-of-type(2), 
-.gradient-button:enabled:focus span:nth-of-type(2) {
+.gradient-button:enabled:hover span:nth-of-type(2),
+.gradient-button:enabled:focus-visible span:nth-of-type(2) {
   opacity: 0.9;
 }
 
-a.gradient-button:hover span:nth-of-type(2), 
-a.gradient-button:focus span:nth-of-type(2) {
+a.gradient-button:hover span:nth-of-type(2),
+a.gradient-button:focus-visible span:nth-of-type(2) {
   opacity: 0.9;
 }
 
@@ -194,11 +199,14 @@ a.gradient-button:focus span:nth-of-type(2) {
   stroke-width: 6px;
 }
 
-.face svg .b, .c {
+.face svg .b,
+.c {
   stroke-miterlimit: 10;
 }
 
-.face svg .b, .c, .d {
+.face svg .b,
+.c,
+.d {
   fill: none;
   stroke: #000;
   stroke-linecap: round;
@@ -208,7 +216,8 @@ a.gradient-button:focus span:nth-of-type(2) {
   fill: #fff;
 }
 
-.face svg .c, .d {
+.face svg .c,
+.d {
   stroke-width: 7px;
 }
 
@@ -220,7 +229,7 @@ a.gradient-button:focus span:nth-of-type(2) {
   background-color: white;
   border-radius: 8px;
   border: 1px solid #f6f6f6;
-  box-shadow: 0 3px 14px 0 rgba(0,0,0,.2);
+  box-shadow: 0 3px 14px 0 rgba(0, 0, 0, 0.2);
   position: fixed;
   top: 50%;
   left: 50%;
@@ -234,7 +243,7 @@ a.gradient-button:focus span:nth-of-type(2) {
   z-index: 10;
 }
 
-svg.personified  {
+svg.personified {
   height: 125px;
 }
 
@@ -247,7 +256,8 @@ svg.personified  {
   stroke-width: 4px;
 }
 
-.personified .h, .personified .i {
+.personified .h,
+.personified .i {
   fill: none;
   stroke: #000;
   stroke-linecap: round;
@@ -256,7 +266,7 @@ svg.personified  {
 .personified .i {
   stroke-linejoin: round;
   stroke-width: 3px;
-} 
+}
 
 #close {
   border: none;
@@ -320,7 +330,8 @@ svg.personified  {
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3607843137);
 }
 
-.accessibility button:focus:enabled, .accessibility button:hover:enabled {
+.accessibility button:focus-visible:enabled,
+.accessibility button:hover:enabled {
   background-color: #e8dbf4;
 }
 
