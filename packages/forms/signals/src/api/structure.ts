@@ -32,6 +32,25 @@ import type {
 } from './types';
 
 /**
+ * Options that can be specified when submitting a form.
+ *
+ * @experimental 21.2.0
+ */
+export interface FormSubmitOptions<TModel> {
+  /** Function to run when submitting the form data (when form is valid). */
+  action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>;
+  /** Function to run when attempting to submit the form data but validation is failing. */
+  onInvalid?: (form: FieldTree<TModel>) => void;
+  /**
+   * Whether to ignore any of the validators when submitting:
+   * - 'pending': Will submit if there are no invalid validators, pending validators do not block submission (default)
+   * - 'none': Will not submit unless all validators are passing, pending validators block submission
+   * - 'ignore': Will always submit regardless of invalid or pending validators
+   */
+  ignoreValidators?: 'pending' | 'none' | 'all';
+}
+
+/**
  * Options that may be specified when creating a form.
  *
  * @category structure
@@ -43,11 +62,13 @@ export interface FormOptions {
    * current [injection context](guide/di/dependency-injection-context), will be used.
    */
   injector?: Injector;
+  /** The name of the root form, used in generating name attributes for the fields. */
   name?: string;
 
   /**
    * Adapter allows managing fields in a more flexible way.
    * Currently this is used to support interop with reactive forms.
+   * @internal
    */
   adapter?: FieldAdapter;
 }
@@ -350,15 +371,17 @@ export function applyWhenValue(
  * }
  *
  * const registrationForm = form(signal({username: 'god', password: ''}));
- * submit(registrationForm, async (f) => {
- *   return registerNewUser(registrationForm);
+ * submit(registrationForm, {
+ *   action: async (f) => {
+ *     return registerNewUser(registrationForm);
+ *   }
  * });
  * registrationForm.username().errors(); // [{kind: 'server', message: 'Username already taken'}]
  * ```
  *
  * @param form The field to submit.
- * @param action An asynchronous action used to submit the field. The action may return submission
- * errors.
+ * @param options Options for the submission.
+ * @returns Whether the submission was successful.
  * @template TModel The data type of the field being submitted.
  *
  * @category submission
@@ -366,26 +389,38 @@ export function applyWhenValue(
  */
 export async function submit<TModel>(
   form: FieldTree<TModel>,
-  action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>,
-) {
-  const node = form() as unknown as FieldNode;
-  const invalid = untracked(() => {
+  options: FormSubmitOptions<TModel>,
+): Promise<boolean> {
+  return untracked(async () => {
+    const {action, onInvalid} = options;
+    const ignoreValidators = options.ignoreValidators ?? 'pending';
+    const node = form() as unknown as FieldNode;
+
     markAllAsTouched(node);
-    return node.invalid();
+
+    // Determine whether or not to run the action based on the current validity.
+    let shouldRunAction = true;
+    if (ignoreValidators === 'none') {
+      shouldRunAction = node.valid();
+    } else if (ignoreValidators === 'pending') {
+      shouldRunAction = !node.invalid();
+    }
+
+    // Run the action (or alternatively the `onInvalid` callback)
+    try {
+      if (shouldRunAction) {
+        node.submitState.selfSubmitting.set(true);
+        const errors = await action(form);
+        errors && setSubmissionErrors(node, errors);
+        return !errors || (isArray(errors) && errors.length === 0);
+      } else if (onInvalid) {
+        onInvalid(form);
+      }
+      return false;
+    } finally {
+      node.submitState.selfSubmitting.set(false);
+    }
   });
-
-  // Fail fast if the form is already invalid.
-  if (invalid) {
-    return;
-  }
-
-  node.submitState.selfSubmitting.set(true);
-  try {
-    const errors = await action(form);
-    errors && setSubmissionErrors(node, errors);
-  } finally {
-    node.submitState.selfSubmitting.set(false);
-  }
 }
 
 /**
