@@ -7,6 +7,7 @@
  */
 
 import {APP_ID, effect, Injector, untracked} from '@angular/core';
+import type {FormSubmitOptions} from '../api/structure';
 import type {FieldNodeStructure} from './structure';
 
 /**
@@ -17,12 +18,18 @@ import type {FieldNodeStructure} from './structure';
  * destroyed, which is the job of the `FormFieldManager`.
  */
 export class FormFieldManager {
+  readonly injector: Injector;
   readonly rootName: string;
+  readonly submitOptions: FormSubmitOptions<unknown> | undefined;
+
   constructor(
-    readonly injector: Injector,
+    injector: Injector,
     rootName: string | undefined,
+    submitOptions: FormSubmitOptions<unknown> | undefined,
   ) {
+    this.injector = injector;
     this.rootName = rootName ?? `${this.injector.get(APP_ID)}.form${nextFormId++}`;
+    this.submitOptions = submitOptions;
   }
 
   /**

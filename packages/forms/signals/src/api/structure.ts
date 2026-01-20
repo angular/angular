@@ -6,8 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injector, runInInjectionContext, untracked, WritableSignal} from '@angular/core';
-
+import {
+  inject,
+  Injector,
+  runInInjectionContext,
+  ɵRuntimeError as RuntimeError,
+  untracked,
+  WritableSignal,
+} from '@angular/core';
+import {RuntimeErrorCode} from '../errors';
 import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
@@ -56,7 +63,7 @@ export interface FormSubmitOptions<TModel> {
  * @category structure
  * @experimental 21.0.0
  */
-export interface FormOptions {
+export interface FormOptions<TModel> {
   /**
    * The injector to use for dependency injection. If this is not provided, the injector for the
    * current [injection context](guide/di/dependency-injection-context), will be used.
@@ -64,6 +71,8 @@ export interface FormOptions {
   injector?: Injector;
   /** The name of the root form, used in generating name attributes for the fields. */
   name?: string;
+  /** Options that define how to handle form submission. */
+  submission?: FormSubmitOptions<TModel>;
 
   /**
    * Adapter allows managing fields in a more flexible way.
@@ -148,7 +157,7 @@ export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
  */
 export function form<TModel>(
   model: WritableSignal<TModel>,
-  schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions,
+  schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions<TModel>,
 ): FieldTree<TModel>;
 
 /**
@@ -197,14 +206,18 @@ export function form<TModel>(
 export function form<TModel>(
   model: WritableSignal<TModel>,
   schema: SchemaOrSchemaFn<TModel>,
-  options: FormOptions,
+  options: FormOptions<TModel>,
 ): FieldTree<TModel>;
 
 export function form<TModel>(...args: any[]): FieldTree<TModel> {
   const [model, schema, options] = normalizeFormArgs<TModel>(args);
   const injector = options?.injector ?? inject(Injector);
   const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
-  const fieldManager = new FormFieldManager(injector, options?.name);
+  const fieldManager = new FormFieldManager(
+    injector,
+    options?.name,
+    options?.submission as FormSubmitOptions<unknown> | undefined,
+  );
   const adapter = options?.adapter ?? new BasicFieldAdapter();
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
@@ -389,38 +402,62 @@ export function applyWhenValue(
  */
 export async function submit<TModel>(
   form: FieldTree<TModel>,
-  options: FormSubmitOptions<TModel>,
+  options?: FormSubmitOptions<TModel>,
+): Promise<boolean>;
+export async function submit<TModel>(
+  form: FieldTree<TModel>,
+  action: FormSubmitOptions<TModel>['action'],
+): Promise<boolean>;
+export async function submit<TModel>(
+  form: FieldTree<TModel>,
+  options?: FormSubmitOptions<TModel> | FormSubmitOptions<TModel>['action'],
 ): Promise<boolean> {
-  return untracked(async () => {
-    const {action, onInvalid} = options;
-    const ignoreValidators = options.ignoreValidators ?? 'pending';
-    const node = form() as unknown as FieldNode;
+  const node = form() as unknown as FieldNode;
+  const opts =
+    typeof options === 'function'
+      ? {action: options}
+      : ({
+          ...(node.structure.fieldManager.submitOptions ?? {}),
+          ...(options ?? {}),
+        } as Partial<FormSubmitOptions<TModel>>);
+  const action = opts?.action;
+  if (!action) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_SUBMIT_ACTION,
+      ngDevMode &&
+        'Cannot submit form with no submit action. Specify the action when creating the form, or as an additional argument to `submit()`.',
+    );
+  }
 
+  const onInvalid = opts?.onInvalid;
+  const ignoreValidators = opts?.ignoreValidators ?? 'pending';
+
+  // Determine whether or not to run the action based on the current validity.
+  let shouldRunAction = true;
+  untracked(() => {
     markAllAsTouched(node);
 
-    // Determine whether or not to run the action based on the current validity.
-    let shouldRunAction = true;
     if (ignoreValidators === 'none') {
       shouldRunAction = node.valid();
     } else if (ignoreValidators === 'pending') {
       shouldRunAction = !node.invalid();
     }
-
-    // Run the action (or alternatively the `onInvalid` callback)
-    try {
-      if (shouldRunAction) {
-        node.submitState.selfSubmitting.set(true);
-        const errors = await action(form);
-        errors && setSubmissionErrors(node, errors);
-        return !errors || (isArray(errors) && errors.length === 0);
-      } else if (onInvalid) {
-        onInvalid(form);
-      }
-      return false;
-    } finally {
-      node.submitState.selfSubmitting.set(false);
-    }
   });
+
+  // Run the action (or alternatively the `onInvalid` callback)
+  try {
+    if (shouldRunAction) {
+      node.submitState.selfSubmitting.set(true);
+      const errors = await untracked(() => action?.(form));
+      errors && setSubmissionErrors(node, errors);
+      return !errors || (isArray(errors) && errors.length === 0);
+    } else {
+      untracked(() => onInvalid?.(form));
+    }
+    return false;
+  } finally {
+    node.submitState.selfSubmitting.set(false);
+  }
 }
 
 /**

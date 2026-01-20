@@ -22,13 +22,13 @@ import { WritableSignal } from '@angular/core';
 export function compatForm<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 
 // @public
-export function compatForm<TModel>(model: WritableSignal<TModel>, schemaOrOptions: SchemaOrSchemaFn<TModel> | CompatFormOptions): FieldTree<TModel>;
+export function compatForm<TModel>(model: WritableSignal<TModel>, schemaOrOptions: SchemaOrSchemaFn<TModel> | CompatFormOptions<TModel>): FieldTree<TModel>;
 
 // @public
-export function compatForm<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: CompatFormOptions): FieldTree<TModel>;
+export function compatForm<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: CompatFormOptions<TModel>): FieldTree<TModel>;
 
 // @public
-export type CompatFormOptions = Omit<FormOptions, 'adapter'>;
+export type CompatFormOptions<TModel> = Omit<FormOptions<TModel>, 'adapter'>;
 
 // @public
 export class CompatValidationError<T = unknown> implements ValidationError {
@@ -54,7 +54,7 @@ export const NG_STATUS_CLASSES: SignalFormsConfig['classes'];
 
 // @public
 export class SignalFormControl<T> extends AbstractControl {
-    constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions, options?: FormOptions);
+    constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions<T>, options?: FormOptions<T>);
     // (undocumented)
     addAsyncValidators(_validators: any): void;
     // (undocumented)
