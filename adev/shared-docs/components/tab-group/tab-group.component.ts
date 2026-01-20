@@ -18,7 +18,8 @@ import {
   ElementRef,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import {_IdGenerator} from '@angular/cdk/a11y';
+
+let idCounter = 0;
 
 /**
  * A simple tabs implementation with proper aria roles.
@@ -36,20 +37,22 @@ import {_IdGenerator} from '@angular/cdk/a11y';
 })
 export class TabGroup {
   private readonly _renderer = inject(Renderer2);
-  private readonly _idGenerator = inject(_IdGenerator);
   private readonly _tabpanels = viewChildren<ElementRef<HTMLDivElement>>('tabpanel');
 
   readonly tabs = input<{label: string; panel: HTMLElement}[]>();
 
-  readonly computedTabs = computed(
-    () =>
+  readonly computedTabs = computed(() => {
+    const id = idCounter++;
+
+    return (
       this.tabs()?.map((tab) => ({
-        tabId: this._idGenerator.getId('docs-tab-'),
-        tabPanelId: this._idGenerator.getId('docs-tab-panel-'),
+        tabId: `docs-tab-${id}`,
+        tabPanelId: `docs-tab-panel-${id}`,
         label: tab.label,
         panel: tab.panel,
-      })) ?? [],
-  );
+      })) ?? []
+    );
+  });
 
   readonly selectedTab = linkedSignal(() => this.computedTabs()[0]?.tabId);
 
