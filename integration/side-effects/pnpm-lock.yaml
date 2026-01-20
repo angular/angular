@@ -40,8 +40,8 @@ packages:
     engines: {node: '>= 8.9.0', npm: '>= 5.5.1'}
     hasBin: true
 
-  '@babel/code-frame@7.27.1':
-    resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
+  '@babel/code-frame@7.28.6':
+    resolution: {integrity: sha512-JYgintcMjRiCvS8mMECzaEn+m3PfoQiyqukOMCCVQtoJGYJw8j/8LBJEiqkHLkfwCcs74E3pbAUFNg7d9VNJ+Q==}
     engines: {node: '>=6.9.0'}
 
   '@babel/helper-validator-identifier@7.28.5':
@@ -70,8 +70,8 @@ packages:
   '@types/node@11.15.54':
     resolution: {integrity: sha512-1RWYiq+5UfozGsU6MwJyFX6BtktcT10XRjvcAQmskCtMcW3tPske88lM/nHv7BQG1w9KBXI1zPGuu5PnNCX14g==}
 
-  '@types/node@25.0.6':
-    resolution: {integrity: sha512-NNu0sjyNxpoiW3YuVFfNz7mxSQ+S4X2G28uqg2s+CzoqoQjLPsWSbsFFyztIAqt2vb8kfEAsJNepMGPTxFDx3Q==}
+  '@types/node@25.0.9':
+    resolution: {integrity: sha512-/rpCXHlCWeqClNBwUhDcusJxXYDjZTyE8v5oTO7WbL8eij2nKhUeU89/6xgjU7N4/Vh3He0BtyhJdQbDyhiXAw==}
 
   '@types/resolve@0.0.8':
     resolution: {integrity: sha512-auApPaJf3NPfe18hSoJkp8EbZzer2ISk7o8mCC3M9he/a04+gbMF97NkpD2S8riMGvm4BMRI59/SZQSaLTKpsQ==}
@@ -206,8 +206,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  terser@5.44.1:
-    resolution: {integrity: sha512-t/R3R/n0MSwnnazuPpPNVO60LX0SKL45pyl9YlvxIdkH0Of7D5qM2EVe+yASRIlY5pZ73nclYJfNANGWPwFDZw==}
+  terser@5.46.0:
+    resolution: {integrity: sha512-jTwoImyr/QbOWFFso3YoU3ik0jBBDJ6JTOQiy/J2YxVJdZCc+5u7skhNwiOR3FQIygFqVUPHl7qbbxtjW2K3Qg==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -231,7 +231,7 @@ snapshots:
       typescript: 3.2.4
       webpack-sources: 1.3.0
 
-  '@babel/code-frame@7.27.1':
+  '@babel/code-frame@7.28.6':
     dependencies:
       '@babel/helper-validator-identifier': 7.28.5
       js-tokens: 4.0.0
@@ -262,13 +262,13 @@ snapshots:
 
   '@types/node@11.15.54': {}
 
-  '@types/node@25.0.6':
+  '@types/node@25.0.9':
     dependencies:
       undici-types: 7.16.0
 
   '@types/resolve@0.0.8':
     dependencies:
-      '@types/node': 25.0.6
+      '@types/node': 25.0.9
 
   acorn@6.4.2: {}
 
@@ -311,7 +311,7 @@ snapshots:
 
   jest-worker@26.6.2:
     dependencies:
-      '@types/node': 25.0.6
+      '@types/node': 25.0.9
       merge-stream: 2.0.0
       supports-color: 7.2.0
 
@@ -354,11 +354,11 @@ snapshots:
 
   rollup-plugin-terser@7.0.2(rollup@1.11.3):
     dependencies:
-      '@babel/code-frame': 7.27.1
+      '@babel/code-frame': 7.28.6
       jest-worker: 26.6.2
       rollup: 1.11.3
       serialize-javascript: 4.0.0
-      terser: 5.44.1
+      terser: 5.46.0
 
   rollup@1.11.3:
     dependencies:
@@ -389,7 +389,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  terser@5.44.1:
+  terser@5.46.0:
     dependencies:
       '@jridgewell/source-map': 0.3.11
       acorn: 8.15.0

@@ -49,10 +49,10 @@ importers:
         version: link:in-existing-linked-by-bazel
       '@types/jasmine':
         specifier: ^5.0.0
-        version: 5.1.14
+        version: 5.1.15
       '@types/node':
         specifier: ^20.14.8
-        version: 20.19.28
+        version: 20.19.30
       rxjs:
         specifier: ^7.0.0
         version: 7.8.2
@@ -65,11 +65,11 @@ importers:
 
 packages:
 
-  '@types/jasmine@5.1.14':
-    resolution: {integrity: sha512-16bJdpgUPNKXuaelVxuLZUeDd02+PnF0aQd5HY4xLWoUOMoRE+CyNkRpjRMIcPBCR1dscSb52pmFNILAN1uzkw==}
+  '@types/jasmine@5.1.15':
+    resolution: {integrity: sha512-ZAC8KjmV2MJxbNTrwXFN+HKeajpXQZp6KpPiR6Aa4XvaEnjP6qh23lL/Rqb7AYzlp3h/rcwDrQ7Gg7q28cQTQg==}
 
-  '@types/node@20.19.28':
-    resolution: {integrity: sha512-VyKBr25BuFDzBFCK5sUM6ZXiWfqgCTwTAOK8qzGV/m9FCirXYDlmczJ+d5dXBAQALGCdRRdbteKYfJ84NGEusw==}
+  '@types/node@20.19.30':
+    resolution: {integrity: sha512-WJtwWJu7UdlvzEAUm484QNg5eAoq5QR08KDNx7g45Usrs2NtOPiX8ugDqmKdXkyL03rBqU5dYNYVQetEpBHq2g==}
 
   rxjs@7.8.2:
     resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
@@ -90,9 +90,9 @@ packages:
 
 snapshots:
 
-  '@types/jasmine@5.1.14': {}
+  '@types/jasmine@5.1.15': {}
 
-  '@types/node@20.19.28':
+  '@types/node@20.19.30':
     dependencies:
       undici-types: 6.21.0
 
