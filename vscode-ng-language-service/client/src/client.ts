@@ -685,6 +685,7 @@ async function getAngularVersionsInWorkspace(
   return Array.from(angularCoreModules);
 }
 
+// TODO(atscott): Now that language service resolves the version of Angular local to the project, do we need this?
 function setAngularVersionAndShowMultipleVersionsWarning(
   angularVersions: NodeModule[],
   args: string[],
@@ -701,7 +702,10 @@ function setAngularVersionAndShowMultipleVersionsWarning(
   // For example, if we tell the v21 compiler that we're using v21 but there's a v13 project,
   // the compiler may attempt to import and use APIs from angular core that don't exist in v13.
   args.push('--angularCoreVersion', angularVersions[0].version.toString());
-  outputChannel.appendLine(`Using Angular version ${angularVersions[0].version.toString()}.`);
+  outputChannel.appendLine(
+    `Using Angular version ${angularVersions[0].version.toString()} by default. If ` +
+      `the project-specific version cannot be resolved, this version will be used.`,
+  );
 
   let minorVersions = new Map<string, NodeModule>();
   for (const v of angularVersions) {
