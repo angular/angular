@@ -546,7 +546,7 @@ export abstract class AbstractControl<
    * Internal reference to the control's value.
    * @internal
    */
-  public _value!: TValue;
+  protected _value!: TValue;
 
   /**
    * The current value of the control.
