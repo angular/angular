@@ -416,7 +416,7 @@ When you add `min()` and `max()` validation rules to the schema, the FormField d
 
 IMPORTANT: Don't implement validation logic in your control. Define validation rules in the form schema and let your control display the results:
 
-```typescript
+```ts {avoid}
 // Avoid: Validation in control
 export class BadControl implements FormValueControl<string> {
   value = model<string>('');
@@ -424,7 +424,9 @@ export class BadControl implements FormValueControl<string> {
     return this.value().length >= 8;
   } // Don't do this!
 }
+```
 
+```ts {prefer}
 // Good: Validation in schema, control displays results
 accountForm = form(this.accountModel, (schemaPath) => {
   minLength(schemaPath.password, 8, {message: 'Password must be at least 8 characters'});

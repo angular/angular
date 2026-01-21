@@ -74,14 +74,16 @@ const usernameField = loginForm.username;
 
 Form models should provide initial values for all fields you want to include in the field tree.
 
-```ts
+```ts {prefer}
 // Good: All fields initialized
 const userModel = signal({
   name: '',
   email: '',
   age: 0,
 });
+```
 
+```ts {avoid}
 // Avoid: Missing initial value
 const userModel = signal({
   name: '',
