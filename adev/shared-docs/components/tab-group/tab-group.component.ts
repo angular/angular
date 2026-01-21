@@ -7,16 +7,16 @@
  */
 
 import {
-  Component,
-  input,
-  inject,
-  computed,
-  linkedSignal,
-  viewChildren,
   afterRenderEffect,
-  Renderer2,
-  ElementRef,
   ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  linkedSignal,
+  Renderer2,
+  viewChildren,
 } from '@angular/core';
 
 let idCounter = 0;
@@ -42,15 +42,17 @@ export class TabGroup {
   readonly tabs = input<{label: string; panel: HTMLElement}[]>();
 
   readonly computedTabs = computed(() => {
-    const id = idCounter++;
-
     return (
-      this.tabs()?.map((tab) => ({
-        tabId: `docs-tab-${id}`,
-        tabPanelId: `docs-tab-panel-${id}`,
-        label: tab.label,
-        panel: tab.panel,
-      })) ?? []
+      this.tabs()?.map((tab) => {
+        const id = idCounter++;
+
+        return {
+          tabId: `docs-tab-${id}`,
+          tabPanelId: `docs-tab-panel-${id}`,
+          label: tab.label,
+          panel: tab.panel,
+        };
+      }) ?? []
     );
   });
 
