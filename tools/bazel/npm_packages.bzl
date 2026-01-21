@@ -32,7 +32,7 @@ PKG_GROUP_REPLACEMENTS = {
     ]""" % ",\n      ".join(["\"%s\"" % s for s in ANGULAR_SCOPED_PACKAGES]),
 }
 
-def ng_package(readme_md = None, license_banner = None, license = None, deps = [], use_no_sub = False, **kwargs):
+def ng_package(readme_md = None, license_banner = None, license = None, deps = [], use_no_sub = False, data = [], **kwargs):
     if not readme_md:
         readme_md = "//packages:README.md"
     if not license_banner:
@@ -60,7 +60,7 @@ def ng_package(readme_md = None, license_banner = None, license = None, deps = [
     ]
 
     _ng_package(
-        name = "npm_package",
+        name = "npm_package_apf",
         deps = deps,
         readme_md = readme_md,
         license = license,
@@ -76,7 +76,7 @@ def ng_package(readme_md = None, license_banner = None, license = None, deps = [
     )
 
     _ng_package(
-        name = "npm_package_nosub",
+        name = "npm_package_nosub_apf",
         deps = deps,
         readme_md = readme_md,
         license = license,
@@ -86,6 +86,29 @@ def ng_package(readme_md = None, license_banner = None, license = None, deps = [
         visibility = visibility,
         tags = ["manual"],
         **kwargs
+    )
+
+    # Here we append the binary files that we don't want to be altered by substitutions
+    _npm_package(
+        name = "npm_package",
+        srcs = ["npm_package_apf"] + data,
+        replace_prefixes = {
+            "npm_package_apf": "/",
+        },
+        visibility = visibility,
+        tags = tags,
+        allow_overwrites = True,
+    )
+
+    _npm_package(
+        name = "npm_package_nosub",
+        srcs = ["npm_package_nosub_apf"] + data,
+        replace_prefixes = {
+            "npm_package_nosub_apf": "/",
+        },
+        visibility = visibility,
+        tags = ["manual"],
+        allow_overwrites = True,
     )
 
     pkg_tar(
