@@ -1,3 +1,21 @@
+<a name="21.1.1"></a>
+# 21.1.1 (2026-01-21)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0e1f1ed573](https://github.com/angular/angular/commit/0e1f1ed5732f3bb4d5dfbd1f0ee5a5be840594e4) | fix | drop .tsx extension for generated relative imports |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [05adfcf8f2](https://github.com/angular/angular/commit/05adfcf8f26013ac20c38f2b08847b5142e4fd85) | fix | handle Set in class bindings |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d89a80a970](https://github.com/angular/angular/commit/d89a80a970d9590df0509d8b94090904a99b7aca) | feat | Ability to manually register a form field binding in signal forms |
+| [cb75f9ce85](https://github.com/angular/angular/commit/cb75f9ce85160b2e4359610c06294929ac1169c0) | fix | fix control value syncing on touch |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.1.0"></a>
 # 21.1.0 (2026-01-14)
 ## Deprecations
