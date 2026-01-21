@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e --port 0"
   },
-  "packageManager": "pnpm@10.28.0",
+  "packageManager": "pnpm@10.28.1",
   "private": true,
   "dependencies": {
     "@angular/animations": "link:./in-existing-linked-by-bazel",
