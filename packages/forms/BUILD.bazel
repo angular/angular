@@ -32,6 +32,8 @@ ng_examples_db(
 ng_package(
     srcs = [
         "package.json",
+    ],
+    data = [
         "resources/code-examples.db",
     ],
     package = "@angular/forms",
