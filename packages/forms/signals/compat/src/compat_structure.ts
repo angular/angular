@@ -13,7 +13,7 @@ import {
   WritableSignal,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
-import {SignalFormsErrorCode} from '../../src/errors';
+import {RuntimeErrorCode} from '../../src/errors';
 import {FormFieldManager} from '../../src/field/manager';
 import {FieldNode, ParentFieldNode} from '../../src/field/node';
 import {
@@ -119,7 +119,7 @@ export class CompatStructure extends FieldNodeStructure {
   constructor(node: FieldNode, options: CompatFieldNodeOptions) {
     super(options.logic, node, () => {
       throw new RuntimeError(
-        SignalFormsErrorCode.COMPAT_NO_CHILDREN,
+        RuntimeErrorCode.COMPAT_NO_CHILDREN,
         ngDevMode && `Compat nodes don't have children.`,
       );
     });
