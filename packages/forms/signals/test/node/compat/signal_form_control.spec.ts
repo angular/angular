@@ -618,8 +618,6 @@ describe('SignalFormControl', () => {
           if (form.touched) {
             form.markAsPristine();
           }
-
-          form.markAsPristine();
         },
         {injector: TestBed.inject(Injector)},
       );

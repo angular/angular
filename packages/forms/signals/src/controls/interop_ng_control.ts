@@ -8,7 +8,7 @@
 
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
 import {SignalFormsErrorCode} from '../errors';
-import {signalErrorsToValidationErrors} from '../api/rules/validation/validation_errors';
+import {signalErrorsToValidationErrors} from '../compat/validation_errors';
 
 import {
   ControlValueAccessor,

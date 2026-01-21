@@ -488,14 +488,3 @@ export type NgValidationError =
   | PatternValidationError
   | EmailValidationError
   | StandardSchemaValidationError;
-
-export function signalErrorsToValidationErrors(errors: ValidationError[]): ValidationErrors | null {
-  if (errors.length === 0) {
-    return null;
-  }
-  const errObj: ValidationErrors = {};
-  for (const error of errors) {
-    errObj[error.kind] = error;
-  }
-  return errObj;
-}
