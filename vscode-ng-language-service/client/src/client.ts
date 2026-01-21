@@ -236,7 +236,7 @@ export class AngularLanguageClient implements vscode.Disposable {
 
   async applyWorkspaceEdits(workspaceEdits: lsp.WorkspaceEdit[]) {
     for (const edit of workspaceEdits) {
-      const workspaceEdit = this.client?.protocol2CodeConverter.asWorkspaceEdit(edit);
+      const workspaceEdit = await this.client?.protocol2CodeConverter.asWorkspaceEdit(edit);
       if (workspaceEdit === undefined) {
         continue;
       }
@@ -341,8 +341,7 @@ export class AngularLanguageClient implements vscode.Disposable {
       this.clientOptions,
       forceDebug,
     );
-    this.disposables.push(this.client.start());
-    await this.client.onReady();
+    await this.client.start();
     // Must wait for the client to be ready before registering notification
     // handlers.
     this.disposables.push(registerNotificationHandlers(this.client));
@@ -481,7 +480,7 @@ export class AngularLanguageClient implements vscode.Disposable {
     return {
       uri: p2cConverter.asUri(response.uri),
       content: response.content,
-      selections: p2cConverter.asRanges(response.selections),
+      selections: await p2cConverter.asRanges(response.selections),
     };
   }
 

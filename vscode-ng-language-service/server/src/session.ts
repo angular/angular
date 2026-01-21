@@ -514,7 +514,7 @@ export class Session {
     }
 
     return {
-      activeParameter: help.argumentCount > 0 ? help.argumentIndex : null,
+      activeParameter: help.argumentCount > 0 ? help.argumentIndex : undefined,
       activeSignature: help.selectedItemIndex,
       signatures: help.items.map((item: ts.SignatureHelpItem): lsp.SignatureInformation => {
         // For each signature, build up a 'label' which represents the full signature text, as well
