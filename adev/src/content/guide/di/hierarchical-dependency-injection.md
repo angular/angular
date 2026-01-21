@@ -434,7 +434,7 @@ Add a binding to the `<app-root>` template to visualize the result:
 
 The output in the view would be:
 
-```shell
+```text {hideCopy}
 Emoji from FlowerService: 🌺
 ```
 
@@ -501,7 +501,7 @@ The next step is to add a binding to the `Child` template.
 
 To render the new values, add `<app-child>` to the bottom of the `App` template so the view also displays the sunflower:
 
-```shell
+```text {hideCopy}
 Child Component
 Emoji from FlowerService: 🌻
 ```
@@ -596,12 +596,11 @@ Additionally, add the same to the `App` template:
 
 ```html
 <p>Emoji from AnimalService: {{animal.emoji}}</p>
-s
 ```
 
 Now you should see both values in the browser:
 
-```shell
+```text {hideCopy}
 App
 Emoji from AnimalService: 🐳
 
@@ -691,7 +690,7 @@ Next, add the following to `app.html` to take advantage of content projection.
 
 The browser now renders the following, omitting the previous examples for brevity:
 
-```shell
+```text {hideCopy}
 ...
 Content projection
 
@@ -762,7 +761,7 @@ Instead, the injector starts looking for the `FlowerService` at the `ElementInje
 Then, it goes back to the `<app-child>` `ModuleInjector` and finds the red hibiscus <code>🌺</code> value, which is available because `<app-child>` and `<app-root>` share the same `ModuleInjector`.
 The UI renders the following:
 
-```shell
+```text {hideCopy}
 Emoji from FlowerService: 🌺
 ```
 
