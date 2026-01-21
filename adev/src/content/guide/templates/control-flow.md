@@ -60,7 +60,15 @@ Select a property that uniquely identifies each item in the `track` expression. 
 
 For static collections that never change, you can use `$index` to tell Angular to track each item by its index in the collection.
 
-If no other option is available, you can specify `identity`. This tells Angular to track the item by its reference identity using the triple-equals operator (`===`). Avoid this option whenever possible as it can lead to significantly slower rendering updates, as Angular has no way to map which data item corresponds to which DOM nodes.
+If no other option is available, you can use the item itself as a tracking key. This tells Angular to track the item by its reference identity using the triple-equals operator (`===`). Avoid this option whenever possible as it can lead to significantly slower rendering updates, as Angular has no way to map which data item corresponds to which DOM nodes.
+
+```angular-html
+@for (item of items; track item) {
+  {{ item.name }}
+}
+```
+
+NOTE: Unlike `*ngFor`, the `@for` block prioritizes view reuse. If a tracked property changes but the object reference remains the same, Angular updates the view's bindings (including component inputs) rather than destroying and recreating the entire element.
 
 ### Contextual variables in `@for` blocks
 
