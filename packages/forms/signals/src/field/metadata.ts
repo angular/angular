@@ -13,7 +13,7 @@ import {
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {MetadataKey} from '../api/rules/metadata';
-import {SignalFormsErrorCode} from '../errors';
+import {RuntimeErrorCode} from '../errors';
 import type {FieldNode} from './node';
 
 /**
@@ -46,7 +46,7 @@ export class FieldMetadataState {
       if (!this.metadata.has(key)) {
         if (key.create) {
           throw new RuntimeError(
-            SignalFormsErrorCode.MANAGED_METADATA_LAZY_CREATION,
+            RuntimeErrorCode.MANAGED_METADATA_LAZY_CREATION,
             ngDevMode && 'Managed metadata cannot be created lazily',
           );
         }
