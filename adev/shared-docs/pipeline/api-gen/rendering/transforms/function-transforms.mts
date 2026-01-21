@@ -29,7 +29,7 @@ export async function getFunctionRenderable(
   moduleName: string,
   repo: string,
 ): Promise<FunctionEntryRenderable> {
-  const a = setEntryFlags(
+  return setEntryFlags(
     await addRenderableCodeToc(
       addHtmlAdditionalLinks(
         addHtmlUsageNotes(
@@ -42,11 +42,6 @@ export async function getFunctionRenderable(
       ),
     ),
   );
-  if (entry.name === 'withExperimentalPlatformNavigation') {
-    console.warn('**************', a);
-  }
-
-  return a;
 }
 
 export function getFunctionMetadataRenderable(
