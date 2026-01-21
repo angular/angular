@@ -28,7 +28,7 @@ import {
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
-import {SignalFormsErrorCode} from '../errors';
+import {RuntimeErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
 import type {ValidationError} from './rules';
@@ -158,7 +158,7 @@ export class FormField<T> {
   registerAsBinding(bindingOptions?: FormFieldBindingOptions<T>) {
     if (untracked(this.bindingOptions)) {
       throw new RuntimeError(
-        SignalFormsErrorCode.BINDING_ALREADY_REGISTERED,
+        RuntimeErrorCode.BINDING_ALREADY_REGISTERED,
         ngDevMode && 'FormField already registered as a binding',
       );
     }

@@ -33,7 +33,7 @@ import {compatForm} from '../api/compat_form';
 import {signalErrorsToValidationErrors} from '../../../src/compat/validation_errors';
 import {FormOptions} from '../../../src/api/structure';
 import {FieldState, FieldTree, SchemaFn} from '../../../src/api/types';
-import {SignalFormsErrorCode} from '../../../src/errors';
+import {RuntimeErrorCode} from '../../../src/errors';
 import {normalizeFormArgs} from '../../../src/util/normalize_form_args';
 import {FieldNode} from '../../../src/field/node';
 
@@ -238,7 +238,7 @@ export class SignalFormControl<T> extends AbstractControl {
     }
 
     const resetValue = value ?? this.sourceValue();
-    this.fieldState.reset(resetValue as any);
+    this.fieldState.reset(resetValue);
 
     if (value !== undefined) {
       this.updateValue(value, options);
@@ -450,13 +450,15 @@ export class SignalFormControl<T> extends AbstractControl {
 
   override setErrors(_errors: any, _opts?: {emitEvent?: boolean}): void {
     throw unsupportedFeatureError(
-      'Imperatively setting errors is not supported in signal forms. Errors are derived from validation rules.',
+      ngDevMode &&
+        'Imperatively setting errors is not supported in signal forms. Errors are derived from validation rules.',
     );
   }
 
   override markAsPending(_opts?: {onlySelf?: boolean; emitEvent?: boolean}): void {
     throw unsupportedFeatureError(
-      'Imperatively marking as pending is not supported in signal forms. Pending state is derived from async validation status.',
+      ngDevMode &&
+        'Imperatively marking as pending is not supported in signal forms. Pending state is derived from async validation status.',
     );
   }
 }
@@ -518,7 +520,7 @@ function wrapFieldTreeForSyncUpdates<T>(tree: FieldTree<T>, onUpdate: () => void
   return wrapTree(tree) as FieldTree<T>;
 }
 
-function isFormControlState(formState: unknown): formState is {value: any; disabled: boolean} {
+function isFormControlState(formState: unknown): formState is FormControlState<unknown> {
   return (
     typeof formState === 'object' &&
     formState !== null &&
@@ -528,19 +530,21 @@ function isFormControlState(formState: unknown): formState is {value: any; disab
   );
 }
 
-function unsupportedFeatureError(message: string): RuntimeError {
-  return new RuntimeError(SignalFormsErrorCode.UNSUPPORTED_FEATURE as any, ngDevMode && message);
+function unsupportedFeatureError(message: string | null): Error {
+  return new RuntimeError(RuntimeErrorCode.UNSUPPORTED_FEATURE, message ?? false);
 }
 
-function unsupportedDisableEnableError(): RuntimeError {
+function unsupportedDisableEnableError(): Error {
   return unsupportedFeatureError(
-    'Imperatively changing enabled/disabled status in form control is not supported in signal forms. Instead use a "disabled" rule to derive the disabled status from a signal.',
+    ngDevMode &&
+      'Imperatively changing enabled/disabled status in form control is not supported in signal forms. Instead use a "disabled" rule to derive the disabled status from a signal.',
   );
 }
 
-function unsupportedValidatorsError(): RuntimeError {
+function unsupportedValidatorsError(): Error {
   return unsupportedFeatureError(
-    'Dynamically adding and removing validators is not supported in signal forms. Instead use the "applyWhen" rule to conditionally apply validators based on a signal.',
+    ngDevMode &&
+      'Dynamically adding and removing validators is not supported in signal forms. Instead use the "applyWhen" rule to conditionally apply validators based on a signal.',
   );
 }
 

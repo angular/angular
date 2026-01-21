@@ -7,7 +7,7 @@
  */
 
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
-import {SignalFormsErrorCode} from '../errors';
+import {RuntimeErrorCode} from '../errors';
 import {signalErrorsToValidationErrors} from '../compat/validation_errors';
 
 import {
@@ -119,7 +119,7 @@ export class InteropNgControl
       return 'PENDING';
     }
     throw new RuntimeError(
-      SignalFormsErrorCode.UNKNOWN_STATUS,
+      RuntimeErrorCode.UNKNOWN_STATUS,
       ngDevMode && 'Unknown form control status',
     );
   }
