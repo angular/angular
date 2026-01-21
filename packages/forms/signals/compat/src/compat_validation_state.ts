@@ -10,10 +10,10 @@ import {computed, Signal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import {ValidationError} from '../../src/api/rules/validation/validation_errors';
 import {calculateValidationSelfStatus, ValidationState} from '../../src/field/validation';
-import type {CompatValidationError} from './api/compat_validation_error';
+import type {CompatValidationError} from '../../src/compat/validation_errors';
 import {getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
-import {extractNestedReactiveErrors} from './compat_validation_error';
+import {extractNestedReactiveErrors} from '../../src/compat/validation_errors';
 
 // Readonly signal containing an empty array, used for optimization.
 const EMPTY_ARRAY_SIGNAL = computed(() => []);
