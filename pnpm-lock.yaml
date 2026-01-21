@@ -336,8 +336,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#370b6f7b49470d16721272715642d0ba2ef99556
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/370b6f7b49470d16721272715642d0ba2ef99556(@modelcontextprotocol/sdk@1.25.2)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#75e70f7c7d3247f7deafdb66fa8187a76a503b81
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75e70f7c7d3247f7deafdb66fa8187a76a503b81(@modelcontextprotocol/sdk@1.25.2)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.6)
@@ -1731,9 +1731,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/370b6f7b49470d16721272715642d0ba2ef99556':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/370b6f7b49470d16721272715642d0ba2ef99556}
-    version: 0.0.0-8d7bdf76c5a620e365ca7d4c6bb5393e362f9f62
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75e70f7c7d3247f7deafdb66fa8187a76a503b81':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75e70f7c7d3247f7deafdb66fa8187a76a503b81}
+    version: 0.0.0-0545ab623ac05419aac01abdb0aefe967bbcd8a1
     hasBin: true
 
   '@angular/ssr@21.1.0-rc.0':
@@ -3414,6 +3414,9 @@ packages:
   '@istanbuljs/schema@0.1.3':
     resolution: {integrity: sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==}
     engines: {node: '>=8'}
+
+  '@jasminejs/reporters@1.0.0':
+    resolution: {integrity: sha512-rM3GG4vx2H1Gp5kYCTr9aKlOEJFd43pzpiMAiy5b1+FUc2ub4e6bS6yCi/WQNDzAa5MVp9++dwcoEtcIfoEnhA==}
 
   '@jest/console@30.2.0':
     resolution: {integrity: sha512-+O1ifRjkvYIkBqASKWgLxrpEhQAAE7hY77ALLUufSk5717KfOShg6IbqLmdsLMPdUiFvA2kTs0R7YZy+l0IzZQ==}
@@ -8710,6 +8713,9 @@ packages:
   jasmine-core@5.13.0:
     resolution: {integrity: sha512-vsYjfh7lyqvZX5QgqKc4YH8phs7g96Z8bsdIFNEU3VqXhlHaq+vov/Fgn/sr6MiUczdZkyXRC3TX369Ll4Nzbw==}
 
+  jasmine-core@6.0.1:
+    resolution: {integrity: sha512-gUtzV5ASR0MLBwDNqri4kBsgKNCcRQd9qOlNw/w/deavD0cl3JmWXXfH8JhKM4LTg6LPTt2IOQ4px3YYfgh2Xg==}
+
   jasmine-reporters@2.5.2:
     resolution: {integrity: sha512-qdewRUuFOSiWhiyWZX8Yx3YNQ9JG51ntBEO4ekLQRpktxFTwUHy24a86zD/Oi2BRTKksEdfWQZcQFqzjqIkPig==}
 
@@ -8719,6 +8725,10 @@ packages:
 
   jasmine@5.13.0:
     resolution: {integrity: sha512-oLCXIhEb5e0zzjn9GyuvcuisvLBwUjmgz7a0RNGWKwQtJCDld4m+vwKUpAIJVLB5vbmQFdtKhT86/tIZlJ5gYw==}
+    hasBin: true
+
+  jasmine@6.0.0:
+    resolution: {integrity: sha512-eSPL6LPWT39WwvHSEEbRXuSvioXMTheNhIPaeUT1OPmSprDZwj4S29884DkTx6/tyiOWTWB1N+LdW2ZSg74aEA==}
     hasBin: true
 
   jasminewd2@2.2.0:
@@ -13445,7 +13455,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/370b6f7b49470d16721272715642d0ba2ef99556(@modelcontextprotocol/sdk@1.25.2)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/75e70f7c7d3247f7deafdb66fa8187a76a503b81(@modelcontextprotocol/sdk@1.25.2)':
     dependencies:
       '@actions/core': 2.0.2
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
@@ -13485,7 +13495,7 @@ snapshots:
       firebase: 12.7.0
       folder-hash: 4.1.1(supports-color@10.2.2)
       git-raw-commits: 5.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)
-      jasmine: 5.13.0
+      jasmine: 6.0.0
       jasmine-core: 5.13.0
       jasmine-reporters: 2.5.2
       jsonc-parser: 3.3.1
@@ -15844,6 +15854,8 @@ snapshots:
       resolve-from: 5.0.0
 
   '@istanbuljs/schema@0.1.3': {}
+
+  '@jasminejs/reporters@1.0.0': {}
 
   '@jest/console@30.2.0':
     dependencies:
@@ -21998,6 +22010,8 @@ snapshots:
 
   jasmine-core@5.13.0: {}
 
+  jasmine-core@6.0.1: {}
+
   jasmine-reporters@2.5.2:
     dependencies:
       '@xmldom/xmldom': 0.8.11
@@ -22013,6 +22027,12 @@ snapshots:
     dependencies:
       glob: 10.5.0
       jasmine-core: 5.13.0
+
+  jasmine@6.0.0:
+    dependencies:
+      '@jasminejs/reporters': 1.0.0
+      glob: 13.0.0
+      jasmine-core: 6.0.1
 
   jasminewd2@2.2.0: {}
 
