@@ -7,7 +7,44 @@
  */
 
 import {AbstractControl, FormArray, FormGroup, ValidationErrors} from '@angular/forms';
-import {CompatValidationError} from './api/compat_validation_error';
+import {ValidationError} from '../api/rules/validation/validation_errors';
+import {FieldTree} from '../api/types';
+
+/**
+ * An error used for compat errors.
+ *
+ * @experimental 21.0.0
+ * @category interop
+ */
+export class CompatValidationError<T = unknown> implements ValidationError {
+  readonly kind: string = 'compat';
+  readonly control: AbstractControl;
+  readonly fieldTree!: FieldTree<unknown>;
+  readonly context: T;
+  readonly message?: string;
+
+  constructor({context, kind, control}: {context: T; kind: string; control: AbstractControl}) {
+    this.context = context;
+    this.kind = kind;
+    this.control = control;
+  }
+}
+
+/**
+ * Converts signal forms validation errors to reactive forms ValidationErrors.
+ *
+ * @experimental 21.0.0
+ */
+export function signalErrorsToValidationErrors(errors: ValidationError[]): ValidationErrors | null {
+  if (errors.length === 0) {
+    return null;
+  }
+  const errObj: ValidationErrors = {};
+  for (const error of errors) {
+    errObj[error.kind] = error;
+  }
+  return errObj;
+}
 
 /**
  * Converts reactive form validation error to signal forms CompatValidationError.
@@ -28,6 +65,11 @@ export function reactiveErrorsToSignalErrors(
   });
 }
 
+/**
+ * Extracts all reactive errors from a control and its children.
+ * @param control
+ * @return list of errors.
+ */
 export function extractNestedReactiveErrors(control: AbstractControl): CompatValidationError[] {
   const errors: CompatValidationError[] = [];
 

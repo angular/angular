@@ -30,7 +30,7 @@ import {
 } from '@angular/forms';
 
 import {compatForm} from '../api/compat_form';
-import {signalErrorsToValidationErrors} from '../../../src/api/rules';
+import {signalErrorsToValidationErrors} from '../../../src/compat/validation_errors';
 import {FormOptions} from '../../../src/api/structure';
 import {FieldState, FieldTree, SchemaFn} from '../../../src/api/types';
 import {SignalFormsErrorCode} from '../../../src/errors';

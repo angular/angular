@@ -7,11 +7,11 @@
  */
 
 import {FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
-import {CompatValidationError} from '../../../compat/src/api/compat_validation_error';
 import {
+  CompatValidationError,
   extractNestedReactiveErrors,
   reactiveErrorsToSignalErrors,
-} from '../../../compat/src/compat_validation_error';
+} from '../../../src/compat/validation_errors';
 
 describe('destroy$', () => {
   const control = new FormControl();

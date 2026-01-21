@@ -18,7 +18,6 @@ function createSignalFormControl<T>(value: T, schema?: SchemaFn<T>) {
   return new SignalFormControl(value, schema, {injector});
 }
 
-// TODO: Organize this test better
 describe('SignalFormControl in FormGroup', () => {
   it('should reflect value and value changes', () => {
     const form = createSignalFormControl(10);
