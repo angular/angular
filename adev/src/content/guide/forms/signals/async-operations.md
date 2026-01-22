@@ -458,37 +458,6 @@ validateHttp(schemaPath.username, {
 });
 ```
 
-### Combine with debouncing
-
-Use the `debounce()` function to wait until the user stops typing before validating. This reduces server requests and improves the user experience:
-
-```ts
-import {form, debounce, validateHttp} from '@angular/forms/signals';
-
-form(model, (schemaPath) => {
-  // Wait 500ms after the user stops typing
-  debounce(schemaPath.username, 500);
-
-  // Then validate
-  validateHttp(schemaPath.username, {
-    request: ({value}) => `/api/check?username=${value()}`,
-    onSuccess: (result) =>
-      result.valid
-        ? null
-        : {
-            kind: 'usernameTaken',
-            message: 'Username taken',
-          },
-    onError: () => ({
-      kind: 'validationError',
-      message: 'Validation failed',
-    }),
-  });
-});
-```
-
-NOTE: Debouncing only affects when the value updates. Async validation automatically cancels pending requests when the value changes, even without debouncing.
-
 ### Handle errors gracefully
 
 Provide clear, user-friendly error messages. Log technical details for debugging but show simple messages to users:
