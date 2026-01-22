@@ -1,0 +1,125 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+.two-column-step {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  text-align: left;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background-color: var(--card-background);
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.5rem;
+  padding: 2rem;
+
+  @include mq.for-tablet-down {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1.5rem;
+  }
+}
+
+.step-description {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .header {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  .description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--secondary-contrast);
+  }
+
+  .demo-display {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 250px;
+    margin-bottom: 2rem;
+
+    .demo-input {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--senary-contrast);
+      background: var(--septenary-contrast);
+      color: var(--primary-contrast);
+      font-size: 1rem;
+      box-sizing: border-box;
+
+      &:focus {
+        outline: 2px solid var(--primary-color);
+        border-color: transparent;
+      }
+    }
+
+    .demo-list {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding-right: 0.5rem;
+      border-radius: 0.5rem;
+      overflow-y: auto;
+      border: 1px solid var(--senary-contrast);
+      background: var(--septenary-contrast);
+      color: var(--primary-contrast);
+
+      .demo-item {
+        padding: 0.25rem 1rem;
+        color: var(--secondary-contrast);
+        border-radius: 0.5rem;
+        transition: background 0.2s;
+        margin: 0.2rem;
+
+        &:hover {
+          background: var(--senary-contrast);
+        }
+      }
+    }
+  }
+}
+
+.step-code {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+
+  .code-block {
+    background: var(--card-background);
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    overflow: auto;
+
+    .code-header {
+      display: flex;
+      padding: 0.75rem;
+      background: var(--subtle-purple);
+      border-radius: 0.25rem 0.25rem 0 0;
+      transition: background 0.3s ease;
+
+      & > span {
+        background-image: var(--purple-to-blue-horizontal-gradient);
+        background-clip: text;
+        color: transparent;
+        font-size: 0.875rem;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 1.4rem;
+        letter-spacing: -0.00875rem;
+        margin: 0;
+        word-wrap: break-word;
+        width: fit-content;
+      }
+    }
+  }
+}

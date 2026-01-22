@@ -95,9 +95,6 @@ export class SearchDialog {
         if (!this.dialog().nativeElement.open) {
           this.dialog().nativeElement.showModal?.();
         }
-        // We want to select the pre-existing text on opening
-        // In order to change the search input with minimal user interaction.
-        this.searchForm().focusBoundControl();
       },
     });
 
