@@ -84,6 +84,8 @@ export class EagerView {
 
 Lazy-loaded routes create child injectors that are only available after the route loads.
 
+NOTE: By default, route injectors and their services persist even after navigating away from the route. They are not destroyed until the application is closed. For automatic cleanup of unused route injectors, see [customizing route behavior](guide/routing/customizing-route-behavior#experimental-automatic-cleanup-of-unused-route-injectors).
+
 **Solution:** Use `providedIn: 'root'` for services that need to be shared across lazy boundaries.
 
 ```ts {prefer}
@@ -208,10 +210,10 @@ export class UserProfile {
 }
 ```
 
-**Solution:** Capture dependencies in field initializers or the constructor.
+**Solution:** Capture dependencies and derive values in field initializers.
 
 ```angular-ts {prefer}
-// Capture in field initializer
+// Derive values in field initializers
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -220,66 +222,8 @@ import {UserClient} from './user-client';
   template: '<p>User: {{userName}}</p>',
 })
 export class UserProfile {
-  private userService = inject(UserClient); // Valid
-  userName = '';
-
-  ngOnInit() {
-    this.userName = this.userService.getUser().name;
-  }
-}
-```
-
-#### Using inject() after await
-
-When you use an `await` statement in your code, everything after that `await` executes asynchronously in a different execution context. If you try to call `inject()` after an `await`, Angular cannot access the injection context because it only exists during synchronous class construction. The code after `await` runs at a later time when the injection context is no longer available.
-
-```angular-ts {avoid}
-// inject() after await
-import {Component, inject} from '@angular/core';
-import {UserClient} from './user-client';
-
-@Component({
-  selector: 'app-profile',
-  template: '<p>User: {{userName}}</p>',
-})
-export class UserProfile {
-  userName = '';
-
-  async ngOnInit() {
-    await this.loadSettings();
-    const userService = inject(UserClient); // ERROR: After async operation
-    this.userName = userService.getUser().name;
-  }
-
-  async loadSettings() {
-    // Simulated async operation
-  }
-}
-```
-
-**Solution:** Capture dependencies before any `await` statements.
-
-```angular-ts {prefer}
-// Capture before async operations
-import {Component, inject} from '@angular/core';
-import {UserClient} from './user-client';
-
-@Component({
-  selector: 'app-profile',
-  template: '<p>User: {{userName}}</p>',
-})
-export class UserProfile {
-  private userService = inject(UserClient); // Valid: Field initializer
-  userName = '';
-
-  async ngOnInit() {
-    await this.loadSettings();
-    this.userName = this.userService.getUser().name; // Uses captured reference
-  }
-
-  async loadSettings() {
-    // Simulated async operation
-  }
+  private userService = inject(UserClient);
+  userName = this.userService.getUser().name;
 }
 ```
 
@@ -531,175 +475,15 @@ The `InjectionToken` exists at runtime and can be used for injection, while the 
 
 ### Circular dependencies
 
-Circular dependencies happen when services inject each other, directly or indirectly.
+Circular dependencies occur when services inject each other, creating a cycle that Angular cannot resolve. For detailed explanations and code examples, see [NG0200: Circular dependency](errors/NG0200).
 
-#### How circular dependencies occur
+**Resolution strategies** (in order of preference):
 
-A circular dependency happens when two or more services inject each other, creating a cycle. For example, Service A injects Service B, and Service B injects Service A.
+1. **Restructure** - Extract shared logic to a third service, breaking the cycle
+2. **Use events** - Replace direct dependencies with event-based communication (e.g., `Subject`)
+3. **Lazy injection** - Use `Injector.get()` to defer one dependency (last resort)
 
-As a result, when Angular tries to create Service A, it needs Service B. But to create Service B, it needs Service A, which it's already trying to create. Angular cannot determine which service to instantiate first, so it throws a circular dependency error.
-
-```ts
-// auth-client.ts
-import {Injectable, inject} from '@angular/core';
-import {UserClient} from './user-client';
-
-@Injectable({providedIn: 'root'})
-export class AuthClient {
-  private userService = inject(UserClient);
-
-  login(username: string) {
-    return this.userService.findUser(username);
-  }
-}
-
-// user-client.ts
-import {Injectable, inject} from '@angular/core';
-import {AuthClient} from './auth-client';
-
-@Injectable({providedIn: 'root'})
-export class UserClient {
-  private authService = inject(AuthClient); // Creates circular dependency
-
-  findUser(username: string) {
-    if (this.authService.isAuthenticated()) {
-      // ... find user
-    }
-  }
-}
-```
-
-Angular cannot determine which service to create first, resulting in a circular dependency error.
-
-#### Resolving circular dependencies: Restructure
-
-The best solution is to restructure your code to eliminate the circular dependency.
-
-**Option 1: Extract shared logic to a third service**
-
-```ts
-// auth-state-store.ts
-import {Injectable, signal} from '@angular/core';
-
-@Injectable({providedIn: 'root'})
-export class AuthStateStore {
-  private authenticated = signal(false);
-
-  isAuthenticated() {
-    return this.authenticated();
-  }
-
-  setAuthenticated(value: boolean) {
-    this.authenticated.set(value);
-  }
-}
-
-// auth-client.ts
-import {Injectable, inject} from '@angular/core';
-import {UserClient} from './user-client';
-import {AuthStateStore} from './auth-state-store';
-
-@Injectable({providedIn: 'root'})
-export class AuthClient {
-  private userService = inject(UserClient);
-  private authState = inject(AuthStateStore);
-
-  login(username: string) {
-    const user = this.userService.findUser(username);
-    this.authState.setAuthenticated(true);
-    return user;
-  }
-}
-
-// user-client.ts
-import {Injectable, inject} from '@angular/core';
-import {AuthStateStore} from './auth-state-store';
-
-@Injectable({providedIn: 'root'})
-export class UserClient {
-  private authState = inject(AuthStateStore); // No circular dependency
-
-  findUser(username: string) {
-    if (this.authState.isAuthenticated()) {
-      // ... find user
-    }
-  }
-}
-```
-
-**Option 2: Use events or observables**
-
-```ts
-// auth-events-store.ts
-import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs';
-
-@Injectable({providedIn: 'root'})
-export class AuthEventsStore {
-  loginSuccess = new Subject<string>();
-  logoutSuccess = new Subject<void>();
-}
-
-// auth-client.ts
-import {Injectable, inject} from '@angular/core';
-import {AuthEventsStore} from './auth-events-store';
-
-@Injectable({providedIn: 'root'})
-export class AuthClient {
-  private authEvents = inject(AuthEventsStore);
-
-  login(username: string) {
-    // ... perform login
-    this.authEvents.loginSuccess.next(username);
-  }
-}
-
-// user-client.ts
-import {Injectable, inject} from '@angular/core';
-import {AuthEventsStore} from './auth-events-store';
-
-@Injectable({providedIn: 'root'})
-export class UserClient {
-  private authEvents = inject(AuthEventsStore);
-
-  constructor() {
-    this.authEvents.loginSuccess.subscribe((username) => {
-      console.log(`User ${username} logged in`);
-    });
-  }
-}
-```
-
-#### Resolving circular dependencies: Lazy injection
-
-As a last resort, you can use lazy injection with the `Injector` to break the circular dependency.
-
-```ts
-// user-client.ts
-import {Injectable, inject, Injector} from '@angular/core';
-import {AuthClient} from './auth-client';
-
-@Injectable({providedIn: 'root'})
-export class UserClient {
-  private injector = inject(Injector);
-  private authService: AuthClient | null = null;
-
-  findUser(username: string) {
-    // Lazy initialization breaks the circular dependency
-    if (!this.authService) {
-      this.authService = this.injector.get(AuthClient);
-    }
-
-    if (this.authService.isAuthenticated()) {
-      // ... find user
-    }
-  }
-}
-```
-
-This approach delays the injection of `AuthClient` until it's actually needed, breaking the circular dependency at construction time.
-
-NOTE: Lazy injection is a workaround, not a solution. Restructuring your code to eliminate the circular dependency is always preferable. Do not use `forwardRef()` for service circular dependencies—it only solves circular imports in standalone component configurations.
+NOTE: Do not use `forwardRef()` for service circular dependencies—it only solves circular imports in standalone component configurations.
 
 ## Debugging dependency resolution
 
@@ -797,16 +581,9 @@ import {UserClient} from './user-client';
   template: '<p>Profile</p>',
 })
 export class UserProfile {
-  // Returns null if not found instead of throwing
   private userService = inject(UserClient, {optional: true});
-
-  ngOnInit() {
-    if (this.userService) {
-      // Service available
-    } else {
-      // Service not available, handle gracefully
-    }
-  }
+  // Derive availability at construction time
+  private hasUserService = this.userService !== null;
 }
 ```
 
@@ -1136,18 +913,10 @@ import {UserClient} from './user-client';
 export class DebugView {
   private userService = inject(UserClient, {optional: true});
   serviceAvailable = this.userService !== null;
-
-  ngOnInit() {
-    if (this.userService) {
-      console.log('UserClient is available');
-    } else {
-      console.log('UserClient is NOT available');
-    }
-  }
 }
 ```
 
-Optional injection returns `null` if no provider is found, allowing you to handle the absence gracefully or log debugging information.
+Optional injection returns `null` if no provider is found, allowing you to handle the absence gracefully.
 
 ### NG0203: inject() must be called from an injection context
 
@@ -1238,6 +1007,13 @@ Angular allows `inject()` in these locations:
      }
    }
    ```
+
+Other injection contexts that `inject()` also works in include:
+
+- [provideAppInitializer](api/core/provideAppInitializer)
+- [provideEnvironmentInitializer](api/core/provideEnvironmentInitializer)
+- Functional [route guards](guide/routing/route-guards)
+- Functional [data resolvers](guide/routing/data-resolvers)
 
 #### When this error occurs
 
