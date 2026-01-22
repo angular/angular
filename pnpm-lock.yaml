@@ -143,8 +143,8 @@ importers:
         specifier: 2.0.46
         version: 2.0.46
       '@types/jasmine':
-        specifier: ^5.0.0
-        version: 5.1.15
+        specifier: ^6.0.0
+        version: 6.0.0
       '@types/jasminewd2':
         specifier: ^2.0.8
         version: 2.0.13
@@ -221,8 +221,8 @@ importers:
         specifier: ^14.0.0
         version: 14.1.1
       jasmine:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.0
+        version: 6.0.0
       jasmine-core:
         specifier: 5.13.0
         version: 5.13.0
@@ -585,8 +585,8 @@ importers:
         specifier: 1.0.6
         version: 1.0.6
       '@types/jasmine':
-        specifier: 5.1.15
-        version: 5.1.15
+        specifier: 6.0.0
+        version: 6.0.0
       '@types/jsdom':
         specifier: 27.0.0
         version: 27.0.0
@@ -896,8 +896,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/upgrade
       '@types/jasmine':
-        specifier: 5.1.15
-        version: 5.1.15
+        specifier: 6.0.0
+        version: 6.0.0
       '@types/jasminewd2':
         specifier: 2.0.13
         version: 2.0.13
@@ -1235,8 +1235,8 @@ importers:
         specifier: 1.5.0
         version: 1.5.0
       '@types/jasmine':
-        specifier: 5.1.15
-        version: 5.1.15
+        specifier: 6.0.0
+        version: 6.0.0
       '@types/node':
         specifier: ^24.3.0
         version: 24.10.8
@@ -1253,8 +1253,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       jasmine:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.0
+        version: 6.0.0
       jasmine-core:
         specifier: 5.13.0
         version: 5.13.0
@@ -1321,8 +1321,8 @@ importers:
         version: 5.9.3
     devDependencies:
       '@types/jasmine':
-        specifier: ~5.1.9
-        version: 5.1.15
+        specifier: ~6.0.0
+        version: 6.0.0
       '@types/jasmine-reporters':
         specifier: ~2.5.3
         version: 2.5.3
@@ -1339,8 +1339,8 @@ importers:
         specifier: ~3.7.0
         version: 3.7.1
       jasmine:
-        specifier: ~5.13.0
-        version: 5.13.0
+        specifier: ~6.0.0
+        version: 6.0.0
       jasmine-core:
         specifier: ~5.13.0
         version: 5.13.0
@@ -4955,6 +4955,9 @@ packages:
   '@types/jasmine@5.1.15':
     resolution: {integrity: sha512-ZAC8KjmV2MJxbNTrwXFN+HKeajpXQZp6KpPiR6Aa4XvaEnjP6qh23lL/Rqb7AYzlp3h/rcwDrQ7Gg7q28cQTQg==}
 
+  '@types/jasmine@6.0.0':
+    resolution: {integrity: sha512-18lgGsLmEh3VJk9eZ5wAjTISxdqzl6YOwu8UdMpolajN57QOCNbl+AbHUd+Yu9ItrsFdB+c8LSZSGNg8nHaguw==}
+
   '@types/jasminewd2@2.0.13':
     resolution: {integrity: sha512-aJ3wj8tXMpBrzQ5ghIaqMisD8C3FIrcO6sDKHqFbuqAsI7yOxj0fA7MrRCPLZHIVUjERIwsMmGn/vB0UQ9u0Hg==}
 
@@ -5461,6 +5464,11 @@ packages:
 
   ajv-formats@2.1.1:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
+    peerDependencies:
+      ajv: ^8.0.0
+    peerDependenciesMeta:
+      ajv:
+        optional: true
 
   ajv-formats@3.0.1:
     resolution: {integrity: sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==}
@@ -8718,10 +8726,6 @@ packages:
     resolution: {integrity: sha512-KbdGQTf5jbZgltoHs31XGiChAPumMSY64OZMWLNYnEnMfG5uwGBhffePwuskexjT+/Jea/gU3qAU8344hNohSw==}
     hasBin: true
 
-  jasmine@5.13.0:
-    resolution: {integrity: sha512-oLCXIhEb5e0zzjn9GyuvcuisvLBwUjmgz7a0RNGWKwQtJCDld4m+vwKUpAIJVLB5vbmQFdtKhT86/tIZlJ5gYw==}
-    hasBin: true
-
   jasmine@6.0.0:
     resolution: {integrity: sha512-eSPL6LPWT39WwvHSEEbRXuSvioXMTheNhIPaeUT1OPmSprDZwj4S29884DkTx6/tyiOWTWB1N+LdW2ZSg74aEA==}
     hasBin: true
@@ -10589,6 +10593,7 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
+
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
@@ -17550,13 +17555,15 @@ snapshots:
 
   '@types/jasmine-reporters@2.5.3':
     dependencies:
-      '@types/jasmine': 5.1.15
+      '@types/jasmine': 6.0.0
 
   '@types/jasmine@5.1.15': {}
 
+  '@types/jasmine@6.0.0': {}
+
   '@types/jasminewd2@2.0.13':
     dependencies:
-      '@types/jasmine': 5.1.15
+      '@types/jasmine': 6.0.0
 
   '@types/jsdom@21.1.7':
     dependencies:
@@ -18109,8 +18116,8 @@ snapshots:
     optionalDependencies:
       ajv: 8.13.0
 
-  ajv-formats@2.1.1:
-    dependencies:
+  ajv-formats@2.1.1(ajv@8.17.1):
+    optionalDependencies:
       ajv: 8.17.1
 
   ajv-formats@3.0.1:
@@ -20351,7 +20358,7 @@ snapshots:
     dependencies:
       '@apidevtools/json-schema-ref-parser': 9.1.2
       ajv: 8.17.1
-      ajv-formats: 2.1.1
+      ajv-formats: 2.1.1(ajv@8.17.1)
       body-parser: 1.20.4
       content-type: 1.0.5
       deep-freeze: 0.0.1
@@ -22002,11 +22009,6 @@ snapshots:
       exit: 0.1.2
       glob: 7.2.3
       jasmine-core: 2.8.0
-
-  jasmine@5.13.0:
-    dependencies:
-      glob: 10.5.0
-      jasmine-core: 5.13.0
 
   jasmine@6.0.0:
     dependencies:
@@ -24932,7 +24934,7 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
       ajv: 8.17.1
-      ajv-formats: 2.1.1
+      ajv-formats: 2.1.1(ajv@8.17.1)
       ajv-keywords: 5.1.0(ajv@8.17.1)
 
   secretlint@10.2.2:

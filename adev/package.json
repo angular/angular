@@ -42,7 +42,7 @@
     "@marijn/find-cluster-break": "1.0.2",
     "@stackblitz/sdk": "1.11.0",
     "@types/dom-navigation": "1.0.6",
-    "@types/jasmine": "5.1.15",
+    "@types/jasmine": "6.0.0",
     "@types/jsdom": "27.0.0",
     "@types/node": "24.10.8",
     "@typescript/vfs": "1.6.2",
