@@ -30,10 +30,10 @@ See more details in the section [below](#vscode-extension).
 import {Component, ContentChild} from '@angular/core';
 
 @Component({
-  template: `Has ref: {{someRef ? 'Yes' : 'No'}}`
+  template: `Has ref: {{ someRef ? 'Yes' : 'No' }}`,
 })
 export class MyComponent {
-  @ContentChild('someRef') ref: ElementRef|undefined = undefined;
+  @ContentChild('someRef') ref: ElementRef | undefined = undefined;
 
   someMethod(): void {
     if (this.ref) {
@@ -49,7 +49,7 @@ export class MyComponent {
 import {Component, contentChild} from '@angular/core';
 
 @Component({
-  template: `Has ref: {{someRef() ? 'Yes' : 'No'}}`
+  template: `Has ref: {{ someRef() ? 'Yes' : 'No' }}`,
 })
 export class MyComponent {
   readonly ref = contentChild<ElementRef>('someRef');

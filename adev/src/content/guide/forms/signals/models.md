@@ -15,8 +15,8 @@ Form models solve this by centralizing form data in a single writable signal. Wh
 A form model is a writable signal created with Angular's `signal()` function. The signal holds an object that represents your form's data structure.
 
 ```angular-ts
-import { Component, signal } from '@angular/core'
-import { form, FormField } from '@angular/forms/signals'
+import {Component, signal} from '@angular/core';
+import {form, FormField} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-login',
@@ -24,15 +24,15 @@ import { form, FormField } from '@angular/forms/signals'
   template: `
     <input type="email" [formField]="loginForm.email" />
     <input type="password" [formField]="loginForm.password" />
-  `
+  `,
 })
 export class LoginComponent {
   loginModel = signal({
     email: '',
-    password: ''
-  })
+    password: '',
+  });
 
-  loginForm = form(this.loginModel)
+  loginForm = form(this.loginModel);
 }
 ```
 
@@ -139,15 +139,15 @@ Access field state when working with individual fields in templates or reactive 
   template: `
     <p>Current email: {{ loginForm.email().value() }}</p>
     <p>Password length: {{ passwordLength() }}</p>
-  `
+  `,
 })
 export class LoginComponent {
-  loginModel = signal({ email: '', password: '' })
-  loginForm = form(this.loginModel)
+  loginModel = signal({email: '', password: ''});
+  loginForm = form(this.loginModel);
 
   passwordLength = computed(() => {
-    return this.loginForm.password().value().length
-  })
+    return this.loginForm.password().value().length;
+  });
 }
 ```
 
@@ -260,11 +260,11 @@ This synchronization happens automatically. You don't write subscriptions or eve
     <input type="text" [formField]="userForm.name" />
     <button (click)="setName('Bob')">Set Name to Bob</button>
     <p>Current name: {{ userModel().name }}</p>
-  `
+  `,
 })
 export class UserComponent {
-  userModel = signal({ name: '' })
-  userForm = form(this.userModel)
+  userModel = signal({name: ''});
+  userForm = form(this.userModel);
 
   setName(name: string) {
     this.userForm.name().value.set(name);

@@ -88,13 +88,14 @@ You can bind to directive properties as well.
 
 ```angular-html
 <!-- Bind to the `ngSrc` property of the `NgOptimizedImage` directive  -->
-<img [ngSrc]="profilePhotoUrl()" alt="The current user's profile photo">
+<img [ngSrc]="profilePhotoUrl()" alt="The current user's profile photo" />
 ```
 
 ### Attributes
 
 When you need to set HTML attributes that do not have corresponding DOM properties, such as SVG attributes, you can bind attributes to elements in your template with the `attr.` prefix.
 
+<!-- prettier-ignore -->
 ```angular-html
 <!-- Bind the `role` attribute on the `<ul>` element to the component's `listRole` property. -->
 <ul [attr.role]="listRole()">
@@ -110,7 +111,7 @@ You can also use text interpolation syntax in properties and attributes by using
 
 ```angular-html
 <!-- Binds a value to the `alt` property of the image element's DOM object. -->
-<img src="profile-photo.jpg" alt="Profile photo of {{ firstName() }}" >
+<img src="profile-photo.jpg" alt="Profile photo of {{ firstName() }}" />
 ```
 
 ## CSS class and style property bindings
@@ -121,6 +122,7 @@ Angular supports additional features for binding CSS classes and CSS style prope
 
 You can create a CSS class binding to conditionally add or remove a CSS class on an element based on whether the bound value is [truthy or falsy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy).
 
+<!-- prettier-ignore -->
 ```angular-html
 <!-- When `isExpanded` is truthy, add the `expanded` CSS class. -->
 <ul [class.expanded]="isExpanded()">
@@ -155,6 +157,7 @@ export class UserProfile {
 
 The above example renders the following DOM:
 
+<!-- prettier-ignore -->
 ```angular-html
 <ul class="full-width outlined"> ... </ul>
 <section class="expandable elevated"> ... </section>
@@ -178,6 +181,7 @@ export class Listbox {
 
 In the example above, Angular renders the `ul` element with all three CSS classes.
 
+<!-- prettier-ignore -->
 ```angular-html
 <ul class="list box expanded">
 ```
@@ -194,6 +198,7 @@ NOTE: Class bindings do not support space-separated class names in a single key.
 
 You can also bind to CSS style properties directly on an element.
 
+<!-- prettier-ignore -->
 ```angular-html
 <!-- Set the CSS `display` property based on the `isExpanded` property. -->
 <section [style.display]="isExpanded() ? 'block' : 'none'">
@@ -201,6 +206,7 @@ You can also bind to CSS style properties directly on an element.
 
 You can further specify units for CSS properties that accept units.
 
+<!-- prettier-ignore -->
 ```angular-html
 <!-- Set the CSS `height` property to a pixel value based on the `sectionHeightInPixels` property. -->
 <section [style.height.px]="sectionHeightInPixels()">
@@ -232,6 +238,7 @@ export class UserProfile {
 
 The above example renders the following DOM.
 
+<!-- prettier-ignore -->
 ```angular-html
 <ul style="display: flex; padding: 8px"> ... </ul>
 <section style="border: 1px solid black; font-weight: bold"> ... </section>

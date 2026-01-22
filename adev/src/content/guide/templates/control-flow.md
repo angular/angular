@@ -8,7 +8,7 @@ The `@if` block conditionally displays its content when its condition expression
 
 ```angular-html
 @if (a > b) {
-  <p>{{a}} is greater than {{b}}</p>
+  <p>{{ a }} is greater than {{ b }}</p>
 }
 ```
 
@@ -16,11 +16,11 @@ If you want to display alternative content, you can do so by providing any numbe
 
 ```angular-html
 @if (a > b) {
-  {{a}} is greater than {{b}}
+  {{ a }} is greater than {{ b }}
 } @else if (b > a) {
-  {{a}} is less than {{b}}
+  {{ a }} is less than {{ b }}
 } @else {
-  {{a}} is equal to {{b}}
+  {{ a }} is equal to {{ b }}
 }
 ```
 
@@ -99,9 +99,9 @@ You can optionally include an `@empty` section immediately after the `@for` bloc
 
 ```angular-html
 @for (item of items; track item.name) {
-  <li> {{ item.name }}</li>
+  <li>{{ item.name }}</li>
 } @empty {
-  <li> There are no items. </li>
+  <li>There are no items.</li>
 }
 ```
 

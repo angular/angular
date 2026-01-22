@@ -224,7 +224,7 @@ When implementing a custom `RouteReuseStrategy`, you may need to manually destro
 Since `DetachedRouteHandle` is an opaque type, you cannot call a destroy method directly on it. Instead, use the `destroyDetachedRouteHandle` function provided by the Router.
 
 ```ts
-import { destroyDetachedRouteHandle } from '@angular/router';
+import {destroyDetachedRouteHandle} from '@angular/router';
 
 // ... inside your strategy
 if (this.handles.size > MAX_CACHE_SIZE) {
@@ -245,12 +245,10 @@ By default, Angular does not destroy the injectors of detached routes, even if t
 To enable automatic cleanup of unused route injectors, you can use the `withExperimentalAutoCleanupInjectors` feature in your router configuration. This feature checks which routes are currently stored by the strategy after navigations and destroys the injectors of any detached routes that are not currently stored by the reuse strategy.
 
 ```ts
-import { provideRouter, withExperimentalAutoCleanupInjectors } from '@angular/router';
+import {provideRouter, withExperimentalAutoCleanupInjectors} from '@angular/router';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes, withExperimentalAutoCleanupInjectors())
-  ]
+  providers: [provideRouter(routes, withExperimentalAutoCleanupInjectors())],
 };
 ```
 
@@ -528,8 +526,8 @@ export const routes: Routes = [
 The component receives the extracted parameters through route inputs:
 
 ```angular-ts
-import { Component, input, inject } from '@angular/core';
-import { resource } from '@angular/core';
+import {Component, input, inject} from '@angular/core';
+import {resource} from '@angular/core';
 
 @Component({
   selector: 'app-documentation',
@@ -541,12 +539,12 @@ import { resource } from '@angular/core';
     } @else if (documentation.value(); as docs) {
       <article>{{ docs.content }}</article>
     }
-  `
+  `,
 })
 export class DocumentationComponent {
   // Route parameters are automatically bound to signal inputs
-  version = input.required<string>();  // Receives the version parameter
-  section = input.required<string>();  // Receives the section parameter
+  version = input.required<string>(); // Receives the version parameter
+  section = input.required<string>(); // Receives the section parameter
 
   private docsService = inject(DocumentationService);
 
@@ -557,13 +555,13 @@ export class DocumentationComponent {
 
       return {
         version: this.version(),
-        section: this.section()
-      }
+        section: this.section(),
+      };
     },
-    loader: ({ params }) => {
+    loader: ({params}) => {
       return this.docsService.loadDocumentation(params.version, params.section);
-    }
-  })
+    },
+  });
 }
 ```
 

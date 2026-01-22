@@ -24,7 +24,9 @@ Here is a simplified example of a `UserProfile` component.
     <p>This is the user profile page</p>
   `,
 })
-export class UserProfile { /* Your component code goes here */ }
+export class UserProfile {
+  /* Your component code goes here */
+}
 ```
 
 The `@Component` decorator also optionally accepts a `styles` property for any CSS you want to apply to your template:
@@ -37,9 +39,15 @@ The `@Component` decorator also optionally accepts a `styles` property for any C
     <h1>User profile</h1>
     <p>This is the user profile page</p>
   `,
-  styles: `h1 { font-size: 3em; } `,
+  styles: `
+    h1 {
+      font-size: 3em;
+    }
+  `,
 })
-export class UserProfile { /* Your component code goes here */ }
+export class UserProfile {
+  /* Your component code goes here */
+}
 ```
 
 ### Separating HTML and CSS into separate files

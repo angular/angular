@@ -9,19 +9,19 @@ NOTE: Angular's pipe syntax deviates from standard JavaScript, which uses the ve
 Here is an example using some built-in pipes that Angular provides:
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { CurrencyPipe, DatePipe, TitleCasePipe } from '@angular/common';
+import {Component} from '@angular/core';
+import {CurrencyPipe, DatePipe, TitleCasePipe} from '@angular/common';
 
 @Component({
   selector: 'app-root',
   imports: [CurrencyPipe, DatePipe, TitleCasePipe],
   template: `
     <main>
-       <!-- Transform the company name to title-case and
+      <!-- Transform the company name to title-case and
        transform the purchasedOn date to a locale-formatted string -->
-<h1>Purchases from {{ company | titlecase }} on {{ purchasedOn | date }}</h1>
+      <h1>Purchases from {{ company | titlecase }} on {{ purchasedOn | date }}</h1>
 
-	    <!-- Transform the amount to a currency-formatted string -->
+      <!-- Transform the amount to a currency-formatted string -->
       <p>Total: {{ amount | currency }}</p>
     </main>
   `,
@@ -91,7 +91,7 @@ Some pipes accept parameters to configure the transformation. To specify a param
 For example, the `DatePipe` is able to take parameters to format the date in a specific way.
 
 ```angular-html
-<p>The event will occur at {{ scheduledOn | date:'hh:mm' }}.</p>
+<p>The event will occur at {{ scheduledOn | date: 'hh:mm' }}.</p>
 ```
 
 Some pipes may accept multiple parameters. You can specify additional parameter values separated by the colon character (`:`).
@@ -99,7 +99,7 @@ Some pipes may accept multiple parameters. You can specify additional parameter 
 For example, we can also pass a second optional parameter to control the timezone.
 
 ```angular-html
-<p>The event will occur at {{ scheduledOn | date:'hh:mm':'UTC' }}.</p>
+<p>The event will occur at {{ scheduledOn | date: 'hh:mm' : 'UTC' }}.</p>
 ```
 
 ## How pipes work
@@ -107,8 +107,8 @@ For example, we can also pass a second optional parameter to control the timezon
 Conceptually, pipes are functions that accept an input value and return a transformed value.
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { CurrencyPipe} from '@angular/common';
+import {Component} from '@angular/core';
+import {CurrencyPipe} from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -148,7 +148,7 @@ The pipe operator has higher precedence than the conditional (ternary) operator.
 If the same expression were written without parentheses:
 
 ```angular-html
-{{ isAdmin ? 'Access granted' : 'Access denied' | uppercase }}
+{{ isAdmin ? 'Access granted' : ('Access denied' | uppercase) }}
 ```
 
 It will be parsed instead as:
@@ -178,7 +178,7 @@ Here is an example of a custom pipe that transforms strings to kebab case:
 
 ```angular-ts
 // kebab-case.pipe.ts
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'kebabCase',
@@ -195,7 +195,7 @@ export class KebabCasePipe implements PipeTransform {
 When creating a custom pipe, import `Pipe` from the `@angular/core` package and use it as a decorator for the TypeScript class.
 
 ```angular-ts
-import { Pipe } from '@angular/core';
+import {Pipe} from '@angular/core';
 
 @Pipe({
   name: 'myCustomTransformation',
@@ -217,7 +217,7 @@ The naming convention for custom pipes consists of two conventions:
 In addition to the `@Pipe` decorator, custom pipes should always implement the `PipeTransform` interface from `@angular/core`.
 
 ```angular-ts
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'myCustomTransformation',
@@ -232,14 +232,14 @@ Implementing this interface ensures that your pipe class has the correct structu
 Every transformation is invoked by the `transform` method with the first parameter being the value being passed in and the return value being the transformed value.
 
 ```angular-ts
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'myCustomTransformation',
 })
 export class MyCustomTransformationPipe implements PipeTransform {
   transform(value: string): string {
-    return `My custom transformation of ${value}.`
+    return `My custom transformation of ${value}.`;
   }
 }
 ```
@@ -249,19 +249,19 @@ export class MyCustomTransformationPipe implements PipeTransform {
 You can add parameters to your transformation by adding additional parameters to the `transform` method:
 
 ```angular-ts
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'myCustomTransformation',
 })
 export class MyCustomTransformationPipe implements PipeTransform {
   transform(value: string, format: string): string {
-    let msg = `My custom transformation of ${value}.`
+    let msg = `My custom transformation of ${value}.`;
 
     if (format === 'uppercase') {
-      return msg.toUpperCase()
+      return msg.toUpperCase();
     } else {
-      return msg
+      return msg;
     }
   }
 }
@@ -274,7 +274,7 @@ When you want a pipe to detect changes within arrays or objects, it must be mark
 IMPORTANT: Avoid creating impure pipes unless absolutely necessary, as they can incur a significant performance penalty if used without care.
 
 ```angular-ts
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'joinNamesImpure',

@@ -59,7 +59,8 @@ Note that in the above code example, each image has both `width` and `height` at
 In situations where you can't or don't want to specify a static `height` and `width` for images, you can use [the `fill` attribute](https://web.dev/articles/cls) to tell the image to act like a "background image", filling its containing element:
 
 ```angular-html
-<div class="image-container"> //Container div has 'position: "relative"'
+// Container div has 'position: "relative"'
+<div class="image-container">
   <img ngSrc="www.example.com/image.png" fill />
 </div>
 ```

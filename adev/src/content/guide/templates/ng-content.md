@@ -6,30 +6,24 @@ Here is an example of a `BaseButton` component that accepts any markup from its 
 
 ```angular-ts
 // ./base-button/base-button.ts
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'button[baseButton]',
-  template: `
-      <ng-content />
-  `,
+  template: `<ng-content />`,
 })
 export class BaseButton {}
 ```
 
 ```angular-ts
 // ./app.ts
-import { Component } from '@angular/core';
-import { BaseButton } from './base-button';
+import {Component} from '@angular/core';
+import {BaseButton} from './base-button';
 
 @Component({
   selector: 'app-root',
   imports: [BaseButton],
-  template: `
-    <button baseButton>
-      Next <span class="icon arrow-right"></span>
-    </button>
-  `,
+  template: `<button baseButton>Next <span class="icon arrow-right"></span></button>`,
 })
 export class App {}
 ```

@@ -52,7 +52,7 @@ Next, update `@Component()` decorator `imports` to include a reference to `Lower
 Finally, in `app.ts` update the template to include the `lowercase` pipe:
 
 ```angular-html
-template: `{{username | lowercase }}`
+template: `{{ username | lowercase }}`
 ```
 
 </docs-step>

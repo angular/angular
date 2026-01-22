@@ -31,7 +31,8 @@ Update the template in `product-card` to display the signal input values.
 <div class="product-card">
   <h3>{{ name() }}</h3>
   <p class="price">\${{ price() }}</p>
-  <p class="status">Status:
+  <p class="status">
+    Status:
     @if (available()) {
       Available
     } @else {

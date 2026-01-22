@@ -83,7 +83,7 @@ While the router uses the [HTML5 pushState](https://developer.mozilla.org/docs/W
 The preferred way to configure the strategy is to add a [`<base href>` element](https://developer.mozilla.org/docs/Web/HTML/Element/base 'base href') tag in the `<head>` of the `index.html`.
 
 ```angular-html
-<base href="/">
+<base href="/" />
 ```
 
 Without that tag, the browser might not be able to load resources \(images, CSS, scripts\) when "deep linking" into the application.

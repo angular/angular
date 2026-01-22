@@ -58,7 +58,7 @@ export class CustomCardAction {
 })
 export class CustomCard {
   actions = viewChildren(CustomCardAction);
-  actionsTexts = computed(() => this.actions().map(action => action.text));
+  actionsTexts = computed(() => this.actions().map((action) => action.text));
 }
 ```
 
@@ -89,16 +89,15 @@ export class CustomExpando {
 }
 
 @Component({
-/* ... */
-// CustomToggle is used inside CustomExpando as content.
-template: `
+  /* ... */
+  // CustomToggle is used inside CustomExpando as content.
+  template: `
     <custom-expando>
       <custom-toggle>Show</custom-toggle>
     </custom-expando>
-  `
+  `,
 })
-
-export class UserProfile { }
+export class UserProfile {}
 ```
 
 If the query does not find a result, its value is `undefined`. This may occur if the target element is absent or hidden by `@if`. Angular keeps the result of `contentChild` up to date as your application state changes.
@@ -120,10 +119,9 @@ export class CustomMenuItem {
   selector: 'custom-menu',
   /*...*/
 })
-
 export class CustomMenu {
   items = contentChildren(CustomMenuItem);
-  itemTexts = computed(() => this.items().map(item => item.text));
+  itemTexts = computed(() => this.items().map((item) => item.text));
 }
 
 @Component({
@@ -133,9 +131,9 @@ export class CustomMenu {
       <custom-menu-item>Cheese</custom-menu-item>
       <custom-menu-item>Tomato</custom-menu-item>
     </custom-menu>
-  `
+  `,
 })
-export class UserProfile { }
+export class UserProfile {}
 ```
 
 `contentChildren` creates a signal with an `Array` of the query results.
@@ -175,7 +173,7 @@ a [template reference variable](guide/templates/variables#template-reference-var
   template: `
     <button #save>Save</button>
     <button #cancel>Cancel</button>
-  `
+  `,
 })
 export class ActionBar {
   saveButton = viewChild<ElementRef<HTMLButtonElement>>('save');
@@ -199,9 +197,11 @@ const SUB_ITEM = new InjectionToken<string>('sub-item');
   /*...*/
   providers: [{provide: SUB_ITEM, useValue: 'special-item'}],
 })
-export class SpecialItem { }
+export class SpecialItem {}
 
-@Component({/*...*/})
+@Component({
+  /*...*/
+})
 export class CustomList {
   subItemType = contentChild(SUB_ITEM);
 }
@@ -254,9 +254,9 @@ export class CustomExpando {
         <custom-toggle>Show</custom-toggle>
       </some-other-component>
     </custom-expando>
-  `
+  `,
 })
-export class UserProfile { }
+export class UserProfile {}
 ```
 
 In the example above, `CustomExpando` cannot find `<custom-toggle>` with `contentChildren` because it is not a direct child of `<custom-expando>`. By setting `descendants: true`, you configure the query to traverse all descendants in the same template. Queries, however, _never_ pierce into components to traverse elements in other templates.
@@ -324,7 +324,7 @@ export class CustomCard {
   @ViewChildren(CustomCardAction) actions: QueryList<CustomCardAction>;
 
   ngAfterViewInit() {
-    this.actions.forEach(action => {
+    this.actions.forEach((action) => {
       console.log(action.text);
     });
   }
@@ -350,7 +350,6 @@ export class CustomToggle {
   selector: 'custom-expando',
   /*...*/
 })
-
 export class CustomExpando {
   @ContentChild(CustomToggle) toggle: CustomToggle;
 
@@ -365,9 +364,9 @@ export class CustomExpando {
     <custom-expando>
       <custom-toggle>Show</custom-toggle>
     </custom-expando>
-  `
+  `,
 })
-export class UserProfile { }
+export class UserProfile {}
 ```
 
 In this example, the `CustomExpando` component queries for a child `CustomToggle` and accesses the result in `ngAfterContentInit`.
@@ -391,12 +390,11 @@ export class CustomMenuItem {
   selector: 'custom-menu',
   /*...*/
 })
-
 export class CustomMenu {
   @ContentChildren(CustomMenuItem) items: QueryList<CustomMenuItem>;
 
   ngAfterContentInit() {
-    this.items.forEach(item => {
+    this.items.forEach((item) => {
       console.log(item.text);
     });
   }
@@ -409,9 +407,9 @@ export class CustomMenu {
       <custom-menu-item>Cheese</custom-menu-item>
       <custom-menu-item>Tomato</custom-menu-item>
     </custom-menu>
-  `
+  `,
 })
-export class UserProfile { }
+export class UserProfile {}
 ```
 
 `@ContentChildren` creates a `QueryList` object that contains the query results. You can subscribe to changes to the query results over time via the `changes` property.

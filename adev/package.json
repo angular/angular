@@ -68,7 +68,7 @@
     "playwright-core": "1.57.0",
     "preact": "10.28.2",
     "preact-render-to-string": "6.6.5",
-    "prettier": "3.7.4",
+    "prettier": "3.8.0",
     "rxjs": "7.8.2",
     "shiki": "3.21.0",
     "style-mod": "4.1.3",

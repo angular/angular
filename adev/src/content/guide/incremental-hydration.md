@@ -175,7 +175,7 @@ Hydrate triggers are additional triggers that are used alongside regular trigger
 ```angular-html
 @defer (on idle; hydrate on interaction) {
   <example-cmp />
-} @placeholder{
+} @placeholder {
   <div>Example Placeholder</div>
 }
 ```
@@ -194,7 +194,7 @@ Angular's component and dependency system is hierarchical, which means hydrating
   } @placeholder {
     <div>Child placeholder</div>
   }
-} @placeholder{
+} @placeholder {
   <div>Parent Placeholder</div>
 }
 ```

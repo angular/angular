@@ -25,7 +25,7 @@ Add the `locale` parameter to the pipe to override the current value of `LOCALE_
 To force the currency to use American English \(`en-US`\), use the following format for the `CurrencyPipe`
 
 ```angular-html
-{{ amount | currency : 'en-US' }}
+{{ amount | currency: 'en-US' }}
 ```
 
 HELPFUL: The locale specified for the `CurrencyPipe` overrides the global `LOCALE_ID` token of your application.

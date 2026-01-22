@@ -145,13 +145,11 @@ Use the `ngAccordionContent` directive on an `ng-template` to defer rendering co
 ```angular-html
 <div ngAccordionGroup>
   <div>
-    <button ngAccordionTrigger panelId="item-1">
-      Trigger Text
-    </button>
+    <button ngAccordionTrigger panelId="item-1">Trigger Text</button>
     <div ngAccordionPanel panelId="item-1">
       <ng-template ngAccordionContent>
         <!-- This content only renders when the panel first opens -->
-        <img src="large-image.jpg" alt="Description">
+        <img src="large-image.jpg" alt="Description" />
         <app-expensive-component />
       </ng-template>
     </div>
