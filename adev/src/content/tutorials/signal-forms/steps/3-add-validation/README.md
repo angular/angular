@@ -18,7 +18,7 @@ Let's add validation!
 Import the `required` and `email` validators from `@angular/forms/signals`:
 
 ```ts
-import {form, Field, required, email} from '@angular/forms/signals';
+import {form, FormField, required, email} from '@angular/forms/signals';
 ```
 
 </docs-step>
