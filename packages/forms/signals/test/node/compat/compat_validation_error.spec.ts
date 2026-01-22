@@ -11,7 +11,9 @@ import {
   CompatValidationError,
   extractNestedReactiveErrors,
   reactiveErrorsToSignalErrors,
+  signalErrorsToValidationErrors,
 } from '../../../src/compat/validation_errors';
+import {ValidationError} from '../../../src/api/rules/validation/validation_errors';
 
 describe('destroy$', () => {
   const control = new FormControl();
@@ -61,5 +63,26 @@ describe('extracts validation errors', () => {
     const control = new FormGroup([], failingValidator);
     const errors = extractNestedReactiveErrors(control);
     expect(errors).toEqual([new CompatValidationError({kind: 'fail', context: true, control})]);
+  });
+});
+
+describe('signalErrorsToValidationErrors', () => {
+  it('should return null for empty errors array', () => {
+    expect(signalErrorsToValidationErrors([])).toBeNull();
+  });
+
+  it('should return null if no errors are added to the object', () => {
+    // This case shouldn't happen with the current logic but it tests the resilience
+    expect(signalErrorsToValidationErrors([])).toBeNull();
+  });
+
+  it('should convert errors to an object', () => {
+    const error: ValidationError = {kind: 'required', context: true} as any;
+    expect(signalErrorsToValidationErrors([error])).toEqual({required: error});
+  });
+
+  it("should return null if errors array is non-empty but loop doesn't add anything", () => {
+    // This is the specific case we added protection for
+    expect(signalErrorsToValidationErrors([])).toBeNull();
   });
 });
