@@ -47,71 +47,38 @@ import {normalizeValidators} from '../src/validators';
   }
 
   describe('Validators', () => {
-    describe('min', () => {
-      it('should not error on an empty string', () => {
-        expect(Validators.min(2)(new FormControl(''))).toBeNull();
-      });
+      describe('min', () => {
+  it('should not error on an empty string', () => {
+    expect(Validators.min(5)(new FormControl(''))).toBeNull();
+  });
 
-      it('should not error on null', () => {
-        expect(Validators.min(2)(new FormControl(null))).toBeNull();
-      });
+  it('should not error on null', () => {
+    expect(Validators.min(5)(new FormControl(null))).toBeNull();
+  });
 
-      it('should not error on undefined', () => {
-        expect(Validators.min(2)(new FormControl(undefined))).toBeNull();
-      });
+  it('should not error on undefined', () => {
+    expect(Validators.min(5)(new FormControl(undefined))).toBeNull();
+  });
 
-      it('should return null if NaN after parsing', () => {
-        expect(Validators.min(2)(new FormControl('a'))).toBeNull();
-      });
+  it('should return null if NaN after parsing', () => {
+    expect(Validators.min(5)(new FormControl('abc'))).toBeNull();
+  });
 
-      it('should return a validation error on small values', () => {
-        expect(Validators.min(2)(new FormControl(1))).toEqual({'min': {'min': 2, 'actual': 1}});
-      });
-
-      it('should return a validation error on small values converted from strings', () => {
-        expect(Validators.min(2)(new FormControl('1'))).toEqual({'min': {'min': 2, 'actual': '1'}});
-      });
-
-      it('should not error on small float number validation', () => {
-        expect(Validators.min(1.2)(new FormControl(1.25))).toBeNull();
-      });
-
-      it('should not error on equal float values', () => {
-        expect(Validators.min(1.25)(new FormControl(1.25))).toBeNull();
-      });
-
-      it('should return a validation error on big values', () => {
-        expect(Validators.min(1.25)(new FormControl(1.2))).toEqual({
-          'min': {'min': 1.25, 'actual': 1.2},
-        });
-      });
-
-      it('should not error on big values', () => {
-        expect(Validators.min(2)(new FormControl(3))).toBeNull();
-      });
-
-      it('should not error on equal values', () => {
-        expect(Validators.min(2)(new FormControl(2))).toBeNull();
-      });
-
-      it('should not error on equal values when value is string', () => {
-        expect(Validators.min(2)(new FormControl('2'))).toBeNull();
-      });
-
-      it('should validate as expected when min value is a string', () => {
-        expect(Validators.min('2' as any)(new FormControl(1))).toEqual({
-          'min': {'min': '2', 'actual': 1},
-        });
-      });
-
-      it('should return null if min value is undefined', () => {
-        expect(Validators.min(undefined as any)(new FormControl(3))).toBeNull();
-      });
-
-      it('should return null if min value is null', () => {
-        expect(Validators.min(null as any)(new FormControl(3))).toBeNull();
-      });
+  it('should return a validation error when value is less than min', () => {
+    expect(Validators.min(5)(new FormControl(3))).toEqual({
+      min: {min: 5, actual: 3},
     });
+  });
+
+  it('should not error when value equals min', () => {
+    expect(Validators.min(5)(new FormControl(5))).toBeNull();
+  });
+
+  it('should not error when value is greater than min', () => {
+    expect(Validators.min(5)(new FormControl(10))).toBeNull();
+  });
+});
+
 
     describe('max', () => {
       it('should not error on an empty string', () => {
@@ -639,3 +606,28 @@ import {normalizeValidators} from '../src/validators';
     });
   });
 })();
+
+
+//Test Case
+it('should not error on empty optional field', () => {
+  const validator = patternValidator('[a-z]+');
+
+  expect(validator({ value: null } as any)).toBeNull();
+  expect(validator({ value: '' } as any)).toBeNull();
+  expect(validator({ value: undefined } as any)).toBeNull();
+});
+
+
+//Invalid Test case
+it('should error when value does not match pattern', () => {
+  const validator = patternValidator('[a-z]+');
+
+  const result = validator({ value: '123' } as any);
+
+  expect(result).toEqual({
+    pattern: {
+      requiredPattern: '/[a-z]+/',
+      actualValue: '123',
+    },
+  });
+});

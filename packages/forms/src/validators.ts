@@ -566,32 +566,34 @@ export function maxLengthValidator(maxLength: number): ValidatorFn {
  * Validator that requires the control's value to match a regex pattern.
  * See `Validators.pattern` for additional information.
  */
-export function patternValidator(pattern: string | RegExp): ValidatorFn {
-  if (!pattern) return nullValidator;
-  let regex: RegExp;
-  let regexStr: string;
-  if (typeof pattern === 'string') {
-    regexStr = '';
 
-    if (pattern.charAt(0) !== '^') regexStr += '^';
 
-    regexStr += pattern;
-
-    if (pattern.charAt(pattern.length - 1) !== '$') regexStr += '$';
-
-    regex = new RegExp(regexStr);
-  } else {
-    regexStr = pattern.toString();
-    regex = pattern;
-  }
-  return (control: AbstractControl): ValidationErrors | null => {
-    if (isEmptyInputValue(control.value)) {
-      return null; // don't validate empty values to allow optional controls
+  export function patternValidator(pattern: string | RegExp): ValidatorFn {
+  return (control) => {
+    const value = control.value;
+    if (value === null || value === undefined || value === '') {
+      return null;
     }
-    const value: string = control.value;
+
+    if (typeof value !== 'string') {
+      return {
+        pattern: {
+          requiredPattern: pattern.toString(),
+          actualValue: value,
+        },
+      };
+    }
+
+    const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
+
     return regex.test(value)
       ? null
-      : {'pattern': {'requiredPattern': regexStr, 'actualValue': value}};
+      : {
+          pattern: {
+            requiredPattern: regex.toString(),
+            actualValue: value,
+          },
+        };
   };
 }
 
