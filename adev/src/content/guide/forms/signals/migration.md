@@ -83,8 +83,8 @@ In the template, use standard reactive syntax by binding the underlying control:
 
 ### Integrating a `FormGroup` into a signal form
 
-You can also wrap an entire `FormGroup`. This is common when a reusable sub-section of a form—such as an **Address Block
-**—is still managed by legacy Reactive Forms.
+You can also wrap an entire `FormGroup`. This is common when a reusable sub-section of a form—such as an
+**Address Block**—is still managed by legacy Reactive Forms.
 
 ```typescript
 import {signal} from '@angular/core';
@@ -297,7 +297,8 @@ export class UserProfile {
 
 ### Dynamic manipulation
 
-Imperative APIs for adding or removing validators (like `addValidators()`, `removeValidators()`, `setValidators()`) are intentionally not supported in `SignalFormControl`.
+Imperative APIs for adding or removing validators (like `addValidators()`, `removeValidators()`, `setValidators()`) are
+intentionally not supported in `SignalFormControl`.
 
 Attempting to call these methods will throw an error.
 
@@ -343,7 +344,9 @@ export class UserProfile {
 
 ### Manual Error Selection
 
-The `setErrors()` and `markAsPending()` methods are not supported. In Signal Forms, errors are derived from validation rules and async validation status. If you need to report an error, it should be done declaratively via a validation rule in the schema.
+The `setErrors()` and `markAsPending()` methods are not supported. In Signal Forms, errors are derived from validation
+rules and async validation status. If you need to report an error, it should be done declaratively via a validation rule
+in the schema.
 
 ## Automatic status classes
 

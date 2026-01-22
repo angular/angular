@@ -40,10 +40,12 @@ export function signalErrorsToValidationErrors(errors: ValidationError[]): Valid
     return null;
   }
   const errObj: ValidationErrors = {};
+  let hasErrors = false;
   for (const error of errors) {
     errObj[error.kind] = error;
+    hasErrors = true;
   }
-  return errObj;
+  return hasErrors ? errObj : null;
 }
 
 /**
