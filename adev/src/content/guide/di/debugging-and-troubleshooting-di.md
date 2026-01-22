@@ -30,7 +30,7 @@ import {DataStore} from './data-store';
 
 @Component({
   selector: 'app-parent',
-  template: '<app-child></app-child>',
+  template: '<app-child />',
 })
 export class ParentComponent {
   private dataService = inject(DataStore); // ERROR: Not available to parent
@@ -41,8 +41,7 @@ Angular only searches up the hierarchy, never down. Parent components cannot acc
 
 **Solution:** Provide the service at a higher level (application or parent component).
 
-```ts
-// Good: Provide at root level
+```ts {prefer}
 import {Injectable} from '@angular/core';
 
 @Injectable({providedIn: 'root'})
@@ -87,8 +86,8 @@ Lazy-loaded routes create child injectors that are only available after the rout
 
 **Solution:** Use `providedIn: 'root'` for services that need to be shared across lazy boundaries.
 
-```ts
-// Good: Provide at root for shared services
+```ts {prefer}
+// Provide at root for shared services
 import {Injectable} from '@angular/core';
 
 @Injectable({providedIn: 'root'})
@@ -107,8 +106,8 @@ You expect one shared instance (singleton) but get separate instances in differe
 
 When you add a service to a component's `providers` array, Angular creates a new instance of that service for each instance of the component. Each component gets its own separate service instance, which means changes in one component don't affect the service instance in other components. This is often unexpected when you want shared state across your application.
 
-```ts
-// Avoid: Component-level provider creates multiple instances
+```ts {avoid}
+// Component-level provider creates multiple instances
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -135,8 +134,8 @@ Each component gets its own `UserClient` instance. Changes in one component don'
 
 **Solution:** Use `providedIn: 'root'` for singletons.
 
-```ts
-// Good: Root-level singleton
+```ts {prefer}
+// Root-level singleton
 import {Injectable} from '@angular/core';
 
 @Injectable({providedIn: 'root'})
@@ -190,8 +189,8 @@ The `inject()` function only works in specific contexts during class constructio
 
 When you call the `inject()` function inside lifecycle hooks like `ngOnInit()`, `ngAfterViewInit()`, or `ngOnDestroy()`, Angular throws an error because these methods run outside the injection context. The injection context is only available during the synchronous execution of class construction, which happens before lifecycle hooks are called.
 
-```ts
-// Avoid: inject() in ngOnInit
+```ts {avoid}
+// inject() in ngOnInit
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -211,8 +210,8 @@ export class ProfileComponent {
 
 **Solution:** Capture dependencies in field initializers or the constructor.
 
-```ts
-// Good: Capture in field initializer
+```ts {prefer}
+// Capture in field initializer
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -234,8 +233,8 @@ export class ProfileComponent {
 
 When you use an `await` statement in your code, everything after that `await` executes asynchronously in a different execution context. If you try to call `inject()` after an `await`, Angular cannot access the injection context because it only exists during synchronous class construction. The code after `await` runs at a later time when the injection context is no longer available.
 
-```ts
-// Avoid: inject() after await
+```ts {avoid}
+// inject() after await
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -260,8 +259,8 @@ export class ProfileComponent {
 
 **Solution:** Capture dependencies before any `await` statements.
 
-```ts
-// Good: Capture before async operations
+```ts {prefer}
+// Capture before async operations
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -375,12 +374,12 @@ export class ChildComponent {
   selector: 'app-root',
   template: `
     <app-parent>
-      <app-child></app-child>
+      <app-child />
       <!-- Can access ThemeStore -->
     </app-parent>
 
     <app-parent-view>
-      <app-child></app-child>
+      <app-child />
       <!-- Cannot access ThemeStore -->
     </app-parent-view>
   `,
@@ -441,7 +440,7 @@ bootstrapApplication(AppComponent, {
 import {InjectionToken, inject} from '@angular/core';
 import {AppConfig} from './config.token';
 
-// Avoid: Creating new token with same description
+// Avoid creating new token with same description
 const APP_CONFIG = new InjectionToken<AppConfig>('app config');
 
 @Component({
@@ -457,8 +456,8 @@ Even though both tokens have the description `'app config'`, they are different 
 
 **Solution:** Import the same token instance.
 
-```ts
-// Good: Import the same token
+```ts {prefer}
+// Import the same token
 import {inject} from '@angular/core';
 import {APP_CONFIG, AppConfig} from './config.token';
 
@@ -477,8 +476,8 @@ TIP: Always export tokens from a shared file and import them everywhere they're 
 
 When you define a TypeScript interface, it only exists during compilation for type checking. TypeScript erases all interface definitions when it compiles to JavaScript, so at runtime there's no object for Angular to use as an injection token. If you try to inject an interface type, Angular has nothing to match against the provider configuration.
 
-```ts
-// Avoid: Can't inject interface
+```ts {avoid}
+// Can't inject interface
 interface UserConfig {
   name: string;
   email: string;
@@ -496,8 +495,8 @@ export class ProfileComponent {
 
 **Solution:** Use `InjectionToken` for interface types.
 
-```ts
-// Good: Use InjectionToken for interfaces
+```ts {prefer}
+// Use InjectionToken for interfaces
 import {InjectionToken, inject} from '@angular/core';
 
 interface UserConfig {
@@ -1055,8 +1054,8 @@ The dependency path shows that `AppComponent` injected `AuthClient`, which tried
 
 The most common cause is forgetting the `@Injectable()` decorator on a service class.
 
-```ts
-// Avoid: Missing decorator
+```ts {avoid}
+// Missing decorator
 export class UserClient {
   getUser() {
     return {name: 'Alice'};
@@ -1066,8 +1065,8 @@ export class UserClient {
 
 Angular requires the `@Injectable()` decorator to generate the metadata needed for dependency injection.
 
-```ts
-// Good: Include @Injectable
+```ts {prefer}
+// Include @Injectable
 import {Injectable} from '@angular/core';
 
 @Injectable({
@@ -1086,8 +1085,8 @@ NOTE: Classes with zero-argument constructors can work without `@Injectable()`, 
 
 A service may have `@Injectable()` but not specify where it should be provided.
 
-```ts
-// Avoid: No providedIn specified
+```ts {avoid}
+// No providedIn specified
 import {Injectable} from '@angular/core';
 
 @Injectable()
@@ -1100,8 +1099,8 @@ export class UserClient {
 
 Specify `providedIn: 'root'` to make the service available throughout your application.
 
-```ts
-// Good: Specify providedIn
+```ts {prefer}
+// Specify providedIn
 import {Injectable} from '@angular/core';
 
 @Injectable({
@@ -1120,8 +1119,8 @@ The `providedIn: 'root'` configuration makes the service available application-w
 
 In Angular v20+ with standalone components, you must explicitly import or provide dependencies in each component.
 
-```ts
-// Avoid: Missing service import
+```ts {avoid}
+// Missing service import
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -1137,8 +1136,8 @@ export class ProfileComponent {
 
 Ensure the service uses `providedIn: 'root'` or add it to the component's `providers` array.
 
-```ts
-// Good: Service uses providedIn: 'root'
+```ts {prefer}
+// Service uses providedIn: 'root'
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -1380,13 +1379,15 @@ NG0204: Can't resolve all parameters for UserClient
 
 **Solution:** Add the `@Injectable()` decorator to the service.
 
-```ts
-// Avoid: Missing @Injectable with constructor parameters
+```ts {avoid}
+// Missing @Injectable with constructor parameters
 export class UserClient {
   constructor(private http: HttpClient) {} // ERROR
 }
+```
 
-// Good: Include @Injectable
+```ts {prefer}
+// Include @Injectable
 import {Injectable, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
@@ -1408,8 +1409,8 @@ This typically happens when accessing services after a component or module has b
 
 **Solution:** Ensure you don't access services after the component lifecycle has ended. Cancel subscriptions and cleanup async operations in `ngOnDestroy()`.
 
-```ts
-// Avoid: Using service after component destroyed
+```ts {avoid}
+// Using service after component destroyed
 import {Component, inject, OnDestroy} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -1441,8 +1442,8 @@ NG0207: EnvironmentProviders cannot be used in component providers
 
 **Solution:** Use `EnvironmentProviders` only at the application or route level.
 
-```ts
-// Avoid: importProvidersFrom in component
+```ts {avoid}
+// importProvidersFrom in component
 import {Component} from '@angular/core';
 import {provideHttpClient} from '@angular/common/http';
 
@@ -1452,8 +1453,10 @@ import {provideHttpClient} from '@angular/common/http';
   providers: [provideHttpClient()], // ERROR
 })
 export class AppComponent {}
+```
 
-// Good: provideHttpClient at application level
+```ts {prefer}
+// provideHttpClient at application level
 import {bootstrapApplication} from '@angular/platform-browser';
 import {provideHttpClient} from '@angular/common/http';
 import {AppComponent} from './app.component';
