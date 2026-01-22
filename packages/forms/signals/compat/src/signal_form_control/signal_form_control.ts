@@ -107,6 +107,7 @@ export class SignalFormControl<T> extends AbstractControl {
     );
     this.fieldState = this.fieldTree();
 
+    // TODO(kirjs): Drop this when https://github.com/angular/angular/pull/66672 is merged.
     Object.defineProperty(this, 'value', {
       get: () => this.sourceValue(),
     });
@@ -202,9 +203,8 @@ export class SignalFormControl<T> extends AbstractControl {
       this.updateParentValueAndValidity(parent, options?.emitEvent);
     }
     if (options?.emitModelToViewChange !== false) {
-      const emitModelEvent = options?.emitViewToModelChange !== false;
       for (const fn of this.onChangeCallbacks) {
-        fn(value, emitModelEvent);
+        fn(value, true);
       }
     }
   }
@@ -477,10 +477,16 @@ class CachingWeakMap<K extends object, V> {
   }
 }
 
+/**
+ * Proxy that takes a FieldTree, wraps it, and potches setters to immediately react on the value update.
+ * @param tree
+ * @param onUpdate
+ */
 function wrapFieldTreeForSyncUpdates<T>(tree: FieldTree<T>, onUpdate: () => void): FieldTree<T> {
   const treeCache = new CachingWeakMap<FieldTree<unknown>, FieldTree<unknown>>();
   const stateCache = new CachingWeakMap<FieldState<unknown>, FieldState<unknown>>();
 
+  // Takes a FieldState and wraps a value to instantly call onUpdate.
   const wrapState = (state: FieldState<unknown>): FieldState<unknown> => {
     const {value} = state;
     const wrappedValue = Object.assign((...a: unknown[]) => (value as Function)(...a), {
@@ -495,7 +501,7 @@ function wrapFieldTreeForSyncUpdates<T>(tree: FieldTree<T>, onUpdate: () => void
     }) as WritableSignal<unknown>;
     return Object.create(state, {value: {get: () => wrappedValue}});
   };
-
+  // Takes a FieldTree and wraps it's state's value to instantly call onUpdate.
   const wrapTree = (t: FieldTree<unknown>): FieldTree<unknown> => {
     return treeCache.getOrCreate(t, () => {
       return new Proxy(t, {
