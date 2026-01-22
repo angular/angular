@@ -7,7 +7,7 @@ You've completed the Signal Forms tutorial and built a complete login form from 
 Throughout this tutorial, you learned the fundamentals of Angular Signal Forms:
 
 1. **Form Models** - Creating type-safe form data with signals and the `form()` function
-2. **Field Binding** - Using the `[field]` directive for two-way data binding and displaying the field with `value()`
+2. **Field Binding** - Using the `[formField]` directive for two-way data binding and displaying the field with `value()`
 3. **Validation** - Applying built-in validators (such as `required()`, `email()`) with custom messages
 4. **Error Display** - Showing validation errors conditionally based on field state
 5. **Form Submission** - Handling form submission with the `submit()` function

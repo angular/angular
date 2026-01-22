@@ -19,7 +19,7 @@ Let's complete the form!
 Import the `submit` function from `@angular/forms/signals`:
 
 ```ts
-import {form, Field, required, email, submit} from '@angular/forms/signals';
+import {form, FormField, required, email, submit} from '@angular/forms/signals';
 ```
 
 </docs-step>
