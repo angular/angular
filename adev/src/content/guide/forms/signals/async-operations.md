@@ -21,16 +21,16 @@ Here's an example checking username availability:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, validateHttp, Field } from '@angular/forms/signals'
+import { form, validateHttp, FormField } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-registration',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <form>
       <label>
         Username:
-        <input [field]="registrationForm.username" />
+        <input [formField]="registrationForm.username" />
       </label>
 
       @if (registrationForm.username().pending()) {
@@ -225,11 +225,11 @@ The `validateAsync()` function requires four properties: `params`, `factory`, `o
 
 ```ts
 import {Component, signal, resource} from '@angular/core';
-import {form, validateAsync, Field} from '@angular/forms/signals';
+import {form, validateAsync, FormField} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-registration',
-  imports: [Field],
+  imports: [FormField],
   template: `...`,
 })
 export class Registration {
@@ -282,7 +282,7 @@ export class Registration {
     });
   });
 
-  private cache = new Map<string, any>();
+  private cache = new Map<string, {available: boolean}>();
 }
 ```
 
@@ -300,19 +300,13 @@ validateAsync(schemaPath.confirmEmail, {
     return {email, confirmEmail};
   },
   factory: (params) =>
-    resource({
-      request: () => params(),
-      loader: async ({params}) => {
-        if (!params) return undefined;
-        const response = await fetch('/api/validate-pair', {
-          method: 'POST',
-          body: JSON.stringify(params),
-        });
-        return response.json();
-      },
+    httpResource<{valid: boolean}>({
+      url: '/api/validate-pair',
+      method: 'POST',
+      body: params,
     }),
   onSuccess: (result) =>
-    result.valid
+    result?.valid
       ? null
       : {
           kind: 'mismatch',
@@ -337,7 +331,7 @@ When async validation runs, the field's `pending()` signal returns `true`. Durin
 Show the pending state in your template to provide feedback:
 
 ```angular-html
-<input [field]="loginForm.username" />
+<input [formField]="loginForm.username" />
 
 @if (loginForm.username().pending()) {
   <span class="loading">Checking availability...</span>
