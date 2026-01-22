@@ -1,3 +1,10 @@
+## 21.1.1 (2026-01-22)
+
+- fix(vscode-extension): add syntax highlighting for arrow functions ([a649fc8f57](https://github.com/angular/angular/commit/a649fc8f57bc4f9686a263022011a614b878048c))
+- fix(vscode-extension): add syntax highlighting for spread/rest expressions ([8f16846dd9](https://github.com/angular/angular/commit/8f16846dd9ce90790b838b73401c22dd21ffbea5))
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 21.1.0 (2026-01-12)
 
 - fix(vscode-extension): convert enum member kind in completions correctly ([50674f8c28](https://github.com/angular/angular/commit/50674f8c28c970e6a9cfe222f9f55bace4e16321))
