@@ -12,7 +12,7 @@ One of the most common DI issues occurs when you try to inject a service but Ang
 
 When you provide a service in a component's `providers` array, Angular creates an instance in that component's injector. This instance is only available to that component and its children. Parent components and sibling components cannot access it because they use different injectors.
 
-```ts
+```angular-ts
 // child-view.ts - Provides service
 import {Component} from '@angular/core';
 import {DataStore} from './data-store';
@@ -56,7 +56,7 @@ TIP: Use `providedIn: 'root'` by default for services that don't need component-
 
 When you provide a service in a lazy-loaded route's `providers` array, Angular creates a child injector for that route. This injector and its services only become available after the route loads. Components in the eagerly-loaded parts of your application cannot access these services because they use different injectors that exist before the lazy-loaded injector is created.
 
-```ts
+```angular-ts
 // feature.routes.ts - Lazy-loaded route
 import {Routes} from '@angular/router';
 import {FeatureClient} from './feature-client';
@@ -106,7 +106,7 @@ You expect one shared instance (singleton) but get separate instances in differe
 
 When you add a service to a component's `providers` array, Angular creates a new instance of that service for each instance of the component. Each component gets its own separate service instance, which means changes in one component don't affect the service instance in other components. This is often unexpected when you want shared state across your application.
 
-```ts {avoid}
+```angular-ts {avoid}
 // Component-level provider creates multiple instances
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
@@ -148,7 +148,7 @@ export class UserClient {
 
 Sometimes you want separate instances per component for component-specific state.
 
-```ts
+```angular-ts
 // Intentional: Component-scoped state
 import {Injectable, signal} from '@angular/core';
 
@@ -189,7 +189,7 @@ The `inject()` function only works in specific contexts during class constructio
 
 When you call the `inject()` function inside lifecycle hooks like `ngOnInit()`, `ngAfterViewInit()`, or `ngOnDestroy()`, Angular throws an error because these methods run outside the injection context. The injection context is only available during the synchronous execution of class construction, which happens before lifecycle hooks are called.
 
-```ts {avoid}
+```angular-ts {avoid}
 // inject() in ngOnInit
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
@@ -210,7 +210,7 @@ export class UserProfile {
 
 **Solution:** Capture dependencies in field initializers or the constructor.
 
-```ts {prefer}
+```angular-ts {prefer}
 // Capture in field initializer
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
@@ -233,7 +233,7 @@ export class UserProfile {
 
 When you use an `await` statement in your code, everything after that `await` executes asynchronously in a different execution context. If you try to call `inject()` after an `await`, Angular cannot access the injection context because it only exists during synchronous class construction. The code after `await` runs at a later time when the injection context is no longer available.
 
-```ts {avoid}
+```angular-ts {avoid}
 // inject() after await
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
@@ -259,7 +259,7 @@ export class UserProfile {
 
 **Solution:** Capture dependencies before any `await` statements.
 
-```ts {prefer}
+```angular-ts {prefer}
 // Capture before async operations
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
@@ -287,7 +287,7 @@ export class UserProfile {
 
 When you need to inject dependencies in callbacks or after async operations, use `runInInjectionContext()`.
 
-```ts
+```angular-ts
 import {Component, inject, Injector} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -311,7 +311,7 @@ export class UserProfile {
 
 The `runInInjectionContext()` method creates a temporary injection context, allowing `inject()` to work inside the callback.
 
-TIP: Always capture dependencies at the class level when possible. Use `runInInjectionContext()` only when you genuinely need deferred injection.
+IMPORTANT: Always capture dependencies at the class level when possible. Use `runInInjectionContext()` only when you genuinely need deferred injection.
 
 ### providers vs viewProviders confusion
 
@@ -323,7 +323,7 @@ The difference between `providers` and `viewProviders` affects content projectio
 
 **viewProviders:** Only available to the component's template, NOT to projected content.
 
-```ts
+```angular-ts
 // parent-view.ts
 import {Component, inject} from '@angular/core';
 import {ThemeStore} from './theme-store';
@@ -437,7 +437,7 @@ bootstrapApplication(App, {
 });
 ```
 
-```ts {avoid}
+```angular-ts {avoid}
 // feature-view.ts - Creating new token with same description
 import {InjectionToken, inject} from '@angular/core';
 import {AppConfig} from './config.token';
@@ -457,7 +457,7 @@ Even though both tokens have the description `'app config'`, they are different 
 
 **Solution:** Import the same token instance.
 
-```ts {prefer}
+```angular-ts {prefer}
 // Import the same token
 import {inject} from '@angular/core';
 import {APP_CONFIG, AppConfig} from './config.token';
@@ -477,7 +477,7 @@ TIP: Always export tokens from a shared file and import them everywhere they're 
 
 When you define a TypeScript interface, it only exists during compilation for type checking. TypeScript erases all interface definitions when it compiles to JavaScript, so at runtime there's no object for Angular to use as an injection token. If you try to inject an interface type, Angular has nothing to match against the provider configuration.
 
-```ts {avoid}
+```angular-ts {avoid}
 // Can't inject interface
 interface UserConfig {
   name: string;
@@ -496,7 +496,7 @@ export class UserProfile {
 
 **Solution:** Use `InjectionToken` for interface types.
 
-```ts {prefer}
+```angular-ts {prefer}
 // Use InjectionToken for interfaces
 import {InjectionToken, inject} from '@angular/core';
 
@@ -750,7 +750,7 @@ You can control how Angular searches the hierarchy with resolution modifiers.
 
 **@Self() - Only check current injector**
 
-```ts
+```angular-ts
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -769,7 +769,7 @@ The `self: true` option restricts the search to the current injector. If the pro
 
 **@SkipSelf() - Start at parent injector**
 
-```ts
+```angular-ts
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -788,7 +788,7 @@ The `skipSelf: true` option skips the current injector and starts searching at t
 
 **@Optional() - Return null if not found**
 
-```ts
+```angular-ts
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -940,7 +940,7 @@ When the service is created, you'll see the log message and a stack trace showin
 
 Use optional injection with logging to determine if a service is available.
 
-```ts
+```angular-ts
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -968,7 +968,7 @@ This pattern helps you verify if a service is available without crashing the app
 
 Test different resolution strategies with logging.
 
-```ts
+```angular-ts
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -1120,7 +1120,7 @@ The `providedIn: 'root'` configuration makes the service available application-w
 
 In Angular v20+ with standalone components, you must explicitly import or provide dependencies in each component.
 
-```ts {avoid}
+```angular-ts {avoid}
 // Missing service import
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
@@ -1137,7 +1137,7 @@ export class UserProfile {
 
 Ensure the service uses `providedIn: 'root'` or add it to the component's `providers` array.
 
-```ts {prefer}
+```angular-ts {prefer}
 // Service uses providedIn: 'root'
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
@@ -1174,7 +1174,7 @@ Start your investigation at the end of the chain (`LoggerStore`) and verify it h
 
 Use optional injection to check if a provider exists without throwing an error.
 
-```ts
+```angular-ts
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -1216,7 +1216,7 @@ Angular allows `inject()` in these locations:
 
 1. **Class field initializers**
 
-   ```ts
+   ```angular-ts
    import {Component, inject} from '@angular/core';
    import {UserClient} from './user-client';
 
@@ -1232,7 +1232,7 @@ Angular allows `inject()` in these locations:
 
 2. **Class constructor**
 
-   ```ts
+   ```angular-ts
    import {Component, inject} from '@angular/core';
    import {UserClient} from './user-client';
 
@@ -1268,7 +1268,7 @@ Angular allows `inject()` in these locations:
 
 4. **Inside runInInjectionContext()**
 
-   ```ts
+   ```angular-ts
    import {Component, inject, Injector} from '@angular/core';
    import {UserClient} from './user-client';
 
@@ -1410,7 +1410,7 @@ This typically happens when accessing services after a component or module has b
 
 **Solution:** Ensure you don't access services after the component lifecycle has ended. Cancel subscriptions and cleanup async operations in `ngOnDestroy()`.
 
-```ts {avoid}
+```angular-ts {avoid}
 // Using service after component destroyed
 import {Component, inject, OnDestroy} from '@angular/core';
 import {UserClient} from './user-client';
@@ -1419,7 +1419,7 @@ import {UserClient} from './user-client';
   selector: 'app-profile',
   template: '<p>User Profile</p>',
 })
-export class Profile implements OnDestroy {
+export class UserProfile implements OnDestroy {
   private userService = inject(UserClient);
 
   ngOnDestroy() {
@@ -1443,7 +1443,7 @@ NG0207: EnvironmentProviders cannot be used in component providers
 
 **Solution:** Use `EnvironmentProviders` only at the application or route level.
 
-```ts {avoid}
+```angular-ts {avoid}
 // importProvidersFrom in component
 import {Component} from '@angular/core';
 import {provideHttpClient} from '@angular/common/http';
