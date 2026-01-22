@@ -236,7 +236,7 @@ export class Registration {
   registrationModel = signal({username: ''});
 
   // Custom resource factory with caching
-  createUsernameValidator = (params: Signal<string | undefined>) => {
+  createUsernameResource = (params: Signal<string | undefined>) => {
     return resource({
       request: () => params(),
       loader: async ({params}) => {
@@ -263,7 +263,7 @@ export class Registration {
         const username = value();
         return username.length >= 3 ? username : undefined;
       },
-      factory: this.createUsernameValidator,
+      factory: this.createUsernameResource,
       onSuccess: (result) => {
         return result?.available
           ? null
