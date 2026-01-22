@@ -1118,5 +1118,5 @@ When you encounter DI errors, remember to:
 For a deeper understanding of specific topics on dependency injection, check out:
 
 - [Understanding dependency injection](guide/di) - Core DI concepts and patterns
-- [Hierarchical dependency injection](guide/di/hierarchical) - How the injector hierarchy works
+- [Hierarchical dependency injection](guide/di/hierarchical-dependency-injection) - How the injector hierarchy works
 - [Testing with dependency injection](guide/testing) - Using TestBed and mocking dependencies
