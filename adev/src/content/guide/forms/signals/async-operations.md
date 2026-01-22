@@ -11,7 +11,7 @@ Use async validation when your validation logic requires external data. Some com
 - **External API validation** - Validate addresses, tax IDs, or other data with third-party services
 - **Server-side business rules** - Apply validation rules that only the server can verify
 
-Don't use async validation for checks you can perform client-side. Use synchronous validation rules like `pattern()`, `email()`, or `validate()` for format validation and static rules.
+Don't use async validation for checks you can perform synchronously on the client. Use synchronous validation rules like `pattern()`, `email()`, or `validate()` for format validation and static rules.
 
 ## How async validation works
 
@@ -86,33 +86,50 @@ The `validateHttp()` function provides the most common form of async validation.
 
 ### Request function
 
-The `request` function returns either a URL string or an `HttpResourceRequest` object. Return `undefined` to skip validation:
+The `request` function returns either a URL string or an `HttpResourceRequest` object. Return `undefined` to skip the validation:
 
 ```ts
-import {form, validateHttp} from '@angular/forms/signals';
+import {Component, signal} from '@angular/core';
+import {form, validateHttp, FormField} from '@angular/forms/signals';
 
-form(model, (schemaPath) => {
-  validateHttp(schemaPath.username, {
-    request: ({value}) => {
-      const username = value();
-      // Skip validation for empty or short usernames
-      if (!username || username.length < 3) return undefined;
+@Component({
+  selector: 'app-registration',
+  imports: [FormField],
+  template: `...`,
+})
+export class Registration {
+  registrationModel = signal({username: ''});
 
-      return `/api/users/check?username=${username}`;
-    },
-    onSuccess: (response) =>
-      response.available
-        ? null
-        : {
-            kind: 'usernameTaken',
-            message: 'Username is already taken',
-          },
-    onError: () => ({
-      kind: 'validationError',
-      message: 'Could not verify username',
-    }),
+  // Cache usernames that passed validation
+  private validatedUsernames = new Set<string>();
+
+  registrationForm = form(this.registrationModel, (schemaPath) => {
+    validateHttp(schemaPath.username, {
+      request: ({value}) => {
+        const username = value();
+        // Skip HTTP request if already validated
+        if (this.validatedUsernames.has(username)) return undefined;
+
+        return `/api/users/check?username=${username}`;
+      },
+      onSuccess: (response, {value}) => {
+        if (response.available) {
+          // Cache successful validations
+          this.validatedUsernames.add(value());
+          return null;
+        }
+        return {
+          kind: 'usernameTaken',
+          message: 'Username is already taken',
+        };
+      },
+      onError: () => ({
+        kind: 'validationError',
+        message: 'Could not verify username',
+      }),
+    });
   });
-});
+}
 ```
 
 For POST requests or custom headers, return an `HttpResourceRequest` object:
