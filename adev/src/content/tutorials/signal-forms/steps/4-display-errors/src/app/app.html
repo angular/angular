@@ -2,7 +2,7 @@
   <div>
     <label>
       Email
-      <input type="email" [field]="loginForm.email" />
+      <input type="email" [formField]="loginForm.email" />
     </label>
     <!-- TODO: Add @if to show errors when invalid and touched -->
     <!-- TODO: Use @for to loop through loginForm.email().errors() -->
@@ -12,7 +12,7 @@
   <div>
     <label>
       Password
-      <input type="password" [field]="loginForm.password" />
+      <input type="password" [formField]="loginForm.password" />
     </label>
     <!-- TODO: Add @if to show errors when invalid and touched -->
     <!-- TODO: Use @for to loop through loginForm.password().errors() -->
@@ -21,7 +21,7 @@
 
   <div>
     <label>
-      <input type="checkbox" [field]="loginForm.rememberMe" />
+      <input type="checkbox" [formField]="loginForm.rememberMe" />
       Remember me
     </label>
   </div>
