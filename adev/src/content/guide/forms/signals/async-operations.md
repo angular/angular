@@ -223,20 +223,18 @@ TIP: See the [httpResource API documentation](api/common/http/httpResource) for 
 
 ## Custom async validation with validateAsync()
 
-Use `validateAsync()` when you need validation logic beyond HTTP requests. This function gives you full control over the async operation using Angular's resource API.
+Most applications should use `validateHttp()` for async validation. It handles HTTP requests with minimal configuration and covers the majority of use cases.
 
-### When to use validateAsync()
+`validateAsync()` is a lower-level API that exposes Angular's resource primitive directly. It offers complete control but requires more code and familiarity with Angular's resource API.
 
-Choose `validateAsync()` for:
+Consider `validateAsync()` only when `validateHttp()` can't meet your needs. Some examples include:
 
-- **Custom resource logic** - Implement caching, retry logic, or other advanced patterns
-- **Non-HTTP protocols** - Validate using WebSocket or other communication methods
-- **Complex resource management** - Fine-grained control over resource lifecycle
-- **Custom API integration** - Work with non-standard API patterns
+- **Non-HTTP validation** - WebSocket connections, IndexedDB lookups, or Web Worker computations
+- **Custom caching strategies** - Application-specific caching beyond simple memoization
+- **Complex retry logic** - Custom backoff strategies or conditional retries
+- **Direct resource access** - When you need the full resource lifecycle
 
-Use `validateHttp()` for standard REST API validation.
-
-### Creating a custom async validation rule
+### Creating a custom validation rule
 
 The `validateAsync()` function requires four properties: `params`, `factory`, `onSuccess`, and `onError`. The `params` function returns the parameters for your resource, while `factory` creates the resource:
 
