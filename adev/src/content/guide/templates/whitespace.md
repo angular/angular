@@ -6,19 +6,20 @@ By default, Angular templates do not preserve whitespace that the framework cons
 
 Most developers prefer to format their templates with newlines and indentation to make the template readable:
 
-```angular-html
+```html
 <section>
   <h3>User profile</h3>
   <label>
     User name
-    <input>
+    <input />
   </label>
 </section>
 ```
 
 This template contains whitespace between all of the elements. The following snippet shows the same HTML with each whitespace character replaced with the hash (`#`) character to highlight how much whitespace is present:
 
-```angular-html
+<!-- prettier-ignore>
+```html
 <!-- Total Whitespace: 20 -->
 <section>###<h3>User profile</h3>###<label>#####User name#####<input>###</label>#</section>
 ```
@@ -29,7 +30,8 @@ Preserving the whitespace as written in the template would result in many unnece
 
 When your web browser renders HTML on a page, it collapses multiple consecutive whitespace characters to a single character:
 
-```angular-html
+<!-- prettier-ignore -->
+```html
 <!-- What it looks like in the template -->
 <p>Hello         world</p>
 ```

@@ -79,13 +79,11 @@ While `RouterLink` handles declarative navigation in templates, Angular provides
 You can use the `router.navigate()` method to programmatically navigate between routes by specifying a URL path array.
 
 ```angular-ts
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  template: `
-    <button (click)="navigateToProfile()">View Profile</button>
-  `
+  template: ` <button (click)="navigateToProfile()">View Profile</button> `,
 })
 export class AppDashboard {
   private router = inject(Router);
@@ -99,11 +97,11 @@ export class AppDashboard {
 
     // With query parameters
     this.router.navigate(['/search'], {
-      queryParams: { category: 'books', sort: 'price' }
+      queryParams: {category: 'books', sort: 'price'},
     });
 
     // With matrix parameters
-    this.router.navigate(['/products', { featured: true, onSale: true }]);
+    this.router.navigate(['/products', {featured: true, onSale: true}]);
   }
 }
 ```
@@ -113,14 +111,14 @@ export class AppDashboard {
 You can also build dynamic navigation paths relative to your component’s location in the routing tree using the `relativeTo` option.
 
 ```angular-ts
-import { Router, ActivatedRoute } from '@angular/router';
+import {Router, ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-user-detail',
   template: `
     <button (click)="navigateToEdit()">Edit User</button>
     <button (click)="navigateToParent()">Back to List</button>
-  `
+  `,
 })
 export class UserDetailComponent {
   private route = inject(ActivatedRoute);
@@ -132,14 +130,14 @@ export class UserDetailComponent {
   navigateToEdit() {
     // From: /users/123
     // To:   /users/123/edit
-    this.router.navigate(['edit'], { relativeTo: this.route });
+    this.router.navigate(['edit'], {relativeTo: this.route});
   }
 
   // Navigate to parent
   navigateToParent() {
     // From: /users/123
     // To:   /users
-    this.router.navigate(['..'], { relativeTo: this.route });
+    this.router.navigate(['..'], {relativeTo: this.route});
   }
 }
 ```

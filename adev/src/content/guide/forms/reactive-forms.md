@@ -387,25 +387,21 @@ You can bind a `FormArray` directly to a `<form>` element by using the `FormArra
 This is useful when the form does not use a top-level `FormGroup`, and the array itself represents the full form model.
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { FormArray, FormControl } from '@angular/forms';
+import {Component} from '@angular/core';
+import {FormArray, FormControl} from '@angular/forms';
 
 @Component({
   selector: 'form-array-example',
   template: `
     <form [formArray]="form">
       @for (control of form.controls; track $index) {
-        <input [formControlName]="$index">
+        <input [formControlName]="$index" />
       }
     </form>
   `,
 })
 export class FormArrayExampleComponent {
-  controls = [
-    new FormControl('fish'),
-    new FormControl('cat'),
-    new FormControl('dog'),
-  ];
+  controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
 
   form = new FormArray(this.controls);
 }

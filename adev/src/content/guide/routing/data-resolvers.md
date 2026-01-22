@@ -76,17 +76,17 @@ You can learn more about the [`resolve` configuration in the API docs](api/route
 You can access the resolved data in a component by accessing the snapshot data from the `ActivatedRoute` using the `signal` function:
 
 ```angular-ts
-import { Component, inject, computed } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import type { User, Settings } from './types';
+import {Component, inject, computed} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {toSignal} from '@angular/core/rxjs-interop';
+import type {User, Settings} from './types';
 
 @Component({
   template: `
     <h1>{{ user().name }}</h1>
     <p>{{ user().email }}</p>
     <div>Theme: {{ settings().theme }}</div>
-  `
+  `,
 })
 export class UserDetail {
   private route = inject(ActivatedRoute);
@@ -113,15 +113,15 @@ bootstrapApplication(App, {
 With this configuration, you can define inputs in your component that match the resolver keys using the `input` function and `input.required` for required inputs:
 
 ```angular-ts
-import { Component, input } from '@angular/core';
-import type { User, Settings } from './types';
+import {Component, input} from '@angular/core';
+import type {User, Settings} from './types';
 
 @Component({
   template: `
     <h1>{{ user().name }}</h1>
     <p>{{ user().email }}</p>
     <div>Theme: {{ settings().theme }}</div>
-  `
+  `,
 })
 export class UserDetail {
   user = input.required<User>();
@@ -186,10 +186,10 @@ export const userResolver: ResolveFn<User> = (route) => {
 You can also handle resolver errors by subscribing to router events and listening for `NavigationError` events. This approach gives you more granular control over error handling and allows you to implement custom error recovery logic.
 
 ```angular-ts
-import { Component, inject, signal } from '@angular/core';
-import { Router, NavigationError } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import {Component, inject, signal} from '@angular/core';
+import {Router, NavigationError} from '@angular/router';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {map} from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -201,7 +201,7 @@ import { map } from 'rxjs';
       </div>
     }
     <router-outlet />
-  `
+  `,
 })
 export class App {
   private router = inject(Router);
@@ -209,20 +209,20 @@ export class App {
 
   private navigationErrors = toSignal(
     this.router.events.pipe(
-      map(event => {
+      map((event) => {
         if (event instanceof NavigationError) {
           this.lastFailedUrl.set(event.url);
 
           if (event.error) {
-            console.error('Navigation error', event.error)
+            console.error('Navigation error', event.error);
           }
 
           return 'Navigation failed. Please try again.';
         }
         return '';
-      })
+      }),
     ),
-    { initialValue: '' }
+    {initialValue: ''},
   );
 
   errorMessage = this.navigationErrors;
@@ -275,8 +275,8 @@ While data resolvers prevent loading states within components, they introduce a 
 To improve user experience during resolver execution, you can listen to router events and show loading indicators:
 
 ```angular-ts
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import {Component, inject} from '@angular/core';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -285,7 +285,7 @@ import { Router } from '@angular/router';
       <div class="loading-bar">Loading...</div>
     }
     <router-outlet />
-  `
+  `,
 })
 export class App {
   private router = inject(Router);

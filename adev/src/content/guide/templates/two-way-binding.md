@@ -13,8 +13,8 @@ Developers commonly use two-way binding to keep component data in sync with a fo
 The following example dynamically updates the `firstName` attribute on the page:
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   imports: [FormsModule],
@@ -23,7 +23,7 @@ import { FormsModule } from '@angular/forms';
       <h2>Hello {{ firstName }}!</h2>
       <input type="text" [(ngModel)]="firstName" />
     </main>
-  `
+  `,
 })
 export class App {
   firstName = 'Ada';
@@ -48,8 +48,8 @@ Here is an example where the `App` is responsible for setting the initial count 
 
 ```angular-ts
 // ./app.ts
-import { Component } from '@angular/core';
-import { Counter } from './counter';
+import {Component} from '@angular/core';
+import {Counter} from './counter';
 
 @Component({
   selector: 'app-root',
@@ -68,7 +68,7 @@ export class App {
 
 ```angular-ts
 // './counter.ts';
-import { Component, model } from '@angular/core';
+import {Component, model} from '@angular/core';
 
 @Component({
   selector: 'app-counter',
@@ -82,7 +82,7 @@ export class Counter {
   count = model<number>(0);
 
   updateCount(amount: number): void {
-    this.count.update(currentCount => currentCount + amount);
+    this.count.update((currentCount) => currentCount + amount);
   }
 }
 ```
@@ -97,14 +97,16 @@ Here is a simplified example:
 
 ```angular-ts
 // './counter.ts';
-import { Component, model } from '@angular/core';
+import {Component, model} from '@angular/core';
 
-@Component({ /* Omitted for brevity */ })
+@Component({
+  /* Omitted for brevity */
+})
 export class Counter {
   count = model<number>(0);
 
   updateCount(amount: number): void {
-    this.count.update(currentCount => currentCount + amount);
+    this.count.update((currentCount) => currentCount + amount);
   }
 }
 ```
@@ -118,8 +120,8 @@ Here is a simplified example:
 
 ```angular-ts
 // ./app.ts
-import { Component } from '@angular/core';
-import { Counter } from './counter';
+import {Component} from '@angular/core';
+import {Counter} from './counter';
 
 @Component({
   selector: 'app-root',

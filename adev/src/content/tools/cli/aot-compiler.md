@@ -43,16 +43,14 @@ The metadata tells Angular how to construct instances of your application classe
 In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
 
 ```angular-ts
-
 @Component({
   selector: 'app-typical',
-  template: '<div>A typical component for {{data.name}}</div>'
+  template: '<div>A typical component for {{data.name}}</div>',
 })
 export class TypicalComponent {
   data = input.required<TypicalData>();
   private someService = inject(SomeService);
 }
-
 ```
 
 The Angular compiler extracts the metadata _once_ and generates a _factory_ for `TypicalComponent`.
@@ -188,17 +186,15 @@ The collector can evaluate references to module-local `const` declarations and i
 Consider the following component definition:
 
 ```angular-ts
-
 const template = '<div>{{hero().name}}</div>';
 
 @Component({
   selector: 'app-hero',
-  template: template
+  template: template,
 })
 export class HeroComponent {
   hero = input.required<Hero>();
 }
-
 ```
 
 The compiler could not refer to the `template` constant because it isn't exported.
@@ -206,15 +202,13 @@ The collector, however, can fold the `template` constant into the metadata defin
 The effect is the same as if you had written:
 
 ```angular-ts
-
 @Component({
   selector: 'app-hero',
-  template: '<div>{{hero().name}}</div>'
+  template: '<div>{{hero().name}}</div>',
 })
 export class HeroComponent {
   hero = input.required<Hero>();
 }
-
 ```
 
 There is no longer a reference to `template` and, therefore, nothing to trouble the compiler when it later interprets the _collector's_ output in `.metadata.json`.
@@ -222,25 +216,21 @@ There is no longer a reference to `template` and, therefore, nothing to trouble 
 You can take this example a step further by including the `template` constant in another expression:
 
 ```angular-ts
-
 const template = '<div>{{hero().name}}</div>';
 
 @Component({
   selector: 'app-hero',
-  template: template + '<div>{{hero().title}}</div>'
+  template: template + '<div>{{hero().title}}</div>',
 })
 export class HeroComponent {
   hero = input.required<Hero>();
 }
-
 ```
 
 The collector reduces this expression to its equivalent _folded_ string:
 
 ```angular-ts
-
-'<div>{{hero().name}}</div><div>{{hero().title}}</div>'
-
+'<div>{{hero().name}}</div><div>{{hero().title}}</div>';
 ```
 
 #### Foldable syntax
@@ -389,15 +379,13 @@ file.
 For example, consider the following component:
 
 ```angular-ts
-
 @Component({
   selector: 'my-component',
-  template: '{{person.addresss.street}}'
+  template: '{{person.addresss.street}}',
 })
 class MyComponent {
   person?: Person;
 }
-
 ```
 
 This produces the following error:
@@ -436,15 +424,13 @@ template compiler, the same way the `if` expression does in TypeScript.
 For example, to avoid `Object is possibly 'undefined'` error in the template above, modify it to only emit the interpolation if the value of `person` is initialized as shown below:
 
 ```angular-ts
-
 @Component({
   selector: 'my-component',
-  template: '<span *ngIf="person"> {{person.address.street}} </span>'
+  template: '<span *ngIf="person"> {{person.address.street}} </span>',
 })
 class MyComponent {
   person?: Person;
 }
-
 ```
 
 Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in the binding expression will never be `undefined`.
@@ -459,10 +445,9 @@ In the following example, the `person` and `address` properties are always set t
 There is no convenient way to describe this constraint to TypeScript and the template compiler, but the error is suppressed in the example by using `address!.street`.
 
 ```angular-ts
-
 @Component({
   selector: 'my-component',
-  template: '<span *ngIf="person"> {{person.name}} lives on {{address!.street}} </span>'
+  template: '<span *ngIf="person"> {{person.name}} lives on {{address!.street}} </span>',
 })
 class MyComponent {
   person?: Person;
@@ -473,7 +458,6 @@ class MyComponent {
     this.address = address;
   }
 }
-
 ```
 
 The non-null assertion operator should be used sparingly as refactoring of the component might break this constraint.
@@ -481,10 +465,9 @@ The non-null assertion operator should be used sparingly as refactoring of the c
 In this example it is recommended to include the checking of `address` in the `*ngIf` as shown below:
 
 ```angular-ts
-
 @Component({
   selector: 'my-component',
-  template: '<span *ngIf="person && address"> {{person.name}} lives on {{address.street}} </span>'
+  template: '<span *ngIf="person && address"> {{person.name}} lives on {{address.street}} </span>',
 })
 class MyComponent {
   person?: Person;
@@ -495,5 +478,4 @@ class MyComponent {
     this.address = address;
   }
 }
-
 ```

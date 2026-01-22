@@ -7,8 +7,8 @@ Angular Router allows you to read and use information associated with a route to
 `ActivatedRoute` is a service from `@angular/router` that provides all the information associated with the current route.
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-product',
@@ -42,9 +42,11 @@ Route snapshots contain essential information about the route, including its par
 Here’s an example of how you’d access a route snapshot:
 
 ```angular-ts
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
 
-@Component({/*...*/})
+@Component({
+  /*...*/
+})
 export class UserProfileComponent {
   readonly userId: string;
   private route = inject(ActivatedRoute);
@@ -58,11 +60,11 @@ export class UserProfileComponent {
     // Access multiple route elements
     const snapshot = this.route.snapshot;
     console.log({
-      url: snapshot.url,           // https://www.angular.dev
+      url: snapshot.url, // https://www.angular.dev
       // Route parameters object: {id: '123'}
       params: snapshot.params,
       // Query parameters object: {role: 'admin', status: 'active'}
-      queryParams: snapshot.queryParams,  // Query parameters
+      queryParams: snapshot.queryParams, // Query parameters
     });
   }
 }
@@ -81,19 +83,17 @@ Route parameters allow you to pass data to a component through the URL. This is 
 You can [define route parameters](/guide/routing/define-routes#define-url-paths-with-route-parameters) by prefixing the parameter name with a colon (`:`).
 
 ```angular-ts
-import { Routes } from '@angular/router';
-import { ProductComponent } from './product/product.component';
+import {Routes} from '@angular/router';
+import {ProductComponent} from './product/product.component';
 
-const routes: Routes = [
-  { path: 'product/:id', component: ProductComponent }
-];
+const routes: Routes = [{path: 'product/:id', component: ProductComponent}];
 ```
 
 You can access parameters by subscribing to `route.params`.
 
 ```angular-ts
-import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component, inject, signal} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-product-detail',
@@ -120,7 +120,7 @@ export class ProductDetailComponent {
 // Single parameter structure
 // /products?category=electronics
 router.navigate(['/products'], {
-  queryParams: { category: 'electronics' }
+  queryParams: {category: 'electronics'},
 });
 
 // Multiple parameters
@@ -129,8 +129,8 @@ router.navigate(['/products'], {
   queryParams: {
     category: 'electronics',
     sort: 'price',
-    page: 1
-  }
+    page: 1,
+  },
 });
 ```
 
@@ -139,7 +139,7 @@ You can access query parameters with `route.queryParams`.
 Here is an example of a `ProductListComponent` that updates the query parameters that affect how it displays a list of products:
 
 ```angular-ts
-import { ActivatedRoute, Router } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-product-list',
@@ -151,7 +151,7 @@ import { ActivatedRoute, Router } from '@angular/router';
       </select>
       <!-- Products list -->
     </div>
-  `
+  `,
 })
 export class ProductListComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -159,7 +159,7 @@ export class ProductListComponent implements OnInit {
 
   constructor() {
     // Access query parameters reactively
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       const sort = params['sort'] || 'price';
       const page = Number(params['page']) || 1;
       this.loadProducts(sort, page);
@@ -170,8 +170,8 @@ export class ProductListComponent implements OnInit {
     const sort = (event.target as HTMLSelectElement).value;
     // Update URL with new query parameter
     this.router.navigate([], {
-      queryParams: { sort },
-      queryParamsHandling: 'merge' // Preserve other query parameters
+      queryParams: {sort},
+      queryParamsHandling: 'merge', // Preserve other query parameters
     });
   }
 }
@@ -224,16 +224,21 @@ You can use the `RouterLinkActive` directive to dynamically style navigation ele
 
 ```angular-html
 <nav>
-  <a class="button"
-     routerLink="/about"
-     routerLinkActive="active-button"
-     ariaCurrentWhenActive="page">
+  <a
+    class="button"
+    routerLink="/about"
+    routerLinkActive="active-button"
+    ariaCurrentWhenActive="page"
+  >
     About
-  </a> |
-  <a class="button"
-     routerLink="/settings"
-     routerLinkActive="active-button"
-     ariaCurrentWhenActive="page">
+  </a>
+  |
+  <a
+    class="button"
+    routerLink="/settings"
+    routerLinkActive="active-button"
+    ariaCurrentWhenActive="page"
+  >
     Settings
   </a>
 </nav>
@@ -260,12 +265,8 @@ If you want to define a different value for aria, you’ll need to explicitly se
 By default, `RouterLinkActive` considers any ancestors in the route a match.
 
 ```angular-html
-<a [routerLink]="['/user/jane']" routerLinkActive="active-link">
-  User
-</a>
-<a [routerLink]="['/user/jane/role/admin']" routerLinkActive="active-link">
-  Role
-</a>
+<a [routerLink]="['/user/jane']" routerLinkActive="active-link"> User </a>
+<a [routerLink]="['/user/jane/role/admin']" routerLinkActive="active-link"> Role </a>
 ```
 
 When the user visits `/user/jane/role/admin`, both links would have the `active-link` class.
@@ -275,13 +276,15 @@ When the user visits `/user/jane/role/admin`, both links would have the `active-
 If you only want to apply the class on an exact match, you need to provide the `routerLinkActiveOptions` directive with a configuration object that contains the value `exact: true`.
 
 ```angular-html
-<a [routerLink]="['/user/jane']"
+<a
+  [routerLink]="['/user/jane']"
   routerLinkActive="active-link"
   [routerLinkActiveOptions]="{exact: true}"
 >
   User
 </a>
-<a [routerLink]="['/user/jane/role/admin']"
+<a
+  [routerLink]="['/user/jane/role/admin']"
   routerLinkActive="active-link"
   [routerLinkActiveOptions]="{exact: true}"
 >
@@ -337,7 +340,7 @@ import {isActive, Router} from '@angular/router';
     <div [class.active]="isSettingsActive()">
       <h2>Settings</h2>
     </div>
-  `
+  `,
 })
 export class Panel {
   private router = inject(Router);
@@ -346,7 +349,7 @@ export class Panel {
     paths: 'subset',
     queryParams: 'ignored',
     fragment: 'ignored',
-    matrixParams: 'ignored'
+    matrixParams: 'ignored',
   });
 }
 ```

@@ -464,7 +464,7 @@ The `DashboardHero` component is embedded in the `Dashboard` component template 
 
 ```angular-html
 @for (hero of heroes; track hero) {
-  <dashboard-hero class="col-1-4" [hero]="hero" (selected)="gotoDetail($event)"/>
+  <dashboard-hero class="col-1-4" [hero]="hero" (selected)="gotoDetail($event)" />
 }
 ```
 

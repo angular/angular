@@ -55,14 +55,14 @@ In the template, use standard reactive syntax by binding the underlying control:
   <div>
     <label>
       Email:
-      <input [formField]="f.email">
+      <input [formField]="f.email" />
     </label>
   </div>
 
   <div>
     <label>
       Password:
-      <input [formField]="f.password" type="password">
+      <input [formField]="f.password" type="password" />
     </label>
 
     @if (f.password().touched() && f.password().invalid()) {
@@ -118,7 +118,7 @@ template by accessing the underlying legacy controls via `.control()`:
   <div>
     <label>
       Customer Name:
-      <input [formField]="f.customerName">
+      <input [formField]="f.customerName" />
     </label>
 
     @if (f.customerName().touched() && f.customerName().invalid()) {
@@ -135,7 +135,7 @@ template by accessing the underlying legacy controls via `.control()`:
     <div>
       <label>
         Street:
-        <input [formControl]="street">
+        <input [formControl]="street" />
       </label>
       @if (street.touched && street.invalid) {
         <div class="error-list">
@@ -148,7 +148,7 @@ template by accessing the underlying legacy controls via `.control()`:
     <div>
       <label>
         City:
-        <input [formControl]="city">
+        <input [formControl]="city" />
       </label>
       @if (city.touched && city.invalid) {
         <div class="error-list">
@@ -161,7 +161,7 @@ template by accessing the underlying legacy controls via `.control()`:
     <div>
       <label>
         Zip Code:
-        <input [formControl]="zip">
+        <input [formControl]="zip" />
       </label>
       @if (zip.touched && zip.invalid) {
         <div class="error-list">

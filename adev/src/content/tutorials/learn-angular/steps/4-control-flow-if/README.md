@@ -51,8 +51,11 @@ Here's an example:
 
 ```angular-html
 template: `
-  @if (isServerRunning) { ... }
-  @else { ... }
+@if (isServerRunning) {
+  ...
+} @else {
+  ...
+}
 `;
 ```
 
