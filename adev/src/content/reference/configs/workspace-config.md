@@ -375,7 +375,7 @@ To add paths, use the `stylePreprocessorOptions` option:
 Files in that directory, such as `src/style-paths/_variables.scss`, can be imported from anywhere in your project without the need for a relative path:
 
 ```scss
-// src/app/app.component.scss
+// src/app/app.scss
 // A relative path works
 @import '../style-paths/variables';
 

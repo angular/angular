@@ -119,7 +119,7 @@ import {environment} from './environments/environment';
 
 This ensures that the build and serve commands can find the configurations for specific build targets.
 
-The following code in the component file (`app.component.ts`) uses an environment variable defined in the configuration files.
+The following code in the component file (`app.ts`) uses an environment variable defined in the configuration files.
 
 ```ts
 import {environment} from './../environments/environment';
