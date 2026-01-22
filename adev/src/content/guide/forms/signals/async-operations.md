@@ -288,37 +288,6 @@ export class Registration {
 
 The `params` function runs on every value change. Return `undefined` to skip validation. The `factory` function runs once during setup and receives params as a signal. The resource updates automatically when params change.
 
-### Cross-field validation
-
-Access other field values in the `params` function for cross-field validation:
-
-```ts
-validateAsync(schemaPath.confirmEmail, {
-  params: ({value, valueOf}) => {
-    const email = valueOf(schemaPath.email);
-    const confirmEmail = value();
-    return {email, confirmEmail};
-  },
-  factory: (params) =>
-    httpResource<{valid: boolean}>({
-      url: '/api/validate-pair',
-      method: 'POST',
-      body: params,
-    }),
-  onSuccess: (result) =>
-    result?.valid
-      ? null
-      : {
-          kind: 'mismatch',
-          message: 'Emails do not match',
-        },
-  onError: () => ({
-    kind: 'validationError',
-    message: 'Validation failed',
-  }),
-});
-```
-
 ## Understanding pending state
 
 When async validation runs, the field's `pending()` signal returns `true`. During this time:
