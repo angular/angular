@@ -197,7 +197,7 @@ validateHttp(schemaPath.field, {
         },
   onError: () => ({
     kind: 'requestFailed',
-    message: 'Request failed',
+    message: 'Unable to reach server to validate.',
   }),
 });
 ```
