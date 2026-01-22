@@ -13,7 +13,7 @@ One of the most common DI issues occurs when you try to inject a service but Ang
 When you provide a service in a component's `providers` array, Angular creates an instance in that component's injector. This instance is only available to that component and its children. Parent components and sibling components cannot access it because they use different injectors.
 
 ```ts
-// child.component.ts - Provides service
+// child-view.ts - Provides service
 import {Component} from '@angular/core';
 import {DataStore} from './data-store';
 
@@ -22,9 +22,9 @@ import {DataStore} from './data-store';
   template: '<p>Child</p>',
   providers: [DataStore], // Only available in this component and its children
 })
-export class ChildComponent {}
+export class ChildView {}
 
-// parent.component.ts - Tries to inject
+// parent-view.ts - Tries to inject
 import {Component, inject} from '@angular/core';
 import {DataStore} from './data-store';
 
@@ -32,7 +32,7 @@ import {DataStore} from './data-store';
   selector: 'app-parent',
   template: '<app-child />',
 })
-export class ParentComponent {
+export class ParentView {
   private dataService = inject(DataStore); // ERROR: Not available to parent
 }
 ```
@@ -65,11 +65,11 @@ export const featureRoutes: Routes = [
   {
     path: 'feature',
     providers: [FeatureClient],
-    loadComponent: () => import('./feature.component'),
+    loadComponent: () => import('./feature-view'),
   },
 ];
 
-// eager.component.ts - Eager component
+// eager-view.ts - Eager component
 import {Component, inject} from '@angular/core';
 import {FeatureClient} from './feature-client';
 
@@ -77,7 +77,7 @@ import {FeatureClient} from './feature-client';
   selector: 'app-eager',
   template: '<p>Eager Component</p>',
 })
-export class EagerComponent {
+export class EagerView {
   private featureService = inject(FeatureClient); // ERROR: Not available yet
 }
 ```
@@ -116,7 +116,7 @@ import {UserClient} from './user-client';
   template: '<p>Profile</p>',
   providers: [UserClient], // Creates new instance per component!
 })
-export class ProfileComponent {
+export class UserProfile {
   private userService = inject(UserClient);
 }
 
@@ -125,7 +125,7 @@ export class ProfileComponent {
   template: '<p>Settings</p>',
   providers: [UserClient], // Different instance!
 })
-export class SettingsComponent {
+export class UserSettings {
   private userService = inject(UserClient);
 }
 ```
@@ -170,7 +170,7 @@ export class FormStateStore {
   template: '<form>...</form>',
   providers: [FormStateStore], // Each form gets its own state
 })
-export class UserFormComponent {
+export class UserForm {
   private formState = inject(FormStateStore);
 }
 ```
@@ -198,7 +198,7 @@ import {UserClient} from './user-client';
   selector: 'app-profile',
   template: '<p>User: {{userName}}</p>',
 })
-export class ProfileComponent {
+export class UserProfile {
   userName = '';
 
   ngOnInit() {
@@ -219,7 +219,7 @@ import {UserClient} from './user-client';
   selector: 'app-profile',
   template: '<p>User: {{userName}}</p>',
 })
-export class ProfileComponent {
+export class UserProfile {
   private userService = inject(UserClient); // Valid
   userName = '';
 
@@ -242,7 +242,7 @@ import {UserClient} from './user-client';
   selector: 'app-profile',
   template: '<p>User: {{userName}}</p>',
 })
-export class ProfileComponent {
+export class UserProfile {
   userName = '';
 
   async ngOnInit() {
@@ -268,7 +268,7 @@ import {UserClient} from './user-client';
   selector: 'app-profile',
   template: '<p>User: {{userName}}</p>',
 })
-export class ProfileComponent {
+export class UserProfile {
   private userService = inject(UserClient); // Valid: Field initializer
   userName = '';
 
@@ -295,7 +295,7 @@ import {UserClient} from './user-client';
   selector: 'app-profile',
   template: '<button (click)="delayedLoad()">Load Later</button>',
 })
-export class ProfileComponent {
+export class UserProfile {
   private injector = inject(Injector);
 
   delayedLoad() {
@@ -324,7 +324,7 @@ The difference between `providers` and `viewProviders` affects content projectio
 **viewProviders:** Only available to the component's template, NOT to projected content.
 
 ```ts
-// parent.component.ts
+// parent-view.ts
 import {Component, inject} from '@angular/core';
 import {ThemeStore} from './theme-store';
 
@@ -338,7 +338,7 @@ import {ThemeStore} from './theme-store';
   `,
   providers: [ThemeStore], // Available to content children
 })
-export class ParentComponent {
+export class ParentView {
   protected themeService = inject(ThemeStore);
 }
 
@@ -352,11 +352,11 @@ export class ParentComponent {
   `,
   viewProviders: [ThemeStore], // NOT available to content children
 })
-export class ParentViewComponent {
+export class ParentView {
   protected themeService = inject(ThemeStore);
 }
 
-// child.component.ts
+// child-view.ts
 import {Component, inject} from '@angular/core';
 import {ThemeStore} from './theme-store';
 
@@ -364,12 +364,12 @@ import {ThemeStore} from './theme-store';
   selector: 'app-child',
   template: '<p>Child theme: {{theme()}}</p>',
 })
-export class ChildComponent {
+export class ChildView {
   private themeService = inject(ThemeStore, {optional: true});
   theme = () => this.themeService?.theme() ?? 'none';
 }
 
-// app.component.ts
+// app.ts
 @Component({
   selector: 'app-root',
   template: `
@@ -384,7 +384,7 @@ export class ChildComponent {
     </app-parent-view>
   `,
 })
-export class AppComponent {}
+export class App {}
 ```
 
 **When projected into `app-parent`:** The child component can inject `ThemeStore` because `providers` makes it available to projected content.
@@ -432,22 +432,23 @@ export const appConfig: AppConfig = {
   apiUrl: 'https://api.example.com',
 };
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [{provide: APP_CONFIG, useValue: appConfig}],
 });
+```
 
-// feature.component.ts - WRONG
+```ts {avoid}
+// feature-view.ts - Creating new token with same description
 import {InjectionToken, inject} from '@angular/core';
 import {AppConfig} from './config.token';
 
-// Avoid creating new token with same description
 const APP_CONFIG = new InjectionToken<AppConfig>('app config');
 
 @Component({
   selector: 'app-feature',
   template: '<p>Feature</p>',
 })
-export class FeatureComponent {
+export class FeatureView {
   private config = inject(APP_CONFIG); // ERROR: Different token instance!
 }
 ```
@@ -465,7 +466,7 @@ import {APP_CONFIG, AppConfig} from './config.token';
   selector: 'app-feature',
   template: '<p>API: {{config.apiUrl}}</p>',
 })
-export class FeatureComponent {
+export class FeatureView {
   protected config = inject(APP_CONFIG); // Works: Same token instance
 }
 ```
@@ -487,7 +488,7 @@ interface UserConfig {
   selector: 'app-profile',
   template: '<p>Profile</p>',
 })
-export class ProfileComponent {
+export class UserProfile {
   // ERROR: Interfaces don't exist at runtime
   constructor(private config: UserConfig) {}
 }
@@ -507,7 +508,7 @@ interface UserConfig {
 export const USER_CONFIG = new InjectionToken<UserConfig>('user configuration');
 
 // Provide the configuration
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [
     {
       provide: USER_CONFIG,
@@ -521,7 +522,7 @@ bootstrapApplication(AppComponent, {
   selector: 'app-profile',
   template: '<p>User: {{config.name}}</p>',
 })
-export class ProfileComponent {
+export class UserProfile {
   protected config = inject(USER_CONFIG);
 }
 ```
@@ -536,10 +537,10 @@ Circular dependencies happen when services inject each other, directly or indire
 
 A circular dependency happens when two or more services inject each other, creating a cycle. For example, Service A injects Service B, and Service B injects Service A.
 
-As a result, When Angular tries to create Service A, it needs Service B. But to create Service B, it needs Service A, which it's already trying to create. Angular cannot determine which service to instantiate first, so it throws a circular dependency error.
+As a result, when Angular tries to create Service A, it needs Service B. But to create Service B, it needs Service A, which it's already trying to create. Angular cannot determine which service to instantiate first, so it throws a circular dependency error.
 
 ```ts
-// auth.service.ts
+// auth-client.ts
 import {Injectable, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -552,7 +553,7 @@ export class AuthClient {
   }
 }
 
-// user.service.ts
+// user-client.ts
 import {Injectable, inject} from '@angular/core';
 import {AuthClient} from './auth-client';
 
@@ -577,7 +578,7 @@ The best solution is to restructure your code to eliminate the circular dependen
 **Option 1: Extract shared logic to a third service**
 
 ```ts
-// auth-state.service.ts
+// auth-state-store.ts
 import {Injectable, signal} from '@angular/core';
 
 @Injectable({providedIn: 'root'})
@@ -593,7 +594,7 @@ export class AuthStateStore {
   }
 }
 
-// auth.service.ts
+// auth-client.ts
 import {Injectable, inject} from '@angular/core';
 import {UserClient} from './user-client';
 import {AuthStateStore} from './auth-state-store';
@@ -610,7 +611,7 @@ export class AuthClient {
   }
 }
 
-// user.service.ts
+// user-client.ts
 import {Injectable, inject} from '@angular/core';
 import {AuthStateStore} from './auth-state-store';
 
@@ -629,7 +630,7 @@ export class UserClient {
 **Option 2: Use events or observables**
 
 ```ts
-// auth-events.service.ts
+// auth-events-store.ts
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs';
 
@@ -639,7 +640,7 @@ export class AuthEventsStore {
   logoutSuccess = new Subject<void>();
 }
 
-// auth.service.ts
+// auth-client.ts
 import {Injectable, inject} from '@angular/core';
 import {AuthEventsStore} from './auth-events-store';
 
@@ -653,7 +654,7 @@ export class AuthClient {
   }
 }
 
-// user.service.ts
+// user-client.ts
 import {Injectable, inject} from '@angular/core';
 import {AuthEventsStore} from './auth-events-store';
 
@@ -674,7 +675,7 @@ export class UserClient {
 As a last resort, you can use lazy injection with the `Injector` to break the circular dependency.
 
 ```ts
-// user.service.ts
+// user-client.ts
 import {Injectable, inject, Injector} from '@angular/core';
 import {AuthClient} from './auth-client';
 
@@ -758,7 +759,7 @@ import {UserClient} from './user-client';
   template: '<p>Profile</p>',
   providers: [UserClient],
 })
-export class ProfileComponent {
+export class UserProfile {
   // Only looks in this component's injector
   private userService = inject(UserClient, {self: true});
 }
@@ -777,7 +778,7 @@ import {UserClient} from './user-client';
   template: '<p>Profile</p>',
   providers: [UserClient],
 })
-export class ProfileComponent {
+export class UserProfile {
   // Skips this component's injector, starts at parent
   private parentUserClient = inject(UserClient, {skipSelf: true});
 }
@@ -795,7 +796,7 @@ import {UserClient} from './user-client';
   selector: 'app-profile',
   template: '<p>Profile</p>',
 })
-export class ProfileComponent {
+export class UserProfile {
   // Returns null if not found instead of throwing
   private userService = inject(UserClient, {optional: true});
 
@@ -947,7 +948,7 @@ import {UserClient} from './user-client';
   selector: 'app-debug',
   template: '<p>Debug Component</p>',
 })
-export class DebugComponent {
+export class DebugView {
   private userService = inject(UserClient, {optional: true});
 
   constructor() {
@@ -976,7 +977,7 @@ import {UserClient} from './user-client';
   template: '<p>Debug Component</p>',
   providers: [UserClient],
 })
-export class DebugComponent {
+export class DebugView {
   // Try to get local instance
   private localService = inject(UserClient, {self: true, optional: true});
 
@@ -1045,10 +1046,10 @@ This error occurs when Angular cannot find a provider for a token in the injecto
 
 ```
 NullInjectorError: No provider for UserClient!
-  Dependency path: AppComponent -> AuthClient -> UserClient
+  Dependency path: App -> AuthClient -> UserClient
 ```
 
-The dependency path shows that `AppComponent` injected `AuthClient`, which tried to inject `UserClient`, but no provider was found.
+The dependency path shows that `App` injected `AuthClient`, which tried to inject `UserClient`, but no provider was found.
 
 #### Missing @Injectable decorator
 
@@ -1128,7 +1129,7 @@ import {UserClient} from './user-client';
   selector: 'app-profile',
   template: '<p>User: {{user().name}}</p>',
 })
-export class ProfileComponent {
+export class UserProfile {
   private userService = inject(UserClient); // ERROR: No provider
   user = this.userService.getUser();
 }
@@ -1145,7 +1146,7 @@ import {UserClient} from './user-client';
   selector: 'app-profile',
   template: '<p>User: {{user().name}}</p>',
 })
-export class ProfileComponent {
+export class UserProfile {
   private userService = inject(UserClient); // Works: providedIn: 'root'
   user = this.userService.getUser();
 }
@@ -1157,12 +1158,12 @@ The dependency path in the error message shows the chain of injections that led 
 
 ```
 NullInjectorError: No provider for LoggerStore!
-  Dependency path: AppComponent -> DataStore -> ApiClient -> LoggerStore
+  Dependency path: App -> DataStore -> ApiClient -> LoggerStore
 ```
 
 This path tells you:
 
-1. `AppComponent` injected `DataStore`
+1. `App` injected `DataStore`
 2. `DataStore` injected `ApiClient`
 3. `ApiClient` tried to inject `LoggerStore`
 4. No provider for `LoggerStore` was found
@@ -1181,7 +1182,7 @@ import {UserClient} from './user-client';
   selector: 'app-debug',
   template: '<p>Service available: {{serviceAvailable}}</p>',
 })
-export class DebugComponent {
+export class DebugView {
   private userService = inject(UserClient, {optional: true});
   serviceAvailable = this.userService !== null;
 
@@ -1223,7 +1224,7 @@ Angular allows `inject()` in these locations:
      selector: 'app-profile',
      template: '<p>User: {{user().name}}</p>',
    })
-   export class ProfileComponent {
+   export class UserProfile {
      private userService = inject(UserClient); // Valid
      user = this.userService.getUser();
    }
@@ -1239,7 +1240,7 @@ Angular allows `inject()` in these locations:
      selector: 'app-profile',
      template: '<p>User: {{user().name}}</p>',
    })
-   export class ProfileComponent {
+   export class UserProfile {
      private userService: UserClient;
 
      constructor() {
@@ -1275,7 +1276,7 @@ Angular allows `inject()` in these locations:
      selector: 'app-profile',
      template: '<button (click)="loadUser()">Load User</button>',
    })
-   export class ProfileComponent {
+   export class UserProfile {
      private injector = inject(Injector);
 
      loadUser() {
@@ -1418,7 +1419,7 @@ import {UserClient} from './user-client';
   selector: 'app-profile',
   template: '<p>User Profile</p>',
 })
-export class ProfileComponent implements OnDestroy {
+export class Profile implements OnDestroy {
   private userService = inject(UserClient);
 
   ngOnDestroy() {
@@ -1452,16 +1453,16 @@ import {provideHttpClient} from '@angular/common/http';
   template: '<p>App</p>',
   providers: [provideHttpClient()], // ERROR
 })
-export class AppComponent {}
+export class App {}
 ```
 
 ```ts {prefer}
 // provideHttpClient at application level
 import {bootstrapApplication} from '@angular/platform-browser';
 import {provideHttpClient} from '@angular/common/http';
-import {AppComponent} from './app.component';
+import {App} from './app';
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [provideHttpClient()],
 });
 ```
