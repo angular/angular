@@ -62,7 +62,7 @@ export class Registration {
       onError: (error) => {
         console.error('Validation request failed:', error)
         return {
-          kind: 'validationError',
+          kind: 'serverError',
           message: 'Could not verify username availability'
         }
       }
@@ -124,7 +124,7 @@ export class Registration {
         };
       },
       onError: () => ({
-        kind: 'validationError',
+        kind: 'serverError',
         message: 'Could not verify username',
       }),
     });
@@ -144,11 +144,11 @@ request: ({value}) => ({
 
 ### Success and error handlers
 
-The `onSuccess` function receives the HTTP response and returns validation errors or `null` for valid values:
+The `onSuccess` function receives the HTTP response and returns validation errors or `undefined` for valid values:
 
 ```ts
 onSuccess: (response) => {
-  if (response.valid) return null;
+  if (response.valid) return undefined;
 
   return {
     kind: 'invalid',
@@ -174,7 +174,7 @@ onSuccess: (response) => {
       message: 'Username contains inappropriate content',
     });
   }
-  return errors.length > 0 ? errors : null;
+  return errors.length > 0 ? errors : undefined;
 };
 ```
 
@@ -292,7 +292,7 @@ export class Registration {
       onError: (error) => {
         console.error('Validation failed:', error);
         return {
-          kind: 'validationError',
+          kind: 'serverError',
           message: 'Could not verify username',
         };
       },
@@ -370,7 +370,7 @@ form(model, (schemaPath) => {
             message: 'Username taken',
           },
     onError: () => ({
-      kind: 'validationError',
+      kind: 'serverError',
       message: 'Validation failed',
     }),
   });
@@ -408,7 +408,7 @@ form(model, (schemaPath) => {
             message: 'Email already in use',
           },
     onError: () => ({
-      kind: 'validationError',
+      kind: 'serverError',
       message: 'Could not verify email',
     }),
   });
@@ -438,7 +438,7 @@ validateHttp(schemaPath.username, {
           message: 'Username taken',
         },
   onError: () => ({
-    kind: 'validationError',
+    kind: 'serverError',
     message: 'Validation failed',
   }),
 });
@@ -457,7 +457,7 @@ validateHttp(schemaPath.field, {
     if (result.valid) return null;
     // Use server message when available
     return {
-      kind: 'validationFailed',
+      kind: 'serverError',
       message: result.message || 'Validation failed',
     };
   },
