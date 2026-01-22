@@ -845,64 +845,15 @@ This searches parent injectors only and returns `null` if not found.
 
 ### Using Angular DevTools
 
-Angular DevTools is a browser extension that helps visualize the injector hierarchy and debug dependency injection issues.
+Angular DevTools includes an injector tree inspector that visualizes the entire injector hierarchy and shows which providers are available at each level. For installation and general usage, see the [Angular DevTools injector documentation](tools/devtools/injectors).
 
-#### Installing Angular DevTools
+When debugging DI issues, use DevTools to answer these questions:
 
-1. Install the Angular DevTools extension from your browser's extension store (Chrome, Edge, or Firefox)
-2. Open your Angular application in the browser
-3. Open browser DevTools (F12 or right-click → Inspect)
-4. Select the "Angular" tab
+- **Is the service provided?** Select the component that fails to inject and check if the service appears in the Injector section.
+- **At what level?** Walk up the component tree to find where the service is actually provided (component, route, or application level).
+- **Multiple instances?** If a singleton service appears in multiple component injectors, it's likely provided in component `providers` arrays instead of using `providedIn: 'root'`.
 
-#### Inspecting the injector hierarchy
-
-The Angular DevTools component explorer shows the component tree and available injectors.
-
-**To inspect providers:**
-
-1. Select a component in the component tree
-2. Look at the "Injector" section in the component details
-3. See all providers available at that component level
-4. Expand parent components to see their providers
-
-**What to look for:**
-
-- Is your service listed in the injector view?
-- At what level is the service provided? (component, route, application)
-- Are there multiple instances? (check multiple components)
-- Does the scope match your expectations?
-
-#### Debugging provider availability
-
-Use DevTools to verify a service is provided where you expect:
-
-1. Navigate to the component that fails to inject
-2. Check the Injector section - is the service listed?
-3. If not, check parent components moving up the tree
-4. Verify the service eventually appears at the application level
-
-If the service never appears in any injector, check:
-
-- Service has `@Injectable()` decorator
-- Service has `providedIn: 'root'` or is in a providers array
-- Service file is not excluded from compilation
-
-#### Identifying scope issues
-
-DevTools helps identify when services are provided at the wrong scope.
-
-**Expected: One instance (singleton)**
-
-- Service appears in application-level injector only
-- All components show the same service instance
-
-**Actual: Multiple instances**
-
-- Service appears in multiple component-level injectors
-- Each component has its own instance
-- Usually caused by including service in component `providers` array
-
-Adjust the `providedIn` scope or remove from component `providers` to fix scope issues.
+If a service never appears in any injector, verify it has the `@Injectable()` decorator with `providedIn: 'root'` or is listed in a `providers` array.
 
 ### Logging and tracing injection
 
@@ -1370,102 +1321,13 @@ Do NOT use `forwardRef()` for service circular dependencies. It only solves circ
 
 ### Other DI error codes
 
-#### NG0204: Invalid injection token
+For detailed explanations and solutions for these errors, see the [Angular error reference](errors):
 
-This error occurs when you try to inject a class that doesn't have an `@Injectable()` decorator and has constructor parameters.
-
-```
-NG0204: Can't resolve all parameters for UserClient
-```
-
-**Solution:** Add the `@Injectable()` decorator to the service.
-
-```ts {avoid}
-// Missing @Injectable with constructor parameters
-export class UserClient {
-  constructor(private http: HttpClient) {} // ERROR
-}
-```
-
-```ts {prefer}
-// Include @Injectable
-import {Injectable, inject} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-
-@Injectable({providedIn: 'root'})
-export class UserClient {
-  private http = inject(HttpClient);
-}
-```
-
-#### NG0205: Injector already destroyed
-
-This error occurs when you try to use an injector after it has been destroyed.
-
-```
-NG0205: Injector has already been destroyed
-```
-
-This typically happens when accessing services after a component or module has been destroyed.
-
-**Solution:** Ensure you don't access services after the component lifecycle has ended. Cancel subscriptions and cleanup async operations in `ngOnDestroy()`.
-
-```angular-ts {avoid}
-// Using service after component destroyed
-import {Component, inject, OnDestroy} from '@angular/core';
-import {UserClient} from './user-client';
-
-@Component({
-  selector: 'app-profile',
-  template: '<p>User Profile</p>',
-})
-export class UserProfile implements OnDestroy {
-  private userService = inject(UserClient);
-
-  ngOnDestroy() {
-    // Component is being destroyed
-  }
-
-  // This might be called after destroy
-  someAsyncCallback() {
-    this.userService.getUser(); // ERROR if component destroyed
-  }
-}
-```
-
-#### NG0207: Provider in wrong context
-
-This error occurs when you use `EnvironmentProviders` (from functions like `importProvidersFrom()` or `provideRouter()`) in a component's `providers` array.
-
-```
-NG0207: EnvironmentProviders cannot be used in component providers
-```
-
-**Solution:** Use `EnvironmentProviders` only at the application or route level.
-
-```angular-ts {avoid}
-// importProvidersFrom in component
-import {Component} from '@angular/core';
-import {provideHttpClient} from '@angular/common/http';
-
-@Component({
-  selector: 'app-root',
-  template: '<p>App</p>',
-  providers: [provideHttpClient()], // ERROR
-})
-export class App {}
-```
-
-```ts {prefer}
-// provideHttpClient at application level
-import {bootstrapApplication} from '@angular/platform-browser';
-import {provideHttpClient} from '@angular/common/http';
-import {App} from './app';
-
-bootstrapApplication(App, {
-  providers: [provideHttpClient()],
-});
-```
+| Error Code              | Description                                                                                |
+| ----------------------- | ------------------------------------------------------------------------------------------ |
+| [NG0204](errors/NG0204) | Can't resolve all parameters - missing `@Injectable()` decorator                           |
+| [NG0205](errors/NG0205) | Injector already destroyed - accessing services after component destruction                |
+| [NG0207](errors/NG0207) | EnvironmentProviders in wrong context - using `provideHttpClient()` in component providers |
 
 ## Next steps
 
