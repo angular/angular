@@ -1,116 +1,216 @@
 @use '@angular/docs/styles/media-queries' as mq;
 
+@mixin background-pattern {
+  pointer-events: none;
+  position: absolute;
+  height: 100%;
+  mask-image: var(--pattern-url);
+  mask-size: 22px 22px;
+  mask-repeat: repeat;
+}
+
 :host {
   width: 100%;
   position: relative;
   display: block;
+
+  --card-background: var(--page-background);
+  --pattern-url: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'><defs><pattern id='p' patternUnits='userSpaceOnUse' width='72' height='72'><g transform='translate(36 36) rotate(-60)'><line x1='-10' y1='0' x2='10' y2='0' stroke='white' stroke-width='3' stroke-linecap='round'/></g></pattern></defs><rect width='100%' height='100%' fill='url(%23p)'/></svg>");
 }
 
-.banners-layer {
-  z-index: 10;
+.adev-banner-container {
+  margin-top: 3rem;
+  padding: 0 3rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  top: var(--layout-padding);
+  left: calc(var(--layout-padding) + var(--primary-nav-width));
+  z-index: 1;
 
-  .adev-banner-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    position: absolute;
-    top: var(--layout-padding);
-    left: calc(var(--layout-padding) + var(--primary-nav-width));
+  @include mq.for-tablet-down {
+    justify-content: flex-start;
+    margin-top: 1rem;
+  }
+}
 
-    @include mq.for-tablet-landscape-down {
-      top: 6rem;
-      left: var(--layout-padding);
-      /* Assuming the container width is identical to the viewport width (mobile device). */
-      max-width: calc(100% - var(--layout-padding) * 2);
-    }
+.adev-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border: 1px solid var(--senary-contrast);
+  background: var(--page-background);
+  border-radius: 0.25rem;
+  padding: 10px;
+  max-width: 100%;
+  width: fit-content;
+  box-sizing: border-box;
 
-    @include mq.for-phone-only {
-      & {
-        top: 5rem;
+  h1,
+  p {
+    display: inline;
+    font-size: 0.875rem;
+    margin: 0;
+    background-image: var(--red-to-pink-to-purple-horizontal-gradient);
+    background-clip: text;
+    color: transparent;
+    width: fit-content;
+    box-shadow: none;
+    position: relative;
+
+    &.adev-banner-cta {
+      color: var(--tertiary-contrast);
+
+      &::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        transform: scaleX(0);
+        height: 1px;
+        bottom: -2px;
+        left: 0;
+        background: var(--red-to-pink-to-purple-horizontal-gradient);
+        transform-origin: bottom right;
+        transition: transform 0.3s ease;
       }
     }
   }
 
-  .adev-banner {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    border: 1px solid var(--senary-contrast);
-    background: var(--page-background);
-    border-radius: 0.25rem;
-    padding: 10px;
-    max-width: 100%;
-    width: fit-content;
-    box-sizing: border-box;
-
-    h1,
-    p {
-      display: inline;
-      font-size: 0.875rem;
-      margin: 0;
-      background-image: var(--red-to-pink-to-purple-horizontal-gradient);
-      background-clip: text;
-      color: transparent;
-      width: fit-content;
-      font-weight: 500;
-      box-shadow: none;
-      position: relative;
-
-      &.adev-banner-cta {
-        color: var(--tertiary-contrast);
-
-        &::after {
-          content: '';
-          position: absolute;
-          width: 100%;
-          transform: scaleX(0);
-          height: 1px;
-          bottom: -2px;
-          left: 0;
-          background: var(--red-to-pink-to-purple-horizontal-gradient);
-          transform-origin: bottom right;
-          transition: transform 0.3s ease;
-        }
+  &:hover {
+    .adev-banner-cta {
+      &::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
       }
     }
+  }
+}
 
-    &:hover {
-      .adev-banner-cta {
-        &::after {
-          transform: scaleX(1);
-          transform-origin: bottom left;
-        }
-      }
-    }
+section {
+  @include mq.for-tablet-landscape-up {
+    padding-left: 7rem;
+  }
+  text-align: center;
+  h2 {
+    padding: 0 1rem;
+    font-size: clamp(1rem, 9vw, 38pt);
+  }
+}
+
+@property --gradient-angle {
+  syntax: '<angle>';
+  initial-value: 90deg;
+  inherits: false;
+}
+
+@keyframes rotateGradient {
+  from {
+    --gradient-angle: 0deg;
+  }
+  to {
+    --gradient-angle: 360deg;
+  }
+}
+
+@property --pulse-inner {
+  syntax: '<percentage>';
+  initial-value: 20%;
+  inherits: false;
+}
+
+@property --pulse-outer {
+  syntax: '<percentage>';
+  initial-value: 75%;
+  inherits: false;
+}
+
+@keyframes pulse {
+  0% {
+    --pulse-inner: 30%;
+    --pulse-outer: 75%;
+  }
+  50% {
+    --pulse-inner: 30%;
+    --pulse-outer: 60%;
+  }
+  100% {
+    --pulse-inner: 30%;
+    --pulse-outer: 75%;
   }
 }
 
 .logo-section {
-  text-align: center;
-  background-image:
-    linear-gradient(
-      63deg,
-      transparent 66%,
-      var(--page-background) 69%,
-      var(--page-background) 70%,
-      transparent 70%
-    ),
-    linear-gradient(162deg, var(--page-background) 50%, #9337f58a 100%);
-  background-size:
-    27px 27px,
-    auto;
-  background-repeat: repeat;
-  background-color: transparent;
-  padding-bottom: 36px;
-  padding-top: 7rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: min(700px, 100vh);
+  @include mq.for-tablet-down {
+    height: min(700px, calc(100vh - 60px));
+  }
+
+  .pattern {
+    @include background-pattern;
+    width: calc(100% - 7rem);
+    @include mq.for-tablet-landscape-down {
+      width: 100%;
+    }
+    animation: rotateGradient 10s linear infinite;
+
+    background: conic-gradient(
+      from 122deg at 50% 50%,
+      transparent 17%,
+      #f627e3 25%,
+      #6911d2 32%,
+      transparent 38%,
+      transparent 61%,
+      #6911d2 71%,
+      #f627e3 81%,
+      transparent 91%
+    );
+
+    &:after {
+      // A fading bottom for the pattern
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent, var(--page-background));
+      bottom: 0;
+      height: 50px;
+      top: auto;
+    }
+  }
+
+  .search-field {
+    @include mq.for-tablet-down() {
+      display: none;
+    }
+  }
+
+  .content {
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    h2 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      margin-bottom: 0;
+    }
+
+    h3 {
+      font-size: clamp(0.5rem, 4vw, 1rem);
+      color: var(--quaternary-contrast);
+    }
+  }
 
   @include mq.for-tablet-landscape-down {
-    padding-top: 9rem;
+    margin-top: 4rem;
   }
 
   button {
-    font-size: 1.2rem;
+    margin-bottom: 5rem;
 
     @include mq.for-tablet-down {
       font-size: 1rem;
@@ -141,47 +241,178 @@
       }
     }
   }
-}
 
-section {
-  padding-left: 9rem;
-  padding-right: 2rem;
-
-  h2 {
-    font-size: 2.5rem;
-    margin-bottom: 3rem;
-  }
-
-  svg {
-    fill: var(--always-pink);
-    color: var(--always-pink);
-  }
-
-  .section-content {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  @include mq.for-tablet-landscape-down {
-    padding-left: 2rem;
+  .uwu img {
+    width: 50vw;
   }
 }
 
-.features {
-  padding-block: 2rem;
-  text-align: center;
-
-  h2 {
-    font-size: 2.2rem;
+.features-section {
+  [ngTabs] {
+    overflow: hidden;
+    width: 100%;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
   }
 
-  .features-grid {
+  [ngTabList] {
+    padding: 4px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    max-width: 1200px;
-    margin: 0 auto;
+    gap: 0;
+    list-style: none;
+    position: relative;
+    background: var(--card-background);
+    border: 1px solid var(--quinary-contrast);
+    border-radius: 0.5rem;
+    width: fit-content;
+    margin: 0 auto 2rem;
 
-    @include mq.for-tablet-down {
+    .tab-background {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 4px;
+      width: calc((100% - 8px) / 4);
+      background-color: var(--septenary-contrast);
+      border-radius: 0.5rem;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    &:has(> :nth-child(2)[aria-selected='true']) .tab-background {
+      transform: translateX(0%);
+    }
+    &:has(> :nth-child(3)[aria-selected='true']) .tab-background {
+      transform: translateX(100%);
+    }
+    &:has(> :nth-child(4)[aria-selected='true']) .tab-background {
+      transform: translateX(200%);
+    }
+    &:has(> :nth-child(5)[aria-selected='true']) .tab-background {
+      transform: translateX(300%);
+    }
+  }
+
+  [ngTab] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    outline: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: var(--tertiary-contrast);
+    font-size: 14px;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    z-index: 1;
+
+    &:hover {
+      color: var(--primary-contrast);
+    }
+  }
+
+  [ngTab][aria-selected='true'] {
+    color: var(
+      --electric-violet
+    ); // the gradient would "look" better but fails constrast requirements
+  }
+
+  .sliding-window {
+    width: 400%;
+    display: flex;
+    transition: all 0.2s ease-in-out;
+  }
+
+  [ngTabList]:has(> :nth-child(2)[aria-selected='true']) ~ .sliding-window {
+    transform: translateX(0%);
+  }
+  [ngTabList]:has(> :nth-child(3)[aria-selected='true']) ~ .sliding-window {
+    transform: translateX(-25%);
+  }
+  [ngTabList]:has(> :nth-child(4)[aria-selected='true']) ~ .sliding-window {
+    transform: translateX(-50%);
+  }
+  [ngTabList]:has(> :nth-child(5)[aria-selected='true']) ~ .sliding-window {
+    transform: translateX(-75%);
+  }
+
+  [ngTabPanel] {
+    display: grid;
+    place-items: start center;
+    padding: 1rem 3rem;
+    min-height: 100px;
+    width: 25%;
+    box-sizing: border-box;
+  }
+}
+
+.two-column-step {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  text-align: left;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background-color: var(--card-background);
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.5rem;
+  padding: 2rem;
+
+  @include mq.for-tablet-down {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1.5rem;
+  }
+}
+
+.step-description {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .header {
+    font-size: 1.75rem;
+  }
+
+  .description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--secondary-contrast);
+
+    .code {
+      font-family: monospace;
+      background: rgba(128, 128, 128, 0.2);
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.5rem;
+      margin: 0 0.1rem;
+    }
+  }
+}
+
+.step-code {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.selling-points {
+  max-width: 1440px;
+  margin: 0 auto 6rem;
+  box-sizing: border-box;
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    text-align: left; /* reset center alignment from section */
+    overflow-x: auto;
+    margin: 0 1rem;
+
+    @include mq.for-tablet-landscape-down {
       grid-template-columns: repeat(2, 1fr);
     }
 
@@ -190,183 +421,420 @@ section {
     }
   }
 
-  .feature {
+  .card {
+    background-color: var(--card-background);
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.5rem;
     padding: 2rem;
-    border-left: 1px solid var(--senary-contrast);
-
-    &:first-child {
-      border-left: none;
-    }
-
-    @include mq.for-tablet-down {
-      border-top: 1px solid var(--senary-contrast);
-
-      &:first {
-        border-top: none;
-      }
-
-      &:nth-child(odd) {
-        border-left: none;
-      }
-    }
-
-    @include mq.for-phone-only {
-      &:nth-child(n) {
-        border-left: none;
-      }
-
-      &:nth-child(-n + 1) {
-        border-top: none;
-      }
-    }
-
-    svg {
-      width: 3rem;
-    }
-
-    h3 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      font-size: 1rem;
-      color: var(--quaternary-contrast);
-      font-weight: 300;
-    }
-  }
-}
-
-.performance {
-  background-image:
-    linear-gradient(
-      63deg,
-      transparent 66%,
-      var(--page-background) 69%,
-      var(--page-background) 70%,
-      transparent 70%
-    ),
-    linear-gradient(350deg, var(--page-background) 50%, #9337f58a 100%);
-  background-size:
-    27px 27px,
-    auto;
-  background-repeat: repeat;
-  background-color: transparent;
-
-  .section-content {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 1.5rem;
-  }
+    height: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
 
-  .performance-half {
-    flex: 1 0 200px;
-    padding: 3rem 0;
-
-    &:nth-child(2) {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      @include mq.for-desktop-down {
-        display: none;
-      }
-
-      svg {
-        width: 80%;
-        max-width: 365px;
-      }
+    &:hover {
+      border-color: var(--quinary-contrast);
+      background: var(--octonary-contrast);
+      cursor: pointer;
     }
   }
 
-  p {
-    &.secondary {
-      font-size: 1.2rem;
+  .icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-contrast);
+    position: relative;
+    background: linear-gradient(
+      90deg,
+      var(--orange-red) 0%,
+      var(--vivid-pink) 50%,
+      var(--electric-violet) 100%
+    );
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: var(--card-background);
+      border-radius: calc(0.5rem - 1px);
     }
-  }
 
-  .docs-card-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-
-    @include mq.for-tablet-down {
-      grid-template-columns: 1fr;
-    }
-  }
-}
-
-.learn-more {
-  background-image:
-    linear-gradient(
-      63deg,
-      transparent 66%,
-      var(--page-background) 69%,
-      var(--page-background) 70%,
-      transparent 70%
-    ),
-    linear-gradient(162deg, var(--page-background) 50%, #9337f58a 100%);
-  background-size:
-    27px 27px,
-    auto;
-  background-repeat: repeat;
-  background-color: transparent;
-
-  padding-block: 5rem;
-  text-align: left;
-
-  h2 {
-    font-size: 2.5rem;
-    margin-bottom: 3rem;
-  }
-
-  h3 {
-    margin-top: 0;
-  }
-
-  svg {
-    width: 64px;
-    flex: 0 0 64px;
-    margin: 0 1rem;
-  }
-
-  p {
-    font-size: 1rem;
-    font-weight: 300;
-
-    &.secondary {
-      color: var(--quaternary-contrast);
+    docs-icon {
+      font-size: 24px;
+      position: relative;
+      z-index: 1;
     }
   }
 
   .card-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-  }
+    h3 {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: var(--secondary-contrast);
+      margin: 0;
 
-  .docs-card {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 1.5rem;
-
-    @include mq.for-tablet-down {
-      & {
-        flex-direction: column;
+      strong {
+        color: var(--primary-contrast);
+        font-weight: 600;
       }
     }
   }
+}
 
-  .docs-card-grid {
+.performance-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .wrapper {
+    width: 800px;
+    height: 800px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+
+    @include mq.for-phone-only {
+      width: 400px;
+      height: 400px;
+    }
+  }
+
+  .pattern {
+    @include background-pattern;
+    z-index: -1;
+    width: 100%;
+
+    background: radial-gradient(transparent 28%, #f627e3 45%, #6911d2 55%, transparent 69%);
+    @include mq.for-phone-only {
+      opacity: 0.7;
+    }
+  }
+
+  .content {
+    height: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    h2 {
+      margin-bottom: 0;
+    }
+    h3 {
+      font-size: 12pt;
+      color: var(--quaternary-contrast);
+      max-width: 400px;
+      margin: 0 1rem;
+    }
+    button {
+      margin-top: 2rem;
+    }
+  }
+}
+
+.learn-more-bottom-section {
+  position: relative;
+  display: flex;
+  height: min(500px, 100vh);
+
+  .pattern {
+    @include background-pattern;
+    width: calc(100% - 7rem);
+
+    animation: pulse 4s ease-in-out infinite;
+    background: radial-gradient(
+      circle at 50% 125%,
+      transparent 20%,
+      #f627e3 35%,
+      #6911d2 55%,
+      transparent var(--pulse-outer)
+    );
+
+    @include mq.for-tablet-landscape-down {
+      width: 100%;
+    }
+  }
+
+  .content {
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+    max-width: 600px;
+
+    h2 {
+      margin-bottom: 0rem;
+    }
+
+    h3 {
+      font-size: 12pt;
+      margin-bottom: 3rem;
+    }
+
+    button {
+      position: absolute;
+      bottom: 3rem;
+    }
+  }
+}
+
+.explore-section {
+  max-width: 1440px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  .title {
+    position: relative;
+    height: clamp(150px, 40vw, 400px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    h2 {
+      max-width: 512px;
+      z-index: 1;
+      position: relative;
+    }
+
+    .pattern {
+      @include background-pattern;
+      height: 120%;
+      width: 100%;
+      animation: rotateGradient 10s linear infinite;
+
+      background: radial-gradient(circle at 50% 150%, #f627e3 50%, #6911d2 66%, transparent 75%);
+    }
+  }
+
+  .cards-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    grid-gap: 2rem;
+    margin: 0 1rem;
 
-    @include mq.for-tablet-down {
+    @include mq.for-phone-only {
       grid-template-columns: 1fr;
     }
+  }
+
+  .explore-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--card-background);
+    border: 1px solid var(--senary-contrast);
+    border-radius: 1rem;
+    overflow: hidden;
+    text-decoration: none;
+    transition: border-color 0.3s ease;
+    height: 100%;
+    min-height: 500px;
+    position: relative;
+    cursor: pointer;
+    animation: rotateGradient 6s linear infinite;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: var(--card-background);
+      border-radius: calc(1rem - 1px); // looks better
+    }
+
+    &:hover {
+      .fake-button {
+        // we're using a background-position to animate on hover
+        // because using background-clip with transform causes rendering/flicker issues in some browsers
+        background-position: 100% 0%;
+
+        docs-icon {
+          transform: translateX(4px);
+          color: var(--electric-violet);
+        }
+      }
+
+      background: linear-gradient(
+        var(--gradient-angle),
+        var(--orange-red) 0%,
+        var(--electric-violet) 39%,
+        transparent 81%
+      );
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      padding: 2.5rem;
+      z-index: 2;
+      flex: 1;
+
+      p {
+        color: var(--quaternary-contrast);
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+        .emphasis {
+          color: var(--secondary-contrast);
+        }
+      }
+    }
+
+    .fake-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--tertiary-contrast);
+      transition: color 0.3s ease;
+      background: linear-gradient(
+        90deg,
+        var(--tertiary-contrast) 0%,
+        var(--tertiary-contrast) 47%,
+        var(--orange-red) 51%,
+        var(--electric-violet) 100%
+      );
+      background-size: 200% 100%;
+      background-position: 0% 0%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      transition: background-position 0.5s ease;
+
+      docs-icon {
+        font-size: 1.2rem;
+        color: var(--tertiary-contrast);
+        transition:
+          transform 0.3s ease,
+          color 0.3s ease;
+      }
+    }
+
+    .editor-background {
+      --img: url('../../../assets/images/home/editor-light.png');
+      background-image: linear-gradient(135deg, transparent, var(--card-background)), var(--img);
+      position: absolute;
+      bottom: 1px;
+      right: 1px;
+      width: 50%;
+      height: clamp(100px, 25vw, 300px);
+      background-size: cover;
+      border-bottom-right-radius: 1rem;
+
+      @include mq.for-phone-only {
+        height: 50vw;
+      }
+
+      ::ng-deep .docs-dark-mode & {
+        --img: url('../../../assets/images/home/editor-dark.png') !important;
+      }
+    }
+
+    .logo-background {
+      --logo-svg: url('../../../assets/images/home/angular-logo-light.svg');
+      background-image: var(--logo-svg);
+      position: absolute;
+      bottom: -100px;
+      right: -100px;
+      width: 490px;
+      height: 453px;
+
+      ::ng-deep .docs-dark-mode & {
+        --logo-svg: url('../../../assets/images/home/angular-logo-dark.svg') !important;
+      }
+    }
+  }
+}
+
+.angular-mcp-container {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: auto;
+  border-radius: 1rem;
+
+  // Glowing gradient background
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #a800d6 0%, #ff266f 50%, #ff5c39 100%);
+    filter: blur(40px);
+    opacity: 0.25;
+    transform: scale(0.7);
+    transition: all 0.5s ease;
+  }
+
+  .explore-card:hover & {
+    &::before {
+      transform: scale(0.95);
+      opacity: 0.45;
+    }
+  }
+
+  .mcp-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    // background-color: var(--card-background);
+    // border: 1px solid var(--senary-contrast);
+    border-radius: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    animation: rotateGradient 10s linear infinite;
+
+    background: conic-gradient(
+      from var(--gradient-angle) at 50% 50%,
+      var(--hot-red) 0%,
+      var(--vivid-pink) 20%,
+      var(--electric-violet) 40%,
+      transparent 50%,
+      transparent 85%,
+      var(--hot-red) 100%
+    );
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      background: var(--card-background);
+      border-radius: 1rem;
+    }
+  }
+
+  .mcp-label {
+    color: var(--primary-contrast);
+    margin-right: 1rem;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    z-index: 1;
+  }
+
+  .mcp-pills {
+    font-size: 0.7rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    overflow: hidden;
+    max-height: 2rem;
+    z-index: 1;
+  }
+
+  .mcp-pill {
+    background-color: var(--septenary-contrast);
+    color: var(--vivid-pink);
+    font-family: monospace;
+    padding: 0.5rem;
+    border-radius: 8px;
   }
 }

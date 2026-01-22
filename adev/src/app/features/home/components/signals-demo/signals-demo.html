@@ -1,0 +1,51 @@
+<div class="two-column-step">
+  <div class="step-description">
+    <div class="header">Signals: Fine-Grained Reactivity</div>
+    <div class="description">
+      Type in the search box to filter the list. A
+      <code>computed</code> signal automatically recalculates the
+      <code>filteredItems</code> whenever the <code>searchTerm</code> signal changes.
+    </div>
+
+    <div class="demo-display">
+      <input
+        [value]="searchTerm()"
+        (input)="onSearch($event)"
+        placeholder="Search for fruit..."
+        class="demo-input"
+      />
+      <div class="demo-list">
+        @for (item of filteredItems(); track item) {
+          <div class="demo-item">{{ item }}</div>
+        }
+      </div>
+    </div>
+
+    <button
+      class="docs-primary-btn"
+      [attr.text]="'Learn more about signals'"
+      routerLink="/guide/signals"
+    >
+      Learn more about signals
+    </button>
+  </div>
+
+  <div class="step-code">
+    <div class="code-block">
+      <div class="code-header">
+        <span>component.ts</span>
+        <span class="copy-icon"></span>
+      </div>
+
+      <adev-code-block [code]="tsExample" />
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>component.html</span>
+        <span class="copy-icon"></span>
+      </div>
+      <adev-code-block [code]="htmlExample" language="angular-html" />
+    </div>
+  </div>
+</div>

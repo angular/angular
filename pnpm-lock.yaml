@@ -579,6 +579,27 @@ importers:
       '@marijn/find-cluster-break':
         specifier: 1.0.2
         version: 1.0.2
+      '@shikijs/core':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/engine-javascript':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/engine-oniguruma':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/langs':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/themes':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/types':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/vscode-textmate':
+        specifier: ^10.0.2
+        version: 10.0.2
       '@stackblitz/sdk':
         specifier: 1.11.0
         version: 1.11.0
@@ -612,6 +633,18 @@ importers:
       angular-split:
         specifier: 20.0.0
         version: 20.0.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+      ccount:
+        specifier: ^2.0.1
+        version: 2.0.1
+      character-entities-html4:
+        specifier: ^2.1.0
+        version: 2.1.0
+      character-entities-legacy:
+        specifier: ^3.0.0
+        version: 3.0.0
+      comma-separated-tokens:
+        specifier: ^2.0.3
+        version: 2.0.3
       crelt:
         specifier: 1.0.6
         version: 1.0.6
@@ -624,6 +657,15 @@ importers:
       fflate:
         specifier: 0.8.2
         version: 0.8.2
+      hast-util-to-html:
+        specifier: ^9.0.5
+        version: 9.0.5
+      hast-util-whitespace:
+        specifier: ^3.0.0
+        version: 3.0.0
+      html-void-elements:
+        specifier: ^3.0.0
+        version: 3.0.0
       jasmine-core:
         specifier: 6.0.0
         version: 6.0.0
@@ -666,12 +708,21 @@ importers:
       prettier:
         specifier: 3.8.1
         version: 3.8.1
+      property-information:
+        specifier: ^7.1.0
+        version: 7.1.0
       rxjs:
         specifier: 7.8.2
         version: 7.8.2
       shiki:
         specifier: 3.22.0
         version: 3.22.0
+      space-separated-tokens:
+        specifier: ^2.0.2
+        version: 2.0.2
+      stringify-entities:
+        specifier: ^4.0.4
+        version: 4.0.4
       style-mod:
         specifier: 4.1.3
         version: 4.1.3
@@ -687,6 +738,9 @@ importers:
       w3c-keyname:
         specifier: 2.2.8
         version: 2.2.8
+      zwitch:
+        specifier: ^2.0.4
+        version: 2.0.4
     devDependencies:
       autoprefixer:
         specifier: 10.4.24
