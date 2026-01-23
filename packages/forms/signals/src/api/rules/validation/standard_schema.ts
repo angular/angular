@@ -13,7 +13,13 @@ import type {FieldTree, SchemaPath, SchemaPathTree} from '../../types';
 import {createMetadataKey, metadata} from '../metadata';
 import {validateAsync} from './validate_async';
 import {validateTree} from './validate_tree';
-import {standardSchemaError, StandardSchemaValidationError} from './validation_errors';
+import {
+  BaseNgValidationError,
+  type ValidationErrorOptions,
+  type WithFieldTree,
+  type WithOptionalFieldTree,
+  type WithoutFieldTree,
+} from './validation_errors';
 
 /**
  * Utility type that removes a string index key when its value is `unknown`,
@@ -112,6 +118,37 @@ export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProp
 }
 
 /**
+ * Create a standard schema issue error associated with the target field
+ * @param issue The standard schema issue
+ * @param options The validation error options
+ *
+ * @category validation
+ * @experimental 21.0.0
+ */
+export function standardSchemaError(
+  issue: StandardSchemaV1.Issue,
+  options: WithFieldTree<ValidationErrorOptions>,
+): StandardSchemaValidationError;
+/**
+ * Create a standard schema issue error
+ * @param issue The standard schema issue
+ * @param options The optional validation error options
+ *
+ * @category validation
+ * @experimental 21.0.0
+ */
+export function standardSchemaError(
+  issue: StandardSchemaV1.Issue,
+  options?: ValidationErrorOptions,
+): WithoutFieldTree<StandardSchemaValidationError>;
+export function standardSchemaError(
+  issue: StandardSchemaV1.Issue,
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<StandardSchemaValidationError> {
+  return new StandardSchemaValidationError(issue, options);
+}
+
+/**
  * Converts a `StandardSchemaV1.Issue` to a `FormTreeError`.
  *
  * @param fieldTree The root field to which the issue's path is relative.
@@ -128,4 +165,21 @@ function standardIssueToFormTreeError(
     target = target[pathKey] as FieldTree<Record<PropertyKey, unknown>>;
   }
   return addDefaultField(standardSchemaError(issue, {message: issue.message}), target);
+}
+
+/**
+ * An error used to indicate an issue validating against a standard schema.
+ *
+ * @category validation
+ * @experimental 21.0.0
+ */
+export class StandardSchemaValidationError extends BaseNgValidationError {
+  override readonly kind = 'standardSchema';
+
+  constructor(
+    readonly issue: StandardSchemaV1.Issue,
+    options?: ValidationErrorOptions,
+  ) {
+    super(options);
+  }
 }

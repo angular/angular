@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {StandardSchemaV1} from '@standard-schema/spec';
 import type {FormField} from '../../form_field_directive';
 import type {FieldTree} from '../../types';
+import type {StandardSchemaValidationError} from './standard_schema';
 
 /**
  * Options used to create a `ValidationError`.
  */
-interface ValidationErrorOptions {
+export interface ValidationErrorOptions {
   /** Human readable error message. */
   message?: string;
 }
@@ -253,37 +253,6 @@ export function emailError(
 }
 
 /**
- * Create a standard schema issue error associated with the target field
- * @param issue The standard schema issue
- * @param options The validation error options
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function standardSchemaError(
-  issue: StandardSchemaV1.Issue,
-  options: WithFieldTree<ValidationErrorOptions>,
-): StandardSchemaValidationError;
-/**
- * Create a standard schema issue error
- * @param issue The standard schema issue
- * @param options The optional validation error options
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function standardSchemaError(
-  issue: StandardSchemaV1.Issue,
-  options?: ValidationErrorOptions,
-): WithoutFieldTree<StandardSchemaValidationError>;
-export function standardSchemaError(
-  issue: StandardSchemaV1.Issue,
-  options?: ValidationErrorOptions,
-): WithOptionalFieldTree<StandardSchemaValidationError> {
-  return new StandardSchemaValidationError(issue, options);
-}
-
-/**
  * Common interface for all validation errors.
  *
  * This can be returned from validators.
@@ -358,7 +327,7 @@ export declare namespace ValidationError {
  *
  * @experimental 21.0.0
  */
-abstract class _NgValidationError implements ValidationError {
+export abstract class BaseNgValidationError implements ValidationError {
   /** Brand the class to avoid Typescript structural matching */
   private __brand = undefined;
 
@@ -384,7 +353,7 @@ abstract class _NgValidationError implements ValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class RequiredValidationError extends _NgValidationError {
+export class RequiredValidationError extends BaseNgValidationError {
   override readonly kind = 'required';
 }
 
@@ -394,7 +363,7 @@ export class RequiredValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class MinValidationError extends _NgValidationError {
+export class MinValidationError extends BaseNgValidationError {
   override readonly kind = 'min';
 
   constructor(
@@ -411,7 +380,7 @@ export class MinValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class MaxValidationError extends _NgValidationError {
+export class MaxValidationError extends BaseNgValidationError {
   override readonly kind = 'max';
 
   constructor(
@@ -428,7 +397,7 @@ export class MaxValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class MinLengthValidationError extends _NgValidationError {
+export class MinLengthValidationError extends BaseNgValidationError {
   override readonly kind = 'minLength';
 
   constructor(
@@ -445,7 +414,7 @@ export class MinLengthValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class MaxLengthValidationError extends _NgValidationError {
+export class MaxLengthValidationError extends BaseNgValidationError {
   override readonly kind = 'maxLength';
 
   constructor(
@@ -462,7 +431,7 @@ export class MaxLengthValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class PatternValidationError extends _NgValidationError {
+export class PatternValidationError extends BaseNgValidationError {
   override readonly kind = 'pattern';
 
   constructor(
@@ -479,25 +448,8 @@ export class PatternValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class EmailValidationError extends _NgValidationError {
+export class EmailValidationError extends BaseNgValidationError {
   override readonly kind = 'email';
-}
-
-/**
- * An error used to indicate an issue validating against a standard schema.
- *
- * @category validation
- * @experimental 21.0.0
- */
-export class StandardSchemaValidationError extends _NgValidationError {
-  override readonly kind = 'standardSchema';
-
-  constructor(
-    readonly issue: StandardSchemaV1.Issue,
-    options?: ValidationErrorOptions,
-  ) {
-    super(options);
-  }
 }
 
 /**
@@ -525,7 +477,7 @@ export class StandardSchemaValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export const NgValidationError: abstract new () => NgValidationError = _NgValidationError as any;
+export const NgValidationError: abstract new () => NgValidationError = BaseNgValidationError as any;
 export type NgValidationError =
   | RequiredValidationError
   | MinValidationError

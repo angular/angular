@@ -62,6 +62,14 @@ export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind exten
 }
 
 // @public
+export abstract class BaseNgValidationError implements ValidationError {
+    constructor(options?: ValidationErrorOptions);
+    readonly fieldTree: FieldTree<unknown>;
+    readonly kind: string;
+    readonly message?: string;
+}
+
+// @public
 export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
     readonly key: Signal<string>;
 }
@@ -115,7 +123,7 @@ export function emailError(options: WithFieldTree<ValidationErrorOptions>): Emai
 export function emailError(options?: ValidationErrorOptions): WithoutFieldTree<EmailValidationError>;
 
 // @public
-export class EmailValidationError extends _NgValidationError {
+export class EmailValidationError extends BaseNgValidationError {
     // (undocumented)
     readonly kind = "email";
 }
@@ -290,7 +298,7 @@ export function maxLengthError(maxLength: number, options: WithFieldTree<Validat
 export function maxLengthError(maxLength: number, options?: ValidationErrorOptions): WithoutFieldTree<MaxLengthValidationError>;
 
 // @public
-export class MaxLengthValidationError extends _NgValidationError {
+export class MaxLengthValidationError extends BaseNgValidationError {
     constructor(maxLength: number, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "maxLength";
@@ -299,7 +307,7 @@ export class MaxLengthValidationError extends _NgValidationError {
 }
 
 // @public
-export class MaxValidationError extends _NgValidationError {
+export class MaxValidationError extends BaseNgValidationError {
     constructor(max: number, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "max";
@@ -369,7 +377,7 @@ export function minLengthError(minLength: number, options: WithFieldTree<Validat
 export function minLengthError(minLength: number, options?: ValidationErrorOptions): WithoutFieldTree<MinLengthValidationError>;
 
 // @public
-export class MinLengthValidationError extends _NgValidationError {
+export class MinLengthValidationError extends BaseNgValidationError {
     constructor(minLength: number, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "minLength";
@@ -378,7 +386,7 @@ export class MinLengthValidationError extends _NgValidationError {
 }
 
 // @public
-export class MinValidationError extends _NgValidationError {
+export class MinValidationError extends BaseNgValidationError {
     constructor(min: number, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "min";
@@ -426,7 +434,7 @@ export function patternError(pattern: RegExp, options: WithFieldTree<ValidationE
 export function patternError(pattern: RegExp, options?: ValidationErrorOptions): WithoutFieldTree<PatternValidationError>;
 
 // @public
-export class PatternValidationError extends _NgValidationError {
+export class PatternValidationError extends BaseNgValidationError {
     constructor(pattern: RegExp, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "pattern";
@@ -461,7 +469,7 @@ export function requiredError(options: WithFieldTree<ValidationErrorOptions>): R
 export function requiredError(options?: ValidationErrorOptions): WithoutFieldTree<RequiredValidationError>;
 
 // @public
-export class RequiredValidationError extends _NgValidationError {
+export class RequiredValidationError extends BaseNgValidationError {
     // (undocumented)
     readonly kind = "required";
 }
@@ -530,7 +538,7 @@ export function standardSchemaError(issue: StandardSchemaV1.Issue, options: With
 export function standardSchemaError(issue: StandardSchemaV1.Issue, options?: ValidationErrorOptions): WithoutFieldTree<StandardSchemaValidationError>;
 
 // @public
-export class StandardSchemaValidationError extends _NgValidationError {
+export class StandardSchemaValidationError extends BaseNgValidationError {
     constructor(issue: StandardSchemaV1.Issue, options?: ValidationErrorOptions);
     // (undocumented)
     readonly issue: StandardSchemaV1.Issue;
@@ -600,6 +608,11 @@ export namespace ValidationError {
         // (undocumented)
         readonly formField?: never;
     }
+}
+
+// @public
+export interface ValidationErrorOptions {
+    message?: string;
 }
 
 // @public
