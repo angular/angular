@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal, ɵWritable} from '@angular/core';
+import {computed, Signal, untracked, ɵWritable} from '@angular/core';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
 import type {FieldTree, TreeValidationResult, ValidationResult} from '../api/types';
 import {isArray} from '../util/type_guards';
@@ -259,7 +259,7 @@ export class FieldValidationState implements ValidationState {
       ...result,
       ...child.errorSummary(),
     ]);
-    errors.sort(compareErrorPosition);
+    untracked(() => errors.sort(compareErrorPosition));
     return errors;
   });
 
@@ -398,6 +398,12 @@ function getFirstBoundElement(error: ValidationError.WithFieldTree) {
     }, undefined);
 }
 
+/**
+ * Compares the position of two validation errors by the position of their corresponding field
+ * binding directive in the DOM.
+ * - For errors with multiple field bindings, the earliest one in the DOM will be used for comparison.
+ * - For errors that have no field bindings, they will be considered to come after all other errors.
+ */
 function compareErrorPosition(
   a: ValidationError.WithFieldTree,
   b: ValidationError.WithFieldTree,
