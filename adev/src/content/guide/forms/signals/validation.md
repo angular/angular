@@ -603,12 +603,11 @@ Async validation handles validation that requires external data sources, like ch
 The `validateHttp()` function performs HTTP-based validation:
 
 ```angular-ts
-import {Component, signal, inject} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {Component, signal} from '@angular/core';
 import {form, FormField, required, validateHttp} from '@angular/forms/signals';
 
 @Component({
-  selector: 'app-username-form',
+  selector: 'app-username-form',|
   imports: [FormField],
   template: `
     <form>
@@ -624,8 +623,6 @@ import {form, FormField, required, validateHttp} from '@angular/forms/signals';
   `,
 })
 export class UsernameFormComponent {
-  http = inject(HttpClient);
-
   usernameModel = signal({username: ''});
 
   usernameForm = form(this.usernameModel, (schemaPath) => {
