@@ -28,6 +28,8 @@ const LINK_EXEMPT = new Set([
   '@keyframes',
   'input',
   'Event',
+  'form',
+  'type',
 ]);
 
 export function shouldLinkSymbol(symbol: string): boolean {
