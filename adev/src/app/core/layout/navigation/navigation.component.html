@@ -190,6 +190,7 @@
           type="button"
           (click)="toggleSearchDialog($event)"
           title="Search docs"
+          [aria-label]="'Open search dialog with ' + searchTitle"
         >
           <svg
             aria-hidden="true"
@@ -202,10 +203,7 @@
               d="M14.583 15.48 9.104 10a4.591 4.591 0 0 1-1.458.844 5.156 5.156 0 0 1-1.771.302c-1.5 0-2.77-.52-3.813-1.563C1.022 8.542.5 7.285.5 5.813c0-1.473.52-2.73 1.563-3.771C3.103 1 4.367.479 5.854.479 7.326.48 8.58 1 9.614 2.042c1.035 1.041 1.553 2.298 1.553 3.77 0 .598-.098 1.174-.292 1.73A5.287 5.287 0 0 1 10 9.104l5.5 5.459-.917.916ZM5.854 9.895c1.125 0 2.083-.4 2.875-1.198a3.95 3.95 0 0 0 1.188-2.885 3.95 3.95 0 0 0-1.188-2.886C7.938 2.13 6.98 1.73 5.854 1.73c-1.139 0-2.107.4-2.906 1.198-.799.799-1.198 1.76-1.198 2.886 0 1.125.4 2.086 1.198 2.885.799.799 1.767 1.198 2.906 1.198Z"
             />
           </svg>
-          <span
-            class="adev-nav-item__label adev-search-desktop"
-            [aria-label]="'Open search dialog with ' + searchTitle"
-          >
+          <span class="adev-nav-item__label adev-search-desktop">
             <kbd>{{ searchLabel }}</kbd>
             <kbd>K</kbd>
           </span>
