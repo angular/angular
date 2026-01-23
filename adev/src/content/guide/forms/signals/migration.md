@@ -213,7 +213,7 @@ You can use `SignalFormControl` to expose a signal-based form as a standard `For
 to migrate leaf nodes of a form to Signals while keeping the parent `FormGroup` structure.
 
 ```typescript
-import {Component, inject, Injector, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {ReactiveFormsModule, FormGroup} from '@angular/forms';
 import {SignalFormControl} from '@angular/forms/signals/compat';
 import {required} from '@angular/forms/signals';
@@ -223,11 +223,8 @@ import {required} from '@angular/forms/signals';
   imports: [ReactiveFormsModule],
 })
 export class UserProfile {
-  private injector = inject(Injector);
-
   // 1. Create a SignalFormControl, use signal form rules.
-  // Note: SignalFormControl requires an Injector
-  emailControl = new SignalFormControl('', this.injector, (p) => {
+  emailControl = new SignalFormControl('', (p) => {
     required(p, {message: 'Email is required'});
   });
 
@@ -255,7 +252,7 @@ Attempting to call disable/enable would throw an error.
 import {signal, effect} from '@angular/core';
 
 export class UserProfile {
-  readonly emailControl = new SignalFormControl('', this.injector);
+  readonly emailControl = new SignalFormControl('');
 
   readonly isLoading = signal(false);
 
@@ -282,7 +279,7 @@ import {disabled} from '@angular/forms/signals';
 export class UserProfile {
   readonly isLoading = signal(false);
 
-  readonly emailControl = new SignalFormControl('', this.injector, (p) => {
+  readonly emailControl = new SignalFormControl('', (p) => {
     // The control becomes disabled whenever isLoading is true
     disabled(p, () => this.isLoading());
   });
@@ -304,7 +301,7 @@ Attempting to call these methods will throw an error.
 
 ```typescript {avoid}
 export class UserProfile {
-  readonly emailControl = new SignalFormControl('', this.injector);
+  readonly emailControl = new SignalFormControl('');
   readonly isRequired = signal(false);
 
   toggleRequired() {
@@ -329,7 +326,7 @@ import {applyWhen, required} from '@angular/forms/signals';
 export class UserProfile {
   readonly isRequired = signal(false);
 
-  readonly emailControl = new SignalFormControl('', this.injector, (p) => {
+  readonly emailControl = new SignalFormControl('', (p) => {
     // The control becomes required whenever isRequired is true
     applyWhen(
       p,
