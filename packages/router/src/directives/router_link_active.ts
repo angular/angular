@@ -11,6 +11,7 @@ import {
   computed,
   contentChildren,
   Directive,
+  effect,
   ElementRef,
   EventEmitter,
   inject,
@@ -106,27 +107,11 @@ import {RouterLink} from './router_link';
 @Directive({
   selector: '[routerLinkActive]',
   exportAs: 'routerLinkActive',
-  host: {
-    '[attr.aria-current]': '_ariaCurrent()',
-    '[class]': '_classBinding()',
-  },
 })
 export class RouterLinkActive implements OnChanges {
   private readonly _links = contentChildren(RouterLink, {descendants: true});
 
   private classes = signal<string[]>([]);
-  /** @docs-private @internal */
-  protected _classBinding = computed(() =>
-    this._hasActiveLinks()
-      ? this.classes()
-      : this.classes().reduce(
-          (acc, v) => {
-            acc[v] = false;
-            return acc;
-          },
-          {} as {[k: string]: false},
-        ),
-  );
 
   get isActive(): boolean {
     return untracked(this._hasActiveLinks);
@@ -177,15 +162,6 @@ export class RouterLinkActive implements OnChanges {
     undefined | 'page' | 'step' | 'location' | 'date' | 'time' | true | false
   >(undefined);
 
-  /** @docs-private @internal */
-  protected _ariaCurrent = computed(() => {
-    const v = this._ariaCurrentWhenActive();
-    if (!this._hasActiveLinks() || v === undefined) {
-      return null;
-    }
-    return v.toString();
-  });
-
   /**
    *
    * You can use the output `isActiveChange` to get notified each time the link becomes
@@ -210,11 +186,34 @@ export class RouterLinkActive implements OnChanges {
 
   constructor(
     private router: Router,
-    // TODO(atscott): clean up g3 and remove
     private element: ElementRef,
     private renderer: Renderer2,
+    // TODO(atscott): clean up g3 and remove
     private readonly cdr: ChangeDetectorRef,
-  ) {}
+  ) {
+    effect(() => {
+      this.classes().forEach((c) => {
+        if (this._hasActiveLinks()) {
+          this.renderer.addClass(this.element.nativeElement, c);
+        } else {
+          this.renderer.removeClass(this.element.nativeElement, c);
+        }
+      });
+    });
+
+    effect(() => {
+      const ariaCurrentWhenActive = this._ariaCurrentWhenActive();
+      if (this._hasActiveLinks() && ariaCurrentWhenActive !== undefined) {
+        this.renderer.setAttribute(
+          this.element.nativeElement,
+          'aria-current',
+          ariaCurrentWhenActive.toString(),
+        );
+      } else {
+        this.renderer.removeAttribute(this.element.nativeElement, 'aria-current');
+      }
+    });
+  }
 
   @Input()
   set routerLinkActive(data: string[] | string) {
