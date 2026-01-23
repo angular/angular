@@ -4,11 +4,11 @@ Signal Forms' field state allows you to react to user interactions by providing 
 
 ## Understanding field state
 
-When you create a form with the `form()` function, it returns a **field tree** - an object structure that mirrors your form model. Each field in the tree is accessible via dot notation (like `form.email`).
+When you create a form with the [`form()`](api/forms/signals/form) function, it returns a **field tree** - an object structure that mirrors your form model. Each field in the tree is accessible via dot notation (like [`form.email`](api/forms/signals/form#email)).
 
 ### Accessing field state
 
-When you call any field in the field tree as a function (like `form.email()`), it returns a `FieldState` object containing reactive signals that track the field's validation, interaction, and availability state. For example, the `invalid()` signal tells you whether the field has validation errors:
+When you call any field in the field tree as a function (like [`form.email()`](api/forms/signals/form#email)), it returns a `FieldState` object containing reactive signals that track the field's validation, interaction, and availability state. For example, the `invalid()` signal tells you whether the field has validation errors:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
