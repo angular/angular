@@ -47,6 +47,7 @@
     text-overflow: ellipsis;
     box-sizing: border-box;
     width: 100%;
+    justify-content: start;
 
     a {
       color: var(--quaternary-contrast);
@@ -73,19 +74,55 @@
 
 .adev-api-items-section-item {
   display: flex;
-  flex: 1;
   gap: 1em;
 }
 
+:host {
+  --item-attr-base-mix: 80%;
+
+  .docs-light-mode & {
+    --item-attr-base-mix: 20%;
+  }
+  @media screen and (prefers-color-scheme: light) {
+    --item-attr-base-mix: 20%;
+  }
+}
+
 .adev-item-attribute {
-  width: 24px;
   text-align: center;
-  font-family: var(--code-font);
-  background-color: var(--senary-contrast);
-  color: var(--tertiary-contrast);
-  border-radius: 0.25rem;
-  padding: 0.001rem 0.2rem 0.005rem;
-  margin-inline-start: 0.5rem;
+
+  border-radius: 1rem;
+  padding: 0rem 0.375rem;
+  margin-inline-start: 1.25rem;
+  display: block;
+  font-size: 0.625rem;
+  line-height: 1rem;
+  cursor: pointer;
+  user-select: none;
+  font-weight: bold;
+
+  &.adev-dev-preview {
+    background: color-mix(
+      in srgb,
+      var(--symbolic-yellow) var(--item-attr-base-mix),
+      var(--octonary-contrast)
+    );
+    color: var(--gray-1000);
+  }
+
+  &.adev-experimental {
+    background: color-mix(
+      in srgb,
+      var(--symbolic-green) var(--item-attr-base-mix),
+      var(--octonary-contrast)
+    );
+    color: var(--gray-1000);
+  }
+
+  &.adev-deprecated {
+    background-color: var(--senary-contrast);
+    color: var(--tertiary-contrast);
+  }
 }
 
 .adev-api-anchor {
