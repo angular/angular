@@ -1,0 +1,1159 @@
+/****************************************************************************************************
+ * PARTIAL FILE: aria_bindings.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+    disabled = '';
+    readonly = '';
+    label = '';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "ng-component", host: { properties: { "attr.aria-disabled": "disabled", "aria-readonly": "readonly", "ariaLabel": "label" } }, ngImport: i0, template: ``, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    template: ``,
+                    host: {
+                        '[attr.aria-disabled]': 'disabled',
+                        '[aria-readonly]': 'readonly',
+                        '[ariaLabel]': 'label',
+                    },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: aria_bindings.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    disabled: string;
+    readonly: string;
+    label: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings.js
+ ****************************************************************************************************/
+import { Directive, HostBinding, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    dirId = 'some id';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: false, selector: "[hostBindingDir]", host: { properties: { "id": "this.dirId" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostBindingDir]',
+                    standalone: false
+                }]
+        }], propDecorators: { dirId: [{
+                type: HostBinding,
+                args: ['id']
+            }] } });
+export class MyModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [HostBindingDir] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [HostBindingDir] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    dirId: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingDir], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_with_temporaries.js
+ ****************************************************************************************************/
+import { Directive, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    getData = () => undefined;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: false, selector: "[hostBindingDir]", host: { properties: { "id": "getData()?.id" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostBindingDir]',
+                    host: { '[id]': 'getData()?.id' },
+                    standalone: false,
+                }]
+        }] });
+export class MyModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [HostBindingDir] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [HostBindingDir] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_with_temporaries.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    getData: () => {
+        id: number;
+    } | undefined;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingDir], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_class_bindings_with_temporaries.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    constructor() {
+        this.value = null;
+    }
+}
+HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: true, selector: "[hostBindingDir]", host: { properties: { "class.a": "value ?? \"class-a\"", "class.b": "value ?? \"class-b\"" } }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostBindingDir]',
+                    host: {
+                        '[class.a]': 'value ?? "class-a"',
+                        '[class.b]': 'value ?? "class-b"',
+                    },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_class_bindings_with_temporaries.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    value: number | null;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_style_bindings_with_temporaries.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    constructor() {
+        this.value = null;
+    }
+}
+HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: true, selector: "[hostBindingDir]", host: { properties: { "style.fontSize": "value ?? \"15px\"", "style.fontWeight": "value ?? \"bold\"" } }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostBindingDir]',
+                    host: {
+                        '[style.fontSize]': 'value ?? "15px"',
+                        '[style.fontWeight]': 'value ?? "bold"',
+                    },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_style_bindings_with_temporaries.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    value: number | null;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_with_pure_functions.js
+ ****************************************************************************************************/
+import { Component, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingComp {
+    id = 'some id';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingComp, isStandalone: false, selector: "host-binding-comp", host: { properties: { "id": "[\"red\", id]" } }, ngImport: i0, template: '', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingComp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'host-binding-comp', host: { '[id]': '["red", id]' }, template: '',
+                    standalone: false
+                }]
+        }] });
+export class MyModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [HostBindingComp] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [HostBindingComp] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_with_pure_functions.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingComp {
+    id: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<HostBindingComp, "host-binding-comp", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingComp], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_attribute_bindings.js
+ ****************************************************************************************************/
+import { Directive, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostAttributeDir {
+    required = true;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostAttributeDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostAttributeDir, isStandalone: false, selector: "[hostAttributeDir]", host: { properties: { "attr.required": "required" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostAttributeDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostAttributeDir]', host: { '[attr.required]': 'required' },
+                    standalone: false
+                }]
+        }] });
+export class MyModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [HostAttributeDir] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [HostAttributeDir] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_attribute_bindings.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostAttributeDir {
+    required: boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostAttributeDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostAttributeDir, "[hostAttributeDir]", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostAttributeDir], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_attributes.js
+ ****************************************************************************************************/
+import { Directive, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostAttributeDir {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostAttributeDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostAttributeDir, isStandalone: false, selector: "[hostAttributeDir]", host: { attributes: { "aria-label": "label" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostAttributeDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostAttributeDir]', host: { 'aria-label': 'label' },
+                    standalone: false
+                }]
+        }] });
+export class MyModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [HostAttributeDir] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [HostAttributeDir] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_attributes.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostAttributeDir {
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostAttributeDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostAttributeDir, "[hostAttributeDir]", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostAttributeDir], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_attributes_with_classes_and_styles.js
+ ****************************************************************************************************/
+import { Component, Directive, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostAttributeComp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostAttributeComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostAttributeComp, isStandalone: false, selector: "my-host-attribute-component", host: { attributes: { "title": "hello there from component" }, styleAttribute: "opacity:1" }, ngImport: i0, template: '...', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostAttributeComp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-host-attribute-component',
+                    template: '...',
+                    host: { 'title': 'hello there from component', 'style': 'opacity:1' },
+                    standalone: false
+                }]
+        }] });
+export class HostAttributeDir {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostAttributeDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostAttributeDir, isStandalone: false, selector: "[hostAttributeDir]", host: { attributes: { "title": "hello there from directive" }, properties: { "style.opacity": "true", "class.three": "true" }, styleAttribute: "width: 200px; height: 500px", classAttribute: "one two" }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostAttributeDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostAttributeDir]',
+                    host: {
+                        'style': 'width: 200px; height: 500px',
+                        '[style.opacity]': 'true',
+                        'class': 'one two',
+                        '[class.three]': 'true',
+                        'title': 'hello there from directive',
+                    },
+                    standalone: false
+                }]
+        }] });
+export class MyModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [HostAttributeComp, HostAttributeDir] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [HostAttributeComp, HostAttributeDir] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_attributes_with_classes_and_styles.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostAttributeComp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostAttributeComp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<HostAttributeComp, "my-host-attribute-component", never, {}, {}, never, never, false, never>;
+}
+export declare class HostAttributeDir {
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostAttributeDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostAttributeDir, "[hostAttributeDir]", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostAttributeComp, typeof HostAttributeDir], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_multiple_property_bindings.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyDirective {
+    myTitle = 'hello';
+    myId = 'special-directive';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, isStandalone: false, selector: "[my-dir]", host: { properties: { "title": "myTitle", "tabindex": "1", "id": "myId" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[my-dir]', host: { '[title]': 'myTitle', '[tabindex]': '1', '[id]': 'myId' },
+                    standalone: false
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_multiple_property_bindings.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyDirective {
+    myTitle: string;
+    myId: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_property_bindings_all.js
+ ****************************************************************************************************/
+import { Directive, HostBinding } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyDirective {
+    myTitle = 'hello';
+    myId = 'special-directive';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, isStandalone: false, selector: "[my-dir]", host: { properties: { "tabindex": "1", "title": "this.myTitle", "id": "this.myId" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[my-dir]', host: { '[tabindex]': '1' },
+                    standalone: false
+                }]
+        }], propDecorators: { myTitle: [{
+                type: HostBinding,
+                args: ['title']
+            }], myId: [{
+                type: HostBinding,
+                args: ['id']
+            }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_property_bindings_all.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyDirective {
+    myTitle: string;
+    myId: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_property_bindings_mixed.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyDirective {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, isStandalone: false, selector: "[my-dir]", host: { properties: { "title": "\"my title\"", "attr.tabindex": "1", "id": "\"my-id\"" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[my-dir]',
+                    host: { '[title]': '"my title"', '[attr.tabindex]': '1', '[id]': '"my-id"' },
+                    standalone: false
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_property_bindings_mixed.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyDirective {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_synthetic_properties.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyDirective {
+    expandedState = 'collapsed';
+    isSmall = true;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, isStandalone: false, selector: "[my-dir]", host: { properties: { "@expand": "expandedState", "@fadeOut": "true", "@shrink": "isSmall" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[my-dir]',
+                    host: { '[@expand]': 'expandedState', '[@fadeOut]': 'true', '[@shrink]': 'isSmall' },
+                    standalone: false
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_synthetic_properties.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyDirective {
+    expandedState: string;
+    isSmall: boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_multiple_attribute_bindings.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyDirective {
+    myTitle = 'hello';
+    myId = 'special-directive';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, isStandalone: false, selector: "[my-dir]", host: { properties: { "attr.title": "myTitle", "attr.tabindex": "1", "attr.id": "myId" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[my-dir]',
+                    host: { '[attr.title]': 'myTitle', '[attr.tabindex]': '1', '[attr.id]': 'myId' },
+                    standalone: false
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_multiple_attribute_bindings.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyDirective {
+    myTitle: string;
+    myId: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_attribute_bindings_all.js
+ ****************************************************************************************************/
+import { Directive, HostBinding } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyDirective {
+    myTitle = 'hello';
+    myId = 'special-directive';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, isStandalone: false, selector: "[my-dir]", host: { properties: { "attr.tabindex": "1", "attr.title": "this.myTitle", "attr.id": "this.myId" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[my-dir]', host: { '[attr.tabindex]': '1' },
+                    standalone: false
+                }]
+        }], propDecorators: { myTitle: [{
+                type: HostBinding,
+                args: ['attr.title']
+            }], myId: [{
+                type: HostBinding,
+                args: ['attr.id']
+            }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_attribute_bindings_all.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyDirective {
+    myTitle: string;
+    myId: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_attribute_bindings_mixed.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyDirective {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, isStandalone: false, selector: "[my-dir]", host: { properties: { "attr.title": "\"my title\"", "tabindex": "1", "attr.id": "\"my-id\"" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[my-dir]',
+                    host: { '[attr.title]': '"my title"', '[tabindex]': '1', '[attr.id]': '"my-id"' },
+                    standalone: false
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_attribute_bindings_mixed.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyDirective {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_multiple_listeners.js
+ ****************************************************************************************************/
+import { Directive, HostListener } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyDirective {
+    mousedown() { }
+    mouseup() { }
+    click() {
+    }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyDirective, isStandalone: false, selector: "[my-dir]", host: { listeners: { "mousedown": "mousedown()", "mouseup": "mouseup()", "click": "click()" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[my-dir]',
+                    host: {
+                        '(mousedown)': 'mousedown()',
+                        '(mouseup)': 'mouseup()',
+                    },
+                    standalone: false
+                }]
+        }], propDecorators: { click: [{
+                type: HostListener,
+                args: ['click']
+            }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_multiple_listeners.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyDirective {
+    mousedown(): void;
+    mouseup(): void;
+    click(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_synthetic_listeners.js
+ ****************************************************************************************************/
+import { Component, HostListener } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+    start() { }
+    done() { }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: false, selector: "my-comp", host: { listeners: { "@animation.done": "done()", "@animation.start": "start()" } }, ngImport: i0, template: '', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-comp',
+                    template: '',
+                    host: {
+                        '(@animation.done)': 'done()',
+                    },
+                    standalone: false,
+                }]
+        }], propDecorators: { start: [{
+                type: HostListener,
+                args: ['@animation.start']
+            }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_synthetic_listeners.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    start(): void;
+    done(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-comp", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_synthetic_listeners_mixed.js
+ ****************************************************************************************************/
+import { Component, HostListener } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+    start() { }
+    click() { }
+    mousedown() { }
+    done() { }
+    mouseup() { }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: false, selector: "my-comp", host: { listeners: { "mousedown": "mousedown()", "@animation.done": "done()", "mouseup": "mouseup()", "@animation.start": "start()", "click": "click()" } }, ngImport: i0, template: '', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-comp',
+                    template: '',
+                    host: {
+                        '(mousedown)': 'mousedown()',
+                        '(@animation.done)': 'done()',
+                        '(mouseup)': 'mouseup()',
+                    },
+                    standalone: false,
+                }]
+        }], propDecorators: { start: [{
+                type: HostListener,
+                args: ['@animation.start']
+            }], click: [{
+                type: HostListener,
+                args: ['click']
+            }] } });
+
+/****************************************************************************************************
+ * PARTIAL FILE: chain_synthetic_listeners_mixed.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    start(): void;
+    click(): void;
+    mousedown(): void;
+    done(): void;
+    mouseup(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-comp", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_dollar_any.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: false, selector: "[hostBindingDir]", host: { properties: { "style.color": "$any(\"red\")" } }, ngImport: i0, template: ``, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Component,
+            args: [{
+                    selector: '[hostBindingDir]',
+                    host: {
+                        '[style.color]': '$any("red")',
+                    },
+                    template: ``,
+                    standalone: false
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_dollar_any.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_primitive_names.js
+ ****************************************************************************************************/
+import { Directive, HostBinding, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    true;
+    false;
+    other;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: false, selector: "[hostBindingDir]", host: { properties: { "class.a": "true", "class.b": "false", "class.c": "this.true", "class.d": "this.false", "class.e": "this.other" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostBindingDir]',
+                    host: {
+                        '[class.a]': 'true',
+                        '[class.b]': 'false',
+                    },
+                    standalone: false
+                }]
+        }], propDecorators: { true: [{
+                type: HostBinding,
+                args: ['class.c']
+            }], false: [{
+                type: HostBinding,
+                args: ['class.d']
+            }], other: [{
+                type: HostBinding,
+                args: ['class.e']
+            }] } });
+export class MyModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [HostBindingDir] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [HostBindingDir] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_primitive_names.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    true: any;
+    false: any;
+    other: any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingDir], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_quoted_names.js
+ ****************************************************************************************************/
+import { Directive, HostBinding, NgModule } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    'is-a';
+    'is-"b"';
+    '"is-c"';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: false, selector: "[hostBindingDir]", host: { properties: { "class.a": "this['is-a']", "class.b": "this['is-\"b\"']", "class.c": "this['\"is-c\"']" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostBindingDir]',
+                    standalone: false
+                }]
+        }], propDecorators: { "is-a": [{
+                type: HostBinding,
+                args: ['class.a']
+            }], "is-\"b\"": [{
+                type: HostBinding,
+                args: ['class.b']
+            }], "\"is-c\"": [{
+                type: HostBinding,
+                args: ['class.c']
+            }] } });
+export class MyModule {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+    static ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [HostBindingDir] });
+    static ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [HostBindingDir] }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_bindings_quoted_names.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    'is-a': any;
+    'is-"b"': any;
+    '"is-c"': any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, false, never>;
+}
+export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingDir], never, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: sanitization.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingLinkDir {
+    evil = 'evil';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingLinkDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingLinkDir, isStandalone: true, selector: "a[hostBindingLinkDir]", host: { properties: { "innerHtml": "evil", "href": "evil", "attr.style": "evil" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingLinkDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'a[hostBindingLinkDir]',
+                    host: {
+                        '[innerHtml]': 'evil',
+                        '[href]': 'evil',
+                        '[attr.style]': 'evil',
+                    },
+                }]
+        }] });
+export class HostBindingImageDir {
+    evil = 'evil';
+    nonEvil = 'nonEvil';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingImageDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingImageDir, isStandalone: true, selector: "img[hostBindingImgDir]", host: { properties: { "innerHtml": "evil", "attr.style": "evil", "src": "nonEvil" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingImageDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'img[hostBindingImgDir]',
+                    host: {
+                        '[innerHtml]': 'evil',
+                        '[attr.style]': 'evil',
+                        '[src]': 'nonEvil',
+                    },
+                }]
+        }] });
+export class HostBindingIframeDir {
+    evil = 'evil';
+    nonEvil = 'nonEvil';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingIframeDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingIframeDir, isStandalone: true, selector: "iframe[hostBindingIframeDir]", host: { properties: { "innerHtml": "evil", "attr.style": "evil", "src": "evil", "sandbox": "evil", "attr.attributeName": "nonEvil" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingIframeDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'iframe[hostBindingIframeDir]',
+                    host: {
+                        '[innerHtml]': 'evil',
+                        '[attr.style]': 'evil',
+                        '[src]': 'evil',
+                        '[sandbox]': 'evil',
+                        '[attr.attributeName]': 'nonEvil',
+                    },
+                }]
+        }] });
+export class HostBindingSvgAnimateDir {
+    evil = 'evil';
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingSvgAnimateDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingSvgAnimateDir, isStandalone: true, selector: "animateMotion[hostBindingSvgAnimateDir]", host: { properties: { "attr.attributeName": "evil" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingSvgAnimateDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'animateMotion[hostBindingSvgAnimateDir]',
+                    host: {
+                        '[attr.attributeName]': 'evil',
+                    },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: sanitization.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingLinkDir {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingLinkDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingLinkDir, "a[hostBindingLinkDir]", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingImageDir {
+    evil: string;
+    nonEvil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingImageDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingImageDir, "img[hostBindingImgDir]", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingIframeDir {
+    evil: string;
+    nonEvil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingIframeDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingIframeDir, "iframe[hostBindingIframeDir]", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingSvgAnimateDir {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingSvgAnimateDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingSvgAnimateDir, "animateMotion[hostBindingSvgAnimateDir]", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: security_sensitive_constant_attributes.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: true, selector: "[hostBindingDir]", host: { attributes: { "src": "trusted", "srcdoc": "trusted" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostBindingDir]',
+                    host: { 'src': 'trusted', 'srcdoc': 'trusted' },
+                }]
+        }] });
+export class HostBindingDir2 {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir2, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir2, isStandalone: true, selector: "img", host: { attributes: { "src": "trusted", "srcdoc": "trusted" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir2, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'img',
+                    host: { 'src': 'trusted', 'srcdoc': 'trusted' },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: security_sensitive_constant_attributes.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingDir2 {
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir2, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir2, "img", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: security_sensitive_style_bindings.js
+ ****************************************************************************************************/
+import { Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class HostBindingDir {
+    imgUrl = 'url(foo.jpg)';
+    styles = { backgroundImage: this.imgUrl };
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: true, selector: "[hostBindingDir]", host: { properties: { "style.background-image": "imgUrl", "style": "styles" } }, ngImport: i0 });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[hostBindingDir]',
+                    host: { '[style.background-image]': 'imgUrl', '[style]': 'styles' },
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: security_sensitive_style_bindings.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class HostBindingDir {
+    imgUrl: string;
+    styles: {
+        backgroundImage: string;
+    };
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_listeners.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+    foo;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-cmp", host: { listeners: { "document:dragover": "foo($event)" } }, ngImport: i0, template: `
+  `, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-cmp',
+                    host: {
+                        '(document:dragover)': 'foo($event)',
+                    },
+                    template: `
+  `
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_listeners.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    foo: any;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-cmp", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_with_ts_expression_node.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export function getBar() {
+    console.log('This function cannot be extracted.');
+    return `${Math.random()}`;
+}
+export const BAR_CONST = getBar();
+export class MyComponent {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-cmp", host: { attributes: { "foo": BAR_CONST } }, ngImport: i0, template: ``, isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-cmp',
+                    host: {
+                        'foo': BAR_CONST,
+                    },
+                    template: ``
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: host_with_ts_expression_node.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare function getBar(): string;
+export declare const BAR_CONST: string;
+export declare class MyComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-cmp", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deceptive_attrs.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyComponent {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-comp", host: { attributes: { "class.is-compact": "false", "style.width": "0", "attr.tabindex": "5" } }, ngImport: i0, template: '', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-comp',
+                    template: '',
+                    host: {
+                        ['class.is-compact']: 'false',
+                        ['style.width']: '0',
+                        ['attr.tabindex']: '5',
+                    }
+                }]
+        }] });
+export class MyComponent2 {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent2, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent2, isStandalone: true, selector: "my-comp-2", host: { properties: { "class.is-compact": "false", "style.width": "0", "attr.tabindex": "5" } }, ngImport: i0, template: '', isInline: true });
+}
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent2, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-comp-2',
+                    template: '',
+                    host: {
+                        '[class.is-compact]': 'false',
+                        '[style.width]': '0',
+                        '[attr.tabindex]': '5',
+                    }
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deceptive_attrs.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-comp", never, {}, {}, never, never, true, never>;
+}
+export declare class MyComponent2 {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent2, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent2, "my-comp-2", never, {}, {}, never, never, true, never>;
+}
+

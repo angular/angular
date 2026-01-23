@@ -1,0 +1,90 @@
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "platform-browser",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@types/hammerjs",
+        "//packages:goog_types",
+        "//packages:types",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/core",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = ":platform-browser",
+    tsconfig = "//packages:tsconfig_build",
+)
+
+ng_package(
+    srcs = [
+        "package.json",
+    ],
+    package = "@angular/platform-browser",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//adev:__pkg__",
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/test:__pkg__",
+    ],
+    deps = [
+        ":platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/animations/async",
+        "//packages/platform-browser/testing",
+    ],
+)
+
+api_golden_test_npm_package(
+    name = "platform-browser_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "goldens/public-api/platform-browser",
+    npm_package = "packages/platform-browser/npm_package",
+)
+
+api_golden_test(
+    name = "platform-browser_errors",
+    data = [
+        "//goldens:public-api",
+        "//packages/platform-browser",
+    ],
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/platform-browser/errors.api.md",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "platform-browser_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/platform-browser",
+)

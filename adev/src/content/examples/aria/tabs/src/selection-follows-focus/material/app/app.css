@@ -1,0 +1,97 @@
+:host {
+  font-family: var(--inter-font);
+  display: flex;
+  justify-content: center;
+}
+
+[ngTabs] {
+  overflow: hidden;
+  width: 600px;
+  border-radius: 0.5rem;
+  background-color: color-mix(in srgb, var(--bright-blue) 5%, transparent);
+}
+
+[ngTabList] {
+  padding: 0;
+  display: flex;
+  list-style: none;
+  position: relative;
+  border-bottom: 1px solid color-mix(in srgb, var(--primary-contrast) 20%, transparent);
+}
+
+[ngTab] {
+  flex: 1;
+  outline: none;
+  padding: 1rem 0;
+  cursor: pointer;
+  text-align: center;
+  color: color-mix(in srgb, var(--primary-contrast) 60%, transparent);
+}
+
+[ngTab]:focus {
+  outline-offset: -8px;
+  border-radius: 0.7rem;
+  outline: 2px solid var(--bright-blue);
+}
+
+[ngTab]:hover {
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+}
+
+[ngTab][aria-selected='true'] {
+  color: var(--bright-blue);
+}
+
+.bottom-border {
+  position: absolute;
+  pointer-events: none;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: calc(100% / 3);
+  background-color: var(--bright-blue);
+  transition: all 0.2s ease-in-out;
+  transform: translateX(0%);
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+[ngTab]:nth-child(1)[aria-selected='true'] ~ .bottom-border {
+  transform: translateX(0%);
+}
+[ngTab]:nth-child(2)[aria-selected='true'] ~ .bottom-border {
+  transform: translateX(100%);
+}
+[ngTab]:nth-child(3)[aria-selected='true'] ~ .bottom-border {
+  transform: translateX(200%);
+}
+
+.sliding-window {
+  width: 300%;
+  display: flex;
+  transition: all 0.2s ease-in-out;
+}
+
+[ngTabList]:has([ngTab]:nth-child(1)[aria-selected='true']) ~ .sliding-window {
+  transform: translateX(0%);
+}
+[ngTabList]:has([ngTab]:nth-child(2)[aria-selected='true']) ~ .sliding-window {
+  transform: translateX(-33.333%);
+}
+[ngTabList]:has([ngTab]:nth-child(3)[aria-selected='true']) ~ .sliding-window {
+  transform: translateX(-66.666%);
+}
+
+[ngTabPanel] {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  min-height: 100px;
+  flex: 1;
+}
+
+[ngTabPanel]:focus {
+  outline-offset: -4px;
+  border-radius: 0.5rem;
+  outline: 2px solid var(--bright-blue);
+}

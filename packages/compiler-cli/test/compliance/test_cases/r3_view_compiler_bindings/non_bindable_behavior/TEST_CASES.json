@@ -1,0 +1,64 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should keep local ref for host element",
+      "inputFiles": [
+        "local_ref_on_host.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of local refs for host element",
+          "files": [
+            {
+              "generated": "local_ref_on_host.js",
+              "expected": "local_ref_on_host.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not have local refs for nested elements",
+      "inputFiles": [
+        "local_ref_on_nested.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of local refs for nested elements",
+          "files": [
+            "local_ref_on_nested.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not process property bindings and listeners",
+      "inputFiles": [
+        "property_bindings_and_listeners.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of property bindings and listeners",
+          "files": [
+            "property_bindings_and_listeners.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not generate extra instructions for elements with no children",
+      "inputFiles": [
+        "no_child_elements.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of elements with no children",
+          "files": [
+            "no_child_elements.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+load("//tools:defaults.bzl", "ts_project", "tsec_test")
+
+package(default_visibility = [
+    "//packages:__pkg__",
+    "//packages/core:__subpackages__",
+])
+
+ts_project(
+    name = "di",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = ":di",
+    tsconfig = "//packages/core:tsconfig_build",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+    visibility = ["//visibility:public"],
+)

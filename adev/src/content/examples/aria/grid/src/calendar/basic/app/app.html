@@ -1,0 +1,60 @@
+<div class="calendar basic-calendar">
+  <div class="calendar-header">
+    <button class="month-control" aria-label="previous month" (click)="prevMonth()">
+      <span aria-hidden="true" class="material-symbols-outlined" translate="no" aria-hidden="true"
+        >chevron_left</span
+      >
+    </button>
+    <h3>{{ monthYearLabel() }}</h3>
+    <button class="month-control" aria-label="next month" (click)="nextMonth()">
+      <span aria-hidden="true" class="material-symbols-outlined" translate="no" aria-hidden="true"
+        >chevron_right</span
+      >
+    </button>
+  </div>
+
+  <table
+    ngGrid
+    colWrap="continuous"
+    rowWrap="nowrap"
+    [enableSelection]="true"
+    [softDisabled]="false"
+    selectionMode="explicit"
+    (keydown)="onKeyDown($event)"
+  >
+    <thead>
+      <tr>
+        @for (day of weekdays(); track day.long) {
+          <th scope="col">
+            <span class="visually-hidden">{{ day.long }}</span>
+            <span aria-hidden="true">{{ day.narrow }}</span>
+          </th>
+        }
+      </tr>
+    </thead>
+
+    @for (week of calendar(); track week) {
+      <tr ngGridRow>
+        @if ($first) {
+          @for (day of daysFromPrevMonth(); track day) {
+            <td ngGridCell disabled>{{ day }}</td>
+          }
+        }
+
+        @for (day of week; track day) {
+          <td ngGridCell [(selected)]="day.selected">
+            <button ngGridCellWidget [attr.aria-label]="day.ariaLabel" [attr.data-day]="day.day">
+              {{ day.displayName }}
+            </button>
+          </td>
+        }
+
+        @if ($last && week.length < 7) {
+          @for (day of [].constructor(7 - week.length); track $index) {
+            <td ngGridCell disabled>{{ $index + 1 }}</td>
+          }
+        }
+      </tr>
+    }
+  </table>
+</div>

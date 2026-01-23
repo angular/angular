@@ -1,0 +1,25 @@
+:host {
+  display: flex;
+  align-items: center;
+  padding-block-end: 1.5rem;
+}
+
+.docs-breadcrumb {
+  span {
+    color: var(--quaternary-contrast);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+  }
+
+  &:not(:last-child) {
+    span {
+      &::after {
+        content: 'chevron_right';
+        font-family: var(--icons);
+        margin-inline: 0.5rem;
+        color: var(--quinary-contrast);
+      }
+    }
+  }
+}

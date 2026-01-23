@@ -1,0 +1,25 @@
+name: DevInfra
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+# Declare default permissions as read only.
+permissions:
+  contents: read
+
+jobs:
+  labels:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: angular/dev-infra/github-actions/pull-request-labeling@71907fee0c48eec1d465dc1e54fe6b3ffc767145
+        with:
+          angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
+  post_approval_changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: angular/dev-infra/github-actions/post-approval-changes@71907fee0c48eec1d465dc1e54fe6b3ffc767145
+        with:
+          angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}

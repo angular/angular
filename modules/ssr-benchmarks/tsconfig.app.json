@@ -1,0 +1,10 @@
+/* To learn more about this file see: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/app",
+    "types": ["node"]
+  },
+  "files": ["src/main.ts", "src/main.server.ts", "run-benchmark.ts"],
+  "include": ["src/**/*.d.ts"]
+}

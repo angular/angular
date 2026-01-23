@@ -1,0 +1,187 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "lib",
+    srcs = ["index.ts"],
+    deps = [
+        ":client_event_subscribers",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "highlighter_test",
+    deps = [
+        ":highlighter_test_lib",
+    ],
+)
+
+ts_test_library(
+    name = "highlighter_test_lib",
+    srcs = [
+        "highlighter.spec.ts",
+    ],
+    deps = [
+        ":highlighter",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ts_project(
+    name = "highlighter",
+    srcs = ["highlighter.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "interfaces",
+    srcs = ["interfaces.ts"],
+    deps = [
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "property_mutation",
+    srcs = ["property-mutation.ts"],
+    deps = [
+        ":utils",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+ts_test_library(
+    name = "property_mutation_test_lib",
+    srcs = ["property-mutation.spec.ts"],
+    deps = [
+        ":property_mutation",
+        "//:node_modules/@angular/core",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "property_mutation_test",
+    deps = [":property_mutation_test_lib"],
+)
+
+zoneless_web_test_suite(
+    name = "router_tree_test",
+    deps = [
+        ":router_tree_test_lib",
+    ],
+)
+
+ts_test_library(
+    name = "router_tree_test_lib",
+    srcs = [
+        "router-tree.spec.ts",
+    ],
+    deps = [
+        ":router_tree",
+    ],
+)
+
+ts_project(
+    name = "router_tree",
+    srcs = ["router-tree.ts"],
+    deps = [
+        "//:node_modules/@angular/router",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "set_console_reference",
+    srcs = ["set-console-reference.ts"],
+    deps = [
+        ":interfaces",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+    ],
+)
+
+ts_project(
+    name = "utils",
+    srcs = [
+        "serialization-utils.ts",
+        "utils.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "utils_test",
+    deps = [
+        ":utils_test_lib",
+    ],
+)
+
+ts_test_library(
+    name = "utils_test_lib",
+    srcs = [
+        "serialization-utils.spec.ts",
+    ],
+    deps = [
+        ":utils",
+    ],
+)
+
+ts_project(
+    name = "version",
+    srcs = ["version.ts"],
+)
+
+zoneless_web_test_suite(
+    name = "client_event_subscribers_test",
+    deps = [
+        ":client_event_subscribers_test_lib",
+    ],
+)
+
+ts_test_library(
+    name = "client_event_subscribers_test_lib",
+    srcs = [
+        "client-event-subscribers.spec.ts",
+    ],
+    deps = [
+        ":client_event_subscribers",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+    ],
+)
+
+ts_project(
+    name = "client_event_subscribers",
+    srcs = ["client-event-subscribers.ts"],
+    deps = [
+        ":highlighter",
+        ":interfaces",
+        ":router_tree",
+        ":set_console_reference",
+        ":utils",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+    ],
+)

@@ -1,0 +1,382 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should create a simple @let declaration",
+      "inputFiles": [
+        "simple_let.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "simple_let_template.js",
+              "generated": "simple_let.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should create multiple @let declarations that depend on each other",
+      "inputFiles": [
+        "multiple_let.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "multiple_let_template.js",
+              "generated": "multiple_let.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should create a let using a pipe",
+      "inputFiles": [
+        "let_with_pipe.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_with_pipe_template.js",
+              "generated": "let_with_pipe.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should be able to use let declarations in event listeners",
+      "inputFiles": [
+        "let_in_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_in_listener_template.js",
+              "generated": "let_in_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should be able to use let declarations in child views",
+      "inputFiles": [
+        "let_in_child_view.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_in_child_view_template.js",
+              "generated": "let_in_child_view.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should share let declarations between parent and child views",
+      "inputFiles": [
+        "let_shared_with_child_view.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_shared_with_child_view_template.js",
+              "generated": "let_shared_with_child_view.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should be able to use let declarations in event listeners inside child views",
+      "inputFiles": [
+        "let_in_child_view_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_in_child_view_listener_template.js",
+              "generated": "let_in_child_view_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should be able to use local references in let declarations",
+      "inputFiles": [
+        "let_local_refs.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_local_refs_template.js",
+              "generated": "let_local_refs.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should be able to use forward references defined after the let declaration",
+      "inputFiles": [
+        "let_local_forward_refs.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_local_forward_refs_template.js",
+              "generated": "let_local_forward_refs.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should be able to use for loop variables in let declarations",
+      "inputFiles": [
+        "let_for_loop.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_for_loop_template.js",
+              "generated": "let_for_loop.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should transform an invalid let reference to undefined",
+      "angularCompilerOptions": {
+        "checkTemplateBodies": false
+      },
+      "inputFiles": [
+        "let_invalid_forward_ref.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_invalid_forward_ref_template.js",
+              "generated": "let_invalid_forward_ref.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should remove a single unused let declaration",
+      "inputFiles": [
+        "let_single_optimization.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_single_optimization_template.js",
+              "generated": "let_single_optimization.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should remove a chain of unused let declarations",
+      "inputFiles": [
+        "let_multiple_optimization.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_multiple_optimization_template.js",
+              "generated": "let_multiple_optimization.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should remove only the unused let declarations from the middle of a chain of declarations",
+      "inputFiles": [
+        "let_partial_optimization.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_partial_optimization_template.js",
+              "generated": "let_partial_optimization.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should not remove let declarations that are only used in an event listener",
+      "inputFiles": [
+        "let_optimization_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_optimization_listener_template.js",
+              "generated": "let_optimization_listener.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should not remove let declarations that are only used in a child view",
+      "inputFiles": [
+        "let_optimization_child_view.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_optimization_child_view_template.js",
+              "generated": "let_optimization_child_view.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should give precedence to local @let definition over one from a parent view",
+      "inputFiles": [
+        "shadowed_let.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "shadowed_let_template.js",
+              "generated": "shadowed_let.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should not optimize away declareLet if expression is using a pipe",
+      "inputFiles": [
+        "let_with_pipe_optimization.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_with_pipe_optimization_template.js",
+              "generated": "let_with_pipe_optimization.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle an @let used only directly inside i18n",
+      "inputFiles": [
+        "let_in_i18n.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_in_i18n_template.js",
+              "generated": "let_in_i18n.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle an @let referenced inside a child view inside i18n",
+      "inputFiles": [
+        "let_in_child_view_inside_i18n.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_in_child_view_inside_i18n_template.js",
+              "generated": "let_in_child_view_inside_i18n.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle an @let referenced inside i18n and in a child view",
+      "inputFiles": [
+        "let_in_i18n_and_child_view.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_in_i18n_and_child_view_template.js",
+              "generated": "let_in_i18n_and_child_view.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle an @let preceded by an element with i18n",
+      "inputFiles": [
+        "let_preceded_by_i18n.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "let_preceded_by_i18n_template.js",
+              "generated": "let_preceded_by_i18n.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "title": "Learn Angular signals",
+  "type": "editor",
+  "nextTutorial": "first-app",
+  "openFiles": ["src/app/app.ts", "src/app/app.html", "src/app/app.css"]
+}

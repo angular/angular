@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: var(--inter-font);
+}
+
+[ngGrid] {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 400px;
+  background-image: var(--pink-to-purple-horizontal-gradient);
+  background-clip: text;
+  color: transparent;
+}
+
+[ngGridRow] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px dotted var(--senary-contrast);
+  padding: 0 0.25rem 0 0.75rem;
+}
+
+[ngGridRow]:focus-within,
+[ngGridRow]:hover {
+  outline-offset: -1px;
+  outline: 1px solid color-mix(in srgb, var(--vivid-pink) 80%, transparent);
+}
+
+[ngGridRow]:has(button[ngGridCellWidget]:focus),
+[ngGridRow]:has(button[ngGridCellWidget]:hover) {
+  outline: none;
+}
+
+[ngGridCell] {
+  display: flex;
+  outline: none;
+}
+
+button[ngGridCellWidget] {
+  border: unset;
+  padding: unset;
+  color: unset;
+  background: unset;
+  font-size: 1.2rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0.25rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+button[ngGridCellWidget]:focus,
+button[ngGridCellWidget]:hover {
+  outline: 1px solid color-mix(in srgb, var(--vivid-pink) 80%, transparent);
+}

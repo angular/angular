@@ -1,0 +1,75 @@
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "localize",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/localize/src/localize",
+        "//packages/localize/src/utils",
+    ],
+)
+
+ng_package(
+    srcs = [
+        "package.json",
+    ],
+    nested_packages = [
+        "//packages/localize/schematics:npm_package",
+        "//packages/localize/tools:npm_package",
+    ],
+    package = "@angular/localize",
+    replace_prefixes = {
+        "tools/npm_package": "tools",
+    },
+    side_effect_entry_points = [
+        "@angular/localize/init",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":localize",
+        "//packages/localize/init",
+    ],
+)
+
+api_golden_test_npm_package(
+    name = "localize_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "goldens/public-api/localize",
+    npm_package = "packages/localize/npm_package",
+    # The logic for the localize function is exported in the primary entry-point, but users
+    # are not supposed to import it from there. We still want to guard these exports though.
+    strip_export_pattern = "^ɵ(?!.localize|LocalizeFn|TranslateFn)",
+    types = {
+        "//:node_modules/@types/babel__core": "babel",
+    },
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "localize_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages/localize/src/utils:files_for_docgen",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/localize",
+)

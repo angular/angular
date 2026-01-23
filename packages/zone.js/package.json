@@ -1,0 +1,84 @@
+{
+  "name": "zone.js",
+  "version": "0.16.0",
+  "description": "Zones for JavaScript",
+  "main": "./bundles/zone.umd.js",
+  "module": "./fesm2015/zone.js",
+  "es2015": "./fesm2015/zone.js",
+  "fesm2015": "./fesm2015/zone.js",
+  "typings": "./zone.d.ts",
+  "devDependencies": {
+    "@csstools/css-calc": "3.0.0",
+    "@csstools/css-color-parser": "4.0.0",
+    "@externs/nodejs": "1.5.0",
+    "@types/jasmine": "5.1.15",
+    "@types/node": "^24.3.0",
+    "@types/systemjs": "6.15.4",
+    "bluebird": "3.7.2",
+    "domino": "https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b",
+    "esbuild-plugin-umd-wrapper": "3.0.0",
+    "jest-environment-jsdom": "30.2.0",
+    "jest-environment-node": "30.2.0",
+    "jest": "30.2.0",
+    "mocha": "11.7.5",
+    "mock-require": "3.0.3",
+    "jasmine": "5.13.0",
+    "source-map-support": "0.5.21",
+    "jasmine-core": "5.13.0",
+    "jasmine-reporters": "2.5.2",
+    "rxjs": "7.8.2",
+    "systemjs": "6.15.1",
+    "tslib": "^2.3.0",
+    "vitest": "^4.0.0"
+  },
+  "scripts": {
+    "electrontest": "cd test/extra && node electron.js",
+    "jest:test": "jest --config ./test/jest/jest.config.js",
+    "jest:nodetest": "jest --config ./test/jest/jest.node.config.js",
+    "vitest:test": "vitest ./test/vitest/vitest.spec.js",
+    "promisefinallytest": "mocha ./test/promise/promise.finally.spec.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/angular/angular.git",
+    "directory": "packages/zone.js"
+  },
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
+  },
+  "author": "Brian Ford",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  },
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./zone.d.ts",
+      "require": "./bundles/zone.umd.js",
+      "default": "./fesm2015/zone.js"
+    },
+    "./testing": {
+      "require": "./bundles/zone-testing.umd.js",
+      "default": "./fesm2015/zone-testing.js"
+    },
+    "./node": {
+      "require": "./bundles/zone-node.umd.js",
+      "default": "./fesm2015/zone-node.js"
+    },
+    "./mix": {
+      "require": "./bundles/zone-mix.umd.js",
+      "default": "./fesm2015/zone-mix.js"
+    },
+    "./plugins/*.min": {
+      "require": "./bundles/*.umd.min.js",
+      "default": "./fesm2015/*.min.js"
+    },
+    "./plugins/*": {
+      "require": "./bundles/*.umd.js",
+      "default": "./fesm2015/*.js"
+    }
+  }
+}

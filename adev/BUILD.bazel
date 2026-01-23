@@ -1,0 +1,177 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@rules_angular//src/architect:ng_application.bzl", "ng_application")
+load("@rules_angular//src/architect:ng_config.bzl", "ng_config")
+load("@rules_angular//src/architect:ng_test.bzl", "ng_test")
+
+package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages(
+    name = "node_modules",
+)
+
+exports_files([
+    "tsconfig.json",
+])
+
+APPLICATION_FILES = [
+    "//adev/src/assets/images",
+    "//adev/src/assets/images/v21-event:v21-event-images",
+    "//adev/src/assets/others",
+    "//adev/src/assets/previews",
+    "//adev/src/assets:tutorials",
+    "//adev/src/assets/icons",
+    "//adev/src/assets:api",
+    "//adev/src/assets:content",
+    "//adev/src/assets:context",
+    "//adev/src/content/examples:embeddable",
+    "tailwind.config.js",
+
+    # For the routes that are generated at build time
+    "//adev/src/assets:docs_api_manifest",
+    "//adev/scripts/routes:generate_route",
+    "//adev/src/app/routing/navigation-entries",
+    "//adev/src/app/routing/navigation-entries:navigation_types",
+    "//adev/src/content/reference/errors:route-nav-items",
+    "//adev/src/content/reference/extended-diagnostics:route-nav-items",
+    "//adev/src/content/tutorials/deferrable-views",
+    "//adev/src/content/tutorials/first-app",
+    "//adev/src/content/tutorials/learn-angular",
+    "//adev/src/content/tutorials/signal-forms",
+    "//adev/src/content/tutorials/signals",
+] + glob(
+    ["src/**/*"],
+    exclude = ["src/**/*.spec.ts"],
+)
+
+APPLICATION_DEPS = [
+    ":node_modules/@codemirror/autocomplete",
+    ":node_modules/@codemirror/commands",
+    ":node_modules/@codemirror/lang-angular",
+    ":node_modules/@codemirror/lang-css",
+    ":node_modules/@codemirror/lang-html",
+    ":node_modules/@codemirror/lang-javascript",
+    ":node_modules/@codemirror/lang-sass",
+    ":node_modules/@codemirror/language",
+    ":node_modules/@codemirror/lint",
+    ":node_modules/@codemirror/search",
+    ":node_modules/@codemirror/state",
+    ":node_modules/@codemirror/view",
+    ":node_modules/@lezer/common",
+    ":node_modules/@lezer/highlight",
+    ":node_modules/@lezer/javascript",
+    ":node_modules/@stackblitz/sdk",
+    ":node_modules/@typescript/vfs",
+    ":node_modules/@webcontainer/api",
+    ":node_modules/@xterm/addon-fit",
+    ":node_modules/@xterm/xterm",
+    ":node_modules/algoliasearch",
+    ":node_modules/angular-split",
+    ":node_modules/fflate",
+    ":node_modules/marked",
+    ":node_modules/ngx-progressbar",
+    ":node_modules/open-in-idx",
+    ":node_modules/tailwindcss",
+    ":node_modules/typescript",
+    ":node_modules/@types/dom-navigation",
+
+    # The imports below are packages that our code does not directly import, but our upstream deps import from
+    # these locations directly. By design, rather than hoisting these packages into the "root" node_modules the
+    # dependency is found in (i.e. ./adev/node_modules), rules_js places all of each package's dependencies in
+    # a "hoisted" location within the `.aspect_rules_js/` directories in the node_modules directory. This prevents
+    # the bundler from being able to find it as expected. We instead specifically provide it as a dep within bazel
+    # as a mechanism of "hoisting" the package for our usage by this target.
+    ":node_modules/@algolia/client-common",
+    ":node_modules/@algolia/requester-browser-xhr",
+    ":node_modules/@algolia/requester-node-http",
+    ":node_modules/@lezer/css",
+    ":node_modules/@lezer/html",
+    ":node_modules/@lezer/lr",
+    ":node_modules/@lezer/sass",
+    ":node_modules/@marijn/find-cluster-break",
+    ":node_modules/crelt",
+    ":node_modules/style-mod",
+    ":node_modules/w3c-keyname",
+]
+
+TEST_FILES = APPLICATION_FILES + glob(["src/app/**/*.spec.ts"])
+
+TEST_DEPS = APPLICATION_DEPS + [
+    ":node_modules/@types/jasmine",
+    ":node_modules/karma",
+    ":node_modules/karma-chrome-launcher",
+    ":node_modules/karma-jasmine",
+    ":node_modules/karma-coverage",
+    ":node_modules/karma-jasmine-html-reporter",
+    ":node_modules/jasmine-core",
+    "@rules_browsers//browsers/chromium",
+]
+
+ng_config(name = "ng_config")
+
+ng_application(
+    name = "build",
+    srcs = APPLICATION_FILES + APPLICATION_DEPS,
+    args = [
+        "--configuration",
+        "development",
+    ],
+    env = {
+        "NG_BUILD_PARTIAL_SSR": "1",
+    },
+    ng_config = ":ng_config",
+    node_modules = ":node_modules",
+    project_name = "angular-dev",
+    serve_args = [
+        "--port",
+        "4201",
+    ],
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec",
+    ],
+)
+
+ng_application(
+    name = "build.production",
+    srcs = APPLICATION_FILES + APPLICATION_DEPS,
+    args = [
+        "--configuration",
+        "production",
+    ],
+    env = {
+        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+    },
+    ng_config = ":ng_config",
+    node_modules = ":node_modules",
+    project_name = "angular-dev",
+    serve_args = [
+        "--port",
+        "4201",
+    ],
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec",
+    ],
+)
+
+ng_test(
+    name = "test",
+    srcs = TEST_FILES + TEST_DEPS,
+    env = {
+        # Move one level up because we are in `//adev`
+        "CHROME_BIN": "../" + "$(CHROME-HEADLESS-SHELL)",
+        "CHROMEDRIVER_BIN": "../" + "$(CHROMEDRIVER)",
+    },
+    ng_config = ":ng_config",
+    node_modules = ":node_modules",
+    project_name = "angular-dev",
+    toolchains = [
+        "@rules_browsers//browsers/chromium:toolchain_alias",
+    ],
+)

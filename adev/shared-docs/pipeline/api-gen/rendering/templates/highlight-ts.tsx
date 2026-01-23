@@ -1,0 +1,24 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {h} from 'preact';
+import {RawHtml} from './raw-html';
+import {codeToHtml} from '../../../shared/shiki.mjs';
+import {getHighlighterInstance} from '../shiki/shiki.mjs';
+import {getSymbolsAsApiEntries} from '../symbol-context.mjs';
+
+/** Component to render a header of the CLI page. */
+export function HighlightTypeScript(props: {code: string}) {
+  const result = codeToHtml(getHighlighterInstance(), props.code, {
+    language: 'typescript',
+    apiEntries: getSymbolsAsApiEntries(),
+  });
+  const withScrollTrack = result.replace(/^(<pre class="shiki)/, '$1 docs-mini-scroll-track');
+
+  return <RawHtml value={withScrollTrack} className="docs-code" />;
+}

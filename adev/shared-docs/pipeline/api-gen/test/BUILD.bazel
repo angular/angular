@@ -1,0 +1,22 @@
+load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
+
+generate_api_docs(
+    name = "test",
+    srcs = ["//adev/shared-docs/pipeline/api-gen/extraction/test:source_files"],
+    entry_point = "//adev/shared-docs/pipeline/api-gen/extraction/test:fake-source.mts",
+    import_map = {
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:index.mts": "@angular/dummy-package",
+    },
+    module_name = "@angular/core",
+)
+
+generate_api_docs(
+    name = "test_with_extra_entries",
+    srcs = ["//adev/shared-docs/pipeline/api-gen/extraction/test:source_files"],
+    entry_point = "//adev/shared-docs/pipeline/api-gen/extraction/test:fake-source.mts",
+    extra_entries = ["//adev/shared-docs/pipeline/api-gen/extraction/test:extra.json"],
+    import_map = {
+        "//adev/shared-docs/pipeline/api-gen/extraction/test/dummy-entry-point:index.mts": "@angular/dummy-package",
+    },
+    module_name = "@angular/core",
+)

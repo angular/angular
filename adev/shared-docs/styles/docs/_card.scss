@@ -1,0 +1,280 @@
+// Card Grid
+
+@mixin docs-card() {
+  .docs-card-container-wrapper {
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.25rem;
+    margin: 1rem 0;
+
+      .docs-card-container-header {
+        align-items: flex-end;
+        border-bottom: 1px solid var(--senary-contrast);
+        display: flex;
+        justify-content: space-between;
+
+        h2 {
+          padding: 2.5rem 1rem 2.5rem 2.5rem;
+          min-width: 350px;
+        }
+
+        .theme-fill-bg {
+          fill: var(--page-background);
+          stroke: var(--primary-contrast);
+        }
+        .theme-fill-accent-bg {
+          fill: var(--septenary-contrast);
+          stroke: var(--primary-contrast);
+        }
+        .theme-stroke-primary {
+          stroke: var(--primary-contrast);
+        }
+        .theme-fill-primary {
+          fill: var(--primary-contrast);
+        }
+        .theme-fill-secondary {
+          fill: var(--octonary-contrast);
+        }
+        .theme-stroke-accent {
+          stroke: var(--vivid-pink);
+        }
+        .theme-fill-accent {
+          fill: var(--vivid-pink);
+          stroke: var(--primary-contrast);
+        }
+        .theme-stroke-secondary {
+          stroke: var(--senary-contrast);
+        }
+        .theme-fill-secondary {
+          fill: var(--senary-contrast);
+        }
+
+
+
+        .header-img {
+          margin-top: 5px;
+          overflow: hidden;
+          margin-bottom: -5px;
+        }
+
+        svg {
+          fill-opacity: 1;
+
+          @container header (max-width: 550px) {
+            display: none;
+          }
+
+          rect {
+            fill: transparent;
+          }
+        }
+      }
+
+    .docs-card-container-content {
+      margin: 1rem;
+      padding: 1.5rem;
+
+      .docs-card {
+        margin: 0;
+
+        svg {
+          margin-block-end: 0.75rem;
+        }
+      }
+    }
+  }
+
+  .docs-card-container-wrapper:nth-child(odd) {
+    background-image: var(--white-to-light-blue-diagonal-gradient);
+    .docs-card-container-header {
+      background-image: var(--white-to-light-blue-diagonal-gradient);
+    }
+  }
+
+  .docs-card-container-wrapper:nth-child(even) {
+    background-image: var(--white-to-light-pink-diagonal-gradient);
+    .docs-card-container-header {
+      background-image: var(--white-to-light-pink-diagonal-gradient);
+    }
+  }
+
+  .docs-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 1.25rem;
+    margin-block: 1rem;
+
+    @container docs-content (max-width: 450px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  :not(.docs-card-container) .docs-card {
+    margin: 1rem 0;
+  }
+
+  .docs-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--page-background);
+    color: var(--primary-contrast);
+    padding: 1.5rem;
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.25rem;
+    overflow: hidden;
+    transition:
+      border-color 0.3s ease,
+      background-color 0.3s ease;
+
+    p:first-of-type {
+      margin-block-start: 1.5rem;
+    }
+
+    p:last-of-type {
+      margin-block-end: 1.5rem;
+    }
+
+    span {
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-block: 0;
+      position: relative;
+    }
+
+    * + *:not(a):not(code):not(span):not(div) {
+      margin-block: 1.5rem;
+    }
+
+    &.docs-card-with-svg {
+      padding: 0;
+
+      .docs-card-text-content {
+        flex-grow: 1;
+        margin-block-start: 0;
+        padding-inline: 1.5rem;
+        padding-block: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-block-start: 1px solid var(--senary-contrast);
+
+        h3 {
+          margin-bottom: 0;
+          font-size: 1rem;
+        }
+        p {
+          margin-block-start: 0;
+        }
+      }
+    }
+  }
+
+  // docs-card with link
+  a.docs-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    span {
+      background: var(--pink-to-highlight-to-purple-to-blue-horizontal-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 0.875rem;
+      margin-block: 0;
+      transition: background-position 1.8s ease-out;
+      background-size: 200% 100%;
+      background-position: 100% 0%;
+      position: relative;
+    }
+
+    &:hover {
+      background: var(--subtle-blue);
+
+      span {
+        background-position: 0% 0%;
+      }
+    }
+  }
+
+  .docs-viewer .docs-card h3 {
+    margin-block-start: 0;
+    font-size: 1rem;
+  }
+
+  .docs-nav-card {
+    position: relative;
+    background: var(--light-vivid-pink-to-light-electric-violet-horizontal-gradient);
+    container: header / inline-size;
+    background-clip: padding-box;
+    border: solid 1px transparent;
+    border-radius: 0.25rem;
+    margin: 1rem 0;
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      z-index: -1;
+      margin: -1px;
+      border-radius: inherit;
+      background: var(--pink-to-white-horizontal-gradient);
+    }
+
+    .docs-nav-card-title {
+      background: var(--pink-to-highlight-to-purple-to-blue-horizontal-gradient);
+      padding: 1.5rem 1.5rem .5rem;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+
+      h6 {
+        margin: 0;
+      }
+    }
+
+    .docs-nav-card-content {
+      display: flex;
+      margin-block: 0;
+      position: relative;
+      overflow: hidden;
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    .docs-nav-card-links {
+      width: 100%;
+    }
+
+    .docs-nav-card-svg {
+      width: 350px;
+
+      @container header (max-width: 550px) {
+        display: none;
+      }
+    }
+
+    a.docs-nav-link {
+      text-decoration: none;
+
+      .docs-nav-link-title {
+        display: flex;
+        gap: 8px;
+
+        h3 {
+          margin-block-end: .5rem;
+        }
+
+        svg path {
+          fill: var(--gray-400);
+        }
+      }
+
+      p {
+        margin-block: 0;
+      }
+    }
+  }
+}

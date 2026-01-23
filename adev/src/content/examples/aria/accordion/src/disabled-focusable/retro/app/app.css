@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: 'Press Start 2P';
+
+  --retro-button-color: color-mix(in srgb, var(--symbolic-yellow) 90%, var(--gray-1000));
+  --retro-button-text-color: color-mix(in srgb, var(--symbolic-yellow) 10%, white);
+  --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
+  --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
+  --retro-elevated-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700);
+  --retro-flat-shadow:
+    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
+    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+  --retro-clickable-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 8px 8px 0px 0px var(--gray-700);
+  --retro-pressed-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-dark),
+    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 0px 0px 0px 0px var(--gray-700);
+}
+
+[ngAccordionGroup] {
+  width: 500px;
+}
+
+h3 {
+  font-size: 1rem;
+  margin: 0;
+  color: var(--retro-button-text-color);
+  background-color: var(--retro-button-color);
+  box-shadow: var(--retro-clickable-shadow);
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s;
+}
+
+h3:focus-within,
+h3:hover {
+  box-shadow: var(--retro-pressed-shadow);
+  transform: translate(1px, 1px);
+  outline-offset: 6px;
+  outline: 4px dashed color-mix(in srgb, var(--hot-pink) 60%, transparent);
+}
+
+h3:has([aria-disabled='true']) {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.treasure-box {
+  margin: 0;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 5rem;
+  background-color: var(--septenary-contrast);
+  box-shadow: var(--retro-flat-shadow);
+}
+
+[ngAccordionTrigger] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  outline: none;
+  cursor: pointer;
+  padding: 1.5rem;
+}
+
+[ngAccordionPanel] {
+  padding: 1rem;
+}

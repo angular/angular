@@ -1,0 +1,37 @@
+<form>
+  <div>
+    <label>
+      Email
+      <input type="email" [formField]="loginForm.email" />
+    </label>
+    <!-- TODO: Add @if to show errors when invalid and touched -->
+    <!-- TODO: Use @for to loop through loginForm.email().errors() -->
+    <!-- TODO: Display error.message for each error -->
+  </div>
+
+  <div>
+    <label>
+      Password
+      <input type="password" [formField]="loginForm.password" />
+    </label>
+    <!-- TODO: Add @if to show errors when invalid and touched -->
+    <!-- TODO: Use @for to loop through loginForm.password().errors() -->
+    <!-- TODO: Display error.message for each error -->
+  </div>
+
+  <div>
+    <label>
+      <input type="checkbox" [formField]="loginForm.rememberMe" />
+      Remember me
+    </label>
+  </div>
+
+  <button type="submit">Log in</button>
+</form>
+
+<div class="form-debug">
+  <h3>Current Form Values:</h3>
+  <p>Email: {{ loginForm.email().value() }}</p>
+  <p>Password: {{ loginForm.password().value() ? '••••••••' : '(empty)' }}</p>
+  <p>Remember me: {{ loginForm.rememberMe().value() ? 'Yes' : 'No' }}</p>
+</div>

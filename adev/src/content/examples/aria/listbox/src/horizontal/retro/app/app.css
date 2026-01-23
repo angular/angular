@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-size: 0.8rem;
+
+  font-family: 'Press Start 2P';
+  --retro-button-color: color-mix(in srgb, var(--hot-pink) 80%, var(--gray-1000));
+  --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
+  --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
+  --retro-flat-shadow:
+    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
+    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+  --retro-flat-shadow-small:
+    2px 0px 0px 0px var(--gray-700), 0px 2px 0px 0px var(--gray-700),
+    -2px 0px 0px 0px var(--gray-700), 0px -2px 0px 0px var(--gray-700);
+}
+
+.retro-listbox {
+  gap: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.5rem;
+  box-shadow: var(--retro-flat-shadow);
+  background-color: var(--septenary-contrast);
+}
+
+[ngOption] {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.6rem;
+  box-shadow: var(--retro-flat-shadow-small);
+}
+
+[ngOption]:hover {
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+}
+
+[ngOption][data-active='true'] {
+  outline-offset: -2px;
+  outline: 2px dashed var(--hot-pink);
+}
+
+[ngOption][aria-selected='true'] {
+  color: var(--hot-pink);
+  background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
+}
+
+.check-icon {
+  width: 0;
+  font-size: 0.9rem;
+  overflow: hidden;
+  transition: width 0.2s ease-in-out;
+}
+
+[ngOption][aria-selected='true'] .check-icon {
+  width: 1.2rem;
+}

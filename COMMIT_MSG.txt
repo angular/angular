@@ -1,0 +1,49 @@
+feat(language-service): add Angular-specific Inlay Hints (LSP 3.17)
+
+This commit implements comprehensive Angular-specific Inlay Hints for
+the Angular Language Service, providing inline type annotations directly
+in template code.
+
+FEATURES:
+- @for loop variable types (@for item: Item of items)
+- @if/@else if alias types (@if (data; as d: Data))
+- @let declaration types (@let x: number = 5)
+- Template reference types (#ref: ElementRef)
+- Event binding types ((click: MouseEvent))
+- Property binding types ([disabled: boolean])
+- Two-way binding types ([(value): WritableSignal<T>])
+- Pipe output types (value | async: T)
+- Function parameter name hints
+- Arrow function parameter types
+- @switch expression types
+- @defer trigger types
+- @HostListener event argument types
+- @HostBinding property types
+- Required input indicators (*, !)
+- Text attribute input bindings (input="value")
+
+CONFIGURATION OPTIONS:
+- forLoopVariableTypes: true/false
+- ifAliasTypes: true/false/'complex'
+- letDeclarationTypes: true/false
+- referenceVariableTypes: true/false
+- eventParameterTypes: true/false/granular
+- propertyBindingTypes: true/false/granular
+- twoWayBindingSignalTypes: true/false
+- pipeOutputTypes: true/false
+- parameterNameHints: 'none'/'literals'/'all'
+- arrowFunctionParameterTypes: true/false
+- switchExpressionTypes: true/false
+- deferTriggerTypes: true/false
+- requiredInputIndicator: 'none'/'asterisk'/'exclamation'
+- variableTypeHintsWhenTypeMatchesName: true/false
+
+TYPESCRIPT PARITY:
+Full parity with TypeScript's inlay hints configuration options.
+
+INTERACTIVE HINTS:
+All type hints are clickable and navigate to type definitions.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>

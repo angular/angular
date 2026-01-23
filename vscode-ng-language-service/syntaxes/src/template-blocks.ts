@@ -1,0 +1,114 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {GrammarDefinition} from './types';
+
+export const TemplateBlocks: GrammarDefinition = {
+  scopeName: 'template.blocks.ng',
+  injectionSelector: 'L:text.html -comment -expression.ng -meta.tag -source.css -source.js',
+  patterns: [{include: '#block'}],
+  repository: {
+    transition: {
+      match: '@',
+      name: 'keyword.control.block.transition.ng',
+    },
+
+    block: {
+      begin: /(@)(if|else if|else|defer|placeholder|loading|error|switch|for|empty)(?:\s*)/,
+      beginCaptures: {
+        1: {
+          patterns: [{include: '#transition'}],
+        },
+        2: {name: 'keyword.control.block.kind.ng'},
+      },
+      patterns: [{include: '#blockExpression'}, {include: '#blockBody'}],
+      name: 'control.block.ng',
+      // The block ends at the close `}` but we don't capture it here because. It's captured instead
+      // by the #blockBody.
+      end: /(?<=\})/,
+    },
+    caseHeader: {
+      begin: /(@)(case|default)(?:\s*)/,
+      beginCaptures: {
+        1: {patterns: [{include: '#transition'}]},
+        2: {name: 'keyword.control.block.kind.ng'},
+      },
+      patterns: [{include: '#blockExpression'}],
+      end: /(?=@|{)/,
+      name: 'control.block.case.header.ng',
+    },
+    caseBlock: {
+      begin: /(?=@(?:case|default))/,
+      patterns: [{include: '#caseHeader'}, {include: '#blockBody'}],
+      end: /(?<=\})/,
+      name: 'control.block.case.ng',
+    },
+    blockExpression: {
+      begin: /\(/,
+      beginCaptures: {
+        0: {name: 'meta.brace.round.ts'},
+      },
+      contentName: 'control.block.expression.ng',
+      patterns: [
+        {include: '#blockExpressionOfClause'},
+        {include: '#blockExpressionLetBinding'},
+        {include: '#blockExpressionTrackClause'},
+        {include: 'expression.ng'},
+      ],
+      end: /\)/,
+      endCaptures: {
+        0: {name: 'meta.brace.round.ts'},
+      },
+    },
+
+    blockExpressionOfClause: {
+      begin: /([_$[:alpha:]][_$[:alnum:]]*)\s+(of)\b/,
+      beginCaptures: {
+        1: {name: 'variable.other.constant.ng'},
+        2: {name: 'keyword.operator.expression.of.ng'},
+      },
+      end: /(?=[$)])|(?<=;)/,
+      patterns: [{include: 'expression.ng'}],
+    },
+
+    blockExpressionLetBinding: {
+      begin: /\blet\b/,
+      beginCaptures: {
+        0: {name: 'storage.type.ng'},
+      },
+      end: /(?=[$)])|(?<=;)/,
+      patterns: [{include: 'expression.ng'}],
+    },
+
+    blockExpressionTrackClause: {
+      begin: /\btrack\b/,
+      beginCaptures: {
+        0: {name: 'keyword.control.track.ng'},
+      },
+      end: /(?=[$)])|(?<=;)/,
+      patterns: [{include: 'expression.ng'}],
+    },
+
+    blockBody: {
+      begin: /\{/,
+      beginCaptures: {
+        0: {name: 'punctuation.definition.block.ts'},
+      },
+      end: /\}/,
+      endCaptures: {
+        0: {name: 'punctuation.definition.block.ts'},
+      },
+      contentName: 'control.block.body.ng',
+      patterns: [
+        {include: '#caseBlock'},
+        {include: 'text.html.derivative'},
+        {include: 'template.ng'},
+      ],
+    },
+  },
+};

@@ -1,0 +1,69 @@
+:host {
+  display: block;
+  font-size: 32px;
+  margin: 20px;
+  text-align: center;
+}
+
+section {
+  border: 1px solid lightgray;
+  border-radius: 50px;
+}
+
+p {
+  display: inline-block;
+  margin: 2rem 0;
+  text-transform: uppercase;
+}
+
+.increment {
+  animation: increment 300ms;
+}
+
+.decrement {
+  animation: decrement 300ms;
+}
+
+.controls {
+  padding-bottom: 2rem;
+}
+
+button {
+  font: inherit;
+  border: 0;
+  background: lightgray;
+  width: 50px;
+  border-radius: 10px;
+}
+
+button + button {
+  margin-left: 10px;
+}
+
+@keyframes increment {
+  33% {
+    color: green;
+    transform: scale(1.3, 1.2);
+  }
+  66% {
+    color: green;
+    transform: scale(1.2, 1.2);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes decrement {
+  33% {
+    color: red;
+    transform: scale(0.8, 0.9);
+  }
+  66% {
+    color: red;
+    transform: scale(0.9, 0.9);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}

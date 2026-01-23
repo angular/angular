@@ -1,0 +1,23 @@
+load("//tools:defaults.bzl", "ng_project")
+
+package(default_visibility = [
+    "//modules/playground:__subpackages__",
+    "//packages:__subpackages__",
+])
+
+exports_files(["package.json"])
+
+ng_project(
+    name = "testing",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-server:bundled_domino_lib",
+    ],
+)

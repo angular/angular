@@ -1,0 +1,34 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "signals-visualizer_styles",
+    src = "signals-visualizer.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "signals-visualizer",
+    srcs = [
+        "signals-visualizer.component.ts",
+        "signals-visualizer.ts",
+        "visualizer-types.ts",
+    ],
+    angular_assets = [
+        "signals-visualizer.component.html",
+        ":signals-visualizer_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@types/d3",
+        "//:node_modules/d3",
+        "//:node_modules/dagre-d3-es",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/protocol",
+    ],
+)

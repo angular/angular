@@ -1,0 +1,22 @@
+<div ngTabs class="material-tabs">
+  <div ngTabList selectionMode="explicit" selectedTab="movie">
+    <div ngTab value="movie">Movie</div>
+    <div ngTab value="theatres">Cast</div>
+    <div ngTab value="showtimes">Reviews</div>
+    <div class="bottom-border"></div>
+  </div>
+
+  <div class="sliding-window">
+    <div ngTabPanel [preserveContent]="true" value="movie">
+      <ng-template ngTabContent>Panel 1</ng-template>
+    </div>
+
+    <div ngTabPanel [preserveContent]="true" value="theatres">
+      <ng-template ngTabContent>Panel 2</ng-template>
+    </div>
+
+    <div ngTabPanel [preserveContent]="true" value="showtimes">
+      <ng-template ngTabContent>Panel 3</ng-template>
+    </div>
+  </div>
+</div>

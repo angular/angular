@@ -1,0 +1,20 @@
+@startuml
+[*] --> notScheduled: initialize
+notScheduled --> scheduling: ①current zone\n scheduleTask
+notScheduled --> scheduling: ③anotherZone\n scheduleTask
+
+scheduling: anotherZoneSpec.onScheduleTask
+scheduling: anotherZoneSpec.onHasTask
+
+scheduling --> notScheduled: ②cancelScheduleRequest
+scheduling --> scheduled
+scheduled --> running: callback
+running: anotherZoneSpec:onInvokeTask
+
+scheduled --> canceling: cancelTask
+canceling: anotherZoneSpec.onCancelTask
+canceling --> notScheduled
+canceling: anotherZoneSpec.onHasTask
+running --> notScheduled
+running: anotherZoneSpec.onHasTask
+@enduml

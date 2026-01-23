@@ -1,0 +1,19 @@
+load("//adev/shared-docs:defaults.bzl", "ng_project")
+
+ng_project(
+    name = "copy-link-anchor",
+    srcs = [
+        "copy-link-anchor.component.ts",
+    ],
+    visibility = [
+        "//adev/shared-docs/components:__pkg__",
+        "//adev/shared-docs/components/viewers:__pkg__",
+    ],
+    deps = [
+        "//adev:node_modules/@angular/cdk",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/material",
+        "//adev/shared-docs/components/icon",
+    ],
+)

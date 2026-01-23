@@ -1,0 +1,15 @@
+<li [class.completed]="todo().completed">
+  <div class="view" appTooltip>
+    <input class="toggle" type="checkbox" [checked]="todo().completed" (change)="toggle()" />
+    <label (dblclick)="enableEditMode()" [style.display]="editMode ? 'none' : 'block'">
+      {{ todo().label }}
+    </label>
+    <button class="destroy" (click)="delete.emit(todo())"></button>
+  </div>
+  <input
+    class="edit"
+    [value]="todo().label"
+    [style.display]="editMode ? 'block' : 'none'"
+    (keydown.enter)="completeEdit($any($event.target).value)"
+  />
+</li>

@@ -1,0 +1,33 @@
+load("//tools:defaults.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages:types",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/service-worker",
+        "//packages/service-worker/testing",
+        "//packages/service-worker/worker",
+        "//packages/service-worker/worker/testing",
+    ],
+)
+
+angular_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib",
+    ],
+)

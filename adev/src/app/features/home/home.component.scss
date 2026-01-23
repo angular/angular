@@ -1,0 +1,372 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+:host {
+  width: 100%;
+  position: relative;
+  display: block;
+}
+
+.banners-layer {
+  z-index: 10;
+
+  .adev-banner-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: absolute;
+    top: var(--layout-padding);
+    left: calc(var(--layout-padding) + var(--primary-nav-width));
+
+    @include mq.for-tablet-landscape-down {
+      top: 6rem;
+      left: var(--layout-padding);
+      /* Assuming the container width is identical to the viewport width (mobile device). */
+      max-width: calc(100% - var(--layout-padding) * 2);
+    }
+
+    @include mq.for-phone-only {
+      & {
+        top: 5rem;
+      }
+    }
+  }
+
+  .adev-banner {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    border: 1px solid var(--senary-contrast);
+    background: var(--page-background);
+    border-radius: 0.25rem;
+    padding: 10px;
+    max-width: 100%;
+    width: fit-content;
+    box-sizing: border-box;
+
+    h1,
+    p {
+      display: inline;
+      font-size: 0.875rem;
+      margin: 0;
+      background-image: var(--red-to-pink-to-purple-horizontal-gradient);
+      background-clip: text;
+      color: transparent;
+      width: fit-content;
+      font-weight: 500;
+      box-shadow: none;
+      position: relative;
+
+      &.adev-banner-cta {
+        color: var(--tertiary-contrast);
+
+        &::after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          transform: scaleX(0);
+          height: 1px;
+          bottom: -2px;
+          left: 0;
+          background: var(--red-to-pink-to-purple-horizontal-gradient);
+          transform-origin: bottom right;
+          transition: transform 0.3s ease;
+        }
+      }
+    }
+
+    &:hover {
+      .adev-banner-cta {
+        &::after {
+          transform: scaleX(1);
+          transform-origin: bottom left;
+        }
+      }
+    }
+  }
+}
+
+.logo-section {
+  text-align: center;
+  background-image:
+    linear-gradient(
+      63deg,
+      transparent 66%,
+      var(--page-background) 69%,
+      var(--page-background) 70%,
+      transparent 70%
+    ),
+    linear-gradient(162deg, var(--page-background) 50%, #9337f58a 100%);
+  background-size:
+    27px 27px,
+    auto;
+  background-repeat: repeat;
+  background-color: transparent;
+  padding-bottom: 36px;
+  padding-top: 7rem;
+
+  @include mq.for-tablet-landscape-down {
+    padding-top: 9rem;
+  }
+
+  button {
+    font-size: 1.2rem;
+
+    @include mq.for-tablet-down {
+      font-size: 1rem;
+    }
+
+    @include mq.for-phone-only {
+      font-size: 0.8rem;
+    }
+  }
+
+  .svg {
+    fill-rule: evenodd;
+    clip-rule: evenodd;
+    stroke-linejoin: round;
+    stroke-miterlimit: 2;
+    color: var(--primary-contrast);
+
+    max-width: 680px;
+  }
+
+  h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+
+    @include mq.for-tablet-down {
+      & {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+section {
+  padding-left: 9rem;
+  padding-right: 2rem;
+
+  h2 {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  svg {
+    fill: var(--always-pink);
+    color: var(--always-pink);
+  }
+
+  .section-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  @include mq.for-tablet-landscape-down {
+    padding-left: 2rem;
+  }
+}
+
+.features {
+  padding-block: 2rem;
+  text-align: center;
+
+  h2 {
+    font-size: 2.2rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 1200px;
+    margin: 0 auto;
+
+    @include mq.for-tablet-down {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include mq.for-phone-only {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .feature {
+    padding: 2rem;
+    border-left: 1px solid var(--senary-contrast);
+
+    &:first-child {
+      border-left: none;
+    }
+
+    @include mq.for-tablet-down {
+      border-top: 1px solid var(--senary-contrast);
+
+      &:first {
+        border-top: none;
+      }
+
+      &:nth-child(odd) {
+        border-left: none;
+      }
+    }
+
+    @include mq.for-phone-only {
+      &:nth-child(n) {
+        border-left: none;
+      }
+
+      &:nth-child(-n + 1) {
+        border-top: none;
+      }
+    }
+
+    svg {
+      width: 3rem;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1rem;
+      color: var(--quaternary-contrast);
+      font-weight: 300;
+    }
+  }
+}
+
+.performance {
+  background-image:
+    linear-gradient(
+      63deg,
+      transparent 66%,
+      var(--page-background) 69%,
+      var(--page-background) 70%,
+      transparent 70%
+    ),
+    linear-gradient(350deg, var(--page-background) 50%, #9337f58a 100%);
+  background-size:
+    27px 27px,
+    auto;
+  background-repeat: repeat;
+  background-color: transparent;
+
+  .section-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .performance-half {
+    flex: 1 0 200px;
+    padding: 3rem 0;
+
+    &:nth-child(2) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      @include mq.for-desktop-down {
+        display: none;
+      }
+
+      svg {
+        width: 80%;
+        max-width: 365px;
+      }
+    }
+  }
+
+  p {
+    &.secondary {
+      font-size: 1.2rem;
+    }
+  }
+
+  .docs-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+
+    @include mq.for-tablet-down {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.learn-more {
+  background-image:
+    linear-gradient(
+      63deg,
+      transparent 66%,
+      var(--page-background) 69%,
+      var(--page-background) 70%,
+      transparent 70%
+    ),
+    linear-gradient(162deg, var(--page-background) 50%, #9337f58a 100%);
+  background-size:
+    27px 27px,
+    auto;
+  background-repeat: repeat;
+  background-color: transparent;
+
+  padding-block: 5rem;
+  text-align: left;
+
+  h2 {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  h3 {
+    margin-top: 0;
+  }
+
+  svg {
+    width: 64px;
+    flex: 0 0 64px;
+    margin: 0 1rem;
+  }
+
+  p {
+    font-size: 1rem;
+    font-weight: 300;
+
+    &.secondary {
+      color: var(--quaternary-contrast);
+    }
+  }
+
+  .card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .docs-card {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1.5rem;
+
+    @include mq.for-tablet-down {
+      & {
+        flex-direction: column;
+      }
+    }
+  }
+
+  .docs-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+
+    @include mq.for-tablet-down {
+      grid-template-columns: 1fr;
+    }
+  }
+}

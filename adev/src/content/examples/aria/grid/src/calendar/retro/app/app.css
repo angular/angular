@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: 'Press Start 2P';
+
+  --retro-button-color: color-mix(in srgb, var(--always-pink) 90%, var(--gray-1000));
+  --retro-button-text-color: color-mix(in srgb, var(--always-pink) 10%, white);
+  --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
+  --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
+  --retro-elevated-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700);
+  --retro-flat-shadow:
+    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
+    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+  --retro-clickable-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 8px 8px 0px 0px var(--gray-700);
+  --retro-pressed-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-dark),
+    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 0px 0px 0px 0px var(--gray-700);
+}
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--septenary-contrast);
+  padding: 0.5rem;
+  box-shadow: var(--retro-flat-shadow);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block-end: 0.5rem;
+}
+
+.calendar-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+button {
+  font-family: 'Press Start 2P';
+  border: unset;
+  padding: unset;
+  color: unset;
+  background: unset;
+  outline: none;
+}
+
+button:hover,
+button:focus {
+  background-color: var(--senary-contrast);
+}
+
+button:focus {
+  outline-offset: 4px;
+  outline: 4px dashed color-mix(in srgb, var(--hot-pink) 90%, transparent);
+}
+
+.visually-hidden {
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+}
+
+.month-control {
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+}
+
+[ngGrid] {
+  display: table;
+  border-spacing: 0;
+}
+
+[ngGridCell] {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+[ngGridCell][aria-selected='true'] > button[ngGridCellWidget] {
+  background-color: var(--retro-button-color);
+  color: var(--retro-button-text-color);
+  box-shadow: var(--retro-clickable-shadow);
+}
+
+[ngGridCell][aria-disabled='true'] {
+  color: var(--senary-contrast);
+}
+
+thead {
+  background-image: var(--orange-to-pink-vertical-gradient);
+  background-clip: text;
+  color: transparent;
+}
+
+button[ngGridCellWidget] {
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+}

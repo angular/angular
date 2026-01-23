@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+
+  font-family: 'Press Start 2P';
+  --retro-button-color: color-mix(in srgb, var(--vivid-pink) 80%, var(--gray-1000));
+  --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
+  --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
+  --retro-elevated-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700);
+  --retro-flat-shadow:
+    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
+    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+  --retro-clickable-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 8px 8px 0px 0px var(--gray-700);
+  --retro-pressed-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-dark),
+    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 0px 0px 0px 0px var(--gray-700);
+}
+
+[ngToolbar] {
+  gap: 1.5rem;
+  display: flex;
+  padding: 1rem;
+}
+
+.group {
+  gap: 1rem;
+  display: flex;
+}
+
+.separator {
+  width: 1px;
+  align-self: center;
+  height: calc(100% - 1rem);
+  background-color: var(--quinary-contrast);
+}
+
+[ngToolbarWidget] {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  font-size: 1.25rem;
+  color: var(--page-background);
+
+  background-color: var(--retro-button-color);
+  box-shadow: var(--retro-clickable-shadow);
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s;
+}
+
+[ngToolbarWidget]:focus,
+[ngToolbarWidget]:hover {
+  transform: translate(1px, 1px);
+}
+
+[ngToolbarWidget]:active,
+[ngToolbarWidget][aria-pressed='true'],
+[ngToolbarWidget][aria-checked='true'] {
+  transform: translate(4px, 4px);
+  box-shadow: var(--retro-pressed-shadow);
+  background-color: color-mix(in srgb, var(--retro-button-color) 60%, var(--gray-50));
+}
+
+[ngToolbarWidget]:focus {
+  outline-offset: 4px;
+  outline: 4px dashed var(--retro-button-color);
+}
+
+[ngToolbarWidget][aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.45;
+}

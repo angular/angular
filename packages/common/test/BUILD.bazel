@@ -1,0 +1,38 @@
+load("//tools:defaults.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/common",
+        "//packages/common/locales",
+        "//packages/common/testing",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+    ],
+)
+
+angular_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib",
+    ],
+)

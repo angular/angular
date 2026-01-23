@@ -1,0 +1,6 @@
+.ɵɵelementStart(0, "h1") // SOURCE: "/simple_element.ts" "<h1>"
+…
+.ɵɵtext(1, "Heading 1") // SOURCE: "/simple_element.ts" "Heading 1"
+…
+// TODO: Work out how to fix the broken segment for the last item in a template
+.ɵɵele // SOURCE: "/simple_element.ts" "</h1>'"

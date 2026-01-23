@@ -1,0 +1,85 @@
+load("//adev/shared-docs:defaults.bzl", "esbuild", "ts_project")
+
+esbuild(
+    name = "guides",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    bundle = True,
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    define = {
+        "HANDLE_MERMAID": "true",
+    },
+    entry_point = ":index.mts",
+    external = [
+        "jsdom",
+        "playwright-core",
+        "typescript",
+    ],
+    format = "esm",
+    output = "guides.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":index",
+    ],
+)
+
+esbuild(
+    name = "guides_no_mermaid",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    bundle = True,
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    define = {
+        "HANDLE_MERMAID": "false",
+    },
+    entry_point = ":index.mts",
+    external = [
+        "jsdom",
+        "typescript",
+    ],
+    output = "guides-no-mermaid.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":index",
+    ],
+)
+
+ts_project(
+    name = "guides_lib",
+    srcs = glob(
+        [
+            "**/*.mts",
+        ],
+        exclude = ["index.mts"],
+    ),
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        "//adev:node_modules/jsdom",
+        "//adev/shared-docs/pipeline/shared:shiki",
+        "//adev/shared-docs/pipeline/shared/marked",
+    ],
+)
+
+ts_project(
+    name = "index",
+    srcs = [
+        "index.mts",
+    ],
+    visibility = [
+        "//adev/shared-docs:__subpackages__",
+    ],
+    deps = [
+        ":guides_lib",
+        "//adev:node_modules/@types/node",
+        "//adev/shared-docs/pipeline/shared:shiki",
+        "//adev/shared-docs/pipeline/shared/marked",
+    ],
+)

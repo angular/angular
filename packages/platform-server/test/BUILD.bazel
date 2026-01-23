@@ -1,0 +1,82 @@
+load("//tools:defaults.bzl", "angular_jasmine_test", "ts_project")
+
+ts_project(
+    name = "dom_utils",
+    testonly = True,
+    srcs = [
+        "dom_utils.ts",
+        "hydration_utils.ts",
+    ],
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-server",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["*.ts"],
+        exclude = [
+            "event_replay_spec.ts",
+            "hydration_utils.ts",
+            "dom_utils.ts",
+        ],
+    ),
+    deps = [
+        ":dom_utils",
+        "//:node_modules/rxjs",
+        "//packages:types",
+        "//packages/animations",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/common/testing",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/localize",
+        "//packages/localize/init",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/platform-server",
+        "//packages/platform-server:bundled_domino_lib",
+        "//packages/private/testing",
+        "//packages/router",
+    ],
+)
+
+ts_project(
+    name = "event_replay_test_lib",
+    testonly = True,
+    srcs = ["event_replay_spec.ts"],
+    deps = [
+        ":dom_utils",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/primitives/event-dispatch",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-server",
+        "//packages/private/testing",
+    ],
+)
+
+angular_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib",
+        "//packages/core/primitives/event-dispatch:contract_bundle_min",
+    ],
+)
+
+angular_jasmine_test(
+    name = "event_replay_test",
+    data = [
+        ":event_replay_test_lib",
+        "//packages/core/primitives/event-dispatch:contract_bundle_min",
+    ],
+)

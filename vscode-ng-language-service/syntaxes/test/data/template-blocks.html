@@ -1,0 +1,62 @@
+@defer (doSomething({111})) {
+    <a></a>
+}
+
+@defer {
+    <a></a>
+}
+
+@switch (a) {
+    @case(0) @case (1) {
+        {{getCase1()}}
+    }
+    @case (2) @case(3) {
+        {{a.b.c}}
+    }
+    @default {
+        default case
+    }
+}
+
+@if (a==b) { hello } @else  { goodbye }
+
+@if (a==b) { 
+    hello 
+} @else if (b==a) { 
+    goodbye 
+}
+
+@for (let item of items; track $index) {
+    bla
+}
+
+@if (
+    items;
+    track $index;
+    let o = $odd
+) {
+    {{o}}
+}
+
+@if 
+(items) {}
+
+@for 
+(item of items; track $index) { }
+
+@for (item of items; track $index) { 
+
+} 
+@empty 
+{
+
+}
+
+<!-- `track` is only a keyword at the start of the clause -->
+@for (item of items; let track = $index; track item.track) { }
+@for (track of tracks; track track) { }
+
+<!-- Should not highlight -->
+
+some.email@google.com ({}) {}
+

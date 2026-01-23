@@ -1,0 +1,284 @@
+load("//devtools/tools:defaults.bzl", "esbuild", "ng_project", "sass_binary", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "app_component_styles",
+    src = "app.component.scss",
+)
+
+ng_project(
+    name = "app",
+    srcs = [
+        "app.component.ts",
+        "app.config.ts",
+    ],
+    angular_assets = [
+        "app.component.html",
+        ":app_component_styles",
+    ],
+    deps = [
+        ":chrome_application_environment",
+        ":chrome_application_operations",
+        ":chrome_message_bus",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@angular/platform-browser",
+        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "ng_validate",
+    srcs = [
+        "ng-validate.ts",
+    ],
+    deps = [
+        "//:node_modules/@types/chrome",
+    ],
+)
+
+ts_project(
+    name = "chrome_window_extensions",
+    srcs = [
+        "chrome-window-extensions.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools-backend",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "chrome_application_environment",
+    srcs = [
+        "chrome-application-environment.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/shell-browser/src/environments:environment",
+    ],
+)
+
+ts_project(
+    name = "chrome_application_operations",
+    srcs = [
+        "chrome-application-operations.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "same_page_message_bus",
+    srcs = [
+        "same-page-message-bus.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "communication",
+    srcs = ["communication.ts"],
+)
+
+ts_project(
+    name = "chrome_message_bus",
+    srcs = [
+        "chrome-message-bus.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "background",
+    srcs = [
+        "background.ts",
+    ],
+    deps = [
+        ":tab_manager",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "tab_manager",
+    srcs = [
+        "tab_manager.ts",
+    ],
+    deps = [
+        "//:node_modules/@types/chrome",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "tab_manager_test",
+    deps = [
+        ":tab_manager_test_lib",
+    ],
+)
+
+ts_test_library(
+    name = "tab_manager_test_lib",
+    srcs = [
+        "tab_manager_spec.ts",
+    ],
+    deps = [
+        ":tab_manager",
+        "//:node_modules/@types/chrome",
+    ],
+)
+
+ts_project(
+    name = "backend",
+    srcs = [
+        "backend.ts",
+    ],
+    deps = [
+        ":chrome_window_extensions",
+        ":communication",
+        ":same_page_message_bus",
+        "//devtools/projects/ng-devtools-backend",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+    ],
+)
+
+ts_project(
+    name = "content_script",
+    srcs = [
+        "content-script.ts",
+    ],
+    deps = [
+        ":chrome_message_bus",
+        ":communication",
+        ":same_page_message_bus",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_project(
+    name = "detect_angular",
+    srcs = [
+        "detect-angular.ts",
+    ],
+    deps = [
+        ":communication",
+        ":same_page_message_bus",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+    ],
+)
+
+esbuild(
+    name = "detect_angular_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_iife",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
+    entry_point = "detect-angular.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":detect_angular",
+    ],
+)
+
+esbuild(
+    name = "backend_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_iife",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
+    entry_point = "backend.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":backend",
+    ],
+)
+
+esbuild(
+    name = "ng_validate_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_iife",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
+    entry_point = "ng-validate.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":ng_validate",
+    ],
+)
+
+esbuild(
+    name = "background_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_iife",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
+    entry_point = "background.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":background",
+    ],
+)
+
+esbuild(
+    name = "content_script_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_iife",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
+    entry_point = "content-script.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "esnext",
+    deps = [
+        ":content_script",
+    ],
+)

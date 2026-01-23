@@ -1,0 +1,83 @@
+<table ngGrid class="basic-data-table">
+  <thead>
+    <tr ngGridRow>
+      <th ngGridCell>
+        <input
+          ngGridCellWidget
+          aria-label="Select all rows"
+          type="checkbox"
+          [checked]="allSelected()"
+          (change)="updateSelection($event)"
+          #headerCheckbox
+        />
+      </th>
+      <th ngGridCell>
+        <button
+          ngGridCellWidget
+          class="sort-button"
+          aria-label="Sort by ID"
+          (click)="sortTaskById()"
+        >
+          ID
+          <span
+            aria-hidden="true"
+            class="material-symbols-outlined"
+            translate="no"
+            aria-hidden="true"
+          >
+            {{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}
+          </span>
+        </button>
+      </th>
+      <th ngGridCell>Task</th>
+      <th ngGridCell>Priority</th>
+      <th ngGridCell>Assignee</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (task of data(); track task.taskId) {
+      <tr ngGridRow>
+        <td ngGridCell>
+          <input
+            ngGridCellWidget
+            aria-label="Select row {{ $index + 1 }}"
+            type="checkbox"
+            [(ngModel)]="task.selected"
+          />
+        </td>
+        <td ngGridCell>{{ task.taskId }}</td>
+        <td ngGridCell>{{ task.summary }}</td>
+        <td ngGridCell>{{ task.priority }}</td>
+        <td ngGridCell class="assignee-cell">
+          <div
+            type="button"
+            ngGridCellWidget
+            aria-label="edit assignee"
+            widgetType="editable"
+            (onActivate)="startEdit($event, task, assigneeInput)"
+            (onDeactivate)="completeEdit($event, task)"
+            #widget="ngGridCellWidget"
+          >
+            <span [class.hidden]="widget.isActivated()">{{ task.assignee }}</span>
+            <input
+              [class.hidden]="!widget.isActivated()"
+              class="assignee-edit-input"
+              [(ngModel)]="tempInput"
+              #assigneeInput
+            />
+            <button
+              tabindex="-1"
+              aria-label="edit assignee"
+              class="material-symbols-outlined assignee-edit-button"
+              (click)="onClickEdit(widget, task, assigneeInput)"
+              [class.hidden]="widget.isActivated()"
+              translate="no"
+            >
+              edit
+            </button>
+          </div>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

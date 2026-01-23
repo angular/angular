@@ -1,0 +1,96 @@
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project", "ts_config")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/dom-navigation",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ng_project(
+    name = "router",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    tsconfig = ":tsconfig_build",
+    deps = [
+        "//:node_modules/@types/dom-navigation",
+        "//:node_modules/rxjs",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+)
+
+ng_package(
+    srcs = [
+        "package.json",
+    ],
+    package = "@angular/router",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//adev:__pkg__",
+        "//adev/shared-docs:__subpackages__",
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__pkg__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/test:__pkg__",
+        "//packages/compiler-cli/test/transformers:__pkg__",
+    ],
+    deps = [
+        ":router",
+        "//packages/router/testing",
+        "//packages/router/upgrade",
+    ],
+)
+
+api_golden_test_npm_package(
+    name = "router_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "goldens/public-api/router",
+    npm_package = "packages/router/npm_package",
+)
+
+api_golden_test(
+    name = "router_errors",
+    data = [
+        "//goldens:public-api",
+        "//packages/router",
+    ],
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/router/errors.api.md",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "router_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+        "//packages/common/http:files_for_docgen",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/router",
+)

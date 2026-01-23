@@ -1,0 +1,27 @@
+load("//tools:defaults.bzl", "ng_project", "zoneless_jasmine_test")
+
+ng_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        "//:node_modules/zod",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/forms",
+        "//packages/forms/signals",
+        "//packages/forms/signals/compat",
+        "//packages/platform-browser",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib",
+    ],
+)

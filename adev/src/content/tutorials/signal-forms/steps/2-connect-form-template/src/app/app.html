@@ -1,0 +1,37 @@
+<form>
+  <div>
+    <label>
+      Email
+      <!-- TODO: Add [formField]="loginForm.email" directive -->
+      <input type="email" />
+    </label>
+  </div>
+
+  <div>
+    <label>
+      Password
+      <!-- TODO: Add [formField]="loginForm.password" directive -->
+      <input type="password" />
+    </label>
+  </div>
+
+  <div>
+    <label>
+      <!-- TODO: Add [formField]="loginForm.rememberMe" directive -->
+      <input type="checkbox" />
+      Remember me
+    </label>
+  </div>
+
+  <button type="submit">Log in</button>
+</form>
+
+<div class="form-debug">
+  <h3>Current Form Values:</h3>
+  <!-- TODO: Display loginForm.email().value() -->
+  <p>Email:</p>
+  <!-- TODO: Display loginForm.password().value() with masking -->
+  <p>Password:</p>
+  <!-- TODO: Display loginForm.rememberMe().value() as Yes/No -->
+  <p>Remember me:</p>
+</div>

@@ -1,0 +1,30 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+
+esbuild(
+    name = "index",
+    config = {
+        # Workaround for https://github.com/aspect-build/rules_esbuild/issues/58
+        "resolveExtensions": [".js"],
+        "mainFields": [
+            "module",
+            "main",
+        ],
+    },
+    data = [
+        "//vscode-ng-language-service:node_modules/@angular/language-service",
+    ],
+    entry_point = "//vscode-ng-language-service/client/src:extension.js",
+    external = [
+        "vscode",
+    ],
+    format = "cjs",
+    # Do not enable minification. It seems to break the extension on Windows (with WSL). See #1198.
+    minify = False,
+    platform = "node",
+    sourcemap = "linked",
+    visibility = ["//vscode-ng-language-service:__pkg__"],
+    deps = [
+        "//:node_modules/source-map-support",
+        "//vscode-ng-language-service/client/src",
+    ],
+)

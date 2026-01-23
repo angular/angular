@@ -1,0 +1,11 @@
+{
+  "description": "Dependency Injection",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[0,1,2,3,4].*",
+    "!**/dummy.module.ts"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["dependency", "di"]
+}

@@ -1,0 +1,27 @@
+<div ngTabs class="retro-tabs">
+  <div ngTabList orientation="vertical" selectedTab="movie">
+    <div ngTab value="movie">
+      <span class="material-symbols-outlined" translate="no" aria-hidden="true">videocam</span>
+    </div>
+    <div ngTab value="theatres">
+      <span class="material-symbols-outlined" translate="no" aria-hidden="true"
+        >theater_comedy</span
+      >
+    </div>
+    <div ngTab value="showtimes">
+      <span class="material-symbols-outlined" translate="no" aria-hidden="true">reviews</span>
+    </div>
+  </div>
+
+  <div ngTabPanel [preserveContent]="true" value="movie">
+    <ng-template ngTabContent>Line 1</ng-template>
+  </div>
+
+  <div ngTabPanel [preserveContent]="true" value="theatres">
+    <ng-template ngTabContent>Line 2</ng-template>
+  </div>
+
+  <div ngTabPanel [preserveContent]="true" value="showtimes">
+    <ng-template ngTabContent>Line 3</ng-template>
+  </div>
+</div>

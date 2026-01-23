@@ -1,0 +1,427 @@
+>/* clang-format off */
+#^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>
+>@Component({
+#^^^^^^^^^^^^^ host-object-literal.ng
+>  //// Quoted static attributes
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>  host: {
+#^^ host-object-literal.ng
+#  ^^^^ host-object-literal.ng meta.object-literal.key.ts
+#      ^ host-object-literal.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#       ^^ host-object-literal.ng
+>    'class': 'one two',
+#^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>    'my-attr': 'my-value',
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>    "doubleQuotes": "value",
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>    'backticksForValue': `my-attr-${value}`,
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+#                                         ^ host-object-literal.ng
+#                                          ^^^ host-object-literal.ng
+>  },
+#^^^^^ host-object-literal.ng
+>
+>  //// Unquoted static attributes
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>  host: {
+#^^ host-object-literal.ng
+#  ^^^^ host-object-literal.ng meta.object-literal.key.ts
+#      ^ host-object-literal.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#       ^^ host-object-literal.ng
+>    class: 'one two',
+#^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>    myAttr: "my-value",
+#^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>    style: `color: red;`,
+#^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>  },
+#^^ host-object-literal.ng hostbindings.ng
+#  ^ host-object-literal.ng
+#   ^^ host-object-literal.ng
+>
+>  //// Attribute bindings
+#^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>  host: {
+#^^ host-object-literal.ng
+#  ^^^^ host-object-literal.ng meta.object-literal.key.ts
+#      ^ host-object-literal.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#       ^^ host-object-literal.ng
+>    '[attr.one]': '123 + "hello"',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#               ^ host-object-literal.ng hostbindings.ng string
+#                ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#                 ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                  ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                   ^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng constant.numeric.decimal.ts
+#                      ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                       ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng keyword.operator.arithmetic.ts
+#                        ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                         ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts punctuation.definition.string.begin.ts
+#                          ^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts
+#                               ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts punctuation.definition.string.end.ts
+#                                ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                 ^^ host-object-literal.ng hostbindings.ng
+>    '[attr.two]': '"something" + counter / 2',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#               ^ host-object-literal.ng hostbindings.ng string
+#                ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#                 ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                  ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                   ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts punctuation.definition.string.begin.ts
+#                    ^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts
+#                             ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts punctuation.definition.string.end.ts
+#                              ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                               ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng keyword.operator.arithmetic.ts
+#                                ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                                 ^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                                        ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                                         ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng keyword.operator.arithmetic.ts
+#                                          ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                                           ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng constant.numeric.decimal.ts
+#                                            ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                             ^^ host-object-literal.ng hostbindings.ng
+>  },
+#^^ host-object-literal.ng hostbindings.ng
+#  ^ host-object-literal.ng
+#   ^^ host-object-literal.ng
+>
+>  //// Class bindings
+#^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>  host: {
+#^^ host-object-literal.ng
+#  ^^^^ host-object-literal.ng meta.object-literal.key.ts
+#      ^ host-object-literal.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#       ^^ host-object-literal.ng
+>    '[class.one]': 'value',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#                ^ host-object-literal.ng hostbindings.ng string
+#                 ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#                  ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                   ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                    ^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                         ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                          ^^ host-object-literal.ng hostbindings.ng
+>    '[class.two]': 'foo || bar',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#                ^ host-object-literal.ng hostbindings.ng string
+#                 ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#                  ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                   ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                    ^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                       ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                        ^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng keyword.operator.logical.ts
+#                          ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                           ^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                              ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                               ^^ host-object-literal.ng hostbindings.ng
+>  },
+#^^ host-object-literal.ng hostbindings.ng
+#  ^ host-object-literal.ng
+#   ^^ host-object-literal.ng
+>
+>  //// Property bindings
+#^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>  host: {
+#^^ host-object-literal.ng
+#  ^^^^ host-object-literal.ng meta.object-literal.key.ts
+#      ^ host-object-literal.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#       ^^ host-object-literal.ng
+>    '[one]': 'value',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#          ^ host-object-literal.ng hostbindings.ng string
+#           ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#            ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#             ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#              ^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                   ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                    ^^ host-object-literal.ng hostbindings.ng
+>    '[two]': 'foo || bar',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#          ^ host-object-literal.ng hostbindings.ng string
+#           ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#            ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#             ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#              ^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                 ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                  ^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng keyword.operator.logical.ts
+#                    ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                     ^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                        ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                         ^^ host-object-literal.ng hostbindings.ng
+>    '[@three]': 'animation',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#             ^ host-object-literal.ng hostbindings.ng string
+#              ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#               ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                 ^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                          ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                           ^^ host-object-literal.ng hostbindings.ng
+>  },
+#^^ host-object-literal.ng hostbindings.ng
+#  ^ host-object-literal.ng
+#   ^^ host-object-literal.ng
+>
+>  //// Event listeners
+#^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>  host: {
+#^^ host-object-literal.ng
+#  ^^^^ host-object-literal.ng meta.object-literal.key.ts
+#      ^ host-object-literal.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#       ^^ host-object-literal.ng
+>    '(click)': 'handleClick(123, $event)',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#            ^ host-object-literal.ng hostbindings.ng string
+#             ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#              ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#               ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                ^^^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng entity.name.function.ts
+#                           ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                            ^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng constant.numeric.decimal.ts
+#                               ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng punctuation.separator.comma.ts
+#                                ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                                 ^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                                       ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                        ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                         ^^ host-object-literal.ng hostbindings.ng
+>    '(window:keydown)': 'globalKey()',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#                     ^ host-object-literal.ng hostbindings.ng string
+#                      ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#                       ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                        ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                         ^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng entity.name.function.ts
+#                                  ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                   ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                    ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                     ^^ host-object-literal.ng hostbindings.ng
+>    '(document:keydown)': 'globalKey()',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#                       ^ host-object-literal.ng hostbindings.ng string
+#                        ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#                         ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                          ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                           ^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng entity.name.function.ts
+#                                    ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                     ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                      ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                       ^^ host-object-literal.ng hostbindings.ng
+>    '(@animation.start)': 'handleStart()',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#                       ^ host-object-literal.ng hostbindings.ng string
+#                        ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#                         ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                          ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                           ^^^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng entity.name.function.ts
+#                                      ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                       ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                        ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                         ^^ host-object-literal.ng hostbindings.ng
+>    '(@animation.end)': 'handleEnd()',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#                     ^ host-object-literal.ng hostbindings.ng string
+#                      ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#                       ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                        ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                         ^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng entity.name.function.ts
+#                                  ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                   ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                    ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                     ^^ host-object-literal.ng hostbindings.ng
+>  },
+#^^ host-object-literal.ng hostbindings.ng
+#  ^ host-object-literal.ng
+#   ^^ host-object-literal.ng
+>
+>  //// Quotes inside the value
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>  host: {
+#^^ host-object-literal.ng
+#  ^^^^ host-object-literal.ng meta.object-literal.key.ts
+#      ^ host-object-literal.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#       ^^ host-object-literal.ng
+>    '(click)': 'handleClick("hello `${name}`")',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#            ^ host-object-literal.ng hostbindings.ng string
+#             ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#              ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#               ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                ^^^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng entity.name.function.ts
+#                           ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                            ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts punctuation.definition.string.begin.ts
+#                             ^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts
+#                                            ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts punctuation.definition.string.end.ts
+#                                             ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                              ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                               ^^ host-object-literal.ng hostbindings.ng
+>  },
+#^^ host-object-literal.ng hostbindings.ng
+#  ^ host-object-literal.ng
+#   ^^ host-object-literal.ng
+>
+>  //// Expression inside object literal
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>  host: {
+#^^ host-object-literal.ng
+#  ^^^^ host-object-literal.ng meta.object-literal.key.ts
+#      ^ host-object-literal.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#       ^^ host-object-literal.ng
+>    ...before,
+#^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>    '(click)': 'handleClick("hello `${name}`")',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#            ^ host-object-literal.ng hostbindings.ng string
+#             ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#              ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#               ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                ^^^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng entity.name.function.ts
+#                           ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                            ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts punctuation.definition.string.begin.ts
+#                             ^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts
+#                                            ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts punctuation.definition.string.end.ts
+#                                             ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                              ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                               ^^ host-object-literal.ng hostbindings.ng
+>    'class': 'hello',
+#^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>    ...after,
+#^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>  },
+#^^ host-object-literal.ng hostbindings.ng
+#  ^ host-object-literal.ng
+#   ^^ host-object-literal.ng
+>
+>  //// Variable initializer
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>  host: HOST_BINDINGS,
+#^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>
+>  //// Variable values
+#^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>  host: {
+#^^ host-object-literal.ng
+#  ^^^^ host-object-literal.ng meta.object-literal.key.ts
+#      ^ host-object-literal.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#       ^^ host-object-literal.ng
+>    '(click)': CLICK_LISTENER + OTHER_STUFF,
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#            ^ host-object-literal.ng hostbindings.ng string
+#             ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                                           ^^ host-object-literal.ng hostbindings.ng
+>    'class': (MY_CLASS + ' ' + MY_OTHER_CLASS) + ` foo-${bar + 123}`,
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+#                                                                  ^ host-object-literal.ng
+#                                                                   ^^^ host-object-literal.ng
+>  },
+#^^^^^ host-object-literal.ng
+>
+>  //// One of each
+#^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>  host: {
+#^^ host-object-literal.ng
+#  ^^^^ host-object-literal.ng meta.object-literal.key.ts
+#      ^ host-object-literal.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#       ^^ host-object-literal.ng
+>    'class': 'one two',
+#^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>    myAttr: "my-value",
+#^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>    '[attr.greeting]': '"hello " + name',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#                    ^ host-object-literal.ng hostbindings.ng string
+#                     ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#                      ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                       ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                        ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts punctuation.definition.string.begin.ts
+#                         ^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts
+#                               ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string.quoted.double.ts punctuation.definition.string.end.ts
+#                                ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                                 ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng keyword.operator.arithmetic.ts
+#                                  ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                                   ^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                                       ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                        ^^ host-object-literal.ng hostbindings.ng
+>    ...extras,
+#^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng
+>    '[class.is-visible]': 'isVisible()',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^^^^^^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#                       ^ host-object-literal.ng hostbindings.ng string
+#                        ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#                         ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#                          ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                           ^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng entity.name.function.ts
+#                                    ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                     ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                      ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                       ^^ host-object-literal.ng hostbindings.ng
+>    '[id]': '_id',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#         ^ host-object-literal.ng hostbindings.ng string
+#          ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#           ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#            ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#             ^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                 ^^ host-object-literal.ng hostbindings.ng
+>    '(click)': 'handleClick($event)',
+#^^^^ host-object-literal.ng hostbindings.ng
+#    ^ host-object-literal.ng hostbindings.ng string
+#     ^^^^^^^ host-object-literal.ng hostbindings.ng entity.other.attribute-name.html
+#            ^ host-object-literal.ng hostbindings.ng string
+#             ^ host-object-literal.ng hostbindings.ng meta.object-literal.key.ts punctuation.separator.key-value.ts
+#              ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng
+#               ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                ^^^^^^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng entity.name.function.ts
+#                           ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                            ^^^^^^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng variable.other.readwrite.ts
+#                                  ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng meta.brace.round.ts
+#                                   ^ host-object-literal.ng hostbindings.ng hostbinding.dynamic.ng string
+#                                    ^^ host-object-literal.ng hostbindings.ng
+>  },
+#^^ host-object-literal.ng hostbindings.ng
+#  ^ host-object-literal.ng
+#   ^^ host-object-literal.ng
+>})
+#^^^ host-object-literal.ng
+>export class TMComponent{}
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^ host-object-literal.ng
+>

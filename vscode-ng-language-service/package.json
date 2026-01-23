@@ -1,0 +1,404 @@
+{
+  "name": "ng-template",
+  "displayName": "Angular Language Service",
+  "description": "Editor services for Angular templates",
+  "version": "21.0.0",
+  "private": true,
+  "publisher": "Angular",
+  "icon": "angular.png",
+  "license": "MIT",
+  "keywords": [
+    "Angular",
+    "multi-root ready"
+  ],
+  "engines": {
+    "vscode": "^1.74.3"
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": {
+      "supported": "limited",
+      "description": "The Language Server Protocol does not support remote file systems. Functionality is limited to syntax highlighting only."
+    }
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "angular.restartNgServer",
+        "title": "Restart Angular Language server",
+        "category": "Angular"
+      },
+      {
+        "command": "angular.openLogFile",
+        "title": "Open Angular Server log",
+        "category": "Angular"
+      },
+      {
+        "command": "angular.getTemplateTcb",
+        "title": "View Template Typecheck Block",
+        "category": "Angular"
+      },
+      {
+        "command": "angular.goToComponentWithTemplateFile",
+        "title": "Go to component",
+        "category": "Angular"
+      },
+      {
+        "command": "angular.goToTemplateForComponent",
+        "title": "Go to template",
+        "category": "Angular"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "angular.submenu",
+        "label": "Angular"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "angular.goToComponentWithTemplateFile",
+          "when": "editorLangId == html && !virtualWorkspace"
+        },
+        {
+          "command": "angular.goToTemplateForComponent",
+          "when": "editorLangId == typescript && !virtualWorkspace"
+        },
+        {
+          "command": "angular.getTemplateTcb",
+          "when": "!virtualWorkspace"
+        }
+      ],
+      "editor/context": [
+        {
+          "submenu": "angular.submenu",
+          "group": "angular"
+        }
+      ],
+      "angular.submenu": [
+        {
+          "when": "(resourceLangId == html || resourceLangId == typescript) && !virtualWorkspace",
+          "command": "angular.getTemplateTcb",
+          "group": "debug"
+        },
+        {
+          "when": "resourceLangId == html && !virtualWorkspace",
+          "command": "angular.goToComponentWithTemplateFile",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceLangId == typescript && !virtualWorkspace",
+          "command": "angular.goToTemplateForComponent",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Angular Language Service",
+      "properties": {
+        "angular.log": {
+          "type": "string",
+          "enum": [
+            "off",
+            "terse",
+            "normal",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Enables logging of the Angular server to a file. This log can be used to diagnose Angular Server issues. The log may contain file paths, source code, and other potentially sensitive information from your project."
+        },
+        "angular.enable-strict-mode-prompt": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Prompt to enable the [strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) flag in [angularCompilerOptions](https://angular.dev/reference/configs/angular-compiler-options)."
+        },
+        "angular.trace.server": {
+          "type": "string",
+          "scope": "window",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the Angular language server."
+        },
+        "angular.suggest.includeAutomaticOptionalChainCompletions": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable showing completions on potentially undefined values that insert an optional chain call. Requires TS 3.7+ and strict null checks to be enabled."
+        },
+        "angular.suggest.includeCompletionsWithSnippetText": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable snippet completions from Angular language server. Requires using TypeScript 4.3+ in the workspace."
+        },
+        "angular.suggest.autoImports": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable/disable auto import suggestions for the exported Angular components from the current project."
+        },
+        "angular.forceStrictTemplates": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enabling this option will force the language service to use [strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) and ignore the user settings in the `tsconfig.json`."
+        },
+        "angular.suppressAngularDiagnosticCodes": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "A comma-separated list of error codes in templates whose diagnostics should be ignored."
+        },
+        "angular.server.useClientSideFileWatcher": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "When enabled, the Angular Language Service will delegate file watching to VS Code instead of creating its own internal file watchers. This can significantly improve performance (greater than 10x faster initialization) and reduce resource usage in large repositories."
+        },
+        "angular.inlayHints.forLoopVariableTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for `@for` loop variables: `@for (user: User of users)`"
+        },
+        "angular.inlayHints.ifAliasTypes": {
+          "type": [
+            "boolean",
+            "string"
+          ],
+          "enum": [
+            true,
+            false,
+            "complex"
+          ],
+          "default": true,
+          "markdownDescription": "Show type hints for `@if` alias variables. Set to `'complex'` to only show hints for complex expressions (property access, comparisons, etc.)"
+        },
+        "angular.inlayHints.letDeclarationTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for `@let` declarations: `@let count: number = items.length`"
+        },
+        "angular.inlayHints.referenceVariableTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for template reference variables: `#ref: HTMLInputElement`"
+        },
+        "angular.inlayHints.variableTypeHintsWhenTypeMatchesName": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show variable type hints even when the variable name matches the type name (case-insensitive). When disabled, hints like `user: User` are suppressed."
+        },
+        "angular.inlayHints.arrowFunctionParameterTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for arrow function parameters in templates."
+        },
+        "angular.inlayHints.arrowFunctionReturnTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show return type hints for arrow functions in templates."
+        },
+        "angular.inlayHints.parameterNameHints": {
+          "type": "string",
+          "enum": [
+            "none",
+            "literals",
+            "all"
+          ],
+          "default": "all",
+          "markdownDescription": "Show parameter name hints for function/method calls. `'literals'` shows hints only for literal arguments."
+        },
+        "angular.inlayHints.parameterNameHintsWhenArgumentMatchesName": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Show parameter name hints even when the argument name matches the parameter name."
+        },
+        "angular.inlayHints.eventParameterTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for event binding `$event` parameter: `(click: MouseEvent)`"
+        },
+        "angular.inlayHints.propertyBindingTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for property/input bindings: `[disabled: boolean]`"
+        },
+        "angular.inlayHints.pipeOutputTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for pipe output types: `{{ value | async: Observable<T> }}`"
+        },
+        "angular.inlayHints.twoWayBindingSignalTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show signal type hints for two-way bindings: `[(value: WritableSignal<string>)]`"
+        },
+        "angular.inlayHints.requiredInputIndicator": {
+          "type": "string",
+          "enum": [
+            "none",
+            "asterisk",
+            "exclamation"
+          ],
+          "default": "none",
+          "markdownDescription": "Visual indicator for required inputs. `'asterisk'` shows `*`, `'exclamation'` shows `!` after the type."
+        },
+        "angular.inlayHints.interactiveInlayHints": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable interactive inlay hints that navigate to type definitions when clicked."
+        },
+        "angular.inlayHints.hostListenerArgumentTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for `@HostListener` argument types."
+        },
+        "angular.inlayHints.switchExpressionTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for `@switch` expression types."
+        },
+        "angular.inlayHints.deferTriggerTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for `@defer` trigger types."
+        }
+      }
+    },
+    "grammars": [
+      {
+        "path": "./syntaxes/inline-template.json",
+        "scopeName": "inline-template.ng",
+        "injectTo": [
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html.derivative": "html",
+          "source.css": "css",
+          "source.js": "javascript"
+        }
+      },
+      {
+        "path": "./syntaxes/inline-styles.json",
+        "scopeName": "inline-styles.ng",
+        "injectTo": [
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "source.css.scss": "scss"
+        }
+      },
+      {
+        "path": "./syntaxes/template.json",
+        "scopeName": "template.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html": "html",
+          "source.css": "css",
+          "expression.ng": "javascript"
+        }
+      },
+      {
+        "path": "./syntaxes/template-blocks.json",
+        "scopeName": "template.blocks.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html": "html",
+          "control.block.expression.ng": "javascript",
+          "control.block.body.ng": "html"
+        }
+      },
+      {
+        "path": "./syntaxes/let-declaration.json",
+        "scopeName": "template.let.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ]
+      },
+      {
+        "path": "./syntaxes/host-object-literal.json",
+        "scopeName": "host-object-literal.ng",
+        "injectTo": [
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html.derivative": "html",
+          "expression.ng": "javascript",
+          "source.ts": "typescript"
+        }
+      },
+      {
+        "path": "./syntaxes/template-tag.json",
+        "scopeName": "template.tag.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ]
+      },
+      {
+        "path": "./syntaxes/expression.json",
+        "scopeName": "expression.ng"
+      }
+    ]
+  },
+  "activationEvents": [
+    "onLanguage:html",
+    "onLanguage:typescript"
+  ],
+  "main": "../dist/bin/vscode-ng-language-service/client/src/extension.js",
+  "scripts": {
+    "vsce": "vsce",
+    "build:syntaxes": "bazel run //vscode-ng-language-service/syntaxes:syntaxes",
+    "watch": "ibazel build //vscode-ng-language-service/client/src //vscode-ng-language-service/server/src",
+    "package": "bazel build //vscode-ng-language-service:development_package --config=release",
+    "test": "bazel test --test_tag_filters=unit_test //vscode-ng-language-service/...",
+    "test:watch": "ibazel test --test_tag_filters=unit_test //vscode-ng-language-service/...",
+    "test:lsp": "bazel test --test_output=streamed //vscode-ng-language-service/integration/lsp:test",
+    "test:e2e": "bazel test --test_output=streamed //vscode-ng-language-service/integration/e2e:test",
+    "test:inspect-client": "bazel run --config=debug //vscode-ng-language-service/client/src/tests:test",
+    "test:inspect-common": "bazel run --config=debug //vscode-ng-language-service/common/tests:test",
+    "test:inspect-server": "bazel run --config=debug //vscode-ng-language-service/server/src/tests:test",
+    "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test",
+    "release": "node tools/release.mts"
+  },
+  "dependencies": {
+    "@angular/language-service": "workspace:*",
+    "typescript": "5.9.3"
+  },
+  "devDependencies": {
+    "@types/jasmine": "~5.1.9",
+    "@types/jasmine-reporters": "~2.5.3",
+    "@types/node": "^24.5.2",
+    "@types/vscode": "^1.74.3",
+    "@vscode/test-electron": "~2.5.2",
+    "@vscode/vsce": "~3.7.0",
+    "jasmine": "~5.13.0",
+    "jasmine-core": "~5.13.0",
+    "jasmine-reporters": "~2.5.2",
+    "source-map-support": "^0.5.21",
+    "vscode-jsonrpc": "8.2.0",
+    "vscode-languageclient": "9.0.1",
+    "vscode-languageserver": "9.0.1",
+    "vscode-languageserver-protocol": "3.17.5",
+    "vscode-languageserver-textdocument": "1.0.12",
+    "vscode-tmgrammar-test": "0.1.3",
+    "vscode-uri": "3.1.0",
+    "xvfb": "^0.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "vscode-ng-language-service"
+  }
+}

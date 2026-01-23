@@ -1,0 +1,69 @@
+<!-- TODO: Reconsider the existence of this component. -->
+<th>{{ label() }}</th>
+<td>
+  @switch (type()) {
+    @case ('flag') {
+      <span [class]="rowValue() ? 'tag-active' : 'tag-inactive'">
+        {{ rowValue() || 'false' }}
+      </span>
+    }
+    @case ('list') {
+      @for (provider of dataArray(); track $index) {
+        <div class="value-container">
+          <span>{{ provider || '[empty string] ' }}</span
+          ><ng-container
+            [ngTemplateOutlet]="actionBtn"
+            [ngTemplateOutletContext]="{value: provider}"
+          />
+        </div>
+      }
+    }
+    @default {
+      @if (rowValue() && renderValueAsJson()) {
+        <ng-object-tree-explorer
+          [dataSource]="treeData()"
+          [childrenAccessor]="treeDataChildrenAccessor"
+          [omitRootNodesNames]="true"
+        >
+          <ng-template let-node>
+            @if (!node.expandable) {
+              <ng-container
+                [ngTemplateOutlet]="actionBtn"
+                [ngTemplateOutletContext]="{value: node.prop.descriptor.preview}"
+              />
+            }
+          </ng-template>
+        </ng-object-tree-explorer>
+      } @else {
+        <div class="value-container">
+          <span> {{ rowValue() || '[empty string] ' }} </span
+          ><ng-container
+            [ngTemplateOutlet]="actionBtn"
+            [ngTemplateOutletContext]="{value: rowValue()}"
+          />
+        </div>
+      }
+    }
+  }
+</td>
+
+<ng-template #actionBtn let-value="value">
+  @if (actionBtnType() !== 'none') {
+    <button
+      ng-button
+      btnType="icon"
+      (click)="actionBtnClick.emit(value)"
+      [matTooltip]="!actionBtnDisabled() ? actionBtnTooltip() || value : null"
+      [disabled]="actionBtnDisabled()"
+    >
+      @switch (actionBtnType()) {
+        @case ('view-source') {
+          <mat-icon class="view-source">code</mat-icon>
+        }
+        @case ('navigate') {
+          <mat-icon class="navigate">output</mat-icon>
+        }
+      }
+    </button>
+  }
+</ng-template>

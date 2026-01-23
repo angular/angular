@@ -1,0 +1,6 @@
+{
+  "title": "Deferrable Views",
+  "type": "editor",
+  "nextTutorial": "first-app",
+  "openFiles": ["src/app/app.ts"]
+}

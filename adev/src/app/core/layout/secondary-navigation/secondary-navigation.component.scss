@@ -1,0 +1,73 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+:host {
+  z-index: 100;
+
+  @include mq.for-tablet-landscape-up {
+    position: sticky;
+    top: 0;
+  }
+
+  @include mq.for-tablet-landscape-down {
+    position: fixed;
+  }
+
+  @include mq.for-phone-only {
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+    &:has(.docs-nav-secondary--open) {
+      transform: translateX(82px);
+      transition: transform 0.3s ease-in 0.3s;
+    }
+  }
+}
+
+// .adev-secondary-nav-mask stays in the same place during nav animation, as a mask
+.adev-secondary-nav-mask {
+  position: sticky;
+  top: 0;
+  overflow-x: hidden;
+  min-width: var(--secondary-nav-width);
+  border-inline-end: 1px solid var(--septenary-contrast);
+  background-color: var(--page-background);
+  z-index: var(--z-index-nav);
+  transition: transform 0.45s ease;
+
+  @include mq.for-tablet-landscape-down {
+    position: absolute;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform 0.45s ease,
+      background-color 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  @include mq.for-tablet-landscape-down {
+    transform: translateX(-100%);
+
+    &.docs-nav-secondary--open {
+      transform: translateX(0);
+    }
+  }
+
+  @include mq.for-phone-only {
+    transform: translateX(-100%);
+    // exit immediately
+    transition: transform 0.45s ease-in;
+
+    &.docs-nav-secondary--open {
+      transform: translateX(0);
+      // enter delayed
+      transition: transform 0.45s ease-out 0.2s;
+    }
+  }
+}
+
+// secondary nav - translated on x to display levels
+.docs-nav-secondary {
+  display: flex;
+  flex-direction: row;
+  max-width: var(--secondary-nav-width);
+}

@@ -1,0 +1,5 @@
+h1 {
+ background-image: linear-gradient(to right, oklch(53.18% 0.28 296.97), oklch(69.02% 0.277 332.77)); 
+ background-clip: text;
+ color: transparent;
+}

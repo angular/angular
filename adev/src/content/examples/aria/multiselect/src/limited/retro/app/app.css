@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-size: 0.8rem;
+
+  font-family: 'Press Start 2P';
+  --retro-button-color: color-mix(in srgb, var(--hot-pink) 80%, var(--gray-1000));
+  --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
+  --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
+  --retro-elevated-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700);
+  --retro-flat-shadow:
+    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
+    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+  --retro-clickable-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 8px 8px 0px 0px var(--gray-700);
+  --retro-pressed-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-dark),
+    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 0px 0px 0px 0px var(--gray-700);
+}
+
+.select {
+  display: flex;
+  position: relative;
+  align-items: center;
+  color: var(--page-background);
+  background-color: var(--hot-pink);
+  box-shadow: var(--retro-clickable-shadow);
+}
+
+.select:hover,
+.select:focus-within {
+  transform: translate(1px, 1px);
+}
+
+.select:active {
+  transform: translate(4px, 4px);
+  box-shadow: var(--retro-pressed-shadow);
+  background-color: color-mix(in srgb, var(--retro-button-color) 60%, var(--gray-50));
+}
+
+.select:has([ngComboboxInput][aria-disabled='true']) {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.selected-label-icon {
+  font-size: 1.25rem;
+}
+
+[ngComboboxInput] {
+  opacity: 0;
+  cursor: pointer;
+  padding: 0 5rem;
+  height: 2.5rem;
+  border: none;
+}
+
+.select:has([ngComboboxInput][aria-expanded='false']):focus-within {
+  outline-offset: 8px;
+  outline: 4px dashed var(--hot-pink);
+}
+
+.combobox-label {
+  gap: 1rem;
+  left: 1rem;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  pointer-events: none;
+}
+
+.example-arrow {
+  right: 1rem;
+  position: absolute;
+  pointer-events: none;
+  transition: transform 150ms ease-in-out;
+}
+
+[ngComboboxInput][aria-expanded='true'] ~ .example-arrow {
+  transform: rotate(180deg);
+}
+
+.example-popup-container {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 20px;
+  box-shadow: var(--retro-flat-shadow);
+  background-color: var(--septenary-contrast);
+
+  max-height: 11rem;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    max-height 150ms ease-out,
+    visibility 0s,
+    opacity 25ms ease-out;
+}
+
+[ngListbox] {
+  gap: 2px;
+  height: 100%;
+  display: flex;
+  overflow: auto;
+  flex-direction: column;
+}
+
+[ngCombobox]:has([ngComboboxInput][aria-expanded='false']) .example-popup-container {
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    max-height 150ms ease-in,
+    visibility 0s 150ms,
+    opacity 150ms ease-in;
+}
+
+[ngCombobox]:has([ngComboboxInput][aria-expanded='true']) [ngListbox] {
+  display: flex;
+}
+
+[ngOption] {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  padding: 0 1rem;
+  font-size: 0.6rem;
+  min-height: 2.25rem;
+}
+
+[ngOption]:hover {
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+}
+
+[ngOption][data-active='true'] {
+  outline-offset: -2px;
+  outline: 2px dashed var(--hot-pink);
+}
+
+[ngOption][aria-selected='true'] {
+  color: var(--hot-pink);
+  background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
+}
+
+.example-option-icon {
+  font-size: 1.25rem;
+  padding-right: 1rem;
+}
+
+[ngOption]:not([aria-selected='true']) .example-option-check {
+  display: none;
+}
+
+[ngOption][aria-disabled='true'] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+[ngOption][aria-disabled='true']:hover {
+  background-color: transparent;
+}
+
+.example-option-icon,
+.example-option-check {
+  font-size: 0.9rem;
+}
+
+.example-option-text {
+  flex: 1;
+}

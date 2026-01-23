@@ -1,0 +1,59 @@
+name: Update ADEV Cross Repo Docs
+
+on:
+  workflow_dispatch:
+    inputs: {}
+  push:
+    branches:
+      - 'main'
+      - '[0-9]+.[0-9]+.x'
+
+# Declare default permissions as read only.
+permissions:
+  contents: read
+
+jobs:
+  update_adev_cross_repo_docs:
+    name: Update Cross Repo ADEV Docs
+    if: github.repository == 'angular/angular'
+    runs-on: ubuntu-latest
+    # Prevents multiple concurrent runs of this workflow for the same branch
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          # Setting `persist-credentials: false` prevents the github-action account from being the
+          # account that is attempted to be used for authentication, instead the remote is set to
+          # an authenticated URL.
+          persist-credentials: false
+
+      - name: Generate Docs
+        run: node adev/scripts/update-cross-repo-docs/index.mjs
+        env:
+          ANGULAR_READONLY_GITHUB_TOKEN: ${{ secrets.READONLY_GITHUB_TOKEN }}
+
+      - name: Create a PR (if necessary)
+        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8.0.0
+        with:
+          token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
+          push-to-fork: 'angular-robot/angular'
+          delete-branch: true
+          maintainer-can-modify: false
+          branch: docs-cross-repo-update-${{github.ref_name}}
+          committer: Angular Robot <angular-robot@google.com>
+          author: Angular Robot <angular-robot@google.com>
+          title: 'docs: update cross-repo adev docs [${{github.ref_name}}]'
+          body: |
+            Updated Angular adev cross repo docs files.
+          labels: |
+            action: merge
+            area: docs
+            target: automation
+          commit-message: |
+            docs: update cross-repo adev docs
+
+            Updated Angular adev cross repo docs files.

@@ -1,0 +1,11 @@
+<router-outlet></router-outlet>
+<app-zippy [title]="getTitle()">This is my content</app-zippy>
+@defer {
+  <app-heavy></app-heavy>
+} @placeholder (minimum 5s) {
+  <b>Stuff will be loaded here</b>
+}
+<div #elementReference>HTMLElement</div>
+<div *appStructural>Test Structural Directive</div>
+<app-sample-properties></app-sample-properties>
+<app-cookies />

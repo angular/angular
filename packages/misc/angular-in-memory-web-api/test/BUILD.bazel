@@ -1,0 +1,25 @@
+load("//tools:defaults.bzl", "ng_web_test_suite", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//:node_modules/jasmine-core",
+        "//:node_modules/rxjs",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/misc/angular-in-memory-web-api",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib",
+    ],
+)

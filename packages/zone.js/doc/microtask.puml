@@ -1,0 +1,14 @@
+@startuml
+[*] --> notScheduled: initialize
+notScheduled --> scheduling: promise.then/\nprocess.nextTick\nand so on
+
+scheduling: zoneSpec.onScheduleTask
+scheduling: zoneSpec.onHasTask
+
+scheduling --> scheduled
+scheduled --> running: callback
+running: zoneSpec:onInvokeTask
+
+running --> notScheduled
+running: zoneSpec.onHasTask
+@enduml

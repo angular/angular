@@ -1,0 +1,18 @@
+{
+  "name": "angular-ls-integration-test-project",
+  "private": true,
+  "dependencies": {
+    "@angular/common": "workspace:*",
+    "@angular/compiler": "workspace:*",
+    "@angular/compiler-cli": "workspace:*",
+    "@angular/core": "workspace:*",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "ng-packagr": "21.2.0-next.0",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "build": "ng-packagr -p libs/post/ng-package.json -c libs/post/tsconfig.json"
+  }
+}

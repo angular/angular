@@ -1,0 +1,61 @@
+<form>
+  <h3>Shipping Details</h3>
+
+  <div>
+    <label>
+      Customer Name:
+      <input [formField]="f.customerName" />
+    </label>
+
+    @if (f.customerName().touched() && f.customerName().invalid()) {
+      <div class="error-list">
+        <p>Customer name is required.</p>
+      </div>
+    }
+  </div>
+
+  <fieldset>
+    <legend>Address</legend>
+
+    @let street = f.shippingAddress().control().controls.street;
+    <div>
+      <label>
+        Street:
+        <input [formControl]="street" />
+      </label>
+      @if (street.touched && street.invalid) {
+        <div class="error-list">
+          <p>Street is required</p>
+        </div>
+      }
+    </div>
+
+    @let city = f.shippingAddress().control().controls.city;
+    <div>
+      <label>
+        City:
+        <input [formControl]="city" />
+      </label>
+      @if (city.touched && city.invalid) {
+        <div class="error-list">
+          <p>City is required</p>
+        </div>
+      }
+    </div>
+
+    @let zip = f.shippingAddress().control().controls.zip;
+    <div>
+      <label>
+        Zip Code:
+        <input [formControl]="zip" />
+      </label>
+      @if (zip.touched && zip.invalid) {
+        <div class="error-list">
+          <p>Zip Code is required</p>
+        </div>
+      }
+    </div>
+  </fieldset>
+  <h3>Value</h3>
+  <pre>{{ formValue() | json }}</pre>
+</form>

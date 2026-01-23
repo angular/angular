@@ -1,0 +1,11 @@
+@mixin docs-video() {
+  .docs-video-container {
+    iframe {
+      border: 0;
+      width: 100%;
+      border-radius: 0.25rem;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+    }
+  }
+}

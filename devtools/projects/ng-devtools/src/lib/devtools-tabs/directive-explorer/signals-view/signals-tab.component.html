@@ -1,0 +1,32 @@
+<ng-signals-visualizer
+  #visualizer
+  [graph]="signalGraph.graph()"
+  [selectedNodeId]="selectedNodeId()"
+  [element]="signalGraph.element()"
+  (nodeClick)="onNodeClick($event)"
+  (clusterCollapse)="detailsVisible.set(false)"
+/>
+
+@let node = selectedNode();
+@if (node && detailsVisible()) {
+  <ng-signals-details
+    [node]="node"
+    (gotoSource)="gotoSource($event)"
+    (expandCluster)="expandCluster($event)"
+    (close)="detailsVisible.set(false)"
+  />
+}
+
+@if (empty()) {
+  <div class="no-signals">No signals in this component</div>
+}
+
+<button
+  ng-button
+  btnType="icon"
+  (click)="close.emit()"
+  class="close"
+  aria-label="Close signal graph"
+>
+  <mat-icon>close</mat-icon>
+</button>

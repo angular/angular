@@ -1,0 +1,2 @@
+// This can only be requested once due to constant method name :(
+ng_jsonp_callback_0([{"name":"caitp"}])

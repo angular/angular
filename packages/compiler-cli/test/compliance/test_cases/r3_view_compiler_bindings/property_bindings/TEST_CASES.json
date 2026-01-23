@@ -1,0 +1,255 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate attribute instructions for DOM-only ARIA bindings",
+      "inputFiles": [
+        "aria_dom_properties.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            "aria_dom_properties.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate ariaProperty instructions for ARIA bindings",
+      "inputFiles": [
+        "aria_properties.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            "aria_properties.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate bind instruction",
+      "inputFiles": [
+        "bind.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect property binding",
+          "files": [
+            "bind.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate interpolation instruction for {{...}} bindings",
+      "inputFiles": [
+        "interpolation.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect interpolated property binding",
+          "files": [
+            "interpolation.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate the proper update instructions for interpolated properties",
+      "inputFiles": [
+        "interpolated_properties.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of interpolated properties",
+          "files": [
+            "interpolated_properties.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not remap special property names when outputting property instructions",
+      "inputFiles": [
+        "special_property_remapping_property.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "special_property_remapping_property.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should remap special property names when outputting domProperty instructions",
+      "inputFiles": [
+        "special_property_remapping_dom_property.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "special_property_remapping_dom_property.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should emit temporary evaluation within the binding expression for in-order execution",
+      "inputFiles": [
+        "temporary_variables.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "temporary_variables.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain multiple property bindings into a single instruction",
+      "inputFiles": [
+        "chain_multiple_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_multiple_bindings.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain property bindings in the presence of other bindings",
+      "inputFiles": [
+        "chain_multiple_bindings_mixed.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_multiple_bindings_mixed.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not add interpolated properties to the property instruction chain",
+      "inputFiles": [
+        "chain_bindings_with_interpolations.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_bindings_with_interpolations.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain synthetic property bindings together with regular property bindings",
+      "inputFiles": [
+        "chain_synthetic_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_synthetic_bindings.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain multiple property bindings on an ng-template",
+      "inputFiles": [
+        "chain_ngtemplate_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_ngtemplate_bindings.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain multiple property bindings when there are multiple elements",
+      "inputFiles": [
+        "chain_multiple_bindings_for_multiple_elements.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_multiple_bindings_for_multiple_elements.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain multiple property bindings when there are child elements",
+      "inputFiles": [
+        "chain_multiple_bindings_with_child_elements.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_multiple_bindings_with_child_elements.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate synthetic bindings and listeners on structural directives",
+      "inputFiles": [
+        "synthetic_bindings_and_listeners_on_structural.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "synthetic_bindings_and_listeners_on_structural.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should sanitize dangerous bindings",
+      "inputFiles": [
+        "sanitization.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "sanitization.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should maintain the binding order between one-way and two-way properties",
+      "inputFiles": [
+        "mixed_one_way_two_way_property_order.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "mixed_one_way_two_way_property_order.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

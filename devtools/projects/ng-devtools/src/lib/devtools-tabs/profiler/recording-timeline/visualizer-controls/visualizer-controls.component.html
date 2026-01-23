@@ -1,0 +1,42 @@
+@let frameRecord = record();
+
+<div class="details">
+  <p [class.warning-label]="estimatedFrameRate() < 60">
+    Time spent: <span class="value">{{ frameRecord.duration | number }} ms</span>
+  </p>
+  @if (estimatedFrameRate() < 60) {
+    <p class="warning-label">
+      Frame rate: <span class="value">{{ estimatedFrameRate() }} fps</span>
+    </p>
+  }
+  @if (frameRecord.source) {
+    <p>
+      Source: <span class="value">{{ frameRecord.source }}</span>
+    </p>
+  }
+</div>
+
+<div class="controls">
+  @if (visualizationMode() === VisMode.FlameGraph) {
+    <input
+      id="cd-only-checkbox"
+      type="checkbox"
+      [checked]="changeDetection()"
+      (change)="changeDetection.set($any($event.target).checked)"
+    />
+    <label for="cd-only-checkbox"> Show only change detection </label>
+    <div class="ver-ruler"></div>
+  }
+
+  <select #select (change)="onVisualizationChange(select.value)" class="ng-select size-mid">
+    <option [value]="VisMode.FlameGraph" [selected]="visualizationMode() === VisMode.FlameGraph">
+      Flame graph
+    </option>
+    <option [value]="VisMode.TreeMap" [selected]="visualizationMode() === VisMode.TreeMap">
+      Tree map
+    </option>
+    <option [value]="VisMode.BarGraph" [selected]="visualizationMode() === VisMode.BarGraph">
+      Bar chart
+    </option>
+  </select>
+</div>

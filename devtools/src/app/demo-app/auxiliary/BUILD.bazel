@@ -1,0 +1,20 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "auxiliary_component_styles",
+    src = "auxiliary.component.scss",
+)
+
+ng_project(
+    name = "auxiliary",
+    srcs = ["auxiliary.component.ts"],
+    angular_assets = [
+        "auxiliary.component.html",
+        ":auxiliary_component_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+    ],
+)

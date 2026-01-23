@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "ts_project")
+
+package(default_visibility = [
+    "//packages:__pkg__",
+    "//packages/core:__subpackages__",
+])
+
+ts_project(
+    name = "devtools",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2022",
+    "moduleResolution": "node",
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "inlineSources": true,
+    "declaration": true,
+    "noEmitOnError": false,
+    "stripInternal": true,
+    "strict": true,
+    "sourceMap": true,
+    "noImplicitOverride": true,
+    "lib": [
+      "es5",
+      "dom",
+      "es2015.iterable",
+      "es2015.promise",
+      "es2015.symbol",
+      "es2015.symbol.wellknown"
+    ],
+  },
+}

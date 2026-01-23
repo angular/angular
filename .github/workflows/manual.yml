@@ -1,0 +1,32 @@
+name: Manual jobs
+
+on:
+  workflow_dispatch:
+    inputs: {}
+
+jobs:
+  # Bazel saucelabs job resides in `manual.yml` because it's currently unstable, but
+  # kept as "runnable" for debugging/stabilization effort purposes.
+  bazel-saucelabs:
+    runs-on: ubuntu-latest
+    env:
+      JOBS: 2
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@71907fee0c48eec1d465dc1e54fe6b3ffc767145
+      - name: Install node modules
+        run: pnpm install --frozen-lockfile
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@71907fee0c48eec1d465dc1e54fe6b3ffc767145
+      - name: Setup Bazel Remote Caching
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@71907fee0c48eec1d465dc1e54fe6b3ffc767145
+      - name: Setup Saucelabs Variables
+        uses: angular/dev-infra/github-actions/saucelabs@71907fee0c48eec1d465dc1e54fe6b3ffc767145
+      - name: Set up Sauce Tunnel Daemon
+        run: pnpm bazel run //tools/saucelabs-daemon/background-service -- $JOBS &
+        env:
+          SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
+      - name: Run all saucelabs bazel tests
+        run: |
+          TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
+          pnpm bazel test --config=saucelabs --jobs=$JOBS ${TESTS}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate ES5 compliant localized messages if the target is ES5",
+      "compilerOptions": {
+        "target": "ES5"
+      },
+      "compilationModeFilter": [
+        "full compile",
+        "declaration-only emit"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    }
+  ]
+}

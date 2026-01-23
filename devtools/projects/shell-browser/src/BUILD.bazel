@@ -1,0 +1,127 @@
+load("//devtools/tools:defaults.bzl", "esbuild", "extension_package", "ng_project", "sass_binary", "string_flag", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "shell_common_styles",
+    src = "styles.scss",
+    include_paths = ["external/_main/node_modules"],
+    sourcemap = False,
+    deps = ["//devtools/projects/ng-devtools/src/styles:global"],
+)
+
+ts_project(
+    name = "devtools",
+    srcs = [
+        "devtools.ts",
+    ],
+    deps = [
+        "//:node_modules/@types/chrome",
+    ],
+)
+
+ng_project(
+    name = "src",
+    srcs = [
+        "main.ts",
+    ],
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/shell-browser/src/app",
+        "//devtools/projects/shell-browser/src/environments:environment",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    srcs = [
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_esm_prod",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-esm-prod.config.mjs",
+    entry_points = [":main.ts"],
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "es2022",
+    deps = [
+        ":src",
+        "//:node_modules/@angular/cdk",
+    ],
+)
+
+esbuild(
+    name = "devtools_bundle",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_esm",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-esm.config.mjs",
+    entry_point = "devtools.ts",
+    format = "iife",
+    minify = True,
+    platform = "browser",
+    splitting = False,
+    target = "es2022",
+    deps = [":devtools"],
+)
+
+exports_files(["index.html"])
+
+filegroup(
+    name = "prod_app_static_files",
+    srcs = [
+        ":index.html",
+        ":shell_common_styles",
+    ],
+)
+
+string_flag(
+    name = "flag_browser",
+    build_setting_default = "chrome",
+    values = [
+        "chrome",
+        "firefox",
+    ],
+)
+
+config_setting(
+    name = "browser_chrome",
+    flag_values = {":flag_browser": "chrome"},
+)
+
+config_setting(
+    name = "browser_firefox",
+    flag_values = {":flag_browser": "firefox"},
+)
+
+genrule(
+    name = "copy_manifest",
+    srcs = select({
+        ":browser_chrome": ["//devtools/projects/shell-browser/src/manifest:manifest.chrome.json"],
+        ":browser_firefox": ["//devtools/projects/shell-browser/src/manifest:manifest.firefox.json"],
+    }),
+    outs = ["manifest.json"],
+    cmd = "cp $< $@",
+)
+
+extension_package(
+    name = "prodapp",
+    srcs = [
+        ":bundle",
+        ":copy_manifest",
+        ":devtools_bundle",
+        ":prod_app_static_files",
+        "//devtools/projects/shell-browser/src:devtools.html",
+        "//devtools/projects/shell-browser/src/app:backend_bundle",
+        "//devtools/projects/shell-browser/src/app:background_bundle",
+        "//devtools/projects/shell-browser/src/app:content_script_bundle",
+        "//devtools/projects/shell-browser/src/app:detect_angular_bundle",
+        "//devtools/projects/shell-browser/src/app:ng_validate_bundle",
+        "//devtools/projects/shell-browser/src/assets",
+        "//devtools/projects/shell-browser/src/popups",
+    ],
+)

@@ -1,0 +1,191 @@
+<section class="main-toolbar">
+  <div class="tools">
+    <button
+      ng-button
+      btnType="icon"
+      class="toolbar-btn inspect-btn"
+      (click)="toggleInspector()"
+      matTooltip="Inspect element"
+      aria-label="Inspect element"
+    >
+      <svg viewBox="0 0 24 24" [class.inspect-active]="inspectorRunning()">
+        <path
+          d="M4,20C3.45,20 2.979,19.804 2.588,19.413C2.196,19.021 2,18.55 2,18L2,6C2,5.45 2.196,4.979 2.588,4.587C2.979,4.196 3.45,4 4,4L20,4C20.55,4 21.021,4.196 21.413,4.587C21.804,4.979 22,5.45 22,6L22,16.6L20,14.6L20,6L4,6L4,18L14.575,18L16.575,20L4,20ZM19.575,20L12.388,12.813L12.388,15.038L10.388,15.038L10.388,9.388L16.038,9.388L16.038,11.388L13.788,11.388L20.975,18.575L19.575,20Z"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <select
+    matTooltip="Select a frame to inspect with Angular Devtools"
+    class="ng-select size-compact frame-selector"
+    (change)="emitSelectedFrame($event)"
+  >
+    @for (frame of frameManager.frames(); track frame.id) {
+      <option [value]="frame.id" [selected]="frameManager.isSelectedFrame(frame)">
+        @if (frame.id === TOP_LEVEL_FRAME_ID) {
+          top
+        } @else {
+          {{ frame.name }} ({{ frame.id }})
+        }
+      </option>
+    } @empty {
+      <option value="0" selected>top</option>
+    }
+  </select>
+
+  <nav
+    mat-tab-nav-bar
+    mat-stretch-tabs="false"
+    [disablePagination]="true"
+    [color]="'accent'"
+    [tabPanel]="tabPanel"
+  >
+    @for (tab of tabs(); track $index) {
+      <a class="tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab() === tab">
+        {{ tab }}
+      </a>
+    }
+  </nav>
+
+  <div class="settings">
+    <div class="ver-ruler"></div>
+    <button
+      ng-button
+      btnType="icon"
+      class="toolbar-btn"
+      [matMenuTriggerFor]="info"
+      matTooltip="Info"
+      aria-label="Info"
+    >
+      <mat-icon> info </mat-icon>
+    </button>
+    <button
+      ng-button
+      btnType="icon"
+      class="toolbar-btn"
+      [matMenuTriggerFor]="menu"
+      matTooltip="Open settings"
+      aria-label="Open settings"
+    >
+      <mat-icon> settings </mat-icon>
+    </button>
+  </div>
+</section>
+
+<mat-tab-nav-panel #tabPanel>
+  @if (!applicationEnvironment.frameSelectorEnabled || frameManager.selectedFrame() !== null) {
+    <div class="tab-content">
+      @let componentsVisible = activeTab() === 'Components';
+      <ng-directive-explorer
+        [hidden]="!componentsVisible"
+        [showCommentNodes]="showCommentNodes()"
+        [isHydrationEnabled]="isHydrationEnabled()"
+        (toggleInspector)="toggleInspector()"
+      />
+
+      @let profilerVisible = activeTab() === 'Profiler';
+      @defer (when profilerVisible; prefetch on idle) {
+        <ng-profiler [hidden]="!profilerVisible" />
+      }
+
+      @let routerTreeVisible = activeTab() === 'Router Tree';
+      @defer (when routerTreeVisible; prefetch on idle) {
+        <ng-router-tree
+          [hidden]="!routerTreeVisible"
+          [routes]="routes()"
+          [routerDebugApiSupport]="supportedApis().routes"
+        />
+      }
+
+      @let injectorTreeVisible = activeTab() === 'Injector Tree';
+      @defer (when injectorTreeVisible; prefetch on idle) {
+        <ng-injector-tree
+          [hidden]="!injectorTreeVisible"
+          [componentExplorerView]="componentExplorerView()"
+          [providers]="providers()"
+        />
+      }
+
+      @let transferStateVisible = activeTab() === 'Transfer State';
+      @defer (when transferStateVisible; prefetch on idle) {
+        <ng-transfer-state [hidden]="!transferStateVisible" />
+      }
+    </div>
+  }
+</mat-tab-nav-panel>
+
+<mat-menu #menu="matMenu">
+  <div (click)="$event.stopPropagation()">
+    @if (!profilingNotificationsSupported) {
+      <label mat-menu-item disableRipple>
+        <mat-slide-toggle [checked]="timingAPIEnabled()" (change)="toggleTimingAPI()" />
+        <span class="ng-mat-menu-label-text"> Enable timing API </span>
+      </label>
+    }
+    <label mat-menu-item disableRipple>
+      @let currentTheme = themeService.currentTheme();
+      <mat-slide-toggle
+        [checked]="currentTheme === 'dark'"
+        (click)="themeService.toggleDarkMode(currentTheme === 'light')"
+      />
+      <span class="ng-mat-menu-label-text">Dark Mode</span>
+    </label>
+    <label mat-menu-item disableRipple>
+      <mat-slide-toggle
+        [checked]="showCommentNodes()"
+        (change)="showCommentNodes.set($event.checked)"
+      />
+      <span class="ng-mat-menu-label-text">Show comment nodes</span>
+    </label>
+    @if (supportedApis().routes) {
+      <label mat-menu-item disableRipple>
+        <mat-slide-toggle
+          [checked]="routerGraphEnabled()"
+          (change)="setRouterGraph($event.checked)"
+        />
+        <span class="ng-mat-menu-label-text">Enable Router Tree</span>
+      </label>
+    }
+    @if (supportedApis().transferState) {
+      <label mat-menu-item disableRipple>
+        <mat-slide-toggle
+          [checked]="transferStateEnabled()"
+          (change)="setTransferStateTab($event.checked)"
+        />
+        <span class="ng-mat-menu-label-text">Enable Transfer State Tab</span>
+      </label>
+    }
+  </div>
+</mat-menu>
+
+<mat-menu #info="matMenu">
+  <p mat-menu-item class="version-label">
+    Angular version:
+    @if (majorAngularVersion() > 12 || majorAngularVersion() === 0) {
+      {{ angularVersion() }}
+    } @else {
+      <span
+        matTooltip="
+          Angular Devtools supports Angular versions 12 and above. Some DevTools features may be available in
+          older versions of Angular, but it is not officially supported.
+        "
+      >
+        {{ angularVersion() }} (unsupported)
+      </span>
+    }
+  </p>
+  <p mat-menu-item class="version-label">DevTools version: {{ extensionVersion() }}</p>
+  <a mat-menu-item href="https://angular.dev/tools/devtools" target="_blank">
+    <mat-icon class="menu-icon">library_books</mat-icon>
+    Guide
+  </a>
+  <a mat-menu-item href="https://github.com/angular/angular" target="_blank">
+    <mat-icon class="menu-icon">launch</mat-icon>
+    GitHub
+  </a>
+  <a mat-menu-item href="https://github.com/angular/angular/issues" target="_blank">
+    <mat-icon class="menu-icon">bug_report</mat-icon>
+    Issues
+  </a>
+</mat-menu>

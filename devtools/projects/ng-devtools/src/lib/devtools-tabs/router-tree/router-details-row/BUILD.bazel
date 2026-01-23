@@ -1,0 +1,57 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "router_details_row_styles",
+    src = "route-details-row.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:prop-action-btn",
+    ],
+)
+
+ng_project(
+    name = "router-details-row",
+    srcs = [
+        "route-data-serializer.ts",
+        "route-details-row.component.ts",
+    ],
+    angular_assets = [
+        ":route-details-row.component.html",
+        ":router_details_row_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree:router-tree-fns",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "router_details_row_test",
+    srcs = [
+        "route-data-serializer.spec.ts",
+        "route-details-row.component.spec.ts",
+    ],
+    visibility = [
+        "//visibility:private",
+    ],
+    deps = [
+        ":router-details-row",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":router_details_row_test",
+    ],
+)

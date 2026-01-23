@@ -1,0 +1,40 @@
+:host {
+  display: block;
+
+  .wrapper {
+    padding-block: 0.75rem;
+    height: inherit;
+    box-sizing: border-box;
+
+    .bar {
+      width: 0;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      padding-block: 0.2rem;
+      background-color: var(--dynamic-blue-02);
+      animation: appear 0.3s ease forwards;
+
+      cursor: pointer;
+      transition:
+        background-color 0.3s ease-out,
+        width 0.3s ease;
+
+      &:hover {
+        background-color: color-mix(in srgb, var(--dynamic-blue-02) 70%, var(--full-contrast) 30%);
+        opacity: 1;
+      }
+
+      span {
+        padding-inline: 0.5rem;
+        max-width: 100%;
+        display: inline-block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        opacity: 1;
+        color: var(--septenary-contrast);
+      }
+    }
+  }
+}

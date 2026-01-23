@@ -1,0 +1,73 @@
+@if (controlsLoaded()) {
+  <mat-accordion [multi]="true">
+    @let deps = dependencies();
+    @if (deps && deps.length > 0) {
+      <div class="mat-accordion-content">
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
+            <mat-panel-title>
+              Injected Services
+              <ng-docs-ref-button docs="dependency-injection" />
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="services">
+            @for (dependency of dependencies(); track dependency.position[0]) {
+              <ng-dependency-viewer [dependency]="dependency" />
+            }
+          </div>
+        </mat-expansion-panel>
+      </div>
+    }
+    @for (panel of panels(); track $index) {
+      @if (panel.controls().dataSource.data.length > 0) {
+        <div class="mat-accordion-content" [id]="panel.title()">
+          <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
+              <mat-panel-title>{{ panel.title() }}</mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-object-tree-explorer
+              [dataSource]="panel.controls().dataSource"
+              [treeControl]="panel.controls().treeControl"
+              [editingEnabled]="true"
+              (propInspect)="handleInspect($event)"
+              (propValueUpdate)="updateValue($event)"
+            >
+              <ng-template let-node>
+                @if (
+                  supportedApis().signalPropertiesInspection &&
+                    signalGraphEnabled() &&
+                    getSignalNode(node);
+                  as signalNode
+                ) {
+                  @let graphBtnTooltip = `Show '${node.prop.name}' signal graph`;
+                  <button
+                    class="prop-action-btn show-signal"
+                    type="button"
+                    [matTooltip]="graphBtnTooltip"
+                    [aria-label]="graphBtnTooltip"
+                    (click)="$event.stopPropagation(); showSignalGraph.emit(signalNode)"
+                  >
+                    <mat-icon>graph_2</mat-icon>
+                  </button>
+                }
+
+                @if (node.level === 0) {
+                  @let tooltip = "Log '" + node.prop.name + "' to console";
+                  <button
+                    class="prop-action-btn log-value"
+                    type="button"
+                    [matTooltip]="tooltip"
+                    [aria-label]="tooltip"
+                    (click)="logValue($event, node)"
+                  >
+                    <mat-icon>terminal</mat-icon>
+                  </button>
+                }
+              </ng-template>
+            </ng-object-tree-explorer>
+          </mat-expansion-panel>
+        </div>
+      }
+    }
+  </mat-accordion>
+}

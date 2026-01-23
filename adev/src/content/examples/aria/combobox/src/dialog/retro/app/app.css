@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-family: 'Press Start 2P';
+
+  --retro-button-color: #fff;
+  --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
+  --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
+  --retro-elevated-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700);
+  --retro-flat-shadow:
+    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
+    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+  --retro-pressed-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-dark),
+    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 0px 0px 0px 0px var(--gray-700);
+}
+
+[ngComboboxInput] {
+  width: 15rem;
+  font-size: 0.6rem;
+  border-radius: 0;
+  font-family: 'Press Start 2P';
+  word-spacing: -5px;
+  padding: 0.75rem 0.5rem 0.75rem 2.5rem;
+  color: #000;
+  border: none;
+}
+
+[ngComboboxInput]::placeholder {
+  color: #000;
+  opacity: 0.7;
+}
+
+[ngCombobox]:has([readonly='true']) {
+  width: 15rem;
+  box-shadow: var(--retro-flat-shadow);
+  background-color: var(--retro-button-color);
+}
+
+.combobox-input-container {
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+
+[ngComboboxInput][readonly='true'] {
+  cursor: pointer;
+  padding: 0.7rem 1rem;
+}
+
+[ngCombobox]:focus-within [ngComboboxInput] {
+  outline: 1.5px solid var(--vivid-pink, #f542a4);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink, #f542a4) 25%, transparent);
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  font-size: 20px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.search-icon {
+  padding: 0 0.5rem;
+  position: absolute;
+  opacity: 0.8;
+  color: #000;
+}
+
+.arrow-icon {
+  padding: 0 0.5rem;
+  position: absolute;
+  right: 0;
+  opacity: 0.8;
+  transition: transform 0.2s ease;
+  color: #000;
+}
+
+[ngComboboxInput][aria-expanded='true'] + .arrow-icon {
+  transform: rotate(180deg);
+}
+
+[ngListbox] {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  max-height: 10rem;
+  padding: 0.5rem;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+[ngOption] {
+  cursor: pointer;
+  padding: 0.3rem 1rem;
+  display: flex;
+  overflow: hidden;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.6rem;
+}
+
+.checkbox-blank-icon,
+[ngOption][aria-selected='true'] .checkbox-filled-icon {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-filled-icon,
+[ngOption][aria-selected='true'] .checkbox-blank-icon {
+  display: none;
+}
+
+.checkbox-blank-icon {
+  opacity: 0.6;
+}
+
+.selected-icon {
+  visibility: hidden;
+}
+
+[ngOption][aria-selected='true'] .selected-icon {
+  visibility: visible;
+}
+
+[ngOption][aria-selected='true'] {
+  color: var(--vivid-pink, #f542a4);
+  background-color: color-mix(in srgb, var(--vivid-pink, #f542a4) 10%, transparent);
+}
+
+[ngOption]:hover {
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface, #1a1a1a) 10%, transparent);
+}
+
+[ngCombobox]:focus-within [data-active='true'] {
+  outline: 2px dashed var(--vivid-pink, #f542a4);
+  outline-offset: -2px;
+}
+
+.dialog {
+  margin-top: 8px;
+  position: absolute;
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  padding: 0;
+  border: none;
+  box-shadow: var(--retro-flat-shadow);
+  background-color: var(--septenary-contrast, #f5f5f5);
+  color: inherit;
+}
+
+.dialog .combobox-input-container {
+  border-radius: 0;
+}
+
+.dialog [ngCombobox],
+.dialog .combobox-input-container {
+  border: none;
+}
+
+.dialog [ngComboboxInput] {
+  border-bottom: 4px solid var(--gray-700, #374151);
+}
+
+.dialog [ngCombobox]:focus-within [ngComboboxInput] {
+  outline: none;
+  box-shadow: none;
+}
+
+.dialog::backdrop {
+  opacity: 0;
+}

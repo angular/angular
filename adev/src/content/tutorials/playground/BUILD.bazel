@@ -1,0 +1,20 @@
+load("//adev/shared-docs:index.bzl", "generate_playground")
+
+package(default_visibility = ["//adev:__subpackages__"])
+
+filegroup(
+    name = "files",
+    srcs = glob(
+        [
+            "**/*",
+        ],
+        exclude = [
+            "**/node_modules/**/*.md",
+        ],
+    ),
+)
+
+generate_playground(
+    name = "playground",
+    playground_srcs = ":files",
+)

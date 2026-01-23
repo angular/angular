@@ -1,0 +1,38 @@
+/**
+ * The central exemption list of existing tsec violations. Modifications to
+ * this list should be carefully reviewed by a security expert.
+ */
+{
+  "ban-trustedtypes-createpolicy": [
+    "core/src/util/security/trusted_types_bypass.ts",
+    "core/src/util/security/trusted_types.ts",
+    "compiler/src/output/output_jit_trusted_types.ts"
+  ],
+  "ban-element-innerhtml-assignments": [
+    "core/src/sanitization/inert_body.ts"
+  ],
+  "ban-element-setattribute": [
+    "platform-browser/src/browser/meta.ts"
+  ],
+  "ban-domparser-parsefromstring": [
+    "core/src/sanitization/inert_body.ts"
+  ],
+  "ban-script-content-assignments": [
+    "platform-server/src/transfer_state.ts"
+  ],
+  "ban-function-calls": [
+    "core/src/interface/type.ts",
+    "core/src/reflection/reflection_capabilities.ts",
+    "core/src/util/security/trusted_types.ts",
+    "core/src/render3/instructions/listener.ts",
+    "compiler/src/core.ts",
+    "compiler/src/output/output_jit_trusted_types.ts",
+    "platform-server/src/server_renderer.ts"
+  ],
+  "ban-window-stringfunctiondef": [
+    "core/src/render3/util/misc_utils.ts"
+  ],
+  "ban-iframe-srcdoc-assignments": [
+    "core/src/sanitization/iframe_attrs_validation.ts"
+  ]
+}

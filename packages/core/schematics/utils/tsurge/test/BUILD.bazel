@@ -1,0 +1,33 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "migration_lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/private",
+        "//packages/core/schematics/utils/tsurge",
+    ],
+)
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.spec.ts"],
+    ),
+    deps = [
+        ":migration_lib",
+        "//packages/compiler-cli/private",
+        "//packages/core/schematics/utils/tsurge",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [":test_lib"],
+)

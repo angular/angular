@@ -1,0 +1,33 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "legacy_lib",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/language-service/src",
+        "//packages/language-service/src/utils",
+    ],
+)
+
+jasmine_test(
+    name = "legacy",
+    data = [
+        ":legacy_lib",
+        ":project",
+        "//packages/common:common_types",
+        "//packages/core:core_types",
+        "//packages/forms:forms_types",
+    ],
+    shard_count = 4,
+)
+
+filegroup(
+    name = "project",
+    srcs = glob(["project/**/*"]),
+    visibility = ["//packages/language-service:__subpackages__"],
+)

@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "generate_api_docs", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "compat",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/core",
+        "//packages/core/rxjs-interop",
+        "//packages/forms",
+        "//packages/forms/signals",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "forms_signals_compat_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/forms/signals/compat",
+)

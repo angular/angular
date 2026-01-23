@@ -1,0 +1,78 @@
+:host,
+label {
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: center;
+}
+
+.docs-label {
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 160%; // 1.4rem
+  letter-spacing: -0.00875rem;
+  color: var(--quaternary-contrast);
+}
+
+.docs-toggle {
+  position: relative;
+  display: inline-block;
+
+  width: 3rem;
+  height: 1.5rem;
+  border: 1px solid var(--senary-contrast);
+  border-radius: 34px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+.docs-slider {
+  position: absolute;
+  cursor: pointer;
+  border-radius: 34px;
+  inset: 0;
+  background-color: var(--septenary-contrast);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+
+  // background
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 34px;
+    background: var(--pink-to-purple-horizontal-gradient);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  // toggle knob
+  &::after {
+    position: absolute;
+    content: '';
+    height: 1.25rem;
+    width: 1.25rem;
+    left: 0.125rem;
+    bottom: 0.125rem;
+    background-color: var(--page-background);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border-radius: 50%;
+  }
+}
+
+input {
+  &:checked + .docs-slider {
+    // background
+    &::before {
+      opacity: 1;
+    }
+
+    // toggle knob
+    &::after {
+      transform: translateX(1.5rem);
+    }
+  }
+}

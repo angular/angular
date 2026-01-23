@@ -1,0 +1,61 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+.adev-footer-columns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+
+  @container footer (max-width: 600px) {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+.adev-footer-container {
+  container: footer / inline-size;
+  position: relative;
+  justify-content: center;
+  padding: var(--layout-padding);
+  padding-inline-end: 1rem;
+  background-color: var(--page-background);
+  transition: background-color 0.3s ease;
+
+  // this accounts for absolutely positioned TOC on the right
+  @include mq.for-large-desktop-up{   
+   width: calc(100% - 195px - var(--layout-padding) * 3);
+  }
+
+  h2 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-block-end: 1.75rem;
+    letter-spacing: -0.00875rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.95rem;
+    li {
+      font-size: 0.8125rem;
+    }
+  }
+
+  a {
+    color: var(--quaternary-contrast);
+    font-weight: 300;
+    transition: color 0.3s ease;
+    &:hover {
+      color: var(--primary-contrast);
+    }
+  }
+  p.docs-license {
+    transition: color 0.3s ease;
+    color: var(--quaternary-contrast);
+    font-weight: 300;
+    grid-column: span 4;
+    font-size: 0.75rem;
+    margin-block-start: 2rem;
+  }
+}

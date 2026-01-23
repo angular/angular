@@ -1,0 +1,153 @@
+load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//packages/common/locales:index.bzl", "generate_base_locale_file")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "ts_config", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+# This generates the `src/i18n/locale_en.ts` file through the `generate-locales` tool. Since
+# the base locale file is checked-in for Google3, it is additionally stored in a golden location.
+generate_base_locale_file(
+    name = "base_locale_file",
+    src = "src/i18n/locale_en.ts",
+)
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig-build.json",
+    deps = ["//packages:tsconfig_build"],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    deps = ["//packages:tsconfig_test"],
+)
+
+ng_project(
+    name = "core",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages:goog_types",
+        "//packages/core/primitives/defer:triggers",
+        "//packages/core/primitives/devtools",
+        "//packages/core/primitives/di",
+        "//packages/core/primitives/dom-navigation",
+        "//packages/core/primitives/event-dispatch",
+        "//packages/core/primitives/signals",
+        "//packages/core/src/compiler",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/reflection",
+        "//packages/core/src/util",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = ":core",
+    tsconfig = "//packages/core:tsconfig_build",
+)
+
+ng_package(
+    srcs = [
+        "package.json",
+        ":event_dispatch_contract_binary",
+        "//packages/core/resources",
+    ],
+    nested_packages = [
+        "//packages/core/schematics:npm_package",
+    ],
+    package = "@angular/core",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//adev:__pkg__",
+        "//adev/shared-docs:__subpackages__",
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
+        "//packages/bazel/test/ng_package:__pkg__",
+        "//packages/compiler-cli/test:__subpackages__",
+        "//packages/compiler/test:__pkg__",
+        "//packages/language-service/test:__pkg__",
+    ],
+    deps = [
+        ":core",
+        "//packages/core/primitives/di",
+        "//packages/core/primitives/event-dispatch",
+        "//packages/core/primitives/signals",
+        "//packages/core/rxjs-interop",
+        "//packages/core/testing",
+    ],
+)
+
+api_golden_test_npm_package(
+    name = "core_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "goldens/public-api/core",
+    npm_package = "packages/core/npm_package",
+    strip_export_pattern = "^ɵ(?!.*ApiGuard)",
+)
+
+api_golden_test(
+    name = "ng_global_utils_api",
+    data = [
+        "//goldens:public-api",
+        "//packages/core",
+    ],
+    entry_point = "src/render3/global_utils_api.d.ts",
+    golden = "goldens/public-api/core/global_utils.api.md",
+)
+
+api_golden_test(
+    name = "core_errors",
+    data = [
+        "//goldens:public-api",
+        "//packages/core",
+    ],
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/core/errors.api.md",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + [
+        "PACKAGE.md",
+    ],
+)
+
+generate_api_docs(
+    name = "core_docs",
+    srcs = [
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/core",
+    private_modules = [
+        "//packages/core/primitives/di",
+        "core/primitives/signals",
+        "core/primitives/event-dispatch",
+    ],
+)
+
+genrule(
+    name = "event_dispatch_contract_binary",
+    srcs = ["//packages/core/primitives/event-dispatch:contract_bundle_min.js"],
+    outs = ["event-dispatch-contract.min.js"],
+    cmd = "cp $< $@",
+)

@@ -1,0 +1,36 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../dist/legacy-test-out",
+    "target": "ES2020",
+    "module": "esnext",
+    "importHelpers": true,
+    // The project uses Bazel for TypeScript compilation. Unlike with Bazel, we build all
+    // sources as part of a single TypeScript compilation. This results in `@internal`
+    // declarations not being omitted between the logical as defined per the Bazel targets.
+    // This can cause issues where the `override` keyword is needed for the legacy TS
+    // compilation, but not within Bazel where the overridden member has `@internal`.
+    "noImplicitOverride": false,
+    // We run the decorator downlevel transform when compiling the sources and tests.
+    // Given that is the case, we do not need additional `design` metadata being emitted.
+    // The default TS decorator metadata would also not work with ES2015 JIT.
+    // https://github.com/angular/angular/issues/30106.
+    "emitDecoratorMetadata": false
+  },
+  "exclude": [
+    // Exclusions from the parent `tsconfig` need to be merged manually here.
+    "bazel",
+    "common/locales",
+    "compiler-cli/integrationtest",
+    "compiler-cli/test/compliance",
+    "core/schematics",
+    "elements/schematics",
+    "examples/**",
+    "http/**",
+    "platform-server/integrationtest",
+
+    // Additional exclusion since tests for the language-service never run within the
+    // Saucelabs job and the package is not compatible with ESM TS compilation anyway.
+    "language-service/**"
+  ]
+}

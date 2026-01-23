@@ -1,0 +1,10 @@
+:host {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+
+  .tree-wrapper {
+    overflow-y: auto;
+    height: calc(100% - 33px);
+  }
+}

@@ -1,0 +1,9 @@
+:host {
+  display: block;
+  background: var(--color-background);
+  border-radius: 0.5rem;
+
+  &:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+}

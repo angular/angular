@@ -1,0 +1,1 @@
+dependencies: [SomeModule, NotStandaloneDir, IndirectDir, DirectDir, NotStandalonePipe, IndirectPipe, DirectPipe],

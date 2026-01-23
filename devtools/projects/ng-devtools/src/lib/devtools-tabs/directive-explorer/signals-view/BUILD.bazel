@@ -1,0 +1,30 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "signals-tab_styles",
+    src = "signals-tab.component.scss",
+)
+
+ng_project(
+    name = "signals-tab",
+    srcs = [
+        "signals-tab.component.ts",
+    ],
+    angular_assets = [
+        "signals-tab.component.html",
+        ":signals-tab_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view/signals-details",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view/signals-visualizer",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/protocol",
+    ],
+)

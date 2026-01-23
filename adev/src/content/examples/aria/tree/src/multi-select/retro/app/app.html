@@ -1,0 +1,79 @@
+<div class="win95-file-explorer">
+  <div class="title-bar">
+    <div class="title-bar-text">Exploring - (C:)</div>
+    <div class="title-bar-controls">
+      <button tabindex="-1" aria-label="Minimize"><span>-</span></button>
+      <button tabindex="-1" aria-label="Maximize"><span>&#x25A1;</span></button>
+      <button tabindex="-1" aria-label="Close"><span>&#xd7;</span></button>
+    </div>
+  </div>
+
+  <div class="menu-bar">
+    <div class="menu-item"><u>F</u>ile</div>
+    <div class="menu-item"><u>E</u>dit</div>
+    <div class="menu-item"><u>V</u>iew</div>
+    <div class="menu-item"><u>T</u>ools</div>
+    <div class="menu-item"><u>H</u>elp</div>
+  </div>
+
+  <div class="toolbar">
+    <button tabindex="-1" class="win95-btn"><span class="icon">&#x2190;</span> Back</button>
+    <button tabindex="-1" class="win95-btn"><span class="icon">&#x2192;</span> Forward</button>
+    <button tabindex="-1" class="win95-btn"><span class="icon">&#x2191;</span> Up</button>
+  </div>
+
+  <div class="tree-view">
+    <ul ngTree #tree="ngTree" class="retro-tree" [(values)]="selected" [multi]="true">
+      <ng-template
+        [ngTemplateOutlet]="treeNodes"
+        [ngTemplateOutletContext]="{nodes: nodes, parent: tree}"
+      />
+    </ul>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-panel status-panel-grow">{{ selectedCount() }} object(s) selected</div>
+    <div class="status-panel status-panel-right">4.5MB</div>
+  </div>
+</div>
+
+<ng-template #treeNodes let-nodes="nodes" let-parent="parent">
+  @for (node of nodes; track node.value) {
+    <li
+      ngTreeItem
+      [parent]="parent"
+      [value]="node.value"
+      [label]="node.name"
+      [(expanded)]="node.expanded"
+      [disabled]="node.disabled"
+      #treeItem="ngTreeItem"
+    >
+      <span aria-hidden="true">
+        @if (node.children) {
+          {{ treeItem.expanded() ? '📂' : '📁' }}
+        } @else {
+          📄
+        }
+      </span>
+      {{ node.name }}
+      <span
+        aria-hidden="true"
+        class="material-symbols-outlined selected-icon"
+        translate="no"
+        aria-hidden="true"
+        >check</span
+      >
+    </li>
+
+    @if (node.children) {
+      <ul role="group">
+        <ng-template ngTreeItemGroup [ownedBy]="treeItem" #group="ngTreeItemGroup">
+          <ng-template
+            [ngTemplateOutlet]="treeNodes"
+            [ngTemplateOutletContext]="{nodes: node.children, parent: group}"
+          />
+        </ng-template>
+      </ul>
+    }
+  }
+</ng-template>

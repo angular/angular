@@ -1,0 +1,97 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@angular/animations':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/common':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/compiler':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/compiler-cli':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/core':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/elements':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/forms':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/localize':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/platform-browser':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/platform-browser-dynamic':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/platform-server':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/router':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/service-worker':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/upgrade':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@types/jasmine':
+        specifier: ^5.0.0
+        version: 5.1.15
+      rxjs:
+        specifier: ^7.0.0
+        version: 7.8.2
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      zone.js:
+        specifier: 0.16.0
+        version: 0.16.0
+
+packages:
+
+  '@types/jasmine@5.1.15':
+    resolution: {integrity: sha512-ZAC8KjmV2MJxbNTrwXFN+HKeajpXQZp6KpPiR6Aa4XvaEnjP6qh23lL/Rqb7AYzlp3h/rcwDrQ7Gg7q28cQTQg==}
+
+  rxjs@7.8.2:
+    resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+  zone.js@0.16.0:
+    resolution: {integrity: sha512-LqLPpIQANebrlxY6jKcYKdgN5DTXyyHAKnnWWjE5pPfEQ4n7j5zn7mOEEpwNZVKGqx3kKKmvplEmoBrvpgROTA==}
+
+snapshots:
+
+  '@types/jasmine@5.1.15': {}
+
+  rxjs@7.8.2:
+    dependencies:
+      tslib: 2.8.1
+
+  tslib@2.8.1: {}
+
+  typescript@5.9.3: {}
+
+  zone.js@0.16.0: {}

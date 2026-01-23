@@ -1,0 +1,31 @@
+{
+  "name": "ng-add-localize",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng add @angular/localize && pnpm ng build"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/common": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "@angular/localize": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-browser": "link:./in-existing-linked-by-bazel",
+    "@angular/router": "link:./in-existing-linked-by-bazel",
+    "rxjs": "^7.0.0",
+    "tslib": "^2.3.0",
+    "zone.js": "0.16.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "21.1.0-rc.0",
+    "@angular/cli": "21.1.0-rc.0",
+    "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
+    "@types/node": "^20.14.8",
+    "typescript": "5.9.3"
+  },
+  "packageManager": "pnpm@10.28.1"
+}

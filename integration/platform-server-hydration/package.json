@@ -1,0 +1,43 @@
+{
+  "name": "hydration",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --configuration production",
+    "pretest": "ng version && node ./copy-event-dispatch-contract.mjs",
+    "test": "pnpm run e2e",
+    "lint": "ng lint",
+    "e2e": "ng e2e --configuration=production"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "link:./in-existing-linked-by-bazel",
+    "@angular/common": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-browser": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-server": "link:./in-existing-linked-by-bazel",
+    "@angular/router": "link:./in-existing-linked-by-bazel",
+    "@angular/ssr": "21.1.0-rc.0",
+    "rxjs": "^7.0.0",
+    "tslib": "^2.3.0",
+    "zone.js": "0.16.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "21.1.0-rc.0",
+    "@angular/build": "21.1.0-rc.0",
+    "@angular/cli": "21.1.0-rc.0",
+    "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
+    "@types/jasmine": "^5.0.0",
+    "@types/node": "^20.14.8",
+    "@types/selenium-webdriver": "3.0.7",
+    "jasmine-core": "5.13.0",
+    "jasmine-spec-reporter": "~7.0.0",
+    "protractor": "^7.0.0",
+    "selenium-webdriver": "3.5.0",
+    "ts-node": "^10.9.1",
+    "typescript": "5.9.3"
+  },
+  "packageManager": "pnpm@10.28.1"
+}

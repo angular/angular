@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "es2022"],
+    "types": [],
+    "module": "esnext",
+    "moduleResolution": "nodenext",
+    "declaration": true,
+    "sourceMap": true,
+    "paths": {
+      "@angular/*": ["../../packages/*/index"]
+    }
+  }
+}

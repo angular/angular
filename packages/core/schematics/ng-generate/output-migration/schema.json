@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AngularOutputMigration",
+  "title": "Angular Output migration",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Path to the directory where all outputs should be migrated.",
+      "x-prompt": "Which directory do you want to migrate?",
+      "default": "./"
+    },
+    "analysisDir": {
+      "type": "string",
+      "description": "Path to the directory that should be analyzed. References to migrated outputs are migrated based on this folder. Useful for larger projects if the analysis takes too long and the analysis scope can be narrowed.",
+      "default": "./"
+    }
+  }
+}

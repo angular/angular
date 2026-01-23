@@ -1,0 +1,51 @@
+{
+  "name": "platform-server",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "#comment-1": "The below is used is for payload size checks",
+    "build": "ng build standalone && ng build ngmodule",
+    "#comment-2": "The below is used is for integration tests",
+    "build:ngmodule": "ng run ngmodule:build:development",
+    "serve:ngmodule": "node ./dist/ngmodule/server/server.mjs",
+    "test:ngmodule": "pnpm build:ngmodule && concurrently \"pnpm serve:ngmodule\" \"pnpm ng e2e ngmodule\" --kill-others --success first",
+    "build:standalone": "ng run standalone:build:development",
+    "serve:standalone": "node ./dist/standalone/server/server.mjs",
+    "test:standalone": "pnpm build:standalone && concurrently \"pnpm serve:standalone\" \"pnpm ng e2e standalone\" --kill-others --success first",
+    "test": "ng version && pnpm test:standalone && pnpm test:ngmodule"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "link:./in-existing-linked-by-bazel",
+    "@angular/common": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "@angular/forms": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-browser": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-server": "link:./in-existing-linked-by-bazel",
+    "@angular/router": "link:./in-existing-linked-by-bazel",
+    "@angular/ssr": "21.1.0-rc.0",
+    "express": "~5.2.0",
+    "rxjs": "^7.0.0",
+    "tslib": "^2.3.0",
+    "zone.js": "0.16.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "21.1.0-rc.0",
+    "@angular/build": "21.1.0-rc.0",
+    "@angular/cli": "21.1.0-rc.0",
+    "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
+    "@types/express": "^5.0.3",
+    "@types/jasmine": "^5.0.0",
+    "@types/node": "^20.14.8",
+    "@types/selenium-webdriver": "3.0.7",
+    "concurrently": "9.2.1",
+    "jasmine-core": "5.13.0",
+    "jasmine-spec-reporter": "~7.0.0",
+    "protractor": "^7.0.0",
+    "selenium-webdriver": "3.5.0",
+    "ts-node": "^10.9.1",
+    "typescript": "5.9.3"
+  },
+  "packageManager": "pnpm@10.28.1"
+}

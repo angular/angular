@@ -1,0 +1,921 @@
+{
+  "repo": "angular/components",
+  "moduleLabel": "@angular/aria/grid",
+  "moduleName": "@angular/aria/grid",
+  "normalizedModuleName": "angular_aria_grid",
+  "entries": [
+    {
+      "name": "GridRow",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "rowIndex",
+          "type": "InputSignal<number | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The index of this row within the grid.",
+          "jsdocTags": [],
+          "inputAlias": "rowIndex",
+          "isRequiredInput": false
+        }
+      ],
+      "generics": [],
+      "description": "Represents a row within a grid. It is a container for `ngGridCell` directives.\n\n```html\n<tr ngGridRow>\n  <!-- ... cells ... -->\n</tr>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Grid](guide/aria/grid)"
+        }
+      ],
+      "rawComment": "/**\n * Represents a row within a grid. It is a container for `ngGridCell` directives.\n *\n * ```html\n * <tr ngGridRow>\n *   <!-- ... cells ... -->\n * </tr>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Grid](guide/aria/grid)\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngGridRow]",
+      "exportAs": [
+        "ngGridRow"
+      ],
+      "aliases": [
+        "ngGridRow"
+      ],
+      "source": {
+        "filePath": "/src/aria/grid/grid-row.ts",
+        "startLine": 35,
+        "endLine": 74
+      }
+    },
+    {
+      "name": "GridCellWidget",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "active",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the widget is currently active (focused).",
+          "jsdocTags": []
+        },
+        {
+          "name": "id",
+          "type": "InputSignal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "A unique identifier for the widget.",
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
+        },
+        {
+          "name": "widgetType",
+          "type": "InputSignal<\"simple\" | \"complex\" | \"editable\">",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The type of widget, which determines how it is activated.",
+          "jsdocTags": [],
+          "inputAlias": "widgetType",
+          "isRequiredInput": false
+        },
+        {
+          "name": "disabled",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the widget is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "focusTarget",
+          "type": "InputSignal<HTMLElement | ElementRef<any> | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The target that will receive focus instead of the widget.",
+          "jsdocTags": [],
+          "inputAlias": "focusTarget",
+          "isRequiredInput": false
+        },
+        {
+          "name": "onActivate",
+          "type": "OutputEmitterRef<KeyboardEvent | FocusEvent | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "output"
+          ],
+          "description": "Emits when the widget is activated.",
+          "jsdocTags": [],
+          "outputAlias": "onActivate"
+        },
+        {
+          "name": "onDeactivate",
+          "type": "OutputEmitterRef<KeyboardEvent | FocusEvent | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "output"
+          ],
+          "description": "Emits when the widget is deactivated.",
+          "jsdocTags": [],
+          "outputAlias": "onDeactivate"
+        },
+        {
+          "name": "tabindex",
+          "type": "InputSignal<number | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The tabindex override.",
+          "jsdocTags": [],
+          "inputAlias": "tabindex",
+          "isRequiredInput": false
+        },
+        {
+          "name": "isActivated",
+          "type": "Signal<boolean>",
+          "memberType": "getter",
+          "memberTags": [],
+          "description": "Whether the widget is activated.",
+          "jsdocTags": []
+        },
+        {
+          "name": "activate",
+          "signatures": [
+            {
+              "name": "activate",
+              "entryType": "function",
+              "description": "Activates the widget.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Activates the widget. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "activate",
+            "description": "Activates the widget.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Activates the widget. */"
+          },
+          "entryType": "function",
+          "description": "Activates the widget.",
+          "jsdocTags": [],
+          "rawComment": "/** Activates the widget. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "deactivate",
+          "signatures": [
+            {
+              "name": "deactivate",
+              "entryType": "function",
+              "description": "Deactivates the widget.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Deactivates the widget. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "deactivate",
+            "description": "Deactivates the widget.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Deactivates the widget. */"
+          },
+          "entryType": "function",
+          "description": "Deactivates the widget.",
+          "jsdocTags": [],
+          "rawComment": "/** Deactivates the widget. */",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "Represents an interactive element inside a `GridCell`. It allows for pausing grid navigation to\ninteract with the widget.\n\nWhen the user interacts with the widget (e.g., by typing in an input or opening a menu), grid\nnavigation is temporarily suspended to allow the widget to handle keyboard\nevents.\n\n```html\n<td ngGridCell>\n  <button ngGridCellWidget>Click Me</button>\n</td>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Grid](guide/aria/grid)"
+        }
+      ],
+      "rawComment": "/**\n * Represents an interactive element inside a `GridCell`. It allows for pausing grid navigation to\n * interact with the widget.\n *\n * When the user interacts with the widget (e.g., by typing in an input or opening a menu), grid\n * navigation is temporarily suspended to allow the widget to handle keyboard\n * events.\n *\n * ```html\n * <td ngGridCell>\n *   <button ngGridCellWidget>Click Me</button>\n * </td>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Grid](guide/aria/grid)\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngGridCellWidget]",
+      "exportAs": [
+        "ngGridCellWidget"
+      ],
+      "aliases": [
+        "ngGridCellWidget"
+      ],
+      "source": {
+        "filePath": "src/aria/grid/grid-cell-widget.ts",
+        "startLine": 42,
+        "endLine": 136
+      }
+    },
+    {
+      "name": "Grid",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "textDirection",
+          "type": "WritableSignal<Direction>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Text direction.",
+          "jsdocTags": []
+        },
+        {
+          "name": "enableSelection",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether selection is enabled for the grid.",
+          "jsdocTags": [],
+          "inputAlias": "enableSelection",
+          "isRequiredInput": false
+        },
+        {
+          "name": "disabled",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the grid is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "softDisabled",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",
+          "jsdocTags": [],
+          "inputAlias": "softDisabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "focusMode",
+          "type": "InputSignal<\"roving\" | \"activedescendant\">",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The focus strategy used by the grid.\n- `roving`: Focus is moved to the active cell using `tabindex`.\n- `activedescendant`: Focus remains on the grid container, and `aria-activedescendant` is used to indicate the active cell.",
+          "jsdocTags": [],
+          "inputAlias": "focusMode",
+          "isRequiredInput": false
+        },
+        {
+          "name": "rowWrap",
+          "type": "InputSignal<\"continuous\" | \"loop\" | \"nowrap\">",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The wrapping behavior for keyboard navigation along the row axis.\n- `continuous`: Navigation wraps from the last row to the first, and vice-versa.\n- `loop`: Navigation wraps within the current row.\n- `nowrap`: Navigation stops at the first/last item in the row.",
+          "jsdocTags": [],
+          "inputAlias": "rowWrap",
+          "isRequiredInput": false
+        },
+        {
+          "name": "colWrap",
+          "type": "InputSignal<\"continuous\" | \"loop\" | \"nowrap\">",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The wrapping behavior for keyboard navigation along the column axis.\n- `continuous`: Navigation wraps from the last column to the first, and vice-versa.\n- `loop`: Navigation wraps within the current column.\n- `nowrap`: Navigation stops at the first/last item in the column.",
+          "jsdocTags": [],
+          "inputAlias": "colWrap",
+          "isRequiredInput": false
+        },
+        {
+          "name": "multi",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether multiple cells in the grid can be selected.",
+          "jsdocTags": [],
+          "inputAlias": "multi",
+          "isRequiredInput": false
+        },
+        {
+          "name": "selectionMode",
+          "type": "InputSignal<\"follow\" | \"explicit\">",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The selection strategy used by the grid.\n- `follow`: The focused cell is automatically selected.\n- `explicit`: Cells are selected explicitly by the user (e.g., via click or spacebar).",
+          "jsdocTags": [],
+          "inputAlias": "selectionMode",
+          "isRequiredInput": false
+        },
+        {
+          "name": "enableRangeSelection",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether enable range selections (with modifier keys or dragging).",
+          "jsdocTags": [],
+          "inputAlias": "enableRangeSelection",
+          "isRequiredInput": false
+        }
+      ],
+      "generics": [],
+      "description": "The container for a grid. It provides keyboard navigation and focus management for the grid's\nrows and cells. It manages the overall behavior of the grid, including focus\nwrapping, selection, and disabled states.\n\n```html\n<table ngGrid [multi]=\"true\" [enableSelection]=\"true\">\n  @for (row of gridData; track row) {\n    <tr ngGridRow>\n      @for (cell of row; track cell) {\n        <td ngGridCell [disabled]=\"cell.disabled\">\n          {{cell.value}}\n        </td>\n      }\n    </tr>\n  }\n</table>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Grid](guide/aria/grid)"
+        }
+      ],
+      "rawComment": "/**\n * The container for a grid. It provides keyboard navigation and focus management for the grid's\n * rows and cells. It manages the overall behavior of the grid, including focus\n * wrapping, selection, and disabled states.\n *\n * ```html\n * <table ngGrid [multi]=\"true\" [enableSelection]=\"true\">\n *   @for (row of gridData; track row) {\n *     <tr ngGridRow>\n *       @for (cell of row; track cell) {\n *         <td ngGridCell [disabled]=\"cell.disabled\">\n *           {{cell.value}}\n *         </td>\n *       }\n *     </tr>\n *   }\n * </table>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Grid](guide/aria/grid)\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngGrid]",
+      "exportAs": [
+        "ngGrid"
+      ],
+      "aliases": [
+        "ngGrid"
+      ],
+      "source": {
+        "filePath": "/src/aria/grid/grid.ts",
+        "startLine": 47,
+        "endLine": 161
+      }
+    },
+    {
+      "name": "GridCell",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "active",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the cell is currently active (focused).",
+          "jsdocTags": []
+        },
+        {
+          "name": "textDirection",
+          "type": "WritableSignal<Direction>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Text direction.",
+          "jsdocTags": []
+        },
+        {
+          "name": "id",
+          "type": "InputSignal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "A unique identifier for the cell.",
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
+        },
+        {
+          "name": "role",
+          "type": "InputSignal<\"gridcell\" | \"columnheader\" | \"rowheader\">",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The ARIA role for the cell.",
+          "jsdocTags": [],
+          "inputAlias": "role",
+          "isRequiredInput": false
+        },
+        {
+          "name": "rowSpan",
+          "type": "InputSignal<number>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The number of rows the cell should span.",
+          "jsdocTags": [],
+          "inputAlias": "rowSpan",
+          "isRequiredInput": false
+        },
+        {
+          "name": "colSpan",
+          "type": "InputSignal<number>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The number of columns the cell should span.",
+          "jsdocTags": [],
+          "inputAlias": "colSpan",
+          "isRequiredInput": false
+        },
+        {
+          "name": "rowIndex",
+          "type": "InputSignal<number | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The index of this cell's row within the grid.",
+          "jsdocTags": [],
+          "inputAlias": "rowIndex",
+          "isRequiredInput": false
+        },
+        {
+          "name": "colIndex",
+          "type": "InputSignal<number | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The index of this cell's column within the grid.",
+          "jsdocTags": [],
+          "inputAlias": "colIndex",
+          "isRequiredInput": false
+        },
+        {
+          "name": "disabled",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the cell is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "selected",
+          "type": "ModelSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "Whether the cell is selected.",
+          "jsdocTags": [],
+          "inputAlias": "selected",
+          "isRequiredInput": false,
+          "outputAlias": "selectedChange"
+        },
+        {
+          "name": "selectable",
+          "type": "InputSignal<boolean>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the cell is selectable.",
+          "jsdocTags": [],
+          "inputAlias": "selectable",
+          "isRequiredInput": false
+        },
+        {
+          "name": "orientation",
+          "type": "InputSignal<\"vertical\" | \"horizontal\">",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Orientation of the widgets in the cell.",
+          "jsdocTags": [],
+          "inputAlias": "orientation",
+          "isRequiredInput": false
+        },
+        {
+          "name": "wrap",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether widgets navigation wraps.",
+          "jsdocTags": [],
+          "inputAlias": "wrap",
+          "isRequiredInput": false
+        },
+        {
+          "name": "tabindex",
+          "type": "InputSignal<number | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The tabindex override.",
+          "jsdocTags": [],
+          "inputAlias": "tabindex",
+          "isRequiredInput": false
+        }
+      ],
+      "generics": [],
+      "description": "Represents a cell within a grid row. It is the primary focusable element\nwithin the grid. It can be disabled and can have its selection state managed\nthrough the `selected` input.\n\n```html\n<td ngGridCell [disabled]=\"isDisabled\" [(selected)]=\"isSelected\">\n  Cell Content\n</td>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Grid](guide/aria/grid)"
+        }
+      ],
+      "rawComment": "/**\n * Represents a cell within a grid row. It is the primary focusable element\n * within the grid. It can be disabled and can have its selection state managed\n * through the `selected` input.\n *\n * ```html\n * <td ngGridCell [disabled]=\"isDisabled\" [(selected)]=\"isSelected\">\n *   Cell Content\n * </td>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Grid](guide/aria/grid)\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngGridCell]",
+      "exportAs": [
+        "ngGridCell"
+      ],
+      "aliases": [
+        "ngGridCell"
+      ],
+      "source": {
+        "filePath": "/src/aria/grid/grid-cell.ts",
+        "startLine": 41,
+        "endLine": 156
+      }
+    }
+  ],
+  "symbols": [
+    [
+      "computed",
+      "@angular/core"
+    ],
+    [
+      "contentChildren",
+      "@angular/core"
+    ],
+    [
+      "Directive",
+      "@angular/core"
+    ],
+    [
+      "ElementRef",
+      "@angular/core"
+    ],
+    [
+      "inject",
+      "@angular/core"
+    ],
+    [
+      "input",
+      "@angular/core"
+    ],
+    [
+      "Signal",
+      "@angular/core"
+    ],
+    [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
+    ],
+    [
+      "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
+      "booleanAttribute",
+      "@angular/core"
+    ],
+    [
+      "output",
+      "@angular/core"
+    ],
+    [
+      "Directionality",
+      "@angular/cdk/bidi"
+    ],
+    [
+      "model",
+      "@angular/core"
+    ],
+    [
+      "GridRow",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridRow",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridRow.element",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridRow.rowIndex",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.element",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.active",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.id",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.widgetType",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.disabled",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.focusTarget",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.onActivate",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.onDeactivate",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.tabindex",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.isActivated",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.activate",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.deactivate",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.element",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.textDirection",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.enableSelection",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.disabled",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.softDisabled",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.focusMode",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.rowWrap",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.colWrap",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.multi",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.selectionMode",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.enableRangeSelection",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.element",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.active",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.textDirection",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.id",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.role",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.rowSpan",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.colSpan",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.rowIndex",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.colIndex",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.disabled",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.selected",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.selectable",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.orientation",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.wrap",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.tabindex",
+      "@angular/aria/grid"
+    ]
+  ]
+}

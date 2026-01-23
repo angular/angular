@@ -1,0 +1,21 @@
+load("//devtools/tools:defaults.bzl", "ts_config")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig.json",
+    "cypress.json",
+])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    deps = [
+        ":tsconfig_build",
+    ],
+)

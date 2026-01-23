@@ -1,0 +1,10 @@
+<select
+  [attr.id]="id()"
+  [attr.name]="name()"
+  [value]="value()"
+  (change)="setOption($any($event.target).value)"
+>
+  @for (item of options(); track item) {
+    <option [value]="item.value" [selected]="value() === item.value">{{ item.label }}</option>
+  }
+</select>

@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: var(--inter-font, system-ui, sans-serif);
+  --border-color: color-mix(in srgb, var(--full-contrast, #000) 20%, var(--page-background, #fff));
+}
+
+[ngCombobox] {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+}
+
+[ngCombobox]:has([readonly='true']) {
+  width: 15rem;
+}
+
+.combobox-input-container {
+  display: flex;
+  position: relative;
+  align-items: center;
+  border-radius: 0.25rem;
+}
+
+[ngComboboxInput] {
+  border-radius: 0.25rem;
+}
+
+[ngComboboxInput][readonly='true'] {
+  cursor: pointer;
+  padding: 0.7rem 1rem;
+}
+
+[ngCombobox]:focus-within [ngComboboxInput] {
+  outline: 1.5px solid var(--vivid-pink, #f542a4);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink, #f542a4) 25%, transparent);
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  font-size: 20px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.search-icon {
+  padding: 0 0.5rem;
+  position: absolute;
+  opacity: 0.8;
+}
+
+.arrow-icon {
+  padding: 0 0.5rem;
+  position: absolute;
+  right: 0;
+  opacity: 0.8;
+  transition: transform 0.2s ease;
+}
+
+[ngComboboxInput][aria-expanded='true'] + .arrow-icon {
+  transform: rotate(180deg);
+}
+
+[ngComboboxInput] {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  padding: 0.7rem 1rem 0.7rem 2.5rem;
+  background-color: var(--septenary-contrast, #f5f5f5);
+  color: var(--primary-contrast, #1a1a1a);
+}
+
+.popover {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  background-color: var(--septenary-contrast, #f5f5f5);
+}
+
+[ngListbox] {
+  gap: 2px;
+  max-height: 200px;
+  display: flex;
+  overflow: auto;
+  flex-direction: column;
+}
+
+[ngOption] {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  margin: 1px;
+  padding: 0 1rem;
+  min-height: 2.25rem;
+  border-radius: 0.5rem;
+}
+
+[ngOption]:hover {
+  background-color: color-mix(in srgb, var(--primary-contrast, #1a1a1a) 5%, transparent);
+}
+
+[ngOption][data-active='true'] {
+  outline-offset: -2px;
+  outline: 2px solid var(--vivid-pink, #f542a4);
+}
+
+[ngOption][aria-selected='true'] {
+  color: var(--vivid-pink, #f542a4);
+  background-color: color-mix(in srgb, var(--vivid-pink, #f542a4) 5%, transparent);
+}
+
+[ngOption]:not([aria-selected='true']) .check-icon {
+  display: none;
+}
+
+.option-label {
+  flex: 1;
+}
+
+.check-icon {
+  font-size: 0.9rem;
+}
+
+.dialog {
+  position: absolute;
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  background-color: var(--septenary-contrast, #f5f5f5);
+  color: inherit;
+}
+
+.dialog .combobox-input-container {
+  border-radius: 0;
+}
+
+.dialog [ngCombobox],
+.dialog .combobox-input-container {
+  border: none;
+}
+
+.dialog [ngComboboxInput] {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.dialog [ngCombobox]:focus-within [ngComboboxInput] {
+  outline: none;
+  box-shadow: none;
+}
+
+.dialog .combobox-input-container {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dialog::backdrop {
+  opacity: 0;
+}
+
+.no-results {
+  padding: 1rem;
+}

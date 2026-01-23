@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+}
+
+[ngToolbar] {
+  display: flex;
+}
+
+[ngToolbarWidget] {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.25rem;
+  border-radius: 2rem;
+  color: color-mix(in srgb, var(--vivid-pink) 70%, var(--full-contrast));
+  background-color: color-mix(in srgb, var(--vivid-pink) 20%, transparent);
+  transition:
+    width 0.2s ease-in-out,
+    background-color 0.15s ease-in-out,
+    color 0.15s ease-in-out;
+}
+
+[ngToolbarWidget]:focus {
+  outline-offset: 2px;
+  outline: 2px solid var(--vivid-pink);
+}
+
+[ngToolbarWidget]:active,
+[ngToolbarWidget][aria-pressed='true'],
+[ngToolbarWidget][aria-checked='true'] {
+  background-color: color-mix(in srgb, var(--vivid-pink) 80%, var(--full-contrast));
+  color: var(--page-background);
+}
+
+[ngToolbarWidget][aria-checked='true'] {
+  width: 4.5rem;
+}
+
+.group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.separator {
+  width: 1px;
+  margin: 0 1rem;
+  height: calc(100% - 2rem);
+  background-color: var(--quinary-contrast);
+}
+
+[ngToolbarWidget][aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.45;
+}
+

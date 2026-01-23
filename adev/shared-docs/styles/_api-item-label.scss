@@ -1,0 +1,129 @@
+@mixin api-item-label() {
+  .docs-api-item-label {
+    display: flex;
+    --label-theme: var(--symbolic-purple);
+    font-weight: 500;
+    color: var(--label-theme);
+    background: color-mix(in srgb, var(--label-theme) 10%, white);
+    border-radius: 0.25rem;
+    cursor: default;
+
+    &:first-letter {
+      text-transform: uppercase;
+    }
+
+    &:not(.full) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 22px;
+      width: 22px;
+      flex: 0 0 22px;
+    }
+
+    &.full {
+      font-size: 0.75rem;
+      &:not(:has(*)), &:not(:has(a span, span)) {
+        // if no children, just a text node, or
+        // no children with span
+        padding: 0.25rem 0.5rem;
+      }
+    }
+
+    a {
+      display: flex;
+      color: var(--label-theme);
+
+      &:hover {
+        .status-label {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .status-version,
+    .status-label {
+      padding: 0.25rem 0.5rem;
+    }
+
+    .status-version {
+      position: relative;
+      background-color: var(--septenary-contrast);
+      color: var(--secondary-contrast);
+      border-bottom-right-radius: 0.25rem;
+      border-top-right-radius: 0.25rem;
+      text-align: right;
+    }
+
+    @media screen and (prefers-color-scheme: dark) {
+      background: color-mix(in srgb, var(--label-theme) 17%, #272727);
+    }
+
+    .docs-dark-mode & {
+      background: color-mix(in srgb, var(--label-theme) 17%, #272727);
+    }
+
+    .docs-light-mode & {
+      background: color-mix(in srgb, var(--label-theme) 10%, white);
+    }
+
+    &.type-undecorated_class,
+    &.type-class {
+      --label-theme: var(--symbolic-purple);
+    }
+
+    &.type-constant,
+    &.type-const {
+      --label-theme: var(--symbolic-gray);
+    }
+
+    &.type-decorator {
+      --label-theme: var(--symbolic-blue);
+    }
+
+    &.type-directive {
+      --label-theme: var(--symbolic-pink);
+    }
+
+    &.type-element {
+      --label-theme: var(--symbolic-orange);
+    }
+
+    &.type-enum {
+      --label-theme: var(--symbolic-yellow);
+    }
+
+    &.type-function {
+      --label-theme: var(--symbolic-green);
+    }
+
+    &.type-interface {
+      --label-theme: var(--symbolic-cyan);
+    }
+
+    &.type-pipe {
+      --label-theme: var(--symbolic-teal);
+    }
+
+    &.type-impure-pipe {
+      --label-theme: var(--symbolic-pink);
+    }
+
+    &.type-ng_module {
+      --label-theme: var(--symbolic-brown);
+    }
+
+    &.type-type_alias {
+      --label-theme: var(--symbolic-lime);
+    }
+
+    &.type-block {
+      --label-theme: var(--vivid-pink);
+    }
+
+    &.type-developer_preview,
+    &.type-deprecated {
+      --label-theme: var(--hot-red);
+    }
+  }
+}

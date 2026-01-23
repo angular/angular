@@ -1,0 +1,41 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "directive-forest",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/semver-dsl",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib:version",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "render-tree.spec.ts",
+    ],
+    deps = [
+        ":directive-forest",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

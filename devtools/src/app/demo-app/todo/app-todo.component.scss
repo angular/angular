@@ -1,0 +1,39 @@
+nav {
+  padding-top: 20px;
+  padding-bottom: 10px;
+
+  a {
+    margin-right: 15px;
+    text-decoration: none;
+  }
+}
+
+.dialog-open-button {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-right: 20px;
+}
+
+.guard-toggle-container {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+.guard-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.guard-toggle-input {
+  cursor: pointer;
+}
+
+.guard-toggle-description {
+  margin: 5px 0 0 0;
+  font-size: 12px;
+  color: #666;
+}

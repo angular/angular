@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "es2015"],
+    "types": ["angular", "jasmine"],
+    "declaration": true,
+    "sourceMap": true,
+    "paths": {
+       "@angular/*": ["../../*/index"],
+    },
+    "experimentalDecorators": true,
+    "target": "es2015",
+    "moduleResolution": "node",
+  }
+}

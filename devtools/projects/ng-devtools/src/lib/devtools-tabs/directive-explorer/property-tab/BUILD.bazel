@@ -1,0 +1,29 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "property-tab_styles",
+    src = "property-tab.component.scss",
+)
+
+ng_project(
+    name = "property-tab",
+    srcs = [
+        "property-tab.component.ts",
+    ],
+    angular_assets = [
+        "property-tab.component.html",
+        ":property-tab_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/defer-view",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-tab-header",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
+        "//devtools/projects/protocol",
+    ],
+)

@@ -1,0 +1,35 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "property-view-body_styles",
+    src = "property-view-body.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:prop-action-btn",
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "property-view-body",
+    srcs = [
+        "property-view-body.component.ts",
+    ],
+    angular_assets = [
+        "property-view-body.component.html",
+        ":property-view-body_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:supported_apis",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view/property-view-body/dependency-viewer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
+        "//devtools/projects/ng-devtools/src/lib/shared/docs-ref-button",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
+        "//devtools/projects/protocol",
+    ],
+)

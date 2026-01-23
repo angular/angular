@@ -1,0 +1,35 @@
+{
+  "schematics": {
+    "control-flow-migration": {
+      "version": "21.0.0",
+      "description": "Converts the entire application to block control flow syntax",
+      "factory": "./bundles/control-flow-migration.cjs#migrate"
+    },
+    "router-current-navigation": {
+      "version": "21.0.0",
+      "description": "Replaces usages of the deprecated Router.getCurrentNavigation method with the Router.currentNavigation signal",
+      "factory": "./bundles/router-current-navigation.cjs#migrate",
+      "optional": true
+    },
+    "router-last-successful-navigation": {
+      "version": "21.0.0",
+      "description": "Ensures that the Router.lastSuccessfulNavigation signal is now invoked",
+      "factory": "./bundles/router-last-successful-navigation.cjs#migrate"
+    },
+    "application-config-core": {
+      "version": "21.0.0",
+      "description": "Moves imports of `ApplicationConfig` from `@angular/platform-browser` to `@angular/core`",
+      "factory": "./bundles/application-config-core.cjs#migrate"
+    },
+    "add-bootstrap-context-to-server-main": {
+      "version": "21.0.0",
+      "description": "Adds `BootstrapContext` to `bootstrapApplication` calls in `main.server.ts` to support server rendering.",
+      "factory": "./bundles/add-bootstrap-context-to-server-main.cjs#migrate"
+    },
+    "bootstrap-options-migration": {
+      "version": "21.0.0",
+      "description": "Migrates deprecated bootstrap options to providers.",
+      "factory": "./bundles/bootstrap-options-migration.cjs#migrate"
+    }
+  }
+}

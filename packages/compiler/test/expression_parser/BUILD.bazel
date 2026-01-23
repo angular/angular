@@ -1,0 +1,27 @@
+load("//tools:defaults.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
+
+ts_project(
+    name = "expression_parser_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+    ],
+)
+
+angular_jasmine_test(
+    name = "expression_parser",
+    data = [
+        ":expression_parser_lib",
+    ],
+)
+
+ng_web_test_suite(
+    name = "expression_parser_web",
+    deps = [
+        ":expression_parser_lib",
+    ],
+)

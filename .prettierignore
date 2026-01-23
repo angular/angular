@@ -1,0 +1,39 @@
+pnpm-lock.yaml
+
+# Do not format d.ts files as they are generated
+**/*.d.ts
+
+# Both third_party and .yarn are directories containing copied code which should
+# not be modified.
+third_party/**/*.js
+third_party/**/*.css
+third_party/**/*.md
+third_party/**/*.json
+
+# Do not format the locale files which are checked-in for Google3, but generated using
+# the `generate-locales-tool` from `packages/common/locales`.
+packages/core/src/i18n/locale_en.ts
+packages/common/locales/closure-locale.ts
+packages/common/src/i18n/currencies.ts
+
+# Test cases contain non valid code.
+packages/compiler-cli/test/compliance/test_cases/**/*.js
+packages/compiler-cli/test/compliance/test_cases/**/*.ts
+
+# Ignore generated javascript file(s)
+.github/actions/deploy-docs-site/main.js
+
+# Ignore testing data files for language service
+vscode-ng-language-service/syntaxes/test/data/*.ts
+vscode-ng-language-service/syntaxes/test/data/*.html
+
+# Ignore goldens MD files
+goldens/**/*.api.md
+
+# adev generated files
+adev/src/content/aria/**/*.json
+adev/src/content/cli/**/*.json
+adev/src/content/cdk/**/*.json
+
+CHANGELOG.md
+CHANGELOG_ARCHIVE.md

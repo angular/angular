@@ -1,0 +1,555 @@
+{
+  "repo": "angular/components",
+  "moduleLabel": "@angular/aria/listbox",
+  "moduleName": "@angular/aria/listbox",
+  "normalizedModuleName": "angular_aria_listbox",
+  "entries": [
+    {
+      "name": "Option",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "active",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether the option is currently active (focused).",
+          "jsdocTags": []
+        },
+        {
+          "name": "id",
+          "type": "InputSignal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "A unique identifier for the option.",
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
+        },
+        {
+          "name": "searchTerm",
+          "type": "Signal<string>",
+          "memberType": "property",
+          "memberTags": [
+            "protected"
+          ],
+          "description": "The text used by the typeahead search.",
+          "jsdocTags": []
+        },
+        {
+          "name": "value",
+          "type": "InputSignal<V>",
+          "memberType": "property",
+          "memberTags": [
+            "input"
+          ],
+          "description": "The value of the option.",
+          "jsdocTags": [],
+          "inputAlias": "value",
+          "isRequiredInput": true
+        },
+        {
+          "name": "disabled",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [
+            "input"
+          ],
+          "description": "Whether an item is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "label",
+          "type": "InputSignal<string | undefined>",
+          "memberType": "property",
+          "memberTags": [
+            "input"
+          ],
+          "description": "The text used by the typeahead search.",
+          "jsdocTags": [],
+          "inputAlias": "label",
+          "isRequiredInput": false
+        },
+        {
+          "name": "selected",
+          "type": "Signal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the option is selected.",
+          "jsdocTags": []
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "A selectable option in an `ngListbox`.\n\nThis directive should be applied to an element (e.g., `<li>`, `<div>`) within an\n`ngListbox`. The `value` input is used to identify the option, and the `label` input provides\nthe accessible name for the option.\n\n```html\n<li ngOption value=\"item-id\" label=\"Item Name\">\n  Item Name\n</li>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Listbox](guide/aria/listbox)"
+        },
+        {
+          "name": "see",
+          "comment": "[Autocomplete](guide/aria/autocomplete)"
+        },
+        {
+          "name": "see",
+          "comment": "[Select](guide/aria/select)"
+        },
+        {
+          "name": "see",
+          "comment": "[Multiselect](guide/aria/multiselect)"
+        }
+      ],
+      "rawComment": "/**\n * A selectable option in an `ngListbox`.\n *\n * This directive should be applied to an element (e.g., `<li>`, `<div>`) within an\n * `ngListbox`. The `value` input is used to identify the option, and the `label` input provides\n * the accessible name for the option.\n *\n * ```html\n * <li ngOption value=\"item-id\" label=\"Item Name\">\n *   Item Name\n * </li>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngOption]",
+      "exportAs": [
+        "ngOption"
+      ],
+      "aliases": [
+        "ngOption"
+      ],
+      "source": {
+        "filePath": "/src/aria/listbox/option.ts",
+        "startLine": 34,
+        "endLine": 88
+      }
+    },
+    {
+      "name": "Listbox",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "id",
+          "type": "InputSignal<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A unique identifier for the listbox.",
+          "jsdocTags": []
+        },
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "textDirection",
+          "type": "Signal<Direction>",
+          "memberType": "property",
+          "memberTags": [
+            "protected"
+          ],
+          "description": "A signal wrapper for directionality.",
+          "jsdocTags": []
+        },
+        {
+          "name": "items",
+          "type": "Signal<OptionPattern<V>[]>",
+          "memberType": "property",
+          "memberTags": [
+            "protected"
+          ],
+          "description": "The Option UIPatterns of the child Options.",
+          "jsdocTags": []
+        },
+        {
+          "name": "orientation",
+          "type": "InputSignal<\"vertical\" | \"horizontal\">",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether the list is vertically or horizontally oriented.",
+          "jsdocTags": []
+        },
+        {
+          "name": "multi",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether multiple items in the list can be selected at once.",
+          "jsdocTags": []
+        },
+        {
+          "name": "wrap",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether focus should wrap when navigating.",
+          "jsdocTags": []
+        },
+        {
+          "name": "softDisabled",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",
+          "jsdocTags": []
+        },
+        {
+          "name": "focusMode",
+          "type": "InputSignal<\"roving\" | \"activedescendant\">",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "The focus strategy used by the list.\n- `roving`: Focus is moved to the active item using `tabindex`.\n- `activedescendant`: Focus remains on the listbox container, and `aria-activedescendant` is used to indicate the active item.",
+          "jsdocTags": []
+        },
+        {
+          "name": "selectionMode",
+          "type": "InputSignal<\"follow\" | \"explicit\">",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "The selection strategy used by the list.\n- `follow`: The focused item is automatically selected.\n- `explicit`: Items are selected explicitly by the user (e.g., via click or spacebar).",
+          "jsdocTags": []
+        },
+        {
+          "name": "typeaheadDelay",
+          "type": "InputSignal<number>",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "The amount of time before the typeahead search is reset.",
+          "jsdocTags": []
+        },
+        {
+          "name": "disabled",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether the listbox is disabled.",
+          "jsdocTags": []
+        },
+        {
+          "name": "readonly",
+          "type": "InputSignalWithTransform<boolean, unknown>",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether the listbox is readonly.",
+          "jsdocTags": []
+        },
+        {
+          "name": "values",
+          "type": "ModelSignal<V[]>",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "The values of the currently selected items.",
+          "jsdocTags": []
+        },
+        {
+          "name": "scrollActiveItemIntoView",
+          "signatures": [
+            {
+              "name": "scrollActiveItemIntoView",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "options",
+                  "description": "",
+                  "type": "ScrollIntoViewOptions",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "options",
+                "description": "",
+                "type": "ScrollIntoViewOptions",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "scrollActiveItemIntoView",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "gotoFirst",
+          "signatures": [
+            {
+              "name": "gotoFirst",
+              "entryType": "function",
+              "description": "Navigates to the first item in the listbox.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Navigates to the first item in the listbox. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "gotoFirst",
+            "description": "Navigates to the first item in the listbox.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Navigates to the first item in the listbox. */"
+          },
+          "entryType": "function",
+          "description": "Navigates to the first item in the listbox.",
+          "jsdocTags": [],
+          "rawComment": "/** Navigates to the first item in the listbox. */",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "Represents a container used to display a list of items for a user to select from.\n\nThe `ngListbox` is meant to be used in conjunction with `ngOption` directives to create a\nselectable list. It supports single and multiple selection modes, as well as various focus and\norientation strategies.\n\n```html\n<ul ngListbox [(value)]=\"selectedItems\" [multi]=\"true\" orientation=\"vertical\">\n  @for (item of items; track item.id) {\n    <li ngOption [value]=\"item.id\" [label]=\"item.name\" [disabled]=\"item.disabled\">\n      {{item.name}}\n    </li>\n  }\n</ul>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        },
+        {
+          "name": "see",
+          "comment": "[Listbox](guide/aria/listbox)"
+        },
+        {
+          "name": "see",
+          "comment": "[Autocomplete](guide/aria/autocomplete)"
+        },
+        {
+          "name": "see",
+          "comment": "[Select](guide/aria/select)"
+        },
+        {
+          "name": "see",
+          "comment": "[Multiselect](guide/aria/multiselect)"
+        }
+      ],
+      "rawComment": "/**\n * Represents a container used to display a list of items for a user to select from.\n *\n * The `ngListbox` is meant to be used in conjunction with `ngOption` directives to create a\n * selectable list. It supports single and multiple selection modes, as well as various focus and\n * orientation strategies.\n *\n * ```html\n * <ul ngListbox [(value)]=\"selectedItems\" [multi]=\"true\" orientation=\"vertical\">\n *   @for (item of items; track item.id) {\n *     <li ngOption [value]=\"item.id\" [label]=\"item.name\" [disabled]=\"item.disabled\">\n *       {{item.name}}\n *     </li>\n *   }\n * </ul>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Listbox](guide/aria/listbox)\n * @see [Autocomplete](guide/aria/autocomplete)\n * @see [Select](guide/aria/select)\n * @see [Multiselect](guide/aria/multiselect)\n */",
+      "implements": [],
+      "source": {
+        "filePath": "/src/aria/listbox/listbox.ts",
+        "startLine": 53,
+        "endLine": 213
+      }
+    }
+  ],
+  "symbols": [
+    [
+      "booleanAttribute",
+      "@angular/core"
+    ],
+    [
+      "computed",
+      "@angular/core"
+    ],
+    [
+      "Directive",
+      "@angular/core"
+    ],
+    [
+      "ElementRef",
+      "@angular/core"
+    ],
+    [
+      "inject",
+      "@angular/core"
+    ],
+    [
+      "input",
+      "@angular/core"
+    ],
+    [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
+    ],
+    [
+      "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
+      "contentChildren",
+      "@angular/core"
+    ],
+    [
+      "model",
+      "@angular/core"
+    ],
+    [
+      "signal",
+      "@angular/core"
+    ],
+    [
+      "untracked",
+      "@angular/core"
+    ],
+    [
+      "Directionality",
+      "@angular/cdk/bidi"
+    ],
+    [
+      "Option",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option.element",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option.active",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option.id",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option.searchTerm",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option.value",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option.disabled",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option.label",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option.selected",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.id",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.element",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.textDirection",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.items",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.orientation",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.multi",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.wrap",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.softDisabled",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.focusMode",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.selectionMode",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.typeaheadDelay",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.disabled",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.readonly",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.values",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.scrollActiveItemIntoView",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.gotoFirst",
+      "@angular/aria/listbox"
+    ]
+  ]
+}

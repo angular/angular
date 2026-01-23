@@ -1,0 +1,83 @@
+<table ngGrid class="retro-data-table">
+  <thead>
+    <tr ngGridRow>
+      <th ngGridCell>
+        <input
+          ngGridCellWidget
+          aria-label="Select all rows"
+          type="checkbox"
+          [checked]="allSelected()"
+          (change)="updateSelection($event)"
+          #headerCheckbox
+        />
+      </th>
+      <th ngGridCell>
+        <button
+          ngGridCellWidget
+          class="sort-button"
+          aria-label="Sort by ID"
+          (click)="sortTaskById()"
+        >
+          Reward
+          <span
+            aria-hidden="true"
+            class="material-symbols-outlined"
+            translate="no"
+            aria-hidden="true"
+          >
+            {{ sortAscending ? 'arrow_upward' : 'arrow_downward' }}
+          </span>
+        </button>
+      </th>
+      <th ngGridCell>Target</th>
+      <th ngGridCell>Rank</th>
+      <th ngGridCell>Hunter</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (task of data(); track task) {
+      <tr ngGridRow>
+        <td ngGridCell>
+          <input
+            ngGridCellWidget
+            aria-label="Select row {{ $index + 1 }}"
+            type="checkbox"
+            [(ngModel)]="task.selected"
+          />
+        </td>
+        <td ngGridCell>${{ task.reward }}</td>
+        <td ngGridCell>{{ task.target }}</td>
+        <td ngGridCell>{{ task.rank }}</td>
+        <td ngGridCell class="assignee-cell">
+          <div
+            type="button"
+            ngGridCellWidget
+            aria-label="edit hunter"
+            widgetType="editable"
+            (onActivate)="startEdit($event, task, assigneeInput)"
+            (onDeactivate)="completeEdit($event, task)"
+            #widget="ngGridCellWidget"
+          >
+            <span [class.hidden]="widget.isActivated()">{{ task.hunter }}</span>
+            <input
+              [class.hidden]="!widget.isActivated()"
+              class="assignee-edit-input"
+              [(ngModel)]="tempInput"
+              #assigneeInput
+            />
+            <button
+              tabindex="-1"
+              aria-label="edit hunter"
+              class="material-symbols-outlined assignee-edit-button"
+              (click)="onClickEdit(widget, task, assigneeInput)"
+              [class.hidden]="widget.isActivated()"
+              translate="no"
+            >
+              edit
+            </button>
+          </div>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

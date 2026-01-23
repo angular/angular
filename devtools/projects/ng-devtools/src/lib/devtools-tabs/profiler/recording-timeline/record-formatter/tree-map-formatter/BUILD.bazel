@@ -1,0 +1,40 @@
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "tree-map-formatter",
+    srcs = glob(
+        include = [
+            "*.ts",
+        ],
+        exclude = [
+            "tree-map-formatter.spec.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/tslib",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "tree-map-formatter.spec.ts",
+    ],
+    deps = [
+        ":tree-map-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter:record_formatter_spec_constants",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

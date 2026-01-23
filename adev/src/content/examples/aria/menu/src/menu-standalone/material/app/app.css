@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: var(--inter-font);
+}
+
+[ngMenu] {
+  gap: 3px;
+  width: 30rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  background-color: color-mix(in srgb, var(--vivid-pink) 5%, var(--page-background));
+  border: 1px solid color-mix(in srgb, var(--full-contrast) 10%, var(--page-background));
+}
+
+[ngMenu] [ngMenu] {
+  width: 15rem;
+}
+
+[ngMenu] .group {
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  background-color: var(--page-background);
+  box-shadow: 0 1px 2px 1px color-mix(in srgb, var(--primary-contrast) 25%, transparent);
+}
+
+[ngMenu] .group:first-of-type {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+[ngMenu] .group:last-of-type {
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+
+[ngMenu][data-visible='false'] {
+  display: none;
+}
+
+[ngMenuItem] {
+  outline: none;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.75rem;
+}
+
+[ngMenuItem][data-active='true'] {
+  color: color-mix(in srgb, var(--vivid-pink) 70%, var(--primary-contrast));
+  background: color-mix(in srgb, var(--vivid-pink) 5%, transparent);
+}
+
+[ngMenuItem]:focus {
+  outline: 2px solid var(--vivid-pink);
+}
+
+[ngMenuItem] .icon {
+  opacity: 0.875;
+  font-size: 1.25rem;
+}
+
+[ngMenuItem] .label {
+  flex: 1;
+  opacity: 0.875;
+  font-size: 0.875rem;
+}
+
+[ngMenuItem]:not([aria-expanded='true']) .arrow {
+  opacity: 0.5;
+}
+
+[ngMenu] .separator {
+  border-top: 1px solid var(--gray-500);
+  margin: 0.25rem 0;
+  opacity: 0.25;
+}
+
+[ngMenu] .heading {
+  display: block;
+  font-weight: bold;
+  opacity: 0.6;
+  font-size: 0.75rem;
+  padding: 0.75rem;
+  letter-spacing: 0.05rem;
+}

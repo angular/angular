@@ -1,0 +1,28 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "property-view_styles",
+    src = "property-view.component.scss",
+)
+
+ng_project(
+    name = "property-view",
+    srcs = [
+        "property-view.component.ts",
+    ],
+    angular_assets = [
+        "property-view.component.html",
+        ":property-view_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view/property-view-body",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view/property-view-header",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
+        "//devtools/projects/protocol",
+    ],
+)

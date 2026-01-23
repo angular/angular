@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "js_binary", "ts_project")
+
+ts_project(
+    name = "src",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["test/**"],
+    ),
+    visibility = [
+        "//packages/core/schematics/migrations/output-migration:__pkg__",
+        "//packages/core/schematics/migrations/signal-migration/test:__pkg__",
+        "//packages/core/schematics/migrations/signal-queries-migration:__pkg__",
+        "//packages/core/schematics/ng-generate/signal-input-migration:__pkg__",
+        "//packages/language-service:__subpackages__",
+    ],
+    deps = [
+        "//:node_modules/@types/node",
+        "//:node_modules/magic-string",
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/core/schematics/utils/tsurge",
+        "//packages/core/schematics/utils/tsurge/helpers/ast",
+    ],
+)
+
+js_binary(
+    name = "bin",
+    data = [":src"],
+    entry_point = ":cli.js",
+    visibility = ["//packages/core/schematics/migrations/signal-migration/test:__pkg__"],
+)
+
+js_binary(
+    name = "batch_test_bin",
+    data = [":src"],
+    entry_point = ":batch/test_bin.js",
+    visibility = ["//packages/core/schematics/migrations/signal-migration/test:__pkg__"],
+)

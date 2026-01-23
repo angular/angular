@@ -1,0 +1,21 @@
+load("@devinfra//bazel/jasmine:jasmine.bzl", "jasmine_test")
+load("//tools:defaults.bzl", "ts_project")
+
+ts_project(
+    name = "tests",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//vscode-ng-language-service:node_modules/@types/jasmine",
+        "//vscode-ng-language-service/common",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    args = ["*_spec.js"],
+    chdir = package_name(),
+    data = [":tests"],
+    node_modules = "//vscode-ng-language-service:node_modules",
+    tags = ["unit_test"],
+)

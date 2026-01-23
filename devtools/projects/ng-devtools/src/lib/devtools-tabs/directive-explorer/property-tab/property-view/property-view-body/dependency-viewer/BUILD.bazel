@@ -1,0 +1,28 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "dependency-viewer_styles",
+    src = "dependency-viewer.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "dependency-viewer",
+    srcs = [
+        "dependency-viewer.component.ts",
+    ],
+    angular_assets = [
+        "dependency-viewer.component.html",
+        ":dependency-viewer_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view/property-view-body/dependency-viewer/resolution-path",
+        "//devtools/projects/protocol",
+    ],
+)

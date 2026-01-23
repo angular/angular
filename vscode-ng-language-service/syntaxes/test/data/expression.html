@@ -1,0 +1,119 @@
+<!-- Data types -->
+{{ variable }}
+{{ 'string' }}
+{{ "string" }}
+{{ 1 }}
+{{ true }}
+{{ false }}
+{{ null }}
+{{ this }}
+{{ undefined }}
+{{ [variable, variable] }}
+{{ ['string', 'string'] }}
+{{ ["string", "string"] }}
+{{ [1, 2] }}
+{{ [true, false, null, this, undefined] }}
+{{ {object: variable} }}
+{{ {object: 'string'} }}
+{{ {object: "string"} }}
+{{ {object: 1} }}
+{{ {object: true} }}
+{{ {object: false} }}
+{{ {object: null} }}
+{{ {object: this} }}
+{{ {object: undefined} }}
+{{ {object: [variable, variable]} }}
+{{ {object: ['string', 'string']} }}
+{{ {object: ["string", "string"]} }}
+{{ {object: [1, 2]} }}
+{{ {object: [true, false, null, this, undefined]} }}
+
+<!-- Property read and method call: implicit -->
+{{ call() }}
+{{ call(); }}
+{{ call().object }}
+{{ call().object; }}
+{{ call()?.conditional }}
+{{ call()?.conditional; }}
+{{ call()!.conditional }}
+{{ call()!.conditional; }}
+
+<!-- Property read and method call: received -->
+{{ object.call() }}
+{{ object.call(); }}
+{{ object.call().object }}
+{{ object.call().object; }}
+{{ object?.call()?.conditional }}
+{{ object?.call()?.conditional; }}
+{{ object!.call()!.conditional }}
+{{ object!.call()!.conditional; }}
+
+<!-- Method call with parameters -->
+{{ call(withParams) }}
+{{ call('withParams') }}
+{{ call("withParams") }}
+{{ call("withParams") }}
+{{ call(false) }}
+{{ call(!!true) }}
+{{ call(["array", 123]) }}
+{{ call(1) }}
+{{ call({ test: 'object' }) }}
+{{ call({ test: 123 }) }}
+{{ call({ test: [123, 321, { value: ['string', false, true] }] }) }}
+
+<!-- Nullish coalesce -->
+{{a ?? 'empty'}}
+
+<!-- Ternary expression -->
+{{ condition ? true : false }}
+{{ condition ? true : false; }}
+{{ condition() ? call(1 + 2 + 3) : call() }}
+{{ condition() ? call(1 + 2 + 3) : call(); }}
+{{ condition()?.object ? call()!.test() : false }}
+{{ condition ? ['123'] : { test: 'a' } }}
+{{ condition ? 'test' : "test" }}
+{{ condition ? [function(), variable] : {} }}
+{{ condition ? condition2 ? condition3 ? 1 : 2 : 3 : 4 }}
+<!-- Don't match safe navigations -->
+{{ condition?.a : 1 }}
+<!-- Don't match nullish coalesce -->
+{{ condition ?? (a ? 1 : 2) }}
+
+<!-- Pipes -->
+{{ (let param of params) | async }}
+{{ (let param of params) | trackBy: trackByMethod }}
+{{ (let param of params) | customPipe: 'param' | search: ['term1', 'term2'] }}
+{{ ((let param of params) | async) | translate }}
+
+<!-- Template literals -->
+{{ `hello world` }}
+{{ tag`hello world` }}
+{{ `before ${123} - ${fn()} after` }}
+{{ tag`before ${123} - ${fn()} after` }}
+
+<!-- Mixed -->
+{{ (let param of params?.get('value')!.property | async).anotherProperty | translate: ['language1', 'language2']; index
+as i }}
+{{ (let param of params?.anotherParam!.param().param | async) as p; let i = index; let first = first }}
+{{ (let param of params?.get('value')!.property | async).anotherProperty | translate: ['language1', 'language2']; let i
+= index; }}
+
+<!-- Spread -->
+{{ [1, ...foo, 2, ...bar, 3] }}
+{{ {{a: 1, ...foo, b: 2, ...bar, c: 3}} }}
+
+<!-- Rest -->
+{{ someFn(1, ...foo, 2, ...bar, 3, ...baz) }}
+
+<!-- Arrow functions -->
+{{ foo => foo + 1 }}
+{{ (foo, bar, baz) => foo + bar + baz }}
+{{ (foo, bar) => [foo, bar, 1, 2] }}
+{{ (foo, bar) => ({foo: 1, bar: 2}) }}
+{{ a => (b, c) => (d, e) => f => a + b + c + d + e + f }}
+{{ ((a, b) => a * b)(2, 3) }}
+{{ [a => a + 1, (b, c) => b + c] }}
+{{ (a, b) =>
+    a / b + 123
+}}
+{{ someSignal.update(prev => prev + 1) }}

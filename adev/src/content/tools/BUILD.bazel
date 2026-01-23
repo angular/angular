@@ -1,0 +1,20 @@
+load("//adev/shared-docs:defaults.bzl", "js_library")
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "tools",
+    srcs = glob([
+        "*.md",
+    ]),
+    visibility = ["//adev:__subpackages__"],
+)
+
+js_library(
+    name = "guide_files",
+    srcs = [
+        "//adev/src/content/tools/cli:guide_files",
+        "//adev/src/content/tools/devtools:guide_files",
+        "//adev/src/content/tools/libraries:guide_files",
+    ] + glob(["**/*.md"]),
+    visibility = ["//adev/src/content:__pkg__"],
+)

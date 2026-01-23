@@ -1,0 +1,26 @@
+<div role="tablist" class="docs-tab-list">
+  @for (tab of computedTabs(); track tab.tabId) {
+    <button
+      [id]="tab.tabId"
+      role="tab"
+      class="docs-tab"
+      [class.docs-tab-active]="tab.tabId === selectedTab()"
+      [aria-selected]="tab.tabId === selectedTab()"
+      [aria-controls]="tab.tabPanelId"
+      (click)="selectedTab.set(tab.tabId)"
+    >
+      {{ tab.label }}
+    </button>
+  }
+</div>
+
+@for (tab of computedTabs(); track tab.tabId) {
+  <div
+    [id]="tab.tabPanelId"
+    role="tabpanel"
+    class="docs-tab-panel"
+    [attr.aria-labelledby]="tab.tabId"
+    [hidden]="tab.tabId !== selectedTab()"
+    #tabpanel
+  ></div>
+}

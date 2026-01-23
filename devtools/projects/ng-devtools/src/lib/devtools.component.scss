@@ -1,0 +1,99 @@
+@use '../styles/typography';
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0px var(--dynamic-red-02);
+  }
+  100% {
+    box-shadow: 0 0 0 35px var(--dynamic-transparent-01);
+  }
+}
+
+:host {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.devtools-wrapper {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.noselect {
+  user-select: none;
+}
+
+.initializing {
+  margin: auto;
+  width: 125px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+
+  .loading {
+    border-radius: 50%;
+    width: 125px;
+    height: 125px;
+    float: left;
+    text-align: center;
+    animation: pulse 1s infinite;
+  }
+}
+
+.devtools-state-screen {
+  padding: 1rem;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+
+  mat-icon {
+    display: block;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    margin-inline: auto;
+    margin-block-start: 0.5rem;
+    color: var(--quinary-contrast);
+  }
+
+  .text-message {
+    @extend %heading-500;
+    text-align: center;
+    margin: 0;
+
+    &[matTooltip] {
+      cursor: help;
+    }
+  }
+}
+
+.ng-dev-mode-causes {
+  @extend %body-medium-01;
+  padding: 1rem;
+  width: 80%;
+  margin: auto;
+  border: 1px solid var(--quinary-contrast);
+  border-radius: 16px;
+  margin-top: 1rem;
+
+  p:first-of-type {
+    margin-top: 0;
+  }
+
+  p:last-of-type {
+    margin-bottom: 0;
+  }
+
+  code {
+    padding: 2px;
+    color: var(--dynamic-green-01);
+    background: var(--senary-contrast);
+    border-radius: 5px;
+  }
+
+  li {
+    margin-bottom: 1rem;
+  }
+}

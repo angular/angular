@@ -1,0 +1,114 @@
+<div ngToolbar dir="rtl" class="rtl-retro-toolbar" aria-label="Text Formatting Tools">
+  <div class="group">
+    <button
+      ngToolbarWidget
+      value="undo"
+      type="button"
+      aria-label="undo"
+      class="material-symbols-outlined"
+      translate="no"
+    >
+      undo
+    </button>
+
+    <button
+      ngToolbarWidget
+      value="redo"
+      type="button"
+      aria-label="redo"
+      class="material-symbols-outlined"
+      translate="no"
+    >
+      redo
+    </button>
+  </div>
+
+  <div class="separator" role="separator"></div>
+
+  <div class="group">
+    <button
+      ngToolbarWidget
+      value="bold"
+      type="button"
+      aria-label="bold"
+      #bold="ngToolbarWidget"
+      class="material-symbols-outlined"
+      [aria-pressed]="bold.selected()"
+      translate="no"
+    >
+      format_bold
+    </button>
+
+    <button
+      ngToolbarWidget
+      value="italic"
+      type="button"
+      aria-label="italic"
+      #italic="ngToolbarWidget"
+      class="material-symbols-outlined"
+      [aria-pressed]="italic.selected()"
+      translate="no"
+    >
+      format_italic
+    </button>
+
+    <button
+      ngToolbarWidget
+      value="underlined"
+      type="button"
+      aria-label="underlined"
+      #underlined="ngToolbarWidget"
+      class="material-symbols-outlined"
+      [aria-pressed]="underlined.selected()"
+      translate="no"
+    >
+      format_underlined
+    </button>
+  </div>
+
+  <div class="separator" role="separator"></div>
+
+  <div ngToolbarWidgetGroup role="radiogroup" class="group" aria-label="Text alignment options">
+    <button
+      ngToolbarWidget
+      role="radio"
+      type="button"
+      value="align left"
+      aria-label="align left"
+      #leftAlign="ngToolbarWidget"
+      class="material-symbols-outlined"
+      [aria-checked]="leftAlign.selected()"
+      translate="no"
+    >
+      format_align_left
+    </button>
+
+    <button
+      ngToolbarWidget
+      role="radio"
+      type="button"
+      value="align center"
+      aria-label="align center"
+      #centerAlign="ngToolbarWidget"
+      class="material-symbols-outlined"
+      [aria-checked]="centerAlign.selected()"
+      translate="no"
+    >
+      format_align_center
+    </button>
+
+    <button
+      ngToolbarWidget
+      role="radio"
+      type="button"
+      value="align right"
+      aria-label="align right"
+      #rightAlign="ngToolbarWidget"
+      class="material-symbols-outlined"
+      [aria-checked]="rightAlign.selected()"
+      translate="no"
+    >
+      format_align_right
+    </button>
+  </div>
+</div>

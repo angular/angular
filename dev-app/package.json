@@ -1,0 +1,29 @@
+{
+  "name": "dev-app",
+  "private": true,
+  "scripts": {
+    "dev": "ibazel run //dev-app:build.serve",
+    "dev:prod": "ibazel run //dev-app:build.production.serve",
+    "dev:build": "bazel build //dev-app:build"
+  },
+  "dependencies": {
+    "@angular/common": "workspace:*",
+    "@angular/compiler": "workspace:*",
+    "@angular/core": "workspace:*",
+    "@angular/forms": "workspace:*",
+    "@angular/platform-browser": "workspace:*",
+    "@angular/platform-server": "workspace:*",
+    "@angular/router": "workspace:*",
+    "@angular/ssr": "21.1.0-rc.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "21.1.0-rc.0",
+    "@angular/cli": "21.1.0-rc.0",
+    "@angular/compiler-cli": "workspace:*",
+    "jsdom": "^27.0.0",
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.0"
+  }
+}

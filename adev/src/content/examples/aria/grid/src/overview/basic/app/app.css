@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: var(--inter-font);
+
+  --card-shadow: 2px 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+button {
+  border: unset;
+  padding: unset;
+  color: unset;
+  background: unset;
+  outline: none;
+}
+
+[ngGrid] {
+  display: table;
+  border-spacing: 0.75rem;
+}
+
+[ngGridCell] {
+  height: 4rem;
+  width: 4rem;
+  perspective: 1000px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  border: 0.25rem solid #f0f0f0;
+  box-shadow: var(--card-shadow);
+}
+
+.card.flipped {
+  transform: rotateY(180deg);
+  cursor: default;
+}
+
+.card:not(.flipped):hover,
+.card:not(.flipped):focus {
+  transform: scale(1.05) translate(-2px, -2px);
+}
+
+.card:hover,
+.card:focus {
+  outline-offset: 2px;
+  outline: 4px dashed color-mix(in srgb, var(--hot-pink) 90%, transparent);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  border-radius: 0.25rem;
+}
+
+.card-front {
+  background-image: var(--hot-pink-to-electric-violet-radial-gradient);
+  color: rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.card-back {
+  background: #f0f0f0;
+  transform: rotateY(180deg);
+}
+
+.explode {
+  animation: shake 0.25s 20 linear;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate(-3px, -1px) rotate(-1deg);
+  }
+  40% {
+    transform: translate(3px, 1px) rotate(1deg);
+  }
+  60% {
+    transform: translate(-3px, 1px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(3px, -1px) rotate(1deg);
+  }
+}
+
+.angular-logo {
+  transform: rotate(-25deg) scale(1.1) translateY(5%);
+}
+
+.shield-shape {
+  d: path(
+    'm 222.077 39.192 l -8.019 125.923 L 137.387 0 l 84.69 39.192 Z m -53.105 162.825 l -57.933 33.056 l -57.934 -33.056 l 11.783 -28.556 h 92.301 l 11.783 28.556 Z M 111.039 62.675 l 30.357 73.803 H 80.681 l 30.358 -73.803 Z M 7.937 165.115 L 0 39.192 L 84.69 0 L 7.937 165.115 Z'
+  );
+  fill: currentColor;
+}

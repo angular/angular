@@ -1,0 +1,19 @@
+load("//adev/shared-docs:defaults.bzl", "copy_to_bin")
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "aria",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/content/examples",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)
+
+copy_to_bin(
+    name = "guide_files",
+    srcs = glob(["**/*.md"]),
+    visibility = ["//adev:__subpackages__"],
+)

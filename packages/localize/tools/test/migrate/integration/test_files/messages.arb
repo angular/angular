@@ -1,0 +1,33 @@
+{
+  "@@locale": "en-GB",
+  "12345678901234567890": "Hello",
+  "@12345678901234567890": {
+    "x-locations": [
+      {
+        "file": "test.js",
+        "start": { "line": "1", "column": "0" },
+        "end": { "line": "1", "column": "0" }
+      }
+    ]
+  },
+  "custom-id": "Custom id message",
+  "@custom-id": {
+    "x-locations": [
+      {
+        "file": "test.js",
+        "start": { "line": "2", "column": "0" },
+        "end": { "line": "2", "column": "0" }
+      }
+    ]
+  },
+  "1234567890123456789012345678901234567890": "Goodbye",
+  "@1234567890123456789012345678901234567890": {
+    "x-locations": [
+      {
+        "file": "test.js",
+        "start": { "line": "3", "column": "0" },
+        "end": { "line": "3", "column": "0" }
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+@use '../../../../styles/typography';
+
+:host {
+  display: block;
+  padding: 1rem;
+
+  h1 {
+    @extend %heading-600;
+    margin: 0;
+    padding: 0;
+  }
+
+  p {
+    @extend %body-01;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .profiler-version {
+    color: var(--dynamic-green-01);
+  }
+
+  .imported-version,
+  .error {
+    color: var(--dynamic-red-01);
+  }
+}

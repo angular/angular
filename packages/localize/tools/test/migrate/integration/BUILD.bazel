@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "copy_to_bin", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*_spec.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/localize/tools",
+        "//packages/localize/tools/test:test_lib",
+        "//packages/localize/tools/test/helpers",
+    ],
+)
+
+# Use copy_to_bin since filegroup doesn't seem to work on Windows.
+copy_to_bin(
+    name = "test_files",
+    srcs = glob(["test_files/**/*"]),
+)
+
+jasmine_test(
+    name = "integration",
+    data = [
+        ":test_files",
+        ":test_lib",
+        "//:node_modules/tinyglobby",
+        "//:node_modules/yargs",
+    ],
+)

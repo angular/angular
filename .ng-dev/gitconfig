@@ -1,0 +1,15 @@
+# The file is inert unless it's explicitly included into the local git config via:
+#
+# ```
+# git config --add include.path '../.ng-dev/gitconfig'
+# ```
+#
+# Calling that command will append the following into `.git/config` of the current git workspace
+# (i.e. $GIT_DIR, typically `angular/.git/config`):
+#
+# ```
+# [include]
+#     path = ../.ng-dev/gitconfig
+# ```
+[commit]
+  template = .gitmessage

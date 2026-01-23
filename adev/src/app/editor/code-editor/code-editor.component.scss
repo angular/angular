@@ -1,0 +1,316 @@
+:host {
+  /* GitHub Light Default */
+  :host-context(.docs-light-mode) {
+    --gh-bg: #ffffff;
+    --gh-fg: #24292f;
+    --gh-selection-bg: #007acc;
+    --gh-selection-bg-focused: #007acc;
+    --gh-cursor: #24292f;
+    --gh-comment: #6a737d;
+    --gh-keyword: #d73a49;
+    --gh-string: #032f62;
+    --gh-number: #005cc5;
+    --gh-bool: #005cc5;
+    --gh-function: #6f42c1;
+    --gh-variable: #e36209;
+    --gh-type: #005cc5;
+    --gh-operator: #d73a49;
+    --gh-brace: #24292f;
+    --gh-tag: #22863a;
+    --gh-attribute: #6f42c1;
+    --gh-regexp: #032f62;
+    --gh-tooltip-bg: #f6f8fa;
+    --gh-tooltip-fg: #24292f;
+    --gh-tooltip-border: #d1d5da;
+  }
+
+  /* GitHub Dark Default */
+  :host-context(.docs-dark-mode) {
+    --gh-bg: #0d1117;
+    --gh-fg: #c9d1d9;
+    --gh-selection-bg: #264f78;
+    --gh-selection-bg-focused: #316dca;
+    --gh-cursor: #c9d1d9;
+    --gh-comment: #8b949e;
+    --gh-keyword: #ff7b72;
+    --gh-string: #a5d6ff;
+    --gh-number: #79c0ff;
+    --gh-bool: #79c0ff;
+    --gh-function: #d2a8ff;
+    --gh-variable: #ffa657;
+    --gh-type: #79c0ff;
+    --gh-operator: #ff7b72;
+    --gh-brace: #c9d1d9;
+    --gh-tag: #7ee787;
+    --gh-attribute: #d2a8ff;
+    --gh-regexp: #a5d6ff;
+    --gh-tooltip-bg: #161b22;
+    --gh-tooltip-fg: #c9d1d9;
+    --gh-tooltip-border: #30363d;
+  } /* Code editor variables mapped to GitHub theme tokens */
+
+  --code-editor-selection-background: var(--gh-selection-bg);
+  --code-editor-focused-selection-background: var(--gh-selection-bg-focused);
+  --code-editor-text-base-color: var(--gh-fg);
+  --code-editor-tooltip-background: var(--gh-tooltip-bg);
+  --code-editor-tooltip-color: var(--gh-tooltip-fg);
+  --code-editor-tooltip-border: 1px solid var(--gh-tooltip-border);
+  --code-editor-tooltip-border-radius: 0.25rem;
+  --code-editor-autocomplete-item-background: var(--gh-bg);
+  --code-editor-autocomplete-item-color: var(--gh-fg);
+  --code-name: var(--gh-fg);
+  --code-editor-cursor-color: var(--gh-cursor);
+  --code-variable-name: var(--gh-variable);
+  --code-property-name: var(--gh-fg);
+  --code-definition-keyword: var(--gh-keyword);
+  --code-comment: var(--gh-comment);
+  --code-line-comment: var(--gh-comment);
+  --code-block-comment: var(--gh-comment);
+  --code-doc-comment: var(--gh-comment);
+  --code-keyword: var(--gh-keyword);
+  --code-modifier: var(--gh-keyword);
+  --code-operator-keyword: var(--gh-operator);
+  --code-control-keyword: var(--gh-keyword);
+  --code-module-keyword: var(--gh-keyword);
+  --code-brace: var(--gh-brace);
+  --code-bool: var(--gh-bool);
+  --code-string: var(--gh-string);
+  --code-regexp: var(--gh-regexp);
+  --code-tags: var(--gh-tag);
+  --code-component: var(--gh-fg);
+  --code-type-name: var(--gh-type);
+  --code-self: var(--gh-string);
+  --code-number: var(--gh-number);
+  --code-attribute-name: var(--gh-attribute);
+  --code-attribute-value: var(--gh-string);
+  --code-literal: var(--gh-number);
+  --code-operator: var(--gh-operator);
+  --code-punctuation: var(--gh-fg);
+  --code-bracket: var(--gh-brace);
+  --code-angle-bracket: var(--gh-brace);
+  --code-square-bracket: var(--gh-brace);
+  --code-paren: var(--gh-brace);
+  --code-invalid: var(--gh-fg);
+  --code-meta: var(--gh-comment);
+  --code-annotation: var(--gh-function);
+  --code-processing-instruction: var(--gh-comment);
+  --code-namespace: var(--gh-variable);
+  --code-macro-name: var(--gh-function);
+  --code-label-name: var(--gh-variable);
+  --code-doc-string: var(--gh-string);
+  --code-character: var(--gh-string);
+  --code-integer: var(--gh-number);
+  --code-float: var(--gh-number);
+  --code-escape: var(--gh-function);
+  --code-color: var(--gh-number);
+  --code-url: var(--gh-string);
+  --code-null: var(--gh-keyword);
+  --code-atom: var(--gh-number);
+  --code-unit: var(--gh-number);
+  --code-deref-operator: var(--gh-operator);
+  --code-arithmetic-operator: var(--gh-operator);
+  --code-logic-operator: var(--gh-operator);
+  --code-bitwise-operator: var(--gh-operator);
+  --code-compare-operator: var(--gh-operator);
+  --code-update-operator: var(--gh-operator);
+  --code-definition-operator: var(--gh-operator);
+  --code-type-operator: var(--gh-operator);
+  --code-control-operator: var(--gh-operator);
+  --code-separator: var(--gh-fg);
+  --code-content: var(--gh-fg);
+  --code-heading: var(--gh-keyword);
+  --code-heading1: var(--gh-keyword);
+  --code-heading2: var(--gh-keyword);
+  --code-heading3: var(--gh-keyword);
+  --code-heading4: var(--gh-keyword);
+  --code-heading5: var(--gh-keyword);
+  --code-heading6: var(--gh-keyword);
+  --code-content-separator: var(--gh-fg);
+  --code-list: var(--gh-fg);
+  --code-quote: var(--gh-string);
+  --code-emphasis: var(--gh-string);
+  --code-strong: var(--gh-keyword);
+  --code-link: var(--gh-string);
+  --code-monospace: var(--gh-string);
+  --code-strikethrough: var(--gh-fg);
+  --code-inserted: var(--gh-tag);
+  --code-deleted: var(--gh-keyword);
+  --code-changed: var(--gh-variable);
+
+  position: relative;
+}
+
+.docs-code-editor-tabs {
+  display: flex;
+  background: var(--octonary-contrast);
+  border-block-end: 1px solid var(--senary-contrast);
+  transition:
+    background 0.3s ease,
+    border 0.3s ease;
+}
+
+.adev-tabs-and-plus {
+  display: flex;
+  width: calc(100% - 2.875rem * 2);
+  min-height: 48px;
+}
+
+.adev-add-file,
+.docs-delete-file,
+.docs-rename-file {
+  docs-icon {
+    color: var(--gray-400);
+    transition: color 0.3s ease;
+    font-size: 1.2rem;
+  }
+  &:hover {
+    docs-icon {
+      color: var(--primary-contrast);
+    }
+  }
+}
+
+.adev-add-file {
+  display: flex;
+  align-items: center;
+}
+
+.docs-delete-file,
+.docs-rename-file {
+  padding-inline-start: 0.1rem;
+  padding-inline-end: 0;
+  margin-block-start: 0.2rem;
+  margin-inline-start: 0.2rem;
+  docs-icon {
+    font-size: 1rem;
+  }
+}
+
+.adev-new-file-input,
+.adev-rename-file-input {
+  color: var(--primary-contrast);
+  border: none;
+  border-radius: 0;
+  border-block-end: 1px solid var(--senary-contrast);
+  background: transparent;
+  outline: none;
+  transition: color 0.3s ease;
+  &:focus-visible {
+    background: transparent;
+    border-block-end: 1px solid var(--primary-contrast);
+  }
+}
+
+.adev-code-editor-wrapper {
+  // adjust height for terminal tabs
+  // so that scroll bar & content do not render under tabs
+  height: calc(100% - 49px);
+  transition: height 0.3s ease;
+
+  &-hidden {
+    display: none;
+  }
+
+  // If error box are displayed, move inline-errors-box
+  // to bottom of the editor and adjust height
+  // so that scroll bar & content do not render under tabs
+  &:has(~ .adev-inline-errors-box) ~ .adev-inline-errors-box {
+    bottom: auto;
+  }
+  &:has(~ .adev-inline-errors-box) {
+    height: min(75% - 49px);
+  }
+}
+
+.adev-inline-errors-box {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem;
+  background-color: color-mix(in srgb, var(--bright-blue), var(--page-background) 90%);
+  border: 1px solid color-mix(in srgb, var(--bright-blue), var(--page-background) 70%);
+  border-radius: 0.25rem;
+  overflow: auto;
+  max-height: 25%;
+
+  button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.25rem;
+
+    docs-icon {
+      font-size: 1.25rem;
+      color: var(--quaternary-contrast);
+      transition: color 0.3s ease;
+    }
+
+    &:hover {
+      docs-icon {
+        color: var(--primary-contrast);
+      }
+    }
+  }
+
+  ul {
+    padding: 0;
+    margin: 0;
+    margin-inline: 1.25rem;
+    color: var(--tertiary-contrast);
+    overflow: auto;
+  }
+}
+
+.adev-editor-download-button {
+  padding: 0;
+  width: 2.875rem;
+  border-radius: 0 0.19rem 0 0;
+  background: var(--octonary-contrast);
+  border-inline-start: 1px solid var(--senary-contrast);
+
+  docs-icon {
+    color: var(--gray-400);
+    transition: color 0.3s ease;
+    font-size: 1.3rem;
+  }
+
+  &:hover {
+    docs-icon {
+      color: var(--primary-contrast);
+    }
+  }
+}
+
+.adev-editor-dropdown {
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  padding: 0;
+  transform: translateY(-0.7rem);
+
+  button {
+    background: var(--page-background);
+    font-size: 0.875rem;
+    width: 100%;
+    text-align: left;
+    padding-block: 0.5rem;
+    color: var(--quaternary-contrast);
+    transition:
+      color 0.3s ease,
+      background 0.3s ease;
+    font-weight: 400;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &:hover {
+      background: var(--senary-contrast);
+      color: var(--primary-contrast);
+    }
+    .icon {
+      margin: initial;
+      padding: initial;
+      width: auto;
+    }
+  }
+}

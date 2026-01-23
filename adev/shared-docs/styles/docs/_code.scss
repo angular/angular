@@ -1,0 +1,478 @@
+$code-font-size: 0.875rem;
+
+@mixin docs-theme {
+  .docs-dark-mode .shiki {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
+
+    span {
+      color: var(--shiki-dark);
+      background-color: var(--shiki-dark-bg);
+      /* Optional, if you also want font styles */
+      font-style: var(--shiki-dark-font-style);
+      font-weight: var(--shiki-dark-font-weight);
+    }
+
+    .shiki-ln-line-highlighted,
+    button:hover {
+      span {
+        background-color: inherit;
+      }
+    }
+  }
+
+  .shiki {
+    &.cli {
+      padding-inline-start: 1rem;
+      padding-block: 1rem;
+    }
+
+    a {
+      color: inherit;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .docs-light-mode .shiki {
+    color: var(--shiki-light);
+    background-color: var(--shiki-light-bg);
+
+    span {
+      color: var(--shiki-light);
+      background-color: var(--shiki-light-bg);
+      /* Optional, if you also want font styles */
+      font-style: var(--shiki-light-font-style);
+      font-weight: var(--shiki-light-font-weight);
+      text-decoration: var(--shiki-light-text-decoration);
+    }
+
+    .shiki-ln-line-highlighted,
+    button:hover {
+      span {
+        background-color: inherit;
+      }
+    }
+  }
+}
+
+@mixin docs-code-block {
+  // code across docs, inline, blocks, shell, example viewer, etc.
+  code {
+    font-family: var(--code-font);
+    border-radius: 0.25rem;
+    font-weight: 400;
+    // Create a new stacking context to allow for the psuedo element content to be placed behind the
+    // text so that the text is properly selectable by the user.
+    isolation: isolate;
+
+    // Inline code only
+    &:not(pre *) {
+      position: relative;
+      padding: 0 0.3rem;
+      // Fallback for older browsers
+      background: #e62600;
+      background: var(--red-to-orange-horizontal-gradient);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      max-width: max-content;
+      width: 100%;
+      display: inline-block;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--subtle-purple);
+        border-radius: 0.25rem;
+        z-index: -1;
+      }
+
+      a:not(.docs-anchor) > & {
+        position: relative;
+        padding: 0 0.3rem;
+        white-space: nowrap;
+        background: var(--purple-to-blue-horizontal-gradient);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        max-width: max-content;
+
+        &::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          background: var(--subtle-purple);
+          border-radius: 0.25rem;
+          transition: background 0.3s ease;
+          z-index: -1;
+        }
+
+        &:hover {
+          background: var(--vivid-pink);
+          background-clip: text;
+          -webkit-background-clip: text;
+          color: transparent;
+          max-width: max-content;
+        }
+      }
+    }
+
+    // render inline code emjois without gradient
+    .docs-emoji {
+      color: initial;
+    }
+  }
+
+  pre {
+    white-space: pre;
+  }
+
+  // render inline code emjois without gradient
+  .docs-emoji {
+    color: inherit;
+  }
+
+  // docs-code shell, multifile, mermaid diagrams
+  .docs-code {
+    .docs-viewer & {
+      margin-block: 1rem;
+    }
+    display: block;
+    position: relative;
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.25rem;
+    background: var(--octonary-contrast);
+    overflow: hidden;
+    transition:
+      background 0.3s ease,
+      border-color 0.3s ease;
+    container: codeblock / inline-size;
+
+    &.compact {
+      code {
+        max-height: 300px;
+      }
+    }
+
+    &.embedded {
+      border-width: 0;
+      border-radius: 0;
+    }
+
+    &.docs-code-avoid {
+      --style-color: var(--hot-red);
+    }
+
+    &.docs-code-prefer {
+      --style-color: var(--symbolic-green);
+    }
+    &.docs-code-avoid,
+    &.docs-code-prefer {
+      border-color: color-mix(in srgb, var(--style-color) 40%, var(--senary-contrast));
+    }
+  }
+
+  .shiki {
+    code {
+      width: 100%;
+      overflow: auto;
+      padding-block: 1rem;
+      display: flex;
+      flex-direction: column;
+      font-size: $code-font-size;
+      counter-reset: line;
+    }
+
+    &.compact {
+      pre {
+        max-height: 300px;
+      }
+    }
+  }
+
+  // shell doesn't have a header, for commands only
+  .shell {
+    pre {
+      white-space: nowrap;
+    }
+
+    .shiki .line {
+      &::before {
+        content: '$';
+        padding-inline-end: 0.5rem;
+      }
+      display: block;
+
+      &.hidden {
+        display: none;
+      }
+    }
+  }
+
+  // copy code button
+  button[docs-copy-source-code] {
+    padding: 0.375rem 0.4rem 0.15rem 0.5rem;
+    position: absolute;
+    top: 3.1rem;
+    right: 0.2rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    z-index: var(--z-index-icon);
+    background-color: var(--octonary-contrast);
+    border: 1px solid var(--senary-contrast);
+    transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease;
+
+    .docs-icon {
+      transition: opacity 0.3s ease-out;
+    }
+    .docs-copy {
+      opacity: 1;
+      path {
+        transition: fill 0.3s ease;
+        fill: var(--gray-400);
+      }
+    }
+    .docs-check {
+      opacity: 0;
+      color: var(--primary-contrast);
+      position: absolute;
+      inset: 0;
+      top: 0.35rem;
+      path {
+        transition: fill 0.3s ease;
+      }
+    }
+
+    &.docs-copy-source-code-button-success {
+      .docs-copy {
+        opacity: 0;
+      }
+      .docs-check {
+        opacity: 1;
+      }
+    }
+
+    &:hover {
+      .docs-copy {
+        path {
+          fill: var(--primary-contrast);
+        }
+      }
+    }
+  }
+
+  .docs-code .docs-code-header {
+    position: relative;
+    h3 {
+      background-image: var(--purple-to-blue-horizontal-gradient);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      font-size: $code-font-size;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1.4rem;
+      letter-spacing: -0.00875rem;
+      margin: 0;
+      word-wrap: break-word;
+      width: fit-content;
+    }
+  }
+
+  .docs-code-header {
+    display: flex;
+    padding: 0.75rem;
+
+    background: var(--subtle-purple);
+    border-radius: 0.25rem 0.25rem 0 0;
+    transition: background 0.3s ease;
+
+    .docs-code-avoid &,
+    .docs-code-prefer & {
+      background: color-mix(in srgb, var(--style-color) 17%, var(--page-background));
+      color: color-mix(in srgb, var(--style-color) 60%, var(--primary-contrast));
+      h3 {
+        color: color-mix(in srgb, var(--style-color) 60%, var(--primary-contrast));
+      }
+    }
+
+    .docs-code-header-style {
+      display: flex;
+      align-items: center;
+      font-size: 0.8rem;
+
+      &::before {
+        font-family: var(--icons);
+        margin-right: 0.5rem;
+      }
+      &:not(:last-child)::after {
+        content: '-';
+        margin: 0 0.5rem;
+      }
+    }
+
+    .docs-code-header-style {
+      .docs-code-prefer & {
+        &::before {
+          content: 'check';
+        }
+      }
+    }
+
+    .docs-code-header-style {
+      .docs-code-avoid & {
+        &::before {
+          content: 'dangerous';
+        }
+      }
+    }
+  }
+
+  // Single line docs-code elements, without headers, shell code
+  .docs-code:not(:has(.docs-code-header)) {
+    button[docs-copy-source-code] {
+      top: 0.2rem;
+      right: 0.2rem;
+    }
+  }
+
+  .docs-code[mermaid] {
+    border: 0;
+    width: 100%;
+    background-color: transparent;
+  }
+
+  // Line numbers styling: Add a grid, if there are line numbers
+  .docs-code:not([mermaid]),
+  .docs-example-viewer-code-wrapper {
+    code:has(.shiki-ln-number) {
+      display: grid;
+      grid-template-columns: min-content 1fr;
+      height: 100%;
+    }
+
+    pre {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+    }
+  }
+
+  .docs-example-viewer-code-wrapper {
+    .docs-code-header {
+      display: none;
+    }
+  }
+
+  .shiki {
+    .shiki-ln-number.shiki-ln-number.shiki-ln-number {
+      border-inline-end: 1px solid var(--senary-contrast);
+      padding-inline-start: 0.75rem;
+      padding-inline-end: 0.5rem;
+      color: var(--quaternary-contrast);
+      font-size: $code-font-size;
+      text-align: right;
+      padding-block: 0.25rem;
+    }
+
+    .line {
+      &.highlighted {
+        background-color: color-mix(in srgb, var(--bright-blue) 9%, var(--page-background));
+        color: color-mix(in srgb, var(--bright-blue) 60%, var(--full-contrast));
+
+        span {
+          background-color: inherit;
+        }
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+  }
+}
+
+@mixin docs-syntax-highlighting {
+  .shiki .line {
+    min-height: 1.375em;
+    padding-inline: 1rem;
+    color: var(--tertiary-contrast);
+    display: block;
+    font-size: $code-font-size;
+    font-family: var(--code-font);
+    font-weight: 400;
+    text-align: left;
+    padding-block: 0.25rem;
+
+    &.hidden {
+      display: none;
+    }
+
+    // Hide the last line if it's empty
+    &:last-child:empty {
+      display: none;
+    }
+
+    span:last-child {
+      margin-inline-end: 4rem;
+    }
+  }
+
+  .shiki-ln-group {
+    display: flex;
+    flex-direction: column;
+    margin: 1rem 0;
+  }
+
+  .shiki-deprecated {
+    text-decoration: line-through;
+  }
+
+  .gap {
+    color: var(--quaternary-contrast);
+  }
+
+  .hljs-constructor {
+    color: var(--symbolic-cyan);
+  }
+
+  .hljs-params {
+    color: var(--bright-blue);
+  }
+}
+
+@mixin docs-code-editor {
+  .cm-tooltip-hover {
+    display: flex;
+    flex-direction: column-reverse;
+    padding: 0.75rem;
+
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0);
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--senary-contrast);
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--quinary-contrast);
+    }
+  }
+}

@@ -1,0 +1,38 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_jasmine_test")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "linking",
+    srcs = ["linking.mts"],
+    visibility = [
+        "//adev/shared-docs/pipeline:__subpackages__",
+    ],
+)
+
+ts_project(
+    name = "shiki",
+    srcs = ["shiki.mts"],
+    visibility = [
+        "//adev/shared-docs/pipeline:__subpackages__",
+    ],
+    deps = [
+        ":linking",
+        "//adev:node_modules/shiki",
+        "//adev:node_modules/typescript",
+    ],
+)
+
+ts_project(
+    name = "linking_test_lib",
+    testonly = True,
+    srcs = ["test/linking.spec.mts"],
+    deps = [
+        ":linking",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "linking_test",
+    data = [":linking_test_lib"],
+)

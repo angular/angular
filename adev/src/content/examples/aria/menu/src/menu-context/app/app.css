@@ -1,0 +1,9 @@
+h1 {
+  background: var(--gray-600);
+  color: #e0e0e0;
+  padding: 2rem;
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 2rem;
+  text-align: center;
+}

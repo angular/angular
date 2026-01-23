@@ -1,0 +1,28 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "component-metadata_styles",
+    src = "component-metadata.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "component-metadata",
+    srcs = [
+        "component-metadata.component.ts",
+    ],
+    angular_assets = [
+        "component-metadata.component.html",
+        ":component-metadata_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/ng-devtools/src/lib/shared/docs-ref-button",
+        "//devtools/projects/protocol",
+    ],
+)

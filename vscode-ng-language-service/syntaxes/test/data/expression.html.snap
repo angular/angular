@@ -1,0 +1,1535 @@
+><!-- Data types -->
+#^^^^^^^^^^^^^^^^^^^^ template.ng
+>{{ variable }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#           ^ template.ng expression.ng
+#            ^^ template.ng punctuation.definition.block.ts
+>{{ 'string' }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#    ^^^^^^ template.ng expression.ng string.quoted.single.ts
+#          ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#           ^ template.ng expression.ng
+#            ^^ template.ng punctuation.definition.block.ts
+>{{ "string" }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng string.quoted.double.ts punctuation.definition.string.begin.ts
+#    ^^^^^^ template.ng expression.ng string.quoted.double.ts
+#          ^ template.ng expression.ng string.quoted.double.ts punctuation.definition.string.end.ts
+#           ^ template.ng expression.ng
+#            ^^ template.ng punctuation.definition.block.ts
+>{{ 1 }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng constant.numeric.decimal.ts
+#    ^ template.ng expression.ng
+#     ^^ template.ng punctuation.definition.block.ts
+>{{ true }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng constant.language.boolean.true.ts
+#       ^ template.ng expression.ng
+#        ^^ template.ng punctuation.definition.block.ts
+>{{ false }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^ template.ng expression.ng constant.language.boolean.false.ts
+#        ^ template.ng expression.ng
+#         ^^ template.ng punctuation.definition.block.ts
+>{{ null }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng constant.language.null.ts
+#       ^ template.ng expression.ng
+#        ^^ template.ng punctuation.definition.block.ts
+>{{ this }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng variable.language.this.ts
+#       ^ template.ng expression.ng
+#        ^^ template.ng punctuation.definition.block.ts
+>{{ undefined }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng constant.language.undefined.ts
+#            ^ template.ng expression.ng
+#             ^^ template.ng punctuation.definition.block.ts
+>{{ [variable, variable] }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#    ^^^^^^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#            ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#             ^ template.ng expression.ng meta.array.literal.ts
+#              ^^^^^^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#                      ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                       ^ template.ng expression.ng
+#                        ^^ template.ng punctuation.definition.block.ts
+>{{ ['string', 'string'] }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#    ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#     ^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts
+#           ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#            ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#             ^ template.ng expression.ng meta.array.literal.ts
+#              ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#               ^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts
+#                     ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#                      ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                       ^ template.ng expression.ng
+#                        ^^ template.ng punctuation.definition.block.ts
+>{{ ["string", "string"] }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#    ^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts punctuation.definition.string.begin.ts
+#     ^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts
+#           ^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts punctuation.definition.string.end.ts
+#            ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#             ^ template.ng expression.ng meta.array.literal.ts
+#              ^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts punctuation.definition.string.begin.ts
+#               ^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts
+#                     ^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts punctuation.definition.string.end.ts
+#                      ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                       ^ template.ng expression.ng
+#                        ^^ template.ng punctuation.definition.block.ts
+>{{ [1, 2] }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#    ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#     ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#      ^ template.ng expression.ng meta.array.literal.ts
+#       ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#        ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#         ^ template.ng expression.ng
+#          ^^ template.ng punctuation.definition.block.ts
+>{{ [true, false, null, this, undefined] }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#    ^^^^ template.ng expression.ng meta.array.literal.ts constant.language.boolean.true.ts
+#        ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#         ^ template.ng expression.ng meta.array.literal.ts
+#          ^^^^^ template.ng expression.ng meta.array.literal.ts constant.language.boolean.false.ts
+#               ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                ^ template.ng expression.ng meta.array.literal.ts
+#                 ^^^^ template.ng expression.ng meta.array.literal.ts constant.language.null.ts
+#                     ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                      ^ template.ng expression.ng meta.array.literal.ts
+#                       ^^^^ template.ng expression.ng meta.array.literal.ts variable.language.this.ts
+#                           ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                            ^ template.ng expression.ng meta.array.literal.ts
+#                             ^^^^^^^^^ template.ng expression.ng meta.array.literal.ts constant.language.undefined.ts
+#                                      ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                       ^ template.ng expression.ng
+#                                        ^^ template.ng punctuation.definition.block.ts
+>{{ {object: variable} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                    ^^ template.ng expression.ng
+#                      ^^ template.ng punctuation.definition.block.ts
+>{{ {object: 'string'} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#             ^^^^^^ template.ng expression.ng string.quoted.single.ts
+#                   ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                    ^^ template.ng expression.ng
+#                      ^^ template.ng punctuation.definition.block.ts
+>{{ {object: "string"} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^ template.ng expression.ng string.quoted.double.ts punctuation.definition.string.begin.ts
+#             ^^^^^^ template.ng expression.ng string.quoted.double.ts
+#                   ^ template.ng expression.ng string.quoted.double.ts punctuation.definition.string.end.ts
+#                    ^^ template.ng expression.ng
+#                      ^^ template.ng punctuation.definition.block.ts
+>{{ {object: 1} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^ template.ng expression.ng constant.numeric.decimal.ts
+#             ^^ template.ng expression.ng
+#               ^^ template.ng punctuation.definition.block.ts
+>{{ {object: true} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^^^^ template.ng expression.ng constant.language.boolean.true.ts
+#                ^^ template.ng expression.ng
+#                  ^^ template.ng punctuation.definition.block.ts
+>{{ {object: false} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^^^^^ template.ng expression.ng constant.language.boolean.false.ts
+#                 ^^ template.ng expression.ng
+#                   ^^ template.ng punctuation.definition.block.ts
+>{{ {object: null} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^^^^ template.ng expression.ng constant.language.null.ts
+#                ^^ template.ng expression.ng
+#                  ^^ template.ng punctuation.definition.block.ts
+>{{ {object: this} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^^^^ template.ng expression.ng variable.language.this.ts
+#                ^^ template.ng expression.ng
+#                  ^^ template.ng punctuation.definition.block.ts
+>{{ {object: undefined} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^^^^^^^^^ template.ng expression.ng constant.language.undefined.ts
+#                     ^^ template.ng expression.ng
+#                       ^^ template.ng punctuation.definition.block.ts
+>{{ {object: [variable, variable]} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#             ^^^^^^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#                     ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                      ^ template.ng expression.ng meta.array.literal.ts
+#                       ^^^^^^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#                               ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                ^^ template.ng expression.ng
+#                                  ^^ template.ng punctuation.definition.block.ts
+>{{ {object: ['string', 'string']} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#             ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#              ^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts
+#                    ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#                     ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                      ^ template.ng expression.ng meta.array.literal.ts
+#                       ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#                        ^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts
+#                              ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#                               ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                ^^ template.ng expression.ng
+#                                  ^^ template.ng punctuation.definition.block.ts
+>{{ {object: ["string", "string"]} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#             ^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts punctuation.definition.string.begin.ts
+#              ^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts
+#                    ^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts punctuation.definition.string.end.ts
+#                     ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                      ^ template.ng expression.ng meta.array.literal.ts
+#                       ^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts punctuation.definition.string.begin.ts
+#                        ^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts
+#                              ^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts punctuation.definition.string.end.ts
+#                               ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                ^^ template.ng expression.ng
+#                                  ^^ template.ng punctuation.definition.block.ts
+>{{ {object: [1, 2]} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#             ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#              ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#               ^ template.ng expression.ng meta.array.literal.ts
+#                ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#                 ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                  ^^ template.ng expression.ng
+#                    ^^ template.ng punctuation.definition.block.ts
+>{{ {object: [true, false, null, this, undefined]} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^ template.ng expression.ng
+#    ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#          ^^ template.ng expression.ng
+#            ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#             ^^^^ template.ng expression.ng meta.array.literal.ts constant.language.boolean.true.ts
+#                 ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                  ^ template.ng expression.ng meta.array.literal.ts
+#                   ^^^^^ template.ng expression.ng meta.array.literal.ts constant.language.boolean.false.ts
+#                        ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                         ^ template.ng expression.ng meta.array.literal.ts
+#                          ^^^^ template.ng expression.ng meta.array.literal.ts constant.language.null.ts
+#                              ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                               ^ template.ng expression.ng meta.array.literal.ts
+#                                ^^^^ template.ng expression.ng meta.array.literal.ts variable.language.this.ts
+#                                    ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                                     ^ template.ng expression.ng meta.array.literal.ts
+#                                      ^^^^^^^^^ template.ng expression.ng meta.array.literal.ts constant.language.undefined.ts
+#                                               ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                                ^^ template.ng expression.ng
+#                                                  ^^ template.ng punctuation.definition.block.ts
+>
+><!-- Property read and method call: implicit -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
+>{{ call() }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng meta.brace.round.ts
+#         ^ template.ng expression.ng
+#          ^^ template.ng punctuation.definition.block.ts
+>{{ call(); }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng meta.brace.round.ts
+#         ^ template.ng expression.ng punctuation.terminator.statement.ts
+#          ^ template.ng expression.ng
+#           ^^ template.ng punctuation.definition.block.ts
+>{{ call().object }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng meta.brace.round.ts
+#         ^ template.ng expression.ng punctuation.accessor.ts
+#          ^^^^^^ template.ng expression.ng variable.other.property.ts
+#                ^ template.ng expression.ng
+#                 ^^ template.ng punctuation.definition.block.ts
+>{{ call().object; }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng meta.brace.round.ts
+#         ^ template.ng expression.ng punctuation.accessor.ts
+#          ^^^^^^ template.ng expression.ng variable.other.property.ts
+#                ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                 ^ template.ng expression.ng
+#                  ^^ template.ng punctuation.definition.block.ts
+>{{ call()?.conditional }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng meta.brace.round.ts
+#         ^^ template.ng expression.ng punctuation.accessor.ts
+#           ^^^^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                      ^ template.ng expression.ng
+#                       ^^ template.ng punctuation.definition.block.ts
+>{{ call()?.conditional; }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng meta.brace.round.ts
+#         ^^ template.ng expression.ng punctuation.accessor.ts
+#           ^^^^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                      ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                       ^ template.ng expression.ng
+#                        ^^ template.ng punctuation.definition.block.ts
+>{{ call()!.conditional }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng meta.brace.round.ts
+#         ^ template.ng expression.ng keyword.operator.logical.ts
+#          ^ template.ng expression.ng punctuation.accessor.ts
+#           ^^^^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                      ^ template.ng expression.ng
+#                       ^^ template.ng punctuation.definition.block.ts
+>{{ call()!.conditional; }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng meta.brace.round.ts
+#         ^ template.ng expression.ng keyword.operator.logical.ts
+#          ^ template.ng expression.ng punctuation.accessor.ts
+#           ^^^^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                      ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                       ^ template.ng expression.ng
+#                        ^^ template.ng punctuation.definition.block.ts
+>
+><!-- Property read and method call: received -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
+>{{ object.call() }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^ template.ng expression.ng variable.other.object.ts
+#         ^ template.ng expression.ng punctuation.accessor.ts
+#          ^^^^ template.ng expression.ng entity.name.function.ts
+#              ^ template.ng expression.ng meta.brace.round.ts
+#               ^ template.ng expression.ng meta.brace.round.ts
+#                ^ template.ng expression.ng
+#                 ^^ template.ng punctuation.definition.block.ts
+>{{ object.call(); }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^ template.ng expression.ng variable.other.object.ts
+#         ^ template.ng expression.ng punctuation.accessor.ts
+#          ^^^^ template.ng expression.ng entity.name.function.ts
+#              ^ template.ng expression.ng meta.brace.round.ts
+#               ^ template.ng expression.ng meta.brace.round.ts
+#                ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                 ^ template.ng expression.ng
+#                  ^^ template.ng punctuation.definition.block.ts
+>{{ object.call().object }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^ template.ng expression.ng variable.other.object.ts
+#         ^ template.ng expression.ng punctuation.accessor.ts
+#          ^^^^ template.ng expression.ng entity.name.function.ts
+#              ^ template.ng expression.ng meta.brace.round.ts
+#               ^ template.ng expression.ng meta.brace.round.ts
+#                ^ template.ng expression.ng punctuation.accessor.ts
+#                 ^^^^^^ template.ng expression.ng variable.other.property.ts
+#                       ^ template.ng expression.ng
+#                        ^^ template.ng punctuation.definition.block.ts
+>{{ object.call().object; }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^ template.ng expression.ng variable.other.object.ts
+#         ^ template.ng expression.ng punctuation.accessor.ts
+#          ^^^^ template.ng expression.ng entity.name.function.ts
+#              ^ template.ng expression.ng meta.brace.round.ts
+#               ^ template.ng expression.ng meta.brace.round.ts
+#                ^ template.ng expression.ng punctuation.accessor.ts
+#                 ^^^^^^ template.ng expression.ng variable.other.property.ts
+#                       ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                        ^ template.ng expression.ng
+#                         ^^ template.ng punctuation.definition.block.ts
+>{{ object?.call()?.conditional }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#         ^ template.ng expression.ng punctuation.accessor.ts
+#          ^ template.ng expression.ng punctuation.accessor.ts
+#           ^^^^ template.ng expression.ng entity.name.function.ts
+#               ^ template.ng expression.ng meta.brace.round.ts
+#                ^ template.ng expression.ng meta.brace.round.ts
+#                 ^^ template.ng expression.ng punctuation.accessor.ts
+#                   ^^^^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                              ^ template.ng expression.ng
+#                               ^^ template.ng punctuation.definition.block.ts
+>{{ object?.call()?.conditional; }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#         ^ template.ng expression.ng punctuation.accessor.ts
+#          ^ template.ng expression.ng punctuation.accessor.ts
+#           ^^^^ template.ng expression.ng entity.name.function.ts
+#               ^ template.ng expression.ng meta.brace.round.ts
+#                ^ template.ng expression.ng meta.brace.round.ts
+#                 ^^ template.ng expression.ng punctuation.accessor.ts
+#                   ^^^^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                              ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                               ^ template.ng expression.ng
+#                                ^^ template.ng punctuation.definition.block.ts
+>{{ object!.call()!.conditional }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#         ^ template.ng expression.ng keyword.operator.logical.ts
+#          ^ template.ng expression.ng punctuation.accessor.ts
+#           ^^^^ template.ng expression.ng entity.name.function.ts
+#               ^ template.ng expression.ng meta.brace.round.ts
+#                ^ template.ng expression.ng meta.brace.round.ts
+#                 ^ template.ng expression.ng keyword.operator.logical.ts
+#                  ^ template.ng expression.ng punctuation.accessor.ts
+#                   ^^^^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                              ^ template.ng expression.ng
+#                               ^^ template.ng punctuation.definition.block.ts
+>{{ object!.call()!.conditional; }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#         ^ template.ng expression.ng keyword.operator.logical.ts
+#          ^ template.ng expression.ng punctuation.accessor.ts
+#           ^^^^ template.ng expression.ng entity.name.function.ts
+#               ^ template.ng expression.ng meta.brace.round.ts
+#                ^ template.ng expression.ng meta.brace.round.ts
+#                 ^ template.ng expression.ng keyword.operator.logical.ts
+#                  ^ template.ng expression.ng punctuation.accessor.ts
+#                   ^^^^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                              ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                               ^ template.ng expression.ng
+#                                ^^ template.ng punctuation.definition.block.ts
+>
+><!-- Method call with parameters -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
+>{{ call(withParams) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                  ^ template.ng expression.ng meta.brace.round.ts
+#                   ^ template.ng expression.ng
+#                    ^^ template.ng punctuation.definition.block.ts
+>{{ call('withParams') }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#         ^^^^^^^^^^ template.ng expression.ng string.quoted.single.ts
+#                   ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                    ^ template.ng expression.ng meta.brace.round.ts
+#                     ^ template.ng expression.ng
+#                      ^^ template.ng punctuation.definition.block.ts
+>{{ call("withParams") }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng string.quoted.double.ts punctuation.definition.string.begin.ts
+#         ^^^^^^^^^^ template.ng expression.ng string.quoted.double.ts
+#                   ^ template.ng expression.ng string.quoted.double.ts punctuation.definition.string.end.ts
+#                    ^ template.ng expression.ng meta.brace.round.ts
+#                     ^ template.ng expression.ng
+#                      ^^ template.ng punctuation.definition.block.ts
+>{{ call("withParams") }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng string.quoted.double.ts punctuation.definition.string.begin.ts
+#         ^^^^^^^^^^ template.ng expression.ng string.quoted.double.ts
+#                   ^ template.ng expression.ng string.quoted.double.ts punctuation.definition.string.end.ts
+#                    ^ template.ng expression.ng meta.brace.round.ts
+#                     ^ template.ng expression.ng
+#                      ^^ template.ng punctuation.definition.block.ts
+>{{ call(false) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^^^^^ template.ng expression.ng constant.language.boolean.false.ts
+#             ^ template.ng expression.ng meta.brace.round.ts
+#              ^ template.ng expression.ng
+#               ^^ template.ng punctuation.definition.block.ts
+>{{ call(!!true) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng keyword.operator.logical.ts
+#         ^ template.ng expression.ng keyword.operator.logical.ts
+#          ^^^^ template.ng expression.ng constant.language.boolean.true.ts
+#              ^ template.ng expression.ng meta.brace.round.ts
+#               ^ template.ng expression.ng
+#                ^^ template.ng punctuation.definition.block.ts
+>{{ call(["array", 123]) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#         ^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts punctuation.definition.string.begin.ts
+#          ^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts
+#               ^ template.ng expression.ng meta.array.literal.ts string.quoted.double.ts punctuation.definition.string.end.ts
+#                ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                 ^ template.ng expression.ng meta.array.literal.ts
+#                  ^^^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#                     ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                      ^ template.ng expression.ng meta.brace.round.ts
+#                       ^ template.ng expression.ng
+#                        ^^ template.ng punctuation.definition.block.ts
+>{{ call(1) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^ template.ng expression.ng constant.numeric.decimal.ts
+#         ^ template.ng expression.ng meta.brace.round.ts
+#          ^ template.ng expression.ng
+#           ^^ template.ng punctuation.definition.block.ts
+>{{ call({ test: 'object' }) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^^ template.ng expression.ng
+#          ^^^^ template.ng expression.ng variable.other.readwrite.ts
+#              ^^ template.ng expression.ng
+#                ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#                 ^^^^^^ template.ng expression.ng string.quoted.single.ts
+#                       ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                        ^^ template.ng expression.ng
+#                          ^ template.ng expression.ng meta.brace.round.ts
+#                           ^ template.ng expression.ng
+#                            ^^ template.ng punctuation.definition.block.ts
+>{{ call({ test: 123 }) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^^ template.ng expression.ng
+#          ^^^^ template.ng expression.ng variable.other.readwrite.ts
+#              ^^ template.ng expression.ng
+#                ^^^ template.ng expression.ng constant.numeric.decimal.ts
+#                   ^^ template.ng expression.ng
+#                     ^ template.ng expression.ng meta.brace.round.ts
+#                      ^ template.ng expression.ng
+#                       ^^ template.ng punctuation.definition.block.ts
+>{{ call({ test: [123, 321, { value: ['string', false, true] }] }) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng meta.brace.round.ts
+#        ^^ template.ng expression.ng
+#          ^^^^ template.ng expression.ng variable.other.readwrite.ts
+#              ^^ template.ng expression.ng
+#                ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                 ^^^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#                    ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                     ^ template.ng expression.ng meta.array.literal.ts
+#                      ^^^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#                         ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                          ^^^ template.ng expression.ng meta.array.literal.ts
+#                             ^^^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#                                  ^^ template.ng expression.ng meta.array.literal.ts
+#                                    ^ template.ng expression.ng meta.array.literal.ts meta.array.literal.ts meta.brace.square.ts
+#                                     ^ template.ng expression.ng meta.array.literal.ts meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                      ^^^^^^ template.ng expression.ng meta.array.literal.ts meta.array.literal.ts string.quoted.single.ts
+#                                            ^ template.ng expression.ng meta.array.literal.ts meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#                                             ^ template.ng expression.ng meta.array.literal.ts meta.array.literal.ts punctuation.separator.comma.ts
+#                                              ^ template.ng expression.ng meta.array.literal.ts meta.array.literal.ts
+#                                               ^^^^^ template.ng expression.ng meta.array.literal.ts meta.array.literal.ts constant.language.boolean.false.ts
+#                                                    ^ template.ng expression.ng meta.array.literal.ts meta.array.literal.ts punctuation.separator.comma.ts
+#                                                     ^ template.ng expression.ng meta.array.literal.ts meta.array.literal.ts
+#                                                      ^^^^ template.ng expression.ng meta.array.literal.ts meta.array.literal.ts constant.language.boolean.true.ts
+#                                                          ^ template.ng expression.ng meta.array.literal.ts meta.array.literal.ts meta.brace.square.ts
+#                                                           ^^ template.ng expression.ng meta.array.literal.ts
+#                                                             ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                                              ^^ template.ng expression.ng
+#                                                                ^ template.ng expression.ng meta.brace.round.ts
+#                                                                 ^ template.ng expression.ng
+#                                                                  ^^ template.ng punctuation.definition.block.ts
+>
+><!-- Nullish coalesce -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
+>{{a ?? 'empty'}}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng variable.other.readwrite.ts
+#   ^ template.ng expression.ng
+#    ^^ template.ng expression.ng keyword.operator.logical.ts
+#      ^ template.ng expression.ng
+#       ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#        ^^^^^ template.ng expression.ng string.quoted.single.ts
+#             ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#              ^^ template.ng punctuation.definition.block.ts
+>
+><!-- Ternary expression -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
+>{{ condition ? true : false }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#            ^ template.ng expression.ng
+#             ^ template.ng expression.ng keyword.operator.ternary.ts
+#              ^ template.ng expression.ng
+#               ^^^^ template.ng expression.ng constant.language.boolean.true.ts
+#                   ^ template.ng expression.ng
+#                    ^ template.ng expression.ng keyword.operator.ternary.ts
+#                     ^ template.ng expression.ng
+#                      ^^^^^ template.ng expression.ng constant.language.boolean.false.ts
+#                           ^ template.ng expression.ng
+#                            ^^ template.ng punctuation.definition.block.ts
+>{{ condition ? true : false; }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#            ^ template.ng expression.ng
+#             ^ template.ng expression.ng keyword.operator.ternary.ts
+#              ^ template.ng expression.ng
+#               ^^^^ template.ng expression.ng constant.language.boolean.true.ts
+#                   ^ template.ng expression.ng
+#                    ^ template.ng expression.ng keyword.operator.ternary.ts
+#                     ^ template.ng expression.ng
+#                      ^^^^^ template.ng expression.ng constant.language.boolean.false.ts
+#                           ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                            ^ template.ng expression.ng
+#                             ^^ template.ng punctuation.definition.block.ts
+>{{ condition() ? call(1 + 2 + 3) : call() }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng entity.name.function.ts
+#            ^ template.ng expression.ng meta.brace.round.ts
+#             ^ template.ng expression.ng meta.brace.round.ts
+#              ^ template.ng expression.ng
+#               ^ template.ng expression.ng keyword.operator.ternary.ts
+#                ^ template.ng expression.ng
+#                 ^^^^ template.ng expression.ng entity.name.function.ts
+#                     ^ template.ng expression.ng meta.brace.round.ts
+#                      ^ template.ng expression.ng constant.numeric.decimal.ts
+#                       ^ template.ng expression.ng
+#                        ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                         ^ template.ng expression.ng
+#                          ^ template.ng expression.ng constant.numeric.decimal.ts
+#                           ^ template.ng expression.ng
+#                            ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                             ^ template.ng expression.ng
+#                              ^ template.ng expression.ng constant.numeric.decimal.ts
+#                               ^ template.ng expression.ng meta.brace.round.ts
+#                                ^ template.ng expression.ng
+#                                 ^ template.ng expression.ng keyword.operator.ternary.ts
+#                                  ^ template.ng expression.ng
+#                                   ^^^^ template.ng expression.ng entity.name.function.ts
+#                                       ^ template.ng expression.ng meta.brace.round.ts
+#                                        ^ template.ng expression.ng meta.brace.round.ts
+#                                         ^ template.ng expression.ng
+#                                          ^^ template.ng punctuation.definition.block.ts
+>{{ condition() ? call(1 + 2 + 3) : call(); }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng entity.name.function.ts
+#            ^ template.ng expression.ng meta.brace.round.ts
+#             ^ template.ng expression.ng meta.brace.round.ts
+#              ^ template.ng expression.ng
+#               ^ template.ng expression.ng keyword.operator.ternary.ts
+#                ^ template.ng expression.ng
+#                 ^^^^ template.ng expression.ng entity.name.function.ts
+#                     ^ template.ng expression.ng meta.brace.round.ts
+#                      ^ template.ng expression.ng constant.numeric.decimal.ts
+#                       ^ template.ng expression.ng
+#                        ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                         ^ template.ng expression.ng
+#                          ^ template.ng expression.ng constant.numeric.decimal.ts
+#                           ^ template.ng expression.ng
+#                            ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                             ^ template.ng expression.ng
+#                              ^ template.ng expression.ng constant.numeric.decimal.ts
+#                               ^ template.ng expression.ng meta.brace.round.ts
+#                                ^ template.ng expression.ng
+#                                 ^ template.ng expression.ng keyword.operator.ternary.ts
+#                                  ^ template.ng expression.ng
+#                                   ^^^^ template.ng expression.ng entity.name.function.ts
+#                                       ^ template.ng expression.ng meta.brace.round.ts
+#                                        ^ template.ng expression.ng meta.brace.round.ts
+#                                         ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                                          ^ template.ng expression.ng
+#                                           ^^ template.ng punctuation.definition.block.ts
+>{{ condition()?.object ? call()!.test() : false }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng entity.name.function.ts
+#            ^ template.ng expression.ng meta.brace.round.ts
+#             ^ template.ng expression.ng meta.brace.round.ts
+#              ^^ template.ng expression.ng punctuation.accessor.ts
+#                ^^^^^^ template.ng expression.ng variable.other.property.ts
+#                      ^ template.ng expression.ng
+#                       ^ template.ng expression.ng keyword.operator.ternary.ts
+#                        ^ template.ng expression.ng
+#                         ^^^^ template.ng expression.ng entity.name.function.ts
+#                             ^ template.ng expression.ng meta.brace.round.ts
+#                              ^ template.ng expression.ng meta.brace.round.ts
+#                               ^ template.ng expression.ng keyword.operator.logical.ts
+#                                ^ template.ng expression.ng punctuation.accessor.ts
+#                                 ^^^^ template.ng expression.ng entity.name.function.ts
+#                                     ^ template.ng expression.ng meta.brace.round.ts
+#                                      ^ template.ng expression.ng meta.brace.round.ts
+#                                       ^ template.ng expression.ng
+#                                        ^ template.ng expression.ng keyword.operator.ternary.ts
+#                                         ^ template.ng expression.ng
+#                                          ^^^^^ template.ng expression.ng constant.language.boolean.false.ts
+#                                               ^ template.ng expression.ng
+#                                                ^^ template.ng punctuation.definition.block.ts
+>{{ condition ? ['123'] : { test: 'a' } }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#            ^ template.ng expression.ng
+#             ^ template.ng expression.ng keyword.operator.ternary.ts
+#              ^ template.ng expression.ng
+#               ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#                 ^^^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts
+#                    ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#                     ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                      ^ template.ng expression.ng
+#                       ^ template.ng expression.ng keyword.operator.ternary.ts
+#                        ^^^ template.ng expression.ng
+#                           ^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                               ^^ template.ng expression.ng
+#                                 ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                  ^ template.ng expression.ng string.quoted.single.ts
+#                                   ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                                    ^^^ template.ng expression.ng
+#                                       ^^ template.ng punctuation.definition.block.ts
+>{{ condition ? 'test' : "test" }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#            ^ template.ng expression.ng
+#             ^ template.ng expression.ng keyword.operator.ternary.ts
+#              ^ template.ng expression.ng
+#               ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#                ^^^^ template.ng expression.ng string.quoted.single.ts
+#                    ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                     ^ template.ng expression.ng
+#                      ^ template.ng expression.ng keyword.operator.ternary.ts
+#                       ^ template.ng expression.ng
+#                        ^ template.ng expression.ng string.quoted.double.ts punctuation.definition.string.begin.ts
+#                         ^^^^ template.ng expression.ng string.quoted.double.ts
+#                             ^ template.ng expression.ng string.quoted.double.ts punctuation.definition.string.end.ts
+#                              ^ template.ng expression.ng
+#                               ^^ template.ng punctuation.definition.block.ts
+>{{ condition ? [function(), variable] : {} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#            ^ template.ng expression.ng
+#             ^ template.ng expression.ng keyword.operator.ternary.ts
+#              ^ template.ng expression.ng
+#               ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                ^^^^^^^^ template.ng expression.ng meta.array.literal.ts entity.name.function.ts
+#                        ^ template.ng expression.ng meta.array.literal.ts meta.brace.round.ts
+#                         ^ template.ng expression.ng meta.array.literal.ts meta.brace.round.ts
+#                          ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                           ^ template.ng expression.ng meta.array.literal.ts
+#                            ^^^^^^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#                                    ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                     ^ template.ng expression.ng
+#                                      ^ template.ng expression.ng keyword.operator.ternary.ts
+#                                       ^^^^ template.ng expression.ng
+#                                           ^^ template.ng punctuation.definition.block.ts
+>{{ condition ? condition2 ? condition3 ? 1 : 2 : 3 : 4 }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#            ^ template.ng expression.ng
+#             ^ template.ng expression.ng keyword.operator.ternary.ts
+#              ^ template.ng expression.ng
+#               ^^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                         ^ template.ng expression.ng
+#                          ^ template.ng expression.ng keyword.operator.ternary.ts
+#                           ^ template.ng expression.ng
+#                            ^^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                                      ^ template.ng expression.ng
+#                                       ^ template.ng expression.ng keyword.operator.ternary.ts
+#                                        ^ template.ng expression.ng
+#                                         ^ template.ng expression.ng constant.numeric.decimal.ts
+#                                          ^ template.ng expression.ng
+#                                           ^ template.ng expression.ng keyword.operator.ternary.ts
+#                                            ^ template.ng expression.ng
+#                                             ^ template.ng expression.ng constant.numeric.decimal.ts
+#                                              ^ template.ng expression.ng
+#                                               ^ template.ng expression.ng keyword.operator.ternary.ts
+#                                                ^ template.ng expression.ng
+#                                                 ^ template.ng expression.ng constant.numeric.decimal.ts
+#                                                  ^ template.ng expression.ng
+#                                                   ^ template.ng expression.ng keyword.operator.ternary.ts
+#                                                    ^ template.ng expression.ng
+#                                                     ^ template.ng expression.ng constant.numeric.decimal.ts
+#                                                      ^ template.ng expression.ng
+#                                                       ^^ template.ng punctuation.definition.block.ts
+><!-- Don't match safe navigations -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
+>{{ condition?.a : 1 }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#            ^^ template.ng expression.ng punctuation.accessor.ts
+#              ^ template.ng expression.ng variable.other.property.ts
+#               ^^^ template.ng expression.ng
+#                  ^ template.ng expression.ng constant.numeric.decimal.ts
+#                   ^ template.ng expression.ng
+#                    ^^ template.ng punctuation.definition.block.ts
+><!-- Don't match nullish coalesce -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
+>{{ condition ?? (a ? 1 : 2) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#            ^ template.ng expression.ng
+#             ^^ template.ng expression.ng keyword.operator.logical.ts
+#               ^ template.ng expression.ng
+#                ^ template.ng expression.ng meta.brace.round.ts
+#                 ^ template.ng expression.ng variable.other.readwrite.ts
+#                  ^ template.ng expression.ng
+#                   ^ template.ng expression.ng keyword.operator.ternary.ts
+#                    ^ template.ng expression.ng
+#                     ^ template.ng expression.ng constant.numeric.decimal.ts
+#                      ^ template.ng expression.ng
+#                       ^ template.ng expression.ng keyword.operator.ternary.ts
+#                        ^ template.ng expression.ng
+#                         ^ template.ng expression.ng constant.numeric.decimal.ts
+#                          ^ template.ng expression.ng meta.brace.round.ts
+#                           ^ template.ng expression.ng
+#                            ^^ template.ng punctuation.definition.block.ts
+>
+><!-- Pipes -->
+#^^^^^^^^^^^^^^^ template.ng
+>{{ (let param of params) | async }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.brace.round.ts
+#    ^^^ template.ng expression.ng storage.type.ts
+#       ^ template.ng expression.ng
+#        ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#             ^ template.ng expression.ng
+#              ^^ template.ng expression.ng keyword.operator.expression.of.ts
+#                ^ template.ng expression.ng
+#                 ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                       ^ template.ng expression.ng meta.brace.round.ts
+#                        ^ template.ng expression.ng
+#                         ^ template.ng expression.ng keyword.operator.logical.ts
+#                          ^ template.ng expression.ng
+#                           ^^^^^ template.ng expression.ng entity.name.function.pipe.ng
+#                                ^ template.ng expression.ng
+#                                 ^^ template.ng punctuation.definition.block.ts
+>{{ (let param of params) | trackBy: trackByMethod }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.brace.round.ts
+#    ^^^ template.ng expression.ng storage.type.ts
+#       ^ template.ng expression.ng
+#        ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#             ^ template.ng expression.ng
+#              ^^ template.ng expression.ng keyword.operator.expression.of.ts
+#                ^ template.ng expression.ng
+#                 ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                       ^ template.ng expression.ng meta.brace.round.ts
+#                        ^ template.ng expression.ng
+#                         ^ template.ng expression.ng keyword.operator.logical.ts
+#                          ^ template.ng expression.ng
+#                           ^^^^^^^ template.ng expression.ng entity.name.function.pipe.ng
+#                                  ^^ template.ng expression.ng
+#                                    ^^^^^^^^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                                                 ^ template.ng expression.ng
+#                                                  ^^ template.ng punctuation.definition.block.ts
+>{{ (let param of params) | customPipe: 'param' | search: ['term1', 'term2'] }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.brace.round.ts
+#    ^^^ template.ng expression.ng storage.type.ts
+#       ^ template.ng expression.ng
+#        ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#             ^ template.ng expression.ng
+#              ^^ template.ng expression.ng keyword.operator.expression.of.ts
+#                ^ template.ng expression.ng
+#                 ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                       ^ template.ng expression.ng meta.brace.round.ts
+#                        ^ template.ng expression.ng
+#                         ^ template.ng expression.ng keyword.operator.logical.ts
+#                          ^ template.ng expression.ng
+#                           ^^^^^^^^^^ template.ng expression.ng entity.name.function.pipe.ng
+#                                     ^^ template.ng expression.ng
+#                                       ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                        ^^^^^ template.ng expression.ng string.quoted.single.ts
+#                                             ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                                              ^ template.ng expression.ng
+#                                               ^ template.ng expression.ng keyword.operator.logical.ts
+#                                                ^ template.ng expression.ng
+#                                                 ^^^^^^ template.ng expression.ng entity.name.function.pipe.ng
+#                                                       ^^ template.ng expression.ng
+#                                                         ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                                          ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                                           ^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts
+#                                                                ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#                                                                 ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                                                                  ^ template.ng expression.ng meta.array.literal.ts
+#                                                                   ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                                                    ^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts
+#                                                                         ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#                                                                          ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                                                           ^ template.ng expression.ng
+#                                                                            ^^ template.ng punctuation.definition.block.ts
+>{{ ((let param of params) | async) | translate }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.brace.round.ts
+#    ^ template.ng expression.ng meta.brace.round.ts
+#     ^^^ template.ng expression.ng storage.type.ts
+#        ^ template.ng expression.ng
+#         ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#              ^ template.ng expression.ng
+#               ^^ template.ng expression.ng keyword.operator.expression.of.ts
+#                 ^ template.ng expression.ng
+#                  ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                        ^ template.ng expression.ng meta.brace.round.ts
+#                         ^ template.ng expression.ng
+#                          ^ template.ng expression.ng keyword.operator.logical.ts
+#                           ^ template.ng expression.ng
+#                            ^^^^^ template.ng expression.ng entity.name.function.pipe.ng
+#                                 ^ template.ng expression.ng meta.brace.round.ts
+#                                  ^ template.ng expression.ng
+#                                   ^ template.ng expression.ng keyword.operator.logical.ts
+#                                    ^ template.ng expression.ng
+#                                     ^^^^^^^^^ template.ng expression.ng entity.name.function.pipe.ng
+#                                              ^ template.ng expression.ng
+#                                               ^^ template.ng punctuation.definition.block.ts
+>
+><!-- Template literals -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
+>{{ `hello world` }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng string.template.ts punctuation.definition.string.template.begin.ts
+#    ^^^^^^^^^^^ template.ng expression.ng string.template.ts
+#               ^ template.ng expression.ng string.template.ts punctuation.definition.string.template.end.ts
+#                ^ template.ng expression.ng
+#                 ^^ template.ng punctuation.definition.block.ts
+>{{ tag`hello world` }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^ template.ng expression.ng entity.name.function.tagged-template.ts
+#      ^ template.ng expression.ng string.template.ts punctuation.definition.string.template.begin.ts
+#       ^^^^^^^^^^^ template.ng expression.ng string.template.ts
+#                  ^ template.ng expression.ng string.template.ts punctuation.definition.string.template.end.ts
+#                   ^ template.ng expression.ng
+#                    ^^ template.ng punctuation.definition.block.ts
+>{{ `before ${123} - ${fn()} after` }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng string.template.ts punctuation.definition.string.template.begin.ts
+#    ^^^^^^^ template.ng expression.ng string.template.ts
+#           ^^ template.ng expression.ng string.template.ts meta.template.expression.ts punctuation.definition.template-expression.begin.ts
+#             ^^^ template.ng expression.ng string.template.ts meta.template.expression.ts meta.embedded.line.ts constant.numeric.decimal.ts
+#                ^ template.ng expression.ng string.template.ts meta.template.expression.ts punctuation.definition.template-expression.end.ts
+#                 ^^^ template.ng expression.ng string.template.ts
+#                    ^^ template.ng expression.ng string.template.ts meta.template.expression.ts punctuation.definition.template-expression.begin.ts
+#                      ^^ template.ng expression.ng string.template.ts meta.template.expression.ts meta.embedded.line.ts entity.name.function.ts
+#                        ^ template.ng expression.ng string.template.ts meta.template.expression.ts meta.embedded.line.ts meta.brace.round.ts
+#                         ^ template.ng expression.ng string.template.ts meta.template.expression.ts meta.embedded.line.ts meta.brace.round.ts
+#                          ^ template.ng expression.ng string.template.ts meta.template.expression.ts punctuation.definition.template-expression.end.ts
+#                           ^^^^^^ template.ng expression.ng string.template.ts
+#                                 ^ template.ng expression.ng string.template.ts punctuation.definition.string.template.end.ts
+#                                  ^ template.ng expression.ng
+#                                   ^^ template.ng punctuation.definition.block.ts
+>{{ tag`before ${123} - ${fn()} after` }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^ template.ng expression.ng entity.name.function.tagged-template.ts
+#      ^ template.ng expression.ng string.template.ts punctuation.definition.string.template.begin.ts
+#       ^^^^^^^ template.ng expression.ng string.template.ts
+#              ^^ template.ng expression.ng string.template.ts meta.template.expression.ts punctuation.definition.template-expression.begin.ts
+#                ^^^ template.ng expression.ng string.template.ts meta.template.expression.ts meta.embedded.line.ts constant.numeric.decimal.ts
+#                   ^ template.ng expression.ng string.template.ts meta.template.expression.ts punctuation.definition.template-expression.end.ts
+#                    ^^^ template.ng expression.ng string.template.ts
+#                       ^^ template.ng expression.ng string.template.ts meta.template.expression.ts punctuation.definition.template-expression.begin.ts
+#                         ^^ template.ng expression.ng string.template.ts meta.template.expression.ts meta.embedded.line.ts entity.name.function.ts
+#                           ^ template.ng expression.ng string.template.ts meta.template.expression.ts meta.embedded.line.ts meta.brace.round.ts
+#                            ^ template.ng expression.ng string.template.ts meta.template.expression.ts meta.embedded.line.ts meta.brace.round.ts
+#                             ^ template.ng expression.ng string.template.ts meta.template.expression.ts punctuation.definition.template-expression.end.ts
+#                              ^^^^^^ template.ng expression.ng string.template.ts
+#                                    ^ template.ng expression.ng string.template.ts punctuation.definition.string.template.end.ts
+#                                     ^ template.ng expression.ng
+#                                      ^^ template.ng punctuation.definition.block.ts
+>
+><!-- Mixed -->
+#^^^^^^^^^^^^^^^ template.ng
+>{{ (let param of params?.get('value')!.property | async).anotherProperty | translate: ['language1', 'language2']; index
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.brace.round.ts
+#    ^^^ template.ng expression.ng storage.type.ts
+#       ^ template.ng expression.ng
+#        ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#             ^ template.ng expression.ng
+#              ^^ template.ng expression.ng keyword.operator.expression.of.ts
+#                ^ template.ng expression.ng
+#                 ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                       ^ template.ng expression.ng punctuation.accessor.ts
+#                        ^ template.ng expression.ng punctuation.accessor.ts
+#                         ^^^ template.ng expression.ng entity.name.function.ts
+#                            ^ template.ng expression.ng meta.brace.round.ts
+#                             ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#                              ^^^^^ template.ng expression.ng string.quoted.single.ts
+#                                   ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                                    ^ template.ng expression.ng meta.brace.round.ts
+#                                     ^ template.ng expression.ng keyword.operator.logical.ts
+#                                      ^ template.ng expression.ng punctuation.accessor.ts
+#                                       ^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                                               ^ template.ng expression.ng
+#                                                ^ template.ng expression.ng keyword.operator.logical.ts
+#                                                 ^ template.ng expression.ng
+#                                                  ^^^^^ template.ng expression.ng entity.name.function.pipe.ng
+#                                                       ^ template.ng expression.ng meta.brace.round.ts
+#                                                        ^ template.ng expression.ng punctuation.accessor.ts
+#                                                         ^^^^^^^^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                                                                        ^ template.ng expression.ng
+#                                                                         ^ template.ng expression.ng keyword.operator.logical.ts
+#                                                                          ^ template.ng expression.ng
+#                                                                           ^^^^^^^^^ template.ng expression.ng entity.name.function.pipe.ng
+#                                                                                    ^^ template.ng expression.ng
+#                                                                                      ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                                                                       ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                                                                        ^^^^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts
+#                                                                                                 ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#                                                                                                  ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                                                                                                   ^ template.ng expression.ng meta.array.literal.ts
+#                                                                                                    ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                                                                                     ^^^^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts
+#                                                                                                              ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#                                                                                                               ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                                                                                                ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                                                                                                                 ^ template.ng expression.ng
+#                                                                                                                  ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+>as i }}
+#^^ template.ng expression.ng storage.type.as.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng entity.name.type.ts
+#    ^ template.ng expression.ng
+#     ^^ template.ng punctuation.definition.block.ts
+>{{ (let param of params?.anotherParam!.param().param | async) as p; let i = index; let first = first }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.brace.round.ts
+#    ^^^ template.ng expression.ng storage.type.ts
+#       ^ template.ng expression.ng
+#        ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#             ^ template.ng expression.ng
+#              ^^ template.ng expression.ng keyword.operator.expression.of.ts
+#                ^ template.ng expression.ng
+#                 ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                       ^^ template.ng expression.ng punctuation.accessor.ts
+#                         ^^^^^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                                     ^ template.ng expression.ng keyword.operator.logical.ts
+#                                      ^ template.ng expression.ng punctuation.accessor.ts
+#                                       ^^^^^ template.ng expression.ng entity.name.function.ts
+#                                            ^ template.ng expression.ng meta.brace.round.ts
+#                                             ^ template.ng expression.ng meta.brace.round.ts
+#                                              ^ template.ng expression.ng punctuation.accessor.ts
+#                                               ^^^^^ template.ng expression.ng variable.other.property.ts
+#                                                    ^ template.ng expression.ng
+#                                                     ^ template.ng expression.ng keyword.operator.logical.ts
+#                                                      ^ template.ng expression.ng
+#                                                       ^^^^^ template.ng expression.ng entity.name.function.pipe.ng
+#                                                            ^ template.ng expression.ng meta.brace.round.ts
+#                                                             ^ template.ng expression.ng
+#                                                              ^^ template.ng expression.ng storage.type.as.ts
+#                                                                ^ template.ng expression.ng
+#                                                                 ^ template.ng expression.ng entity.name.type.ts
+#                                                                  ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                                                                   ^ template.ng expression.ng
+#                                                                    ^^^ template.ng expression.ng storage.type.ts
+#                                                                       ^ template.ng expression.ng
+#                                                                        ^ template.ng expression.ng variable.other.readwrite.ts
+#                                                                         ^ template.ng expression.ng
+#                                                                          ^ template.ng expression.ng keyword.operator.assignment.ts
+#                                                                           ^ template.ng expression.ng
+#                                                                            ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                                                                                 ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                                                                                  ^ template.ng expression.ng
+#                                                                                   ^^^ template.ng expression.ng storage.type.ts
+#                                                                                      ^ template.ng expression.ng
+#                                                                                       ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                                                                                            ^ template.ng expression.ng
+#                                                                                             ^ template.ng expression.ng keyword.operator.assignment.ts
+#                                                                                              ^ template.ng expression.ng
+#                                                                                               ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                                                                                                    ^ template.ng expression.ng
+#                                                                                                     ^^ template.ng punctuation.definition.block.ts
+>{{ (let param of params?.get('value')!.property | async).anotherProperty | translate: ['language1', 'language2']; let i
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.brace.round.ts
+#    ^^^ template.ng expression.ng storage.type.ts
+#       ^ template.ng expression.ng
+#        ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#             ^ template.ng expression.ng
+#              ^^ template.ng expression.ng keyword.operator.expression.of.ts
+#                ^ template.ng expression.ng
+#                 ^^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                       ^ template.ng expression.ng punctuation.accessor.ts
+#                        ^ template.ng expression.ng punctuation.accessor.ts
+#                         ^^^ template.ng expression.ng entity.name.function.ts
+#                            ^ template.ng expression.ng meta.brace.round.ts
+#                             ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.begin.ts
+#                              ^^^^^ template.ng expression.ng string.quoted.single.ts
+#                                   ^ template.ng expression.ng string.quoted.single.ts punctuation.definition.string.end.ts
+#                                    ^ template.ng expression.ng meta.brace.round.ts
+#                                     ^ template.ng expression.ng keyword.operator.logical.ts
+#                                      ^ template.ng expression.ng punctuation.accessor.ts
+#                                       ^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                                               ^ template.ng expression.ng
+#                                                ^ template.ng expression.ng keyword.operator.logical.ts
+#                                                 ^ template.ng expression.ng
+#                                                  ^^^^^ template.ng expression.ng entity.name.function.pipe.ng
+#                                                       ^ template.ng expression.ng meta.brace.round.ts
+#                                                        ^ template.ng expression.ng punctuation.accessor.ts
+#                                                         ^^^^^^^^^^^^^^^ template.ng expression.ng variable.other.property.ts
+#                                                                        ^ template.ng expression.ng
+#                                                                         ^ template.ng expression.ng keyword.operator.logical.ts
+#                                                                          ^ template.ng expression.ng
+#                                                                           ^^^^^^^^^ template.ng expression.ng entity.name.function.pipe.ng
+#                                                                                    ^^ template.ng expression.ng
+#                                                                                      ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                                                                       ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                                                                        ^^^^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts
+#                                                                                                 ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#                                                                                                  ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                                                                                                   ^ template.ng expression.ng meta.array.literal.ts
+#                                                                                                    ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.begin.ts
+#                                                                                                     ^^^^^^^^^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts
+#                                                                                                              ^ template.ng expression.ng meta.array.literal.ts string.quoted.single.ts punctuation.definition.string.end.ts
+#                                                                                                               ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                                                                                                ^ template.ng expression.ng punctuation.terminator.statement.ts
+#                                                                                                                 ^ template.ng expression.ng
+#                                                                                                                  ^^^ template.ng expression.ng storage.type.ts
+#                                                                                                                     ^ template.ng expression.ng
+#                                                                                                                      ^ template.ng expression.ng variable.other.readwrite.ts
+>= index; }}
+#^ template.ng expression.ng keyword.operator.assignment.ts
+# ^ template.ng expression.ng
+#  ^^^^^ template.ng expression.ng variable.other.readwrite.ts
+#       ^ template.ng expression.ng punctuation.terminator.statement.ts
+#        ^ template.ng expression.ng
+#         ^^ template.ng punctuation.definition.block.ts
+>
+><!-- Spread -->
+#^^^^^^^^^^^^^^^^ template.ng
+>{{ [1, ...foo, 2, ...bar, 3] }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#    ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#     ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#      ^ template.ng expression.ng meta.array.literal.ts
+#       ^^^ template.ng expression.ng meta.array.literal.ts keyword.operator.spread.ts
+#          ^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#             ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#              ^ template.ng expression.ng meta.array.literal.ts
+#               ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#                ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                 ^ template.ng expression.ng meta.array.literal.ts
+#                  ^^^ template.ng expression.ng meta.array.literal.ts keyword.operator.spread.ts
+#                     ^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#                        ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                         ^ template.ng expression.ng meta.array.literal.ts
+#                          ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#                           ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                            ^ template.ng expression.ng
+#                             ^^ template.ng punctuation.definition.block.ts
+>{{ {{a: 1, ...foo, b: 2, ...bar, c: 3}} }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^^^ template.ng expression.ng
+#     ^ template.ng expression.ng variable.other.readwrite.ts
+#      ^^ template.ng expression.ng
+#        ^ template.ng expression.ng constant.numeric.decimal.ts
+#         ^ template.ng expression.ng punctuation.separator.comma.ts
+#          ^ template.ng expression.ng
+#           ^^^ template.ng expression.ng keyword.operator.spread.ts
+#              ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                 ^ template.ng expression.ng punctuation.separator.comma.ts
+#                  ^ template.ng expression.ng
+#                   ^ template.ng expression.ng variable.other.readwrite.ts
+#                    ^^ template.ng expression.ng
+#                      ^ template.ng expression.ng constant.numeric.decimal.ts
+#                       ^ template.ng expression.ng punctuation.separator.comma.ts
+#                        ^ template.ng expression.ng
+#                         ^^^ template.ng expression.ng keyword.operator.spread.ts
+#                            ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                               ^ template.ng expression.ng punctuation.separator.comma.ts
+#                                ^ template.ng expression.ng
+#                                 ^ template.ng expression.ng variable.other.readwrite.ts
+#                                  ^^ template.ng expression.ng
+#                                    ^ template.ng expression.ng constant.numeric.decimal.ts
+#                                     ^^ template.ng punctuation.definition.block.ts
+#                                       ^^^^ template.ng
+>
+><!-- Rest -->
+#^^^^^^^^^^^^^^ template.ng
+>{{ someFn(1, ...foo, 2, ...bar, 3, ...baz) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^ template.ng expression.ng entity.name.function.ts
+#         ^ template.ng expression.ng meta.brace.round.ts
+#          ^ template.ng expression.ng constant.numeric.decimal.ts
+#           ^ template.ng expression.ng punctuation.separator.comma.ts
+#            ^ template.ng expression.ng
+#             ^^^ template.ng expression.ng keyword.operator.spread.ts
+#                ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                   ^ template.ng expression.ng punctuation.separator.comma.ts
+#                    ^ template.ng expression.ng
+#                     ^ template.ng expression.ng constant.numeric.decimal.ts
+#                      ^ template.ng expression.ng punctuation.separator.comma.ts
+#                       ^ template.ng expression.ng
+#                        ^^^ template.ng expression.ng keyword.operator.spread.ts
+#                           ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                              ^ template.ng expression.ng punctuation.separator.comma.ts
+#                               ^ template.ng expression.ng
+#                                ^ template.ng expression.ng constant.numeric.decimal.ts
+#                                 ^ template.ng expression.ng punctuation.separator.comma.ts
+#                                  ^ template.ng expression.ng
+#                                   ^^^ template.ng expression.ng keyword.operator.spread.ts
+#                                      ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                                         ^ template.ng expression.ng meta.brace.round.ts
+#                                          ^ template.ng expression.ng
+#                                           ^^ template.ng punctuation.definition.block.ts
+>
+><!-- Arrow functions -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
+>{{ foo => foo + 1 }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^ template.ng expression.ng meta.arrow.ts variable.parameter.ts
+#      ^ template.ng expression.ng meta.arrow.ts
+#       ^^ template.ng expression.ng meta.arrow.ts storage.type.function.arrow.ts
+#         ^ template.ng expression.ng meta.arrow.ts
+#          ^^^ template.ng expression.ng variable.other.readwrite.ts
+#             ^ template.ng expression.ng
+#              ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#               ^ template.ng expression.ng
+#                ^ template.ng expression.ng constant.numeric.decimal.ts
+#                 ^ template.ng expression.ng
+#                  ^^ template.ng punctuation.definition.block.ts
+>{{ (foo, bar, baz) => foo + bar + baz }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng meta.arrow.ts
+#   ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.begin.ts
+#    ^^^ template.ng expression.ng meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#       ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.separator.parameter.ts
+#        ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts
+#         ^^^ template.ng expression.ng meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#            ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.separator.parameter.ts
+#             ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts
+#              ^^^ template.ng expression.ng meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#                 ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.end.ts
+#                  ^ template.ng expression.ng meta.arrow.ts
+#                   ^^ template.ng expression.ng meta.arrow.ts storage.type.function.arrow.ts
+#                     ^ template.ng expression.ng meta.arrow.ts
+#                      ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                         ^ template.ng expression.ng
+#                          ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                           ^ template.ng expression.ng
+#                            ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                               ^ template.ng expression.ng
+#                                ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                                 ^ template.ng expression.ng
+#                                  ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                                     ^ template.ng expression.ng
+#                                      ^^ template.ng punctuation.definition.block.ts
+>{{ (foo, bar) => [foo, bar, 1, 2] }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng meta.arrow.ts
+#   ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.begin.ts
+#    ^^^ template.ng expression.ng meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#       ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.separator.parameter.ts
+#        ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts
+#         ^^^ template.ng expression.ng meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#            ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.end.ts
+#             ^ template.ng expression.ng meta.arrow.ts
+#              ^^ template.ng expression.ng meta.arrow.ts storage.type.function.arrow.ts
+#                ^ template.ng expression.ng meta.arrow.ts
+#                 ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                  ^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#                     ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                      ^ template.ng expression.ng meta.array.literal.ts
+#                       ^^^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#                          ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                           ^ template.ng expression.ng meta.array.literal.ts
+#                            ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#                             ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#                              ^ template.ng expression.ng meta.array.literal.ts
+#                               ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#                                ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                 ^ template.ng expression.ng
+#                                  ^^ template.ng punctuation.definition.block.ts
+>{{ (foo, bar) => ({foo: 1, bar: 2}) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng meta.arrow.ts
+#   ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.begin.ts
+#    ^^^ template.ng expression.ng meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#       ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.separator.parameter.ts
+#        ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts
+#         ^^^ template.ng expression.ng meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#            ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.end.ts
+#             ^ template.ng expression.ng meta.arrow.ts
+#              ^^ template.ng expression.ng meta.arrow.ts storage.type.function.arrow.ts
+#                ^ template.ng expression.ng meta.arrow.ts
+#                 ^ template.ng expression.ng meta.brace.round.ts
+#                  ^ template.ng expression.ng
+#                   ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                      ^^ template.ng expression.ng
+#                        ^ template.ng expression.ng constant.numeric.decimal.ts
+#                         ^ template.ng expression.ng punctuation.separator.comma.ts
+#                          ^ template.ng expression.ng
+#                           ^^^ template.ng expression.ng variable.other.readwrite.ts
+#                              ^^ template.ng expression.ng
+#                                ^ template.ng expression.ng constant.numeric.decimal.ts
+#                                 ^ template.ng expression.ng
+#                                  ^ template.ng expression.ng meta.brace.round.ts
+#                                   ^ template.ng expression.ng
+#                                    ^^ template.ng punctuation.definition.block.ts
+>{{ a => (b, c) => (d, e) => f => a + b + c + d + e + f }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.arrow.ts variable.parameter.ts
+#    ^ template.ng expression.ng meta.arrow.ts
+#     ^^ template.ng expression.ng meta.arrow.ts storage.type.function.arrow.ts
+#       ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts
+#        ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.begin.ts
+#         ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#          ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts punctuation.separator.parameter.ts
+#           ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts
+#            ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#             ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.end.ts
+#              ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts
+#               ^^ template.ng expression.ng meta.arrow.ts storage.type.function.arrow.ts
+#                 ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts
+#                  ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.begin.ts
+#                   ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#                    ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts punctuation.separator.parameter.ts
+#                     ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts
+#                      ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#                       ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.end.ts
+#                        ^ template.ng expression.ng meta.arrow.ts meta.arrow.ts
+#                         ^^ template.ng expression.ng meta.arrow.ts storage.type.function.arrow.ts
+#                           ^ template.ng expression.ng meta.arrow.ts
+#                            ^ template.ng expression.ng meta.arrow.ts variable.parameter.ts
+#                             ^ template.ng expression.ng meta.arrow.ts
+#                              ^^ template.ng expression.ng meta.arrow.ts storage.type.function.arrow.ts
+#                                ^ template.ng expression.ng meta.arrow.ts
+#                                 ^ template.ng expression.ng variable.other.readwrite.ts
+#                                  ^ template.ng expression.ng
+#                                   ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                                    ^ template.ng expression.ng
+#                                     ^ template.ng expression.ng variable.other.readwrite.ts
+#                                      ^ template.ng expression.ng
+#                                       ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                                        ^ template.ng expression.ng
+#                                         ^ template.ng expression.ng variable.other.readwrite.ts
+#                                          ^ template.ng expression.ng
+#                                           ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                                            ^ template.ng expression.ng
+#                                             ^ template.ng expression.ng variable.other.readwrite.ts
+#                                              ^ template.ng expression.ng
+#                                               ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                                                ^ template.ng expression.ng
+#                                                 ^ template.ng expression.ng variable.other.readwrite.ts
+#                                                  ^ template.ng expression.ng
+#                                                   ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                                                    ^ template.ng expression.ng
+#                                                     ^ template.ng expression.ng variable.other.readwrite.ts
+#                                                      ^ template.ng expression.ng
+#                                                       ^^ template.ng punctuation.definition.block.ts
+>{{ ((a, b) => a * b)(2, 3) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.brace.round.ts
+#    ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.begin.ts
+#     ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#      ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.separator.parameter.ts
+#       ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts
+#        ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#         ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.end.ts
+#          ^ template.ng expression.ng meta.arrow.ts
+#           ^^ template.ng expression.ng meta.arrow.ts storage.type.function.arrow.ts
+#             ^ template.ng expression.ng meta.arrow.ts
+#              ^ template.ng expression.ng variable.other.readwrite.ts
+#               ^ template.ng expression.ng
+#                ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                 ^ template.ng expression.ng
+#                  ^ template.ng expression.ng variable.other.readwrite.ts
+#                   ^ template.ng expression.ng meta.brace.round.ts
+#                    ^ template.ng expression.ng meta.brace.round.ts
+#                     ^ template.ng expression.ng constant.numeric.decimal.ts
+#                      ^ template.ng expression.ng punctuation.separator.comma.ts
+#                       ^ template.ng expression.ng
+#                        ^ template.ng expression.ng constant.numeric.decimal.ts
+#                         ^ template.ng expression.ng meta.brace.round.ts
+#                          ^ template.ng expression.ng
+#                           ^^ template.ng punctuation.definition.block.ts
+>{{ [a => a + 1, (b, c) => b + c] }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#    ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts variable.parameter.ts
+#     ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts
+#      ^^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts storage.type.function.arrow.ts
+#        ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts
+#         ^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#          ^ template.ng expression.ng meta.array.literal.ts
+#           ^ template.ng expression.ng meta.array.literal.ts keyword.operator.arithmetic.ts
+#            ^ template.ng expression.ng meta.array.literal.ts
+#             ^ template.ng expression.ng meta.array.literal.ts constant.numeric.decimal.ts
+#              ^ template.ng expression.ng meta.array.literal.ts punctuation.separator.comma.ts
+#               ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts
+#                ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.begin.ts
+#                 ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#                  ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts meta.parameters.ts punctuation.separator.parameter.ts
+#                   ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts meta.parameters.ts
+#                    ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#                     ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.end.ts
+#                      ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts
+#                       ^^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts storage.type.function.arrow.ts
+#                         ^ template.ng expression.ng meta.array.literal.ts meta.arrow.ts
+#                          ^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#                           ^ template.ng expression.ng meta.array.literal.ts
+#                            ^ template.ng expression.ng meta.array.literal.ts keyword.operator.arithmetic.ts
+#                             ^ template.ng expression.ng meta.array.literal.ts
+#                              ^ template.ng expression.ng meta.array.literal.ts variable.other.readwrite.ts
+#                               ^ template.ng expression.ng meta.array.literal.ts meta.brace.square.ts
+#                                ^ template.ng expression.ng
+#                                 ^^ template.ng punctuation.definition.block.ts
+>{{ (a, b) =>
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng meta.arrow.ts
+#   ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.begin.ts
+#    ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#     ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.separator.parameter.ts
+#      ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts
+#       ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts variable.parameter.ts
+#        ^ template.ng expression.ng meta.arrow.ts meta.parameters.ts punctuation.definition.parameters.end.ts
+#         ^ template.ng expression.ng meta.arrow.ts
+#          ^^ template.ng expression.ng meta.arrow.ts storage.type.function.arrow.ts
+>    a / b + 123
+#^^^^ template.ng expression.ng meta.arrow.ts
+#    ^ template.ng expression.ng variable.other.readwrite.ts
+#     ^ template.ng expression.ng
+#      ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#       ^ template.ng expression.ng
+#        ^ template.ng expression.ng variable.other.readwrite.ts
+#         ^ template.ng expression.ng
+#          ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#           ^ template.ng expression.ng
+#            ^^^ template.ng expression.ng constant.numeric.decimal.ts
+>}}
+#^^ template.ng punctuation.definition.block.ts
+>{{ someSignal.update(prev => prev + 1) }}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^^^^^ template.ng expression.ng variable.other.object.ts
+#             ^ template.ng expression.ng punctuation.accessor.ts
+#              ^^^^^^ template.ng expression.ng entity.name.function.ts
+#                    ^ template.ng expression.ng meta.brace.round.ts
+#                     ^^^^ template.ng expression.ng meta.arrow.ts variable.parameter.ts
+#                         ^ template.ng expression.ng meta.arrow.ts
+#                          ^^ template.ng expression.ng meta.arrow.ts storage.type.function.arrow.ts
+#                            ^ template.ng expression.ng meta.arrow.ts
+#                             ^^^^ template.ng expression.ng variable.other.readwrite.ts
+#                                 ^ template.ng expression.ng
+#                                  ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                                   ^ template.ng expression.ng
+#                                    ^ template.ng expression.ng constant.numeric.decimal.ts
+#                                     ^ template.ng expression.ng meta.brace.round.ts
+#                                      ^ template.ng expression.ng
+#                                       ^^ template.ng punctuation.definition.block.ts
+>

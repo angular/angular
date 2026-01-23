@@ -1,0 +1,43 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "ts_project")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ts_project(
+    name = "recording-visualizer-types",
+    srcs = ["recording-visualizer-types.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/bargraph-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/flamegraph-formatter",
+    ],
+)
+
+sass_binary(
+    name = "recording-visualizer_styles",
+    src = "recording-visualizer.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "recording-visualizer",
+    srcs = [
+        "recording-visualizer.component.ts",
+    ],
+    angular_assets = [
+        "recording-visualizer.component.html",
+        ":recording-visualizer_styles",
+    ],
+    deps = [
+        ":recording-visualizer-types",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/bargraph-visualizer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/execution-details",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/flamegraph-visualizer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/tree-map-visualizer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode",
+        "//devtools/projects/ng-devtools/src/lib/shared/split",
+        "//devtools/projects/protocol",
+    ],
+)

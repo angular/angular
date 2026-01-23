@@ -1,0 +1,18 @@
+{
+  "name": "terser",
+  "version": "0.0.0",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/compiler": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "rxjs": "^7.0.0",
+    "terser": "^5.8.0",
+    "typescript": "5.9.3",
+    "zone.js": "0.16.0"
+  },
+  "packageManager": "pnpm@10.28.1"
+}

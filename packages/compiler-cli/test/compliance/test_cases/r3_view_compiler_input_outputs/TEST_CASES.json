@@ -1,0 +1,60 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should declare inputs/outputs on a component",
+      "inputFiles": [
+        "component.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "component_definition.js",
+              "generated": "component.js"
+            }
+          ],
+          "failureMessage": "Incorrect component definition"
+        }
+      ]
+    },
+    {
+      "description": "should declare inputs/outputs on a directive",
+      "inputFiles": [
+        "directive.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "directive_definition.js",
+              "generated": "directive.js"
+            }
+          ],
+          "failureMessage": "Incorrect directive definition"
+        }
+      ]
+    },
+    {
+      "description": "should declare inputs with transform functions",
+      "inputFiles": [
+        "input_transform.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "input_transform_definition.js",
+              "generated": "input_transform.js"
+            }
+          ],
+          "failureMessage": "Incorrect directive definition"
+        }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "linked compile"
+      ]
+    }
+  ]
+}

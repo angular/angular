@@ -1,0 +1,62 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "sass_library", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+ng_project(
+    name = "types",
+    srcs = ["object-tree-types.ts"],
+    deps = [
+        "//devtools/projects/protocol",
+    ],
+)
+
+sass_binary(
+    name = "object-tree-explorer_styles",
+    src = "object-tree-explorer.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "object-tree-explorer",
+    srcs = ["object-tree-explorer.component.ts"],
+    angular_assets = [
+        "object-tree-explorer.component.html",
+        ":object-tree-explorer_styles",
+    ],
+    deps = [
+        ":types",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer/property-editor",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer/property-preview",
+    ],
+)
+
+sass_library(
+    name = "prop-action-btn",
+    srcs = ["_prop-action-btn.scss"],
+)
+
+ts_test_library(
+    name = "object-tree-explorer_test",
+    srcs = ["object-tree-explorer.spec.ts"],
+    deps = [
+        ":object-tree-explorer",
+        ":types",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@angular/platform-browser",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":object-tree-explorer_test",
+    ],
+)

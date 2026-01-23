@@ -1,0 +1,187 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@npm//:rollup/package_json.bzl", rollup = "bin")
+load("//tools:defaults.bzl", "npm_package", "ts_config")
+
+exports_files([
+    "tsconfig.json",
+    "migrations.json",
+    "collection.json",
+])
+
+js_library(
+    name = "schematics_jsons",
+    srcs = [
+        "collection.json",
+        "migrations.json",
+        "tsconfig.json",
+    ],
+    visibility = ["//packages/core/schematics:__subpackages__"],
+)
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    visibility = ["//packages/core/schematics:__subpackages__"],
+    deps = [
+        "//:node_modules/@types/node",
+    ],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    visibility = ["//packages/core/schematics:__subpackages__"],
+    deps = [
+        ":tsconfig_build",
+        "//:node_modules/@types/jasmine",
+    ],
+)
+
+npm_package(
+    srcs = [
+        "collection.json",
+        "migrations.json",
+        ":bundles",
+        "//packages/core/schematics/migrations/common-to-standalone-migration:static_files",
+        "//packages/core/schematics/migrations/control-flow-migration:static_files",
+        "//packages/core/schematics/migrations/ngclass-to-class-migration:static_files",
+        "//packages/core/schematics/migrations/ngstyle-to-style-migration:static_files",
+        "//packages/core/schematics/migrations/router-testing-module-migration:static_files",
+        "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
+        "//packages/core/schematics/ng-generate/inject-migration:static_files",
+        "//packages/core/schematics/ng-generate/output-migration:static_files",
+        "//packages/core/schematics/ng-generate/route-lazy-loading:static_files",
+        "//packages/core/schematics/ng-generate/self-closing-tags-migration:static_files",
+        "//packages/core/schematics/ng-generate/signal-input-migration:static_files",
+        "//packages/core/schematics/ng-generate/signal-queries-migration:static_files",
+        "//packages/core/schematics/ng-generate/signals:static_files",
+        "//packages/core/schematics/ng-generate/standalone-migration:static_files",
+    ],
+    visibility = ["//packages/core:__pkg__"],
+)
+
+bundle_entrypoints = [
+    [
+        "inject-migration",
+        "packages/core/schematics/ng-generate/inject-migration/index.js",
+    ],
+    [
+        "route-lazy-loading",
+        "packages/core/schematics/ng-generate/route-lazy-loading/index.js",
+    ],
+    [
+        "standalone-migration",
+        "packages/core/schematics/ng-generate/standalone-migration/index.js",
+    ],
+    [
+        "cleanup-unused-imports",
+        "packages/core/schematics/ng-generate/cleanup-unused-imports/index.js",
+    ],
+    [
+        "signals",
+        "packages/core/schematics/ng-generate/signals/index.js",
+    ],
+    [
+        "signal-input-migration",
+        "packages/core/schematics/ng-generate/signal-input-migration/index.js",
+    ],
+    [
+        "signal-queries-migration",
+        "packages/core/schematics/ng-generate/signal-queries-migration/index.js",
+    ],
+    [
+        "output-migration",
+        "packages/core/schematics/ng-generate/output-migration/index.js",
+    ],
+    [
+        "self-closing-tags-migration",
+        "packages/core/schematics/ng-generate/self-closing-tags-migration/index.js",
+    ],
+    [
+        "common-to-standalone-migration",
+        "packages/core/schematics/migrations/common-to-standalone-migration/index.js",
+    ],
+    [
+        "control-flow-migration",
+        "packages/core/schematics/migrations/control-flow-migration/index.js",
+    ],
+    [
+        "ngclass-to-class-migration",
+        "packages/core/schematics/migrations/ngclass-to-class-migration/index.js",
+    ],
+    [
+        "ngstyle-to-style-migration",
+        "packages/core/schematics/migrations/ngstyle-to-style-migration/index.js",
+    ],
+    [
+        "router-current-navigation",
+        "packages/core/schematics/migrations/router-current-navigation/index.js",
+    ],
+    [
+        "router-last-successful-navigation",
+        "packages/core/schematics/migrations/router-last-successful-navigation/index.js",
+    ],
+    [
+        "application-config-core",
+        "packages/core/schematics/migrations/application-config-core/index.js",
+    ],
+    [
+        "add-bootstrap-context-to-server-main",
+        "packages/core/schematics/migrations/add-bootstrap-context-to-server-main/index.js",
+    ],
+    [
+        "bootstrap-options-migration",
+        "packages/core/schematics/migrations/bootstrap-options-migration/index.js",
+    ],
+    [
+        "router-testing-module-migration",
+        "packages/core/schematics/migrations/router-testing-module-migration/index.js",
+    ],
+]
+
+rollup.rollup(
+    name = "bundles",
+    srcs = [
+        "rollup.config.js",
+        "//:node_modules/@rollup/plugin-commonjs",
+        "//:node_modules/@rollup/plugin-node-resolve",
+        "//:node_modules/magic-string",
+        "//:node_modules/semver",
+        "//packages/core/schematics:tsconfig_build",
+        "//packages/core/schematics/migrations/add-bootstrap-context-to-server-main",
+        "//packages/core/schematics/migrations/application-config-core",
+        "//packages/core/schematics/migrations/bootstrap-options-migration",
+        "//packages/core/schematics/migrations/common-to-standalone-migration",
+        "//packages/core/schematics/migrations/control-flow-migration",
+        "//packages/core/schematics/migrations/ngclass-to-class-migration",
+        "//packages/core/schematics/migrations/ngstyle-to-style-migration",
+        "//packages/core/schematics/migrations/router-current-navigation",
+        "//packages/core/schematics/migrations/router-last-successful-navigation",
+        "//packages/core/schematics/migrations/router-testing-module-migration",
+        "//packages/core/schematics/ng-generate/cleanup-unused-imports",
+        "//packages/core/schematics/ng-generate/inject-migration",
+        "//packages/core/schematics/ng-generate/output-migration",
+        "//packages/core/schematics/ng-generate/route-lazy-loading",
+        "//packages/core/schematics/ng-generate/self-closing-tags-migration",
+        "//packages/core/schematics/ng-generate/signal-input-migration",
+        "//packages/core/schematics/ng-generate/signal-queries-migration",
+        "//packages/core/schematics/ng-generate/signals",
+        "//packages/core/schematics/ng-generate/standalone-migration",
+        "//tools/bazel/rollup:path-plugin",
+    ],
+    args = [
+        "--format=cjs",
+        "--config=$(rootpath rollup.config.js)",
+        "--dir=packages/core/schematics/bundles",
+        "--no-sourcemap",
+    ] + ["--input=%s=%s" % (name, path) for [
+        name,
+        path,
+    ] in bundle_entrypoints],
+    out_dirs = [
+        "bundles",
+    ],
+    visibility = [
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)

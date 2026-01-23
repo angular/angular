@@ -1,0 +1,117 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@npm//:rollup/package_json.bzl", rollup = "bin")
+load("//tools:defaults.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "platform-server",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+        exclude = ["src/bundled-domino.d.ts"],
+    ),
+    deps = [
+        ":bundled_domino_lib",
+        "//:node_modules/@types/node",
+        "//:node_modules/rxjs",
+        "//:node_modules/xhr2",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+)
+
+rollup.rollup(
+    name = "bundled_domino",
+    srcs = [
+        "//:node_modules/@rollup/plugin-commonjs",
+        "//:node_modules/domino",
+    ],
+    outs = [
+        "src/bundled-domino.mjs",
+    ],
+    args = [
+        "--format=esm",
+        "--plugin=@rollup/plugin-commonjs",
+        "--input=node_modules/domino/lib/index.js",
+        "--sourcemap=false",
+        "--file=packages/platform-server/src/bundled-domino.mjs",
+    ],
+    progress_message = "Bundling domino",
+    silent_on_success = True,
+)
+
+js_library(
+    name = "bundled_domino_lib",
+    srcs = [
+        "src/bundled-domino.d.ts",
+        ":bundled_domino",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = ":platform-server",
+    tsconfig = "//packages:tsconfig_build",
+)
+
+ng_package(
+    srcs = [
+        "package.json",
+    ],
+    externals = [
+        "xhr2",
+    ],
+    package = "@angular/platform-server",
+    side_effect_entry_points = [
+        "@angular/platform-server/init",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//adev:__pkg__",
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__subpackages__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+    ],
+    deps = [
+        ":platform-server",
+        "//packages/platform-server/init",
+        "//packages/platform-server/testing",
+    ],
+)
+
+api_golden_test_npm_package(
+    name = "platform-server_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "goldens/public-api/platform-server",
+    npm_package = "packages/platform-server/npm_package",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "platform-server_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/platform-server",
+)

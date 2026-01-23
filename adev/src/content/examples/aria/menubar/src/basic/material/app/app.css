@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: var(--inter-font);
+  --border-color: color-mix(in srgb, var(--full-contrast) 20%, var(--page-background));
+}
+
+[ngMenuBar] {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--page-background);
+}
+
+[ngMenu] {
+  gap: 3px;
+  width: 15rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem;
+  border-radius: 1rem;
+  background-color: var(--page-background);
+  box-shadow: 0 1px 2px 1px color-mix(in srgb, var(--primary-contrast) 25%, transparent);
+}
+
+[ngMenu][data-visible='false'] {
+  display: none;
+}
+
+[ngMenuItem] {
+  outline: none;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.75rem;
+}
+
+[ngMenuItem][data-active='true'] {
+  color: color-mix(in srgb, var(--vivid-pink) 70%, var(--primary-contrast));
+  background: color-mix(in srgb, var(--vivid-pink) 5%, transparent);
+}
+
+[ngMenuItem]:focus {
+  outline: 2px solid var(--vivid-pink);
+}
+
+[ngMenuItem] .icon {
+  opacity: 0.875;
+  font-size: 1.25rem;
+}
+
+[ngMenuItem] .label {
+  flex: 1;
+  opacity: 0.875;
+  font-size: 0.875rem;
+}
+
+[ngMenuItem]:not([aria-expanded='true']) .arrow {
+  opacity: 0.5;
+}
+
+[ngMenu] .separator {
+  border-top: 1px solid var(--gray-500);
+  margin: 0.25rem 0;
+  opacity: 0.25;
+}

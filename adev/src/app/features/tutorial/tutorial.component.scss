@@ -1,0 +1,162 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+$resizer-width: 0.0625rem;
+$column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
+
+.adev-page-content {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  position: relative;
+  padding: 0 var(--layout-padding) var(--layout-padding);
+  max-width: calc(100vw - var(--layout-padding) * 2);
+  container: page-content / inline-size;
+
+  @include mq.for-tablet-landscape-down {
+    flex-direction: column;
+  }
+
+  // Tablet / Mobile Tutorial Nav
+  @include mq.for-tablet-landscape-up {
+    >.adev-tutorial-nav-container {
+      display: none;
+    }
+  }
+
+  // blur code editor too when nav is open
+  &.adev-nav-open {
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(3px);
+    }
+  }
+
+  // if there is an embedded editor in view, apply column width
+  &:has(.docs-tutorial-editor) {
+    .docs-tutorial-content {
+      width: $column-width;
+
+      @include mq.for-tablet-landscape-down {
+        // override js applied width from split view resizer
+        width: 100% !important;
+      }
+    }
+  }
+
+  // if tutorial nav exists, size editor to fit vertically within viewport on mobile
+  @include mq.for-tablet-landscape-down {
+    &:has(.adev-tutorial-nav-container) {
+      .docs-tutorial-editor {
+        height: calc(100vh - 200px);
+      }
+    }
+  }
+
+  @include mq.for-phone-only {
+    &:has(.adev-tutorial-nav-container) {
+      .docs-tutorial-editor {
+        // account for reveal answer button height when on smaller screens
+        height: calc(100vh - 200px);
+      }
+    }
+  }
+}
+
+.docs-tutorial-content {
+  min-width: 300px;
+  width: 100%;
+  box-sizing: content-box;
+  container: tutorial-content / inline-size;
+  z-index: var(--z-index-content);
+
+  // Desktop Tutorial Nav
+  @include mq.for-tablet-landscape-down {
+    >.adev-tutorial-nav-container {
+      display: none;
+    }
+  }
+
+  &.adev-nav-open {
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(3px);
+    }
+  }
+
+  .docs-viewer {
+
+    //applying styles when TOC position got translated to the top right 
+    @include mq.for-large-desktop-up {
+      // take the available space except a reserved area for TOC
+      margin-left: 0rem;
+      width: unset;
+    }
+  }
+}
+
+.docs-viewer {
+  padding: 0;
+}
+
+.adev-tutorial-resizer {
+  position: sticky;
+  top: var(--layout-padding);
+  width: $resizer-width;
+  padding-inline: 1.56rem;
+  margin-block-start: var(--layout-padding);
+  cursor: col-resize;
+  align-self: stretch;
+  height: 100vh;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: calc(50% - 0.5px);
+    top: 0;
+    bottom: 0;
+    background: var(--senary-contrast);
+    transition: background 0.3s ease;
+    width: 1px;
+  }
+
+  &-hidden {
+    display: none;
+  }
+
+  @include mq.for-tablet-landscape-down {
+    display: none;
+  }
+}
+
+.docs-tutorial-editor {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  min-width: 300px;
+  padding-block-start: var(--layout-padding);
+  height: calc(100vh - var(--layout-padding));
+
+  // should be suprior to the tutorial content or the tooltip won't integrate properly
+  z-index: var( --z-index-nav);
+}
+
+.adev-split-tutorial {
+  width: 50%;
+
+  @include mq.for-extra-large-desktop-up {
+    width: 100%;
+  }
+
+  @include mq.for-tablet-landscape-down {
+    // override js applied width from split view resizer
+    width: 100% !important;
+  }
+}

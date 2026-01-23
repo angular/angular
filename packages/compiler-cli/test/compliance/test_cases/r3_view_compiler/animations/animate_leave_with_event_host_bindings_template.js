@@ -1,0 +1,41 @@
+export class ChildComponent {
+  …
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+    type: ChildComponent,
+    selectors: [["child-component"]],
+    hostBindings: function ChildComponent_HostBindings(rf, ctx) {
+      if (rf & 1) {
+        $r3$.ɵɵanimateLeaveListener(function ChildComponent_animateleave_HostBindingHandler($event) { return ctx.fadeFn($event); });
+      }
+    },
+    decls: 2,
+    vars: 0,
+    template: function ChildComponent_Template(rf, ctx) {
+      if (rf & 1) {
+        $r3$.ɵɵdomElementStart(0, "p");
+        $r3$.ɵɵtext(1, "Fading Content");
+        $r3$.ɵɵdomElementEnd();
+      }
+    },
+    encapsulation: 2
+  });
+}
+…
+export class MyComponent {
+  …
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+    type: MyComponent,
+    selectors: [["my-component"]],
+    decls: 1,
+    vars: 0,
+    template: function MyComponent_Template(rf, ctx) {
+      if (rf & 1) {
+        $r3$.ɵɵelementStart(0, "child-component");
+        $r3$.ɵɵanimateLeave("slide");
+        $r3$.ɵɵelementEnd();
+      }
+    },
+    dependencies: [ChildComponent],
+    encapsulation: 2
+  });
+}
