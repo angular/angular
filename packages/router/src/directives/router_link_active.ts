@@ -7,26 +7,23 @@
  */
 
 import {
-  AfterContentInit,
   ChangeDetectorRef,
-  ContentChildren,
+  computed,
+  contentChildren,
   Directive,
   ElementRef,
   EventEmitter,
   inject,
   Input,
+  linkedSignal,
   OnChanges,
-  OnDestroy,
   Output,
-  QueryList,
   Renderer2,
+  signal,
   SimpleChanges,
   untracked,
 } from '@angular/core';
-import {from, of, Subscription} from 'rxjs';
-import {mergeAll} from 'rxjs/operators';
 
-import {Event, NavigationEnd} from '../events';
 import {exactMatchOptions, Router, subsetMatchOptions} from '../router';
 import {isActive, IsActiveMatchOptions} from '../url_tree';
 
@@ -109,27 +106,57 @@ import {RouterLink} from './router_link';
 @Directive({
   selector: '[routerLinkActive]',
   exportAs: 'routerLinkActive',
+  host: {
+    '[attr.aria-current]': '_ariaCurrent()',
+    '[class]': '_classBinding()',
+  },
 })
-export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
-  @ContentChildren(RouterLink, {descendants: true}) links!: QueryList<RouterLink>;
+export class RouterLinkActive implements OnChanges {
+  private readonly _links = contentChildren(RouterLink, {descendants: true});
 
-  private classes: string[] = [];
-  private routerEventsSubscription: Subscription;
-  private linkInputChangesSubscription?: Subscription;
-  private _isActive = false;
+  private classes = signal<string[]>([]);
+  /** @docs-private @internal */
+  protected _classBinding = computed(() =>
+    this._hasActiveLinks()
+      ? this.classes()
+      : this.classes().reduce(
+          (acc, v) => {
+            acc[v] = false;
+            return acc;
+          },
+          {} as {[k: string]: false},
+        ),
+  );
 
   get isActive(): boolean {
-    return this._isActive;
+    return untracked(this._hasActiveLinks);
   }
 
   /**
    * Options to configure how to determine if the router link is active.
    *
-   * These options are passed to the `isActive()` function.
+   * These options are passed to the `Router.isActive()` function.
    *
-   * @see {@link isActive}
+   * @see {@link Router#isActive}
    */
-  @Input() routerLinkActiveOptions: {exact: boolean} | IsActiveMatchOptions = {exact: false};
+  @Input() set routerLinkActiveOptions(value: {exact: boolean} | IsActiveMatchOptions) {
+    this._routerLinkActiveOptionsInput.set(value);
+  }
+  get routerLinkActiveOptions(): {exact: boolean} | IsActiveMatchOptions {
+    return untracked(this._routerLinkActiveOptionsInput);
+  }
+  private _routerLinkActiveOptionsInput = signal<{exact: boolean} | IsActiveMatchOptions>({
+    exact: false,
+  });
+  private _routerLinkActiveOptions = computed(() => {
+    const inputValue = this._routerLinkActiveOptionsInput();
+    return isActiveMatchOptions(inputValue)
+      ? inputValue
+      : // While the types should disallow `undefined` here, it's possible without strict inputs
+        inputValue.exact || false
+        ? exactMatchOptions
+        : subsetMatchOptions;
+  });
 
   /**
    * Aria-current attribute to apply when the router link is active.
@@ -138,7 +165,26 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    *
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current}
    */
-  @Input() ariaCurrentWhenActive?: 'page' | 'step' | 'location' | 'date' | 'time' | true | false;
+  @Input() set ariaCurrentWhenActive(
+    value: 'page' | 'step' | 'location' | 'date' | 'time' | true | false | undefined,
+  ) {
+    this._ariaCurrentWhenActive.set(value);
+  }
+  get ariaCurrentWhenActive() {
+    return untracked(this._ariaCurrentWhenActive);
+  }
+  private _ariaCurrentWhenActive = signal<
+    undefined | 'page' | 'step' | 'location' | 'date' | 'time' | true | false
+  >(undefined);
+
+  /** @docs-private @internal */
+  protected _ariaCurrent = computed(() => {
+    const v = this._ariaCurrentWhenActive();
+    if (!this._hasActiveLinks() || v === undefined) {
+      return null;
+    }
+    return v.toString();
+  });
 
   /**
    *
@@ -156,114 +202,63 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    *  (isActiveChange)="this.onRouterLinkActive($event)">Bob</a>
    * ```
    */
-  @Output() readonly isActiveChange: EventEmitter<boolean> = new EventEmitter();
+  // Async emit to avoid expression changed errors since this emits during change detection
+  // Could be changed to synchronous as a breaking change in the future.
+  @Output() readonly isActiveChange: EventEmitter<boolean> = new EventEmitter(true);
 
   private link = inject(RouterLink, {optional: true});
 
   constructor(
     private router: Router,
+    // TODO(atscott): clean up g3 and remove
     private element: ElementRef,
     private renderer: Renderer2,
     private readonly cdr: ChangeDetectorRef,
-  ) {
-    this.routerEventsSubscription = router.events.subscribe((s: Event) => {
-      if (s instanceof NavigationEnd) {
-        this.update();
-      }
-    });
-  }
-
-  /** @docs-private */
-  ngAfterContentInit(): void {
-    // `of(null)` is used to force subscribe body to execute once immediately (like `startWith`).
-    of(this.links.changes, of(null))
-      .pipe(mergeAll())
-      .subscribe((_) => {
-        this.update();
-        this.subscribeToEachLinkOnChanges();
-      });
-  }
-
-  private subscribeToEachLinkOnChanges() {
-    this.linkInputChangesSubscription?.unsubscribe();
-    const allLinkChanges = [...this.links.toArray(), this.link]
-      .filter((link): link is RouterLink => !!link)
-      .map((link) => link.onChanges);
-    this.linkInputChangesSubscription = from(allLinkChanges)
-      .pipe(mergeAll())
-      .subscribe((link) => {
-        if (this._isActive !== this.isLinkActive(this.router)(link)) {
-          this.update();
-        }
-      });
-  }
+  ) {}
 
   @Input()
   set routerLinkActive(data: string[] | string) {
     const classes = Array.isArray(data) ? data : data.split(' ');
-    this.classes = classes.filter((c) => !!c);
+    this.classes.set(classes.filter((c) => !!c));
   }
 
   /** @docs-private */
-  ngOnChanges(changes: SimpleChanges): void {
-    this.update();
-  }
-  /** @docs-private */
-  ngOnDestroy(): void {
-    this.routerEventsSubscription.unsubscribe();
-    this.linkInputChangesSubscription?.unsubscribe();
-  }
+  ngOnChanges(changes: SimpleChanges): void {}
 
-  private update(): void {
-    if (!this.links || !this.router.navigated) return;
-
-    queueMicrotask(() => {
-      const hasActiveLinks = this.hasActiveLinks();
-      this.classes.forEach((c) => {
-        if (hasActiveLinks) {
-          this.renderer.addClass(this.element.nativeElement, c);
-        } else {
-          this.renderer.removeClass(this.element.nativeElement, c);
-        }
-      });
-      if (hasActiveLinks && this.ariaCurrentWhenActive !== undefined) {
-        this.renderer.setAttribute(
-          this.element.nativeElement,
-          'aria-current',
-          this.ariaCurrentWhenActive.toString(),
-        );
-      } else {
-        this.renderer.removeAttribute(this.element.nativeElement, 'aria-current');
-      }
-
-      // Only emit change if the active state changed.
-      if (this._isActive !== hasActiveLinks) {
-        this._isActive = hasActiveLinks;
-        this.cdr.markForCheck();
-        // Emit on isActiveChange after classes are updated
-        this.isActiveChange.emit(hasActiveLinks);
-      }
-    });
+  private isLinkActive(link: RouterLink | null) {
+    return linkedSignal({
+      source: () => {
+        const tree = link?._urlTree();
+        return tree ? isActive(tree, this.router, this._routerLinkActiveOptions()) : signal(false);
+      },
+      computation: (isActive) => isActive(),
+    }).asReadonly();
   }
 
-  private isLinkActive(router: Router): (link: RouterLink) => boolean {
-    const options: IsActiveMatchOptions = isActiveMatchOptions(this.routerLinkActiveOptions)
-      ? this.routerLinkActiveOptions
-      : // While the types should disallow `undefined` here, it's possible without strict inputs
-        (this.routerLinkActiveOptions.exact ?? false)
-        ? {...exactMatchOptions}
-        : {...subsetMatchOptions};
+  private contentLinkActiveSignals = computed(() =>
+    this._links().map((link) => this.isLinkActive(link)),
+  );
+  private someContentLinkActive = computed(() =>
+    this.contentLinkActiveSignals().some((active) => active()),
+  );
 
-    return (link: RouterLink) => {
-      const urlTree = link.urlTree;
-      return urlTree ? untracked(isActive(urlTree, router, options)) : false;
-    };
-  }
+  private thisLinkActive = this.isLinkActive(this.link);
 
-  private hasActiveLinks(): boolean {
-    const isActiveCheckFn = this.isLinkActive(this.router);
-    return (this.link && isActiveCheckFn(this.link)) || this.links.some(isActiveCheckFn);
-  }
+  private routerHasNavigated = linkedSignal<boolean, boolean>({
+    source: () => this.router._navigated?.() ?? this.router.navigated,
+    computation: (navigated, previouslyNavigated): boolean =>
+      navigated || !!previouslyNavigated?.source,
+  }).asReadonly();
+
+  private _hasActiveLinks = linkedSignal({
+    source: computed(
+      () => this.routerHasNavigated() && (this.thisLinkActive() || this.someContentLinkActive()),
+    ),
+    computation: (hasActiveLinks) => {
+      this.isActiveChange.emit(hasActiveLinks);
+      return hasActiveLinks;
+    },
+  });
 }
 
 /**

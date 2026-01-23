@@ -4,7 +4,6 @@
 
 ```ts
 
-import { AfterContentInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture } from '@angular/core/testing';
 import { ComponentRef } from '@angular/core';
@@ -23,7 +22,6 @@ import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Provider } from '@angular/core';
 import { ProviderToken } from '@angular/core';
-import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { Signal } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
