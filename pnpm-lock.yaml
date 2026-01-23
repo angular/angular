@@ -336,8 +336,8 @@ importers:
         specifier: ^6.0.0
         version: 6.0.1
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#0a641d0c0149fbc7308de1d4620c75af6e1af68a
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0a641d0c0149fbc7308de1d4620c75af6e1af68a(@modelcontextprotocol/sdk@1.25.2)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#c018d7f32d8d6efb63ee3b15485bfe5c4e085581
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c018d7f32d8d6efb63ee3b15485bfe5c4e085581(@modelcontextprotocol/sdk@1.25.2)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.5)
@@ -1675,9 +1675,9 @@ packages:
       '@angular/platform-browser': ^21.0.0 || ^22.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0a641d0c0149fbc7308de1d4620c75af6e1af68a':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0a641d0c0149fbc7308de1d4620c75af6e1af68a}
-    version: 0.0.0-cadbf56523362a5902bf492a129839926a002e80
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c018d7f32d8d6efb63ee3b15485bfe5c4e085581':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c018d7f32d8d6efb63ee3b15485bfe5c4e085581}
+    version: 0.0.0-eaf8b84148f9fd8e974c6498f4cd19602bb7814d
     hasBin: true
 
   '@angular/ssr@21.1.1':
@@ -4879,6 +4879,9 @@ packages:
 
   '@types/jasmine@5.1.15':
     resolution: {integrity: sha512-ZAC8KjmV2MJxbNTrwXFN+HKeajpXQZp6KpPiR6Aa4XvaEnjP6qh23lL/Rqb7AYzlp3h/rcwDrQ7Gg7q28cQTQg==}
+
+  '@types/jasmine@6.0.0':
+    resolution: {integrity: sha512-18lgGsLmEh3VJk9eZ5wAjTISxdqzl6YOwu8UdMpolajN57QOCNbl+AbHUd+Yu9ItrsFdB+c8LSZSGNg8nHaguw==}
 
   '@types/jasminewd2@2.0.13':
     resolution: {integrity: sha512-aJ3wj8tXMpBrzQ5ghIaqMisD8C3FIrcO6sDKHqFbuqAsI7yOxj0fA7MrRCPLZHIVUjERIwsMmGn/vB0UQ9u0Hg==}
@@ -10525,6 +10528,7 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
+
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
@@ -13391,7 +13395,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0a641d0c0149fbc7308de1d4620c75af6e1af68a(@modelcontextprotocol/sdk@1.25.2)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c018d7f32d8d6efb63ee3b15485bfe5c4e085581(@modelcontextprotocol/sdk@1.25.2)':
     dependencies:
       '@actions/core': 2.0.2
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
@@ -13414,7 +13418,7 @@ snapshots:
       '@types/events': 3.0.3
       '@types/folder-hash': 4.0.4
       '@types/git-raw-commits': 5.0.1
-      '@types/jasmine': 5.1.15
+      '@types/jasmine': 6.0.0
       '@types/node': 24.10.9
       '@types/semver': 7.7.1
       '@types/which': 3.0.4
@@ -17575,6 +17579,8 @@ snapshots:
   '@types/jasmine@5.1.13': {}
 
   '@types/jasmine@5.1.15': {}
+
+  '@types/jasmine@6.0.0': {}
 
   '@types/jasminewd2@2.0.13':
     dependencies:
