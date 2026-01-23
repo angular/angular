@@ -1,70 +1,26 @@
-@mixin api-item-label() {
-  .docs-api-item-label {
+:host {
+  display: flex;
+  gap: 0.5rem;
+
+  > span {
     display: flex;
     --label-theme: var(--symbolic-purple);
     font-weight: 500;
     color: var(--label-theme);
     background: color-mix(in srgb, var(--label-theme) 10%, white);
     border-radius: 0.25rem;
-    cursor: default;
+    justify-content: center;
+    align-items: center;
+    height: 22px;
+    width: 22px;
+    flex: 0 0 22px;
 
     &:first-letter {
       text-transform: uppercase;
     }
 
-    &:not(.full) {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 22px;
-      width: 22px;
-      flex: 0 0 22px;
-    }
-
-    &.full {
-      font-size: 0.75rem;
-      &:not(:has(*)), &:not(:has(a span, span)) {
-        // if no children, just a text node, or
-        // no children with span
-        padding: 0.25rem 0.5rem;
-      }
-    }
-
-    a {
-      display: flex;
-      color: var(--label-theme);
-
-      &:hover {
-        .status-label {
-          text-decoration: underline;
-        }
-      }
-    }
-
-    .status-version,
-    .status-label {
-      padding: 0.25rem 0.5rem;
-    }
-
-    .status-version {
-      position: relative;
-      background-color: var(--septenary-contrast);
-      color: var(--secondary-contrast);
-      border-bottom-right-radius: 0.25rem;
-      border-top-right-radius: 0.25rem;
-      text-align: right;
-    }
-
     @media screen and (prefers-color-scheme: dark) {
       background: color-mix(in srgb, var(--label-theme) 17%, #272727);
-    }
-
-    .docs-dark-mode & {
-      background: color-mix(in srgb, var(--label-theme) 17%, #272727);
-    }
-
-    .docs-light-mode & {
-      background: color-mix(in srgb, var(--label-theme) 10%, white);
     }
 
     &.type-undecorated_class,

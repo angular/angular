@@ -32,8 +32,7 @@
         [class.adev-reference-list-type-filter-item-active]="form.type().value() === itemType"
         (click)="setItemType(itemType)"
       >
-        <docs-api-item-label [type]="itemType" mode="short" class="docs-api-item-label" />
-        <span class="docs-api-item-label-full">{{ itemType | adevApiLabel: 'full' }}</span>
+        <docs-api-item-label [type]="itemType" mode="full" />
       </li>
     }
   </ul>
