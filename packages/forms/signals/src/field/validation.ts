@@ -259,7 +259,10 @@ export class FieldValidationState implements ValidationState {
       ...result,
       ...child.errorSummary(),
     ]);
-    untracked(() => errors.sort(compareErrorPosition));
+    // Sort by DOM order on client-side only.
+    if (typeof ngServerMode === 'undefined' || !ngServerMode) {
+      untracked(() => errors.sort(compareErrorPosition));
+    }
     return errors;
   });
 
