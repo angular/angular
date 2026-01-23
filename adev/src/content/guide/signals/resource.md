@@ -128,7 +128,7 @@ You can use this status information to conditionally display user interface elem
 
 ## Resource composition with snapshots
 
-A `ResourceSnapshot` is an explicit representation of a resource's state at a point in time. Every resource has a `snapshot` property that provides a signal of its current state.
+A `ResourceSnapshot` is a structured representation of a resource's current state. Every resource has a `snapshot` property that provides a signal of its current state.
 
 ```ts
 const userId: Signal<string> = getUserId();
