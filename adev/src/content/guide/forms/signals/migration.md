@@ -386,3 +386,6 @@ bootstrapApplication(App, {
   ],
 });
 ```
+
+<!-- TODO: include some high level usage comment about how people should mostly interact with this via the signal forms API exposed on .fieldTree, not via the reactive forms methods. -->
+<!-- TODO: Elaborate on why the value taken is not a signal. -->
