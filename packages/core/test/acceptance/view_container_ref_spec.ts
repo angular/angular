@@ -2459,6 +2459,51 @@ describe('ViewContainerRef', () => {
       ]);
     });
 
+    it('should continue destroy lifecycle after removing view during own destroy', () => {
+      @Component({
+        selector: 'hooks',
+        template: `{{ name }}`,
+      })
+      class ComponentWithHooks {
+        @Input() name: string | undefined;
+
+        private log(msg: string) {
+          log.push(msg);
+        }
+
+        ngOnDestroy() {
+          this.log('onDestroy-' + this.name);
+        }
+      }
+
+      @Component({
+        template: ``,
+      })
+      class SomeComponent {
+        constructor(public viewContainerRef: ViewContainerRef) {}
+      }
+
+      log.length = 0;
+
+      const fixture = TestBed.createComponent(SomeComponent);
+      const vcref = fixture.componentRef.instance.viewContainerRef;
+      vcref.createComponent(ComponentWithHooks, {
+        bindings: [inputBinding('name', () => 'A')],
+      });
+      vcref.createComponent(ComponentWithHooks, {
+        bindings: [inputBinding('name', () => 'B')],
+      });
+      fixture.detectChanges();
+
+      log.length = 0;
+      const AHook = vcref.get(0)!;
+      AHook.onDestroy(() => {
+        vcref.remove(vcref.indexOf(AHook)); // Remove A during its destroy
+      });
+      fixture.destroy();
+      expect(log).toEqual(['onDestroy-A', 'onDestroy-B']);
+    });
+
     it('should call all hooks in correct order when creating with createComponent', () => {
       @Component({
         template: `
