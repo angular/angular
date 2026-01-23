@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, effect, Injector, resource} from '@angular/core';
+import {ApplicationRef, effect, Injector, resource, runInInjectionContext} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ControlEvent, FormControlStatus, FormGroup, FormResetEvent} from '@angular/forms';
 import {disabled, required, validateAsync, ValidationError} from '@angular/forms/signals';
@@ -625,6 +625,15 @@ describe('SignalFormControl', () => {
       // In current implementation this will loop because markAsPristine calls reset()
       // which sets touched=false and then back to true.
       appRef.tick();
+    });
+  });
+
+  describe('dependency injection', () => {
+    it('should be created without an explicit injector in an injection context', () => {
+      const injector = TestBed.inject(Injector);
+      const form = runInInjectionContext(injector, () => new SignalFormControl(10));
+
+      expect(form.value).toBe(10);
     });
   });
 });
