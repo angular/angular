@@ -14,6 +14,8 @@ import {ResourceValueError} from './resource';
 /**
  * Creates a `Resource` driven by a source of `ResourceSnapshot`s.
  *
+ * @see [Resource composition with snapshots](guide/signals/resource#resource-composition-with-snapshots)
+ *
  * @experimental
  */
 export function resourceFromSnapshots<T>(source: () => ResourceSnapshot<T>): Resource<T> {
