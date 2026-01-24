@@ -1105,7 +1105,6 @@
       "stringify2",
       "stringifyCSSSelector",
       "stringifyCSSSelectorList",
-      "stringifyForError",
       "stripTrailingSlash",
       "subscribeOn",
       "subsetMatchOptions",
