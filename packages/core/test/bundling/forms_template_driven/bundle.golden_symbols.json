@@ -978,7 +978,6 @@
       "stringify",
       "stringifyCSSSelector",
       "stringifyCSSSelectorList",
-      "stringifyForError",
       "stylingFirstUpdatePass",
       "subscribeOn",
       "syncPendingControls",

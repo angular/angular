@@ -666,7 +666,6 @@
       "stringify",
       "stringifyCSSSelector",
       "stringifyCSSSelectorList",
-      "stringifyForError",
       "syncViewWithBlueprint",
       "textBindingInternal",
       "throwInvalidWriteToSignalError",
