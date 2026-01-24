@@ -745,8 +745,9 @@ export function getNodeInjectable(
     const factory: NodeInjectorFactory = value;
     ngDevMode && injectionPath.push(factory.name ?? 'unknown');
     if (factory.resolving) {
-      const token = stringifyForError(tData[index]);
+      let token = '';
       if (ngDevMode) {
+        token = stringifyForError(tData[index]);
         throw cyclicDependencyErrorWithDetails(token, injectionPath);
       } else {
         throw cyclicDependencyError(token);
