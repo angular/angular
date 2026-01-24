@@ -11,11 +11,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
 import {flatten} from '../../util/array_utils';
-import type {
-  ComponentType,
-  NgModuleScopeInfoFromDecorator,
-  RawScopeInfoFromDecorator,
-} from '../interfaces/definition';
+import type {ComponentType, RawScopeInfoFromDecorator} from '../interfaces/definition';
 import {isComponent, isDirective, isNgModule, isPipe, verifyStandaloneImport} from '../jit/util';
 import {getComponentDef, getNgModuleDef, getNgModuleDefOrThrow, isStandalone} from '../def_getters';
 import {maybeUnwrapFn} from '../util/misc_utils';
@@ -69,7 +65,8 @@ class DepsTracker implements DepsTrackerApi {
 
     const def = getComponentDef(type);
     if (def === null) {
-      throw new Error(
+      throw new RuntimeError(
+        RuntimeErrorCode.DEPS_TRACKER_NOT_COMPONENT,
         `Attempting to get component dependencies for a type that is not a component: ${type}`,
       );
     }
@@ -112,9 +109,12 @@ class DepsTracker implements DepsTrackerApi {
    * This implementation does not make use of param scopeInfo since it assumes the scope info is
    * already added to the type itself through methods like {@link ɵɵsetNgModuleScope}
    */
-  registerNgModule(type: Type<any>, scopeInfo: NgModuleScopeInfoFromDecorator): void {
+  registerNgModule(type: Type<any>): void {
     if (!isNgModule(type)) {
-      throw new Error(`Attempting to register a Type which is not NgModule as NgModule: ${type}`);
+      throw new RuntimeError(
+        RuntimeErrorCode.DEPS_TRACKER_NOT_NG_MODULE,
+        `Attempting to register a Type which is not NgModule as NgModule: ${type}`,
+      );
     }
 
     // Lazily process the NgModules later when needed.

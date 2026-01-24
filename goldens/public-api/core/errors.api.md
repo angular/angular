@@ -40,6 +40,10 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     DEFER_LOADING_FAILED = -750,
     // (undocumented)
+    DEPS_TRACKER_NOT_COMPONENT = 924,
+    // (undocumented)
+    DEPS_TRACKER_NOT_NG_MODULE = 925,
+    // (undocumented)
     DUPLICATE_DIRECTIVE = 309,
     // (undocumented)
     DUPLICATE_NG_MODULE_ID = 921,

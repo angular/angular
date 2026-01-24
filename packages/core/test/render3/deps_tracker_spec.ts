@@ -1073,7 +1073,7 @@ describe('runtime dependency tracker', () => {
           declarations: [MainComponent, Component1, Directive1, Pipe1],
         })
         class MainModule {}
-        depsTracker.registerNgModule(MainModule as NgModuleType, {});
+        depsTracker.registerNgModule(MainModule as NgModuleType);
 
         const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>);
 
@@ -1108,7 +1108,7 @@ describe('runtime dependency tracker', () => {
         (MainModule as NgModuleType).ɵmod = createNgModuleDef({
           declarations: () => [MainComponent, Component1, Directive1, Pipe1],
         });
-        depsTracker.registerNgModule(MainModule as NgModuleType, {});
+        depsTracker.registerNgModule(MainModule as NgModuleType);
 
         const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>);
 
@@ -1147,7 +1147,7 @@ describe('runtime dependency tracker', () => {
           // Importing an invalid class makes the compilation scope corrupted.
           imports: [RandomClass],
         });
-        depsTracker.registerNgModule(MainModule as NgModuleType, {});
+        depsTracker.registerNgModule(MainModule as NgModuleType);
 
         const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>);
 
@@ -1363,7 +1363,7 @@ describe('runtime dependency tracker', () => {
         declarations: [MainComponent],
       })
       class MainModule {}
-      depsTracker.registerNgModule(MainModule as NgModuleType, {});
+      depsTracker.registerNgModule(MainModule as NgModuleType);
 
       expect(depsTracker.isOrphanComponent(MainComponent as ComponentType<any>)).toBeFalse();
     });

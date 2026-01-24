@@ -139,6 +139,11 @@ export const enum RuntimeErrorCode {
   DUPLICATE_NG_MODULE_ID = 921,
   VIEW_DESTROYED_INSERT_ERROR = 922,
   VIEW_DESTROYED_MOVE_ERROR = 923,
+
+  // Dependency tracker errors
+  DEPS_TRACKER_NOT_COMPONENT = 924,
+  DEPS_TRACKER_NOT_NG_MODULE = 925,
+
   // Signal integration errors
   REQUIRED_INPUT_NO_VALUE = -950,
   REQUIRED_QUERY_NO_VALUE = -951,

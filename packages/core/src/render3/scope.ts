@@ -64,7 +64,7 @@ export function ɵɵsetNgModuleScope(type: any, scope: NgModuleScopeInfoFromDeco
       ngModuleDef.bootstrap = convertToTypeArray(scope.bootstrap);
     }
 
-    depsTracker.registerNgModule(type, scope);
+    depsTracker.registerNgModule(type);
   });
 }
 
