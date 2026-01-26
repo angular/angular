@@ -127,7 +127,7 @@ function getInlineTypeCheckInfoAtPosition(
     return undefined;
   }
 
-  // Return `undefined` if the position is not on the template expression or the template resource
+  // Return `undefined` if the position is not within the template expression or the template resource
   // is not inline.
   const resources = compiler.getDirectiveResources(classDecl);
   if (resources === null) {
@@ -137,7 +137,8 @@ function getInlineTypeCheckInfoAtPosition(
   if (
     resources.template !== null &&
     !isExternalResource(resources.template) &&
-    expression === resources.template.node
+    position >= resources.template.node.getStart() &&
+    position <= resources.template.node.getEnd()
   ) {
     const template = compiler.getTemplateTypeChecker().getTemplate(classDecl);
     if (template === null) {
