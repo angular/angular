@@ -16,11 +16,6 @@ import ts from 'typescript';
 
 export interface PluginConfig {
   /**
-   * If true, return only Angular results. Otherwise, return Angular + TypeScript
-   * results.
-   */
-  angularOnly: boolean;
-  /**
    * If true, enable `strictTemplates` in Angular compiler options regardless
    * of its value in tsconfig.json.
    */

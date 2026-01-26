@@ -212,9 +212,7 @@ export class Session {
       },
     });
 
-    const pluginConfig: PluginConfig = {
-      angularOnly: true,
-    };
+    const pluginConfig: PluginConfig = {};
     if (options.forceStrictTemplates) {
       pluginConfig.forceStrictTemplates = true;
     }

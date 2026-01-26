@@ -26,78 +26,37 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   const tsLS = isNgLanguageService(languageService)
     ? languageService.getTypescriptLanguageService()
     : languageService;
-  const angularOnly = config?.angularOnly === true;
 
   const ngLS = new LanguageService(project, tsLS, config);
 
-  function getSyntacticDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
-    if (!angularOnly && isTypeScriptFile(fileName)) {
-      return tsLS.getSyntacticDiagnostics(fileName);
-    }
-
-    // Template files do not currently produce separate syntactic diagnostics and
-    // are instead produced during the semantic diagnostic analysis.
-    return [];
-  }
-
   function getSuggestionDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
     const diagnostics: ts.DiagnosticWithLocation[] = [];
-    if (!angularOnly && isTypeScriptFile(fileName)) {
-      diagnostics.push(...tsLS.getSuggestionDiagnostics(fileName));
-    }
     diagnostics.push(...ngLS.getSuggestionDiagnostics(fileName));
     return diagnostics;
   }
 
   function getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
-    if (!angularOnly && isTypeScriptFile(fileName)) {
-      diagnostics.push(...tsLS.getSemanticDiagnostics(fileName));
-    }
     diagnostics.push(...ngLS.getSemanticDiagnostics(fileName));
     return diagnostics;
   }
 
   function getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
-      return ngLS.getQuickInfoAtPosition(fileName, position);
-    } else {
-      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
-      return (
-        tsLS.getQuickInfoAtPosition(fileName, position) ??
-        ngLS.getQuickInfoAtPosition(fileName, position)
-      );
-    }
+    return ngLS.getQuickInfoAtPosition(fileName, position);
   }
 
   function getTypeDefinitionAtPosition(
     fileName: string,
     position: number,
   ): readonly ts.DefinitionInfo[] | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
-      return ngLS.getTypeDefinitionAtPosition(fileName, position);
-    } else {
-      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
-      return (
-        tsLS.getTypeDefinitionAtPosition(fileName, position) ??
-        ngLS.getTypeDefinitionAtPosition(fileName, position)
-      );
-    }
+    return ngLS.getTypeDefinitionAtPosition(fileName, position);
   }
 
   function getDefinitionAndBoundSpan(
     fileName: string,
     position: number,
   ): ts.DefinitionInfoAndBoundSpan | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
-      return ngLS.getDefinitionAndBoundSpan(fileName, position);
-    } else {
-      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
-      return (
-        tsLS.getDefinitionAndBoundSpan(fileName, position) ??
-        ngLS.getDefinitionAndBoundSpan(fileName, position)
-      );
-    }
+    return ngLS.getDefinitionAndBoundSpan(fileName, position);
   }
 
   function getDefinitionAtPosition(
@@ -120,14 +79,11 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   ): readonly ts.RenameLocation[] | undefined {
     // Most operations combine results from all extensions. However, rename locations are exclusive
     // (results from only one extension are used) so our rename locations are a superset of the TS
-    // rename locations. As a result, we do not check the `angularOnly` flag here because we always
-    // want to include results at TS locations as well as locations in templates.
+    // rename locations.
     return ngLS.findRenameLocations(fileName, position);
   }
 
   function getRenameInfo(fileName: string, position: number): ts.RenameInfo {
-    // See the comment in `findRenameLocations` explaining why we don't check the `angularOnly`
-    // flag.
     return ngLS.getRenameInfo(fileName, position);
   }
 
@@ -136,17 +92,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     span: ts.TextSpan,
     format?: ts.SemanticClassificationFormat,
   ): ts.Classifications {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
-      return ngLS.getEncodedSemanticClassifications(fileName, span, format);
-    } else {
-      const ngClassifications = ngLS.getEncodedSemanticClassifications(fileName, span, format);
-      const tsClassifications = tsLS.getEncodedSemanticClassifications(fileName, span, format);
-      const spans = [...ngClassifications.spans, ...tsClassifications.spans];
-      return {
-        spans,
-        endOfLineState: tsClassifications.endOfLineState,
-      };
-    }
+    return ngLS.getEncodedSemanticClassifications(fileName, span, format);
   }
 
   function getTokenTypeFromClassification(classification: number): number | undefined {
@@ -161,15 +107,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     position: number,
     options: ts.GetCompletionsAtPositionOptions,
   ): ts.WithMetadata<ts.CompletionInfo> | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
-      return ngLS.getCompletionsAtPosition(fileName, position, options);
-    } else {
-      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
-      return (
-        tsLS.getCompletionsAtPosition(fileName, position, options) ??
-        ngLS.getCompletionsAtPosition(fileName, position, options)
-      );
-    }
+    return ngLS.getCompletionsAtPosition(fileName, position, options);
   }
 
   function getCompletionEntryDetails(
@@ -181,37 +119,14 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     preferences: ts.UserPreferences | undefined,
     data: ts.CompletionEntryData | undefined,
   ): ts.CompletionEntryDetails | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
-      return ngLS.getCompletionEntryDetails(
-        fileName,
-        position,
-        entryName,
-        formatOptions,
-        preferences,
-        data,
-      );
-    } else {
-      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
-      return (
-        tsLS.getCompletionEntryDetails(
-          fileName,
-          position,
-          entryName,
-          formatOptions,
-          source,
-          preferences,
-          data,
-        ) ??
-        ngLS.getCompletionEntryDetails(
-          fileName,
-          position,
-          entryName,
-          formatOptions,
-          preferences,
-          data,
-        )
-      );
-    }
+    return ngLS.getCompletionEntryDetails(
+      fileName,
+      position,
+      entryName,
+      formatOptions,
+      preferences,
+      data,
+    );
   }
 
   function getCompletionEntrySymbol(
@@ -220,24 +135,13 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     name: string,
     source: string | undefined,
   ): ts.Symbol | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
-      return ngLS.getCompletionEntrySymbol(fileName, position, name);
-    } else {
-      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
-      return (
-        tsLS.getCompletionEntrySymbol(fileName, position, name, source) ??
-        ngLS.getCompletionEntrySymbol(fileName, position, name)
-      );
-    }
+    return ngLS.getCompletionEntrySymbol(fileName, position, name);
   }
   /**
    * Gets global diagnostics related to the program configuration and compiler options.
    */
   function getCompilerOptionsDiagnostics(): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
-    if (!angularOnly) {
-      diagnostics.push(...tsLS.getCompilerOptionsDiagnostics());
-    }
     diagnostics.push(...ngLS.getCompilerOptionsDiagnostics());
     return diagnostics;
   }
@@ -247,22 +151,11 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     position: number,
     options: ts.SignatureHelpItemsOptions,
   ): ts.SignatureHelpItems | undefined {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
-      return ngLS.getSignatureHelpItems(fileName, position, options);
-    } else {
-      return (
-        tsLS.getSignatureHelpItems(fileName, position, options) ??
-        ngLS.getSignatureHelpItems(fileName, position, options)
-      );
-    }
+    return ngLS.getSignatureHelpItems(fileName, position, options);
   }
 
   function getOutliningSpans(fileName: string): ts.OutliningSpan[] {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
-      return ngLS.getOutliningSpans(fileName);
-    } else {
-      return tsLS.getOutliningSpans(fileName) ?? ngLS.getOutliningSpans(fileName);
-    }
+    return ngLS.getOutliningSpans(fileName);
   }
 
   function getTcb(fileName: string, position: number): GetTcbResponse | undefined {
@@ -319,29 +212,14 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     formatOptions: ts.FormatCodeSettings,
     preferences: ts.UserPreferences,
   ): readonly ts.CodeFixAction[] {
-    if (angularOnly || !isTypeScriptFile(fileName)) {
-      return ngLS.getCodeFixesAtPosition(
-        fileName,
-        start,
-        end,
-        errorCodes,
-        formatOptions,
-        preferences,
-      );
-    } else {
-      const tsLsCodeFixes = tsLS.getCodeFixesAtPosition(
-        fileName,
-        start,
-        end,
-        errorCodes,
-        formatOptions,
-        preferences,
-      );
-      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
-      return tsLsCodeFixes.length > 0
-        ? tsLsCodeFixes
-        : ngLS.getCodeFixesAtPosition(fileName, start, end, errorCodes, formatOptions, preferences);
-    }
+    return ngLS.getCodeFixesAtPosition(
+      fileName,
+      start,
+      end,
+      errorCodes,
+      formatOptions,
+      preferences,
+    );
   }
 
   function getCombinedCodeFix(
@@ -350,15 +228,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     formatOptions: ts.FormatCodeSettings,
     preferences: ts.UserPreferences,
   ): ts.CombinedCodeActions {
-    if (angularOnly) {
-      return ngLS.getCombinedCodeFix(scope, fixId, formatOptions, preferences);
-    } else {
-      const tsLsCombinedCodeFix = tsLS.getCombinedCodeFix(scope, fixId, formatOptions, preferences);
-      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
-      return tsLsCombinedCodeFix.changes.length > 0
-        ? tsLsCombinedCodeFix
-        : ngLS.getCombinedCodeFix(scope, fixId, formatOptions, preferences);
-    }
+    return ngLS.getCombinedCodeFix(scope, fixId, formatOptions, preferences);
   }
 
   function getTypescriptLanguageService() {
@@ -367,7 +237,6 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
 
   return {
     ...tsLS,
-    getSyntacticDiagnostics,
     getSemanticDiagnostics,
     getSuggestionDiagnostics,
     getTypeDefinitionAtPosition,

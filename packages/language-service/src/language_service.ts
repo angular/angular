@@ -56,8 +56,6 @@ import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 
-type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
-
 // Whether the language service should suppress the below for google3.
 const enableG3Suppression = false;
 
@@ -78,7 +76,7 @@ export class LanguageService {
   constructor(
     private readonly project: ts.server.Project,
     private readonly tsLS: ts.LanguageService,
-    private readonly config: Omit<PluginConfig, 'angularOnly'>,
+    private readonly config: PluginConfig,
   ) {
     if (project.projectKind === ts.server.ProjectKind.Configured) {
       const parseConfigHost = new LSParseConfigHost(project.projectService.host);
@@ -794,7 +792,7 @@ function logCompilerOptions(project: ts.server.Project, options: CompilerOptions
 function parseNgCompilerOptions(
   project: ts.server.Project,
   host: ConfigurationHost,
-  config: LanguageServiceConfig,
+  config: PluginConfig,
 ): CompilerOptions {
   if (!(project instanceof ts.server.ConfiguredProject)) {
     return {};
