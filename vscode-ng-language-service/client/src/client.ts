@@ -239,6 +239,15 @@ export class AngularLanguageClient implements vscode.Disposable {
 
           return angularCompletionsPromise;
         },
+        provideDocumentSymbols: async (
+          document: vscode.TextDocument,
+          token: vscode.CancellationToken,
+          next: lsp.ProvideDocumentSymbolsSignature,
+        ) => {
+          if (await this.isInAngularProject(document)) {
+            return next(document, token);
+          }
+        },
         provideFoldingRanges: async (
           document: vscode.TextDocument,
           context: vscode.FoldingContext,
@@ -470,6 +479,11 @@ export class AngularLanguageClient implements vscode.Disposable {
     if (suppressAngularDiagnosticCodes) {
       args.push('--suppressAngularDiagnosticCodes', suppressAngularDiagnosticCodes);
     }
+
+    // Note: Document symbols settings (angular.documentSymbols.enabled,
+    // angular.documentSymbols.showImplicitForVariables) are now fetched
+    // dynamically via workspace/configuration request by the server.
+    // This allows users to change these settings without restarting.
 
     const tsdk = config.get('typescript.tsdk', '');
     if (tsdk.trim().length > 0) {

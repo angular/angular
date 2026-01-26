@@ -37,6 +37,11 @@ import {CompilerFactory} from './compiler_factory';
 import {CompletionBuilder} from './completions';
 import {DefinitionBuilder} from './definitions';
 import {getLinkedEditingRangeAtPosition} from './linked_editing_range';
+import {
+  DocumentSymbolsOptions,
+  getTemplateDocumentSymbols,
+  TemplateDocumentSymbol,
+} from './document_symbols';
 import {getOutliningSpans} from './outlining_spans';
 import {QuickInfoBuilder} from './quick_info';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
@@ -488,6 +493,23 @@ export class LanguageService {
   getOutliningSpans(fileName: string): ts.OutliningSpan[] {
     return this.withCompilerAndPerfTracing(PerfPhase.OutliningSpans, (compiler) => {
       return getOutliningSpans(compiler, fileName);
+    });
+  }
+
+  /**
+   * Gets document symbols for Angular templates, including control flow blocks,
+   * elements, components, template references, and @let declarations.
+   * Returns symbols in NavigationTree format for compatibility with TypeScript.
+   *
+   * @param fileName The file path to get template symbols for
+   * @param options Optional configuration for document symbols behavior
+   */
+  getTemplateDocumentSymbols(
+    fileName: string,
+    options?: DocumentSymbolsOptions,
+  ): TemplateDocumentSymbol[] {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsComponentLocations, (compiler) => {
+      return getTemplateDocumentSymbols(compiler, fileName, options);
     });
   }
 

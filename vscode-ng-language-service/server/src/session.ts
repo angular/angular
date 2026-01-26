@@ -42,6 +42,7 @@ import {onFoldingRanges} from './handlers/folding';
 import {onHover} from './handlers/hover';
 import {onInitialize} from './handlers/initialization';
 import {onLinkedEditingRange} from './handlers/linked_editing_range';
+import {onDocumentSymbol} from './handlers/document_symbols';
 import {onRenameRequest, onPrepareRename} from './handlers/rename';
 import {onSignatureHelp} from './handlers/signature';
 import {onGetTcb} from './handlers/tcb';
@@ -238,6 +239,7 @@ export class Session {
     conn.onHover((p) => onHover(this, p));
     conn.onFoldingRanges((p) => onFoldingRanges(this, p));
     conn.languages.onLinkedEditingRange((p) => onLinkedEditingRange(this, p));
+    conn.onDocumentSymbol(async (p) => await onDocumentSymbol(this, p));
     conn.onCompletion((p) => onCompletion(this, p));
     conn.onCompletionResolve((p) => onCompletionResolve(this, p));
     conn.onRequest(GetComponentsWithTemplateFile, (p) => getComponentsWithTemplateFile(this, p));
