@@ -13,6 +13,7 @@ import {
   signal,
   WritableSignal,
   effect,
+  untracked,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {
@@ -119,9 +120,11 @@ export class SignalFormControl<T> extends AbstractControl {
     effect(
       () => {
         const value = this.sourceValue();
-        this.notifyParentUnlessPending();
-        this.valueChanges.emit(value);
-        this.emitControlEvent(new ValueChangeEvent(value, this));
+        untracked(() => {
+          this.notifyParentUnlessPending();
+          this.valueChanges.emit(value);
+          this.emitControlEvent(new ValueChangeEvent(value, this));
+        });
       },
       {injector},
     );
@@ -130,7 +133,9 @@ export class SignalFormControl<T> extends AbstractControl {
     effect(
       () => {
         const status = this.status;
-        this.statusChanges.emit(status);
+        untracked(() => {
+          this.statusChanges.emit(status);
+        });
         this.emitControlEvent(new StatusChangeEvent(status, this));
       },
       {injector},
@@ -140,9 +145,11 @@ export class SignalFormControl<T> extends AbstractControl {
     effect(
       () => {
         const isDisabled = this.disabled;
-        for (const fn of this.onDisabledChangeCallbacks) {
-          fn(isDisabled);
-        }
+        untracked(() => {
+          for (const fn of this.onDisabledChangeCallbacks) {
+            fn(isDisabled);
+          }
+        });
       },
       {injector},
     );
@@ -185,7 +192,9 @@ export class SignalFormControl<T> extends AbstractControl {
   }
 
   private emitControlEvent(event: ControlEvent): void {
-    (this as any)._events.next(event);
+    untracked(() => {
+      (this as any)._events.next(event);
+    });
   }
 
   override setValue(value: any, options?: ValueUpdateOptions): void {

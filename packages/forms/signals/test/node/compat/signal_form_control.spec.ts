@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, effect, Injector, resource, runInInjectionContext} from '@angular/core';
+import {
+  ApplicationRef,
+  effect,
+  Injector,
+  resource,
+  runInInjectionContext,
+  signal,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ControlEvent, FormControlStatus, FormGroup, FormResetEvent} from '@angular/forms';
 import {disabled, required, validateAsync, ValidationError} from '@angular/forms/signals';
@@ -327,6 +334,75 @@ describe('SignalFormControl', () => {
       expect(statuses).toEqual(['VALID', 'INVALID', 'VALID']);
     });
 
+    it('should NOT track signals read inside statusChanges subscription', () => {
+      const form = createSignalFormControl<number | undefined>(undefined, (p) => {
+        required(p);
+      });
+      const otherSignal = signal(0);
+      const callback = jasmine.createSpy('statusChanges').and.callFake(() => {
+        otherSignal(); // Read another signal
+      });
+
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.tick(); // Flush effects
+
+      form.statusChanges.subscribe(callback);
+
+      form.setValue(1);
+      appRef.tick();
+      expect(callback).toHaveBeenCalledTimes(1);
+      callback.calls.reset();
+
+      // Update the other signal - this should NOT trigger the statusChanges emission if untracked is used
+      otherSignal.set(1);
+      appRef.tick();
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('should NOT track signals read inside valueChanges subscription', () => {
+      const form = createSignalFormControl(10);
+      const otherSignal = signal(0);
+      const callback = jasmine.createSpy('valueChanges').and.callFake(() => {
+        otherSignal();
+      });
+
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.tick();
+
+      form.valueChanges.subscribe(callback);
+
+      form.setValue(20);
+      appRef.tick();
+      expect(callback).toHaveBeenCalledWith(20);
+      callback.calls.reset();
+
+      otherSignal.set(1);
+      appRef.tick();
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('should NOT track signals read inside events subscription', () => {
+      const form = createSignalFormControl(10);
+      const otherSignal = signal(0);
+      const callback = jasmine.createSpy('events').and.callFake(() => {
+        otherSignal();
+      });
+
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.tick();
+
+      form.events.subscribe(callback);
+
+      form.setValue(20);
+      appRef.tick();
+      expect(callback).toHaveBeenCalled();
+      callback.calls.reset();
+
+      otherSignal.set(1);
+      appRef.tick();
+      expect(callback).not.toHaveBeenCalled();
+    });
+
     it('should emit ValueChangeEvent on events observable', () => {
       const form = createSignalFormControl(10);
       const events: any[] = [];
@@ -580,6 +656,33 @@ describe('SignalFormControl', () => {
       form.setValue(20);
       TestBed.inject(ApplicationRef).tick();
 
+      expect(callback).toHaveBeenCalledWith(true);
+    });
+
+    it('should NOT track signals read inside onDisabledChange callback', () => {
+      const form = createSignalFormControl(10, (p) => {
+        disabled(p, ({value}) => value() > 15);
+      });
+      const otherSignal = signal(0);
+      const callback = jasmine.createSpy('onDisabledChange').and.callFake(() => {
+        otherSignal(); // Read another signal
+      });
+
+      form.registerOnDisabledChange(callback);
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.tick();
+
+      expect(callback).toHaveBeenCalledTimes(1);
+      callback.calls.reset();
+
+      // Update the other signal - this should NOT trigger the callback
+      otherSignal.set(1);
+      appRef.tick();
+      expect(callback).not.toHaveBeenCalled();
+
+      // Sanity check: update the form value to trigger disabled change
+      form.setValue(20);
+      appRef.tick();
       expect(callback).toHaveBeenCalledWith(true);
     });
   });
