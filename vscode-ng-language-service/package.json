@@ -159,6 +159,16 @@
             "type": "boolean",
             "default": true,
             "markdownDescription": "When enabled, the Angular Language Service will delegate file watching to VS Code instead of creating its own internal file watchers. This can significantly improve performance (greater than 10x faster initialization) and reduce resource usage in large repositories."
+          },
+          "angular.documentSymbols.enabled": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "Enable Angular-specific document symbols in the Outline view and breadcrumbs. Shows control flow blocks (`@if`, `@for`, `@defer`), elements, variables, and structural directives."
+          },
+          "angular.documentSymbols.showImplicitForVariables": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show all implicit `@for` loop variables (`$index`, `$count`, `$first`, `$last`, `$even`, `$odd`) in document symbols. When disabled (default), only explicitly aliased variables like `let i = $index` are shown."
           }
         }
       }
