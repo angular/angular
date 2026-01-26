@@ -27,8 +27,8 @@ import {from, of, Subscription} from 'rxjs';
 import {mergeAll} from 'rxjs/operators';
 
 import {Event, NavigationEnd} from '../events';
-import {exactMatchOptions, Router, subsetMatchOptions} from '../router';
-import {isActive, IsActiveMatchOptions} from '../url_tree';
+import {Router} from '../router';
+import {isActive, IsActiveMatchOptions, exactMatchOptions, subsetMatchOptions} from '../url_tree';
 
 import {RouterLink} from './router_link';
 
