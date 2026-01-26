@@ -59,8 +59,10 @@ import {StateManager} from './statemanager/state_manager';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {
   containsTree,
+  exactMatchOptions,
   IsActiveMatchOptions,
   isUrlTree,
+  subsetMatchOptions,
   UrlSegmentGroup,
   UrlSerializer,
   UrlTree,
@@ -68,28 +70,6 @@ import {
 import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
 import {RouterState} from './router_state';
-
-/**
- * The equivalent `IsActiveMatchOptions` options for `isActive` is called with `true`
- * (exact = true).
- */
-export const exactMatchOptions: IsActiveMatchOptions = {
-  paths: 'exact',
-  fragment: 'ignored',
-  matrixParams: 'ignored',
-  queryParams: 'exact',
-};
-
-/**
- * The equivalent `IsActiveMatchOptions` options for `isActive` is called with `false`
- * (exact = false).
- */
-export const subsetMatchOptions: IsActiveMatchOptions = {
-  paths: 'subset',
-  fragment: 'ignored',
-  matrixParams: 'ignored',
-  queryParams: 'subset',
-};
 
 /**
  * @description

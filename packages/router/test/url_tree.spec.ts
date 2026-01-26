@@ -7,8 +7,13 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {exactMatchOptions, Router, subsetMatchOptions} from '../src/router';
-import {containsTree, DefaultUrlSerializer} from '../src/url_tree';
+import {Router} from '../src/router';
+import {
+  containsTree,
+  DefaultUrlSerializer,
+  exactMatchOptions,
+  subsetMatchOptions,
+} from '../src/url_tree';
 
 describe('UrlTree', () => {
   const serializer = new DefaultUrlSerializer();

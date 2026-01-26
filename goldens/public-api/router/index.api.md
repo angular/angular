@@ -370,7 +370,7 @@ export interface InMemoryScrollingOptions {
 }
 
 // @public
-export function isActive(url: string | UrlTree, router: Router, matchOptions: IsActiveMatchOptions): Signal<boolean>;
+export function isActive(url: string | UrlTree, router: Router, matchOptions?: IsActiveMatchOptions): Signal<boolean>;
 
 // @public
 export interface IsActiveMatchOptions {
