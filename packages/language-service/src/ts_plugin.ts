@@ -11,11 +11,13 @@ import ts from 'typescript';
 import {
   ApplyRefactoringProgressFn,
   ApplyRefactoringResult,
+  DocumentSymbolsOptions,
   GetComponentLocationsForTemplateResponse,
   GetTcbResponse,
   GetTemplateLocationForComponentResponse,
   isNgLanguageService,
   NgLanguageService,
+  TemplateDocumentSymbol,
 } from '../api';
 
 import {LanguageService} from './language_service';
@@ -365,6 +367,13 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return tsLS;
   }
 
+  function getTemplateDocumentSymbols(
+    fileName: string,
+    options?: DocumentSymbolsOptions,
+  ): TemplateDocumentSymbol[] {
+    return ngLS.getTemplateDocumentSymbols(fileName, options);
+  }
+
   return {
     ...tsLS,
     getSyntacticDiagnostics,
@@ -389,6 +398,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getSignatureHelpItems,
     getOutliningSpans,
     getTemplateLocationForComponent,
+    getTemplateDocumentSymbols,
     hasCodeFixesForErrorCode: ngLS.hasCodeFixesForErrorCode.bind(ngLS),
     getCodeFixesAtPosition,
     getCombinedCodeFix,
