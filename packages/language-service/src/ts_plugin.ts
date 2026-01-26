@@ -16,6 +16,8 @@ import {
   GetTemplateLocationForComponentResponse,
   isNgLanguageService,
   NgLanguageService,
+  AngularInlayHint,
+  InlayHintsConfig,
 } from '../api';
 
 import {LanguageService} from './language_service';
@@ -365,6 +367,14 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return tsLS;
   }
 
+  function getAngularInlayHints(
+    fileName: string,
+    span: ts.TextSpan,
+    config?: InlayHintsConfig,
+  ): AngularInlayHint[] {
+    return ngLS.provideInlayHints(fileName, span, config);
+  }
+
   return {
     ...tsLS,
     getSyntacticDiagnostics,
@@ -395,6 +405,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getTypescriptLanguageService,
     getApplicableRefactors,
     applyRefactoring,
+    getAngularInlayHints,
   };
 }
 

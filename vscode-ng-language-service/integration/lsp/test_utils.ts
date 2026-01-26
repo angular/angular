@@ -59,6 +59,14 @@ export function createConnection(serverOptions: ServerOptions): MessageConnectio
   connection.onDispose(() => {
     server.kill();
   });
+
+  // Handle workspace/configuration requests from the server
+  // This provides default empty configuration for all requested sections
+  connection.onRequest(lsp.ConfigurationRequest.type, (params) => {
+    // Return empty objects for each requested section
+    // This allows the server to use its default configuration
+    return params.items.map(() => ({}));
+  });
   return connection;
 }
 
@@ -80,6 +88,12 @@ export function initializeServer(client: MessageConnection): Promise<lsp.Initial
         moniker: {},
         definition: {linkSupport: true},
         typeDefinition: {linkSupport: true},
+        inlayHint: {
+          dynamicRegistration: false,
+        },
+      },
+      workspace: {
+        configuration: true,
       },
     },
     /**

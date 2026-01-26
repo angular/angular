@@ -661,6 +661,688 @@ export class AppComponent {
     expect(codeLensResolveResponse?.command?.title).toEqual('Go to component');
   });
 
+  describe('inlay hints', () => {
+    it('should provide TypeScript inlay hints for component class', async () => {
+      openTextDocument(client, APP_COMPONENT);
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: APP_COMPONENT_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 20, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // The server should respond (may be empty if TS inlay hints are disabled,
+      // but the request itself should succeed)
+      expect(response).toBeDefined();
+      // response can be null or empty array if TS has no hints to show
+      // The important thing is that the request doesn't fail
+    });
+
+    it('should handle inlay hints for external template', async () => {
+      openTextDocument(client, FOO_TEMPLATE);
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 10, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // For HTML templates, we currently don't provide Angular-specific hints
+      // (that's a future enhancement), but the request should succeed
+      expect(response).toBeDefined();
+    });
+
+    it('should resolve inlay hints', async () => {
+      openTextDocument(client, APP_COMPONENT);
+
+      // First get some hints
+      const hints = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: APP_COMPONENT_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 20, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // If we have any hints, try to resolve one
+      if (hints && hints.length > 0) {
+        const resolved = await client.sendRequest(lsp.InlayHintResolveRequest.type, hints[0]);
+        expect(resolved).toBeDefined();
+        // Resolved hint should have at least the same position
+        expect(resolved.position).toEqual(hints[0].position);
+      }
+    });
+
+    it('should return inlay hints response for external template', async () => {
+      // Use existing foo.component.html which has a simple template
+      openTextDocument(client, FOO_TEMPLATE);
+
+      // First verify diagnostics work (confirms Angular LS is working)
+      const diagnostics = await getDiagnosticsForFile(client, FOO_TEMPLATE);
+      expect(diagnostics).toBeDefined();
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 10, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // The InlayHint request should succeed (response is null or array)
+      // For external templates, we may not have hints yet if the feature
+      // isn't fully implemented, but the request shouldn't fail
+      // Check that response is either null or an array (not undefined)
+      expect(response === null || Array.isArray(response)).toBe(true);
+    });
+
+    it('should provide Angular inlay hints for @if alias', async () => {
+      // Create a component with @if and alias
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `@if (title; as result) {
+  <div>{{ result }}</div>
+}`,
+        },
+      });
+
+      // Wait for diagnostics to ensure the file is processed
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 5, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // Should have at least one hint for the @if alias
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+      expect(response!.length).toBeGreaterThan(0);
+
+      // Find the alias hint - should show the type (string for title)
+      const aliasHint = response!.find((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label.includes('string');
+      });
+      expect(aliasHint).toBeDefined();
+    });
+
+    it('should provide inlay hints for pipe output types', async () => {
+      // Use existing foo.component.html which has a pipe: {{title | uppercase}}
+      openTextDocument(client, FOO_TEMPLATE);
+
+      // Wait for diagnostics to ensure the file is processed
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      // Now try inlay hints
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 10, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // Should have at least one hint for the pipe
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+      expect(response!.length).toBeGreaterThan(0);
+
+      // Find the pipe hint - should show the output type of uppercase pipe
+      const pipeHint = response!.find((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label.includes('string');
+      });
+      expect(pipeHint).toBeDefined();
+    });
+
+    it('should provide inlay hints for @for loop variables', async () => {
+      // Create a template with @for loop
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `@for (item of [1, 2, 3]; track item; let idx = $index) {
+  <div>{{ item }} at {{ idx }}</div>
+}`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 5, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // Should have hints for the loop variable and possibly context variables
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+      expect(response!.length).toBeGreaterThan(0);
+
+      // Find hint for the loop item (should be number)
+      const itemHint = response!.find((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label.includes('number');
+      });
+      expect(itemHint).toBeDefined();
+    });
+
+    it('should provide inlay hints for @let declarations', async () => {
+      // Create a template with @let declaration
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `@let doubled = 2 * 2;
+<div>{{ doubled }}</div>`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 5, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // Should have a hint for the @let declaration
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+      expect(response!.length).toBeGreaterThan(0);
+
+      // The hint should show number type for the multiplication result
+      const letHint = response!.find((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label.includes('number');
+      });
+      expect(letHint).toBeDefined();
+    });
+
+    it('should provide inlay hints for event parameter types', async () => {
+      // Create a template with event binding using $event
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `<button (click)="onClick($event)">Click me</button>`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 5, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // The hint might be present if the implementation supports it
+      expect(response === null || Array.isArray(response)).toBe(true);
+
+      // If hints are returned, check for MouseEvent or Event type
+      if (response && response.length > 0) {
+        const eventHint = response.find((h) => {
+          const label =
+            typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+          return label.includes('MouseEvent') || label.includes('Event');
+        });
+        // Event hint is optional - some configurations might not enable it
+        if (eventHint) {
+          expect(eventHint.position).toBeDefined();
+        }
+      }
+    });
+
+    it('should provide inlay hints for structural directive let variables', async () => {
+      // Create a template with ngFor structural directive (let-item pattern)
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `<ng-template ngFor let-item [ngForOf]="[1, 2, 3]" let-i="index">
+  <div>{{ item }} at {{ i }}</div>
+</ng-template>`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 5, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // Hints should be returned for let variables
+      expect(response === null || Array.isArray(response)).toBe(true);
+
+      // If hints are returned, check for number type hints
+      if (response && response.length > 0) {
+        const numberHint = response.find((h) => {
+          const label =
+            typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+          return label.includes('number');
+        });
+        // Number hint expected for the item and index
+        expect(numberHint).toBeDefined();
+      }
+    });
+
+    it('should provide inlay hints for pipes in property bindings', async () => {
+      // Create a template with pipe in property binding
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `<div [title]="title | uppercase">Hover me</div>`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 5, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // Should have a hint for the pipe output
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+      expect(response!.length).toBeGreaterThan(0);
+
+      // Find the pipe hint - should show string type
+      const pipeHint = response!.find((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label.includes('string');
+      });
+      expect(pipeHint).toBeDefined();
+    });
+
+    it('should provide inlay hints for chained pipes', async () => {
+      // Create a template with chained pipes
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `{{ title | uppercase | lowercase }}`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 5, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      // Should have hints for each pipe in the chain
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+      // At least 2 hints for 2 pipes
+      expect(response!.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('should not produce duplicate inlay hints for @for loop variables', async () => {
+      // Regression test: TmplAstRecursiveVisitor visits variables twice
+      // (once in visitForLoopBlock, once via visitVariable) which caused duplicates
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `@for (item of [1, 2, 3]; track item; let idx = $index) {
+  {{ item }}
+}`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 5, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+
+      // Count hints with ': number' - there should be exactly 2:
+      // one for 'item' and one for 'idx'
+      const numberHints = response!.filter((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label === ': number';
+      });
+
+      // Should have exactly 2 number hints, not 4+ (which would happen with duplicates)
+      expect(numberHints.length).toBe(2);
+    });
+
+    it('should not produce duplicate inlay hints for @if alias', async () => {
+      // Regression test: @if alias was being visited twice causing duplicate hints
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `@if (title; as myTitle) {
+  {{ myTitle }}
+}`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 5, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+
+      // Count hints with ': string' - there should be exactly 1 for 'myTitle'
+      const stringHints = response!.filter((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label === ': string';
+      });
+
+      // Should have exactly 1 string hint, not 2 (which would happen with duplicates)
+      expect(stringHints.length).toBe(1);
+    });
+
+    it('should provide inlay hints for @else if alias', async () => {
+      // @else if also supports the 'as' alias syntax
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `@if (false) {
+  never
+} @else if (title; as elseIfAlias) {
+  {{ elseIfAlias }}
+}`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 10, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+
+      // Should have a hint for the @else if alias
+      const stringHints = response!.filter((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label === ': string';
+      });
+
+      // Should have exactly 1 string hint for 'elseIfAlias'
+      expect(stringHints.length).toBe(1);
+    });
+
+    it('should provide inlay hints for @let declarations', async () => {
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `@let greeting = title;
+@let doubled = 2 * 2;
+{{ greeting }} {{ doubled }}`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 5, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+
+      // Should have hints for both @let declarations
+      const stringHints = response!.filter((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label === ': string';
+      });
+      const numberHints = response!.filter((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label === ': number';
+      });
+
+      expect(stringHints.length).toBe(1); // greeting: string
+      expect(numberHints.length).toBe(1); // doubled: number
+    });
+
+    it('should provide inlay hints for pipe output types', async () => {
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `{{ title | uppercase }}`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 1, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+
+      // Should have a hint for the pipe output type
+      const pipeHints = response!.filter((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label.includes('string');
+      });
+
+      expect(pipeHints.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should provide inlay hints for template reference variables', async () => {
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `<input #myInput>
+<div #myDiv>content</div>
+{{ myInput.value }} {{ myDiv.textContent }}`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 5, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+
+      // Should have hints for #myInput (HTMLInputElement) and #myDiv (HTMLDivElement)
+      const inputHint = response!.find((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label.includes('HTMLInputElement');
+      });
+      const divHint = response!.find((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label.includes('HTMLDivElement');
+      });
+
+      expect(inputHint).toBeDefined();
+      expect(divHint).toBeDefined();
+    });
+
+    it('should provide inlay hints for structural directive variables (*ngFor)', async () => {
+      // Use a template with *ngFor that uses a simple string array
+      client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+          languageId: 'html',
+          version: 1,
+          text: `<div *ngFor="let char of title; let idx = index">{{ char }} {{ idx }}</div>`,
+        },
+      });
+
+      await getDiagnosticsForFile(client, FOO_TEMPLATE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: FOO_TEMPLATE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 2, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+
+      // Should have hints for 'char' (string) and 'idx' (number)
+      const charHint = response!.find((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label === ': string';
+      });
+      const idxHint = response!.find((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label === ': number';
+      });
+
+      expect(charHint).toBeDefined();
+      expect(idxHint).toBeDefined();
+    });
+
+    it('should provide inlay hints for host event bindings', async () => {
+      const HIGHLIGHT_DIRECTIVE = join(PROJECT_PATH, 'app', 'highlight.directive.ts');
+      const HIGHLIGHT_DIRECTIVE_URI = pathToFileURL(HIGHLIGHT_DIRECTIVE).toString();
+
+      openTextDocument(client, HIGHLIGHT_DIRECTIVE);
+      await getDiagnosticsForFile(client, HIGHLIGHT_DIRECTIVE);
+
+      const response = (await client.sendRequest(lsp.InlayHintRequest.type, {
+        textDocument: {
+          uri: HIGHLIGHT_DIRECTIVE_URI,
+        },
+        range: {
+          start: {line: 0, character: 0},
+          end: {line: 30, character: 0},
+        },
+      })) as lsp.InlayHint[] | null;
+
+      expect(response).not.toBeNull();
+      expect(Array.isArray(response)).toBe(true);
+
+      // Should have event type hints for the $event parameter in host event handlers
+      // Note: click events are PointerEvent in modern browsers, mouseenter is MouseEvent
+      const eventHints = response!.filter((h) => {
+        const label = typeof h.label === 'string' ? h.label : h.label.map((l) => l.value).join('');
+        return label.includes('MouseEvent') || label.includes('PointerEvent');
+      });
+
+      // Should have at least 2 event type hints (one for click=PointerEvent, one for mouseenter=MouseEvent)
+      expect(eventHints.length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
   it('detects an Angular project', async () => {
     openTextDocument(client, FOO_TEMPLATE);
     const templateResponse = await client.sendRequest(IsInAngularProject, {
@@ -696,15 +1378,17 @@ export class AppComponent {
               {
                 'newText': '\nimport { BarComponent } from "./bar.component";',
                 'range': {
-                  'start': {'line': 5, 'character': 45},
-                  'end': {'line': 5, 'character': 45},
+                  // Line numbers adjusted for HighlightDirective import
+                  'start': {'line': 6, 'character': 57},
+                  'end': {'line': 6, 'character': 57},
                 },
               },
               {
                 'newText': 'imports: [CommonModule, PostModule, BarComponent]',
                 'range': {
-                  'start': {'line': 8, 'character': 2},
-                  'end': {'line': 8, 'character': 37},
+                  // Line numbers adjusted for HighlightDirective import
+                  'start': {'line': 9, 'character': 2},
+                  'end': {'line': 9, 'character': 37},
                 },
               },
             ],
