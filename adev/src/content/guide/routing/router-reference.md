@@ -64,7 +64,9 @@ The browser uses the `<base href>` value to prefix relative URLs when referencin
 Add the `<base>` element just after the `<head>` tag.
 If the `app` folder is the application root, as it is for this application, set the `href` value in `index.html` as shown here.
 
-<docs-code header="index.html (base-href)" path="adev/src/content/examples/router/src/index.html" region="base-href"/>
+```html
+<base href="/" />
+```
 
 ### HTML5 URLs and the `<base href>`
 
