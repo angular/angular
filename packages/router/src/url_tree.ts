@@ -639,7 +639,13 @@ class UrlParser {
     return this.consumeOptional('#') ? decodeURIComponent(this.remaining) : null;
   }
 
-  private parseChildren(): {[outlet: string]: UrlSegmentGroup} {
+  private parseChildren(depth = 0): {[outlet: string]: UrlSegmentGroup} {
+    if (depth > 50) {
+      throw new RuntimeError(
+        RuntimeErrorCode.UNPARSABLE_URL,
+        (typeof ngDevMode === 'undefined' || ngDevMode) && 'URL is too deep',
+      );
+    }
     if (this.remaining === '') {
       return {};
     }
@@ -659,12 +665,12 @@ class UrlParser {
     let children: {[outlet: string]: UrlSegmentGroup} = {};
     if (this.peekStartsWith('/(')) {
       this.capture('/');
-      children = this.parseParens(true);
+      children = this.parseParens(true, depth);
     }
 
     let res: {[outlet: string]: UrlSegmentGroup} = {};
     if (this.peekStartsWith('(')) {
-      res = this.parseParens(false);
+      res = this.parseParens(false, depth);
     }
 
     if (segments.length > 0 || Object.keys(children).length > 0) {
@@ -750,7 +756,7 @@ class UrlParser {
   }
 
   // parse `(a/b//outlet_name:c/d)`
-  private parseParens(allowPrimary: boolean): {[outlet: string]: UrlSegmentGroup} {
+  private parseParens(allowPrimary: boolean, depth: number): {[outlet: string]: UrlSegmentGroup} {
     const segments: {[key: string]: UrlSegmentGroup} = {};
     this.capture('(');
 
@@ -777,7 +783,7 @@ class UrlParser {
         outletName = PRIMARY_OUTLET;
       }
 
-      const children = this.parseChildren();
+      const children = this.parseChildren(depth + 1);
       segments[outletName ?? PRIMARY_OUTLET] =
         Object.keys(children).length === 1 && children[PRIMARY_OUTLET]
           ? children[PRIMARY_OUTLET]
