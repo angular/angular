@@ -7,7 +7,7 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {provideRouter, Router} from '../src';
+import {provideRouter, Event, Router} from '../src';
 import {withExperimentalPlatformNavigation, withRouterConfig} from '../src/provide_router';
 import {withBody} from '@angular/private/testing';
 import {
@@ -241,5 +241,29 @@ if (typeof window !== 'undefined' && 'navigation' in window) {
         expect(router.url).toBe('/somewhere');
       }),
     );
+
+    it('should not convert reload events to SPA navigations', async () => {
+      const navigation = TestBed.inject(PlatformNavigation);
+      navigation.addEventListener(
+        'navigate',
+        (e: NavigateEvent) => {
+          e.intercept({
+            handler: () => new Promise((_, reject) => setTimeout(reject, 2)),
+          });
+        },
+        {once: true},
+      );
+      const routerEvents: Event[] = [];
+      router.events.subscribe((e) => routerEvents.push(e));
+      router.resetConfig([
+        {
+          path: '**',
+          children: [],
+        },
+      ]);
+      navigation.reload();
+      await timeout(3);
+      expect(routerEvents).toEqual([]);
+    });
   });
 }
