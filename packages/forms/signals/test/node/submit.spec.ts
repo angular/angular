@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, resource, signal} from '@angular/core';
+import {ApplicationRef, Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   form,
@@ -35,33 +35,125 @@ describe('submit', () => {
     expect(f.first().errors()).toEqual([requiredError({fieldTree: f.first})]);
   });
 
-  it('should not block on pending async validators', async () => {
-    const data = signal('');
-    const resolvers = promiseWithResolvers();
-    const f = form(
-      data,
-      (p) => {
-        validateAsync(p, {
-          params: ({value}) => value(),
-          factory: (params) =>
-            resource({
-              params,
-              loader: () => resolvers.promise,
-            }),
-          onSuccess: () => {},
-          onError: () => {},
-        });
-      },
-      {injector: TestBed.inject(Injector)},
-    );
+  describe('while pending', () => {
+    it('should not block', async () => {
+      const data = signal('');
+      const {promise} = promiseWithResolvers();
+      const f = form(
+        data,
+        (p) => {
+          validateAsync(p, {
+            params: ({value}) => value(),
+            factory: (params) =>
+              resource({
+                params,
+                loader: () => promise,
+              }),
+            onSuccess: () => {},
+            onError: () => {},
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
 
-    expect(f().pending()).toBe(true);
+      expect(f().pending()).toBe(true);
 
-    const submitSpy = jasmine.createSpy();
-    await submit(f, submitSpy);
+      const submitSpy = jasmine.createSpy();
+      await submit(f, submitSpy);
 
-    expect(f().pending()).toBe(true);
-    expect(submitSpy).toHaveBeenCalled();
+      expect(f().pending()).toBe(true);
+      expect(submitSpy).toHaveBeenCalled();
+    });
+
+    it('should retain submit errors after pending validation resolves', async () => {
+      const appRef = TestBed.inject(ApplicationRef);
+      const data = signal('foo');
+      const {promise, resolve} = promiseWithResolvers<boolean>();
+      const f = form(
+        data,
+        (p) => {
+          validateAsync(p, {
+            params: ({value}) => value(),
+            factory: (params) =>
+              resource({
+                params,
+                loader: () => promise,
+              }),
+            onSuccess: () => ({kind: 'async'}),
+            onError: (error) => fail(error),
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      await submit(f, async () => ({kind: 'submit'}));
+      expect(f().errorSummary()).toEqual([jasmine.objectContaining({kind: 'submit'})]);
+
+      resolve(true);
+      await appRef.whenStable();
+      expect(f().errorSummary()).toEqual([jasmine.objectContaining({kind: 'submit'})]);
+    });
+
+    it('should resolve pending validation on subfield', async () => {
+      const appRef = TestBed.inject(ApplicationRef);
+      const data = signal({first: 'foo', last: 'bar'});
+      const {promise, resolve} = promiseWithResolvers<boolean>();
+      const f = form(
+        data,
+        (p) => {
+          validateAsync(p.first, {
+            params: ({value}) => value(),
+            factory: (params) =>
+              resource({
+                params,
+                loader: () => promise,
+              }),
+            onSuccess: () => ({kind: 'async'}),
+            onError: (error) => fail(error),
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      await submit(f, async () => ({kind: 'submit'}));
+      expect(f().errorSummary()).toEqual([jasmine.objectContaining({kind: 'submit'})]);
+
+      resolve(true);
+      await appRef.whenStable();
+      expect(f().errorSummary()).toEqual([
+        jasmine.objectContaining({kind: 'submit', fieldTree: f}),
+        jasmine.objectContaining({kind: 'async', fieldTree: f.first}),
+      ]);
+    });
+
+    it('should resolve pending validation after successful submit', async () => {
+      const appRef = TestBed.inject(ApplicationRef);
+      const data = signal('foo');
+      const {promise, resolve} = promiseWithResolvers();
+      const f = form(
+        data,
+        (p) => {
+          validateAsync(p, {
+            params: ({value}) => value(),
+            factory: (params) =>
+              resource({
+                params,
+                loader: () => promise,
+              }),
+            onSuccess: () => ({kind: 'async'}),
+            onError: (error) => fail(error),
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      await submit(f, async () => undefined);
+      expect(f().errorSummary()).toEqual([]);
+
+      resolve(true);
+      await appRef.whenStable();
+      expect(f().errorSummary()).toEqual([jasmine.objectContaining({kind: 'async'})]);
+    });
   });
 
   it('maps error to a field', async () => {
