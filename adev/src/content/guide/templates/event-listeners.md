@@ -98,6 +98,22 @@ Angular also allows you to specify [Code values for keyboard events](https://dev
 
 This can be useful for handling keyboard events consistently across different operating systems. For example, when using the Alt key on MacOS devices, the `key` property reports the key based on the character already modified by the Alt key. This means that a combination like Alt + S reports a `key` value of `'ß'`. The `code` property, however, corresponds to the physical or virtual button pressed rather than the character produced.
 
+## Listening on global targets
+
+Global target names can be used to prefix an event. The 3 supported global targets are `window`, `document` and `body`.
+
+```angular-ts
+@Component({
+  /* ... */
+  host: {
+    'window:click': 'onWindowClick()',
+    'document:click': 'onDocumentClick()',
+    'body:click': 'onBodyClick()',
+  },
+})
+export class MyView {}
+```
+
 ## Preventing event default behavior
 
 If your event handler should replace the native browser behavior, you can use the event object's [`preventDefault` method](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault):
