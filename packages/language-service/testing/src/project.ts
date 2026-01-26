@@ -289,6 +289,19 @@ export class Project {
   getLogger(): ts.server.Logger {
     return this.tsProject.projectService.logger;
   }
+
+  getLinkedEditingRangeAtPosition(
+    projectFileName: string,
+    position: number,
+  ): {ranges: ts.TextSpan[]; wordPattern?: string} | null {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    return this.ngLS.getLinkedEditingRangeAtPosition(fileName, position) ?? null;
+  }
+
+  getSemanticDiagnostics(projectFileName: string): ts.Diagnostic[] {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    return [...this.ngLS.getSemanticDiagnostics(fileName)];
+  }
 }
 
 function getClassOrError(sf: ts.SourceFile, name: string): ts.ClassDeclaration {
