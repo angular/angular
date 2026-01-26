@@ -86,6 +86,7 @@ export class SignalFormControl<T> extends AbstractControl {
   public readonly sourceValue: WritableSignal<T>;
 
   private readonly fieldState: FieldState<T>;
+  private readonly initialValue: T;
   private pendingParentNotifications = 0;
   private readonly onChangeCallbacks: Array<(value?: any, emitModelEvent?: boolean) => void> = [];
   private readonly onDisabledChangeCallbacks: Array<(isDisabled: boolean) => void> = [];
@@ -97,6 +98,7 @@ export class SignalFormControl<T> extends AbstractControl {
 
     const [model, schema, opts] = normalizeFormArgs<T>([signal(value), schemaOrOptions, options]);
     this.sourceValue = model;
+    this.initialValue = value;
     const injector = opts?.injector ?? inject(Injector);
 
     const rawTree = schema
@@ -243,10 +245,10 @@ export class SignalFormControl<T> extends AbstractControl {
 
   override reset(value?: T | FormControlState<T>, options?: ValueUpdateOptions): void {
     if (isFormControlState(value)) {
-      value = value.value;
+      throw unsupportedDisableEnableError();
     }
 
-    const resetValue = value ?? this.sourceValue();
+    const resetValue = value ?? this.initialValue;
     this.fieldState.reset(resetValue);
 
     if (value !== undefined) {
