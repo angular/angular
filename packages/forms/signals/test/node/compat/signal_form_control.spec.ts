@@ -491,12 +491,15 @@ describe('SignalFormControl', () => {
       expect(form.dirty).toBe(false);
     });
 
-    it('should unbox value in reset', () => {
+    it('should throw when boxed value is passed to reset', () => {
       const form = createSignalFormControl(10);
-      form.reset({value: 20, disabled: true});
+      expect(() => form.reset({value: 20, disabled: true})).toThrowError(
+        /Imperatively changing enabled\/disabled status in form control is not supported/,
+      );
 
-      expect(form.value).toBe(20);
-      expect(form.disabled).toBe(false);
+      expect(() => form.reset({value: 20, disabled: false})).toThrowError(
+        /Imperatively changing enabled\/disabled status in form control is not supported/,
+      );
     });
 
     it('should NOT unbox value in reset if it has extra keys', () => {
@@ -523,6 +526,16 @@ describe('SignalFormControl', () => {
 
       form.reset(20, {emitEvent: false});
       expect(events.length).toBe(0);
+    });
+
+    it('should reset to initial value when no value is provided', () => {
+      const form = createSignalFormControl('initial');
+
+      form.setValue('changed');
+      expect(form.value).toBe('changed');
+
+      form.reset();
+      expect(form.value).toBe('initial');
     });
   });
 
