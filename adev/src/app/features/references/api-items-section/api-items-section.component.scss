@@ -88,16 +88,19 @@
   }
 }
 
+.docs-api-item-label {
+  pointer-events: none;
+}
+
 .adev-item-attribute {
   text-align: center;
-
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   padding: 0rem 0.375rem;
-  margin-inline-start: 1.25rem;
+  margin-inline-start: 0.5rem;
   display: block;
   font-size: 0.625rem;
   line-height: 1rem;
-  cursor: pointer;
+  cursor: default;
   user-select: none;
   font-weight: bold;
 
