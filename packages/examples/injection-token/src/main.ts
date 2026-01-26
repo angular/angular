@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-// TODO: Add unit tests for this file.
 /* eslint-disable @angular-eslint/no-output-native */
 // #docregion
 import {Injector, InjectionToken} from '@angular/core';
