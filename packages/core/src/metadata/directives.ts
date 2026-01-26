@@ -313,8 +313,9 @@ export interface Directive {
    *
    * For event handling:
    * - The key is the DOM event that the directive listens to.
-   * To listen to global events, add the target to the event name.
-   * The target can be `window`, `document` or `body`.
+   *  The global target names that can be used to prefix an event name are
+   * `document:`, `window:` and `body:`.
+   *
    * - The value is the statement to execute when the event occurs. If the
    * statement evaluates to `false`, then `preventDefault` is applied on the DOM
    * event. A handler method can refer to the `$event` local variable.
@@ -936,7 +937,7 @@ export interface HostBindingDecorator {
    *
    * @usageNotes
    *
-   * NOTE:  **Always** prefer using the `host` property over `@HostBinding`.
+   * NOTE:  **Always** prefer using the [`host` property](guide/components/host-elements#binding-to-the-host-element) over `@HostBinding`.
    * This decorator exist exclusively for backwards compatibility.
    *
    * The following example creates a directive that sets the `valid` and `invalid`

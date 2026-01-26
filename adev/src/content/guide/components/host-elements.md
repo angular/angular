@@ -62,6 +62,8 @@ export class CustomSlider {
 }
 ```
 
+NOTE: The global target names that can be used to prefix an event name are `document:`, `window:` and `body:`.
+
 ## The `@HostBinding` and `@HostListener` decorators
 
 You can alternatively bind to the host element by applying the `@HostBinding` and `@HostListener`
