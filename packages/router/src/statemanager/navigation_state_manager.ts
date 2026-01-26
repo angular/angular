@@ -191,8 +191,7 @@ export class NavigationStateManager extends StateManager {
     // to add the router-specific state.
     if (
       navigationEvent &&
-      (navigationEvent.navigationType === 'traverse' ||
-        navigationEvent.navigationType === 'reload') &&
+      navigationEvent.navigationType === 'traverse' &&
       this.eventAndRouterDestinationsMatch(navigationEvent, transition)
     ) {
       return;
@@ -339,7 +338,10 @@ export class NavigationStateManager extends StateManager {
   private handleNavigate(event: NavigateEvent) {
     // If the event cannot be intercepted (e.g., cross-origin, or some browser-internal
     // navigations), let the browser handle it.
-    if (!event.canIntercept) {
+    // We also do not convert reload navigation events to SPA navigations. Intercepting
+    // would prevent the generally expected hard refresh. If an application wants special
+    // handling for reloads, they can implement it in their own `navigate` event listener.
+    if (!event.canIntercept || event.navigationType === 'reload') {
       return;
     }
 
