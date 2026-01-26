@@ -29,7 +29,6 @@ const LINK_EXEMPT = new Set([
   'input',
   'Event',
   'form',
-  'formatCurrency',
   'type',
 ]);
 
