@@ -6,18 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-// TODO: Add unit tests for this file.
 /* eslint-disable @angular-eslint/no-output-native */
 // #docregion
 import {Injector, InjectionToken} from '@angular/core';
 
-interface MyInterface {
+export interface MyInterface {
   someProperty: string;
 }
 
 // #docregion InjectionToken
 
-const TOKEN = new InjectionToken<MyInterface>('SomeToken');
+export const TOKEN = new InjectionToken<MyInterface>('SomeToken');
 
 // Setting up the provider using the same token instance
 const providers = [
