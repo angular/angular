@@ -370,7 +370,7 @@ export interface InMemoryScrollingOptions {
 }
 
 // @public
-export function isActive(url: string | UrlTree, router: Router, matchOptions?: IsActiveMatchOptions): Signal<boolean>;
+export function isActive(url: string | UrlTree, router: Router, matchOptions?: Partial<IsActiveMatchOptions>): Signal<boolean>;
 
 // @public
 export interface IsActiveMatchOptions {
@@ -728,8 +728,8 @@ export class Router {
     initialNavigation(): void;
     // @deprecated
     isActive(url: string | UrlTree, exact: boolean): boolean;
-    // @deprecated
-    isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;
+    // @deprecated (undocumented)
+    isActive(url: string | UrlTree, matchOptions: Partial<IsActiveMatchOptions>): boolean;
     get lastSuccessfulNavigation(): Signal<Navigation | null>;
     navigate(commands: readonly any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
@@ -885,7 +885,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     set routerLinkActive(data: string[] | string);
     routerLinkActiveOptions: {
         exact: boolean;
-    } | IsActiveMatchOptions;
+    } | Partial<IsActiveMatchOptions>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": { "alias": "routerLinkActiveOptions"; "required": false; }; "ariaCurrentWhenActive": { "alias": "ariaCurrentWhenActive"; "required": false; }; "routerLinkActive": { "alias": "routerLinkActive"; "required": false; }; }, { "isActiveChange": "isActiveChange"; }, ["links"], never, true, never>;
     // (undocumented)
