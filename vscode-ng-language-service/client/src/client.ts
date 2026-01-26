@@ -241,6 +241,19 @@ export class AngularLanguageClient implements vscode.Disposable {
           }
           return next(document, context, token);
         },
+        provideLinkedEditingRange: async (
+          document: vscode.TextDocument,
+          position: vscode.Position,
+          token: vscode.CancellationToken,
+          next: lsp.ProvideLinkedEditingRangeSignature,
+        ) => {
+          if (
+            (await this.isInAngularProject(document)) &&
+            isNotTypescriptOrSupportedDecoratorField(document, position)
+          ) {
+            return next(document, position, token);
+          }
+        },
       },
     };
   }

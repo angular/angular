@@ -37,6 +37,7 @@ export function onInitialize(session: Session, params: lsp.InitializeParams): ls
         triggerCharacters: ['(', ','],
         retriggerCharacters: [','],
       },
+      linkedEditingRangeProvider: true,
       workspace: {
         workspaceFolders: {supported: true},
       },
