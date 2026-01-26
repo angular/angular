@@ -251,6 +251,7 @@ export type ResourceStreamItem<T> = {value: T} | {error: Error};
  * An explicit representation of a resource's state.
  *
  * @experimental
+ * @see [Resource composition with snapshots](guide/signals/resource#resource-composition-with-snapshots)
  */
 export type ResourceSnapshot<T> =
   | {readonly status: 'idle'; readonly value: T}
