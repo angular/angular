@@ -12,6 +12,7 @@ import {
   containsTree,
   DefaultUrlSerializer,
   exactMatchOptions,
+  isActive,
   subsetMatchOptions,
 } from '../src/url_tree';
 
@@ -144,6 +145,38 @@ describe('UrlTree', () => {
         const t1 = serializer.parse('/one/two');
         const t2 = serializer.parse('/one/two(right:three)');
         expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
+      });
+    });
+
+    describe('isActive', () => {
+      it('should allow partial match options and use subset match options as default', () => {
+        const router = {
+          parseUrl: (url: string) => serializer.parse(url),
+          lastSuccessfulNavigation: () => ({finalUrl: serializer.parse('/one/two?a=1&b=2')}),
+        } as unknown as Router;
+
+        const t2 = serializer.parse('/one/two?a=1');
+
+        // With partial options: paths: 'exact'.
+        // derived options should be:
+        // paths: 'exact'
+        // queryParams: 'subset' (default)
+        // matrixParams: 'ignored' (default)
+        // fragment: 'ignored' (default)
+
+        // This should return true because paths match exactly, and queryParams is subset (t2 is subset of t1)
+        expect(isActive(t2, router, {paths: 'exact'})()).toBe(true);
+      });
+
+      it('should use subset match options as base for other properties', () => {
+        const router = {
+          parseUrl: (url: string) => serializer.parse(url),
+          lastSuccessfulNavigation: () => ({finalUrl: serializer.parse('/one/two#frag')}),
+        } as unknown as Router;
+        const t2 = serializer.parse('/one/two#diff');
+
+        // fragment is ignored by default in subsetMatchOptions
+        expect(isActive(t2, router, {paths: 'exact'})()).toBe(true);
       });
     });
 

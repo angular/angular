@@ -107,21 +107,26 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  *
  * As the router state changes, the signal will update to reflect whether the url is active.
  *
+ * When using the `matchOptions` argument, any missing properties fall back to the following defaults:
+ * - `paths`: 'subset'
+ * - `queryParams`: 'subset'
+ * - `matrixParams`: 'ignored'
+ * - `fragment`: 'ignored'
+ *
  * @see [Check if a URL is active](guide/routing/read-route-state#check-if-a-url-is-active)
  * @publicApi 21.1
  */
 export function isActive(
   url: string | UrlTree,
   router: Router,
-  matchOptions?: IsActiveMatchOptions,
+  matchOptions?: Partial<IsActiveMatchOptions>,
 ): Signal<boolean> {
   const urlTree = url instanceof UrlTree ? url : router.parseUrl(url);
   return computed(() =>
-    containsTree(
-      router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(),
-      urlTree,
-      matchOptions ?? subsetMatchOptions,
-    ),
+    containsTree(router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(), urlTree, {
+      ...subsetMatchOptions,
+      ...matchOptions,
+    }),
   );
 }
 

@@ -608,25 +608,24 @@ export class Router {
    */
   isActive(url: string | UrlTree, exact: boolean): boolean;
   /**
-   * Returns whether the url is activated.
-   * @deprecated 21.1 - Use the `isActive` function instead.
    * @see {@link isActive}
+   * @deprecated 21.1 - Use the `isActive` function instead.
    */
-  isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;
+  isActive(url: string | UrlTree, matchOptions: Partial<IsActiveMatchOptions>): boolean;
   /** @internal */
   isActive(url: string | UrlTree, matchOptions: boolean | IsActiveMatchOptions): boolean;
   /**
    * @deprecated 21.1 - Use the `isActive` function instead.
    * @see {@link isActive}
    */
-  isActive(url: string | UrlTree, matchOptions: boolean | IsActiveMatchOptions): boolean {
+  isActive(url: string | UrlTree, matchOptions: boolean | Partial<IsActiveMatchOptions>): boolean {
     let options: IsActiveMatchOptions;
     if (matchOptions === true) {
       options = {...exactMatchOptions};
     } else if (matchOptions === false) {
       options = {...subsetMatchOptions};
     } else {
-      options = matchOptions;
+      options = {...subsetMatchOptions, ...matchOptions};
     }
     if (isUrlTree(url)) {
       return containsTree(this.currentUrlTree, url, options);
