@@ -144,7 +144,7 @@ This lets the parent communicate with the child, if it is present, in a type-saf
 For example, the `LibCard` now queries `LibHeaderToken` rather than `LibHeader`.
 The following example shows how the pattern lets `LibCard` communicate with the `LibHeader` without actually referring to `LibHeader`:
 
-```ts {highlight: [[2],[9],[11],[19]]}
+```ts {highlight: [[2],[7],[11],[19]]}
 abstract class LibHeaderToken {
   abstract doSomething(): void;
 }
