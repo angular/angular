@@ -49,7 +49,7 @@ export interface DirectiveDecorator {
    *
    * ### Declaring directives
    *
-   * By default, directives are marked as [standalone](guide/components/importing), which makes
+   * By default, directives are marked as standalone, which makes
    * them available to other components in your application.
    *
    * ```ts
@@ -332,12 +332,7 @@ export interface Directive {
   jit?: true;
 
   /**
-   * Angular directives marked as `standalone` do not need to be declared in an NgModule. Such
-   * directives don't depend on any "intermediate context" of an NgModule (ex. configured
-   * providers).
-   *
-   * More information about standalone components, directives, and pipes can be found in [this
-   * guide](guide/components/importing).
+   * Set `standalone` to `false` if you want to import the directive into an NgModule.
    */
   standalone?: boolean;
 
@@ -627,12 +622,7 @@ export interface Component extends Directive {
   preserveWhitespaces?: boolean;
 
   /**
-   * Angular components marked as `standalone` do not need to be declared in an NgModule. Such
-   * components directly manage their own template dependencies (components, directives, and pipes
-   * used in a template) via the imports property.
-   *
-   * More information about standalone components, directives, and pipes can be found in [this
-   * guide](guide/components/importing).
+   * Set `standalone` to `false` if you want to import the directive into an NgModule.
    */
   standalone?: boolean;
 
@@ -643,9 +633,6 @@ export interface Component extends Directive {
    *
    * This property is only available for standalone components - specifying it for components
    * declared in an NgModule generates a compilation error.
-   *
-   * More information about standalone components, directives, and pipes can be found in [this
-   * guide](guide/components/importing).
    */
   imports?: (Type<any> | ReadonlyArray<any>)[];
 
@@ -666,9 +653,6 @@ export interface Component extends Directive {
    *
    * This property is only available for standalone components - specifying it for components
    * declared in an NgModule generates a compilation error.
-   *
-   * More information about standalone components, directives, and pipes can be found in [this
-   * guide](guide/components/importing).
    */
   schemas?: SchemaMetadata[];
 }
@@ -750,9 +734,6 @@ export interface Pipe {
   /**
    * Angular pipes marked as `standalone` do not need to be declared in an NgModule. Such
    * pipes don't depend on any "intermediate context" of an NgModule (ex. configured providers).
-   *
-   * More information about standalone components, directives, and pipes can be found in [this
-   * guide](guide/components/importing).
    */
   standalone?: boolean;
 }
