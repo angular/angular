@@ -525,9 +525,6 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
     [K in keyof TModel]: MaybeSchemaPathTree<TModel[K], PathKind.Child>;
 } : unknown);
 
-// @public (undocumented)
-export function signalErrorsToValidationErrors(errors: ValidationError[]): ValidationErrors | null;
-
 // @public
 export interface SignalFormsConfig {
     classes?: {
