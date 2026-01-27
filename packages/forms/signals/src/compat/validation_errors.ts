@@ -7,7 +7,7 @@
  */
 
 import {AbstractControl, FormArray, FormGroup, ValidationErrors} from '@angular/forms';
-import {ValidationError} from '../api/rules/validation/validation_errors';
+import {ValidationError} from '../api/rules';
 import {FieldTree} from '../api/types';
 
 /**
@@ -40,12 +40,10 @@ export function signalErrorsToValidationErrors(errors: ValidationError[]): Valid
     return null;
   }
   const errObj: ValidationErrors = {};
-  let hasErrors = false;
   for (const error of errors) {
-    errObj[error.kind] = error;
-    hasErrors = true;
+    errObj[error.kind] = error instanceof CompatValidationError ? error.context : error;
   }
-  return hasErrors ? errObj : null;
+  return errObj;
 }
 
 /**

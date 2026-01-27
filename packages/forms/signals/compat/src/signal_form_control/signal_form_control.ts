@@ -239,7 +239,6 @@ export class SignalFormControl<T> extends AbstractControl {
   }
 
   override getRawValue(): T {
-    // TODO: Should this throw or drop disabled components?
     return this.value;
   }
 
@@ -489,7 +488,7 @@ class CachingWeakMap<K extends object, V> {
 }
 
 /**
- * Proxy that takes a FieldTree, wraps it, and potches setters to immediately react on the value update.
+ * A FieldTree proxy that patches setters to immediately react on value changes.
  * @param tree
  * @param onUpdate
  */

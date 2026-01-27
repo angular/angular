@@ -13,17 +13,18 @@ import {
   reactiveErrorsToSignalErrors,
   signalErrorsToValidationErrors,
 } from '../../../src/compat/validation_errors';
-import {ValidationError} from '../../../src/api/rules/validation/validation_errors';
+import {ValidationError} from '../../../src/api/rules';
 
 describe('destroy$', () => {
-  const control = new FormControl();
   it('converts an error to a custom error', () => {
+    const control = new FormControl();
     expect(reactiveErrorsToSignalErrors({min: true}, control)).toEqual([
       new CompatValidationError({kind: 'min', context: true, control}),
     ]);
   });
 
   it('converts multiple errors', () => {
+    const control = new FormControl();
     expect(reactiveErrorsToSignalErrors({min: true, max: {max: 1, actual: 0}}, control)).toEqual([
       new CompatValidationError({kind: 'min', context: true, control}),
       new CompatValidationError({kind: 'max', context: {max: 1, actual: 0}, control}),
@@ -71,18 +72,50 @@ describe('signalErrorsToValidationErrors', () => {
     expect(signalErrorsToValidationErrors([])).toBeNull();
   });
 
-  it('should return null if no errors are added to the object', () => {
-    // This case shouldn't happen with the current logic but it tests the resilience
-    expect(signalErrorsToValidationErrors([])).toBeNull();
+  it('should convert standard ValidationError to an object matching its kind', () => {
+    const error: ValidationError = {kind: 'required', message: 'Field is required'};
+    expect(signalErrorsToValidationErrors([error])).toEqual({
+      required: error,
+    });
   });
 
-  it('should convert errors to an object', () => {
-    const error: ValidationError = {kind: 'required', context: true} as any;
-    expect(signalErrorsToValidationErrors([error])).toEqual({required: error});
+  it('should unwrap CompatValidationError context', () => {
+    const control = new FormControl();
+    const errorDetails = {min: 10, actual: 5};
+    const compatError = new CompatValidationError({
+      kind: 'min',
+      context: errorDetails,
+      control,
+    });
+
+    expect(signalErrorsToValidationErrors([compatError])).toEqual({
+      min: errorDetails,
+    });
   });
 
-  it("should return null if errors array is non-empty but loop doesn't add anything", () => {
-    // This is the specific case we added protection for
-    expect(signalErrorsToValidationErrors([])).toBeNull();
+  it('should handle mixed standard and compat errors', () => {
+    const control = new FormControl();
+    const requiredError: ValidationError = {kind: 'required'};
+    const minDetails = {min: 10, actual: 5};
+    const minCompatError = new CompatValidationError({
+      kind: 'min',
+      context: minDetails,
+      control,
+    });
+
+    const result = signalErrorsToValidationErrors([requiredError, minCompatError]);
+    expect(result).toEqual({
+      required: requiredError,
+      min: minDetails,
+    });
+  });
+
+  it('should let the last error of the same kind win', () => {
+    const error1: ValidationError = {kind: 'custom', message: 'error 1'};
+    const error2: ValidationError = {kind: 'custom', message: 'error 2'};
+
+    expect(signalErrorsToValidationErrors([error1, error2])).toEqual({
+      custom: error2,
+    });
   });
 });
