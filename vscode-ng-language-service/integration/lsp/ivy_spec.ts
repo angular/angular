@@ -1007,18 +1007,48 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000; /* 10 seconds */
 
   let client: MessageConnection;
+  /**
+   * Promise that resolves when the server sends a workspace/diagnostic/refresh request.
+   * This is more reliable than a fixed setTimeout as it waits for the server signal.
+   */
+  let diagnosticRefreshPromise: Promise<void>;
+  let resolveDiagnosticRefresh: () => void;
+
+  /**
+   * Wait for the server to signal it's ready for diagnostics to be pulled.
+   * The server sends workspace/diagnostic/refresh after processing document changes.
+   * This replaces fixed setTimeout waits with event-driven synchronization.
+   */
+  function waitForDiagnosticRefresh(): Promise<void> {
+    return diagnosticRefreshPromise;
+  }
+
+  /**
+   * Reset the diagnostic refresh promise for the next wait cycle.
+   * Should be called after consuming a refresh signal.
+   */
+  function resetDiagnosticRefresh(): void {
+    diagnosticRefreshPromise = new Promise((resolve) => {
+      resolveDiagnosticRefresh = resolve;
+    });
+  }
 
   beforeEach(async () => {
+    // Initialize the diagnostic refresh promise
+    resetDiagnosticRefresh();
+
     client = createConnection({});
     // If debugging, set to
     // - lsp.Trace.Messages to inspect request/response/notification, or
     // - lsp.Trace.Verbose to inspect payload
     client.trace(lsp.Trace.Off, createTracer());
 
-    // Handle the workspace/diagnostic/refresh request from the server
-    // This is sent by the server when it wants the client to re-fetch diagnostics
+    // Handle the workspace/diagnostic/refresh request from the server.
+    // Resolves the promise so tests can await this signal instead of using setTimeout.
     client.onRequest(lsp.DiagnosticRefreshRequest.type, () => {
-      // Just acknowledge the request, no action needed in tests
+      resolveDiagnosticRefresh();
+      // Reset for next wait cycle
+      resetDiagnosticRefresh();
     });
 
     client.listen();
@@ -1041,8 +1071,8 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
       },
     });
 
-    // Wait a bit for the server to process
-    await setTimeout(500);
+    // Wait for the server to signal it's ready for diagnostics to be pulled
+    await waitForDiagnosticRefresh();
 
     // Request pull diagnostics
     const response = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
@@ -1069,7 +1099,8 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
       },
     });
 
-    await setTimeout(500);
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
 
     // First request to get the resultId
     const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
@@ -1103,7 +1134,8 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
       },
     });
 
-    await setTimeout(500);
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
 
     // First request to get the resultId
     const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
@@ -1122,7 +1154,8 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
       contentChanges: [{text: `{{ alsoDoesNotExist }}`}],
     });
 
-    await setTimeout(500);
+    // Wait for the server to signal it's ready after document change
+    await waitForDiagnosticRefresh();
 
     // Request with previous resultId - should get full report since document changed
     const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
@@ -1139,7 +1172,8 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
     // Open the app component which should have no errors
     openTextDocument(client, APP_COMPONENT);
 
-    await setTimeout(500);
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
 
     const response = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
       textDocument: {uri: APP_COMPONENT_URI},
@@ -1161,7 +1195,8 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
       },
     });
 
-    await setTimeout(500);
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
 
     const response = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
       textDocument: {uri: FOO_TEMPLATE_URI},
@@ -1189,7 +1224,8 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
       },
     });
 
-    await setTimeout(500);
+    // Wait for the server to signal it's ready (may receive multiple refresh signals)
+    await waitForDiagnosticRefresh();
 
     // Request workspace diagnostics
     const response = await client.sendRequest(lsp.WorkspaceDiagnosticRequest.type, {
