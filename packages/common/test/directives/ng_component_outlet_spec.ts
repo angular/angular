@@ -9,7 +9,6 @@
 import {CommonModule} from '../../index';
 import {NgComponentOutlet} from '../../src/directives/ng_component_outlet';
 import {
-  Compiler,
   Component,
   ComponentRef,
   createEnvironmentInjector,
@@ -19,9 +18,9 @@ import {
   Injector,
   Input,
   NgModule,
-  NgModuleFactory,
   NO_ERRORS_SCHEMA,
   Optional,
+  provideZonelessChangeDetection,
   QueryList,
   TemplateRef,
   Type,
@@ -34,7 +33,10 @@ import {expect} from '@angular/private/testing/matchers';
 
 describe('insert/remove', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({imports: [TestModule]});
+    TestBed.configureTestingModule({
+      imports: [TestModule],
+      providers: [provideZonelessChangeDetection()],
+    });
   });
 
   it('should do nothing if component is null', waitForAsync(() => {

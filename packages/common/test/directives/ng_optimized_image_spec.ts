@@ -11,7 +11,7 @@ import {
   Component,
   PLATFORM_ID,
   Provider,
-  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   Type,
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -43,7 +43,7 @@ import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_imag
 describe('Image directive', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
+      providers: [provideZonelessChangeDetection()],
     });
   });
 
@@ -734,6 +734,7 @@ describe('Image directive', () => {
           // Update input (expect to throw)
           (fixture.componentInstance as unknown as {[key: string]: unknown})[inputName as string] =
             value;
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
         }).toThrowError(new RegExp(expectedErrorMessage));
       });
@@ -1872,6 +1873,7 @@ describe('Image directive', () => {
       expect(imgs[0].src).toBe(`${IMG_BASE_URL}/img.png`);
 
       fixture.componentInstance.ngSrc = 'updatedImg.png';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(imgs[0].src).toBe(`${IMG_BASE_URL}/updatedImg.png`);
     });
@@ -1900,6 +1902,7 @@ describe('Image directive', () => {
       );
 
       fixture.componentInstance.ngSrc = 'updatedImg.png';
+      fixture.changeDetectorRef.markForCheck();
       nativeElement = fixture.nativeElement as HTMLElement;
       imgs = nativeElement.querySelectorAll('img')!;
       fixture.detectChanges();

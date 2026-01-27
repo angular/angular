@@ -18,6 +18,7 @@ import {
   NO_ERRORS_SCHEMA,
   OnDestroy,
   Provider,
+  provideZonelessChangeDetection,
   QueryList,
   TemplateRef,
 } from '@angular/core';
@@ -51,7 +52,7 @@ describe('NgTemplateOutlet', () => {
         InjectValueComponent,
       ],
       imports: [CommonModule],
-      providers: [DestroyedSpyService],
+      providers: [provideZonelessChangeDetection(), DestroyedSpyService],
     });
   });
 
