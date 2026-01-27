@@ -18,8 +18,7 @@ Components often rely on route parameters from the URL to fetch data, like a use
 
 The following example shows how to test a `UserProfile` component that displays a user ID from the route.
 
-```ts
-// user-profile.component.spec.ts
+```ts { header: 'user-profile.spec.ts'}
 import {TestBed} from '@angular/core/testing';
 import {Router} from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
@@ -41,10 +40,9 @@ describe('UserProfile', () => {
 });
 ```
 
-```angular-ts
-// user-profile.component.ts
-import {Component, inject} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+```angular-ts {header: 'user-profile.ts'}
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   template: '<h1>User Profile: {{userId}}</h1>',
@@ -61,8 +59,7 @@ Route guards control access to routes based on conditions like authentication or
 
 The following example tests an `authGuard` that allows navigation for authenticated users and redirects unauthenticated users to a login page.
 
-```ts
-// auth.guard.spec.ts
+```ts {header: 'auth.guard.spec.ts'}
 import {vi, type Mocked} from 'vitest';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {provideRouter, Router} from '@angular/router';
@@ -72,10 +69,10 @@ import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 @Component({template: '<h1>Protected Page</h1>'})
-class ProtectedComponent {}
+class Protected {}
 
 @Component({template: '<h1>Login Page</h1>'})
-class LoginComponent {}
+class Login {}
 
 describe('authGuard', () => {
   let authStore: Mocked<AuthStore>;
@@ -88,8 +85,8 @@ describe('authGuard', () => {
       providers: [
         {provide: AuthStore, useValue: authStore},
         provideRouter([
-          {path: 'protected', component: ProtectedComponent, canActivate: [authGuard]},
-          {path: 'login', component: LoginComponent},
+          {path: 'protected', component: Protected, canActivate: [authGuard]},
+          {path: 'login', component: Login},
         ]),
       ],
     });
@@ -99,22 +96,21 @@ describe('authGuard', () => {
 
   it('allows navigation when user is authenticated', async () => {
     await setup(true);
-    await harness.navigateByUrl('/protected', ProtectedComponent);
+    await harness.navigateByUrl('/protected', Protected);
     // The protected component should render when authenticated
     expect(harness.routeNativeElement?.textContent).toContain('Protected Page');
   });
 
   it('redirects to login when user is not authenticated', async () => {
     await setup(false);
-    await harness.navigateByUrl('/protected', LoginComponent);
+    await harness.navigateByUrl('/protected', Login);
     // The login component should render after redirect
     expect(harness.routeNativeElement?.textContent).toContain('Login Page');
   });
 });
 ```
 
-```ts
-// auth.guard.ts
+```ts {header: 'auth.guard.ts'}
 import {inject} from '@angular/core';
 import {CanActivateFn, Router} from '@angular/router';
 import {AuthStore} from './auth-store';
@@ -132,8 +128,7 @@ Router outlet tests are more of an integration test since you're essentially tes
 
 Here's an example of how to set up a test that verifies different components are displayed for different routes:
 
-```ts
-// app.component.spec.ts
+```ts {header: 'app.spec.ts'}
 import {TestBed} from '@angular/core/testing';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {provideRouter} from '@angular/router';
@@ -181,10 +176,9 @@ describe('App Router Outlet', () => {
 });
 ```
 
-```angular-ts
-// app.component.ts
-import {Component} from '@angular/core';
-import {RouterOutlet, RouterLink} from '@angular/router';
+```angular-ts {header: 'app.ts'}
+import { Component } from '@angular/core';
+import { RouterOutlet, RouterLink } from '@angular/router';
 
 @Component({
   imports: [RouterOutlet, RouterLink],
@@ -211,8 +205,7 @@ You need to verify that:
 
 Here's an example of testing a parent-child route structure:
 
-```ts
-// nested-routes.spec.ts
+```ts {header: 'nested-routes.spec.ts'}
 import {TestBed} from '@angular/core/testing';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {provideRouter} from '@angular/router';
@@ -247,10 +240,9 @@ describe('Nested Routes', () => {
 });
 ```
 
-```angular-ts
-// nested-components.ts
-import {Component} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
+```angular-ts {header: 'nested.ts'}
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   imports: [RouterOutlet],
@@ -275,8 +267,7 @@ Unlike route parameters that are part of the route definition, query parameters 
 
 Here's an example of how to test query parameters and fragments:
 
-```ts
-// search.component.spec.ts
+```ts {header: 'search.spec.ts'}
 import {TestBed} from '@angular/core/testing';
 import {Router, provideRouter} from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
@@ -303,11 +294,10 @@ describe('Search', () => {
 });
 ```
 
-```angular-ts
-// search.component.ts
-import {Component, inject, computed} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {toSignal} from '@angular/core/rxjs-interop';
+```angular-ts {header: 'search.ts'}
+import { Component, inject, computed } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   template: '<div>Search term: {{searchTerm()}}</div>',
