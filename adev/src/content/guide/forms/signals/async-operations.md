@@ -184,7 +184,7 @@ The `onError` function handles request failures like network errors or HTTP erro
 onError: (error) => {
   console.error('Validation request failed:', error);
   return {
-    kind: 'networkError',
+    kind: 'serverError',
     message: 'Could not verify. Please try again later.',
   };
 };
@@ -465,7 +465,7 @@ validateHttp(schemaPath.field, {
 
     // Show user-friendly message
     return {
-      kind: 'networkError',
+      kind: 'serverError',
       message: 'Unable to validate. Please try again later.',
     };
   },
