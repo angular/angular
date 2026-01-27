@@ -49,7 +49,7 @@ export interface DirectiveDecorator {
    *
    * ### Declaring directives
    *
-   * By default, directives are marked as [standalone](guide/components/importing), which makes
+   * By default, directives are marked as [standalone](guide/components), which makes
    * them available to other components in your application.
    *
    * ```ts
@@ -336,7 +336,7 @@ export interface Directive {
    * providers).
    *
    * More information about standalone components, directives, and pipes can be found in [this
-   * guide](guide/components/importing).
+   * guide](guide/components).
    */
   standalone?: boolean;
 
@@ -631,7 +631,7 @@ export interface Component extends Directive {
    * used in a template) via the imports property.
    *
    * More information about standalone components, directives, and pipes can be found in [this
-   * guide](guide/components/importing).
+   * guide](guide/components).
    */
   standalone?: boolean;
 
@@ -644,7 +644,7 @@ export interface Component extends Directive {
    * declared in an NgModule generates a compilation error.
    *
    * More information about standalone components, directives, and pipes can be found in [this
-   * guide](guide/components/importing).
+   * guide](guide/components).
    */
   imports?: (Type<any> | ReadonlyArray<any>)[];
 
@@ -667,7 +667,7 @@ export interface Component extends Directive {
    * declared in an NgModule generates a compilation error.
    *
    * More information about standalone components, directives, and pipes can be found in [this
-   * guide](guide/components/importing).
+   * guide](guide/components).
    */
   schemas?: SchemaMetadata[];
 }
@@ -751,7 +751,7 @@ export interface Pipe {
    * pipes don't depend on any "intermediate context" of an NgModule (ex. configured providers).
    *
    * More information about standalone components, directives, and pipes can be found in [this
-   * guide](guide/components/importing).
+   * guide](guide/components).
    */
   standalone?: boolean;
 }

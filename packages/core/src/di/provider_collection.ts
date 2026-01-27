@@ -112,7 +112,7 @@ type WalkProviderTreeVisitor = (
  * providers.
  *
  * More information about standalone components can be found in [this
- * guide](guide/components/importing).
+ * guide](guide/components).
  *
  * @usageNotes
  * The results of the `importProvidersFrom` call can be used in the `bootstrapApplication` call:
