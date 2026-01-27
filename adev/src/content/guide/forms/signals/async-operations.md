@@ -139,7 +139,7 @@ request: ({value}) => ({
   url: '/api/validate',
   method: 'POST',
   body: {username: value()},
-});
+}) // prettier-ignore
 ```
 
 ### Success and error handlers
@@ -154,7 +154,7 @@ onSuccess: (response) => {
     kind: 'invalid',
     message: response.message || 'Validation failed',
   };
-};
+} // prettier-ignore
 ```
 
 Return multiple errors when needed:
@@ -175,7 +175,7 @@ onSuccess: (response) => {
     });
   }
   return errors.length > 0 ? errors : undefined;
-};
+} // prettier-ignore
 ```
 
 The `onError` function handles request failures like network errors or HTTP errors:
@@ -187,7 +187,7 @@ onError: (error) => {
     kind: 'serverError',
     message: 'Could not verify. Please try again later.',
   };
-};
+} // prettier-ignore
 ```
 
 ### HTTP options
