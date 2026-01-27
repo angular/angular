@@ -12,8 +12,7 @@ One of the most common DI issues occurs when you try to inject a service but Ang
 
 When you provide a service in a component's `providers` array, Angular creates an instance in that component's injector. This instance is only available to that component and its children. Parent components and sibling components cannot access it because they use different injectors.
 
-```angular-ts
-// child-view.ts - Provides service
+```angular-ts {header: 'child-view.ts'}
 import {Component} from '@angular/core';
 import {DataStore} from './data-store';
 
@@ -23,8 +22,9 @@ import {DataStore} from './data-store';
   providers: [DataStore], // Only available in this component and its children
 })
 export class ChildView {}
+```
 
-// parent-view.ts - Tries to inject
+```angular-ts {header: 'parent-view.ts'}
 import {Component, inject} from '@angular/core';
 import {DataStore} from './data-store';
 
@@ -56,8 +56,7 @@ TIP: Use `providedIn: 'root'` by default for services that don't need component-
 
 When you provide a service in a lazy-loaded route's `providers` array, Angular creates a child injector for that route. This injector and its services only become available after the route loads. Components in the eagerly-loaded parts of your application cannot access these services because they use different injectors that exist before the lazy-loaded injector is created.
 
-```angular-ts
-// feature.routes.ts - Lazy-loaded route
+```ts {header: 'feature.routes.ts'}
 import {Routes} from '@angular/router';
 import {FeatureClient} from './feature-client';
 
@@ -68,8 +67,9 @@ export const featureRoutes: Routes = [
     loadComponent: () => import('./feature-view'),
   },
 ];
+```
 
-// eager-view.ts - Eager component
+```angular-ts {header: 'eager-view.ts'}
 import {Component, inject} from '@angular/core';
 import {FeatureClient} from './feature-client';
 
@@ -267,8 +267,7 @@ The difference between `providers` and `viewProviders` affects content projectio
 
 **viewProviders:** Only available to the component's template, NOT to projected content.
 
-```angular-ts
-// parent-view.ts
+```angular-ts {header: 'parent-view.ts'}
 import {Component, inject} from '@angular/core';
 import {ThemeStore} from './theme-store';
 
@@ -277,7 +276,7 @@ import {ThemeStore} from './theme-store';
   template: `
     <div>
       <p>Theme: {{ themeService.theme() }}</p>
-      <ng-content></ng-content>
+      <ng-content />
     </div>
   `,
   providers: [ThemeStore], // Available to content children
@@ -291,16 +290,17 @@ export class ParentView {
   template: `
     <div>
       <p>Theme: {{ themeService.theme() }}</p>
-      <ng-content></ng-content>
+      <ng-content />
     </div>
   `,
   viewProviders: [ThemeStore], // NOT available to content children
 })
-export class ParentView {
+export class ParentViewOnly {
   protected themeService = inject(ThemeStore);
 }
+```
 
-// child-view.ts
+```angular-ts {header: 'child-view.ts'}
 import {Component, inject} from '@angular/core';
 import {ThemeStore} from './theme-store';
 
@@ -312,8 +312,9 @@ export class ChildView {
   private themeService = inject(ThemeStore, {optional: true});
   theme = () => this.themeService?.theme() ?? 'none';
 }
+```
 
-// app.ts
+```angular-ts {header: 'app.ts'}
 @Component({
   selector: 'app-root',
   template: `
@@ -359,8 +360,7 @@ When using `InjectionToken` for non-class dependencies, developers often encount
 
 When you create a new `InjectionToken` instance, JavaScript creates a unique object in memory. Even if you create another `InjectionToken` with the exact same description string, it's a completely different object. Angular uses the token object's identity (not its description) to match providers with injection points, so tokens with the same description but different object identities cannot access each other's values.
 
-```ts
-// config.token.ts
+```ts {header: 'config.token.ts'}
 import {InjectionToken} from '@angular/core';
 
 export interface AppConfig {
@@ -368,8 +368,9 @@ export interface AppConfig {
 }
 
 export const APP_CONFIG = new InjectionToken<AppConfig>('app config');
+```
 
-// app.config.ts
+```ts {header: 'app.config.ts'}
 import {APP_CONFIG} from './config.token';
 
 export const appConfig: AppConfig = {
@@ -381,8 +382,8 @@ bootstrapApplication(App, {
 });
 ```
 
-```angular-ts {avoid}
-// feature-view.ts - Creating new token with same description
+```angular-ts {avoid, header: 'feature-view.ts'}
+// Creating new token with same description
 import {InjectionToken, inject} from '@angular/core';
 import {AppConfig} from './config.token';
 
@@ -401,8 +402,7 @@ Even though both tokens have the description `'app config'`, they are different 
 
 **Solution:** Import the same token instance.
 
-```angular-ts {prefer}
-// Import the same token
+```angular-ts {prefer, header: 'feature-view.ts'}
 import {inject} from '@angular/core';
 import {APP_CONFIG, AppConfig} from './config.token';
 
@@ -480,7 +480,7 @@ Circular dependencies occur when services inject each other, creating a cycle th
 **Resolution strategies** (in order of preference):
 
 1. **Restructure** - Extract shared logic to a third service, breaking the cycle
-2. **Use events** - Replace direct dependencies with event-based communication (e.g., `Subject`)
+2. **Use events** - Replace direct dependencies with event-based communication (such as `Subject`)
 3. **Lazy injection** - Use `Injector.get()` to defer one dependency (last resort)
 
 NOTE: Do not use `forwardRef()` for service circular dependencies—it only solves circular imports in standalone component configurations.
