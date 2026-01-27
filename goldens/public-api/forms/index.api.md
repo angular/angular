@@ -207,7 +207,7 @@ export interface AsyncValidatorFn {
 export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<CheckboxControlValueAccessor, "input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CheckboxControlValueAccessor, "input[type=checkbox]:not([ngNoCva])[formControlName],input[type=checkbox]:not([ngNoCva])[formControl],input[type=checkbox]:not([ngNoCva])[ngModel]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<CheckboxControlValueAccessor, never>;
 }
@@ -255,7 +255,7 @@ export class DefaultValueAccessor extends BaseControlValueAccessor implements Co
     constructor(renderer: Renderer2, elementRef: ElementRef, _compositionMode: boolean);
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<DefaultValueAccessor, "input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<DefaultValueAccessor, "input:not([type=checkbox]):not([ngNoCva])[formControlName],textarea:not([ngNoCva])[formControlName],input:not([type=checkbox]):not([ngNoCva])[formControl],textarea:not([ngNoCva])[formControl],input:not([type=checkbox]):not([ngNoCva])[ngModel],textarea:not([ngNoCva])[ngModel],[ngDefaultControl]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<DefaultValueAccessor, [null, null, { optional: true; }]>;
 }
@@ -804,7 +804,7 @@ export class NumberValueAccessor extends BuiltInControlValueAccessor implements 
     registerOnChange(fn: (_: number | null) => void): void;
     writeValue(value: number): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NumberValueAccessor, "input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NumberValueAccessor, "input[type=number]:not([ngNoCva])[formControlName],input[type=number]:not([ngNoCva])[formControl],input[type=number]:not([ngNoCva])[ngModel]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NumberValueAccessor, never>;
 }
@@ -841,7 +841,7 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
     value: any;
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RadioControlValueAccessor, "input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]", never, { "name": { "alias": "name"; "required": false; }; "formControlName": { "alias": "formControlName"; "required": false; }; "value": { "alias": "value"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RadioControlValueAccessor, "input[type=radio]:not([ngNoCva])[formControlName],input[type=radio]:not([ngNoCva])[formControl],input[type=radio]:not([ngNoCva])[ngModel]", never, { "name": { "alias": "name"; "required": false; }; "formControlName": { "alias": "formControlName"; "required": false; }; "value": { "alias": "value"; "required": false; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RadioControlValueAccessor, never>;
 }
@@ -851,7 +851,7 @@ export class RangeValueAccessor extends BuiltInControlValueAccessor implements C
     registerOnChange(fn: (_: number | null) => void): void;
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RangeValueAccessor, "input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]", never, {}, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RangeValueAccessor, "input[type=range]:not([ngNoCva])[formControlName],input[type=range]:not([ngNoCva])[formControl],input[type=range]:not([ngNoCva])[ngModel]", never, {}, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RangeValueAccessor, never>;
 }
@@ -887,7 +887,7 @@ export class SelectControlValueAccessor extends BuiltInControlValueAccessor impl
     value: any;
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SelectControlValueAccessor, "select:not([multiple])[formControlName],select:not([multiple])[formControl],select:not([multiple])[ngModel]", never, { "compareWith": { "alias": "compareWith"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SelectControlValueAccessor, "select:not([multiple]):not([ngNoCva])[formControlName],select:not([multiple]):not([ngNoCva])[formControl],select:not([multiple]):not([ngNoCva])[ngModel]", never, { "compareWith": { "alias": "compareWith"; "required": false; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SelectControlValueAccessor, never>;
 }
@@ -899,7 +899,7 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
     value: any;
     writeValue(value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<SelectMultipleControlValueAccessor, "select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]", never, { "compareWith": { "alias": "compareWith"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SelectMultipleControlValueAccessor, "select[multiple]:not([ngNoCva])[formControlName],select[multiple]:not([ngNoCva])[formControl],select[multiple]:not([ngNoCva])[ngModel]", never, { "compareWith": { "alias": "compareWith"; "required": false; }; }, {}, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<SelectMultipleControlValueAccessor, never>;
 }
