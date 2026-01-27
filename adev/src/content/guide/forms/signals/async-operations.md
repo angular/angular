@@ -239,8 +239,9 @@ Consider `validateAsync()` only when `validateHttp()` can't meet your needs. Som
 The `validateAsync()` function requires four properties: `params`, `factory`, `onSuccess`, and `onError`. The `params` function returns the parameters for your resource, while `factory` creates the resource:
 
 ```ts
-import {Component, signal, resource} from '@angular/core';
+import {Component, inject, signal, resource, Signal} from '@angular/core';
 import {form, validateAsync, FormField} from '@angular/forms/signals';
+import {UsernameValidator} from './username-validator';
 
 @Component({
   selector: 'app-registration',
@@ -249,6 +250,9 @@ import {form, validateAsync, FormField} from '@angular/forms/signals';
 })
 export class Registration {
   registrationModel = signal({username: ''});
+
+  private usernameValidator = inject(UsernameValidator);
+  private cache = new Map<string, {available: boolean}>();
 
   // Custom resource factory with caching
   createUsernameResource = (params: Signal<string | undefined>) => {
@@ -261,9 +265,8 @@ export class Registration {
         const cached = this.cache.get(params);
         if (cached !== undefined) return cached;
 
-        // Fetch from server
-        const response = await fetch(`/api/users/check?username=${params}`);
-        const result = await response.json();
+        // Use injected service for validation
+        const result = await this.usernameValidator.checkAvailability(params);
 
         // Cache result
         this.cache.set(params, result);
@@ -296,8 +299,6 @@ export class Registration {
       },
     });
   });
-
-  private cache = new Map<string, {available: boolean}>();
 }
 ```
 
