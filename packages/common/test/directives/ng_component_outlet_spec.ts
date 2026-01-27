@@ -20,7 +20,6 @@ import {
   NgModule,
   NO_ERRORS_SCHEMA,
   Optional,
-  provideZonelessChangeDetection,
   QueryList,
   TemplateRef,
   Type,
@@ -35,7 +34,6 @@ describe('insert/remove', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TestModule],
-      providers: [provideZonelessChangeDetection()],
     });
   });
 
