@@ -1,6 +1,13 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("//tools:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
+
+js_library(
+    name = "jasmine_config",
+    srcs = ["jasmine_config.mjs"],
+    no_copy_to_bin = ["jasmine_config.mjs"],
+)
 
 ts_project(
     name = "zone_base_setup_lib",
