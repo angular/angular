@@ -255,21 +255,21 @@ export class Registration {
   private cache = new Map<string, {available: boolean}>();
 
   // Custom resource factory with caching
-  createUsernameResource = (params: Signal<string | undefined>) => {
+  createUsernameResource = (usernameSignal: Signal<string | undefined>) => {
     return resource({
-      request: () => params(),
-      loader: async ({params}) => {
-        if (!params) return undefined;
+      params: () => usernameSignal(),
+      loader: async ({params: username}) => {
+        if (!username) return undefined;
 
         // Check cache first
-        const cached = this.cache.get(params);
+        const cached = this.cache.get(username);
         if (cached !== undefined) return cached;
 
         // Use injected service for validation
-        const result = await this.usernameValidator.checkAvailability(params);
+        const result = await this.usernameValidator.checkAvailability(username);
 
         // Cache result
-        this.cache.set(params, result);
+        this.cache.set(username, result);
         return result;
       },
     });
@@ -303,6 +303,54 @@ export class Registration {
 ```
 
 The `params` function runs on every value change. Return `undefined` to skip validation. The `factory` function runs once during setup and receives params as a signal. The resource updates automatically when params change.
+
+### Using Observable-based services
+
+If your application has existing services that return Observables, convert them to Promises using `firstValueFrom()` from RxJS:
+
+```ts
+import {Component, inject, signal, resource, Signal} from '@angular/core';
+import {firstValueFrom} from 'rxjs';
+import {form, validateAsync, FormField} from '@angular/forms/signals';
+import {UsernameService} from './username-service';
+
+@Component({
+  selector: 'app-registration',
+  imports: [FormField],
+  template: `...`,
+})
+export class Registration {
+  registrationModel = signal({username: ''});
+
+  private usernameService = inject(UsernameService);
+
+  createUsernameResource = (usernameSignal: Signal<string | undefined>) => {
+    return resource({
+      params: () => usernameSignal(),
+      loader: async ({params: username}) => {
+        if (!username) return undefined;
+
+        return firstValueFrom(this.usernameService.checkUsername(username));
+      },
+    });
+  };
+
+  registrationForm = form(this.registrationModel, (schemaPath) => {
+    validateAsync(schemaPath.username, {
+      params: ({value}) => value() || undefined,
+      factory: this.createUsernameResource,
+      onSuccess: (result) =>
+        result?.available ? null : {kind: 'usernameTaken', message: 'Username taken'},
+      onError: () => ({
+        kind: 'serverError',
+        message: 'Could not verify username',
+      }),
+    });
+  });
+}
+```
+
+The resource's built-in cancellation handles cleanup when the field value changes.
 
 ## Understanding pending state
 
