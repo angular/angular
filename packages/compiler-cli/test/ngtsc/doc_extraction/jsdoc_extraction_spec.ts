@@ -7,12 +7,7 @@
  */
 
 import {DocEntry} from '../../../src/ngtsc/docs';
-import {
-  ClassEntry,
-  FunctionEntry,
-  FunctionSignatureMetadata,
-  MethodEntry,
-} from '../../../src/ngtsc/docs/src/entities';
+import {ClassEntry, FunctionEntry, MethodEntry} from '../../../src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../../src/ngtsc/testing';
 
@@ -388,6 +383,51 @@ runInEachFileSystem(() => {
       expect(entry.jsdocTags[0]).toEqual({
         name: 'deprecated',
         comment: 'Use something else.',
+      });
+    });
+
+    it('should handle a jsdoc with a url', () => {
+      env.write(
+        'index.ts',
+        `
+        /** 
+         * 
+         * @see https://www.youtube.com/watch?v=dQw4w9WgXcQ
+         */
+        export class Foo  {};
+      `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const entry = docs[0] as ClassEntry;
+      expect(entry.jsdocTags.length).toBe(1);
+      expect(entry.jsdocTags[0]).toEqual({
+        name: 'see',
+        comment: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      });
+    });
+
+    it('should handle a jsdoc with a trailing ()', () => {
+      env.write(
+        'index.ts',
+        `
+        /** 
+         * 
+         * @see {@link entry()}
+         */
+        export class Foo  {};
+      `,
+      );
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const entry = docs[0] as ClassEntry;
+      expect(entry.jsdocTags.length).toBe(1);
+      expect(entry.jsdocTags[0]).toEqual({
+        name: 'see',
+        comment: '{@link entry()}',
       });
     });
   });
