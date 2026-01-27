@@ -277,7 +277,7 @@ export class FormField<T> {
 
   /**
    * The presence of this symbol tells the template type-checker that this directive is a control
-   * directive and should be type-checked as such. We don't use the `ɵngControlCreate` method above
+   * directive and should be type-checked as such. We don't use the `ɵngControlCreate` method below
    * as it's marked internal and removed from the public API. A symbol is used instead to avoid
    * polluting the public API with the marker.
    */
@@ -304,7 +304,7 @@ export class FormField<T> {
       this.ɵngControlUpdate = nativeControlCreate(host, this as FormField<unknown>);
     } else {
       throw new RuntimeError(
-        SignalFormsErrorCode.INVALID_FIELD_DIRECTIVE_HOST, // TODO: real runtime error
+        SignalFormsErrorCode.INVALID_FIELD_DIRECTIVE_HOST,
         ngDevMode &&
           `${host.descriptor} is an invalid [formField] directive host. The host must be a native form control ` +
             `(such as <input>', '<select>', or '<textarea>') or a custom form control with a 'value' or ` +

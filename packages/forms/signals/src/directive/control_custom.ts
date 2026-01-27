@@ -33,7 +33,7 @@ export function customControlCreate(
     // Bind custom form control model ('value' or 'checked').
     const controlValue = state.controlValue();
     if (bindingUpdated(bindings, 'controlValue', controlValue)) {
-      host.customControlModel(controlValue);
+      host.setCustomControlModelInput(controlValue);
     }
 
     // Bind remaining field state properties.
@@ -45,7 +45,7 @@ export function customControlCreate(
         value = readFieldStateBindingValue(state, name);
       }
       if (bindingUpdated(bindings, name, value)) {
-        host.property(name, value);
+        host.setInputOnDirectives(name, value);
 
         // If the host node is a native control, we can bind field state properties to native
         // properties for any that weren't defined as inputs on the custom control.

@@ -40,9 +40,9 @@ export function cvaControlCreate(
     for (const name of CONTROL_BINDING_NAMES) {
       const value = readFieldStateBindingValue(fieldState, name);
       if (bindingUpdated(bindings, name, value)) {
-        const propertyWasSet = host.property(name, value);
-        if (name === 'disabled') {
-          untracked(() => parent.controlValueAccessor!.setDisabledState?.(value as boolean));
+        const propertyWasSet = host.setInputOnDirectives(name, value);
+        if (name === 'disabled' && parent.controlValueAccessor!.setDisabledState) {
+          untracked(() => parent.controlValueAccessor!.setDisabledState!(value as boolean));
         } else if (!propertyWasSet && parent.elementAcceptsNativeProperty(name)) {
           // Fall back to native DOM properties.
           setNativeDomProperty(

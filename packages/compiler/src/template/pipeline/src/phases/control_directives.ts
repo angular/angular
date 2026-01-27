@@ -29,23 +29,43 @@ function processView(view: ViewCompilationUnit): void {
   }
 }
 
-function addControlInstruction(view: ViewCompilationUnit, propertyOp: ir.PropertyOp): void {
-  // First, add a `ControlCreate` instruction following the element definition for this property.
+const CONTROL_OP_CREATE_KINDS = new Set([
+  ir.OpKind.Container,
+  ir.OpKind.ContainerStart,
+  ir.OpKind.ContainerEnd,
+  ir.OpKind.Element,
+  ir.OpKind.ElementStart,
+  ir.OpKind.ElementEnd,
+  ir.OpKind.Template,
+]);
+
+function isRelevantCreateOp(createOp: ir.CreateOp): createOp is ir.CreateOp & {xref: ir.XrefId} {
+  return CONTROL_OP_CREATE_KINDS.has(createOp.kind);
+}
+
+function findCreateInstruction(view: ViewCompilationUnit, target: ir.XrefId): ir.CreateOp | null {
+  let lastFoundOp: ir.CreateOp | null = null;
   for (const createOp of view.create) {
-    if (createOp.kind !== ir.OpKind.Element && createOp.kind !== ir.OpKind.ElementStart) {
+    if (!isRelevantCreateOp(createOp) || createOp.xref !== target) {
       continue;
     }
 
-    if (createOp.xref !== propertyOp.target) {
-      continue;
-    }
-
-    const controlCreateOp = ir.createControlCreateOp(propertyOp.sourceSpan);
-    ir.OpList.insertAfter<ir.CreateOp>(controlCreateOp, createOp);
-    ir.OpList.insertAfter<ir.UpdateOp>(
-      ir.createControlOp(propertyOp.target, propertyOp.sourceSpan),
-      propertyOp,
-    );
-    return;
+    lastFoundOp = createOp;
   }
+
+  return lastFoundOp;
+}
+
+function addControlInstruction(view: ViewCompilationUnit, propertyOp: ir.PropertyOp): void {
+  const targetCreateOp = findCreateInstruction(view, propertyOp.target);
+  if (targetCreateOp === null) {
+    throw new Error(`No create instruction found for control target ${propertyOp.target}`);
+  }
+
+  const controlCreateOp = ir.createControlCreateOp(propertyOp.sourceSpan);
+  ir.OpList.insertAfter<ir.CreateOp>(controlCreateOp, targetCreateOp);
+  ir.OpList.insertAfter<ir.UpdateOp>(
+    ir.createControlOp(propertyOp.target, propertyOp.sourceSpan),
+    propertyOp,
+  );
 }

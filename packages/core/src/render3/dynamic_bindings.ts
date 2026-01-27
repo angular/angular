@@ -36,7 +36,6 @@ export interface BindingInternal extends Binding {
   readonly [BINDING]: {
     readonly kind: string;
     readonly requiredVars: number;
-    readonly requiresSlot: boolean;
   };
 
   /** Target index (in a view's registry) to which to apply the binding. */
@@ -64,12 +63,10 @@ export interface DirectiveWithBindings<T> {
 const INPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {
   kind: 'input',
   requiredVars: 1,
-  requiresSlot: false,
 };
 const OUTPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {
   kind: 'output',
   requiredVars: 0,
-  requiresSlot: false,
 };
 
 // TODO(pk): this is a sketch of an input binding instruction that still needs some cleanups
@@ -232,7 +229,6 @@ export function twoWayBinding(publicName: string, value: WritableSignal<unknown>
     [BINDING]: {
       kind: 'twoWay',
       requiredVars: input[BINDING].requiredVars + output[BINDING].requiredVars,
-      requiresSlot: false,
     },
     set targetIdx(idx: number) {
       (input as Writable<BindingInternal>).targetIdx = idx;

@@ -44,6 +44,9 @@ export function nativeControlCreate(
     observeSelectMutations(
       input as HTMLSelectElement,
       () => {
+        // It's not legal to access `parent.state()` until update mode has run, but
+        // `observeSelectMutations` may fire earlier. It's okay to ignore these early notifications
+        // because we'll write `input.value` in that first update pass anyway.
         if (!updateMode) {
           return;
         }
@@ -64,11 +67,14 @@ export function nativeControlCreate(
 
     for (const name of CONTROL_BINDING_NAMES) {
       const value = readFieldStateBindingValue(state, name);
-      host.property(name, value);
-      if (parent.elementAcceptsNativeProperty(name) && bindingUpdated(bindings, name, value)) {
-        setNativeDomProperty(parent.renderer, input, name, value as string | number | undefined);
+      if (bindingUpdated(bindings, name, value)) {
+        host.setInputOnDirectives(name, value);
+        if (parent.elementAcceptsNativeProperty(name)) {
+          setNativeDomProperty(parent.renderer, input, name, value as string | number | undefined);
+        }
       }
     }
+
     updateMode = true;
   };
 }

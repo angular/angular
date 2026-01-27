@@ -9,7 +9,7 @@
 import type {FieldState} from '../api/types';
 
 /**
- * Binding keys which are used to
+ * Branded type for the public name of an input we bind on control components or DOM elements.
  */
 export type ControlBindingKey = string & {__brand: 'ControlBindingKey'};
 
@@ -41,6 +41,10 @@ const FIELD_STATE_KEY_TO_CONTROL_BINDING = {
   touched: 'touched' as ControlBindingKey,
 } as const satisfies {[K in keyof FieldState<unknown>]?: ControlBindingKey};
 
+/**
+ * Inverts `FIELD_STATE_KEY_TO_CONTROL_BINDING` to look up the minified name of the corresponding
+ * field state property from its control binding name.
+ */
 const CONTROL_BINDING_TO_FIELD_STATE_KEY = /* @__PURE__ */ (() => {
   const map = {} as Record<ControlBindingKey, keyof typeof FIELD_STATE_KEY_TO_CONTROL_BINDING>;
   for (const key of Object.keys(FIELD_STATE_KEY_TO_CONTROL_BINDING) as Array<
@@ -52,11 +56,11 @@ const CONTROL_BINDING_TO_FIELD_STATE_KEY = /* @__PURE__ */ (() => {
 })();
 
 export function readFieldStateBindingValue(
-  fieldState: FieldState<unknown> | undefined,
+  fieldState: FieldState<unknown>,
   key: ControlBindingKey,
 ): unknown {
   const property = CONTROL_BINDING_TO_FIELD_STATE_KEY[key];
-  return fieldState?.[property]?.();
+  return fieldState[property]?.();
 }
 
 /** The keys of {@link FIELD_STATE_KEY_TO_CONTROL_BINDING} */

@@ -66,7 +66,7 @@ export function ɵɵcontrol(): void {
 }
 
 export function controlUpdateInternal(): void {
-  if (isInCheckNoChangesMode()) {
+  if (ngDevMode && isInCheckNoChangesMode()) {
     return;
   }
 
@@ -158,7 +158,7 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
     );
   }
 
-  property(inputName: string, value: unknown): boolean {
+  setInputOnDirectives(inputName: string, value: unknown): boolean {
     const directiveIndices = this.tNode.inputs?.[inputName];
     if (!directiveIndices) {
       return false;
@@ -171,7 +171,7 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
     return true;
   }
 
-  customControlModel(value: unknown): void {
+  setCustomControlModelInput(value: unknown): void {
     const directive = this.lView[this.tNode.customControlIndex];
     const directiveDef = this.tView.data[this.tNode.customControlIndex] as DirectiveDef<{}>;
     const modelName = this.tNode.flags & TNodeFlags.isFormValueControl ? 'value' : 'checked';
@@ -211,11 +211,6 @@ function initializeControlFirstCreatePass(tView: TView, tNode: TNode, lView: LVi
       tNode.flags |= TNodeFlags.isPassThroughControl;
       return;
     }
-  }
-
-  const directiveIndices = tNode.inputs?.['formField'];
-  if (!directiveIndices) {
-    return; // There are no matching inputs for the `[formField]` property binding.
   }
 
   initializeCustomControlStatus(tView, tNode);
