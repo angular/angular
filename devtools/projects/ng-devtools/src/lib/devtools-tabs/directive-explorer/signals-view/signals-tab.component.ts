@@ -71,7 +71,7 @@ export class SignalsTabComponent {
       }
       // In all other cases (e.g. initialization,  externally selected node change),
       // use the externally selected node as a value.
-      return source?.externallySelectedNodeId;
+      return source.externallySelectedNodeId;
     },
   });
 
