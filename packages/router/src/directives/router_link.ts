@@ -29,7 +29,6 @@ import {
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
-import {Subject} from 'rxjs';
 
 import {RuntimeErrorCode} from '../errors';
 import {NavigationEnd} from '../events';
@@ -358,8 +357,6 @@ export class RouterLink implements OnChanges, OnDestroy {
    * element.
    */
   private readonly isAnchorElement: boolean;
-  /** @internal */
-  onChanges = new Subject<RouterLink>();
   private readonly applicationErrorHandler = inject(ɵINTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true});
   private readonly reactiveRouterState = inject(ReactiveRouterState);
@@ -423,11 +420,7 @@ export class RouterLink implements OnChanges, OnDestroy {
   /** @docs-private */
   // TODO(atscott): Remove changes parameter in major version as a breaking
   // change.
-  ngOnChanges(changes?: SimpleChanges): void {
-    // This is subscribed to by `RouterLinkActive` so that it knows to update
-    // when there are changes to the RouterLinks it's tracking.
-    this.onChanges.next(this);
-  }
+  ngOnChanges(changes?: SimpleChanges): void {}
 
   private routerLinkInput = signal<readonly any[] | UrlTree | null>(null);
 

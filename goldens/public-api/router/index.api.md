@@ -4,7 +4,6 @@
 
 ```ts
 
-import { AfterContentInit } from '@angular/core';
 import { ChangeDetectorRef } from '@angular/core';
 import { ComponentRef } from '@angular/core';
 import { ElementRef } from '@angular/core';
@@ -23,7 +22,6 @@ import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Provider } from '@angular/core';
 import { ProviderToken } from '@angular/core';
-import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { Signal } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
@@ -733,7 +731,8 @@ export class Router {
     get lastSuccessfulNavigation(): Signal<Navigation | null>;
     navigate(commands: readonly any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
-    navigated: boolean;
+    get navigated(): boolean;
+    set navigated(v: boolean);
     ngOnDestroy(): void;
     // @deprecated
     onSameUrlNavigation: OnSameUrlNavigation;
@@ -870,24 +869,26 @@ export { RouterLink }
 export { RouterLink as RouterLinkWithHref }
 
 // @public
-export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
+export class RouterLinkActive implements OnChanges {
     constructor(router: Router, element: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef);
-    ariaCurrentWhenActive?: 'page' | 'step' | 'location' | 'date' | 'time' | true | false;
+    set ariaCurrentWhenActive(value: 'page' | 'step' | 'location' | 'date' | 'time' | true | false | undefined);
+    // (undocumented)
+    get ariaCurrentWhenActive(): "page" | "step" | "location" | "date" | "time" | true | false | undefined;
     // (undocumented)
     get isActive(): boolean;
     readonly isActiveChange: EventEmitter<boolean>;
-    // (undocumented)
-    links: QueryList<RouterLink>;
-    ngAfterContentInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
-    ngOnDestroy(): void;
     // (undocumented)
     set routerLinkActive(data: string[] | string);
-    routerLinkActiveOptions: {
+    set routerLinkActiveOptions(value: {
+        exact: boolean;
+    } | IsActiveMatchOptions);
+    // (undocumented)
+    get routerLinkActiveOptions(): {
         exact: boolean;
     } | IsActiveMatchOptions;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": { "alias": "routerLinkActiveOptions"; "required": false; }; "ariaCurrentWhenActive": { "alias": "ariaCurrentWhenActive"; "required": false; }; "routerLinkActive": { "alias": "routerLinkActive"; "required": false; }; }, { "isActiveChange": "isActiveChange"; }, ["links"], never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": { "alias": "routerLinkActiveOptions"; "required": false; }; "ariaCurrentWhenActive": { "alias": "ariaCurrentWhenActive"; "required": false; }; "routerLinkActive": { "alias": "routerLinkActive"; "required": false; }; }, { "isActiveChange": "isActiveChange"; }, ["_links"], never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<RouterLinkActive, never>;
 }
