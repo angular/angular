@@ -8,7 +8,7 @@
 
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserModule} from '../../index';
+import {BrowserModule, createApplication} from '../../index';
 import {expect} from '@angular/private/testing/matchers';
 import {isNode} from '@angular/private/testing';
 
@@ -80,6 +80,93 @@ describe('ShadowDOM Support', () => {
     expect(articleSlot!.assignedNodes()[1].textContent).toBe('Article Subtext!');
     expect(articleContent.assignedSlot).toBe(articleSlot);
     expect(articleSubcontent.assignedSlot).toBe(articleSlot);
+  });
+
+  it('should support bootstrapping under a shadow root', async () => {
+    @Component({
+      selector: 'app-root',
+      template: '<div>Hello, World!</div>',
+      styles: `
+        div {
+          color: red;
+        }
+      `,
+    })
+    class Root {}
+
+    const container = document.createElement('div');
+    container.attachShadow({mode: 'open'});
+    const root = document.createElement('app-root');
+    container.shadowRoot!.append(root);
+    document.body.append(container);
+
+    const appRef = await createApplication();
+    appRef.bootstrap(Root, root);
+
+    expect(getComputedStyle(root.querySelector('div')!).color).toBe('rgb(255, 0, 0)');
+
+    expect(document.head.innerHTML).not.toContain('<style>');
+
+    appRef.destroy();
+
+    expect(container.shadowRoot!.innerHTML).not.toContain('<style>');
+  });
+
+  it('should support bootstrapping multiple root components under different shadow roots', async () => {
+    const appRef = await createApplication();
+
+    {
+      @Component({
+        selector: 'app-root',
+        template: '<div>Hello, World!</div>',
+        styles: `
+          div {
+            color: red;
+          }
+        `,
+      })
+      class Root {}
+
+      const container = document.createElement('div');
+      container.attachShadow({mode: 'open'});
+      const root = document.createElement('app-root');
+      container.shadowRoot!.append(root);
+      document.body.append(container);
+
+      appRef.bootstrap(Root, root);
+      expect(getComputedStyle(root.querySelector('div')!).color).toBe('rgb(255, 0, 0)');
+    }
+
+    {
+      @Component({
+        selector: 'app-root-2',
+        template: '<div>Hello, World!</div>',
+        styles: `
+          div {
+            color: lime;
+          }
+        `,
+      })
+      class Root {}
+
+      const container = document.createElement('div');
+      container.attachShadow({mode: 'open'});
+      const root = document.createElement('app-root-2');
+      container.shadowRoot!.append(root);
+      document.body.append(container);
+
+      appRef.bootstrap(Root, root);
+      expect(getComputedStyle(root.querySelector('div')!).color).toBe('rgb(0, 255, 0)');
+    }
+
+    expect(document.head.innerHTML).not.toContain('<style>');
+
+    appRef.destroy();
+
+    const containers = Array.from(document.querySelectorAll('div'));
+    const [shadowRoot1, shadowRoot2] = containers.map((container) => container.shadowRoot!);
+    expect(shadowRoot1.innerHTML).not.toContain('<style>');
+    expect(shadowRoot2.innerHTML).not.toContain('<style>');
   });
 });
 
