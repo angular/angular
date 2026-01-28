@@ -26,7 +26,7 @@ export function nativeControlCreate(
 
   host.listenToDom('input', () => {
     const state = parent.state();
-    state.setControlValue(getNativeControlValue(input, state.value));
+    state.controlValue.set(getNativeControlValue(input, state.value));
   });
 
   host.listenToDom('blur', () => parent.state().markAsTouched());

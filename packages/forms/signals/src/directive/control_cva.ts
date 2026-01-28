@@ -22,7 +22,7 @@ export function cvaControlCreate(
   parent: FormField<unknown>,
 ): () => void {
   parent.controlValueAccessor!.registerOnChange((value: unknown) =>
-    parent.state().setControlValue(value as any),
+    parent.state().controlValue.set(value as any),
   );
   parent.controlValueAccessor!.registerOnTouched(() => parent.state().markAsTouched());
   parent.registerAsBinding();
