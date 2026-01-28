@@ -40,7 +40,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
         emitEvent?: boolean;
     }): void;
     get enabled(): boolean;
-    readonly errors: ValidationErrors | null;
+    get errors(): ValidationErrors | null;
     readonly events: Observable<ControlEvent<TValue>>;
     get<P extends string | readonly (string | number)[]>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
     get<P extends string | Array<string | number>>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
@@ -103,7 +103,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     get valid(): boolean;
     get validator(): ValidatorFn | null;
     set validator(validatorFn: ValidatorFn | null);
-    readonly value: TValue;
+    get value(): TValue;
     readonly valueChanges: Observable<TValue>;
 }
 
