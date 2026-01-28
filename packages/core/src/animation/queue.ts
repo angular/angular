@@ -100,3 +100,17 @@ export function queueEnterAnimations(
     addToAnimationQueue(injector, nodeAnimations.animateFns);
   }
 }
+
+export function removeAnimationsFromQueue(
+  injector: Injector,
+  animationFns: VoidFunction | VoidFunction[],
+) {
+  const animationQueue = injector.get(ANIMATION_QUEUE);
+  if (Array.isArray(animationFns)) {
+    for (const animateFn of animationFns) {
+      animationQueue.queue.delete(animateFn);
+    }
+  } else {
+    animationQueue.queue.delete(animationFns);
+  }
+}
