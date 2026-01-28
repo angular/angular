@@ -14,12 +14,14 @@ import {
   forwardRef,
   Host,
   Inject,
+  Injector,
   Input,
   OnChanges,
   OnDestroy,
   Optional,
   Output,
   Provider,
+  Renderer2,
   Self,
   SimpleChanges,
 } from '@angular/core';
@@ -31,7 +33,7 @@ import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {NgControl} from './ng_control';
+import {NG_CONTROL_PARSE_ERRORS_PROVIDER, NgControl} from './ng_control';
 import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
 import {
@@ -39,7 +41,7 @@ import {
   controlPath,
   isPropertyUpdated,
   SetDisabledStateOption,
-  setUpControl,
+  setUpControlValueAccessor,
 } from './shared';
 import {
   formGroupNameException,
@@ -159,7 +161,7 @@ const resolvedPromise = (() => Promise.resolve())();
  */
 @Directive({
   selector: '[ngModel]:not([formControlName]):not([formControl])',
-  providers: [formControlBinding],
+  providers: [formControlBinding, NG_CONTROL_PARSE_ERRORS_PROVIDER],
   exportAs: 'ngModel',
   standalone: false,
 })
@@ -240,8 +242,10 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     @Optional()
     @Inject(CALL_SET_DISABLED_STATE)
     private callSetDisabledState?: SetDisabledStateOption,
+    @Optional() injector?: Injector,
+    @Optional() renderer?: Renderer2,
   ) {
-    super(valueAccessors);
+    super(injector, renderer, valueAccessors);
     this._parent = parent;
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
@@ -325,7 +329,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   private _setUpStandalone(): void {
     this.valueAccessor ??= this.selectedValueAccessor;
-    setUpControl(this.control, this, this.callSetDisabledState);
+    setUpControlValueAccessor(this.control, this, this.callSetDisabledState);
     this.control.updateValueAndValidity({emitEvent: false});
   }
 
@@ -336,7 +340,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    */
   _setupWithForm(callSetDisabledState?: SetDisabledStateOption): void {
     this.valueAccessor ??= this.selectedValueAccessor;
-    setUpControl(this.control, this, callSetDisabledState);
+    setUpControlValueAccessor(this.control, this, callSetDisabledState);
   }
 
   private _checkForErrors(): void {

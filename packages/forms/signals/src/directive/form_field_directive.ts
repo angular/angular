@@ -25,7 +25,12 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import {type ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
+import {
+  type ControlValueAccessor,
+  NG_VALUE_ACCESSOR,
+  NgControl,
+  ɵFORM_FIELD_PARSE_ERRORS as FORM_FIELD_PARSE_ERRORS,
+} from '@angular/forms';
 import {type ValidationError} from '../api/rules';
 import type {Field, FieldState} from '../api/types';
 import {InteropNgControl} from '../controls/interop_ng_control';
@@ -42,7 +47,6 @@ import {
   isTextualFormElement,
   type NativeFormControl,
 } from './native';
-import {FORM_FIELD_PARSE_ERRORS} from './parse_errors';
 
 export const ɵNgFieldDirective: unique symbol = Symbol();
 
