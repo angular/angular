@@ -1,3 +1,31 @@
+<a name="21.2.0-next.1"></a>
+# 21.2.0-next.1 (2026-01-28)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8bbe6dc46c](https://github.com/angular/angular/commit/8bbe6dc46c9dc13bafa81a60c7613b84b5ca3761) | feat | Add Location strategies to manage trailing slash on write |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ebae211add](https://github.com/angular/angular/commit/ebae211add37700858adeb8fc5d87bf503a59721) | feat | introduce parse errors in signal forms |
+| [e682e53113](https://github.com/angular/angular/commit/e682e53113601b967881cf3d19ba8cffff637c0f) | fix | only touch visible, interactive fields on submit |
+| [fb05fc86d0](https://github.com/angular/angular/commit/fb05fc86d0f12ffafd94c7c1420118d8a79f7e59) | fix | sort error summary by DOM order |
+### language-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6fb39d9b62](https://github.com/angular/angular/commit/6fb39d9b62cbb634e95ec00fe5ef85d84da3bdbd) | feat | Support client-side file watching via `onDidChangeWatchedFiles` |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8a7cbd4668](https://github.com/angular/angular/commit/8a7cbd46685874f4500c52629d09c5f7fd309080) | fix | Detect local project version on creation |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b51bab583d](https://github.com/angular/angular/commit/b51bab583d84e38f16dea489e4119edc34e2a491) | feat | Add partial ActivatedRouteSnapshot information to `canMatch` params |
+| [dbd50be7f7](https://github.com/angular/angular/commit/dbd50be7f7151c567b3caa72c3f21083e7022b74) | fix | Do not intercept reload events with Navigation integration |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.1.2"></a>
 # 21.1.2 (2026-01-28)
 ### forms
