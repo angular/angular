@@ -514,136 +514,21 @@ NOTE: Do not use `forwardRef()` for service circular dependencies—it only solv
 
 ### Understanding the resolution process
 
-Angular resolves dependencies by walking up the injector hierarchy. Understanding this process helps you diagnose where and why injection fails.
+Angular resolves dependencies by walking up the injector hierarchy. When a `NullInjectorError` occurs, understanding this search order helps you identify where to add the missing provider.
 
-#### Resolution order
-
-When Angular needs to inject a dependency, it searches in this order:
+Angular searches in this order:
 
 1. **Element injector** - The current component or directive
-2. **Parent element injectors** - Walk up the DOM tree through parent components
-3. **Environment injector** - The application or route injector
-4. **Parent environment injectors** - Walk up to platform injector
-5. **NullInjector** - Throws `NullInjectorError`
+2. **Parent element injectors** - Up the DOM tree through parent components
+3. **Environment injector** - The route or application injector
+4. **NullInjector** - Throws `NullInjectorError` if not found
 
-```
-Component Injector
-        ↓
-Parent Component Injector
-        ↓
-Root Component Injector
-        ↓
-Route Injector (if lazy loaded)
-        ↓
-Application Injector
-        ↓
-Platform Injector
-        ↓
-NullInjector (throws error)
-```
+When you see a `NullInjectorError`, the service isn't provided at any level the component can access. Check that:
 
-#### Default resolution behavior
+- The service has `@Injectable({providedIn: 'root'})`, or
+- The service is in a `providers` array the component can reach
 
-By default, injection searches the entire hierarchy from bottom to top.
-
-```ts
-// Searches from component up through entire hierarchy
-private userService = inject(UserClient)
-```
-
-If `UserClient` is provided anywhere in the hierarchy, Angular finds it. If not found at any level, Angular throws `NullInjectorError`.
-
-#### Resolution modifiers
-
-You can control how Angular searches the hierarchy with resolution modifiers.
-
-**@Self() - Only check current injector**
-
-```angular-ts
-import {Component, inject} from '@angular/core';
-import {UserClient} from './user-client';
-
-@Component({
-  selector: 'app-profile',
-  template: '<p>Profile</p>',
-  providers: [UserClient],
-})
-export class UserProfile {
-  // Only looks in this component's injector
-  private userService = inject(UserClient, {self: true});
-}
-```
-
-The `self: true` option restricts the search to the current injector. If the provider is not at this level, Angular throws an error immediately without checking parent injectors.
-
-**@SkipSelf() - Start at parent injector**
-
-```angular-ts
-import {Component, inject} from '@angular/core';
-import {UserClient} from './user-client';
-
-@Component({
-  selector: 'app-profile',
-  template: '<p>Profile</p>',
-  providers: [UserClient],
-})
-export class UserProfile {
-  // Skips this component's injector, starts at parent
-  private parentUserClient = inject(UserClient, {skipSelf: true});
-}
-```
-
-The `skipSelf: true` option skips the current injector and starts searching at the parent. This is useful when you want to access a parent's instance while also providing your own.
-
-**@Optional() - Return null if not found**
-
-```angular-ts
-import {Component, inject} from '@angular/core';
-import {UserClient} from './user-client';
-
-@Component({
-  selector: 'app-profile',
-  template: '<p>Profile</p>',
-})
-export class UserProfile {
-  private userService = inject(UserClient, {optional: true});
-  // Derive availability at construction time
-  private hasUserService = this.userService !== null;
-}
-```
-
-The `optional: true` option prevents errors when a provider is not found. Angular returns `null` instead of throwing `NullInjectorError`.
-
-**@Host() - Stop at host component**
-
-```ts
-import {Directive, inject} from '@angular/core';
-import {UserClient} from './user-client';
-
-@Directive({
-  selector: '[appUser]',
-})
-export class UserDirective {
-  // Stops search at host component boundary
-  private userService = inject(UserClient, {host: true});
-}
-```
-
-The `host: true` option stops the search at the host component boundary. This is useful for directives that should only access services from their host component.
-
-#### Combining modifiers
-
-You can combine modifiers for specific behaviors.
-
-```ts
-// Optional parent service
-private parentService = inject(UserClient, {
-  optional: true,
-  skipSelf: true
-})
-```
-
-This searches parent injectors only and returns `null` if not found.
+You can modify this search behavior with resolution modifiers like `self`, `skipSelf`, `host`, and `optional`. For complete coverage of resolution rules and modifiers, see the [Hierarchical injectors guide](guide/di/hierarchical-dependency-injection).
 
 ### Using Angular DevTools
 
