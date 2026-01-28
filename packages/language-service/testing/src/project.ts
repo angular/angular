@@ -289,6 +289,14 @@ export class Project {
   getLogger(): ts.server.Logger {
     return this.tsProject.projectService.logger;
   }
+
+  getSelectionRangeAtPosition(
+    projectFileName: string,
+    position: number,
+  ): ts.SelectionRange | undefined {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    return this.ngLS.getSelectionRangeAtPosition(fileName, position);
+  }
 }
 
 function getClassOrError(sf: ts.SourceFile, name: string): ts.ClassDeclaration {
