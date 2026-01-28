@@ -141,3 +141,5 @@ if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     );
   };
 }
+
+export {SHARED_STYLES_HOST, SharedStylesHost} from './render3/interfaces/shared_styles_host';
