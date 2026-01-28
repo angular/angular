@@ -1042,7 +1042,7 @@ export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
     // (undocumented)
     [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
     // (undocumented)
-    [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: TransformT;
+    [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: (value: TransformT) => void;
 }
 
 // @public
