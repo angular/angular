@@ -81,9 +81,37 @@ const paramCompareMap: Record<ParamMatchOptions, ParamCompareFn> = {
 };
 
 /**
+ * The equivalent `IsActiveMatchOptions` options for `isActive` is called with `true`
+ * (exact = true).
+ */
+export const exactMatchOptions: IsActiveMatchOptions = {
+  paths: 'exact',
+  fragment: 'ignored',
+  matrixParams: 'ignored',
+  queryParams: 'exact',
+};
+
+/**
+ * The equivalent `IsActiveMatchOptions` options for `isActive` is called with `false`
+ * (exact = false).
+ */
+export const subsetMatchOptions: IsActiveMatchOptions = {
+  paths: 'subset',
+  fragment: 'ignored',
+  matrixParams: 'ignored',
+  queryParams: 'subset',
+};
+
+/**
  * Returns a computed signal of whether the given url is activated in the Router.
  *
  * As the router state changes, the signal will update to reflect whether the url is active.
+ *
+ * When using the `matchOptions` argument, any missing properties fall back to the following defaults:
+ * - `paths`: 'subset'
+ * - `queryParams`: 'subset'
+ * - `matrixParams`: 'ignored'
+ * - `fragment`: 'ignored'
  *
  * @see [Check if a URL is active](guide/routing/read-route-state#check-if-a-url-is-active)
  * @publicApi 21.1
@@ -91,15 +119,14 @@ const paramCompareMap: Record<ParamMatchOptions, ParamCompareFn> = {
 export function isActive(
   url: string | UrlTree,
   router: Router,
-  matchOptions: IsActiveMatchOptions,
+  matchOptions?: Partial<IsActiveMatchOptions>,
 ): Signal<boolean> {
   const urlTree = url instanceof UrlTree ? url : router.parseUrl(url);
   return computed(() =>
-    containsTree(
-      router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(),
-      urlTree,
-      matchOptions,
-    ),
+    containsTree(router.lastSuccessfulNavigation()?.finalUrl ?? new UrlTree(), urlTree, {
+      ...subsetMatchOptions,
+      ...matchOptions,
+    }),
   );
 }
 
