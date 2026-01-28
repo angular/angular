@@ -37,7 +37,7 @@ import { form, validateHttp, FormField } from '@angular/forms/signals'
         <span class="checking">Checking availability...</span>
       }
       @if (registrationForm.username().invalid()) {
-        @for (error of registrationForm.username().errors(); track error) {
+        @for (error of registrationForm.username().errors(); track $index) {
           <span class="error">{{ error.message }}</span>
         }
       }
