@@ -52,7 +52,7 @@ export class DataStore {
 
 TIP: Use `providedIn: 'root'` by default for services that don't need component-specific state. This makes services available everywhere and enables tree-shaking.
 
-#### Lazy-loaded module services
+#### Services and lazy-loaded routes
 
 When you provide a service in a lazy-loaded route's `providers` array, Angular creates a child injector for that route. This injector and its services only become available after the route loads. Components in the eagerly-loaded parts of your application cannot access these services because they use different injectors that exist before the lazy-loaded injector is created.
 
@@ -227,9 +227,9 @@ export class UserProfile {
 }
 ```
 
-#### Using runInInjectionContext for deferred injection
+#### Using the Injector for deferred injection
 
-When you need to inject dependencies in callbacks or after async operations, use `runInInjectionContext()`.
+When you need to retrieve services outside an injection context, use the captured `Injector` directly with `injector.get()`:
 
 ```angular-ts
 import {Component, inject, Injector} from '@angular/core';
@@ -244,18 +244,43 @@ export class UserProfile {
 
   delayedLoad() {
     setTimeout(() => {
-      this.injector.runInInjectionContext(() => {
-        const userService = inject(UserClient);
-        console.log(userService.getUser());
-      });
+      const userService = this.injector.get(UserClient);
+      console.log(userService.getUser());
     }, 1000);
   }
 }
 ```
 
-The `runInInjectionContext()` method creates a temporary injection context, allowing `inject()` to work inside the callback.
+#### Using runInInjectionContext for callbacks
 
-IMPORTANT: Always capture dependencies at the class level when possible. Use `runInInjectionContext()` only when you genuinely need deferred injection.
+Use `runInInjectionContext()` when you need to enable **other code** to call `inject()`. This is useful when accepting callbacks that might use dependency injection:
+
+```angular-ts
+import {Component, inject, Injector, input} from '@angular/core';
+
+@Component({
+  selector: 'app-data-loader',
+  template: '<button (click)="load()">Load</button>',
+})
+export class DataLoader {
+  private injector = inject(Injector);
+  onLoad = input<() => void>();
+
+  load() {
+    const callback = this.onLoad();
+    if (callback) {
+      // Enable the callback to use inject()
+      this.injector.runInInjectionContext(callback);
+    }
+  }
+}
+```
+
+The `runInInjectionContext()` method creates a temporary injection context, allowing code inside the callback to call `inject()`.
+
+IMPORTANT: Always capture dependencies at the class level when possible. Use `injector.get()` for simple deferred retrieval, and `runInInjectionContext()` only when external code needs to call `inject()`.
+
+TIP: Use `assertInInjectionContext()` to verify your code is running in a valid injection context. This is useful when creating reusable functions that call `inject()`. See [Asserting the context](guide/di/dependency-injection-context#asserts-the-context) for details.
 
 ### providers vs viewProviders confusion
 
