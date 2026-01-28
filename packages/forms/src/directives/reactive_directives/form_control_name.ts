@@ -35,7 +35,15 @@ import {
   disabledAttrWarning,
   ngModelGroupException,
 } from '../reactive_errors';
-import {_ngModelWarning, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
+import {
+  _ngModelWarning,
+  CALL_SET_DISABLED_STATE,
+  controlPath,
+  isPropertyUpdated,
+  selectValueAccessor,
+  SetDisabledStateOption,
+  setUpControl,
+} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
 import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
@@ -158,11 +166,23 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING)
     private _ngModelWarningConfig: string | null,
   ) {
-    super();
+    super(valueAccessors);
     this._parent = parent;
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
-    this.valueAccessor = selectValueAccessor(this, valueAccessors);
+  }
+
+  /**
+   * Sets up the control with the form.
+   *
+   * Called by `AbstractFormDirective.addControl`.
+   *
+   * @internal
+   */
+  _setupWithForm(control: FormControl, callSetDisabledState?: SetDisabledStateOption): void {
+    (this as Writable<FormControlName>).control = control;
+    this.valueAccessor ??= this.selectedValueAccessor;
+    setUpControl(control, this, callSetDisabledState);
   }
 
   /** @docs-private */
