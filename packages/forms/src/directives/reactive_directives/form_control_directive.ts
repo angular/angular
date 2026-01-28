@@ -32,7 +32,6 @@ import {
   CALL_SET_DISABLED_STATE,
   cleanUpControl,
   isPropertyUpdated,
-  selectValueAccessor,
   SetDisabledStateOption,
   setUpControl,
 } from '../shared';
@@ -141,19 +140,19 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     @Inject(CALL_SET_DISABLED_STATE)
     private callSetDisabledState?: SetDisabledStateOption,
   ) {
-    super();
+    super(valueAccessors);
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
-    this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
   /** @docs-private */
   ngOnChanges(changes: SimpleChanges): void {
     if (this._isControlChanged(changes)) {
-      const previousForm = changes['form'].previousValue;
+      const previousForm = changes['form'].previousValue as FormControl | null;
       if (previousForm) {
         cleanUpControl(previousForm, this, /* validateControlPresenceOnChange */ false);
       }
+      this.valueAccessor ??= this.selectedValueAccessor;
       setUpControl(this.form, this, this.callSetDisabledState);
       this.form.updateValueAndValidity({emitEvent: false});
     }

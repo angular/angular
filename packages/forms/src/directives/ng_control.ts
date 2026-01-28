@@ -9,6 +9,7 @@
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
+import {selectValueAccessor} from './shared';
 
 /**
  * @description
@@ -37,6 +38,22 @@ export abstract class NgControl extends AbstractControlDirective {
    * The value accessor for the control
    */
   valueAccessor: ControlValueAccessor | null = null;
+
+  /**
+   * Raw `ControlValueAccessor`s retrieved from DI.
+   */
+  private readonly rawValueAccessors: ControlValueAccessor[] | undefined;
+
+  constructor(rawValueAccessors?: ControlValueAccessor[]) {
+    super();
+    this.rawValueAccessors = rawValueAccessors;
+  }
+
+  private _selectedValueAccessor: ControlValueAccessor | null = null;
+
+  protected get selectedValueAccessor(): ControlValueAccessor | null {
+    return (this._selectedValueAccessor ??= selectValueAccessor(this, this.rawValueAccessors));
+  }
 
   /**
    * @description

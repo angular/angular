@@ -34,7 +34,6 @@ import {
   cleanUpValidators,
   removeListItem,
   SetDisabledStateOption,
-  setUpControl,
   setUpFormContainer,
   setUpValidators,
   syncPendingControls,
@@ -188,7 +187,7 @@ export abstract class AbstractFormDirective
    */
   addControl(dir: FormControlName): FormControl {
     const ctrl = this.form.get(dir.path) as FormControl;
-    setUpControl(ctrl, dir, this.callSetDisabledState);
+    dir._setupWithForm(ctrl, this.callSetDisabledState);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
     return ctrl;
@@ -338,8 +337,7 @@ export abstract class AbstractFormDirective
         // taken care of in the `removeControl` method invoked when corresponding `formControlName`
         // directive instance is being removed (invoked from `FormControlName.ngOnDestroy`).
         if (isFormControl(newCtrl)) {
-          setUpControl(newCtrl, dir, this.callSetDisabledState);
-          (dir as {control: FormControl}).control = newCtrl;
+          dir._setupWithForm(newCtrl, this.callSetDisabledState);
         }
       }
     });

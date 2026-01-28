@@ -385,7 +385,7 @@ export function syncPendingControls(
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
   dir: NgControl,
-  valueAccessors: ControlValueAccessor[],
+  valueAccessors: ControlValueAccessor[] | null | undefined,
 ): ControlValueAccessor | null {
   if (!valueAccessors) return null;
 

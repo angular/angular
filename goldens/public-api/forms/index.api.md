@@ -677,7 +677,10 @@ export const NG_VALUE_ACCESSOR: InjectionToken<readonly ControlValueAccessor[]>;
 
 // @public
 export abstract class NgControl extends AbstractControlDirective {
+    constructor(rawValueAccessors?: ControlValueAccessor[]);
     name: string | number | null;
+    // (undocumented)
+    protected get selectedValueAccessor(): ControlValueAccessor | null;
     valueAccessor: ControlValueAccessor | null;
     abstract viewToModelUpdate(newValue: any): void;
 }
