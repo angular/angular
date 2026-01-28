@@ -1,3 +1,20 @@
+<a name="21.1.2"></a>
+# 21.1.2 (2026-01-28)
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9f99b14882](https://github.com/angular/angular/commit/9f99b14882bc4f883aa33295856010a8bca900fa) | fix | only touch visible, interactive fields on submit |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c57b0355b5](https://github.com/angular/angular/commit/c57b0355b51f5aee5abd822f203fc3bcc3e85acd) | fix | Detect local project version on creation |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [21ecdc036a](https://github.com/angular/angular/commit/21ecdc036a46c487d6c5b6bd25c2bbc3e53a60f9) | fix | Do not intercept reload events with Navigation integration |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.1.1"></a>
 # 21.1.1 (2026-01-21)
 ### compiler-cli
