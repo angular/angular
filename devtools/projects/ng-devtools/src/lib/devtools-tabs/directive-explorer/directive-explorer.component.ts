@@ -17,7 +17,6 @@ import {
   viewChild,
   ChangeDetectionStrategy,
   computed,
-  linkedSignal,
   DestroyRef,
 } from '@angular/core';
 import {
@@ -133,10 +132,7 @@ export class DirectiveExplorerComponent {
   private readonly snackBar = inject(MatSnackBar);
   protected readonly signalGraph = inject(SignalGraphManager);
 
-  protected readonly preselectedSignalNodeId = linkedSignal<IndexedNode | null, string | null>({
-    source: this.currentSelectedElement,
-    computation: () => null,
-  });
+  protected readonly externallySelectedSignalNodeId = signal<{id: string} | null>(null);
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
@@ -390,7 +386,8 @@ export class DirectiveExplorerComponent {
 
   showSignalGraph(node: DevtoolsSignalGraphNode | null) {
     if (node) {
-      this.preselectedSignalNodeId.set(node.id);
+      // We want to trigger an update each time we intercept an update.
+      this.externallySelectedSignalNodeId.set({id: node.id});
     }
     this.signalsOpen.set(true);
   }

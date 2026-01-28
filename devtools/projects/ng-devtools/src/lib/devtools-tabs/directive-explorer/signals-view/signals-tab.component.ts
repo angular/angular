@@ -10,6 +10,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
   linkedSignal,
@@ -24,8 +25,14 @@ import {FrameManager} from '../../../application-services/frame_manager';
 import {SignalsDetailsComponent} from './signals-details/signals-details.component';
 import {ButtonComponent} from '../../../shared/button/button.component';
 import {SignalGraphManager} from '../signal-graph/signal-graph-manager';
-import {DevtoolsSignalGraph, DevtoolsSignalGraphNode} from '../signal-graph';
+import {DevtoolsSignalGraphNode} from '../signal-graph';
 import {SignalsVisualizerComponent} from './signals-visualizer/signals-visualizer.component';
+import {ElementPosition} from '../../../../../../protocol';
+
+type SelectedNodeSource = {
+  element: ElementPosition | undefined;
+  externallySelectedNodeId: string | null;
+};
 
 @Component({
   templateUrl: './signals-tab.component.html',
@@ -41,17 +48,30 @@ export class SignalsTabComponent {
   private readonly appOperations = inject(ApplicationOperations);
   private readonly frameManager = inject(FrameManager);
 
-  protected readonly preselectedNodeId = input<string | null>(null);
   protected readonly close = output<void>();
 
-  // selected is automatically reset to null whenever `graph` changes
-  protected readonly selectedNodeId = linkedSignal<DevtoolsSignalGraph | null, string | null>({
-    source: this.signalGraph.graph,
+  // Source for selected node ID.
+  // Use only for triggering behavior dependent on external node ID changes.
+  protected readonly externallySelectedNodeId = input<{id: string} | null>(null);
+
+  private readonly selectedNodeSource = computed<SelectedNodeSource>(() => ({
+    element: this.signalGraph.element(),
+    externallySelectedNodeId: this.externallySelectedNodeId()?.id ?? null,
+  }));
+
+  // Use a single source of truth for the selected node ID.
+  // The selected node ID computation is triggered either
+  // by an element (graph) change or externally selected node ID change.
+  protected readonly selectedNodeId = linkedSignal<SelectedNodeSource, string | null>({
+    source: this.selectedNodeSource,
     computation: (source, prev) => {
-      if (prev?.value && source?.nodes.find((n) => n.id === prev.value)) {
-        return prev.value;
+      // If the element changes, this means we have a new graph => reset
+      if (prev?.value && source.element !== prev.source.element) {
+        return null;
       }
-      return this.preselectedNodeId();
+      // In all other cases (e.g. initialization,  externally selected node change),
+      // use the externally selected node as a value.
+      return source.externallySelectedNodeId;
     },
   });
 
