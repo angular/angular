@@ -778,6 +778,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
         updateOn?: FormHooks;
     };
     get path(): string[];
+    protected get shouldBindRequired(): boolean;
     update: EventEmitter<any>;
     viewModel: any;
     viewToModelUpdate(newValue: any): void;

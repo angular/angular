@@ -9,7 +9,12 @@
 import * as ir from '../../ir';
 import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
-const ELIGIBLE_CONTROL_PROPERTIES = new Set(['formField']);
+const ELIGIBLE_CONTROL_PROPERTIES = new Set([
+  'formField',
+  'formControl',
+  'formControlName',
+  'ngModel',
+]);
 
 export function specializeControlProperties(job: ComponentCompilationJob): void {
   for (const unit of job.units) {

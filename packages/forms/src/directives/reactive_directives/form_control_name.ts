@@ -7,6 +7,7 @@
  */
 
 import {
+  ChangeDetectorRef,
   Directive,
   EventEmitter,
   forwardRef,
@@ -24,6 +25,7 @@ import {
   SimpleChanges,
   SkipSelf,
   ɵWritable as Writable,
+  type ɵControlDirectiveHost as ControlDirectiveHost,
 } from '@angular/core';
 
 import {FormControl} from '../../model/form_control';
@@ -39,6 +41,7 @@ import {
 } from '../reactive_errors';
 import {
   _ngModelWarning,
+  CALL_SET_DISABLED_STATE,
   controlPath,
   isPropertyUpdated,
   SetDisabledStateOption,
@@ -175,16 +178,18 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   }
 
   /**
-   * Sets up the control with the form.
-   *
-   * Called by `AbstractFormDirective.addControl`.
-   *
+   * Sets up the control with the form, handling FVC vs CVA branching.
+   * Called by AbstractFormDirective.addControl.
    * @internal
    */
   _setupWithForm(control: FormControl, callSetDisabledState?: SetDisabledStateOption): void {
     (this as Writable<FormControlName>).control = control;
-    this.valueAccessor ??= this.selectedValueAccessor;
-    setUpControlValueAccessor(control, this, callSetDisabledState);
+    if (!this.isCustomControlBased) {
+      this.valueAccessor ??= this.selectedValueAccessor;
+      setUpControlValueAccessor(control, this, callSetDisabledState);
+    } else {
+      this.setupCustomControl();
+    }
   }
 
   /** @docs-private */
@@ -238,6 +243,36 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     }
     (this as Writable<this>).control = this.formDirective.addControl(this);
     this._added = true;
+  }
+
+  /**
+   * Internal control directive creation lifecycle hook.
+   *
+   * The presence of this method tells the compiler to install `ɵɵControlFeature`, which will
+   * cause this directive to be recognized as a control directive by the `ɵcontrolCreate` and
+   * `ɵcontrol` instructions.
+   *
+   * @internal
+   */
+  ɵngControlCreate(host: ControlDirectiveHost): void {
+    super.ngControlCreate(host);
+  }
+
+  /**
+   * Internal control directive update lifecycle hook.
+   *
+   * @internal
+   */
+  ɵngControlUpdate(host: ControlDirectiveHost): void {
+    // Ensure behavior is the same if we're not using the custom control codepath.
+    if (!this.isCustomControlBased) {
+      return;
+    }
+
+    // this.control is typically initialized by `ngOnChanges`, however `ɵngControlUpdate` fires
+    // first. So, we're responsible for initializing it here.
+    if (!this._added) this._setUpControl();
+    super.ngControlUpdate(host, true);
   }
 }
 
