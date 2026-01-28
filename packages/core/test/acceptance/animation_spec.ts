@@ -22,6 +22,7 @@ import {
   OnDestroy,
   provideZonelessChangeDetection,
   signal,
+  TemplateRef,
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
@@ -2298,5 +2299,101 @@ describe('Animation', () => {
       expect(fixture.debugElement.query(By.css('p.all-there-is'))).not.toBeNull();
       expect(fixture.debugElement.query(By.css('p.not-here'))).toBeNull();
     }));
+  });
+
+  describe('animation element duplication', () => {
+    it('should not duplicate elements when using dynamic components', async () => {
+      const animateStyles = `
+        .example-menu {
+          display: inline-flex;
+          flex-direction: column;
+          min-width: 180px;
+          max-width: 280px;
+          padding: 6px 0;
+        }
+        .open {
+          animation: open 10ms;
+        }
+        .close {
+          animation: open 10ms reverse;
+        }
+        @keyframes open {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'dynamic-menu',
+        styles: [animateStyles],
+        template: `
+          <ng-template #menu>
+            <div class="example-menu" animate.enter="open" animate.leave="close">
+              <div>Menu</div>
+            </div>
+          </ng-template>
+        `,
+        changeDetection: ChangeDetectionStrategy.OnPush,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class MenuComponent {
+        @ViewChild('menu') menuTpl!: TemplateRef<unknown>;
+        vcr = inject(ViewContainerRef);
+        opened = false;
+
+        toggle() {
+          if (this.opened) {
+            this.close();
+          } else {
+            this.open();
+          }
+        }
+
+        open() {
+          this.opened = true;
+          this.vcr.createEmbeddedView(this.menuTpl);
+        }
+
+        close() {
+          this.opened = false;
+          this.vcr.clear();
+        }
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        imports: [MenuComponent],
+        template: ` <dynamic-menu /> `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {}
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const cmp = fixture.debugElement.query(By.css('dynamic-menu')).componentInstance;
+
+      const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      // Toggle the menu quickly multiple times
+      for (let i = 0; i < 20; i++) {
+        cmp.toggle();
+        // Wait 1ms to allow some logic to run but less than animation duration
+        await delay(1);
+        fixture.detectChanges();
+      }
+
+      // Finish remaining animations (wait 100ms real time which is > 10ms animation)
+      await delay(200);
+      fixture.detectChanges();
+
+      const menus = fixture.debugElement.nativeElement.querySelectorAll('.example-menu');
+      expect(menus.length).toBe(0);
+    });
   });
 });
