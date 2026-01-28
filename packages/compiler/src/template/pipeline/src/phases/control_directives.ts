@@ -11,6 +11,9 @@ import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation'
 
 const ELIGIBLE_CONTROL_PROPERTIES = new Map<string, Set<ir.OpKind>>([
   ['formField', new Set([ir.OpKind.Property])],
+  ['formControl', new Set([ir.OpKind.Property])],
+  ['formControlName', new Set([ir.OpKind.Property, ir.OpKind.Attribute])],
+  ['ngModel', new Set([ir.OpKind.Attribute, ir.OpKind.Property, ir.OpKind.TwoWayProperty])],
 ]);
 
 export function specializeControlProperties(job: ComponentCompilationJob): void {

@@ -636,6 +636,31 @@ describe('reactive forms integration tests', () => {
     });
   });
 
+  describe('template pipeline integration', () => {
+    it('should not crash when a control directive is applied to an element inside an @if block', () => {
+      @Component({
+        selector: 'my-app',
+        template: `
+          <div [formGroup]="form">
+            @if (true) {
+              <input formControlName="name" />
+            }
+          </div>
+        `,
+        standalone: false,
+      })
+      class App {
+        form = new FormGroup({name: new FormControl('Angular')});
+      }
+
+      const fixture = initTest(App);
+      fixture.detectChanges();
+
+      const input = fixture.debugElement.query(By.css('input'));
+      expect(input.nativeElement.value).toEqual('Angular');
+    });
+  });
+
   describe('form arrays', () => {
     it('should support form arrays', () => {
       const fixture = initTest(FormArrayComp);

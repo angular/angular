@@ -24,7 +24,9 @@ import {
   Renderer2,
   Self,
   SimpleChanges,
+  type ɵControlDirectiveHost as ControlDirectiveHost,
 } from '@angular/core';
+import {Subscription} from 'rxjs';
 
 import {FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
@@ -284,6 +286,32 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   /**
+   * Internal control directive creation lifecycle hook.
+   * @internal
+   */
+  ɵngControlCreate(host: ControlDirectiveHost): void {
+    super.ngControlCreate(host);
+  }
+
+  /**
+   * Internal control directive update lifecycle hook.
+   * @internal
+   */
+  ɵngControlUpdate(host: ControlDirectiveHost): void {
+    super.ngControlUpdate(host, false);
+  }
+
+  /**
+   * Template-driven forms handle `required` via the `RequiredValidator` directive.
+   *
+   * This directive has a `required` input and a host binding to `[attr.required]`. It defines the
+   * source of truth for required-ness, so disable the normal control binding for it.
+   */
+  protected override get shouldBindRequired() {
+    return false;
+  }
+
+  /**
    * @description
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
@@ -328,8 +356,13 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _setUpStandalone(): void {
-    this.valueAccessor ??= this.selectedValueAccessor;
-    setUpControlValueAccessor(this.control, this, this.callSetDisabledState);
+    if (!this.isCustomControlBased) {
+      this.valueAccessor ??= this.selectedValueAccessor;
+      setUpControlValueAccessor(this.control, this, this.callSetDisabledState);
+    } else {
+      // FVC path - set up subscriptions for value/status sync
+      this.setupCustomControl();
+    }
     this.control.updateValueAndValidity({emitEvent: false});
   }
 
@@ -339,8 +372,12 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * @internal
    */
   _setupWithForm(callSetDisabledState?: SetDisabledStateOption): void {
-    this.valueAccessor ??= this.selectedValueAccessor;
-    setUpControlValueAccessor(this.control, this, callSetDisabledState);
+    if (!this.isCustomControlBased) {
+      this.valueAccessor ??= this.selectedValueAccessor;
+      setUpControlValueAccessor(this.control, this, callSetDisabledState);
+    } else {
+      this.setupCustomControl();
+    }
   }
 
   private _checkForErrors(): void {

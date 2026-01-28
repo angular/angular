@@ -7,6 +7,7 @@
  */
 
 import {
+  ChangeDetectorRef,
   Directive,
   EventEmitter,
   forwardRef,
@@ -22,6 +23,7 @@ import {
   Renderer2,
   Self,
   SimpleChanges,
+  type ɵControlDirectiveHost as ControlDirectiveHost,
 } from '@angular/core';
 
 import {FormControl} from '../../model/form_control';
@@ -155,9 +157,18 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
       const previousForm = changes['form'].previousValue as FormControl | null;
       if (previousForm) {
         cleanUpControl(previousForm, this, /* validateControlPresenceOnChange */ false);
+        this.removeParseErrorsValidator(previousForm);
       }
-      this.valueAccessor ??= this.selectedValueAccessor;
-      setUpControlValueAccessor(this.form, this, this.callSetDisabledState);
+      // Only set up CVA if not using FVC
+      if (!this.isCustomControlBased) {
+        // Now that we know we're not using FVC, select the value accessor
+        this.valueAccessor ??= this.selectedValueAccessor;
+        setUpControlValueAccessor(this.form, this, this.callSetDisabledState);
+      } else {
+        // Set up FVC subscriptions when form changes - mark for check so
+        // ɵngControlUpdate runs and syncs values/status to the FVC
+        this.setupCustomControl();
+      }
       this.form.updateValueAndValidity({emitEvent: false});
     }
     if (isPropertyUpdated(changes, this.viewModel)) {
@@ -206,5 +217,27 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
 
   private _isControlChanged(changes: {[key: string]: any}): boolean {
     return changes.hasOwnProperty('form');
+  }
+
+  /**
+   * Internal control directive creation lifecycle hook.
+   *
+   * The presence of this method tells the compiler to install `ɵɵControlFeature`, which will
+   * cause this directive to be recognized as a control directive by the `ɵcontrolCreate` and
+   * `ɵcontrol` instructions.
+   *
+   * @internal
+   */
+  ɵngControlCreate(host: ControlDirectiveHost): void {
+    super.ngControlCreate(host);
+  }
+
+  /**
+   * Internal control directive update lifecycle hook.
+   *
+   * @internal
+   */
+  ɵngControlUpdate(host: ControlDirectiveHost): void {
+    super.ngControlUpdate(host, true);
   }
 }
