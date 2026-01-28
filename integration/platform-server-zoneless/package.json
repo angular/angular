@@ -32,7 +32,7 @@
     "@angular/cli": "21.1.0-rc.0",
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "@types/express": "^5.0.3",
-    "@types/jasmine": "^5.0.0",
+    "@types/jasmine": "^6.0.0",
     "@types/node": "^20.14.8",
     "@types/selenium-webdriver": "3.0.7",
     "concurrently": "9.2.1",

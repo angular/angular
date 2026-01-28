@@ -143,8 +143,8 @@ importers:
         specifier: 2.0.46
         version: 2.0.46
       '@types/jasmine':
-        specifier: ^5.0.0
-        version: 5.1.15
+        specifier: ^6.0.0
+        version: 6.0.0
       '@types/jasminewd2':
         specifier: ^2.0.8
         version: 2.0.13
@@ -221,8 +221,8 @@ importers:
         specifier: ^14.0.0
         version: 14.1.1
       jasmine:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.0
+        version: 6.0.0
       jasmine-core:
         specifier: 5.13.0
         version: 5.13.0
@@ -585,8 +585,8 @@ importers:
         specifier: 1.0.6
         version: 1.0.6
       '@types/jasmine':
-        specifier: 5.1.15
-        version: 5.1.15
+        specifier: 6.0.0
+        version: 6.0.0
       '@types/jsdom':
         specifier: 27.0.0
         version: 27.0.0
@@ -896,8 +896,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/upgrade
       '@types/jasmine':
-        specifier: 5.1.15
-        version: 5.1.15
+        specifier: 6.0.0
+        version: 6.0.0
       '@types/jasminewd2':
         specifier: 2.0.13
         version: 2.0.13
@@ -1235,8 +1235,8 @@ importers:
         specifier: 1.5.0
         version: 1.5.0
       '@types/jasmine':
-        specifier: 5.1.15
-        version: 5.1.15
+        specifier: 6.0.0
+        version: 6.0.0
       '@types/node':
         specifier: ^24.3.0
         version: 24.10.9
@@ -1253,8 +1253,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       jasmine:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.0
+        version: 6.0.0
       jasmine-core:
         specifier: 5.13.0
         version: 5.13.0
@@ -1321,8 +1321,8 @@ importers:
         version: 5.9.3
     devDependencies:
       '@types/jasmine':
-        specifier: ~5.1.9
-        version: 5.1.15
+        specifier: ~6.0.0
+        version: 6.0.0
       '@types/jasmine-reporters':
         specifier: ~2.5.3
         version: 2.5.3
@@ -1339,8 +1339,8 @@ importers:
         specifier: ~3.7.0
         version: 3.7.1
       jasmine:
-        specifier: ~5.13.0
-        version: 5.13.0
+        specifier: ~6.0.0
+        version: 6.0.0
       jasmine-core:
         specifier: ~5.13.0
         version: 5.13.0
@@ -8764,10 +8764,6 @@ packages:
 
   jasmine@2.8.0:
     resolution: {integrity: sha512-KbdGQTf5jbZgltoHs31XGiChAPumMSY64OZMWLNYnEnMfG5uwGBhffePwuskexjT+/Jea/gU3qAU8344hNohSw==}
-    hasBin: true
-
-  jasmine@5.13.0:
-    resolution: {integrity: sha512-oLCXIhEb5e0zzjn9GyuvcuisvLBwUjmgz7a0RNGWKwQtJCDld4m+vwKUpAIJVLB5vbmQFdtKhT86/tIZlJ5gYw==}
     hasBin: true
 
   jasmine@6.0.0:
@@ -17684,7 +17680,7 @@ snapshots:
 
   '@types/jasmine-reporters@2.5.3':
     dependencies:
-      '@types/jasmine': 5.1.15
+      '@types/jasmine': 6.0.0
 
   '@types/jasmine@5.1.15': {}
 
@@ -17692,7 +17688,7 @@ snapshots:
 
   '@types/jasminewd2@2.0.13':
     dependencies:
-      '@types/jasmine': 5.1.15
+      '@types/jasmine': 6.0.0
 
   '@types/jsdom@21.1.7':
     dependencies:
@@ -22135,11 +22131,6 @@ snapshots:
       exit: 0.1.2
       glob: 7.2.3
       jasmine-core: 2.8.0
-
-  jasmine@5.13.0:
-    dependencies:
-      glob: 10.5.0
-      jasmine-core: 5.13.0
 
   jasmine@6.0.0:
     dependencies:
