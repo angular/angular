@@ -15,6 +15,7 @@ import {
   OnDestroy,
   Optional,
   PLATFORM_ID,
+  ɵSharedStylesHost,
 } from '@angular/core';
 
 /** The style elements attribute name used to set value of `APP_ID` token. */
@@ -102,7 +103,7 @@ export function createLinkElement(url: string, doc: Document): HTMLLinkElement {
 }
 
 @Injectable()
-export class SharedStylesHost implements OnDestroy {
+export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
   /**
    * Provides usage information for active inline style content and associated HTML <style> elements.
    * Embedded styles typically originate from the `styles` metadata of a rendered component.
@@ -132,10 +133,6 @@ export class SharedStylesHost implements OnDestroy {
     this.hosts.add(doc.head);
   }
 
-  /**
-   * Adds embedded styles to the DOM via HTML `style` elements.
-   * @param styles An array of style content strings.
-   */
   addStyles(styles: string[], urls?: string[]): void {
     for (const value of styles) {
       this.addUsage(value, this.inline, createStyleElement);
@@ -206,12 +203,6 @@ export class SharedStylesHost implements OnDestroy {
     this.hosts.clear();
   }
 
-  /**
-   * Adds a host node to the set of style hosts and adds all existing style usage to
-   * the newly added host node.
-   *
-   * This is currently only used for Shadow DOM encapsulation mode.
-   */
   addHost(hostNode: Node): void {
     this.hosts.add(hostNode);
 
