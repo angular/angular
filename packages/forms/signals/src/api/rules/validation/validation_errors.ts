@@ -7,6 +7,7 @@
  */
 
 import type {StandardSchemaV1} from '@standard-schema/spec';
+import {ValidationErrors} from '@angular/forms';
 import type {FormField} from '../../form_field_directive';
 import type {FieldTree} from '../../types';
 

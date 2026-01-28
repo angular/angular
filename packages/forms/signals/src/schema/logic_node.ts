@@ -7,7 +7,7 @@
  */
 
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
-import {SignalFormsErrorCode} from '../errors';
+import {RuntimeErrorCode} from '../errors';
 
 import type {MetadataKey, ValidationError} from '../api/rules';
 import type {AsyncValidationResult, DisabledReason, LogicFn, ValidationResult} from '../api/types';
@@ -436,7 +436,7 @@ function getAllChildBuilders(
     ];
   } else {
     throw new RuntimeError(
-      SignalFormsErrorCode.UNKNOWN_BUILDER_TYPE,
+      RuntimeErrorCode.UNKNOWN_BUILDER_TYPE,
       ngDevMode && 'Unknown LogicNodeBuilder type',
     );
   }
@@ -473,7 +473,7 @@ function createLogic(
     logic.mergeIn(builder.logic);
   } else {
     throw new RuntimeError(
-      SignalFormsErrorCode.UNKNOWN_BUILDER_TYPE,
+      RuntimeErrorCode.UNKNOWN_BUILDER_TYPE,
       ngDevMode && 'Unknown LogicNodeBuilder type',
     );
   }
