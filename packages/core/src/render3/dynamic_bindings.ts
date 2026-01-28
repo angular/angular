@@ -138,7 +138,7 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
         inputBindingUpdate(binding.targetIdx!, publicName, value());
         controlUpdateInternal();
       },
-    } as BindingInternal;
+    };
     return binding;
   }
 
