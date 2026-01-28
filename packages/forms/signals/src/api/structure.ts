@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/core';
+import {inject, Injector, runInInjectionContext, untracked, WritableSignal} from '@angular/core';
 
 import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
 import {FormFieldManager} from '../field/manager';
@@ -369,10 +369,13 @@ export async function submit<TModel>(
   action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>,
 ) {
   const node = form() as unknown as FieldNode;
-  markAllAsTouched(node);
+  const invalid = untracked(() => {
+    markAllAsTouched(node);
+    return node.invalid();
+  });
 
   // Fail fast if the form is already invalid.
-  if (node.invalid()) {
+  if (invalid) {
     return;
   }
 
@@ -429,6 +432,12 @@ export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
 
 /** Marks a {@link node} and its descendants as touched. */
 function markAllAsTouched(node: FieldNode) {
+  // Don't mark hidden, disabled, or readonly fields as touched since they don't contribute to the
+  // form's validity. This also prevents errors from appearing immediately if they're later made
+  // interactive.
+  if (node.validationState.shouldSkipValidation()) {
+    return;
+  }
   node.markAsTouched();
   for (const child of node.structure.children()) {
     markAllAsTouched(child);
