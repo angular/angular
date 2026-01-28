@@ -371,7 +371,7 @@ Show the pending state in your template to provide feedback:
 }
 
 @if (loginForm.username().touched() && loginForm.username().invalid()) {
-  @for (error of loginForm.username().errors(); track error) {
+  @for (error of loginForm.username().errors(); track $index) {
     <span class="error">{{ error.message }}</span>
   }
 }
