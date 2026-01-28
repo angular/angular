@@ -19,6 +19,7 @@ import {
   getTView,
   isInCheckNoChangesMode,
 } from '../state';
+import {getNativeByTNode} from '../util/view_utils';
 import {debugStringifyTypeForError} from '../util/stringify_utils';
 import {listenToOutput} from '../view/directive_outputs';
 import {listenToDomEvent, wrapListener} from '../view/listeners';
@@ -103,6 +104,10 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
       : undefined;
   }
 
+  get nativeElement(): HTMLElement {
+    return getNativeByTNode(this.tNode, this.lView) as HTMLElement;
+  }
+
   get descriptor(): string {
     if (ngDevMode && isComponentHost(this.tNode)) {
       const componentIndex = this.tNode.directiveStart + this.tNode.componentOffset;
@@ -165,25 +170,36 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
       return false;
     }
 
+    let wasSet = false;
     if (directiveIndices) {
       for (const index of directiveIndices) {
+        // Skip the control directive itself to avoid triggering its property setters
+        if (index === this.tNode.controlDirectiveIndex) {
+          continue;
+        }
         const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
         const directive = this.lView[index];
         writeToDirectiveInput(directiveDef, directive, inputName, value);
+        wasSet = true;
       }
     }
 
     if (hostDirectiveInputs) {
       for (let i = 0; i < hostDirectiveInputs.length; i += 2) {
         const index = hostDirectiveInputs[i] as number;
+        // Skip the control directive itself to avoid triggering its property setters
+        if (index === this.tNode.controlDirectiveIndex) {
+          continue;
+        }
         const internalName = hostDirectiveInputs[i + 1] as string;
         const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
         const directive = this.lView[index];
         writeToDirectiveInput(directiveDef, directive, internalName, value);
+        wasSet = true;
       }
     }
 
-    return true;
+    return wasSet;
   }
 
   setCustomControlModelInput(value: unknown): void {
