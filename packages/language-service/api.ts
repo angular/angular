@@ -90,11 +90,37 @@ export interface ApplyRefactoringResult extends Omit<ts.RefactorEditInfo, 'notAp
 }
 
 /**
+ * Result for linked editing ranges containing the ranges and optional word pattern.
+ */
+export interface LinkedEditingRanges {
+  /** The ranges that should be edited together. */
+  ranges: ts.TextSpan[];
+  /** An optional word pattern to describe valid tag names. */
+  wordPattern?: string;
+}
+
+/**
  * `NgLanguageService` describes an instance of an Angular language service,
  * whose API surface is a strict superset of TypeScript's language service.
  */
 export interface NgLanguageService extends ts.LanguageService {
   getTcb(fileName: string, position: number): GetTcbResponse | undefined;
+
+  /**
+   * Gets linked editing ranges for synchronized editing of HTML tag pairs.
+   *
+   * When the cursor is on an element tag name, returns both the opening and closing
+   * tag name spans so they can be edited simultaneously. This overrides TypeScript's
+   * built-in method which only works for JSX/TSX.
+   *
+   * @param fileName The file to check
+   * @param position The cursor position in the file
+   * @returns LinkedEditingRanges if on a tag name, undefined otherwise
+   */
+  getLinkedEditingRangeAtPosition(
+    fileName: string,
+    position: number,
+  ): LinkedEditingRanges | undefined;
   getComponentLocationsForTemplate(fileName: string): GetComponentLocationsForTemplateResponse;
   getTemplateLocationForComponent(
     fileName: string,
