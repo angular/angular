@@ -213,10 +213,6 @@ function convertLinks(text: string) {
 }
 
 function parseAtLink(link: string): {label: string; url: string} | undefined {
-  // Because of microsoft/TypeScript/issues/59679
-  // getTextOfJSDocComment introduces an extra space between the symbol and a trailing ()
-  link = link.replace(/ \(\)$/, '');
-
   let [rawSymbol, description] = link.split(/\s(.+)/);
   if (rawSymbol.startsWith('#')) {
     rawSymbol = rawSymbol.substring(1);
