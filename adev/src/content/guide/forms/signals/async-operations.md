@@ -306,11 +306,11 @@ The `params` function runs on every value change. Return `undefined` to skip val
 
 ### Using Observable-based services
 
-If your application has existing services that return Observables, convert them to Promises using `firstValueFrom()` from RxJS:
+If your application has existing services that return Observables, use `rxResource` from `@angular/core/rxjs-interop`:
 
 ```ts
-import {Component, inject, signal, resource, Signal} from '@angular/core';
-import {firstValueFrom} from 'rxjs';
+import {Component, inject, signal, Signal} from '@angular/core';
+import {rxResource} from '@angular/core/rxjs-interop';
 import {form, validateAsync, FormField} from '@angular/forms/signals';
 import {UsernameService} from './username-service';
 
@@ -324,14 +324,10 @@ export class Registration {
 
   private usernameService = inject(UsernameService);
 
-  createUsernameResource = (usernameSignal: Signal<string | undefined>) => {
-    return resource({
-      params: () => usernameSignal(),
-      loader: async ({params: username}) => {
-        if (!username) return undefined;
-
-        return firstValueFrom(this.usernameService.checkUsername(username));
-      },
+  private createUsernameResource = (usernameSignal: Signal<string | undefined>) => {
+    return rxResource({
+      request: () => usernameSignal(),
+      stream: ({request: username}) => this.usernameService.checkUsername(username),
     });
   };
 
@@ -350,7 +346,7 @@ export class Registration {
 }
 ```
 
-The resource's built-in cancellation handles cleanup when the field value changes.
+The `rxResource` function works directly with Observables and handles subscription cleanup automatically when the field value changes.
 
 ## Understanding pending state
 
