@@ -38,7 +38,6 @@ import {
   CALL_SET_DISABLED_STATE,
   controlPath,
   isPropertyUpdated,
-  selectValueAccessor,
   SetDisabledStateOption,
   setUpControl,
 } from './shared';
@@ -242,11 +241,10 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     @Inject(CALL_SET_DISABLED_STATE)
     private callSetDisabledState?: SetDisabledStateOption,
   ) {
-    super();
+    super(valueAccessors);
     this._parent = parent;
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
-    this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
   /** @docs-private */
@@ -326,8 +324,19 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _setUpStandalone(): void {
+    this.valueAccessor ??= this.selectedValueAccessor;
     setUpControl(this.control, this, this.callSetDisabledState);
     this.control.updateValueAndValidity({emitEvent: false});
+  }
+
+  /**
+   * Sets up the control with the form, handling FVC vs CVA branching.
+   * Called by NgForm.addControl.
+   * @internal
+   */
+  _setupWithForm(callSetDisabledState?: SetDisabledStateOption): void {
+    this.valueAccessor ??= this.selectedValueAccessor;
+    setUpControl(this.control, this, callSetDisabledState);
   }
 
   private _checkForErrors(): void {
