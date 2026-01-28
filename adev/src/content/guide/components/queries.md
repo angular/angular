@@ -106,7 +106,7 @@ By default, content queries find only _direct_ children of the component and do 
 
 You can also query for multiple results with the `contentChildren` function.
 
-```angular-ts {highlight: [15, 16]}
+```angular-ts {highlight: [14, 15]}
 @Component({
   selector: 'custom-menu-item',
   /*...*/
@@ -236,7 +236,7 @@ Developers most commonly use `read` to retrieve `ElementRef` and `TemplateRef`.
 By default, `contentChildren` queries find only _direct_ children of the component and do not traverse into descendants.
 `contentChild` queries do traverse into descendants by default.
 
-```angular-ts {highlight: [13, 14, 15, 16]}
+```angular-ts {highlight: [13, 14, 15, 16, 17]}
 @Component({
   selector: 'custom-expando',
   /*...*/
@@ -287,7 +287,7 @@ export class CustomCardHeader {
   selector: 'custom-card',
   template: '<custom-card-header>Visit sunny California!</custom-card-header>',
 })
-export class CustomCard {
+export class CustomCard implements AfterViewInit {
   @ViewChild(CustomCardHeader) header: CustomCardHeader;
 
   ngAfterViewInit() {
@@ -320,7 +320,7 @@ export class CustomCardAction {
     <custom-card-action>Cancel</custom-card-action>
   `,
 })
-export class CustomCard {
+export class CustomCard implements AfterViewInit {
   @ViewChildren(CustomCardAction) actions: QueryList<CustomCardAction>;
 
   ngAfterViewInit() {
@@ -337,7 +337,7 @@ export class CustomCard {
 
 You can query for a single result with the `@ContentChild` decorator.
 
-```angular-ts {highlight: [15, 16, 17, 18, 19, 26]}
+```angular-ts {highlight: [14, 16, 17, 18]}
 @Component({
   selector: 'custom-toggle',
   /*...*/
@@ -350,7 +350,7 @@ export class CustomToggle {
   selector: 'custom-expando',
   /*...*/
 })
-export class CustomExpando {
+export class CustomExpando implements AfterContentInit {
   @ContentChild(CustomToggle) toggle: CustomToggle;
 
   ngAfterContentInit() {
@@ -377,7 +377,7 @@ Angular keeps the result of `@ContentChild` up to date as your application state
 
 You can also query for multiple results with the `@ContentChildren` decorator.
 
-```angular-ts {highlight: [15, 17, 18, 19, 20, 21]}
+```angular-ts {highlight: [14, 16, 17, 18, 19, 20]}
 @Component({
   selector: 'custom-menu-item',
   /*...*/
@@ -390,7 +390,7 @@ export class CustomMenuItem {
   selector: 'custom-menu',
   /*...*/
 })
-export class CustomMenu {
+export class CustomMenu implements AfterContentInit {
   @ContentChildren(CustomMenuItem) items: QueryList<CustomMenuItem>;
 
   ngAfterContentInit() {
@@ -427,7 +427,7 @@ All query decorators accept an options object as a second parameter. These optio
   selector: 'custom-card',
   template: '<custom-card-header>Visit sunny California!</custom-card-header>',
 })
-export class CustomCard {
+export class CustomCard implements OnInit {
   @ViewChild(CustomCardHeader, {static: true}) header: CustomCardHeader;
 
   ngOnInit() {
