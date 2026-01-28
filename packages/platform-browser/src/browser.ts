@@ -37,6 +37,7 @@ import {
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
   inject,
   ɵresolveComponentResources as resolveComponentResources,
+  ɵSHARED_STYLES_HOST as SHARED_STYLES_HOST,
 } from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -266,7 +267,9 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
   },
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
   DomRendererFactory2,
-  SharedStylesHost,
+  {provide: SHARED_STYLES_HOST, useClass: SharedStylesHost},
+  // Only remains for backwards compatibility, should be removed once g3 no longer needs it.
+  {provide: SharedStylesHost, useExisting: SHARED_STYLES_HOST},
   EventManager,
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: XhrFactory, useClass: BrowserXhr},
