@@ -94,6 +94,8 @@ export const STATUS = 's';
 export const STATUS_TEXT = 'st';
 export const REQ_URL = 'u';
 export const RESPONSE_TYPE = 'rt';
+export const REDIRECTED = 'r';
+export const EVENT_RESPONSE_TYPE = 'ert';
 
 interface TransferHttpResponse {
   /** body */
@@ -108,6 +110,10 @@ interface TransferHttpResponse {
   [REQ_URL]?: string;
   /** responseType */
   [RESPONSE_TYPE]?: HttpRequest<unknown>['responseType'];
+  /** `Response.redirected` from the Fetch API */
+  [REDIRECTED]?: boolean;
+  /** `Response.type` value from the Fetch API */
+  [EVENT_RESPONSE_TYPE]?: ResponseType;
 }
 
 interface CacheOptions extends HttpTransferCacheOptions {
@@ -182,6 +188,8 @@ export function transferCacheInterceptorFn(
       [STATUS]: status,
       [STATUS_TEXT]: statusText,
       [REQ_URL]: url,
+      [REDIRECTED]: redirected,
+      [EVENT_RESPONSE_TYPE]: eventType,
     } = response;
     // Request found in cache. Respond using it.
     let body: ArrayBuffer | Blob | string | undefined = undecodedBody;
@@ -213,6 +221,8 @@ export function transferCacheInterceptorFn(
         status,
         statusText,
         url,
+        redirected,
+        responseType: eventType,
       }),
     );
   }
@@ -232,6 +242,8 @@ export function transferCacheInterceptorFn(
             [STATUS_TEXT]: event.statusText,
             [REQ_URL]: requestUrl,
             [RESPONSE_TYPE]: req.responseType,
+            [REDIRECTED]: event.redirected,
+            [EVENT_RESPONSE_TYPE]: event.responseType,
           });
         }
       }),
