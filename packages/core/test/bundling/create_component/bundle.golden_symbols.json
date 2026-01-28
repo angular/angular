@@ -408,6 +408,7 @@
       "getDOM",
       "getDeclarationTNode",
       "getDirectiveDef",
+      "getDocument",
       "getFactoryDef",
       "getFirstLContainer",
       "getFirstNativeNode",

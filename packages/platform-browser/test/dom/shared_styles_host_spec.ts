@@ -61,7 +61,8 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).toEqual('<style>a {};</style>');
     });
 
-    it('should use the document head as default host', () => {
+    it('should allow adding the document head as a host', () => {
+      ssh.addHost(doc.head);
       ssh.addStyles(['a {};', 'b {};']);
       expect(doc.head).toHaveText('a {};b {};');
     });
@@ -135,7 +136,8 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).toEqual('<link rel="stylesheet" href="component-1.css">');
     });
 
-    it('should use the document head as default host', () => {
+    it('should allow adding the document head as a host', () => {
+      ssh.addHost(doc.head);
       ssh.addStyles([], ['component-1.css', 'component-2.css']);
       expect(doc.head.innerHTML).toContain('<link rel="stylesheet" href="component-1.css">');
       expect(doc.head.innerHTML).toContain('<link rel="stylesheet" href="component-2.css">');

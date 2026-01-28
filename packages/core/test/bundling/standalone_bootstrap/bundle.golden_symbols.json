@@ -375,6 +375,7 @@
       "getDOM",
       "getDeclarationTNode",
       "getDirectiveDef",
+      "getDocument",
       "getFactoryDef",
       "getFirstLContainer",
       "getGlobalLocale",

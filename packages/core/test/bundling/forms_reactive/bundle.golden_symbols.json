@@ -568,6 +568,7 @@
       "getDOM",
       "getDeclarationTNode",
       "getDirectiveDef",
+      "getDocument",
       "getElementDepthCount",
       "getFactoryDef",
       "getFactoryOf",

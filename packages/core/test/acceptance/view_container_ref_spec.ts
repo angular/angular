@@ -41,6 +41,7 @@ import {
   RendererFactory2,
   RendererType2,
   Sanitizer,
+  ɵSHARED_STYLES_HOST as SHARED_STYLES_HOST,
   signal,
   TemplateRef,
   ViewChild,
@@ -49,6 +50,7 @@ import {
   ɵsetDocument,
 } from '../../src/core';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '../../testing';
+import {MockSharedStylesHost} from '../../testing/src/mock_shared_styles_host';
 
 describe('ViewContainerRef', () => {
   /**
@@ -1401,6 +1403,8 @@ describe('ViewContainerRef', () => {
         declarations: [EmbeddedViewInsertionComp, VCRefDirective, EmbeddedComponent],
       });
 
+      const mockSharedStylesHost = new MockSharedStylesHost();
+
       @NgModule({
         providers: [
           {provide: String, useValue: 'root_module'},
@@ -1410,11 +1414,19 @@ describe('ViewContainerRef', () => {
           {provide: ErrorHandler, useValue: TestBed.inject(ErrorHandler)},
           {provide: RendererFactory2, useValue: TestBed.inject(RendererFactory2)},
           {provide: ANIMATION_QUEUE, useValue: TestBed.inject(ANIMATION_QUEUE)},
+          {provide: SHARED_STYLES_HOST, useValue: mockSharedStylesHost},
+          {provide: DOCUMENT, useValue: document},
         ],
       })
       class MyAppModule {}
 
-      @NgModule({providers: [{provide: String, useValue: 'some_module'}]})
+      @NgModule({
+        providers: [
+          {provide: String, useValue: 'some_module'},
+          {provide: SHARED_STYLES_HOST, useValue: mockSharedStylesHost},
+          {provide: DOCUMENT, useValue: document},
+        ],
+      })
       class SomeModule {}
 
       // Compile test modules in order to be able to pass the NgModuleRef or the
