@@ -130,7 +130,6 @@ export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
     @Inject(PLATFORM_ID) platformId: object = {},
   ) {
     addServerStyles(doc, appId, this.inline, this.external);
-    this.hosts.set(doc.head, 1);
   }
 
   addStyles(styles: string[], urls?: string[]): void {

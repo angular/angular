@@ -22,6 +22,7 @@ import {HEADER_OFFSET, LViewFlags, TVIEW, TViewType} from '../../src/render3/int
 import {enterView, leaveView} from '../../src/render3/state';
 import {getOrCreateTNode} from '../../src/render3/tnode_manipulation';
 import {createLView, createTView} from '../../src/render3/view/construction';
+import {ɵMockSharedStylesHost as MockSharedStylesHost} from '@angular/core/testing';
 
 describe('di', () => {
   describe('directive injection', () => {
@@ -156,6 +157,7 @@ describe('di', () => {
           changeDetectionScheduler: null,
           ngReflect: false,
           tracingService: null,
+          sharedStylesHost: new MockSharedStylesHost(),
         },
         {} as any,
         null,
