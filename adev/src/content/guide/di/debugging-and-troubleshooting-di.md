@@ -574,7 +574,7 @@ When the service is created, you'll see the log message and a stack trace showin
 - Where in the code is it being injected? (check the stack trace)
 - Is it created at the expected time? (application startup vs lazy)
 
-#### Tracing injection attempts with optional
+#### Checking service availability
 
 Use optional injection with logging to determine if a service is available.
 
