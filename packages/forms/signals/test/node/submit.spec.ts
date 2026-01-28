@@ -9,12 +9,15 @@
 import {ApplicationRef, Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
+  disabled,
   form,
   required,
   requiredError,
   submit,
   validateAsync,
   ValidationError,
+  hidden,
+  readonly,
 } from '../../public_api';
 
 describe('submit', () => {
@@ -360,6 +363,81 @@ describe('submit', () => {
 
     expect(f.first().errors()).toEqual([]);
     expect(f.last().errors()).toEqual([{kind: 'submit', fieldTree: f.last}]);
+  });
+
+  it('does not mark disabled fields as touched', async () => {
+    const data = signal({first: '', last: ''});
+    const f = form(
+      data,
+      (name) => {
+        // Disable first name when last name is empty.
+        disabled(name.first, ({valueOf}) => valueOf(name.last) === '');
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.first().disabled()).toBe(true);
+    expect(f.first().touched()).toBe(false);
+    expect(f.last().touched()).toBe(false);
+
+    await submit(f, async () => []);
+    expect(f.first().touched()).toBe(false);
+    expect(f.last().touched()).toBe(true);
+
+    // Set last name to make first name enabled.
+    f.last().value.set('Doe');
+    expect(f.first().disabled()).toBe(false);
+    expect(f.first().touched()).toBe(false);
+  });
+
+  it('does not mark hidden fields as touched', async () => {
+    const data = signal({first: '', last: ''});
+    const f = form(
+      data,
+      (name) => {
+        // Hide first name when last name is empty.
+        hidden(name.first, ({valueOf}) => valueOf(name.last) === '');
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.first().hidden()).toBe(true);
+    expect(f.first().touched()).toBe(false);
+    expect(f.last().touched()).toBe(false);
+
+    await submit(f, async () => []);
+    expect(f.first().touched()).toBe(false);
+    expect(f.last().touched()).toBe(true);
+
+    // Set last name to make first name visible.
+    f.last().value.set('Doe');
+    expect(f.first().hidden()).toBe(false);
+    expect(f.first().touched()).toBe(false);
+  });
+
+  it('does not mark readonly fields as touched', async () => {
+    const data = signal({first: '', last: ''});
+    const f = form(
+      data,
+      (name) => {
+        // Make first name readonly when last name is empty.
+        readonly(name.first, ({valueOf}) => valueOf(name.last) === '');
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.first().readonly()).toBe(true);
+    expect(f.first().touched()).toBe(false);
+    expect(f.last().touched()).toBe(false);
+
+    await submit(f, async () => []);
+    expect(f.first().touched()).toBe(false);
+    expect(f.last().touched()).toBe(true);
+
+    // Set last name to make first name enabled.
+    f.last().value.set('Doe');
+    expect(f.first().readonly()).toBe(false);
+    expect(f.first().touched()).toBe(false);
   });
 });
 
