@@ -55,7 +55,7 @@ export {
   BaseDirectiveDebugMetadata as ɵBaseDirectiveDebugMetadata,
   ComponentDef as ɵComponentDef,
   ComponentType as ɵComponentType,
-  ɵcontrolUpdate,
+  ControlDirectiveHost as ɵControlDirectiveHost,
   CssSelectorList as ɵCssSelectorList,
   ɵDEFER_BLOCK_CONFIG,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
@@ -103,6 +103,7 @@ export {
   ɵɵcontentQuerySignal,
   ɵɵcontrol,
   ɵɵcontrolCreate,
+  ɵɵControlFeature,
   ɵɵdeclareLet,
   ɵɵdefer,
   ɵɵdeferEnableTimerScheduling,
@@ -250,13 +251,6 @@ export {
 } from './render3/index';
 export {CONTAINER_HEADER_OFFSET as ɵCONTAINER_HEADER_OFFSET} from './render3/interfaces/container';
 export {LContext as ɵLContext} from './render3/interfaces/context';
-export {
-  ɵCONTROL,
-  ɵFieldState,
-  ɵFormFieldBindingOptions,
-  ɵFormFieldDirective,
-  ɵInteropControl,
-} from './render3/interfaces/control';
 export {setDocument as ɵsetDocument} from './render3/interfaces/document';
 export {
   compileComponent as ɵcompileComponent,

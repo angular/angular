@@ -595,26 +595,11 @@ export function property(
   return propertyBase(Identifiers.property, name, expression, sanitizer, sourceSpan);
 }
 
-export function control(
-  name: string,
-  expression: o.Expression | ir.Interpolation,
-  sanitizer: o.Expression | null,
-  sourceSpan: ParseSourceSpan,
-): ir.UpdateOp {
-  const args = [];
-  if (expression instanceof ir.Interpolation) {
-    args.push(interpolationToExpression(expression, sourceSpan));
-  } else {
-    args.push(expression);
-  }
-  args.push(o.literal(name));
-  if (sanitizer !== null) {
-    args.push(sanitizer);
-  }
-  return call(Identifiers.control, args, sourceSpan);
+export function control(sourceSpan: ParseSourceSpan | null): ir.UpdateOp {
+  return call(Identifiers.control, [], sourceSpan);
 }
 
-export function controlCreate(sourceSpan: ParseSourceSpan): ir.CreateOp {
+export function controlCreate(sourceSpan: ParseSourceSpan | null): ir.CreateOp {
   return call(Identifiers.controlCreate, [], sourceSpan);
 }
 

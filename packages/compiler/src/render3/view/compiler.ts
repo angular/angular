@@ -148,6 +148,11 @@ function addFeatures(
   if (meta.lifecycle.usesOnChanges) {
     features.push(o.importExpr(R3.NgOnChangesFeature));
   }
+  if (meta.controlCreate !== null) {
+    features.push(
+      o.importExpr(R3.ControlFeature).callFn([o.literal(meta.controlCreate.passThroughInput)]),
+    );
+  }
   if ('externalStyles' in meta && meta.externalStyles?.length) {
     const externalStyleNodes = meta.externalStyles.map((externalStyle) => o.literal(externalStyle));
     features.push(

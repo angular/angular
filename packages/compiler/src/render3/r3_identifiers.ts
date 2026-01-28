@@ -424,6 +424,11 @@ export class Identifiers {
 
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵɵNgOnChangesFeature', moduleName: CORE};
 
+  static ControlFeature: o.ExternalReference = {
+    name: 'ɵɵControlFeature',
+    moduleName: CORE,
+  };
+
   static InheritDefinitionFeature: o.ExternalReference = {
     name: 'ɵɵInheritDefinitionFeature',
     moduleName: CORE,
