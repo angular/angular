@@ -190,7 +190,7 @@ export interface ɵFieldState<T> {
    * buffer debounced updates from the control to the field. This will also not take into account
    * the {@link controlValue} of children.
    */
-  readonly controlValue: Signal<T>;
+  readonly controlValue: WritableSignal<T>;
 
   /**
    * Sets the dirty status of the field to `true`.
@@ -201,9 +201,4 @@ export interface ɵFieldState<T> {
    * Sets the touched status of the field to `true`.
    */
   markAsTouched(): void;
-
-  /**
-   * Sets {@link controlValue} immediately and triggers synchronization to {@link value}.
-   */
-  setControlValue(value: T): void;
 }

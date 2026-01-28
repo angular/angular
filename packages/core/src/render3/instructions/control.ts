@@ -346,7 +346,7 @@ function initializeCustomControl(
     directiveIndex,
     outputName,
     outputName,
-    wrapListener(tNode, lView, (value: unknown) => fieldDirective.state().setControlValue(value)),
+    wrapListener(tNode, lView, (value: unknown) => fieldDirective.state().controlValue.set(value)),
   );
 
   const directiveDef = tView.data[directiveIndex] as DirectiveDef<unknown>;
@@ -372,7 +372,7 @@ function initializeCustomControl(
 function initializeInteropControl(fieldDirective: ɵFormFieldDirective<unknown>): void {
   const interopControl = fieldDirective.ɵinteropControl!;
   interopControl.registerOnChange((value: unknown) =>
-    fieldDirective.state().setControlValue(value),
+    fieldDirective.state().controlValue.set(value),
   );
   interopControl.registerOnTouched(() => fieldDirective.state().markAsTouched());
 }
@@ -421,7 +421,7 @@ function initializeNativeControl(
 
   const inputListener = () => {
     const state = fieldDirective.state();
-    state.setControlValue(getNativeControlValue(element, state.value));
+    state.controlValue.set(getNativeControlValue(element, state.value));
   };
   listenToDomEvent(
     tNode,

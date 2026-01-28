@@ -616,7 +616,7 @@ describe('FieldNode', () => {
       // Same object identity because there was no change to flush to the name.
       expect(myForm().value()).toBe(product);
 
-      myForm.name().setControlValue('b');
+      myForm.name().controlValue.set('b');
       // Same object identity because the name change is still pending.
       expect(myForm().value()).toBe(product);
 
