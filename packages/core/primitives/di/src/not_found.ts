@@ -28,11 +28,11 @@ export class NotFoundError extends Error {
  */
 export function isNotFound(e: unknown): e is NotFound {
   if (e === NOT_FOUND) return true;
-  // Only check .name on Error instances to avoid triggering getters on arbitrary objects.
-  // See https://github.com/angular/angular/issues/66784
+
   if (e instanceof Error) {
     return e.name === 'ɵNotFound';
   }
+
   return false;
 }
 
