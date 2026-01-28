@@ -120,7 +120,7 @@ import {Router, ActivatedRoute} from '@angular/router';
     <button (click)="navigateToParent()">Back to List</button>
   `,
 })
-export class UserDetailComponent {
+export class UserDetail {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 

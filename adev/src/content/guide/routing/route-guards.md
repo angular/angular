@@ -101,8 +101,8 @@ It has access to the following default arguments:
 It can return the [standard return guard types](#route-guard-return-types).
 
 ```ts
-export const unsavedChangesGuard: CanDeactivateFn<FormComponent> = (
-  component: FormComponent,
+export const unsavedChangesGuard: CanDeactivateFn<Form> = (
+  component: Form,
   currentRoute: ActivatedRouteSnapshot,
   currentState: RouterStateSnapshot,
   nextState: RouterStateSnapshot,
@@ -172,21 +172,21 @@ const routes: Routes = [
   // Basic CanActivate - requires authentication
   {
     path: 'dashboard',
-    component: DashboardComponent,
+    component: Dashboard,
     canActivate: [authGuard],
   },
 
   // Multiple CanActivate guards - requires authentication AND admin role
   {
     path: 'admin',
-    component: AdminComponent,
+    component: Admin,
     canActivate: [authGuard, adminGuard],
   },
 
   // CanActivate + CanDeactivate - protected route with unsaved changes check
   {
     path: 'profile',
-    component: ProfileComponent,
+    component: Profile,
     canActivate: [authGuard],
     canDeactivate: [canDeactivateGuard],
   },
@@ -197,23 +197,23 @@ const routes: Routes = [
     canActivateChild: [authGuard],
     children: [
       // /users/list - PROTECTED
-      {path: 'list', component: UserListComponent},
+      {path: 'list', component: UserList},
       // /users/detail/:id - PROTECTED
-      {path: 'detail/:id', component: UserDetailComponent},
+      {path: 'detail/:id', component: UserDetail},
     ],
   },
 
   // CanMatch - conditionally matches route based on feature flag
   {
     path: 'beta-feature',
-    component: BetaFeatureComponent,
+    component: BetaFeature,
     canMatch: [featureToggleGuard],
   },
 
   // Fallback route if beta feature is disabled
   {
     path: 'beta-feature',
-    component: ComingSoonComponent,
+    component: ComingSoon,
   },
 ];
 ```

@@ -2,9 +2,9 @@ import {Component, input} from '@angular/core';
 
 @Component({
   selector: 'app-profile',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css'],
+  templateUrl: './profile.html',
+  styleUrls: ['./profile.css'],
 })
-export class ProfileComponent {
+export class Profile {
   readonly username = input.required<string>();
 }
