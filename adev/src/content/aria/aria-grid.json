@@ -445,8 +445,8 @@
       ],
       "source": {
         "filePath": "/src/aria/grid/grid.ts",
-        "startLine": 47,
-        "endLine": 161
+        "startLine": 48,
+        "endLine": 177
       }
     },
     {
@@ -715,6 +715,10 @@
     ],
     [
       "output",
+      "@angular/core"
+    ],
+    [
+      "NgZone",
       "@angular/core"
     ],
     [
