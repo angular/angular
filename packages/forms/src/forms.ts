@@ -119,4 +119,12 @@ export {
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
 export {VERSION} from './version';
 
+export {
+  isNativeFormElement as ɵisNativeFormElement,
+  isNumericFormElement as ɵisNumericFormElement,
+  isTextualFormElement as ɵisTextualFormElement,
+  setNativeDomProperty as ɵsetNativeDomProperty,
+  type NativeFormControl as ɵNativeFormControl,
+} from './directives/native';
+
 export * from './form_providers';
