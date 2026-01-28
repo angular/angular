@@ -19,7 +19,12 @@ export function specializeControlProperties(job: ComponentCompilationJob): void 
 
 function processView(view: ViewCompilationUnit): void {
   for (const op of view.update) {
-    if (op.kind !== ir.OpKind.Property) {
+    // Handle Property ops, TwoWayProperty ops (for [(ngModel)]), and Attribute ops (for static formControlName="name")
+    if (
+      op.kind !== ir.OpKind.Property &&
+      op.kind !== ir.OpKind.TwoWayProperty &&
+      op.kind !== ir.OpKind.Attribute
+    ) {
       continue;
     }
 
@@ -56,7 +61,10 @@ function findCreateInstruction(view: ViewCompilationUnit, target: ir.XrefId): ir
   return lastFoundOp;
 }
 
-function addControlInstruction(view: ViewCompilationUnit, propertyOp: ir.PropertyOp): void {
+function addControlInstruction(
+  view: ViewCompilationUnit,
+  propertyOp: ir.PropertyOp | ir.TwoWayPropertyOp | ir.AttributeOp,
+): void {
   const targetCreateOp = findCreateInstruction(view, propertyOp.target);
   if (targetCreateOp === null) {
     throw new Error(`No create instruction found for control target ${propertyOp.target}`);
