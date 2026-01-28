@@ -13,10 +13,10 @@ import {
   type Signal,
   type WritableSignal,
 } from '@angular/core';
-import {FORM_FIELD_PARSE_ERRORS} from '../directive/parse_errors';
 import {createParser} from '../util/parser';
 import type {ValidationError} from './rules';
 import type {OneOrMany} from './types';
+import {ɵFORM_FIELD_PARSE_ERRORS as FORM_FIELD_PARSE_ERRORS} from '@angular/forms';
 
 /**
  * Result of parsing a raw value into a model value.
