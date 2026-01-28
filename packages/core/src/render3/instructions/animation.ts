@@ -277,6 +277,7 @@ function runLeaveAnimations(
 
   const renderer = lView[RENDERER];
   const ngZone = lView[INJECTOR].get(NgZone);
+  console.log(`runLeaveAnimations scheduling: ${lView[ID]}\n${new Error().stack}`); // DEBUG
   allLeavingAnimations.add(lView[ID]);
   (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
 
@@ -389,6 +390,7 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
   const tNode = getCurrentTNode()!;
   cancelLeavingNodes(tNode, lView);
 
+  console.log(`ɵɵanimateLeaveListener, scheduling: ${lView[ID]}`); // DEBUG
   allLeavingAnimations.add(lView[ID]);
 
   addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>

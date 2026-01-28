@@ -592,7 +592,11 @@ function clearDetachAnimationList(lContainer: LContainer, index: number): void {
     const injector = viewToDetach[INJECTOR];
     removeFromAnimationQueue(injector, animations);
     allLeavingAnimations.delete(viewToDetach[ID]);
+    console.log(`clearDetachAnimationList: Removing animation: ${viewToDetach[ID]}`); // DEBUG
     animations.detachedLeaveAnimationFns = undefined;
+  } else {
+    allLeavingAnimations.delete(viewToDetach[ID]);
+    console.log(`clearDetachAnimationList: Not removing animation: ${viewToDetach?.[ID]}`); // DEBUG
   }
 }
 

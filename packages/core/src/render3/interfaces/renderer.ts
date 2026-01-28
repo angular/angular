@@ -7,7 +7,7 @@
  */
 
 import {RendererStyleFlags2, RendererType2} from '../../render/api_flags';
-import type {ListenerOptions} from '../../render/api';
+import type {ListenerOptions, StyleRoot} from '../../render/api';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../../util/security/trusted_type_defs';
 
 import {RComment, RElement, RNode, RText} from './renderer_dom';
@@ -77,6 +77,15 @@ export interface Renderer {
     callback: (event: any) => boolean | void,
     options?: ListenerOptions,
   ): () => void;
+
+  /** The component's internal shadow root if one is used. */
+  shadowRoot?: ShadowRoot;
+
+  /** Attach any required stylesheets to the DOM. */
+  applyStyles?(styleRoot: StyleRoot): void;
+
+  /** Detach any stylesheets from the DOM. */
+  removeStyles?(styleRoot: StyleRoot): void;
 }
 
 export interface RendererFactory {

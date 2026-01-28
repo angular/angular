@@ -6,12 +6,27 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DOCUMENT} from '../../document';
+import {StyleRoot} from '../../render';
+import {asStyleRoot} from '../../render/api';
 import {assertDefined} from '../../util/assert';
 import {assertLView} from '../assert';
 import {readPatchedLView} from '../context_discovery';
-import {LContainer} from '../interfaces/container';
-import {isLContainer, isLView, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CONTEXT, LView, NEXT} from '../interfaces/view';
+import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
+import {TElementNode, TNode} from '../interfaces/node';
+import {isComponentHost, isLContainer, isLView, isRootView} from '../interfaces/type_checks';
+import {
+  CHILD_HEAD,
+  DECLARATION_COMPONENT_VIEW,
+  CONTEXT,
+  HOST,
+  INJECTOR,
+  LView,
+  NEXT,
+  RENDERER,
+  T_HOST,
+  PARENT,
+} from '../interfaces/view';
 
 import {getLViewParent} from './view_utils';
 
@@ -64,4 +79,98 @@ function getNearestLContainer(viewOrContainer: LContainer | LView | null) {
     viewOrContainer = viewOrContainer[NEXT];
   }
   return viewOrContainer as LContainer | null;
+}
+
+/**
+ * Generates all the {@link LView} and {@link LContainer} descendants of the given input. Also generates {@link LView}
+ * and {@link LContainer} instances which are projected into a descendant.
+ *
+ * There are no strict guarantees on the order of traversal.
+ * TODO: Duplicating results.
+ */
+export function* walkDescendants(
+  parent: LView | LContainer,
+): Generator<LView | LContainer, void, void> {
+  for (const child of walkChildren(parent)) {
+    yield child;
+    yield* walkDescendants(child);
+  }
+}
+
+function* walkChildren(parent: LView | LContainer): Generator<LView | LContainer, void, void> {
+  let child = isLContainer(parent) ? parent[CONTAINER_HEADER_OFFSET] : parent[CHILD_HEAD];
+  while (child) {
+    yield child;
+    child = child[NEXT];
+  }
+
+  if (isLView(parent)) {
+    const host = parent[T_HOST];
+    if (host && isComponentHost(host)) {
+      // `parent[T_HOST]` is the `TElementNode` in the parents's parent view, which
+      // owns the host element of `parent`. So we need to look up the grandparent
+      // to access it.
+      const grandparent = isLContainer(parent[PARENT]) ? parent[PARENT][PARENT]! : parent[PARENT]!;
+      yield* walkProjectedChildren(grandparent, host as TElementNode);
+    }
+  }
+}
+
+function* walkProjectedChildren(
+  lView: LView,
+  componentHost: TElementNode,
+): Generator<LView | LContainer, void, void> {
+  if (!componentHost.projection) return;
+
+  for (const projectedNodes of componentHost.projection) {
+    if (Array.isArray(projectedNodes)) {
+      // Projected `RNode` objects are just raw elements and don't contain any `LView` objects.
+      continue;
+    }
+
+    for (const projectedNode of walkProjectedSiblings(projectedNodes)) {
+      const projected = lView[projectedNode.index];
+      if (isLView(projected) || isLContainer(projected)) yield projected;
+    }
+  }
+}
+
+function* walkProjectedSiblings(node: TNode | null): Generator<TNode, void, void> {
+  while (node) {
+    yield node;
+    node = node.projectionNext;
+  }
+}
+
+/** Combine multiple iterables into a single stream with the same ordering. */
+export function* concat<T>(...iterables: Array<Iterable<T>>): Iterable<T> {
+  for (const iterable of iterables) {
+    yield* iterable;
+  }
+}
+
+/** Returns the {@link StyleRoot} where styles for the component should be applied. */
+export function getStyleRoot(lView: LView): StyleRoot | undefined {
+  // DOM emulation does not support shadow DOM and `Node.prototype.getRootNode`, so we
+  // need to feature detect and fallback even though it is already Baseline Widely
+  // Available. In theory, we could do this only on SSR, but Jest, Vitest, and other
+  // Node testing solutions lack DOM emulation as well.
+  if (!Node.prototype.getRootNode) {
+    // TODO: Can't use injector during destroy because it is destroyed before the
+    // component. Is it ok to depend on the `document` global? If not, might need to
+    // change the contract of `getStyleRoot` and inject `DOCUMENT` prior to
+    // destruction.
+    // const injector = lView[INJECTOR];
+    // const doc = injector.get(DOCUMENT);
+
+    return document;
+  }
+
+  const renderer = lView[RENDERER];
+  if (renderer?.shadowRoot) return renderer.shadowRoot;
+
+  const hostRNode = lView[HOST];
+  ngDevMode && assertDefined(hostRNode, 'hostRNode');
+
+  return asStyleRoot(hostRNode!.getRootNode());
 }

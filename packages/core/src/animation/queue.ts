@@ -55,6 +55,7 @@ export function addToAnimationQueue(
     // is re-attached before the animation queue runs.
     animationData?.detachedLeaveAnimationFns?.push(animationFns);
   }
+  console.log(`Scheduling: ${Boolean(animationQueue.scheduler)}`); // DEBUG
   animationQueue.scheduler && animationQueue.scheduler(injector);
 }
 
@@ -72,8 +73,10 @@ export function scheduleAnimationQueue(injector: Injector) {
   const animationQueue = injector.get(ANIMATION_QUEUE);
   // We only want to schedule the animation queue if it hasn't already been scheduled.
   if (!animationQueue.isScheduled) {
+    console.log('afterNextRender: scheduled'); // DEBUG
     afterNextRender(
       () => {
+        console.log('afterNextRender: running'); // DEBUG
         animationQueue.isScheduled = false;
         for (let animateFn of animationQueue.queue) {
           animateFn();

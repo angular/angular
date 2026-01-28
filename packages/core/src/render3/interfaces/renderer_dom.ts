@@ -52,6 +52,23 @@ export interface RNode {
    * Used exclusively for building up DOM which are static (ie not View roots)
    */
   appendChild(newChild: RNode): RNode;
+
+  /**
+   * Get the root node of the DOM tree containing the node.
+   *
+   * This is typically either the `document` object (when the Node exists in light
+   * DOM) or a `ShadowRoot` (when the Node exists in shadow DOM).
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode
+   */
+  getRootNode(options?: GetRootNodeOptions): Node;
+
+  /**
+   * Whether or not the Node is attached to a `Document` (directly or indirectly).
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected
+   */
+  readonly isConnected: boolean;
 }
 
 /**
@@ -78,6 +95,7 @@ export interface RElement extends RNode {
   removeEventListener(type: string, listener?: EventListener, options?: boolean): void;
   remove(): void;
   setProperty?(name: string, value: any): void;
+  shadowRoot: ShadowRoot | null;
 }
 
 export interface RCssStyleDeclaration {

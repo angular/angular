@@ -8,7 +8,7 @@
 
 import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserModule} from '../../index';
+import {BrowserModule, createApplication} from '../../index';
 import {expect} from '@angular/private/testing/matchers';
 import {isNode} from '@angular/private/testing';
 
@@ -21,6 +21,10 @@ describe('ShadowDOM Support', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({imports: [TestModule]});
+  });
+
+  afterEach(() => {
+    for (const child of document.body.children) child.remove();
   });
 
   it('should attach and use a shadowRoot when ViewEncapsulation.ShadowDom is set', () => {
@@ -80,6 +84,28 @@ describe('ShadowDOM Support', () => {
     expect(articleSlot!.assignedNodes()[1].textContent).toBe('Article Subtext!');
     expect(articleContent.assignedSlot).toBe(articleSlot);
     expect(articleSubcontent.assignedSlot).toBe(articleSlot);
+  });
+
+  it('should support bootstrapping an application underneath a shadow root', async () => {
+    @Component({
+      selector: 'app-root',
+      template: `Hello world!`,
+      styles: `:host {color: red;}`,
+    })
+    class AppRoot {}
+
+    const container = document.createElement('div');
+    const shadowRoot = container.attachShadow({mode: 'open'});
+    const appRoot = document.createElement('my-app');
+    shadowRoot.appendChild(appRoot);
+    document.body.appendChild(container);
+
+    const appRef = await createApplication();
+    const componentRef = appRef.bootstrap(AppRoot, appRoot);
+
+    expect(getComputedStyle(componentRef.location.nativeElement).color).toBe('rgb(255, 0, 0)');
+
+    expect(document.head.innerHTML).not.toContain('<style>');
   });
 });
 
