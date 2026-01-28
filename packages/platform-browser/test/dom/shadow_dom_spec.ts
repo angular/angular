@@ -23,6 +23,10 @@ describe('ShadowDOM Support', () => {
     TestBed.configureTestingModule({imports: [TestModule]});
   });
 
+  afterEach(() => {
+    for (const node of document.body.childNodes) node.remove();
+  });
+
   it('should attach and use a shadowRoot when ViewEncapsulation.ShadowDom is set', () => {
     const compEl = TestBed.createComponent(ShadowComponent).nativeElement;
     expect(compEl.shadowRoot!.textContent).toEqual('Hello World');
@@ -167,6 +171,121 @@ describe('ShadowDOM Support', () => {
     const [shadowRoot1, shadowRoot2] = containers.map((container) => container.shadowRoot!);
     expect(shadowRoot1.innerHTML).not.toContain('<style>');
     expect(shadowRoot2.innerHTML).not.toContain('<style>');
+  });
+
+  it('should support bootstrapping multiple root components under the same shadow root', async () => {
+    const container = document.createElement('div');
+    container.attachShadow({mode: 'open'});
+    document.body.append(container);
+
+    const appRef = await createApplication();
+
+    @Component({
+      selector: 'app-root',
+      template: '<div>Hello, World!</div>',
+      styles: `
+        div {
+          color: red;
+        }
+      `,
+    })
+    class Root {}
+
+    const rootEl = document.createElement('app-root');
+    container.shadowRoot!.append(rootEl);
+
+    const root = appRef.bootstrap(Root, rootEl);
+    expect(container.shadowRoot!.innerHTML).toContain('color: red;');
+    expect(getComputedStyle(rootEl.querySelector('div')!).color).toBe('rgb(255, 0, 0)');
+
+    @Component({
+      selector: 'app-root-2',
+      template: '<div>Hello, World!</div>',
+      styles: `
+        div {
+          color: lime;
+        }
+      `,
+    })
+    class Root2 {}
+
+    const root2El = document.createElement('app-root-2');
+    container.shadowRoot!.append(root2El);
+
+    const root2 = appRef.bootstrap(Root2, root2El);
+    expect(container.shadowRoot!.innerHTML).toContain('color: lime;');
+    expect(getComputedStyle(root2El.querySelector('div')!).color).toBe('rgb(0, 255, 0)');
+
+    expect(document.head.innerHTML).not.toContain('<style>');
+
+    root.destroy();
+    expect(container.shadowRoot!.innerHTML).not.toContain('color: red;');
+    expect(getComputedStyle(root2El.querySelector('div')!).color).toBe('rgb(0, 255, 0)');
+
+    root2.destroy();
+    expect(container.shadowRoot!.innerHTML).not.toContain('color: lime;');
+
+    appRef.destroy();
+  });
+
+  it('should not leak styles into previously used shadow roots', async () => {
+    const container1 = document.createElement('div');
+    container1.attachShadow({mode: 'open'});
+    document.body.append(container1);
+
+    const container2 = document.createElement('div');
+    container2.attachShadow({mode: 'open'});
+    document.body.append(container2);
+
+    const appRef = await createApplication();
+
+    {
+      @Component({
+        selector: 'app-root',
+        template: '<div>Hello, World!</div>',
+        styles: `
+          div {
+            color: red;
+          }
+        `,
+      })
+      class Root {}
+
+      const rootEl = document.createElement('app-root');
+      container1.shadowRoot!.append(rootEl);
+
+      const root = appRef.bootstrap(Root, rootEl);
+      expect(getComputedStyle(rootEl.querySelector('div')!).color).toBe('rgb(255, 0, 0)');
+      root.destroy();
+
+      expect(container1.shadowRoot!.innerHTML).not.toContain('<style>');
+    }
+
+    {
+      @Component({
+        selector: 'app-root-2',
+        template: '<div>Hello, World!</div>',
+        styles: `
+          div {
+            color: lime;
+          }
+        `,
+      })
+      class Root2 {}
+
+      const root2El = document.createElement('app-root-2');
+      container2.shadowRoot!.append(root2El);
+
+      const root = appRef.bootstrap(Root2, root2El);
+      expect(getComputedStyle(root2El.querySelector('div')!).color).toBe('rgb(0, 255, 0)');
+
+      // Should not leak into `container1`.
+      expect(container1.shadowRoot!.innerHTML).not.toContain('<style>');
+
+      root.destroy();
+    }
+
+    appRef.destroy();
   });
 });
 

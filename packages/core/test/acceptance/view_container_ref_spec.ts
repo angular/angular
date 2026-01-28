@@ -37,6 +37,7 @@ import {
   RendererFactory2,
   RendererType2,
   Sanitizer,
+  SHARED_STYLES_HOST,
   signal,
   TemplateRef,
   ViewChild,
@@ -49,6 +50,7 @@ import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By, DomSanitizer} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 import {ANIMATION_QUEUE} from '../../src/animation/queue';
+import {SharedStylesHost} from '@angular/platform-browser/src/dom/shared_styles_host';
 
 describe('ViewContainerRef', () => {
   /**
@@ -1412,6 +1414,7 @@ describe('ViewContainerRef', () => {
           {provide: ErrorHandler, useValue: TestBed.inject(ErrorHandler)},
           {provide: RendererFactory2, useValue: TestBed.inject(RendererFactory2)},
           {provide: ANIMATION_QUEUE, useValue: TestBed.inject(ANIMATION_QUEUE)},
+          {provide: SHARED_STYLES_HOST, useExisting: SharedStylesHost},
         ],
       })
       class MyAppModule {}

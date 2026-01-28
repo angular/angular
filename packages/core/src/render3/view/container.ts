@@ -33,7 +33,10 @@ import {
   T_HOST,
   TView,
   TVIEW,
+  HOST,
+  INJECTOR,
 } from '../interfaces/view';
+import {SHARED_STYLES_HOST} from '../interfaces/shared_styles_host';
 import {
   addViewToDOM,
   destroyLView,
@@ -116,6 +119,16 @@ export function addLViewToLContainer(
     }
   }
 
+  // To prevent the "style duplication" issue where styles are added to the head instead of
+  // the shadow root when using ViewEncapsulation.Emulated (default) inside a ShadowRoot,
+  // we need to register the shadow root as a host with the SharedStylesHost.
+  // This logic handles the case where an LView is added to an LContainer (e.g. dynamic component).
+  const rootNode = (lView[HOST] as any)?.getRootNode?.();
+  if (rootNode instanceof ShadowRoot) {
+    const sharedStylesHost = lView[INJECTOR].get(SHARED_STYLES_HOST, null);
+    sharedStylesHost?.addHost(rootNode);
+  }
+
   // When in hydration mode, reset the pointer to the first child in
   // the dehydrated view. This indicates that the view was hydrated and
   // further attaching/detaching should work with this view as normal.
@@ -153,6 +166,13 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView |
   const viewToDetach = lContainer[indexInContainer];
 
   if (viewToDetach) {
+    // Undo the SharedStylesHost registration if needed
+    const rootNode = (viewToDetach[HOST] as any)?.getRootNode?.();
+    if (rootNode instanceof ShadowRoot) {
+      const sharedStylesHost = viewToDetach[INJECTOR].get(SHARED_STYLES_HOST, null);
+      sharedStylesHost?.removeHost(rootNode);
+    }
+
     const declarationLContainer = viewToDetach[DECLARATION_LCONTAINER];
     if (declarationLContainer !== null && declarationLContainer !== lContainer) {
       detachMovedView(declarationLContainer, viewToDetach);
