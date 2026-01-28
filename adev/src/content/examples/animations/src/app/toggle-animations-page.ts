@@ -7,7 +7,7 @@ import {OpenCloseChild} from './open-close.4';
     <section>
       <h2>Toggle Animations</h2>
 
-      <app-open-close-toggle></app-open-close-toggle>
+      <app-open-close-toggle />
     </section>
   `,
   imports: [OpenCloseChild],
