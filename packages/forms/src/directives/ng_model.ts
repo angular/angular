@@ -14,12 +14,14 @@ import {
   forwardRef,
   Host,
   Inject,
+  Injector,
   Input,
   OnChanges,
   OnDestroy,
   Optional,
   Output,
   Provider,
+  Renderer2,
   Self,
   SimpleChanges,
 } from '@angular/core';
@@ -39,7 +41,7 @@ import {
   controlPath,
   isPropertyUpdated,
   SetDisabledStateOption,
-  setUpControl,
+  setUpControlValueAccessor,
 } from './shared';
 import {
   formGroupNameException,
@@ -240,8 +242,10 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     @Optional()
     @Inject(CALL_SET_DISABLED_STATE)
     private callSetDisabledState?: SetDisabledStateOption,
+    @Optional() injector?: Injector,
+    @Optional() renderer?: Renderer2,
   ) {
-    super(valueAccessors);
+    super(injector, renderer, valueAccessors);
     this._parent = parent;
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
@@ -325,7 +329,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
   private _setUpStandalone(): void {
     this.valueAccessor ??= this.selectedValueAccessor;
-    setUpControl(this.control, this, this.callSetDisabledState);
+    setUpControlValueAccessor(this.control, this, this.callSetDisabledState);
     this.control.updateValueAndValidity({emitEvent: false});
   }
 
@@ -336,7 +340,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    */
   _setupWithForm(callSetDisabledState?: SetDisabledStateOption): void {
     this.valueAccessor ??= this.selectedValueAccessor;
-    setUpControl(this.control, this, callSetDisabledState);
+    setUpControlValueAccessor(this.control, this, callSetDisabledState);
   }
 
   private _checkForErrors(): void {

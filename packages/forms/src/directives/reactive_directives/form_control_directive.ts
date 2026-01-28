@@ -12,12 +12,14 @@ import {
   forwardRef,
   Inject,
   InjectionToken,
+  Injector,
   Input,
   OnChanges,
   OnDestroy,
   Optional,
   Output,
   Provider,
+  Renderer2,
   Self,
   SimpleChanges,
 } from '@angular/core';
@@ -33,7 +35,7 @@ import {
   cleanUpControl,
   isPropertyUpdated,
   SetDisabledStateOption,
-  setUpControl,
+  setUpControlValueAccessor,
 } from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
@@ -139,8 +141,10 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     @Optional()
     @Inject(CALL_SET_DISABLED_STATE)
     private callSetDisabledState?: SetDisabledStateOption,
+    @Optional() renderer?: Renderer2,
+    @Optional() injector?: Injector,
   ) {
-    super(valueAccessors);
+    super(injector, renderer, valueAccessors);
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
   }
@@ -153,7 +157,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
         cleanUpControl(previousForm, this, /* validateControlPresenceOnChange */ false);
       }
       this.valueAccessor ??= this.selectedValueAccessor;
-      setUpControl(this.form, this, this.callSetDisabledState);
+      setUpControlValueAccessor(this.form, this, this.callSetDisabledState);
       this.form.updateValueAndValidity({emitEvent: false});
     }
     if (isPropertyUpdated(changes, this.viewModel)) {

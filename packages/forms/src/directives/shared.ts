@@ -64,7 +64,7 @@ export function controlPath(name: string | null, parent: ControlContainer): stri
  * @param control Form control instance that should be linked.
  * @param dir Directive that should be linked with a given control.
  */
-export function setUpControl(
+export function setUpControlValueAccessor(
   control: FormControl,
   dir: NgControl,
   callSetDisabledState: SetDisabledStateOption = setDisabledStateDefault,

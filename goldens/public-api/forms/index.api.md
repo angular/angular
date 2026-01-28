@@ -19,6 +19,7 @@ import { OnInit } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
 import { Version } from '@angular/core';
+import { ɵControlDirectiveHost } from '@angular/core';
 
 // @public
 export abstract class AbstractControl<TValue = any, TRawValue extends TValue = TValue, TValueWithOptionalControlStates = any> {
@@ -407,7 +408,7 @@ export const FormControl: ɵFormControlCtor;
 
 // @public
 export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
-    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null, callSetDisabledState?: SetDisabledStateOption | undefined);
+    constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null, callSetDisabledState?: SetDisabledStateOption | undefined, renderer?: Renderer2, injector?: Injector);
     get control(): FormControl;
     form: FormControl;
     set isDisabled(isDisabled: boolean);
@@ -423,12 +424,12 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlDirective, "[formControl]", ["ngForm"], { "form": { "alias": "formControl"; "required": false; }; "isDisabled": { "alias": "disabled"; "required": false; }; "model": { "alias": "ngModel"; "required": false; }; }, { "update": "ngModelChange"; }, never, never, false, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<FormControlDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormControlDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }, { optional: true; }, { optional: true; }, { optional: true; }]>;
 }
 
 // @public
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
-    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
+    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null, renderer?: Renderer2, injector?: Injector);
     readonly control: FormControl;
     get formDirective(): any;
     set isDisabled(isDisabled: boolean);
@@ -444,7 +445,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlName, "[formControlName]", never, { "name": { "alias": "formControlName"; "required": false; }; "isDisabled": { "alias": "disabled"; "required": false; }; "model": { "alias": "ngModel"; "required": false; }; }, { "update": "ngModelChange"; }, never, never, false, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<FormControlName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormControlName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }, { optional: true; }, { optional: true; }]>;
 }
 
 // @public
@@ -677,10 +678,31 @@ export const NG_VALUE_ACCESSOR: InjectionToken<readonly ControlValueAccessor[]>;
 
 // @public
 export abstract class NgControl extends AbstractControlDirective {
-    constructor(rawValueAccessors?: ControlValueAccessor[]);
+    constructor(injector?: Injector, renderer?: Renderer2, rawValueAccessors?: ControlValueAccessor[]);
+    protected customControlBindings: {
+        value?: unknown;
+        disabled?: boolean;
+        touched?: boolean;
+        dirty?: boolean;
+        valid?: boolean;
+        invalid?: boolean;
+        pending?: boolean;
+        required?: boolean;
+        errors?: ValidationErrors | null;
+    } | null;
+    // (undocumented)
+    protected isCustomControlBased: boolean;
     name: string | number | null;
     // (undocumented)
+    protected ngControlUpdate(host: ɵControlDirectiveHost, bindRequired: boolean): void;
+    protected parseErrorsValidator: ValidatorFn | null;
+    // (undocumented)
+    protected removeParseErrorsValidator(control: AbstractControl | null | undefined): void;
+    // (undocumented)
     protected get selectedValueAccessor(): ControlValueAccessor | null;
+    // (undocumented)
+    protected setupCustomControl(): void;
+    protected get shouldBindRequired(): boolean;
     valueAccessor: ControlValueAccessor | null;
     abstract viewToModelUpdate(newValue: any): void;
 }
@@ -740,7 +762,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
 
 // @public
 export class NgModel extends NgControl implements OnChanges, OnDestroy {
-    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _changeDetectorRef?: (ChangeDetectorRef | null) | undefined, callSetDisabledState?: SetDisabledStateOption | undefined);
+    constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _changeDetectorRef?: (ChangeDetectorRef | null) | undefined, callSetDisabledState?: SetDisabledStateOption | undefined, injector?: Injector, renderer?: Renderer2);
     // (undocumented)
     readonly control: FormControl;
     get formDirective(): any;
@@ -762,7 +784,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgModel, "[ngModel]:not([formControlName]):not([formControl])", ["ngModel"], { "name": { "alias": "name"; "required": false; }; "isDisabled": { "alias": "disabled"; "required": false; }; "model": { "alias": "ngModel"; "required": false; }; "options": { "alias": "ngModelOptions"; "required": false; }; }, { "update": "ngModelChange"; }, never, never, false, never>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<NgModel, [{ optional: true; host: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgModel, [{ optional: true; host: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }, { optional: true; }, { optional: true; }, { optional: true; }]>;
 }
 
 // @public

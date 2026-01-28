@@ -12,12 +12,14 @@ import {
   forwardRef,
   Host,
   Inject,
+  Injector,
   Input,
   OnChanges,
   OnDestroy,
   Optional,
   Output,
   Provider,
+  Renderer2,
   Self,
   SimpleChanges,
   SkipSelf,
@@ -37,12 +39,10 @@ import {
 } from '../reactive_errors';
 import {
   _ngModelWarning,
-  CALL_SET_DISABLED_STATE,
   controlPath,
   isPropertyUpdated,
-  selectValueAccessor,
   SetDisabledStateOption,
-  setUpControl,
+  setUpControlValueAccessor,
 } from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
@@ -165,8 +165,10 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     @Optional()
     @Inject(NG_MODEL_WITH_FORM_CONTROL_WARNING)
     private _ngModelWarningConfig: string | null,
+    @Optional() renderer?: Renderer2,
+    @Optional() injector?: Injector,
   ) {
-    super(valueAccessors);
+    super(injector, renderer, valueAccessors);
     this._parent = parent;
     this._setValidators(validators);
     this._setAsyncValidators(asyncValidators);
@@ -182,7 +184,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   _setupWithForm(control: FormControl, callSetDisabledState?: SetDisabledStateOption): void {
     (this as Writable<FormControlName>).control = control;
     this.valueAccessor ??= this.selectedValueAccessor;
-    setUpControl(control, this, callSetDisabledState);
+    setUpControlValueAccessor(control, this, callSetDisabledState);
   }
 
   /** @docs-private */
