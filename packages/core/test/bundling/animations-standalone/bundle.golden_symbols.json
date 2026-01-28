@@ -756,6 +756,7 @@
       "relativePath",
       "rememberChangeHistoryAndInvokeOnChangesHook",
       "remove",
+      "removeAnimationsFromQueue",
       "removeClass",
       "removeElements",
       "removeFromArray",

@@ -84,7 +84,11 @@ import {ProfilerEvent} from '../../primitives/devtools';
 import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
 import {allLeavingAnimations} from '../animation/longest_animation';
 import {Injector} from '../di';
-import {addToAnimationQueue, queueEnterAnimations} from '../animation/queue';
+import {
+  addToAnimationQueue,
+  queueEnterAnimations,
+  removeAnimationsFromQueue,
+} from '../animation/queue';
 import {RunLeaveAnimationFn} from '../animation/interfaces';
 
 const enum WalkTNodeTreeAction {
@@ -385,6 +389,10 @@ function runLeaveAnimationsWithCallback(
   callback: Function,
 ) {
   const animations = lView?.[ANIMATIONS];
+  if (animations?.enter?.has(tNode.index)) {
+    removeAnimationsFromQueue(injector, animations.enter.get(tNode.index)!.animateFns);
+  }
+
   if (animations == null || animations.leave == undefined || !animations.leave.has(tNode.index))
     return callback(false);
 
