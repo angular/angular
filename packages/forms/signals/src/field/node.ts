@@ -7,7 +7,6 @@
  */
 
 import {computed, linkedSignal, type Signal, untracked, type WritableSignal} from '@angular/core';
-import type {FormField} from '../directive/form_field_directive';
 import {
   MAX,
   MAX_LENGTH,
@@ -19,6 +18,7 @@ import {
 } from '../api/rules/metadata';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
 import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
+import type {FormField} from '../directive/form_field_directive';
 import {DYNAMIC} from '../schema/logic';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';

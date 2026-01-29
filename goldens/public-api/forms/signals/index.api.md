@@ -210,14 +210,20 @@ export interface FormFieldBindingOptions {
 export interface FormOptions<TModel> {
     injector?: Injector;
     name?: string;
-    submission?: FormSubmitOptions<TModel>;
+    submission?: FormSubmitOptions<TModel, unknown>;
 }
 
 // @public
-export interface FormSubmitOptions<TModel> {
-    action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>;
+export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
+    action: (field: FieldTree<TRootModel & TSubmittedModel>, detail: {
+        root: FieldTree<TRootModel>;
+        submitted: FieldTree<TSubmittedModel>;
+    }) => Promise<TreeValidationResult>;
     ignoreValidators?: 'pending' | 'none' | 'all';
-    onInvalid?: (form: FieldTree<TModel>) => void;
+    onInvalid?: (field: FieldTree<TRootModel & TSubmittedModel>, detail: {
+        root: FieldTree<TRootModel>;
+        submitted: FieldTree<TSubmittedModel>;
+    }) => void;
 }
 
 // @public
@@ -558,10 +564,10 @@ export type Subfields<TModel> = {
 };
 
 // @public
-export function submit<TModel>(form: FieldTree<TModel>, options?: FormSubmitOptions<TModel>): Promise<boolean>;
+export function submit<TModel>(form: FieldTree<TModel>, options?: NoInfer<FormSubmitOptions<unknown, TModel>>): Promise<boolean>;
 
 // @public (undocumented)
-export function submit<TModel>(form: FieldTree<TModel>, action: FormSubmitOptions<TModel>['action']): Promise<boolean>;
+export function submit<TModel>(form: FieldTree<TModel>, action: NoInfer<FormSubmitOptions<unknown, TModel>['action']>): Promise<boolean>;
 
 // @public
 export function transformedValue<TValue, TRaw>(value: ModelSignal<TValue>, options: TransformedValueOptions<TValue, TRaw>): TransformedValueSignal<TRaw>;

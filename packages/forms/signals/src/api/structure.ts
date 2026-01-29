@@ -24,9 +24,11 @@ import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema/schema';
 import {normalizeFormArgs} from '../util/normalize_form_args';
 import {isArray} from '../util/type_guards';
-import type {ValidationError} from './rules/validation/validation_errors';
+import type {ValidationError} from './rules';
 import type {
+  FieldState,
   FieldTree,
+  FormSubmitOptions,
   ItemType,
   LogicFn,
   OneOrMany,
@@ -35,27 +37,7 @@ import type {
   SchemaFn,
   SchemaOrSchemaFn,
   SchemaPath,
-  TreeValidationResult,
 } from './types';
-
-/**
- * Options that can be specified when submitting a form.
- *
- * @experimental 21.2.0
- */
-export interface FormSubmitOptions<TModel> {
-  /** Function to run when submitting the form data (when form is valid). */
-  action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>;
-  /** Function to run when attempting to submit the form data but validation is failing. */
-  onInvalid?: (form: FieldTree<TModel>) => void;
-  /**
-   * Whether to ignore any of the validators when submitting:
-   * - 'pending': Will submit if there are no invalid validators, pending validators do not block submission (default)
-   * - 'none': Will not submit unless all validators are passing, pending validators block submission
-   * - 'ignore': Will always submit regardless of invalid or pending validators
-   */
-  ignoreValidators?: 'pending' | 'none' | 'all';
-}
 
 /**
  * Options that may be specified when creating a form.
@@ -72,7 +54,7 @@ export interface FormOptions<TModel> {
   /** The name of the root form, used in generating name attributes for the fields. */
   name?: string;
   /** Options that define how to handle form submission. */
-  submission?: FormSubmitOptions<TModel>;
+  submission?: FormSubmitOptions<TModel, unknown>;
 
   /**
    * Adapter allows managing fields in a more flexible way.
@@ -216,7 +198,7 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
   const fieldManager = new FormFieldManager(
     injector,
     options?.name,
-    options?.submission as FormSubmitOptions<unknown> | undefined,
+    options?.submission as FormSubmitOptions<unknown, unknown> | undefined,
   );
   const adapter = options?.adapter ?? new BasicFieldAdapter();
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
@@ -402,35 +384,39 @@ export function applyWhenValue(
  */
 export async function submit<TModel>(
   form: FieldTree<TModel>,
-  options?: FormSubmitOptions<TModel>,
+  options?: NoInfer<FormSubmitOptions<unknown, TModel>>,
 ): Promise<boolean>;
 export async function submit<TModel>(
   form: FieldTree<TModel>,
-  action: FormSubmitOptions<TModel>['action'],
+  action: NoInfer<FormSubmitOptions<unknown, TModel>['action']>,
 ): Promise<boolean>;
 export async function submit<TModel>(
   form: FieldTree<TModel>,
-  options?: FormSubmitOptions<TModel> | FormSubmitOptions<TModel>['action'],
+  options?: FormSubmitOptions<unknown, TModel> | FormSubmitOptions<unknown, TModel>['action'],
 ): Promise<boolean> {
-  const node = form() as unknown as FieldNode;
-  const opts =
+  const node = untracked(form) as FieldState<unknown> as FieldNode;
+
+  const field = options === undefined ? node.structure.root.fieldProxy : form;
+  const detail = {root: node.structure.root.fieldProxy, submitted: form};
+
+  // Normalize options.
+  options =
     typeof options === 'function'
       ? {action: options}
-      : ({
-          ...(node.structure.fieldManager.submitOptions ?? {}),
-          ...(options ?? {}),
-        } as Partial<FormSubmitOptions<TModel>>);
-  const action = opts?.action;
+      : (options ?? node.structure.fieldManager.submitOptions);
+
+  // Verify that an action was provided.
+  const action = options?.action as FormSubmitOptions<unknown, unknown>['action'];
   if (!action) {
     throw new RuntimeError(
       RuntimeErrorCode.MISSING_SUBMIT_ACTION,
-      ngDevMode &&
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
         'Cannot submit form with no submit action. Specify the action when creating the form, or as an additional argument to `submit()`.',
     );
   }
 
-  const onInvalid = opts?.onInvalid;
-  const ignoreValidators = opts?.ignoreValidators ?? 'pending';
+  const onInvalid = options?.onInvalid as FormSubmitOptions<unknown, unknown>['onInvalid'];
+  const ignoreValidators = options?.ignoreValidators ?? 'pending';
 
   // Determine whether or not to run the action based on the current validity.
   let shouldRunAction = true;
@@ -448,15 +434,42 @@ export async function submit<TModel>(
   try {
     if (shouldRunAction) {
       node.submitState.selfSubmitting.set(true);
-      const errors = await untracked(() => action?.(form));
+      const errors = await untracked(() => action?.(field, detail));
       errors && setSubmissionErrors(node, errors);
       return !errors || (isArray(errors) && errors.length === 0);
     } else {
-      untracked(() => onInvalid?.(form));
+      untracked(() => onInvalid?.(field, detail));
     }
     return false;
   } finally {
     node.submitState.selfSubmitting.set(false);
+  }
+}
+
+/**
+ * Creates a `Schema` that adds logic rules to a form.
+ * @param fn A **non-reactive** function that sets up reactive logic rules for the form.
+ * @returns A schema object that implements the given logic.
+ * @template TValue The value type of a `FieldTree` that this schema binds to.
+ *
+ * @category structure
+ * @experimental 21.0.0
+ */
+export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
+  return SchemaImpl.create(fn) as unknown as Schema<TValue>;
+}
+
+/** Marks a {@link node} and its descendants as touched. */
+function markAllAsTouched(node: FieldNode) {
+  // Don't mark hidden, disabled, or readonly fields as touched since they don't contribute to the
+  // form's validity. This also prevents errors from appearing immediately if they're later made
+  // interactive.
+  if (node.validationState.shouldSkipValidation()) {
+    return;
+  }
+  node.markAsTouched();
+  for (const child of node.structure.children()) {
+    markAllAsTouched(child);
   }
 }
 
@@ -486,32 +499,5 @@ function setSubmissionErrors(
   }
   for (const [field, fieldErrors] of errorsByField) {
     field.submitState.submissionErrors.set(fieldErrors);
-  }
-}
-
-/**
- * Creates a `Schema` that adds logic rules to a form.
- * @param fn A **non-reactive** function that sets up reactive logic rules for the form.
- * @returns A schema object that implements the given logic.
- * @template TValue The value type of a `FieldTree` that this schema binds to.
- *
- * @category structure
- * @experimental 21.0.0
- */
-export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
-  return SchemaImpl.create(fn) as unknown as Schema<TValue>;
-}
-
-/** Marks a {@link node} and its descendants as touched. */
-function markAllAsTouched(node: FieldNode) {
-  // Don't mark hidden, disabled, or readonly fields as touched since they don't contribute to the
-  // form's validity. This also prevents errors from appearing immediately if they're later made
-  // interactive.
-  if (node.validationState.shouldSkipValidation()) {
-    return;
-  }
-  node.markAsTouched();
-  for (const child of node.structure.children()) {
-    markAllAsTouched(child);
   }
 }

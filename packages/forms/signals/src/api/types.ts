@@ -17,6 +17,47 @@ import type {MetadataKey, ValidationError} from './rules';
 declare const ɵɵTYPE: unique symbol;
 
 /**
+ * Options that can be specified when submitting a form.
+ *
+ * @experimental 21.2.0
+ */
+export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
+  /**
+   * Function to run when submitting the form data (when form is valid).
+   *
+   * @param field The contextually relevant field for this action function (the root field when
+   *   specified during form creation, and the submitted field when specified as part of the
+   *   `submit()` call)
+   * @param detail An object containing the root field of the submitted form as well as the
+   *   submitted field itself
+   */
+  action: (
+    field: FieldTree<TRootModel & TSubmittedModel>,
+    detail: {root: FieldTree<TRootModel>; submitted: FieldTree<TSubmittedModel>},
+  ) => Promise<TreeValidationResult>;
+  /**
+   * Function to run when attempting to submit the form data but validation is failing.
+   *
+   * @param field The contextually relevant field for this onInvalid function (the root field when
+   *   specified during form creation, and the submitted field when specified as part of the
+   *   `submit()` call)
+   * @param detail An object containing the root field of the submitted form as well as the
+   *   submitted field itself
+   */
+  onInvalid?: (
+    field: FieldTree<TRootModel & TSubmittedModel>,
+    detail: {root: FieldTree<TRootModel>; submitted: FieldTree<TSubmittedModel>},
+  ) => void;
+  /**
+   * Whether to ignore any of the validators when submitting:
+   * - 'pending': Will submit if there are no invalid validators, pending validators do not block submission (default)
+   * - 'none': Will not submit unless all validators are passing, pending validators block submission
+   * - 'ignore': Will always submit regardless of invalid or pending validators
+   */
+  ignoreValidators?: 'pending' | 'none' | 'all';
+}
+
+/**
  * A type that represents either a single value of type `T` or a readonly array of `T`.
  * @template T The type of the value(s).
  *
