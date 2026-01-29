@@ -425,6 +425,24 @@ groups:
       required: 1 # Require that 1 person approve
       reviewed_for: required
 
+  # =========================================================
+  #  Agent Skills
+  # =========================================================
+  agent-skills:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'skills/{*,.*}',
+          'skills/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - marktechson
+        - kirjs
+        - ~JeanMeche
+        - ~dgp1130
+
   ####################################################################################
   #  Special Cases
   ####################################################################################
