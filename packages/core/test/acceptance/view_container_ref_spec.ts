@@ -47,10 +47,9 @@ import {
 } from '../../src/core';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '../../testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
-import {By, DomSanitizer} from '@angular/platform-browser';
+import {By, DomSanitizer, ɵSharedStylesHost as SharedStylesHost} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 import {ANIMATION_QUEUE} from '../../src/animation/queue';
-import {SharedStylesHost} from '@angular/platform-browser/src/dom/shared_styles_host';
 
 describe('ViewContainerRef', () => {
   /**
@@ -1414,7 +1413,11 @@ describe('ViewContainerRef', () => {
           {provide: ErrorHandler, useValue: TestBed.inject(ErrorHandler)},
           {provide: RendererFactory2, useValue: TestBed.inject(RendererFactory2)},
           {provide: ANIMATION_QUEUE, useValue: TestBed.inject(ANIMATION_QUEUE)},
-          {provide: SHARED_STYLES_HOST, useExisting: SharedStylesHost},
+          {
+            provide: SHARED_STYLES_HOST,
+            useValue: {addHost: () => {}, removeHost: () => {}, addStyles: () => {}},
+          },
+          {provide: DOCUMENT, useValue: TestBed.inject(DOCUMENT)},
         ],
       })
       class MyAppModule {}

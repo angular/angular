@@ -310,14 +310,14 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       // If the created component is detached from the document, this will be `null` and stylesheets
       // will be tracked once the component is attached to the document.
       const rootNode = hostElement.getRootNode?.();
-      if (rootNode) {
-        const sharedStylesHost = rootLView[INJECTOR].get(SHARED_STYLES_HOST);
-        if (typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot) {
-          sharedStylesHost.addHost(rootNode);
-        } else {
-          const doc = rootLView[INJECTOR].get(DOCUMENT);
-          sharedStylesHost.addHost(doc.head);
-        }
+      const sharedStylesHost = rootLView[INJECTOR].get(SHARED_STYLES_HOST);
+      const isShadowRoot =
+        rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot;
+      if (isShadowRoot) {
+        sharedStylesHost.addHost(rootNode);
+      } else {
+        const doc = rootLView[INJECTOR].get(DOCUMENT);
+        sharedStylesHost.addHost(doc.head);
       }
 
       // rootView is the parent when bootstrapping
@@ -566,16 +566,19 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
   }
 
   override destroy(): void {
+    if (this.hostView.destroyed) {
+      return;
+    }
     // Verify if the host element is referenced in the SharedStylesHost and remove it if so.
     const rootNode = this.location.nativeElement.getRootNode?.();
-    if (rootNode) {
-      const sharedStylesHost = this._rootLView[INJECTOR].get(SHARED_STYLES_HOST);
-      if (typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot) {
-        sharedStylesHost.removeHost(rootNode);
-      } else {
-        const doc = this._rootLView[INJECTOR].get(DOCUMENT);
-        sharedStylesHost.removeHost(doc.head);
-      }
+    const sharedStylesHost = this._rootLView[INJECTOR].get(SHARED_STYLES_HOST);
+    const isShadowRoot =
+      rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot;
+    if (isShadowRoot) {
+      sharedStylesHost.removeHost(rootNode);
+    } else {
+      const doc = this._rootLView[INJECTOR].get(DOCUMENT);
+      sharedStylesHost.removeHost(doc.head);
     }
     this.hostView.destroy();
   }

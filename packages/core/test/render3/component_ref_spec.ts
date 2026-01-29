@@ -9,6 +9,8 @@
 import {ComponentFactoryResolver} from '../../src/render3/component_ref';
 import {Renderer} from '../../src/render3/interfaces/renderer';
 import {RElement} from '../../src/render3/interfaces/renderer_dom';
+import {SHARED_STYLES_HOST} from '../../src/render3/interfaces/shared_styles_host';
+import {DOCUMENT} from '@angular/common';
 import {TestBed} from '../../testing';
 
 import {
@@ -41,7 +43,26 @@ const THROWING_RENDERER_FACTOR2_PROVIDER = {
   },
 };
 
+const MOCK_SHARED_STYLES_HOST_PROVIDER = {
+  provide: SHARED_STYLES_HOST,
+  useValue: {
+    addHost: () => {},
+    removeHost: () => {},
+  },
+};
+
+const COMMON_PROVIDERS = [
+  MOCK_SHARED_STYLES_HOST_PROVIDER,
+  {provide: DOCUMENT, useValue: document},
+];
+
 describe('ComponentFactory', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [COMMON_PROVIDERS],
+    });
+  });
+
   const cfr = new ComponentFactoryResolver();
 
   describe('constructor()', () => {
@@ -124,7 +145,7 @@ describe('ComponentFactory', () => {
     describe('(when `ngModuleRef` is not provided)', () => {
       it('should retrieve `RendererFactory2` from the specified injector', () => {
         const injector = Injector.create({
-          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
+          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}, COMMON_PROVIDERS],
         });
 
         cf.create(injector);
@@ -138,6 +159,7 @@ describe('ComponentFactory', () => {
           providers: [
             {provide: RendererFactory2, useValue: rendererFactorySpy},
             {provide: Sanitizer, useFactory: sanitizerFactorySpy, deps: []},
+            COMMON_PROVIDERS,
           ],
         });
 
@@ -150,7 +172,7 @@ describe('ComponentFactory', () => {
     describe('(when `ngModuleRef` is provided)', () => {
       it('should retrieve `RendererFactory2` from the specified injector first', () => {
         const injector = Injector.create({
-          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
+          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}, COMMON_PROVIDERS],
         });
         const mInjector = Injector.create({providers: [THROWING_RENDERER_FACTOR2_PROVIDER]});
 
@@ -160,7 +182,7 @@ describe('ComponentFactory', () => {
       });
 
       it('should retrieve `RendererFactory2` from the `ngModuleRef` if not provided by the injector', () => {
-        const injector = Injector.create({providers: []});
+        const injector = Injector.create({providers: [COMMON_PROVIDERS]});
         const mInjector = Injector.create({
           providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
         });
@@ -175,7 +197,10 @@ describe('ComponentFactory', () => {
           .createSpy('Injector#sanitizerFactory')
           .and.returnValue({});
         const injector = Injector.create({
-          providers: [{provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []}],
+          providers: [
+            {provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []},
+            COMMON_PROVIDERS,
+          ],
         });
 
         const mSanitizerFactorySpy = jasmine
@@ -195,7 +220,7 @@ describe('ComponentFactory', () => {
       });
 
       it('should retrieve `Sanitizer` from the `ngModuleRef` if not provided by the injector', () => {
-        const injector = Injector.create({providers: []});
+        const injector = Injector.create({providers: [COMMON_PROVIDERS]});
 
         const mSanitizerFactorySpy = jasmine
           .createSpy('NgModuleRef#sanitizerFactory')
@@ -216,7 +241,7 @@ describe('ComponentFactory', () => {
     describe('(when the factory is bound to a `ngModuleRef`)', () => {
       it('should retrieve `RendererFactory2` from the specified injector first', () => {
         const injector = Injector.create({
-          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
+          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}, COMMON_PROVIDERS],
         });
         (cf as any).ngModule = {
           injector: Injector.create({providers: [THROWING_RENDERER_FACTOR2_PROVIDER]}),
@@ -228,7 +253,7 @@ describe('ComponentFactory', () => {
       });
 
       it('should retrieve `RendererFactory2` from the `ngModuleRef` if not provided by the injector', () => {
-        const injector = Injector.create({providers: []});
+        const injector = Injector.create({providers: [COMMON_PROVIDERS]});
         (cf as any).ngModule = {
           injector: Injector.create({
             providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
@@ -248,6 +273,7 @@ describe('ComponentFactory', () => {
           providers: [
             {provide: RendererFactory2, useValue: rendererFactorySpy},
             {provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []},
+            COMMON_PROVIDERS,
           ],
         });
 
@@ -267,7 +293,7 @@ describe('ComponentFactory', () => {
       });
 
       it('should retrieve `Sanitizer` from the `ngModuleRef` if not provided by the injector', () => {
-        const injector = Injector.create({providers: []});
+        const injector = Injector.create({providers: [COMMON_PROVIDERS]});
 
         const mSanitizerFactorySpy = jasmine
           .createSpy('NgModuleRef#sanitizerFactory')
@@ -303,6 +329,7 @@ describe('ComponentFactory', () => {
       const injector = Injector.create({
         providers: [
           {provide: RendererFactory2, useFactory: () => new TestMockRendererFactory(), deps: []},
+          COMMON_PROVIDERS,
         ],
       });
 
