@@ -24,7 +24,7 @@
     "mock-require": "3.0.3",
     "jasmine": "5.13.0",
     "source-map-support": "0.5.21",
-    "jasmine-core": "5.13.0",
+    "jasmine-core": "6.0.1",
     "jasmine-reporters": "2.5.2",
     "rxjs": "7.8.2",
     "systemjs": "6.15.1",
