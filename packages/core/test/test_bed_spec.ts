@@ -57,6 +57,9 @@ import {expect} from '@angular/private/testing/matchers';
 import {NgModuleType} from '../src/render3';
 import {depsTracker} from '../src/render3/deps_tracker/deps_tracker';
 import {setClassMetadataAsync} from '../src/render3/metadata';
+import {ɵSharedStylesHost as SharedStylesHost} from '@angular/platform-browser';
+import {SHARED_STYLES_HOST} from '../src/render3/interfaces/shared_styles_host';
+import {APP_ID} from '../src/core';
 import {
   ComponentFixtureAutoDetect,
   TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT,
@@ -2700,6 +2703,10 @@ describe('TestBed module teardown', () => {
     TestBed.configureTestingModule({
       declarations: [StyledComp1, StyledComp2],
       teardown: {destroyAfterEach: true},
+      providers: [
+        {provide: SHARED_STYLES_HOST, useClass: SharedStylesHost},
+        {provide: APP_ID, useValue: 'ng'},
+      ],
     });
 
     const fixtures = [TestBed.createComponent(StyledComp1), TestBed.createComponent(StyledComp2)];

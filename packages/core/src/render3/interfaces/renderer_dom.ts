@@ -52,6 +52,11 @@ export interface RNode {
    * Used exclusively for building up DOM which are static (ie not View roots)
    */
   appendChild(newChild: RNode): RNode;
+
+  /**
+   * Returns the root node (Document or ShadowRoot) of this node.
+   */
+  getRootNode?(): RNode | ShadowRoot | null;
 }
 
 /**
