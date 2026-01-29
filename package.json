@@ -134,7 +134,7 @@
     "open-in-idx": "^0.1.1",
     "protractor": "^7.0.0",
     "reflect-metadata": "^0.2.0",
-    "rollup": "4.55.3",
+    "rollup": "4.57.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-preserve-shebang": "^1.0.1",
     "rxjs": "^7.0.0",

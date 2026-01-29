@@ -9,7 +9,7 @@
   "typings": "./zone.d.ts",
   "devDependencies": {
     "@csstools/css-calc": "3.0.0",
-    "@csstools/css-color-parser": "4.0.0",
+    "@csstools/css-color-parser": "4.0.1",
     "@externs/nodejs": "1.5.0",
     "@types/jasmine": "5.1.15",
     "@types/node": "^24.3.0",
