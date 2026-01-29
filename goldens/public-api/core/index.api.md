@@ -209,7 +209,9 @@ export interface BootstrapOptions {
 
 // @public
 export enum ChangeDetectionStrategy {
+    // @deprecated
     Default = 1,
+    Eager = 1,
     OnPush = 0
 }
 
