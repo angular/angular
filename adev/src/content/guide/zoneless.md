@@ -11,7 +11,7 @@ The main advantages to removing ZoneJS as a dependency are:
 
 ## Enabling Zoneless in an application
 
-In Angular v21+, no additional provider is required.
+Zoneless is the default in Angular v21+ so you do not need to do anything to enable it. You should verify that `provideZoneChangeDetection` is not used anywhere to override the default configuration.
 
 If you are using Angular v20, enable zoneless change detection by adding `provideZonelessChangeDetection()` at bootstrap:
 
