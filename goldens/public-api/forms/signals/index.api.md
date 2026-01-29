@@ -563,6 +563,9 @@ export type Subfields<TModel> = {
 // @public
 export function submit<TModel>(form: FieldTree<TModel>, options?: FormSubmitOptions<TModel>): Promise<boolean>;
 
+// @public (undocumented)
+export function submit<TModel>(form: FieldTree<TModel>, action: FormSubmitOptions<TModel>['action']): Promise<boolean>;
+
 // @public
 export type TreeValidationResult<E extends ValidationError.WithOptionalFieldTree = ValidationError.WithOptionalFieldTree> = ValidationSuccess | OneOrMany<E>;
 

@@ -403,13 +403,24 @@ export function applyWhenValue(
 export async function submit<TModel>(
   form: FieldTree<TModel>,
   options?: FormSubmitOptions<TModel>,
+): Promise<boolean>;
+export async function submit<TModel>(
+  form: FieldTree<TModel>,
+  action: FormSubmitOptions<TModel>['action'],
+): Promise<boolean>;
+export async function submit<TModel>(
+  form: FieldTree<TModel>,
+  options?: FormSubmitOptions<TModel> | FormSubmitOptions<TModel>['action'],
 ): Promise<boolean> {
   return untracked(async () => {
     const node = form() as unknown as FieldNode;
-    const opts = {
-      ...(node.structure.fieldManager.submitOptions ?? {}),
-      ...(options ?? {}),
-    } as Partial<FormSubmitOptions<TModel>>;
+    const opts =
+      typeof options === 'function'
+        ? {action: options}
+        : ({
+            ...(node.structure.fieldManager.submitOptions ?? {}),
+            ...(options ?? {}),
+          } as Partial<FormSubmitOptions<TModel>>);
     const action = opts?.action;
     if (!action) {
       throw new RuntimeError(
