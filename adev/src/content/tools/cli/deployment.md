@@ -74,6 +74,29 @@ But most servers by default will reject `http://my-app.test/users/42` and return
 Configure the fallback route or 404 page to `index.html` for your server, so Angular is served for deep links and can display the correct route.
 Some servers call this fallback behavior "Single-Page Application" (SPA) mode.
 
+CRITICAL: On platforms like GitHub Pages that serve a `404.html` file for missing routes, **do not manually copy `index.html` to `404.html`.**
+
+This common approach fails because the Angular CLI injects dynamic script references with content hashes (for example, `main.abc123.js`) that change on every build. Manually copying the file means you must remember to update `404.html` after every build, which is error-prone and defeats the purpose of cache-busting hashes.
+
+**Option A: Use angular-cli-ghpages (Recommended)**
+
+The simplest and most reliable solution is to use [`angular-cli-ghpages`](https://npmjs.org/package/angular-cli-ghpages), which handles the build process, 404 fallback, and deployment in a single command:
+
+```shell
+
+ng add angular-cli-ghpages
+ng deploy --base-href=/your-repo-name/
+
+```
+
+This package automatically manages the `404.html` file and keeps it in sync with your build output.
+
+**Option B: Use a redirect script**
+
+If you must deploy manually, use a redirect-based `404.html` that preserves the original URL and redirects to `index.html`. This approach uses a small script in `404.html` to store the requested path, then redirects to `index.html` where another script restores the path for Angular Router to handle.
+
+Copy the [`404.html` from spa-github-pages](https://github.com/rafgraph/spa-github-pages/blob/gh-pages/404.html) into your build output directory and add the corresponding [redirect script](https://github.com/rafgraph/spa-github-pages#usage-instructions) to your `index.html`. If your app is deployed to a project site like `https://username.github.io/repo-name/`, set `pathSegmentsToKeep` to `1` in the `404.html` script. This tells the script to preserve the `/repo-name/` segment when redirecting, so the URL `https://username.github.io/repo-name/users/42` redirects to `https://username.github.io/repo-name/?/users/42` instead of losing the repository path.
+
 Once the browser loads the application, Angular router will read the URL to determine which page it is on and display `/users/42` correctly.
 
 For "real" 404 pages such as `http://my-app.test/does-not-exist`, the server does not require any additional configuration.
