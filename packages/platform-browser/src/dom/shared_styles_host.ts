@@ -204,6 +204,7 @@ export class SharedStylesHost implements OnDestroy {
     for (const [, {elements}] of [...this.inline, ...this.external]) {
       removeElements(elements);
     }
+    // TODO: Seems to be getting called too early? Why is the timing changing at all?
     this.hosts.clear();
   }
 
@@ -231,14 +232,14 @@ export class SharedStylesHost implements OnDestroy {
   removeHost(hostNode: Node): void {
     const usage = this.hosts.get(hostNode);
     if (typeof ngDevMode !== 'undefined' && ngDevMode && usage === undefined) {
-      throw new Error('Attempted to remove a host which was not added');
+      throw new Error('Attempted to remove a host which was not added.');
     }
 
     if (usage! === 1) {
       const elements = [...this.inline.values(), ...this.external.values()].flatMap(
         (record) => record.elements,
       );
-      for (const element of elements) element.remove();
+      removeElements(elements);
 
       this.hosts.delete(hostNode);
     } else {
