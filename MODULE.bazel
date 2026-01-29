@@ -13,7 +13,7 @@ bazel_dep(name = "aspect_rules_jasmine", version = "2.0.2")
 bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
 bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
-bazel_dep(name = "tar.bzl", version = "0.7.0")
+bazel_dep(name = "tar.bzl", version = "0.8.1")
 bazel_dep(name = "yq.bzl", version = "0.3.4")
 bazel_dep(name = "rules_angular")
 git_override(
