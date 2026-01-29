@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
-import {email, form, FormField, required, submit} from '@angular/forms/signals';
+import {email, form, FormField, required} from '@angular/forms/signals';
 
 interface LoginData {
   email: string;
@@ -36,7 +36,7 @@ export class App {
 
   onSubmit(event: Event) {
     event.preventDefault();
-    submit(this.loginForm, {
+    this.loginForm().submit({
       action: async () => {
         const credentials = this.loginModel();
         // In a real app, this would be async:

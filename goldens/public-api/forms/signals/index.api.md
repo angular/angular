@@ -152,6 +152,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     readonly readonly: Signal<boolean>;
     readonly required: Signal<boolean>;
     reset(value?: TValue): void;
+    submit(options?: FormSubmitOptions<unknown, TValue>): Promise<boolean>;
     readonly submitting: Signal<boolean>;
     readonly touched: Signal<boolean>;
     readonly valid: Signal<boolean>;
@@ -210,14 +211,14 @@ export interface FormFieldBindingOptions {
 export interface FormOptions<TModel> {
     injector?: Injector;
     name?: string;
-    submission?: FormSubmitOptions<TModel>;
+    submission?: FormSubmitOptions<TModel, unknown>;
 }
 
 // @public
-export interface FormSubmitOptions<TModel> {
-    action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>;
+export interface FormSubmitOptions<TFormModel, TFieldModel> {
+    action: (form: FieldTree<TFormModel>, field: FieldTree<TFieldModel>) => Promise<TreeValidationResult>;
     ignoreValidators?: 'pending' | 'none' | 'all';
-    onInvalid?: (form: FieldTree<TModel>) => void;
+    onInvalid?: (form: FieldTree<TFormModel>, field: FieldTree<TFieldModel>) => void;
 }
 
 // @public
@@ -558,11 +559,11 @@ export type Subfields<TModel> = {
     [Symbol.iterator](): Iterator<[string, MaybeFieldTree<TModel[keyof TModel], string>]>;
 };
 
-// @public
-export function submit<TModel>(form: FieldTree<TModel>, options?: FormSubmitOptions<TModel>): Promise<boolean>;
+// @public @deprecated
+export function submit<TModel>(form: FieldTree<TModel>, options?: FormSubmitOptions<unknown, TModel>): Promise<boolean>;
 
 // @public (undocumented)
-export function submit<TModel>(form: FieldTree<TModel>, action: FormSubmitOptions<TModel>['action']): Promise<boolean>;
+export function submit<TModel>(form: FieldTree<TModel>, action: FormSubmitOptions<unknown, TModel>['action']): Promise<boolean>;
 
 // @public
 export type TreeValidationResult<E extends ValidationError.WithOptionalFieldTree = ValidationError.WithOptionalFieldTree> = ValidationSuccess | OneOrMany<E>;

@@ -17,6 +17,28 @@ import type {MetadataKey, ValidationError} from './rules';
 declare const ɵɵTYPE: unique symbol;
 
 /**
+ * Options that can be specified when submitting a form.
+ *
+ * @experimental 21.2.0
+ */
+export interface FormSubmitOptions<TFormModel, TFieldModel> {
+  /** Function to run when submitting the form data (when form is valid). */
+  action: (
+    form: FieldTree<TFormModel>,
+    field: FieldTree<TFieldModel>,
+  ) => Promise<TreeValidationResult>;
+  /** Function to run when attempting to submit the form data but validation is failing. */
+  onInvalid?: (form: FieldTree<TFormModel>, field: FieldTree<TFieldModel>) => void;
+  /**
+   * Whether to ignore any of the validators when submitting:
+   * - 'pending': Will submit if there are no invalid validators, pending validators do not block submission (default)
+   * - 'none': Will not submit unless all validators are passing, pending validators block submission
+   * - 'ignore': Will always submit regardless of invalid or pending validators
+   */
+  ignoreValidators?: 'pending' | 'none' | 'all';
+}
+
+/**
  * A type that represents either a single value of type `T` or a readonly array of `T`.
  * @template T The type of the value(s).
  *
@@ -395,6 +417,40 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * @param options Optional focus options to pass to the native focus() method.
    */
   focusBoundControl(options?: FocusOptions): void;
+
+  /**
+   * Submits the form using the given action function and applies any submission errors
+   * resulting from the action to the field. Submission errors returned by the `action` will be integrated
+   * into the field as a `ValidationError` on the sub-field indicated by the `fieldTree` property of the
+   * submission error.
+   *
+   * @example
+   * ```ts
+   * async function registerNewUser(registrationForm: FieldTree<{username: string, password: string}>) {
+   *   const result = await myClient.registerNewUser(registrationForm().value());
+   *   if (result.errorCode === myClient.ErrorCode.USERNAME_TAKEN) {
+   *     return [{
+   *       fieldTree: registrationForm.username,
+   *       kind: 'server',
+   *       message: 'Username already taken'
+   *     }];
+   *   }
+   *   return undefined;
+   * }
+   *
+   * const registrationForm = form(signal({username: 'god', password: ''}));
+   * registrationForm().submit({
+   *   action: async (f) => {
+   *     return registerNewUser(registrationForm);
+   *   }
+   * });
+   * registrationForm.username().errors(); // [{kind: 'server', message: 'Username already taken'}]
+   * ```
+   *
+   * @param options Options for the submission.
+   * @returns Whether the submission was successful.
+   */
+  submit(options?: FormSubmitOptions<unknown, TValue>): Promise<boolean>;
 }
 
 /**
