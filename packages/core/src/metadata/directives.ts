@@ -1020,7 +1020,7 @@ export interface HostListenerDecorator {
    *
    * @usageNotes
    *
-   * NOTE:  **Always** prefer using the `host` property over `@HostListener`.
+   * NOTE:  **Always** prefer using the [`host` property](guide/components/host-elements#binding-to-the-host-element) over `@HostListener`.
    * This decorator exist exclusively for backwards compatibility.
    *
    * The following example declares a directive
