@@ -179,6 +179,13 @@ export interface TemplateTypeChecker {
   getSymbolOfNode(node: AST | TmplAstNode, component: ts.ClassDeclaration): Symbol | null;
 
   /**
+   * Retrieves the `TcbLocation` for the node in a component's template.
+   *
+   * This method can return `null` if a valid `TcbLocation` cannot be determined for the node.
+   */
+  getTcbLocationOfNode(node: AST | TmplAstNode, component: ts.ClassDeclaration): TcbLocation | null;
+
+  /**
    * Get "global" `Completion`s in the given context.
    *
    * Global completions are completions in the global context, as opposed to completions within an

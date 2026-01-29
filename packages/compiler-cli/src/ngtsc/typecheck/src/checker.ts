@@ -799,6 +799,17 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return this.perf.inPhase(PerfPhase.TtcSymbol, () => builder.getSymbol(node));
   }
 
+  getTcbLocationOfNode(
+    node: AST | TmplAstNode,
+    component: ts.ClassDeclaration,
+  ): TcbLocation | null {
+    const builder = this.getOrCreateSymbolBuilder(component);
+    if (builder === null) {
+      return null;
+    }
+    return this.perf.inPhase(PerfPhase.TtcSymbol, () => builder.getTcbLocation(node));
+  }
+
   private getOrCreateSymbolBuilder(component: ts.ClassDeclaration): SymbolBuilder | null {
     if (this.symbolBuilderCache.has(component)) {
       return this.symbolBuilderCache.get(component)!;
