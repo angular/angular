@@ -11,12 +11,13 @@ The main advantages to removing ZoneJS as a dependency are:
 
 ## Enabling Zoneless in an application
 
-```typescript
-// standalone bootstrap
+```ts {header: 'standalone bootstrap'}
 bootstrapApplication(MyApp, {providers: [provideZonelessChangeDetection()]});
+```
 
-// NgModule bootstrap
+```ts {header: 'NgModule bootstrap'}
 platformBrowser().bootstrapModule(AppModule);
+
 @NgModule({
   providers: [provideZonelessChangeDetection()],
 })
@@ -122,12 +123,12 @@ an ongoing Router navigation and an incomplete `HttpClient` request.
 
 ### Using Zoneless in `TestBed`
 
-The zoneless provider function can also be used with `TestBed` to help
-ensure the components under test are compatible with a Zoneless
-Angular application.
+`TestBed` supports zoneless mode, but **you must explicitly enable it when `zone.js` is present in your application**. Without this configuration, tests will use zone-based change detection even if your production app runs zoneless.
 
 ```typescript
 TestBed.configureTestingModule({
+   // Optional: include the provider to ensure the testing environment
++  // uses the same zoneless behavior as a zoneless application.
   providers: [provideZonelessChangeDetection()],
 });
 
