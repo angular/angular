@@ -14,7 +14,7 @@ import type {DestroyRef} from '@angular/core';
  * @param select The native `<select>` element to observe.
  * @param lView The `LView` that contains the native form control.
  * @param tNode The `TNode` of the native form control.
- * @returns The newly created `MutationObserver`.
+ * @return The newly created `MutationObserver`.
  */
 export function observeSelectMutations(
   select: HTMLSelectElement,
@@ -53,7 +53,7 @@ export function observeSelectMutations(
 function isRelevantSelectMutation(mutation: MutationRecord) {
   // Consider changes that may add / remove options, or change their text content.
   if (mutation.type === 'childList' || mutation.type === 'characterData') {
-    // If the target element is a comment its not relevant.
+    // If the target element is a comment it's not relevant.
     if (mutation.target instanceof Comment) {
       return false;
     }
@@ -68,10 +68,10 @@ function isRelevantSelectMutation(mutation: MutationRecord) {
         return true;
       }
     }
-    // Otherwise its not relevant.
+    // Otherwise it's not relevant.
     return false;
   }
-  // If the value attribute of an option changed, its relevant.
+  // If the value attribute of an option changed, it's relevant.
   if (mutation.type === 'attributes' && mutation.target instanceof HTMLOptionElement) {
     return true;
   }

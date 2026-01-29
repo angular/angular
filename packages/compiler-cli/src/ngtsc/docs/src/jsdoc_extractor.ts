@@ -31,7 +31,7 @@ export function extractJsDocTags(node: ts.HasJSDoc): JsDocTagEntry[] {
 
 /**
  * Gets the comment text from a JSDoc tag
- * This wrapper attemps to work around some TS bugs (microsoft/TypeScript#59679, microsoft/TypeScript#63027 etc).
+ * This wrapper attempts to work around some TS bugs (microsoft/TypeScript#59679, microsoft/TypeScript#63027 etc).
  */
 function getJSDocTagComment(tag: ts.JSDocTag): string | undefined {
   const comment = tag.comment;
