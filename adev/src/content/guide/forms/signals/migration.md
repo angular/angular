@@ -215,7 +215,8 @@ Reactive/Template Forms automatically adds [class attributes](/guide/forms/templ
 If you want to preserve this behavior, you can provide the `NG_STATUS_CLASSES` preset:
 
 ```typescript
-import {NG_STATUS_CLASSES, provideSignalFormsConfig} from '@angular/forms/signals';
+import {provideSignalFormsConfig} from '@angular/forms/signals';
+import {NG_STATUS_CLASSES} from '@angular/forms/signals/compat';
 
 bootstrapApplication(App, {
   providers: [
