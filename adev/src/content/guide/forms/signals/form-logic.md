@@ -34,7 +34,7 @@ For complete details on `FieldContext` properties and methods, see the [Validati
 
 The `disabled()` rule configures a field's disabled state.
 
-It works with the `[field]` directive to automatically bind the `disabled` attribute based on the field's state, so you don't need to manually add `[disabled]="yourForm.fieldName().disabled()"` to your template.
+It works with the `[formField]` directive to automatically bind the `disabled` attribute based on the field's state, so you don't need to manually add `[disabled]="yourForm.fieldName().disabled()"` to your template.
 
 NOTE: Disabled fields skip validation - they don't participate in form validation checks. The field's value is preserved but not validated. For details on validation behavior, see the [Validation guide](guide/forms/signals/validation).
 
@@ -44,15 +44,15 @@ To disable a field permanently, call `disabled()` with just the field path:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, disabled } from '@angular/forms/signals'
+import { form, FormField, disabled } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-settings',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
       System ID (cannot be changed)
-      <input [field]="settingsForm.systemId" />
+      <input [formField]="settingsForm.systemId" />
     </label>
   `
 })
@@ -74,20 +74,20 @@ To disable a field based on conditions, provide a reactive logic function that r
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, disabled } from '@angular/forms/signals'
+import { form, FormField, disabled } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-order',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
       Order Total
-      <input type="number" [field]="orderForm.total" />
+      <input type="number" [formField]="orderForm.total" />
     </label>
 
     <label>
       Coupon Code
-      <input [field]="orderForm.couponCode" />
+      <input [formField]="orderForm.couponCode" />
     </label>
   `
 })
@@ -111,20 +111,20 @@ When you disable a field, provide user-facing explanations by returning a string
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, disabled } from '@angular/forms/signals'
+import { form, FormField, disabled } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-order',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
       Order Total
-      <input type="number" [field]="orderForm.total" />
+      <input type="number" [formField]="orderForm.total" />
     </label>
 
     <label>
       Coupon Code
-      <input [field]="orderForm.couponCode" />
+      <input [formField]="orderForm.couponCode" />
     </label>
 
     @if (orderForm.couponCode().disabled()) {
@@ -178,7 +178,7 @@ If both conditions are true, the field shows both disabled reasons. This pattern
 
 The `hidden()` rule configures a field's hidden state. However, this only sets a programmatic state. **You control whether the field appears in the UI**.
 
-IMPORTANT: Unlike `disabled` and `readonly`, there is no native DOM property for `hidden` state. The `[field]` directive does not apply a `hidden` attribute to elements. You must use `@if` or CSS in your template to conditionally render fields based on the `hidden()` state.
+IMPORTANT: Unlike `disabled` and `readonly`, there is no native DOM property for `hidden` state. The `[formField]` directive does not apply a `hidden` attribute to elements. You must use `@if` or CSS in your template to conditionally render fields based on the `hidden()` state.
 
 NOTE: Like disabled fields, hidden fields also skip validation. See the [Validation guide](guide/forms/signals/validation) for details.
 
@@ -188,21 +188,21 @@ Use `hidden()` with a reactive logic function that returns `true` (hidden) or `f
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, hidden } from '@angular/forms/signals'
+import { form, FormField, hidden } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-profile',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
-      <input type="checkbox" [field]="profileForm.isPublic" />
+      <input type="checkbox" [FormField]="profileForm.isPublic" />
       Make profile public
     </label>
 
     @if (!profileForm.publicUrl().hidden()) {
       <label>
         Public URL
-        <input [field]="profileForm.publicUrl" />
+        <input [FormField]="profileForm.publicUrl" />
       </label>
     }
   `
@@ -221,7 +221,7 @@ export class Profile {
 
 ## Display uneditable fields with `readonly()`
 
-The `readonly()` rule prevents users from updating a field. The `[field]` directive automatically binds this state to the HTML `readonly` attribute, which prevents editing while still allowing users to focus and select text.
+The `readonly()` rule prevents users from updating a field. The `[FormField]` directive automatically binds this state to the HTML `readonly` attribute, which prevents editing while still allowing users to focus and select text.
 
 NOTE: Readonly fields skip [validation](guide/forms/signals/validation).
 
@@ -231,20 +231,20 @@ To make a field permanently readonly, call `readonly()` with just the field path
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, readonly } from '@angular/forms/signals'
+import { form, FormField, readonly } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-account',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
       Username (cannot be changed)
-      <input [field]="accountForm.username" />
+      <input [FormField]="accountForm.username" />
     </label>
 
     <label>
       Email
-      <input [field]="accountForm.email" />
+      <input [FormField]="accountForm.email" />
     </label>
   `
 })
@@ -260,7 +260,7 @@ export class Account {
 }
 ```
 
-The `[field]` directive automatically binds the `readonly` attribute based on the field's state.
+The `[FormField]` directive automatically binds the `readonly` attribute based on the field's state.
 
 ### Conditional readonly
 
@@ -268,20 +268,20 @@ To make a field readonly based on conditions, provide a reactive logic function:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, readonly } from '@angular/forms/signals'
+import { form, FormField, readonly } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-document',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
-      <input type="checkbox" [field]="documentForm.isLocked" />
+      <input type="checkbox" [FormField]="documentForm.isLocked" />
       Lock document
     </label>
 
     <label>
       Document Title
-      <input [field]="documentForm.title" />
+      <input [FormField]="documentForm.title" />
     </label>
   `
 })
@@ -351,15 +351,15 @@ You can debounce a field by specifying a delay in milliseconds:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, debounce } from '@angular/forms/signals'
+import { form, FormField, debounce } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-search',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
       Search
-      <input [field]="searchForm.query" />
+      <input [FormField]="searchForm.query" />
     </label>
 
     <p>Searching for: {{ searchForm.query().value() }}</p>
@@ -398,15 +398,15 @@ For advanced control, provide a debouncer function that controls when to synchro
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, debounce } from '@angular/forms/signals'
+import { form, FormField, debounce } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-search',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
       Search
-      <input [field]="searchForm.query" />
+      <input [FormField]="searchForm.query" />
     </label>
   `
 })
@@ -471,21 +471,21 @@ When you use validation rules like `required()` or `min()`, they automatically s
 
 ### Reading pre-defined metadata
 
-The `[field]` directive automatically binds built-in metadata to HTML attributes. You can also read metadata directly using the built-in accessors on field state:
+The `[FormField]` directive automatically binds built-in metadata to HTML attributes. You can also read metadata directly using the built-in accessors on field state:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, required, min, max } from '@angular/forms/signals'
+import { form, FormField, required, min, max } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-age',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
       Age (between {{ ageForm.age().min() }} and {{ ageForm.age().max() }})
       <input
         type="number"
-        [field]="ageForm.age"
+        [FormField]="ageForm.age"
       />
     </label>
 
@@ -507,7 +507,7 @@ export class Age {
 }
 ```
 
-The `[field]` directive automatically binds `required`, `min`, and `max` attributes to the input. You can read these values using `field().required()`, `field().min()`, and `field().max()` for display or logic purposes.
+The `[formField]` directive automatically binds `required`, `min`, and `max` attributes to the input. You can read these values using `field().required()`, `field().min()`, and `field().max()` for display or logic purposes.
 
 ### Setting metadata manually
 
@@ -515,13 +515,13 @@ Use the `metadata()` function to set metadata values when validation rules don't
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, min, max, validate } from '@angular/forms/signals'
+import { form, FormField, min, max, validate } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-custom',
-  imports: [Field],
+  imports: [formField],
   template: `
-    <input [field]="customForm.score" />
+    <input [formField]="customForm.score" />
   `
 })
 export class Custom {
@@ -643,15 +643,15 @@ Make metadata reactive to other field values:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, max } from '@angular/forms/signals'
+import { form, FormField, max } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-inventory',
-  imports: [Field],
+  imports: [formField],
   template: `
     <label>
       Item
-      <select [field]="inventoryForm.item">
+      <select [formField]="inventoryForm.item">
         <option value="widget">Widget</option>
         <option value="gadget">Gadget</option>
       </select>
@@ -659,7 +659,7 @@ import { form, Field, max } from '@angular/forms/signals'
 
     <label>
       Quantity (max: {{ inventoryForm.quantity().max() }})
-      <input type="number" [field]="inventoryForm.quantity" [max]="inventoryForm.quantity().max()" />
+      <input type="number" [formField]="inventoryForm.quantity" [max]="inventoryForm.quantity().max()" />
     </label>
   `
 })
@@ -723,16 +723,16 @@ Apply multiple rules to configure all aspects of a field's behavior:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, disabled, hidden, debounce, metadata, PLACEHOLDER } from '@angular/forms/signals'
+import { form, FormField, disabled, hidden, debounce, metadata, PLACEHOLDER } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-promo',
-  imports: [Field],
+  imports: [formField],
   template: `
     @if (!promoForm.promoCode().hidden()) {
       <label>
         Promo Code
-        <input [field]="promoForm.promoCode" />
+        <input [formField]="promoForm.promoCode" />
       </label>
     }
   `
@@ -770,15 +770,15 @@ Use `applyWhen()` to conditionally apply entire groups of rules:
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, applyWhen, required, pattern } from '@angular/forms/signals'
+import { form, FormField, applyWhen, required, pattern } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-address',
-  imports: [Field],
+  imports: [formField],
   template: `
     <label>
       Country
-      <select [field]="addressForm.country">
+      <select [formField]="addressForm.country">
         <option value="US">United States</option>
         <option value="CA">Canada</option>
       </select>
@@ -786,7 +786,7 @@ import { form, Field, applyWhen, required, pattern } from '@angular/forms/signal
 
     <label>
       Zip/Postal Code
-      <input [field]="addressForm.zipCode" />
+      <input [formField]="addressForm.zipCode" />
     </label>
   `
 })
