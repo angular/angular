@@ -7,7 +7,6 @@
 import { AbstractControl } from '@angular/forms';
 import * as _angular_forms from '@angular/forms';
 import { ControlValueAccessor } from '@angular/forms';
-import { DestroyableInjector } from '@angular/core';
 import { FormControlStatus } from '@angular/forms';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
@@ -170,10 +169,10 @@ export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> =
 export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 
 // @public
-export function form<TModel>(model: WritableSignal<TModel>, schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions): FieldTree<TModel>;
+export function form<TModel>(model: WritableSignal<TModel>, schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions<TModel>): FieldTree<TModel>;
 
 // @public
-export function form<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: FormOptions): FieldTree<TModel>;
+export function form<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: FormOptions<TModel>): FieldTree<TModel>;
 
 // @public
 export const FORM_FIELD: InjectionToken<FormField<unknown>>;
@@ -209,11 +208,17 @@ export interface FormFieldBindingOptions {
 }
 
 // @public
-export interface FormOptions {
-    adapter?: FieldAdapter;
+export interface FormOptions<TModel> {
     injector?: Injector;
-    // (undocumented)
     name?: string;
+    submission?: FormSubmitOptions<TModel>;
+}
+
+// @public
+export interface FormSubmitOptions<TModel> {
+    action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>;
+    ignoreValidators?: 'pending' | 'none' | 'all';
+    onInvalid?: (form: FieldTree<TModel>) => void;
 }
 
 // @public
@@ -555,7 +560,10 @@ export type Subfields<TModel> = {
 };
 
 // @public
-export function submit<TModel>(form: FieldTree<TModel>, action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>): Promise<void>;
+export function submit<TModel>(form: FieldTree<TModel>, options?: FormSubmitOptions<TModel>): Promise<boolean>;
+
+// @public (undocumented)
+export function submit<TModel>(form: FieldTree<TModel>, action: FormSubmitOptions<TModel>['action']): Promise<boolean>;
 
 // @public
 export type TreeValidationResult<E extends ValidationError.WithOptionalFieldTree = ValidationError.WithOptionalFieldTree> = ValidationSuccess | OneOrMany<E>;
