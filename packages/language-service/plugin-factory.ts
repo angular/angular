@@ -9,20 +9,10 @@
 // Note: use a type-only import to prevent TypeScript from being bundled in.
 import type ts from 'typescript';
 
-export const factory: ts.server.PluginModuleFactory = (tsModule) => {
-  let plugin: ts.server.PluginModule;
+export const factory: ts.server.PluginModuleFactory = (mod) => {
+  const {initialize}: {initialize: ts.server.PluginModuleFactory} = require(
+    `@angular/language-service/bundles/language-service.js`,
+  )(mod);
 
-  return {
-    create(info: ts.server.PluginCreateInfo): ts.LanguageService {
-      plugin ??= require(`@angular/language-service/bundles/language-service.js`)(tsModule);
-
-      return plugin.create(info);
-    },
-    getExternalFiles(project: ts.server.Project): string[] {
-      return plugin?.getExternalFiles?.(project, tsModule.typescript.ProgramUpdateLevel.Full) ?? [];
-    },
-    onConfigurationChanged(config: unknown): void {
-      plugin?.onConfigurationChanged?.(config);
-    },
-  };
+  return initialize(mod);
 };
