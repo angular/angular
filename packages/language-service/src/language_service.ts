@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AST, TmplAstNode} from '@angular/compiler';
+import {
+  AST,
+  ASTWithSource,
+  BindingType,
+  LiteralMap,
+  LiteralPrimitive,
+  TmplAstBoundAttribute,
+  TmplAstNode,
+  TmplAstTextAttribute,
+} from '@angular/compiler';
 import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
@@ -55,6 +64,32 @@ import {getTypeCheckInfoAtPosition, isTypeScriptFile, TypeCheckInfo} from './uti
 import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {getInlayHintsForTemplate} from './inlay_hints';
+import type {
+  AngularInlayHint,
+  InlayHintsConfig,
+  CssDiagnosticsConfig,
+  DocumentColorInfo,
+  ColorInfo,
+  ColorPresentation,
+} from '../api';
+import {
+  getCssDiagnostics,
+  DEFAULT_CSS_DIAGNOSTICS_CONFIG,
+  parseColorValue,
+  isColorProperty,
+  getColorPresentations,
+} from './css';
+import {
+  getEventDiagnostics,
+  getOutputDefinitionDiagnostics,
+  DEFAULT_EVENT_DIAGNOSTICS_CONFIG,
+} from './events';
+import {
+  getAriaDiagnostics,
+  DEFAULT_ARIA_DIAGNOSTICS_CONFIG,
+  type AriaDiagnosticsConfig,
+} from './aria';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
@@ -108,12 +143,73 @@ export class LanguageService {
         if (sourceFile) {
           const ngDiagnostics = compiler.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile);
           diagnostics.push(...filterNgDiagnosticsForFile(ngDiagnostics, sourceFile.fileName));
+
+          // Add CSS property validation diagnostics for components in this file
+          // Note: This pattern (walking class declarations, using ttc.getTemplate) is similar
+          // to getInlayHintsAtPosition - could be refactored to share a utility function.
+          const cssConfig = this.getCssDiagnosticsConfig();
+          const eventConfig = this.getEventDiagnosticsConfig();
+          const ariaConfig = this.getAriaDiagnosticsConfig();
+          if (cssConfig.enabled || eventConfig.enabled || ariaConfig.enabled) {
+            const ttc = compiler.getTemplateTypeChecker();
+            // Find all class declarations that are components/directives
+            const visit = (node: ts.Node): void => {
+              if (ts.isClassDeclaration(node)) {
+                try {
+                  // Check if this is a component/directive by getting its metadata
+                  const meta = ttc.getDirectiveMetadata(node);
+                  if (meta) {
+                    try {
+                      // Check outputs at definition site for all directives/components
+                      if (eventConfig.enabled && eventConfig.warnOnShadowedEvents) {
+                        const outputDiags = getOutputDefinitionDiagnostics(
+                          node,
+                          compiler,
+                          eventConfig,
+                        );
+                        diagnostics.push(...outputDiags);
+                      }
+
+                      // For components with templates, also validate template events, CSS, and ARIA
+                      const template = ttc.getTemplate(node);
+                      if (template) {
+                        if (cssConfig.enabled) {
+                          const cssDiags = getCssDiagnostics(node, compiler, cssConfig);
+                          diagnostics.push(...cssDiags);
+                        }
+                        if (eventConfig.enabled) {
+                          const eventDiags = getEventDiagnostics(node, compiler, eventConfig);
+                          diagnostics.push(...eventDiags);
+                        }
+                        if (ariaConfig.enabled) {
+                          const ariaDiags = getAriaDiagnostics(node, compiler, ariaConfig);
+                          diagnostics.push(...ariaDiags);
+                        }
+                      }
+                    } catch {
+                      // Skip diagnostics for components with compilation errors
+                    }
+                  }
+                } catch {
+                  // Not a component/directive or error getting metadata, skip
+                }
+              }
+              ts.forEachChild(node, visit);
+            };
+            visit(sourceFile);
+          }
         }
       } else {
         const components = compiler.getComponentsWithTemplateFile(fileName);
         for (const component of components) {
           if (ts.isClassDeclaration(component)) {
             diagnostics.push(...compiler.getDiagnosticsForComponent(component));
+            // Add CSS property validation diagnostics
+            diagnostics.push(...this.getCssDiagnosticsForComponent(component, compiler));
+            // Add event validation diagnostics
+            diagnostics.push(...this.getEventDiagnosticsForComponent(component, compiler));
+            // Add ARIA validation diagnostics
+            diagnostics.push(...this.getAriaDiagnosticsForComponent(component, compiler));
           }
         }
       }
@@ -127,6 +223,153 @@ export class LanguageService {
       }
       return diagnostics;
     });
+  }
+
+  /**
+   * Gets CSS property validation diagnostics for a component.
+   * @internal
+   */
+  private getCssDiagnosticsForComponent(
+    component: ts.ClassDeclaration,
+    compiler: NgCompiler,
+  ): ts.Diagnostic[] {
+    const cssConfig = this.getCssDiagnosticsConfig();
+    if (!cssConfig.enabled) {
+      return [];
+    }
+    try {
+      return getCssDiagnostics(component, compiler, cssConfig);
+    } catch {
+      // Skip CSS diagnostics for components with compilation errors
+      // (e.g., unexported host directives)
+      return [];
+    }
+  }
+
+  /**
+   * Normalizes the CSS diagnostics configuration from the plugin config.
+   * @internal
+   */
+  private getCssDiagnosticsConfig(): {
+    enabled: boolean;
+    severity: 'error' | 'warning' | 'suggestion';
+    strictUnitValues?: boolean;
+    validateValues?: boolean;
+  } {
+    const cssValidation = this.config.cssPropertyValidation;
+
+    if (cssValidation === undefined || cssValidation === true) {
+      // Default: enabled with warning severity
+      return DEFAULT_CSS_DIAGNOSTICS_CONFIG;
+    }
+
+    if (cssValidation === false) {
+      // Explicitly disabled
+      return {enabled: false, severity: 'warning'};
+    }
+
+    // Custom configuration object
+    return {
+      enabled: cssValidation.enabled !== false,
+      severity: cssValidation.severity ?? 'warning',
+      strictUnitValues: cssValidation.strictUnitValues ?? false,
+      validateValues: cssValidation.validateValues ?? true,
+    };
+  }
+
+  /**
+   * Gets event validation diagnostics for a component.
+   * @internal
+   */
+  private getEventDiagnosticsForComponent(
+    component: ts.ClassDeclaration,
+    compiler: NgCompiler,
+  ): ts.Diagnostic[] {
+    const eventConfig = this.getEventDiagnosticsConfig();
+    if (!eventConfig.enabled) {
+      return [];
+    }
+    try {
+      return getEventDiagnostics(component, compiler, eventConfig);
+    } catch {
+      // Skip event diagnostics for components with compilation errors
+      return [];
+    }
+  }
+
+  /**
+   * Normalizes the event diagnostics configuration from the plugin config.
+   * @internal
+   */
+  private getEventDiagnosticsConfig(): {
+    enabled: boolean;
+    severity: 'error' | 'warning' | 'suggestion';
+    warnOnShadowedEvents: boolean;
+  } {
+    const eventValidation = this.config.eventValidation;
+
+    if (eventValidation === undefined || eventValidation === true) {
+      // Default: enabled with warning severity
+      return DEFAULT_EVENT_DIAGNOSTICS_CONFIG;
+    }
+
+    if (eventValidation === false) {
+      // Explicitly disabled
+      return {enabled: false, severity: 'warning', warnOnShadowedEvents: true};
+    }
+
+    // Custom configuration object
+    return {
+      enabled: eventValidation.enabled !== false,
+      severity: eventValidation.severity ?? 'warning',
+      warnOnShadowedEvents: eventValidation.warnOnShadowedEvents !== false,
+    };
+  }
+
+  /**
+   * Gets ARIA validation diagnostics for a component.
+   * @internal
+   */
+  private getAriaDiagnosticsForComponent(
+    component: ts.ClassDeclaration,
+    compiler: NgCompiler,
+  ): ts.Diagnostic[] {
+    const ariaConfig = this.getAriaDiagnosticsConfig();
+    if (!ariaConfig.enabled) {
+      return [];
+    }
+    try {
+      return getAriaDiagnostics(component, compiler, ariaConfig);
+    } catch {
+      // Skip ARIA diagnostics for components with compilation errors
+      return [];
+    }
+  }
+
+  /**
+   * Normalizes the ARIA diagnostics configuration from the plugin config.
+   * @internal
+   */
+  private getAriaDiagnosticsConfig(): AriaDiagnosticsConfig {
+    const ariaValidation = this.config.ariaValidation;
+
+    if (ariaValidation === undefined || ariaValidation === true) {
+      // Default: enabled
+      return DEFAULT_ARIA_DIAGNOSTICS_CONFIG;
+    }
+
+    if (ariaValidation === false) {
+      // Explicitly disabled
+      return {...DEFAULT_ARIA_DIAGNOSTICS_CONFIG, enabled: false};
+    }
+
+    // Custom configuration object
+    return {
+      enabled: ariaValidation.enabled !== false,
+      warnOnDeprecated: ariaValidation.warnOnDeprecated !== false,
+      validateValues: ariaValidation.validateValues !== false,
+      validateRoles: ariaValidation.validateRoles !== false,
+    };
   }
 
   getSuggestionDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
@@ -200,6 +443,85 @@ export class LanguageService {
     return this.withCompilerAndPerfTracing(PerfPhase.LsQuickInfo, (compiler) => {
       return this.getQuickInfoAtPositionImpl(fileName, position, compiler);
     });
+  }
+
+  /**
+   * Provide Angular-specific inlay hints for templates.
+   *
+   * This returns hints for:
+   * - @for loop variable types: `@for (user: User of users)`
+   * - @if alias types: `@if (data; as result: ApiResult)`
+   * - Event parameter types: `(click)="onClick($event: MouseEvent)"`
+   * - Pipe output types: `{{ value | async: Observable<T> }}`
+   * - @let declaration types
+   *
+   * @param fileName The file to get inlay hints for
+   * @param span The text span to get hints within
+   * @param config Optional configuration for which hints to show
+   */
+  provideInlayHints(
+    fileName: string,
+    span: ts.TextSpan,
+    config?: InlayHintsConfig,
+  ): AngularInlayHint[] {
+    // Use LsQuickInfo phase since inlay hints are similar in cost
+    return (
+      this.withCompilerAndPerfTracing(PerfPhase.LsQuickInfo, (compiler) => {
+        const hints: AngularInlayHint[] = [];
+
+        if (isTypeScriptFile(fileName)) {
+          // For TypeScript files, find all components and process their templates
+          const program = compiler.getCurrentProgram();
+          const sourceFile = program.getSourceFile(fileName);
+          if (!sourceFile) {
+            return hints;
+          }
+
+          const ttc = compiler.getTemplateTypeChecker();
+
+          // Walk the source file to find component/directive classes
+          const visit = (node: ts.Node): void => {
+            if (ts.isClassDeclaration(node) && node.name) {
+              // Try to get the template for this class (component) or host element (directive)
+              try {
+                const template = ttc.getTemplate(node);
+                const hostElement = ttc.getHostElement(node);
+
+                // Process if we have either a template or host element
+                if (template || hostElement) {
+                  // This is a component with a template or a directive with host bindings
+                  const typeCheckInfo: TypeCheckInfo = {
+                    declaration: node,
+                    nodes: template ?? [],
+                  };
+                  const templateHints = getInlayHintsForTemplate(
+                    compiler,
+                    typeCheckInfo,
+                    span,
+                    config,
+                  );
+                  hints.push(...templateHints);
+                }
+              } catch {
+                // Not a component/directive or error getting template, skip
+              }
+            }
+            ts.forEachChild(node, visit);
+          };
+
+          visit(sourceFile);
+        } else {
+          // For external template files (HTML), find the associated component
+          const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, span.start, compiler);
+          if (typeCheckInfo) {
+            const templateHints = getInlayHintsForTemplate(compiler, typeCheckInfo, span, config);
+            hints.push(...templateHints);
+          }
+        }
+
+        return hints;
+      }) ?? []
+    );
   }
 
   private getQuickInfoAtPositionImpl(
@@ -703,6 +1025,304 @@ export class LanguageService {
   }
 
   /**
+   * Get document colors for style bindings in templates and host bindings.
+   * Finds color values in:
+   * - Style bindings: [style.color]="'red'"
+   * - Style objects: [style]="{color: 'red'}"
+   * - Static styles: style="color: red"
+   * - Host bindings: @Component({ host: { '[style.color]': "'red'" } })
+   * - @HostBinding: @HostBinding('style.color') color = 'red';
+   */
+  getDocumentColors(fileName: string): DocumentColorInfo[] {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsQuickInfo, (compiler) => {
+      const colors: DocumentColorInfo[] = [];
+
+      // Only process template files or TypeScript files with inline templates
+      const program = compiler.getCurrentProgram();
+      const sourceFile = program.getSourceFile(fileName);
+      if (!sourceFile) {
+        return colors;
+      }
+
+      try {
+        const ttc = compiler.getTemplateTypeChecker();
+
+        // For template files (.html), find the component that owns this template
+        if (!isTypeScriptFile(fileName)) {
+          const components = compiler.getComponentsWithTemplateFile(fileName);
+          for (const component of components) {
+            if (ts.isClassDeclaration(component)) {
+              const template = ttc.getTemplate(component);
+              if (template) {
+                this.findColorsInTemplate(template, sourceFile, colors);
+              }
+            }
+          }
+        } else {
+          // For TypeScript files, find all components/directives and check their templates and host bindings
+          const visit = (node: ts.Node): void => {
+            if (ts.isClassDeclaration(node)) {
+              try {
+                // Check template for inline templates
+                const template = ttc.getTemplate(node);
+                if (template) {
+                  // Get the template source file (inline templates are in the same file)
+                  const templateSourceSpan = template[0]?.sourceSpan;
+                  if (templateSourceSpan) {
+                    const templateFile = program.getSourceFile(templateSourceSpan.start.file.url);
+                    if (templateFile) {
+                      this.findColorsInTemplate(template, templateFile, colors);
+                    }
+                  }
+                }
+
+                // Check host element for host bindings (@HostBinding and host property)
+                const hostElement = ttc.getHostElement(node);
+                if (hostElement) {
+                  this.findColorsInHostBindings(hostElement.bindings, colors);
+                }
+              } catch {
+                // Skip components with errors
+              }
+            }
+            ts.forEachChild(node, visit);
+          };
+          visit(sourceFile);
+        }
+      } catch {
+        // Skip on errors
+      }
+
+      return colors;
+    });
+  }
+
+  /**
+   * Find colors in host style bindings.
+   * Handles bindings from @Component({ host: { '[style.color]': "'red'" } }) and @HostBinding('style.color')
+   */
+  private findColorsInHostBindings(
+    bindings: readonly TmplAstBoundAttribute[],
+    colors: DocumentColorInfo[],
+  ): void {
+    for (const binding of bindings) {
+      // Skip bindings with invalid spans
+      if (!binding.keySpan || binding.keySpan.start.offset < 0) {
+        continue;
+      }
+
+      // Individual style binding: [style.color]
+      if (binding.type === BindingType.Style) {
+        const propertyName = binding.name;
+        if (isColorProperty(propertyName)) {
+          const value = binding.value;
+          if (value instanceof ASTWithSource && value.ast instanceof LiteralPrimitive) {
+            const literalValue = value.ast.value;
+            if (typeof literalValue === 'string') {
+              const color = parseColorValue(literalValue);
+              if (color) {
+                const valueSpan = value.ast.sourceSpan;
+                colors.push({
+                  color,
+                  range: {
+                    start: valueSpan.start + 1, // Skip opening quote
+                    length: literalValue.length,
+                  },
+                });
+              }
+            }
+          }
+        }
+      }
+
+      // Style object binding: [style]="{color: 'red'}"
+      if (binding.type === BindingType.Property && binding.name === 'style') {
+        this.findColorsInStyleObject(binding.value, colors);
+      }
+    }
+  }
+
+  /**
+   * Find colors in style bindings within a template.
+   * Handles:
+   * - Individual style bindings: [style.color]="'red'"
+   * - Style object bindings: [style]="{color: 'red'}"
+   * - ngStyle bindings: [ngStyle]="{color: 'red'}"
+   * - Static style attributes: style="color: red"
+   */
+  private findColorsInTemplate(
+    template: TmplAstNode[],
+    sourceFile: ts.SourceFile,
+    colors: DocumentColorInfo[],
+  ): void {
+    const visit = (node: TmplAstNode): void => {
+      // Check for individual style bindings: [style.color]="'red'"
+      if (node instanceof TmplAstBoundAttribute && node.type === BindingType.Style) {
+        const propertyName = node.name;
+
+        // Check if this is a color property
+        if (isColorProperty(propertyName)) {
+          // Try to extract the value if it's a literal
+          const value = node.value;
+          if (value instanceof ASTWithSource && value.ast instanceof LiteralPrimitive) {
+            const literalValue = value.ast.value;
+            if (typeof literalValue === 'string') {
+              const color = parseColorValue(literalValue);
+              if (color) {
+                // Calculate the position of the color value in the source
+                const valueSpan = value.ast.sourceSpan;
+                colors.push({
+                  color,
+                  range: {
+                    start: valueSpan.start + 1, // Skip opening quote
+                    length: literalValue.length,
+                  },
+                });
+              }
+            }
+          }
+        }
+      }
+
+      // Check for style object bindings: [style]="{color: 'red'}" or [ngStyle]="{color: 'red'}"
+      if (
+        node instanceof TmplAstBoundAttribute &&
+        node.type === BindingType.Property &&
+        (node.name === 'style' || node.name === 'ngStyle')
+      ) {
+        this.findColorsInStyleObject(node.value, colors);
+      }
+
+      // Check for static style attributes: style="color: red"
+      if (node instanceof TmplAstTextAttribute && node.name === 'style') {
+        this.findColorsInStaticStyle(node.value, node.valueSpan?.start.offset ?? 0, colors);
+      }
+
+      // Visit children for elements and templates
+      if ('children' in node && Array.isArray(node.children)) {
+        for (const child of node.children) {
+          visit(child);
+        }
+      }
+      if ('attributes' in node && Array.isArray(node.attributes)) {
+        for (const attr of node.attributes) {
+          visit(attr);
+        }
+      }
+      if ('inputs' in node && Array.isArray(node.inputs)) {
+        for (const input of node.inputs) {
+          visit(input);
+        }
+      }
+    };
+
+    for (const node of template) {
+      visit(node);
+    }
+  }
+
+  /**
+   * Find colors in a style object literal expression.
+   * Handles expressions like: {color: 'red', backgroundColor: 'blue'}
+   */
+  private findColorsInStyleObject(value: AST, colors: DocumentColorInfo[]): void {
+    let ast: AST = value;
+    if (ast instanceof ASTWithSource) {
+      ast = ast.ast;
+    }
+
+    if (!(ast instanceof LiteralMap)) {
+      return;
+    }
+
+    for (let i = 0; i < ast.keys.length; i++) {
+      const key = ast.keys[i];
+      if (key.kind !== 'property') continue;
+
+      const propertyName = key.key;
+      if (!isColorProperty(propertyName)) continue;
+
+      const valueAst = ast.values[i];
+      let valueNode: AST = valueAst;
+      if (valueNode instanceof ASTWithSource) {
+        valueNode = valueNode.ast;
+      }
+
+      if (valueNode instanceof LiteralPrimitive && typeof valueNode.value === 'string') {
+        const color = parseColorValue(valueNode.value);
+        if (color) {
+          colors.push({
+            color,
+            range: {
+              start: valueNode.sourceSpan.start + 1, // Skip opening quote
+              length: valueNode.value.length,
+            },
+          });
+        }
+      }
+    }
+  }
+
+  /**
+   * Find colors in a static style attribute value.
+   * Parses CSS declarations like: "color: red; background-color: blue"
+   */
+  private findColorsInStaticStyle(
+    styleValue: string,
+    baseOffset: number,
+    colors: DocumentColorInfo[],
+  ): void {
+    // Parse CSS declarations from the style attribute value
+    // Format: "property: value; property: value"
+    const declarations = styleValue.split(';');
+    let currentOffset = baseOffset;
+
+    for (const declaration of declarations) {
+      const colonIndex = declaration.indexOf(':');
+      if (colonIndex === -1) {
+        currentOffset += declaration.length + 1; // +1 for semicolon
+        continue;
+      }
+
+      const propertyName = declaration.substring(0, colonIndex).trim();
+      const propertyValue = declaration.substring(colonIndex + 1).trim();
+
+      if (isColorProperty(propertyName)) {
+        const color = parseColorValue(propertyValue);
+        if (color) {
+          // Calculate position: base + offset to colon + 1 + whitespace before value
+          const valueStartInDecl =
+            colonIndex +
+            1 +
+            (declaration.substring(colonIndex + 1).length -
+              declaration.substring(colonIndex + 1).trimStart().length);
+          colors.push({
+            color,
+            range: {
+              start: currentOffset + valueStartInDecl,
+              length: propertyValue.length,
+            },
+          });
+        }
+      }
+
+      currentOffset += declaration.length + 1; // +1 for semicolon
+    }
+  }
+
+  /**
+   * Get color presentations (format conversions) for a color.
+   */
+  getColorPresentations(
+    fileName: string,
+    color: ColorInfo,
+    range: ts.TextSpan,
+  ): ColorPresentation[] {
+    const presentations = getColorPresentations(color);
+    return presentations.map((label) => ({label}));
+  }
+
+  /**
    * Provides an instance of the `NgCompiler` and traces perf results. Perf results are logged only
    * if the log level is verbose or higher. This method is intended to be called once per public
    * method call.
@@ -912,7 +1532,8 @@ function isHostBindingExpression(node: ts.Node): boolean {
   }
 
   const assignment = closestAncestorNode(node, ts.isPropertyAssignment);
-  if (assignment === null || assignment.initializer !== node) {
+  // Allow both key (name) and value (initializer) positions
+  if (assignment === null || (assignment.initializer !== node && assignment.name !== node)) {
     return false;
   }
 

@@ -1419,6 +1419,205 @@ describe('code fixes', () => {
       });
     });
   });
+
+  describe('CSS property fixes', () => {
+    it('should suggest fixes for unknown CSS property in style binding', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<div [style.backgroundColour]="myColor"></div>',
+           standalone: true,
+         })
+         export class AppComponent {
+           myColor = 'red';
+         }
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const diags = project.getDiagnosticsForFile('app.ts');
+      const cssDiag = diags.find((d) => d.code === 99001);
+      expect(cssDiag).toBeDefined();
+
+      const appFile = project.openFile('app.ts');
+      appFile.moveCursorToText('backgroundColour¦');
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        cssDiag!.code,
+      ]);
+
+      // Should have suggestions
+      expect(codeActions.length).toBeGreaterThan(0);
+      // First suggestion should be backgroundColor
+      expect(codeActions[0].description).toContain('backgroundColor');
+    });
+
+    it('should suggest fixes for unknown CSS property with kebab-case', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<div [style.backgrond-color]="myColor"></div>',
+           standalone: true,
+         })
+         export class AppComponent {
+           myColor = 'red';
+         }
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const diags = project.getDiagnosticsForFile('app.ts');
+      const cssDiag = diags.find((d) => d.code === 99001);
+      expect(cssDiag).toBeDefined();
+
+      const appFile = project.openFile('app.ts');
+      appFile.moveCursorToText('backgrond-color¦');
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        cssDiag!.code,
+      ]);
+
+      // Should have suggestions in kebab-case
+      expect(codeActions.length).toBeGreaterThan(0);
+      expect(codeActions[0].description).toContain('background-color');
+    });
+
+    it('should fix all unknown CSS properties', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<div [style.colro]="c1" [style.wdith]="c2"></div>',
+           standalone: true,
+         })
+         export class AppComponent {
+           c1 = 'red';
+           c2 = '100px';
+         }
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const appFile = project.openFile('app.ts');
+
+      const fixesAllActions = project.getCombinedCodeFix(
+        'app.ts',
+        FixIdForCodeFixesAll.FIX_CSS_PROPERTY,
+      );
+
+      // Should have changes for both properties
+      expect(fixesAllActions.changes.length).toBe(1);
+      expect(fixesAllActions.changes[0].textChanges.length).toBe(2);
+    });
+  });
+
+  describe('CSS shorthand conflict fixes', () => {
+    it('should offer to remove conflicting longhand property', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<div [style.background]="bg" [style.backgroundColor]="bgColor"></div>',
+           standalone: true,
+         })
+         export class AppComponent {
+           bg = 'url(test.png)';
+           bgColor = 'red';
+         }
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const diags = project.getDiagnosticsForFile('app.ts');
+      const cssDiag = diags.find((d) => d.code === 99014); // SHORTHAND_OVERRIDE
+      expect(cssDiag).toBeDefined();
+
+      const appFile = project.openFile('app.ts');
+      appFile.moveCursorToText('backgroundColor¦');
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        cssDiag!.code,
+      ]);
+
+      // Should have fix action
+      expect(codeActions.length).toBeGreaterThan(0);
+      expect(codeActions[0].description).toContain('Remove');
+      expect(codeActions[0].description).toContain('background-color');
+    });
+  });
+
+  describe('CSS unit value fixes', () => {
+    it('should offer to remove unit suffix when value is non-numeric', () => {
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<div [style.width.px]="\\'red\\'"></div>',
+           standalone: true,
+         })
+         export class AppComponent {}
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const diags = project.getDiagnosticsForFile('app.ts');
+      const cssDiag = diags.find((d) => d.code === 99011); // INVALID_UNIT_VALUE
+      expect(cssDiag).toBeDefined();
+
+      const appFile = project.openFile('app.ts');
+      appFile.moveCursorToText("\\'red\\'¦");
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        cssDiag!.code,
+      ]);
+
+      // Should have fix action
+      expect(codeActions.length).toBeGreaterThan(0);
+      expect(codeActions[0].description).toContain('.px');
+      expect(codeActions[0].description).toContain('Remove');
+    });
+
+    it('should offer to convert string numeric literal to number', () => {
+      // Note: This test requires strictUnitValues config option to be enabled.
+      // Currently, the test infrastructure doesn't support passing PluginConfig options.
+      // The PREFER_NUMERIC_UNIT_VALUE diagnostic (99015) is only produced when
+      // cssValidation.strictUnitValues is true.
+      // TODO: Enable this test once configuration support is added.
+      // See the TODO comment in css_diagnostics_spec.ts for more details.
+      pending('Test requires strictUnitValues config support');
+
+      const files = {
+        'app.ts': `
+         import {Component} from '@angular/core';
+
+         @Component({
+           template: '<div [style.width.px]="\\'100\\'"></div>',
+           standalone: true,
+         })
+         export class AppComponent {}
+       `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+      const diags = project.getDiagnosticsForFile('app.ts');
+      const cssDiag = diags.find((d) => d.code === 99015); // PREFER_NUMERIC_UNIT_VALUE
+      expect(cssDiag).toBeDefined();
+
+      const appFile = project.openFile('app.ts');
+      appFile.moveCursorToText("\\'100\\'¦");
+      const codeActions = project.getCodeFixesAtPosition('app.ts', appFile.cursor, appFile.cursor, [
+        cssDiag!.code,
+      ]);
+
+      // Should have fix action
+      expect(codeActions.length).toBeGreaterThan(0);
+      expect(codeActions[0].description).toContain('100');
+      expect(codeActions[0].description).toContain('Convert');
+    });
+  });
 });
 
 type ActionChanges = {

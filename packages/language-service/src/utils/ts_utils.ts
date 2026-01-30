@@ -810,9 +810,7 @@ function getStringLiteralText(moduleSpecifier: ts.Expression): string | undefine
  * The developer should export the `FooComponent` in the `AppModule`.
  *
  */
-class PotentialDirectiveModuleSpecifierResolverImpl
-  implements PotentialDirectiveModuleSpecifierResolver
-{
+class PotentialDirectiveModuleSpecifierResolverImpl implements PotentialDirectiveModuleSpecifierResolver {
   constructor(
     private readonly compiler: NgCompiler,
     private readonly directive: PotentialDirective | PotentialPipe,

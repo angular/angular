@@ -158,6 +158,114 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "When enabled, the Angular Language Service will delegate file watching to VS Code instead of creating its own internal file watchers. This can significantly improve performance (greater than 10x faster initialization) and reduce resource usage in large repositories."
+        },
+        "angular.inlayHints.forLoopVariableTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for `@for` loop variables: `@for (user: User of users)`"
+        },
+        "angular.inlayHints.ifAliasTypes": {
+          "type": [
+            "boolean",
+            "string"
+          ],
+          "enum": [
+            true,
+            false,
+            "complex"
+          ],
+          "default": true,
+          "markdownDescription": "Show type hints for `@if` alias variables. Set to `'complex'` to only show hints for complex expressions (property access, comparisons, etc.)"
+        },
+        "angular.inlayHints.letDeclarationTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for `@let` declarations: `@let count: number = items.length`"
+        },
+        "angular.inlayHints.referenceVariableTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for template reference variables: `#ref: HTMLInputElement`"
+        },
+        "angular.inlayHints.variableTypeHintsWhenTypeMatchesName": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show variable type hints even when the variable name matches the type name (case-insensitive). When disabled, hints like `user: User` are suppressed."
+        },
+        "angular.inlayHints.arrowFunctionParameterTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for arrow function parameters in templates."
+        },
+        "angular.inlayHints.arrowFunctionReturnTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show return type hints for arrow functions in templates."
+        },
+        "angular.inlayHints.parameterNameHints": {
+          "type": "string",
+          "enum": [
+            "none",
+            "literals",
+            "all"
+          ],
+          "default": "all",
+          "markdownDescription": "Show parameter name hints for function/method calls. `'literals'` shows hints only for literal arguments."
+        },
+        "angular.inlayHints.parameterNameHintsWhenArgumentMatchesName": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Show parameter name hints even when the argument name matches the parameter name."
+        },
+        "angular.inlayHints.eventParameterTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for event binding `$event` parameter: `(click: MouseEvent)`"
+        },
+        "angular.inlayHints.propertyBindingTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for property/input bindings: `[disabled: boolean]`"
+        },
+        "angular.inlayHints.pipeOutputTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for pipe output types: `{{ value | async: Observable<T> }}`"
+        },
+        "angular.inlayHints.twoWayBindingSignalTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show signal type hints for two-way bindings: `[(value: WritableSignal<string>)]`"
+        },
+        "angular.inlayHints.requiredInputIndicator": {
+          "type": "string",
+          "enum": [
+            "none",
+            "asterisk",
+            "exclamation"
+          ],
+          "default": "none",
+          "markdownDescription": "Visual indicator for required inputs. `'asterisk'` shows `*`, `'exclamation'` shows `!` after the type."
+        },
+        "angular.inlayHints.interactiveInlayHints": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable interactive inlay hints that navigate to type definitions when clicked."
+        },
+        "angular.inlayHints.hostListenerArgumentTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for `@HostListener` argument types."
+        },
+        "angular.inlayHints.switchExpressionTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for `@switch` expression types."
+        },
+        "angular.inlayHints.deferTriggerTypes": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Show type hints for `@defer` trigger types."
         }
       }
     },

@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isNgLanguageService, NgLanguageService, PluginConfig} from '@angular/language-service/api';
+import {
+  isNgLanguageService,
+  NgLanguageService,
+  PluginConfig,
+  InlayHintsConfig,
+} from '@angular/language-service/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {promisify} from 'util';
 import * as lsp from 'vscode-languageserver/node';
@@ -35,6 +40,7 @@ import {
   uriToFilePath,
 } from './utils';
 import {onCodeAction, onCodeActionResolve} from './handlers/code_actions';
+import {onColorPresentation, onDocumentColor} from './handlers/colors';
 import {getComponentsWithTemplateFile, onCodeLens, onCodeLensResolve} from './handlers/code_lens';
 import {onCompletion, onCompletionResolve} from './handlers/completions';
 import {onDefinition, onTypeDefinition, onReferences} from './handlers/definitions';
@@ -46,6 +52,7 @@ import {onSignatureHelp} from './handlers/signature';
 import {onGetTcb} from './handlers/tcb';
 import {onGetTemplateLocationForComponent, isInAngularProject} from './handlers/template_info';
 import {onDidChangeWatchedFiles} from './handlers/did_change_watched_files';
+import {onInlayHint, onInlayHintResolve} from './handlers/inlay_hints';
 
 export interface SessionOptions {
   host: ServerHost;
@@ -101,6 +108,11 @@ export class Session {
   readonly renameDisabledProjects: WeakSet<ts.server.Project> = new WeakSet();
   clientCapabilities: lsp.ClientCapabilities = {};
   readonly defaultPreferences: ts.UserPreferences = {};
+  /**
+   * Configuration for Angular inlay hints.
+   * Updated via workspace/didChangeConfiguration notifications.
+   */
+  inlayHintsConfig: InlayHintsConfig = {};
 
   constructor(options: SessionOptions) {
     this.includeAutomaticOptionalChainCompletions =
@@ -238,6 +250,8 @@ export class Session {
     conn.onFoldingRanges((p) => onFoldingRanges(this, p));
     conn.onCompletion((p) => onCompletion(this, p));
     conn.onCompletionResolve((p) => onCompletionResolve(this, p));
+    conn.onDocumentColor((p) => onDocumentColor(this, p));
+    conn.onColorPresentation((p) => onColorPresentation(this, p));
     conn.onRequest(GetComponentsWithTemplateFile, (p) => getComponentsWithTemplateFile(this, p));
     conn.onRequest(GetTemplateLocationForComponent, (p) =>
       onGetTemplateLocationForComponent(this, p),
@@ -249,6 +263,10 @@ export class Session {
     conn.onSignatureHelp((p) => onSignatureHelp(this, p));
     conn.onCodeAction((p) => onCodeAction(this, p));
     conn.onCodeActionResolve(async (p) => await onCodeActionResolve(this, p));
+
+    // Inlay hints (LSP 3.17)
+    conn.onRequest(lsp.InlayHintRequest.type, (p) => onInlayHint(this, p));
+    conn.onRequest(lsp.InlayHintResolveRequest.type, (p) => onInlayHintResolve(this, p));
   }
 
   private enableLanguageServiceForProject(project: ts.server.Project): void {

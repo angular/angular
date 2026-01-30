@@ -76,6 +76,7 @@ export class CodeFixes {
           formatOptions,
           preferences,
           tsLs: this.tsLS,
+          diagnostics,
         });
         const fixAllAvailable = isFixAllAvailable(meta, diagnostics);
         const removeFixIdForCodeActions = codeActionsForMeta.map(

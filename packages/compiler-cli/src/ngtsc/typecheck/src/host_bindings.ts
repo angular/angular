@@ -189,7 +189,7 @@ function createNodeFromHostLiteralProperty(
   const {name, initializer} = property;
 
   if (name.text.startsWith('[') && name.text.endsWith(']')) {
-    const {attrName, type} = inferBoundAttribute(name.text.slice(1, -1));
+    const {attrName, type, unit} = inferBoundAttribute(name.text.slice(1, -1));
     const valueSpan = createStaticExpressionSpan(initializer);
     const ast = parser.parseBinding(initializer.text, true, valueSpan, valueSpan.start.offset);
     if (ast.errors.length > 0) {
@@ -203,7 +203,7 @@ function createNodeFromHostLiteralProperty(
         type,
         0,
         ast,
-        null,
+        unit,
         createSourceSpan(property),
         createStaticExpressionSpan(name),
         valueSpan,
@@ -421,10 +421,15 @@ function createNodeFromListenerDecorator(
 }
 
 /**
- * Infers the attribute name and binding type of a bound attribute based on its raw name.
+ * Infers the attribute name, binding type, and optional CSS unit of a bound attribute
+ * based on its raw name.
  * @param name Name from which to infer the information.
  */
-function inferBoundAttribute(name: string): {attrName: string; type: BindingType} {
+function inferBoundAttribute(name: string): {
+  attrName: string;
+  type: BindingType;
+  unit: string | null;
+} {
   const attrPrefix = 'attr.';
   const classPrefix = 'class.';
   const stylePrefix = 'style.';
@@ -432,6 +437,7 @@ function inferBoundAttribute(name: string): {attrName: string; type: BindingType
   const legacyAnimationPrefix = '@';
   let attrName: string;
   let type: BindingType;
+  let unit: string | null = null;
 
   // Infer the binding type based on the prefix.
   if (name.startsWith(attrPrefix)) {
@@ -441,7 +447,16 @@ function inferBoundAttribute(name: string): {attrName: string; type: BindingType
     attrName = name.slice(classPrefix.length);
     type = BindingType.Class;
   } else if (name.startsWith(stylePrefix)) {
-    attrName = name.slice(stylePrefix.length);
+    // Extract property name and optional unit for style bindings
+    // e.g., 'width.px' -> attrName='width', unit='px'
+    const stylePart = name.slice(stylePrefix.length);
+    const dotIndex = stylePart.indexOf('.');
+    if (dotIndex > -1) {
+      attrName = stylePart.slice(0, dotIndex);
+      unit = stylePart.slice(dotIndex + 1);
+    } else {
+      attrName = stylePart;
+    }
     type = BindingType.Style;
   } else if (name.startsWith(animationPrefix)) {
     attrName = name;
@@ -454,7 +469,7 @@ function inferBoundAttribute(name: string): {attrName: string; type: BindingType
     type = BindingType.Property;
   }
 
-  return {attrName, type};
+  return {attrName, type, unit};
 }
 
 /** Checks whether the specified node is a static name node. */

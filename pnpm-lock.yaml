@@ -133,6 +133,9 @@ importers:
       '@types/convert-source-map':
         specifier: ^2.0.0
         version: 2.0.3
+      '@types/css-tree':
+        specifier: ^2.3.11
+        version: 2.3.11
       '@types/dom-navigation':
         specifier: ^1.0.5
         version: 1.0.6
@@ -199,6 +202,9 @@ importers:
       convert-source-map:
         specifier: ^1.5.1
         version: 1.9.0
+      css-tree:
+        specifier: ^3.1.0
+        version: 3.1.0
       d3:
         specifier: ^7.0.0
         version: 7.9.0
@@ -313,6 +319,15 @@ importers:
       typescript:
         specifier: 5.9.3
         version: 5.9.3
+      vscode-css-languageservice:
+        specifier: ^6.3.9
+        version: 6.3.9
+      vscode-html-languageservice:
+        specifier: ^5.6.1
+        version: 5.6.1
+      vscode-languageserver-textdocument:
+        specifier: ^1.0.12
+        version: 1.0.12
       webtreemap:
         specifier: ^2.0.1
         version: 2.0.1
@@ -377,6 +392,9 @@ importers:
       '@types/tmp':
         specifier: ^0.2.6
         version: 0.2.6
+      '@vscode/web-custom-data':
+        specifier: ^0.6.2
+        version: 0.6.2
       '@yarnpkg/lockfile':
         specifier: ^1.1.0
         version: 1.1.0
@@ -4919,6 +4937,9 @@ packages:
   '@types/cors@2.8.19':
     resolution: {integrity: sha512-mFNylyeyqN93lfe/9CSxOGREz8cpzAhH+E93xJ4xWQf62V8sQ/24reV2nyzUWM6H6Xji+GGHpkbLe7pVoUEskg==}
 
+  '@types/css-tree@2.3.11':
+    resolution: {integrity: sha512-aEokibJOI77uIlqoBOkVbaQGC9zII0A+JH1kcTNKW2CwyYWD8KM6qdo+4c77wD3wZOQfJuNWAr9M4hdk+YhDIg==}
+
   '@types/d3-array@3.2.2':
     resolution: {integrity: sha512-hOLWVbm7uRza0BYXpIIW5pxfrKe0W+D5lrFiAEYR+pb6w3N2SwSMaJbXdUfSEv+dT4MfHBLtn5js0LAWaO6otw==}
 
@@ -5450,6 +5471,9 @@ packages:
     resolution: {integrity: sha512-OTm2XdMt2YkpSn2Nx7z2EJtSuhRHsTPYsSK59hr3v8jRArK+2UEoju4Jumn1CmpgoBLGI6ReHLJ/czYltNUW3g==}
     engines: {node: '>= 20'}
     hasBin: true
+
+  '@vscode/web-custom-data@0.6.2':
+    resolution: {integrity: sha512-PIZNbMb3WkPWzXeCIe2HBkykVlX/MeASXyQ0IPcGA6HkMW5dcJyNhv+xkxjza60aCVQnsCHnZduO7D/cUgdFXw==}
 
   '@wdio/config@6.12.1':
     resolution: {integrity: sha512-V5hTIW5FNlZ1W33smHF4Rd5BKjGW2KeYhyXDQfXHjqLCeRiirZ9fABCo9plaVQDnwWSUMWYaAaIAifV82/oJCQ==}
@@ -17591,6 +17615,8 @@ snapshots:
     dependencies:
       '@types/node': 24.10.9
 
+  '@types/css-tree@2.3.11': {}
+
   '@types/d3-array@3.2.2': {}
 
   '@types/d3-axis@3.0.6':
@@ -18195,6 +18221,8 @@ snapshots:
       keytar: 7.9.0
     transitivePeerDependencies:
       - supports-color
+
+  '@vscode/web-custom-data@0.6.2': {}
 
   '@wdio/config@6.12.1':
     dependencies:

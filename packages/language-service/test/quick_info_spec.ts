@@ -116,6 +116,18 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
         })
         export class DeprecatedDirective {}
 
+        /**
+         * A directive that shadows StringModel's 'model' input.
+         */
+        @Directive({
+          selector: '[string-model][shadow-model]',
+          standalone: false,
+        })
+        export class ShadowingDirective {
+          @Input() model!: string;
+          @Output() modelChange!: EventEmitter<string>;
+        }
+
         @NgModule({
           declarations: [
             AppCmp,
@@ -123,7 +135,8 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
             StringModel,
             TestComponent,
             SignalModel,
-            DeprecatedDirective
+            DeprecatedDirective,
+            ShadowingDirective
           ],
           imports: [
             CommonModule,
@@ -192,7 +205,9 @@ describe('quick info', () => {
           expectedSpanText: '<test-comp></test-comp>',
           expectedDisplayString: '(component) AppModule.TestComponent',
         });
-        expect(toText(documentation)).toBe('This Component provides the `test-comp` selector.');
+        expect(toText(documentation)).toContain(
+          'This Component provides the `test-comp` selector.',
+        );
       });
 
       it('should work for components with bound attributes', () => {
@@ -201,7 +216,9 @@ describe('quick info', () => {
           expectedSpanText: `<test-comp [attr.id]="'1' + '2'" [attr.name]="'myName'"></test-comp>`,
           expectedDisplayString: '(component) AppModule.TestComponent',
         });
-        expect(toText(documentation)).toBe('This Component provides the `test-comp` selector.');
+        expect(toText(documentation)).toContain(
+          'This Component provides the `test-comp` selector.',
+        );
       });
 
       it('should work for structural directives', () => {
@@ -241,6 +258,38 @@ describe('quick info', () => {
         const tags = quickInfo!.tags!;
         expect(tags[0].name).toBe('deprecated');
         expect(toText(tags[0].text)).toBe('use the new thing');
+      });
+    });
+
+    describe('element inspector', () => {
+      it('should show directive and binding info on element hover', () => {
+        const {documentation} = expectQuickInfo({
+          templateOverride: `<t¦est-comp [tcName]="name" (test)="myClick($event)"></test-comp>`,
+          expectedSpanText: `<test-comp [tcName]="name" (test)="myClick($event)"></test-comp>`,
+          expectedDisplayString: '(component) AppModule.TestComponent',
+        });
+        // Should include original documentation
+        expect(toText(documentation)).toContain(
+          'This Component provides the `test-comp` selector.',
+        );
+        // Should include applied directives
+        expect(toText(documentation)).toContain('**Applied Directives:**');
+        expect(toText(documentation)).toContain('**TestComponent**');
+        // Should include binding counts
+        expect(toText(documentation)).toContain('**Bindings:**');
+      });
+
+      it('should show shadowing warning when multiple directives have same input', () => {
+        const {documentation} = expectQuickInfo({
+          templateOverride: `<div string-model shadow-model [mod¦el]="name"></div>`,
+          expectedSpanText: 'model',
+          expectedDisplayString: '(property) ShadowingDirective.model: string',
+        });
+        // Should show shadowing warning
+        expect(toText(documentation)).toContain('Shadowing Warning');
+        expect(toText(documentation)).toContain('Multiple directives declare input');
+        expect(toText(documentation)).toContain('StringModel');
+        expect(toText(documentation)).toContain('ShadowingDirective');
       });
     });
 
@@ -341,6 +390,44 @@ describe('quick info', () => {
           });
         });
       });
+
+      describe('HTML attributes', () => {
+        it('should provide documentation for property bindings', () => {
+          const {documentation} = expectQuickInfo({
+            templateOverride: `<div [tab¦index]="0"></div>`,
+            expectedSpanText: 'tabindex',
+            expectedDisplayString: 'property tabindex',
+          });
+          expect(toText(documentation)).toContain('tabindex');
+        });
+
+        it('should provide documentation for attribute bindings', () => {
+          const {documentation} = expectQuickInfo({
+            templateOverride: `<div [attr.tab¦index]="0"></div>`,
+            expectedSpanText: 'attr.tabindex',
+            expectedDisplayString: 'attribute tabindex',
+          });
+          expect(toText(documentation)).toContain('tabindex');
+        });
+
+        it('should provide documentation for hidden property binding', () => {
+          const {documentation} = expectQuickInfo({
+            templateOverride: `<div [hid¦den]="true"></div>`,
+            expectedSpanText: 'hidden',
+            expectedDisplayString: 'property hidden',
+          });
+          expect(toText(documentation)).toContain('hidden');
+        });
+
+        it('should provide documentation for ARIA attribute bindings', () => {
+          const {documentation} = expectQuickInfo({
+            templateOverride: `<div [attr.aria-lab¦el]="'test'"></div>`,
+            expectedSpanText: 'attr.aria-label',
+            expectedDisplayString: 'attribute aria-label',
+          });
+          expect(toText(documentation)).toContain('aria-label');
+        });
+      });
     });
 
     describe('references', () => {
@@ -379,14 +466,38 @@ describe('quick info', () => {
       });
 
       it('should work for click output from native element', () => {
-        expectQuickInfo({
+        const {documentation} = expectQuickInfo({
           templateOverride: `<div (cl¦ick)="myClick($event)"></div>`,
           expectedSpanText: 'click',
-          expectedDisplayString:
-            '(event) HTMLDivElement.addEventListener<"click">(type: "click", listener: ' +
-            '(this: HTMLDivElement, ev: PointerEvent) => any, options?: boolean | ' +
-            'AddEventListenerOptions): void (+1 overload)',
+          expectedDisplayString: '(event) click: PointerEvent',
         });
+        // Should include MDN link and event description
+        const docText = toText(documentation);
+        expect(docText).toContain('click');
+        expect(docText).toContain('MDN Documentation');
+      });
+
+      it('should show keyboard event modifier hint for keydown', () => {
+        const {documentation} = expectQuickInfo({
+          templateOverride: `<input (key¦down)="myClick($event)">`,
+          expectedSpanText: 'keydown',
+          expectedDisplayString: '(event) keydown: KeyboardEvent',
+        });
+        // Should include tip about keyboard modifiers
+        const docText = toText(documentation);
+        expect(docText).toContain('keydown.enter');
+        expect(docText).toContain('MDN Documentation');
+      });
+
+      it('should work for keyboard event with modifier', () => {
+        const {documentation} = expectQuickInfo({
+          templateOverride: `<input (keydown.en¦ter)="myClick($event)">`,
+          expectedSpanText: 'keydown.enter',
+          expectedDisplayString: '(event) keydown.enter: KeyboardEvent',
+        });
+        // Should have documentation but no modifier tip (since already using modifier)
+        const docText = toText(documentation);
+        expect(docText).toContain('MDN Documentation');
       });
     });
 
@@ -1270,6 +1381,84 @@ describe('quick info', () => {
         expectedSpanText: 'ref',
         expectedDisplayString: '(reference) ref: TestDirective',
       });
+    });
+  });
+
+  describe('CSS style bindings', () => {
+    beforeEach(() => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      project = env.addProject('test', {
+        'app.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            templateUrl: './app.html',
+          })
+          export class AppCmp {
+            myColor = 'red';
+            myWidth = 100;
+          }
+        `,
+        'app.html': 'Will be overridden',
+      });
+    });
+
+    it('should provide quick info for style binding property name', () => {
+      const template = project.openFile('app.html');
+      const templateText = `<div [style.backgroun¦dColor]="'red'"></div>`;
+      template.contents = templateText.replace('¦', '');
+      template.moveCursorToText(`backgroun¦dColor`);
+      const quickInfo = template.getQuickInfoAtPosition();
+      expect(quickInfo).toBeTruthy();
+      expect(toText(quickInfo!.displayParts)).toContain('style.backgroundColor');
+      expect(quickInfo!.documentation?.some((d) => d.text.toLowerCase().includes('color'))).toBe(
+        true,
+      );
+    });
+
+    it('should provide quick info for style binding value', () => {
+      const template = project.openFile('app.html');
+      const templateText = `<div [style.color]="'re¦d'"></div>`;
+      template.contents = templateText.replace('¦', '');
+      template.moveCursorToText(`re¦d`);
+      const quickInfo = template.getQuickInfoAtPosition();
+      expect(quickInfo).toBeTruthy();
+      // Should show CSS value documentation
+      expect(quickInfo!.displayParts).toBeDefined();
+      expect(quickInfo!.documentation).toBeDefined();
+    });
+
+    it('should provide quick info for style binding with hex color value', () => {
+      const template = project.openFile('app.html');
+      const templateText = `<div [style.backgroundColor]="'#ff00¦00'"></div>`;
+      template.contents = templateText.replace('¦', '');
+      template.moveCursorToText(`#ff00¦00`);
+      const quickInfo = template.getQuickInfoAtPosition();
+      expect(quickInfo).toBeTruthy();
+      // Should show CSS value information
+      expect(quickInfo!.displayParts).toBeDefined();
+    });
+
+    it('should provide quick info for style binding with unit suffix property', () => {
+      const template = project.openFile('app.html');
+      const templateText = `<div [style.wid¦th.px]="myWidth"></div>`;
+      template.contents = templateText.replace('¦', '');
+      template.moveCursorToText(`wid¦th`);
+      const quickInfo = template.getQuickInfoAtPosition();
+      expect(quickInfo).toBeTruthy();
+      expect(toText(quickInfo!.displayParts)).toContain('style.width');
+      expect(toText(quickInfo!.displayParts)).toContain('px');
+    });
+
+    it('should provide quick info for display property value', () => {
+      const template = project.openFile('app.html');
+      const templateText = `<div [style.display]="'fle¦x'"></div>`;
+      template.contents = templateText.replace('¦', '');
+      template.moveCursorToText(`fle¦x`);
+      const quickInfo = template.getQuickInfoAtPosition();
+      expect(quickInfo).toBeTruthy();
+      expect(quickInfo!.displayParts).toBeDefined();
     });
   });
 

@@ -9,7 +9,13 @@ ts_project(
         "**/*.ts",
     ]),
     deps = [
+        "//:node_modules/@types/css-tree",
+        "//:node_modules/@vscode/web-custom-data",
+        "//:node_modules/css-tree",
         "//:node_modules/typescript",
+        "//:node_modules/vscode-css-languageservice",
+        "//:node_modules/vscode-html-languageservice",
+        "//:node_modules/vscode-languageserver-textdocument",
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/core",

@@ -28,7 +28,8 @@ export interface CodeActionContext {
   errorCode: number;
   formatOptions: tss.FormatCodeSettings;
   preferences: tss.UserPreferences;
-  tsLs: tss.LanguageService;
+  tsLs: tss.LanguageService; /** All diagnostics for the file, to help code fixes find the relevant diagnostic. */
+  diagnostics: tss.Diagnostic[];
 }
 
 /**
@@ -139,4 +140,8 @@ export enum FixIdForCodeFixesAll {
   FIX_MISSING_IMPORT = 'fixMissingImport',
   FIX_UNUSED_STANDALONE_IMPORTS = 'fixUnusedStandaloneImports',
   FIX_MISSING_REQUIRED_INPUTS = 'fixMissingRequiredInputs',
+  FIX_CSS_PROPERTY = 'fixCssProperty',
+  FIX_CSS_SHORTHAND_CONFLICT = 'fixCssShorthandConflict',
+  FIX_CSS_UNIT_VALUE = 'fixCssUnitValue',
+  FIX_CSS_VALUE = 'fixCssValue',
 }
