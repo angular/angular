@@ -26,7 +26,7 @@ import {
 } from '@angular/core';
 import {type ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
-import {SignalFormsErrorCode} from '../errors';
+import {RuntimeErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
 import type {FieldTree} from '../api/types';
@@ -239,7 +239,7 @@ export class FormField<T> {
   registerAsBinding(bindingOptions?: FormFieldBindingOptions): void {
     if (this.isFieldBinding) {
       throw new RuntimeError(
-        SignalFormsErrorCode.BINDING_ALREADY_REGISTERED,
+        RuntimeErrorCode.BINDING_ALREADY_REGISTERED,
         ngDevMode && 'FormField already registered as a binding',
       );
     }
@@ -304,7 +304,7 @@ export class FormField<T> {
       this.ɵngControlUpdate = nativeControlCreate(host, this as FormField<unknown>);
     } else {
       throw new RuntimeError(
-        SignalFormsErrorCode.INVALID_FIELD_DIRECTIVE_HOST,
+        RuntimeErrorCode.INVALID_FIELD_DIRECTIVE_HOST,
         ngDevMode &&
           `${host.descriptor} is an invalid [formField] directive host. The host must be a native form control ` +
             `(such as <input>', '<select>', or '<textarea>') or a custom form control with a 'value' or ` +
