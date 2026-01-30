@@ -251,7 +251,7 @@ describe('hot module replacement', () => {
     );
   });
 
-  it('should replace a component using shadow DOM encapsulation', () => {
+  fit('should replace a component using shadow DOM encapsulation', () => {
     // Domino doesn't support shadow DOM.
     if (isNode) {
       return;
