@@ -255,7 +255,7 @@
             "readonly",
             "input"
           ],
-          "description": "The value of the menu item.",
+          "description": "The value of the menu item, used as the default aria-label",
           "jsdocTags": [],
           "inputAlias": "value",
           "isRequiredInput": true
@@ -441,7 +441,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu-item.ts",
         "startLine": 33,
-        "endLine": 107
+        "endLine": 108
       }
     },
     {
@@ -769,7 +769,7 @@
           "name": "V"
         }
       ],
-      "description": "A list of menu items.\n\nA `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\nwithin other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\nand `ngMenuItem` directives.\n\n```html\n<button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n\n<div ngMenu #myMenu=\"ngMenu\">\n  <div ngMenuItem>Star</div>\n  <div ngMenuItem>Edit</div>\n  <div ngMenuItem [submenu]=\"subMenu\">More</div>\n</div>\n\n<div ngMenu #subMenu=\"ngMenu\">\n  <div ngMenuItem>Sub Item 1</div>\n  <div ngMenuItem>Sub Item 2</div>\n</div>\n```",
+      "description": "A list of menu items.\n\nA `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\nwithin other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\nand `ngMenuItem` directives.\n\n```html\n<button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n\n<div ngMenu #myMenu=\"ngMenu\">\n  <div ngMenuItem value=\"Star\">Star</div>\n  <div ngMenuItem value=\"Edit\">Edit</div>\n  <div ngMenuItem value=\"More\" [submenu]=\"subMenu\">More</div>\n</div>\n\n<div ngMenu #subMenu=\"ngMenu\">\n  <div ngMenuItem value=\"Sub Item 1\">Sub Item 1</div>\n  <div ngMenuItem value=\"Sub Item 2\">Sub Item 2</div>\n</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
@@ -784,7 +784,7 @@
           "comment": "[MenuBar](guide/aria/menubar)"
         }
       ],
-      "rawComment": "/**\n * A list of menu items.\n *\n * A `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\n * within other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\n * and `ngMenuItem` directives.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem>Star</div>\n *   <div ngMenuItem>Edit</div>\n *   <div ngMenuItem [submenu]=\"subMenu\">More</div>\n * </div>\n *\n * <div ngMenu #subMenu=\"ngMenu\">\n *   <div ngMenuItem>Sub Item 1</div>\n *   <div ngMenuItem>Sub Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
+      "rawComment": "/**\n * A list of menu items.\n *\n * A `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\n * within other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\n * and `ngMenuItem` directives.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem value=\"Star\">Star</div>\n *   <div ngMenuItem value=\"Edit\">Edit</div>\n *   <div ngMenuItem value=\"More\" [submenu]=\"subMenu\">More</div>\n * </div>\n *\n * <div ngMenu #subMenu=\"ngMenu\">\n *   <div ngMenuItem value=\"Sub Item 1\">Sub Item 1</div>\n *   <div ngMenuItem value=\"Sub Item 2\">Sub Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
       "implements": [],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
