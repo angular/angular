@@ -54,6 +54,10 @@ export function createImagekitUrl(path: string, config: ImageLoaderConfig): stri
     params.push(`w-${width}`);
   }
 
+  if (config.height) {
+    params.push(`h-${config.height}`);
+  }
+
   // When requesting a placeholder image we ask for a low quality image to reduce the load time.
   if (config.isPlaceholder) {
     params.push(`q-${PLACEHOLDER_QUALITY}`);

@@ -52,6 +52,10 @@ function createImgixUrl(path: string, config: ImageLoaderConfig) {
     params.push(`w=${config.width}`);
   }
 
+  if (config.height) {
+    params.push(`h=${config.height}`);
+  }
+
   // When requesting a placeholder image we ask a low quality image to reduce the load time.
   if (config.isPlaceholder) {
     params.push(`q=${PLACEHOLDER_QUALITY}`);
