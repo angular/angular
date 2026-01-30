@@ -85,8 +85,8 @@ Angular — Deliver web apps with confidence 🚀
 ## Server Side Rendering (SSR)
 
 - [SSR Overview](https://angular.dev/guide/performance)
-- [SSR with Angular](https://angular.dev/guide/ssr)
-- [Build-time prerendering (SSG)](https://angular.dev/guide/prerendering)
+- [Server and hybrid rendering](https://angular.dev/guide/ssr)
+- [Rendering strategies in Angular](https://angular.dev/guide/routing/rendering-strategies)
 - [Hybrid rendering with server routing](https://angular.dev/guide/hybrid-rendering)
 - [Hydration](https://angular.dev/guide/hydration)
 - [Incremental Hydration](https://angular.dev/guide/incremental-hydration)
