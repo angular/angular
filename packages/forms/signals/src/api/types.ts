@@ -362,12 +362,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * buffer debounced updates from the control to the field. This will also not take into account
    * the {@link controlValue} of children.
    */
-  readonly controlValue: Signal<TValue>;
-
-  /**
-   * Sets {@link controlValue} immediately and triggers synchronization to {@link value}.
-   */
-  setControlValue(value: TValue): void;
+  readonly controlValue: WritableSignal<TValue>;
 
   /**
    * Sets the dirty status of the field to `true`.

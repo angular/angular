@@ -22,7 +22,7 @@ export function customControlCreate(
   host: ControlDirectiveHost,
   parent: FormField<unknown>,
 ): () => void {
-  host.listenToCustomControlModel((value) => parent.state().setControlValue(value));
+  host.listenToCustomControlModel((value) => parent.state().controlValue.set(value));
   host.listenToCustomControlOutput('touchedChange', () => parent.state().markAsTouched());
 
   parent.registerAsBinding(host.customControl as FormUiControl<unknown>);

@@ -128,7 +128,7 @@ export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = T
 
 // @public
 export interface FieldState<TValue, TKey extends string | number = string | number> {
-    readonly controlValue: Signal<TValue>;
+    readonly controlValue: WritableSignal<TValue>;
     readonly dirty: Signal<boolean>;
     readonly disabled: Signal<boolean>;
     // (undocumented)
@@ -154,7 +154,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     readonly readonly: Signal<boolean>;
     readonly required: Signal<boolean>;
     reset(value?: TValue): void;
-    setControlValue(value: TValue): void;
     readonly submitting: Signal<boolean>;
     readonly touched: Signal<boolean>;
     readonly valid: Signal<boolean>;
