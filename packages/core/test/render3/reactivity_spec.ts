@@ -16,6 +16,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ComponentRef,
   computed,
   ContentChildren,
   createComponent,
@@ -32,6 +33,7 @@ import {
   OnChanges,
   provideZonelessChangeDetection,
   QueryList,
+  resource,
   signal,
   SimpleChanges,
   TemplateRef,
@@ -42,7 +44,7 @@ import {
 import {SIGNAL} from '../../primitives/signals';
 import {toObservable} from '../../rxjs-interop';
 import {EffectNode} from '../../src/render3/reactivity/effect';
-import {TestBed} from '../../testing';
+import {type ComponentFixture, TestBed} from '../../testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
@@ -485,6 +487,118 @@ describe('reactivity', () => {
 
         fix.destroy();
         expect(destroyed).toBeTrue();
+      });
+
+      it('should execute effects cleanup functions when their view is destroyed', async () => {
+        const recorder: string[] = [];
+        let fixture: ComponentFixture<TestCmp>;
+
+        @Component({})
+        class TestCmp {
+          readonly counter = signal(0);
+
+          constructor() {
+            effect((onCleanup) => {
+              const value = this.counter();
+              recorder.push(`counter: ${value}`);
+              if (value === 2) {
+                fixture.destroy();
+              }
+              onCleanup(() => {
+                recorder.push(`counter onCleanup: ${value}`);
+              });
+            });
+
+            const doubled = computed(() => this.counter() * 2);
+            effect((onCleanup) => {
+              const value = doubled();
+              recorder.push(`doubled counter: ${value}`);
+              onCleanup(() => recorder.push(`doubled counter onCleanup: ${value}`));
+            });
+          }
+
+          increment() {
+            this.counter.update((c) => c + 1);
+          }
+        }
+
+        fixture = TestBed.createComponent(TestCmp);
+        fixture.detectChanges();
+
+        fixture.componentInstance.increment();
+        await fixture.whenStable();
+        fixture.componentInstance.increment();
+        await fixture.whenStable();
+
+        expect(recorder).toEqual([
+          'counter: 0',
+          'doubled counter: 0',
+          'counter onCleanup: 0',
+          'counter: 1',
+          'doubled counter onCleanup: 0',
+          'doubled counter: 2',
+          'counter onCleanup: 1',
+          'counter: 2',
+          'doubled counter onCleanup: 2', // During destroy()
+          'counter onCleanup: 2', // After destroy(), via a fix in `createEffectFn` (effect.ts)
+        ]);
+      });
+
+      it('should execute effect cleanup when component destroys itself via resource', async () => {
+        const recorder: string[] = [];
+        let compRef: ComponentRef<ExampleDialog>;
+
+        @Component({})
+        class TestCmp {
+          constructor() {
+            compRef = inject(ViewContainerRef).createComponent(ExampleDialog);
+          }
+        }
+
+        @Component({
+          template: 'foobar',
+        })
+        class ExampleDialog {
+          resource = resource({
+            loader: () => new Promise((res) => setTimeout(() => res('foobar'), 100)),
+          });
+
+          ref = effect((onCleanup) => {
+            const val = this.resource.value();
+            recorder.push(`effect: ${val}`);
+
+            if (val === 'foobar') {
+              compRef.destroy();
+            }
+
+            onCleanup(() => {
+              recorder.push(`cleanup: ${val}`);
+            });
+          });
+        }
+
+        const fixture = TestBed.createComponent(TestCmp);
+        fixture.detectChanges();
+
+        // Initial state: resource is loading, value is undefined
+        expect(recorder).toEqual(['effect: undefined']);
+
+        // Wait for the resource to resolves
+        await fixture.whenStable();
+
+        // Should have:
+        // 1. Cleanup from the undefined state
+        // 2. Effect run with 'foobar' value (which triggers destroy)
+        // 3. Cleanup from the 'foobar' state (this is the critical one - should run after destroy)
+        expect(recorder).toEqual([
+          'effect: undefined',
+          'cleanup: undefined',
+          'effect: foobar',
+          'cleanup: foobar', // This should run even though destroy() was called during the effect
+        ]);
+
+        // Verify component was actually destroyed
+        expect(compRef!.hostView.destroyed).toBe(true);
       });
 
       it('should destroy effects when their DestroyRef is separately destroyed', () => {
