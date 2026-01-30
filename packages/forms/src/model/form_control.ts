@@ -505,7 +505,7 @@ export const FormControl: ɵFormControlCtor = class FormControl<TValue = any>
       emitViewToModelChange?: boolean;
     } = {},
   ): void {
-    (this as Writable<this>).value = this._pendingValue = value;
+    this._value = this._pendingValue = value;
     if (this._onChange.length && options.emitModelToViewChange !== false) {
       this._onChange.forEach((changeFn) =>
         changeFn(this.value, options.emitViewToModelChange !== false),
@@ -592,12 +592,12 @@ export const FormControl: ɵFormControlCtor = class FormControl<TValue = any>
 
   private _applyFormState(formState: FormControlState<TValue> | TValue) {
     if (isFormControlState(formState)) {
-      (this as Writable<this>).value = this._pendingValue = formState.value;
+      this._value = this._pendingValue = formState.value;
       formState.disabled
         ? this.disable({onlySelf: true, emitEvent: false})
         : this.enable({onlySelf: true, emitEvent: false});
     } else {
-      (this as Writable<this>).value = this._pendingValue = formState;
+      this._value = this._pendingValue = formState;
     }
   }
 };
