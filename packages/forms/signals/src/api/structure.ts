@@ -412,52 +412,52 @@ export async function submit<TModel>(
   form: FieldTree<TModel>,
   options?: FormSubmitOptions<TModel> | FormSubmitOptions<TModel>['action'],
 ): Promise<boolean> {
-  return untracked(async () => {
-    const node = form() as unknown as FieldNode;
-    const opts =
-      typeof options === 'function'
-        ? {action: options}
-        : ({
-            ...(node.structure.fieldManager.submitOptions ?? {}),
-            ...(options ?? {}),
-          } as Partial<FormSubmitOptions<TModel>>);
-    const action = opts?.action;
-    if (!action) {
-      throw new RuntimeError(
-        SignalFormsErrorCode.MISSING_SUBMIT_ACTION,
-        ngDevMode &&
-          'Cannot submit form with no submit action. Specify the action when creating the form, or as an additional argument to `submit()`.',
-      );
-    }
+  const node = form() as unknown as FieldNode;
+  const opts =
+    typeof options === 'function'
+      ? {action: options}
+      : ({
+          ...(node.structure.fieldManager.submitOptions ?? {}),
+          ...(options ?? {}),
+        } as Partial<FormSubmitOptions<TModel>>);
+  const action = opts?.action;
+  if (!action) {
+    throw new RuntimeError(
+      SignalFormsErrorCode.MISSING_SUBMIT_ACTION,
+      ngDevMode &&
+        'Cannot submit form with no submit action. Specify the action when creating the form, or as an additional argument to `submit()`.',
+    );
+  }
 
-    const onInvalid = opts?.onInvalid;
-    const ignoreValidators = opts?.ignoreValidators ?? 'pending';
+  const onInvalid = opts?.onInvalid;
+  const ignoreValidators = opts?.ignoreValidators ?? 'pending';
 
+  // Determine whether or not to run the action based on the current validity.
+  let shouldRunAction = true;
+  untracked(() => {
     markAllAsTouched(node);
 
-    // Determine whether or not to run the action based on the current validity.
-    let shouldRunAction = true;
     if (ignoreValidators === 'none') {
       shouldRunAction = node.valid();
     } else if (ignoreValidators === 'pending') {
       shouldRunAction = !node.invalid();
     }
-
-    // Run the action (or alternatively the `onInvalid` callback)
-    try {
-      if (shouldRunAction) {
-        node.submitState.selfSubmitting.set(true);
-        const errors = await action?.(form);
-        errors && setSubmissionErrors(node, errors);
-        return !errors || (isArray(errors) && errors.length === 0);
-      } else {
-        onInvalid?.(form);
-      }
-      return false;
-    } finally {
-      node.submitState.selfSubmitting.set(false);
-    }
   });
+
+  // Run the action (or alternatively the `onInvalid` callback)
+  try {
+    if (shouldRunAction) {
+      node.submitState.selfSubmitting.set(true);
+      const errors = await untracked(() => action?.(form));
+      errors && setSubmissionErrors(node, errors);
+      return !errors || (isArray(errors) && errors.length === 0);
+    } else {
+      untracked(() => onInvalid?.(form));
+    }
+    return false;
+  } finally {
+    node.submitState.selfSubmitting.set(false);
+  }
 }
 
 /**
