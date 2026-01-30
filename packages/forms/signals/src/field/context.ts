@@ -13,7 +13,7 @@ import {
   WritableSignal,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
-import {SignalFormsErrorCode} from '../errors';
+import {RuntimeErrorCode} from '../errors';
 import {AbstractControl} from '@angular/forms';
 import {
   FieldContext,
@@ -73,7 +73,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
           field = field.structure.parent;
           if (field === undefined) {
             throw new RuntimeError(
-              SignalFormsErrorCode.PATH_NOT_IN_FIELD_TREE,
+              RuntimeErrorCode.PATH_NOT_IN_FIELD_TREE,
               ngDevMode && 'Path is not part of this field tree.',
             );
           }
@@ -85,7 +85,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
           field = field.structure.getChild(key);
           if (field === undefined) {
             throw new RuntimeError(
-              SignalFormsErrorCode.PATH_RESOLUTION_FAILED,
+              RuntimeErrorCode.PATH_RESOLUTION_FAILED,
               ngDevMode &&
                 `Cannot resolve path .${targetPathNode.keys.join('.')} relative to field ${[
                   '<root>',
@@ -129,7 +129,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
     // Assert that the parent is actually an array.
     if (!isArray(untracked(this.node.structure.parent!.value))) {
       throw new RuntimeError(
-        SignalFormsErrorCode.PARENT_NOT_ARRAY,
+        RuntimeErrorCode.PARENT_NOT_ARRAY,
         ngDevMode && 'Cannot access index, parent field is not an array.',
       );
     }
@@ -144,7 +144,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
 
     if (result instanceof AbstractControl) {
       throw new RuntimeError(
-        SignalFormsErrorCode.ABSTRACT_CONTROL_IN_FORM,
+        RuntimeErrorCode.ABSTRACT_CONTROL_IN_FORM,
         ngDevMode &&
           `Tried to read an 'AbstractControl' value from a 'form()'. Did you mean to use 'compatForm()' instead?`,
       );

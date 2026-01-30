@@ -7,7 +7,8 @@
  */
 
 import {ɵRuntimeError as RuntimeError} from '@angular/core';
-import {SignalFormsErrorCode} from '../errors';
+import {RuntimeErrorCode} from '../errors';
+import {signalErrorsToValidationErrors} from '../compat/validation_errors';
 
 import {
   ControlValueAccessor,
@@ -85,15 +86,7 @@ export class InteropNgControl
   }
 
   get errors(): ValidationErrors | null {
-    const errors = this.field().errors();
-    if (errors.length === 0) {
-      return null;
-    }
-    const errObj: ValidationErrors = {};
-    for (const error of errors) {
-      errObj[error.kind] = error;
-    }
-    return errObj;
+    return signalErrorsToValidationErrors(this.field().errors());
   }
 
   get pristine(): boolean {
@@ -126,7 +119,7 @@ export class InteropNgControl
       return 'PENDING';
     }
     throw new RuntimeError(
-      SignalFormsErrorCode.UNKNOWN_STATUS,
+      RuntimeErrorCode.UNKNOWN_STATUS,
       ngDevMode && 'Unknown form control status',
     );
   }

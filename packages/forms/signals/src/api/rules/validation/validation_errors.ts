@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ValidationErrors} from '@angular/forms';
 import type {FormField} from '../../../directive/form_field_directive';
 import type {FieldTree} from '../../types';
 import type {StandardSchemaValidationError} from './standard_schema';
