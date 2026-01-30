@@ -15,7 +15,6 @@
 @use 'scroll-track';
 @use 'button';
 @use 'kbd';
-@use 'api-item-label';
 @use 'faceted-list';
 @use 'media-queries' as mq;
 
@@ -38,7 +37,6 @@
 @include scroll-track.scroll-track();
 @include button.button();
 @include kbd.kbd();
-@include api-item-label.api-item-label();
 @include faceted-list.faceted-list();
 
 @include mq.breakpoints-vars();

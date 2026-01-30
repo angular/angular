@@ -27,7 +27,6 @@ import ApiItemLabel from '../api-item-label/api-item-label.component';
 import ApiItemsSection from '../api-items-section/api-items-section.component';
 import {ApiItemType} from '../interfaces/api-item-type';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
-import {ApiLabel} from '../pipes/api-label.pipe';
 import {ApiReferenceManager} from './api-reference-manager.service';
 
 export const ALL_TYPES_KEY = 'All';
@@ -46,7 +45,6 @@ export const DEFAULT_STATUS = STATUSES.stable | STATUSES.developerPreview | STAT
     ApiItemsSection,
     ApiItemLabel,
     TextField,
-    ApiLabel,
     CdkMenuModule,
     MatChipListbox,
     MatChipOption,

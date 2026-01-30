@@ -78,10 +78,6 @@
           border: 1px solid var(--quinary-contrast);
           color: var(--primary-contrast);
         }
-
-        .docs-api-item-label-full {
-          white-space: nowrap;
-        }
       }
     }
 
@@ -113,10 +109,6 @@
   p {
     font-size: 1rem;
   }
-}
-
-.docs-api-item-label-full {
-  white-space: nowrap;
 }
 
 .map-chip-option {
