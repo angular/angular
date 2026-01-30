@@ -242,6 +242,12 @@
         "path": "./syntaxes/expression.json",
         "scopeName": "expression.ng"
       }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": "tsconfig*.json",
+        "url": "./schemas/tsconfig-ng.schema.json"
+      }
     ]
   },
   "activationEvents": [
