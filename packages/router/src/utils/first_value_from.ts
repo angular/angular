@@ -14,7 +14,18 @@ export function firstValueFrom<T>(source: Observable<T>): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     source.pipe(first()).subscribe({
       next: (value) => resolve(value),
-      error: (err) => reject(err),
+      // Issue: When an observable completes without emitting, the `first()` operator
+      // throws `EmptyError` synchronously. This causes the promise
+      // to reject synchronously, before the caller can attach a `.catch()` handler. Zone.js
+      // detects this as an unhandled rejection and logs/re-throws the error, even though
+      // the caller does properly handle it with `.catch()` or try-catch.
+      //
+      // Defer the rejection by one microtask using `queueMicrotask()`. This ensures
+      // the caller's `.catch()` handler is attached before the rejection occurs, satisfying
+      // zone.js's unhandled rejection detection.
+      //
+      // This change becomes obsolete when Angular entirely drops zone.js support.
+      error: (err) => queueMicrotask(() => reject(err)),
     });
   });
 }
