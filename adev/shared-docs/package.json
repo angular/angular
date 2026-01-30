@@ -9,7 +9,7 @@
     "@angular/material": "^21.2.0-next",
     "@angular/platform-browser": "^21.2.0-next",
     "@angular/router": "^21.2.0-next",
-    "@angular/ssr": "^21.1.0-next",
+    "@angular/ssr": "^21.2.0-next",
     "algoliasearch": "^5.0.0",
     "rxjs": "^7.8.1"
   },
