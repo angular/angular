@@ -40,7 +40,7 @@ describe('CLI docs to html', () => {
     const cliTocs = fragment.querySelectorAll('.docs-reference-cli-toc')!;
     expect(cliTocs.length).toBe(2);
 
-    expect(cliTocs[0].textContent).toContain('ng component[name][options]');
-    expect(cliTocs[1].textContent).toContain('ng c[name][options]');
+    expect(cliTocs[0].textContent).toContain('ng component [name] [options]');
+    expect(cliTocs[1].textContent).toContain('ng c [name] [options]');
   });
 });
