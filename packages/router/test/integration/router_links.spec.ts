@@ -24,10 +24,11 @@ import {
   LinkWithQueryParamsAndFragment,
   LinkWithState,
   DivLinkWithState,
+  LinkWithBrowserUrl,
+  DivLinkWithBrowserUrl,
   createRoot,
   advance,
 } from './integration_helpers';
-import {timeout} from '../helpers';
 
 export function routerLinkIntegrationSpec() {
   describe('router links', () => {
@@ -421,6 +422,48 @@ export function routerLinkIntegrationSpec() {
 
         // Check the history entry
         expect(location.getState()).toEqual({foo: 'bar', navigationId: 3});
+      });
+    });
+
+    describe('should support browserUrl', () => {
+      let component: typeof LinkWithBrowserUrl | typeof DivLinkWithBrowserUrl;
+      it('for anchor elements', () => {
+        // Test logic in afterEach to reduce duplication
+        component = LinkWithBrowserUrl;
+      });
+
+      it('for non-anchor elements', () => {
+        // Test logic in afterEach to reduce duplication
+        component = DivLinkWithBrowserUrl;
+      });
+
+      afterEach(async () => {
+        const router: Router = TestBed.inject(Router);
+        const location: Location = TestBed.inject(Location);
+        const fixture = await createRoot(router, RootCmp);
+
+        router.resetConfig([
+          {
+            path: 'team/:id',
+            component: TeamCmp,
+            children: [
+              {path: 'link', component},
+              {path: 'simple', component: SimpleCmp},
+            ],
+          },
+        ]);
+
+        router.navigateByUrl('/team/22/link');
+        await advance(fixture);
+
+        const native = fixture.nativeElement.querySelector('#link');
+        native.click();
+        await advance(fixture);
+
+        expect(fixture.nativeElement).toHaveText('team 22 [ simple, right:  ]');
+
+        // Check the browser URL is the custom browserUrl value
+        expect(location.path()).toEqual('/custom');
       });
     });
 
