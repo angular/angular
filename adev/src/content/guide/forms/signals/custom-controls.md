@@ -301,7 +301,7 @@ export class StatefulInput implements FormValueControl<string> {
   readonly = input<boolean>(false);
   hidden = input<boolean>(false);
   invalid = input<boolean>(false);
-  errors = input<readonly ValidationError.WithField[]>([]);
+  errors = input<readonly WithOptionalField<ValidationError>[]>([]);
 }
 ```
 
