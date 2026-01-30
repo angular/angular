@@ -15,7 +15,7 @@ Add `resource` to your existing imports and import the fake API function.
 // Add resource to existing imports
 import {Component, signal, computed, resource, ChangeDetectionStrategy} from '@angular/core';
 // Import mock API function
-import {loadUser} from './user-api';
+import {getUserData} from './user-api';
 ```
 
 </docs-step>
@@ -28,7 +28,7 @@ userId = signal(1);
 
 userResource = resource({
   params: () => ({id: this.userId()}),
-  loader: (params) => loadUser(params.params.id),
+  loader: (params) => getUserData(params.params.id),
 });
 ```
 
