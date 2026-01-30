@@ -110,13 +110,7 @@ export class SignalFormControl<T> extends AbstractControl {
     );
     this.fieldState = this.fieldTree();
 
-    // TODO(kirjs): Drop this when https://github.com/angular/angular/pull/66672 is merged.
-    Object.defineProperty(this, 'value', {
-      get: () => this.sourceValue(),
-    });
-    Object.defineProperty(this, 'errors', {
-      get: () => signalErrorsToValidationErrors(this.fieldState.errors()),
-    });
+    this.defineCompatProperties();
 
     // Value changes effect
     effect(
@@ -191,6 +185,22 @@ export class SignalFormControl<T> extends AbstractControl {
       },
       {injector},
     );
+  }
+
+  /**
+   * Defines properties using closure-safe names to prevent issues with property renaming optimizations.
+   *
+   * AbstractControl have `value` and `errors` as readonly prop, which doesn't allow getters.
+   **/
+  private defineCompatProperties(): void {
+    const valueProp = getClosureSafeProperty({value: getClosureSafeProperty});
+    Object.defineProperty(this, valueProp, {
+      get: () => this.sourceValue(),
+    });
+    const errorsProp = getClosureSafeProperty({errors: getClosureSafeProperty});
+    Object.defineProperty(this, errorsProp, {
+      get: () => signalErrorsToValidationErrors(this.fieldState.errors()),
+    });
   }
 
   private emitControlEvent(event: ControlEvent): void {
@@ -567,4 +577,17 @@ function unsupportedValidatorsError(): Error {
 function removeListItem<T>(list: T[], el: T): void {
   const index = list.indexOf(el);
   if (index > -1) list.splice(index, 1);
+}
+
+function getClosureSafeProperty<T>(objWithPropertyToExtract: T): string {
+  for (let key in objWithPropertyToExtract) {
+    if (objWithPropertyToExtract[key] === (getClosureSafeProperty as any)) {
+      return key;
+    }
+  }
+  throw Error(
+    typeof ngDevMode === 'undefined' || ngDevMode
+      ? 'Could not find renamed property on target object.'
+      : '',
+  );
 }
