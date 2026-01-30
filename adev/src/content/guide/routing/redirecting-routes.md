@@ -98,7 +98,7 @@ Here is an example where the user is redirected to different menu based on the t
 
 ```ts
 import {Routes} from '@angular/router';
-import {MenuComponent} from './menu/menu.component';
+import {Menu} from './menu';
 
 export const routes: Routes = [
   {
@@ -124,9 +124,9 @@ export const routes: Routes = [
   },
 
   // Destination routes
-  {path: 'restaurant/:location/menu/breakfast', component: MenuComponent},
-  {path: 'restaurant/:location/menu/lunch', component: MenuComponent},
-  {path: 'restaurant/:location/menu/dinner', component: MenuComponent},
+  {path: 'restaurant/:location/menu/breakfast', component: Menu},
+  {path: 'restaurant/:location/menu/lunch', component: Menu},
+  {path: 'restaurant/:location/menu/dinner', component: Menu},
 
   // Default redirect
   {path: '', redirectTo: '/restaurant/downtown/menu', pathMatch: 'full'},

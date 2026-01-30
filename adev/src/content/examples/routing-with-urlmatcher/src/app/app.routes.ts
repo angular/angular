@@ -1,6 +1,6 @@
 import {Routes, UrlSegment} from '@angular/router';
 
-import {ProfileComponent} from './profile/profile.component';
+import {Profile} from './profile/profile';
 
 export const routes: Routes = [
   // #docregion matcher
@@ -12,7 +12,7 @@ export const routes: Routes = [
 
       return null;
     },
-    component: ProfileComponent,
+    component: Profile,
   },
   // #enddocregion matcher
 ];

@@ -38,7 +38,7 @@ import {Event, Router, NavigationStart, NavigationEnd} from '@angular/router';
 @Component({
   /*...*/
 })
-export class RouterEventsComponent {
+export class RouterEvents {
   private readonly router = inject(Router);
 
   constructor() {
@@ -69,7 +69,7 @@ When you need to inspect a Router event sequence, you can enable logging for int
 import {provideRouter, withDebugTracing} from '@angular/router';
 
 const appRoutes: Routes = [];
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [provideRouter(appRoutes, withDebugTracing())],
 });
 ```
@@ -161,7 +161,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
     }
   `,
 })
-export class ErrorHandlerComponent {
+export class ErrorHandler {
   private router = inject(Router);
   readonly errorMessage = signal('');
 
