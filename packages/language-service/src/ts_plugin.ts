@@ -117,6 +117,18 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return ngLS.getRenameInfo(fileName, position);
   }
 
+  function getSelectionRangeAtPosition(
+    fileName: string,
+    position: number,
+  ): ts.SelectionRange | undefined {
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getSelectionRangeAtPosition(fileName, position);
+    } else {
+      // If Angular LS could answer the query for templates, use that; otherwise fall back to TS
+      return ngLS.getSelectionRangeAtPosition(fileName, position);
+    }
+  }
+
   function getEncodedSemanticClassifications(
     fileName: string,
     span: ts.TextSpan,
@@ -331,6 +343,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getReferencesAtPosition,
     findRenameLocations,
     getRenameInfo,
+    getSelectionRangeAtPosition,
     getEncodedSemanticClassifications,
     getTokenTypeFromClassification,
     getTokenModifierFromClassification,
