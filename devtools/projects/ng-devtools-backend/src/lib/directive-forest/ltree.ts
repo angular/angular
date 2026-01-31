@@ -92,6 +92,7 @@ export class LTreeStrategy {
         component: null,
         hydration: null, // We know there is no hydration if we use the LTreeStrategy
         defer: null, // neither there will be any defer
+        forLoop: null, // neither there will be any @for
       };
     }
     for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
@@ -118,6 +119,7 @@ export class LTreeStrategy {
       component,
       hydration: null, // We know there is no hydration if we use the LTreeStrategy
       defer: null, // neither there will be any defer
+      forLoop: null, // neither there will be any @for
     };
   }
 

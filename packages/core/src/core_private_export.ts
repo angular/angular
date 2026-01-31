@@ -54,6 +54,10 @@ export {
   getDeferBlocks as ɵgetDeferBlocks,
 } from './defer/discovery';
 export {renderDeferBlockState as ɵrenderDeferBlockState} from './defer/rendering';
+export {
+  ForLoopBlockData as ɵForLoopBlockData,
+  getForLoopBlocks as ɵgetForLoopBlocks,
+} from './render3/util/repeater';
 export {triggerResourceLoading as ɵtriggerResourceLoading} from './defer/triggering';
 export {
   DeferBlockBehavior as ɵDeferBlockBehavior,

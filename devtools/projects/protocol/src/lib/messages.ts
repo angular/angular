@@ -98,6 +98,14 @@ export interface BlockDetails {
   loadingBlock: {exists: boolean; minimumTime: number | null; afterTime: number | null};
 }
 
+export interface ForLoopInfo {
+  id: string;
+  itemCount: number;
+  hasEmptyBlock: boolean;
+  items: Descriptor[];
+  trackExpression: string;
+}
+
 // TODO: refactor to remove nativeElement as it is not serializable
 // and only really exists on the ng-devtools-backend
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
@@ -109,6 +117,7 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   resolutionPath?: SerializedInjector[];
   hydration: HydrationStatus;
   defer: DeferInfo | null;
+  forLoop: ForLoopInfo | null;
   onPush?: boolean;
 }
 

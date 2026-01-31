@@ -32,6 +32,7 @@ const indexTree = (
     children: node.children.map((n, i) => indexTree(n, i, position)),
     hydration: node.hydration,
     defer: node.defer,
+    forLoop: node.forLoop,
     onPush: node.onPush,
     hasNativeElement: (node as any).hasNativeElement,
   };
@@ -39,3 +40,19 @@ const indexTree = (
 
 export const indexForest = (forest: (DevToolsNode & {hasNativeElement?: boolean})[]) =>
   forest.map((n, i) => indexTree(n, i));
+
+export const findNodeByPosition = (
+  forest: IndexedNode[],
+  position: ElementPosition,
+): IndexedNode | null => {
+  if (position.length === 0) {
+    return null;
+  }
+
+  let current: IndexedNode | undefined = forest[position[0]];
+  for (let i = 1; i < position.length && current; i++) {
+    current = current.children[position[i]];
+  }
+
+  return current ?? null;
+};
