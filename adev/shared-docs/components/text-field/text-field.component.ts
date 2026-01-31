@@ -28,10 +28,10 @@ import {IconComponent} from '../icon/icon.component';
     class: 'docs-form-element',
   },
 })
-export class TextField implements FormValueControl<string | null> {
+export class TextField implements FormValueControl<string> {
   readonly input = viewChild.required<ElementRef<HTMLInputElement>>('inputRef');
   readonly name = input<string>('');
-  readonly value = model<string | null>(null);
+  readonly value = model<string>('');
   readonly placeholder = input<string | null>(null);
   readonly disabled = model<boolean>(false);
   readonly hideIcon = input<boolean>(false);
