@@ -1052,7 +1052,6 @@
       "searchTokensOnInjector",
       "selectIndexInternal",
       "serializeMatrixParams",
-      "serializeNode",
       "serializePath",
       "serializePaths",
       "serializeQueryParams",
