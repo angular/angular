@@ -42,12 +42,13 @@ def zone_compatible_jasmine_test(name, external = [], data = [], bootstrap = [],
         **kwargs
     )
 
-def jasmine_test(name, tsconfig = "//packages:tsconfig_build", fixed_args = [], **kwargs):
+def jasmine_test(name, tsconfig = "//packages:tsconfig_build", data = [], fixed_args = [], **kwargs):
     # Create relative path to root, from current package dir. Necessary as
     # we change the `chdir` below to the package directory.
     relative_to_root = "/".join([".."] * len(native.package_name().split("/")))
 
     all_fixed_args = [
+        "--require=$$JS_BINARY__RUNFILES/$(rlocationpath //tools/testing:jasmine_config)",
         # Escape so that the `js_binary` launcher triggers Bash expansion.
         "'**/*+(.|_)spec.js'",
         "'**/*+(.|_)spec.mjs'",
@@ -60,6 +61,7 @@ def jasmine_test(name, tsconfig = "//packages:tsconfig_build", fixed_args = [], 
 
     _jasmine_test(
         name = name,
+        data = data + ["//tools/testing:jasmine_config"],
         node_modules = "//:node_modules",
         chdir = native.package_name(),
         fixed_args = all_fixed_args,
