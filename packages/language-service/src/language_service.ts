@@ -27,6 +27,7 @@ import {
   GetComponentLocationsForTemplateResponse,
   GetTcbResponse,
   GetTemplateLocationForComponentResponse,
+  LinkedEditingRanges,
   PluginConfig,
 } from '../api';
 
@@ -35,6 +36,7 @@ import {ALL_CODE_FIXES_METAS, CodeFixes} from './codefixes';
 import {CompilerFactory} from './compiler_factory';
 import {CompletionBuilder} from './completions';
 import {DefinitionBuilder} from './definitions';
+import {getLinkedEditingRangeAtPosition} from './linked_editing_range';
 import {getOutliningSpans} from './outlining_spans';
 import {QuickInfoBuilder} from './quick_info';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
@@ -275,6 +277,26 @@ export class LanguageService {
         position,
       );
       return results === null ? undefined : getUniqueLocations(results);
+    });
+  }
+
+  /**
+   * Gets linked editing ranges for synchronized editing of HTML tag pairs.
+   *
+   * When the cursor is on an element tag name, returns both the opening and closing
+   * tag name spans so they can be edited simultaneously.
+   *
+   * @param fileName The file to check
+   * @param position The cursor position in the file
+   * @returns LinkedEditingRanges if on a tag name, undefined otherwise
+   */
+  getLinkedEditingRangeAtPosition(
+    fileName: string,
+    position: number,
+  ): LinkedEditingRanges | undefined {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
+      const result = getLinkedEditingRangeAtPosition(compiler, fileName, position);
+      return result ?? undefined;
     });
   }
 
