@@ -253,6 +253,30 @@ export class AngularLanguageClient implements vscode.Disposable {
           }
           return next(document, range, token);
         },
+        provideDocumentColors: async (
+          document: vscode.TextDocument,
+          token: vscode.CancellationToken,
+          next,
+        ) => {
+          // Only provide document colors for Angular projects
+          // VS Code sends DocumentColor requests for ALL open files when colorProvider: true
+          if (!(await this.isInAngularProject(document))) {
+            return null;
+          }
+          return next(document, token);
+        },
+        provideColorPresentations: async (
+          color: vscode.Color,
+          context: {document: vscode.TextDocument; range: vscode.Range},
+          token: vscode.CancellationToken,
+          next,
+        ) => {
+          // Only provide color presentations for Angular projects
+          if (!(await this.isInAngularProject(context.document))) {
+            return null;
+          }
+          return next(color, context, token);
+        },
       },
     };
   }
