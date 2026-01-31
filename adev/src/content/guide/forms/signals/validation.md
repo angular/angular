@@ -461,18 +461,43 @@ export class UrlFormComponent {
 }
 ```
 
-For submission errors that target specific fields, use the `fieldTree` property:
+### Using validateTree()
 
-```ts
-// In a submit function
-return [
-  {
-    fieldTree: registrationForm.username, // Target specific field
-    kind: 'server',
-    message: 'Username already taken',
-  },
-];
+The `validateTree()` function creates custom validation rules that can target multiple fields or provide complex validation logic for a whole subtree.
+
+```angular-ts
+import {Component, model} from '@angular/core';
+import {form, FormField, validateTree} from '@angular/forms/signals';
+
+interface User {
+  firstName: string;
+  lastName: string;
+}
+
+@Component({ /* ... */ })
+export class UserFormComponent {
+  readonly userModel = model<DTO>({
+    firstName: '',
+    lastName: '',
+  });
+
+  userForm = form(this.userModel, (path) => {
+    validateTree(path, (ctx) => {
+      if (ctx.valueOf(path.firstName).length < 5) {
+        return {
+          kind: 'minLength5',
+          message: 'First name must be at least 5 characters',
+          fieldTree: ctx.fieldTree.lastName,
+        };
+      }
+
+      return null;
+    });
+  });
+}
 ```
+
+The `validateTree()` validator function receives a `ValidationContext` object that provides access to the values and states of all fields in the tree.
 
 The validator function receives a `FieldContext` object with:
 
