@@ -445,6 +445,7 @@
       "from",
       "fromArrayLike",
       "fromAsyncIterable",
+      "fromBase64",
       "fromInteropObservable",
       "fromIterable",
       "fromPromise",

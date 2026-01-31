@@ -138,6 +138,37 @@ describe('TransferCache', () => {
       expect(transferState.get(key, null)).toEqual(jasmine.objectContaining({[BODY]: 'foo'}));
     });
 
+    it('should cache arraybuffer responses correctly', () => {
+      const testData = new Uint8Array([1, 2, 3, 4, 5]).buffer;
+      let response!: ArrayBuffer;
+      TestBed.inject(HttpClient)
+        .get('/test-arraybuffer', {responseType: 'arraybuffer'})
+        .subscribe((r) => (response = r));
+      TestBed.inject(HttpTestingController).expectOne('/test-arraybuffer').flush(testData);
+
+      expect(new Uint8Array(response)).toEqual(new Uint8Array([1, 2, 3, 4, 5]));
+
+      let cachedResponse!: ArrayBuffer;
+      TestBed.inject(HttpClient)
+        .get('/test-arraybuffer', {responseType: 'arraybuffer'})
+        .subscribe((r) => (cachedResponse = r));
+      TestBed.inject(HttpTestingController).expectNone('/test-arraybuffer');
+
+      expect(new Uint8Array(cachedResponse)).toEqual(new Uint8Array([1, 2, 3, 4, 5]));
+    });
+
+    it('should cache blob responses correctly', () => {
+      const testData = new Uint8Array([10, 20, 30, 40, 50]).buffer;
+      let response!: Blob;
+      TestBed.inject(HttpClient)
+        .get('/test-blob', {responseType: 'blob'})
+        .subscribe((r) => (response = r));
+      TestBed.inject(HttpTestingController).expectOne('/test-blob').flush(testData);
+
+      expect(response instanceof Blob).toBeTrue();
+      expect(response.size).toBe(5);
+    });
+
     it('should stop storing HTTP calls in `TransferState` after application becomes stable', fakeAsync(() => {
       makeRequestAndExpectOne('/test-1', 'foo');
       makeRequestAndExpectOne('/test-2', 'buzz');
