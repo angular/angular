@@ -14,17 +14,23 @@ export function onDocumentColor(
   session: Session,
   params: lsp.DocumentColorParams,
 ): lsp.ColorInformation[] {
+  session.debug(`onDocumentColor: ${params.textDocument.uri}`);
   const lsInfo = session.getLSAndScriptInfo(params.textDocument);
   if (lsInfo === null) {
+    session.debug(`onDocumentColor: no language service for ${params.textDocument.uri}`);
     return [];
   }
 
   const {languageService, scriptInfo} = lsInfo;
   if (!('getDocumentColors' in languageService)) {
+    session.debug(
+      `onDocumentColor: language service does not support colors for ${scriptInfo.fileName}`,
+    );
     return [];
   }
 
   const colors = languageService.getDocumentColors(scriptInfo.fileName);
+  session.debug(`onDocumentColor: found ${colors.length} colors in ${scriptInfo.fileName}`);
   return colors.map((c) => ({
     color: {
       red: c.color.red,

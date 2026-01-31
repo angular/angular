@@ -30,8 +30,12 @@ export function onCompletion(
   session: Session,
   params: lsp.CompletionParams,
 ): lsp.CompletionItem[] | null {
+  session.debug(
+    `onCompletion: ${params.textDocument.uri} @ ${params.position.line}:${params.position.character}`,
+  );
   const lsInfo = session.getLSAndScriptInfo(params.textDocument);
   if (lsInfo === null) {
+    session.debug(`onCompletion: no language service for ${params.textDocument.uri}`);
     return null;
   }
   const {languageService, scriptInfo} = lsInfo;
@@ -65,15 +69,17 @@ export function onCompletion(
   );
 
   if (!completions) {
+    session.debug(
+      `onCompletion: languageService returned no completions for ${scriptInfo.fileName}`,
+    );
     const sf = session.getDefaultProjectForScriptInfo(scriptInfo)?.getSourceFile(scriptInfo.path);
     if (!sf) {
+      session.debug(`onCompletion: no sourceFile available for fallback`);
       return null;
     }
-    // We need getTokenAtPosition. It is currently in session.ts.
-    // I should move it to utils.ts first or duplicate it (bad).
-    // Let's assume I will move it to utils.ts in the next step.
     const node = getTokenAtPosition(sf, offset);
     if (!isInlineStyleNode(node)) {
+      session.debug(`onCompletion: not an inline style node`);
       return null;
     }
     const virtualScssDocContents = getSCSSVirtualContent(sf);
@@ -85,8 +91,10 @@ export function onCompletion(
     );
     const stylesheet = scssLS.parseStylesheet(virtualScssDoc);
     const scssCompletions = scssLS.doComplete(virtualScssDoc, params.position, stylesheet);
+    session.debug(`onCompletion: scss fallback provided ${scssCompletions.items.length} items`);
     return scssCompletions.items;
   }
+  session.debug(`onCompletion: returning ${completions.entries.length} entries`);
   return completions.entries.map((e) =>
     tsCompletionEntryToLspCompletionItem(e, params.position, scriptInfo),
   );
@@ -96,14 +104,17 @@ export function onCompletionResolve(
   session: Session,
   item: lsp.CompletionItem,
 ): lsp.CompletionItem {
+  session.debug(`onCompletionResolve: item=${item.label}`);
   const data = readNgCompletionData(item);
   if (data === null) {
+    session.debug(`onCompletionResolve: no ng data attached`);
     return item;
   }
 
   const {filePath, position} = data;
   const lsInfo = session.getLSAndScriptInfo(filePath);
   if (lsInfo === null) {
+    session.debug(`onCompletionResolve: no ls for ${filePath}`);
     return item;
   }
   const {languageService, scriptInfo} = lsInfo;
@@ -119,6 +130,7 @@ export function onCompletionResolve(
     data.tsData,
   );
   if (details === undefined) {
+    session.debug(`onCompletionResolve: no details for ${item.label}`);
     return item;
   }
 

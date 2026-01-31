@@ -37,9 +37,13 @@ export function onCodeAction(
   session: Session,
   params: lsp.CodeActionParams,
 ): lsp.CodeAction[] | null {
+  session.debug(
+    `onCodeAction: ${params.textDocument.uri} range=${params.range.start.line}:${params.range.start.character}-${params.range.end.line}:${params.range.end.character} diagnostics=${params.context.diagnostics.length}`,
+  );
   const filePath = uriToFilePath(params.textDocument.uri);
   const lsInfo = session.getLSAndScriptInfo(params.textDocument);
   if (!lsInfo) {
+    session.debug(`onCodeAction: no language service for ${params.textDocument.uri}`);
     return null;
   }
 
@@ -106,6 +110,7 @@ export async function onCodeActionResolve(
   session: Session,
   param: lsp.CodeAction,
 ): Promise<lsp.CodeAction> {
+  session.debug(`onCodeActionResolve: title=${param.title}`);
   const codeActionResolve = param.data as unknown as CodeActionResolveData;
 
   // This is a refactoring action; not a code fix.
@@ -113,6 +118,9 @@ export async function onCodeActionResolve(
     const filePath = uriToFilePath(codeActionResolve.document.uri);
     const lsInfo = session.getLSAndScriptInfo(codeActionResolve.document);
     if (!lsInfo) {
+      session.debug(
+        `onCodeActionResolve: no language service for ${codeActionResolve.document.uri}`,
+      );
       return param;
     }
 

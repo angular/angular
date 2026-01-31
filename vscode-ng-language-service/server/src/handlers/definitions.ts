@@ -22,14 +22,19 @@ export function onDefinition(
   session: Session,
   params: lsp.TextDocumentPositionParams,
 ): lsp.Location[] | lsp.LocationLink[] | null {
+  session.debug(
+    `onDefinition: ${params.textDocument.uri} @ ${params.position.line}:${params.position.character}`,
+  );
   const lsInfo = session.getLSAndScriptInfo(params.textDocument);
   if (lsInfo === null) {
+    session.debug(`onDefinition: no language service for ${params.textDocument.uri}`);
     return null;
   }
   const {languageService, scriptInfo} = lsInfo;
   const offset = lspPositionToTsPosition(scriptInfo, params.position);
   const definition = languageService.getDefinitionAndBoundSpan(scriptInfo.fileName, offset);
   if (!definition || !definition.definitions) {
+    session.debug(`onDefinition: no definitions found`);
     return null;
   }
 
@@ -48,14 +53,19 @@ export function onTypeDefinition(
   session: Session,
   params: lsp.TextDocumentPositionParams,
 ): lsp.Location[] | lsp.LocationLink[] | null {
+  session.debug(
+    `onTypeDefinition: ${params.textDocument.uri} @ ${params.position.line}:${params.position.character}`,
+  );
   const lsInfo = session.getLSAndScriptInfo(params.textDocument);
   if (lsInfo === null) {
+    session.debug(`onTypeDefinition: no language service for ${params.textDocument.uri}`);
     return null;
   }
   const {languageService, scriptInfo} = lsInfo;
   const offset = lspPositionToTsPosition(scriptInfo, params.position);
   const definitions = languageService.getTypeDefinitionAtPosition(scriptInfo.fileName, offset);
   if (!definitions) {
+    session.debug(`onTypeDefinition: no type definitions found`);
     return null;
   }
 
@@ -73,16 +83,22 @@ export function onReferences(
   session: Session,
   params: lsp.TextDocumentPositionParams,
 ): lsp.Location[] | null {
+  session.debug(
+    `onReferences: ${params.textDocument.uri} @ ${params.position.line}:${params.position.character}`,
+  );
   const lsInfo = session.getLSAndScriptInfo(params.textDocument);
   if (lsInfo === null) {
+    session.debug(`onReferences: no language service for ${params.textDocument.uri}`);
     return null;
   }
   const {languageService, scriptInfo} = lsInfo;
   const offset = lspPositionToTsPosition(scriptInfo, params.position);
   const references = languageService.getReferencesAtPosition(scriptInfo.fileName, offset);
   if (references === undefined) {
+    session.debug(`onReferences: no references found`);
     return null;
   }
+  session.debug(`onReferences: found ${references.length} references`);
   return references.map((ref) => {
     const scriptInfo = session.projectService.getScriptInfo(ref.fileName);
     const range = scriptInfo ? tsTextSpanToLspRange(scriptInfo, ref.textSpan) : EMPTY_RANGE;

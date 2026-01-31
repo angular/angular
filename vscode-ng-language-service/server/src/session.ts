@@ -68,6 +68,8 @@ export interface SessionOptions {
   disableLetSyntax: boolean;
   angularCoreVersion: string | null;
   suppressAngularDiagnosticCodes: string | null;
+  /** Enable verbose debug logging */
+  verboseLogging?: boolean;
 }
 
 enum LanguageId {
@@ -114,6 +116,23 @@ export class Session {
    */
   inlayHintsConfig: InlayHintsConfig = {};
 
+  /** Whether verbose debug logging is enabled for this session */
+  verboseLogging = false;
+
+  /** Emit a verbose message to both the client output and server log if enabled. */
+  debug(message: string): void {
+    if (!this.verboseLogging) return;
+    try {
+      if (this.logToConsole) {
+        this.connection.console.log(`[VERBOSE] ${message}`);
+      }
+      // ts.server.Msg.Info is the appropriate msg level for informational logs
+      this.logger.msg(`[VERBOSE] ${message}`, ts.server.Msg.Info);
+    } catch {
+      // Best-effort logging - swallow errors to avoid affecting LS behavior
+    }
+  }
+
   constructor(options: SessionOptions) {
     this.includeAutomaticOptionalChainCompletions =
       options.includeAutomaticOptionalChainCompletions;
@@ -126,6 +145,10 @@ export class Session {
       ...this.defaultPreferences,
       includeCompletionsForModuleExports: options.includeCompletionsForModuleExports,
     };
+
+    // Debug logging (controlled by --verboseLogging)
+    this.verboseLogging = !!options.verboseLogging;
+
     // Create a connection for the server. The connection uses Node's IPC as a transport.
     this.connection = lsp.createConnection({
       // cancelUndispatched is a "middleware" to handle all cancellation requests.

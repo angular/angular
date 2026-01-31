@@ -16,9 +16,20 @@ import {
   ParseSpan,
   SpreadElement,
   TmplAstBoundAttribute,
+  TmplAstContent,
+  TmplAstDeferredBlock,
+  TmplAstDeferredBlockError,
+  TmplAstDeferredBlockLoading,
+  TmplAstDeferredBlockPlaceholder,
   TmplAstElement,
+  TmplAstForLoopBlock,
+  TmplAstForLoopBlockEmpty,
   TmplAstHostElement,
+  TmplAstIfBlock,
+  TmplAstIfBlockBranch,
   TmplAstNode,
+  TmplAstSwitchBlock,
+  TmplAstSwitchBlockCaseGroup,
   TmplAstTemplate,
   tmplAstVisitAll,
   TmplAstVisitor,
@@ -134,12 +145,16 @@ export const DEFAULT_CSS_DIAGNOSTICS_CONFIG: CssDiagnosticsConfig = {
  * @param config Optional configuration for diagnostics.
  * @returns Array of CSS diagnostics.
  */
+import {debugLog} from '../debug';
+
 export function getCssDiagnostics(
   component: ts.ClassDeclaration,
   compiler: NgCompiler,
   config: CssDiagnosticsConfig = DEFAULT_CSS_DIAGNOSTICS_CONFIG,
 ): ts.Diagnostic[] {
+  debugLog(`getCssDiagnostics: component=${component.name?.getText()}`);
   if (!config.enabled) {
+    debugLog(`getCssDiagnostics: disabled via config`);
     return [];
   }
 
@@ -158,6 +173,8 @@ export function getCssDiagnostics(
       config,
     );
     tmplAstVisitAll(visitor, template);
+  } else {
+    debugLog(`getCssDiagnostics: no template for component`);
   }
 
   // Validate host element style bindings (from @Component host: { '[style.prop]': ... })
@@ -468,7 +485,9 @@ function maybeReportInvalidCssValue(
   valueAst: AST,
   code: CssDiagnosticCode,
 ): void {
+  debugLog(`maybeReportInvalidCssValue: property=${propertyName} unit=${unit} code=${code}`);
   if (config.validateValues === false) {
+    debugLog(`maybeReportInvalidCssValue: validation disabled via config`);
     return;
   }
 
@@ -589,10 +608,12 @@ class CssBindingVisitor implements TmplAstVisitor<void> {
   ) {}
 
   visitBoundAttribute(attribute: TmplAstBoundAttribute): void {
+    debugLog(`visitBoundAttribute: name=${attribute.name} type=${attribute.type}`);
     // Check if this is an object-style binding: [style]="{ prop: value }" or [ngStyle]="{ prop: value }"
     // These are Property bindings, not Style bindings
     if (attribute.type === BindingType.Property) {
       if (attribute.name === 'style' || attribute.name === 'ngStyle') {
+        debugLog(`visitBoundAttribute: validating style object literal`);
         this.validateStyleObjectLiteral(attribute);
       }
       // For all Property bindings (including style/ngStyle), we're done
@@ -613,6 +634,8 @@ class CssBindingVisitor implements TmplAstVisitor<void> {
     // Note: For [style.width], attribute.name will be 'width', not 'style.width'
     const propertyName = parts[0];
     const unit = attribute.unit;
+
+    debugLog(`visitBoundAttribute: property=${propertyName} unit=${unit}`);
 
     // CSS custom properties (--my-var) are always valid
     if (propertyName.startsWith('--')) {
@@ -923,6 +946,7 @@ class CssBindingVisitor implements TmplAstVisitor<void> {
    * Validates CSS properties in object-style bindings like [style]="{prop: value}".
    */
   private validateStyleObjectLiteral(attribute: TmplAstBoundAttribute): void {
+    debugLog(`validateStyleObjectLiteral: key=${attribute.keySpan?.start.file?.url ?? 'unknown'}`);
     // Unwrap ASTWithSource to get the actual AST
     let ast: AST = attribute.value;
     if (ast instanceof ASTWithSource) {
@@ -1122,6 +1146,7 @@ class CssBindingVisitor implements TmplAstVisitor<void> {
    * Collects all style properties being set on an element and detects conflicts.
    */
   private detectStyleBindingConflicts(element: TmplAstElement | TmplAstTemplate): void {
+    debugLog(`detectStyleBindingConflicts: element=${element.sourceSpan.start.file.url}`);
     // Collect all style bindings by normalized property name
     const bindingsByProperty = new Map<string, StyleBinding[]>();
 
@@ -1356,7 +1381,9 @@ class CssBindingVisitor implements TmplAstVisitor<void> {
     // Recursively visit children
     tmplAstVisitAll(this, template.children);
   }
-  visitContent(): void {}
+  visitContent(content: TmplAstContent): void {
+    tmplAstVisitAll(this, content.children);
+  }
   visitVariable(): void {}
   visitReference(): void {}
   visitTextAttribute(): void {}
@@ -1364,18 +1391,54 @@ class CssBindingVisitor implements TmplAstVisitor<void> {
   visitText(): void {}
   visitIcu(): void {}
   visitBoundEvent(): void {}
-  visitDeferredBlock(): void {}
-  visitDeferredBlockPlaceholder(): void {}
-  visitDeferredBlockError(): void {}
-  visitDeferredBlockLoading(): void {}
+  visitDeferredBlock(deferred: TmplAstDeferredBlock): void {
+    tmplAstVisitAll(this, deferred.children);
+    if (deferred.placeholder) {
+      this.visitDeferredBlockPlaceholder(deferred.placeholder);
+    }
+    if (deferred.error) {
+      this.visitDeferredBlockError(deferred.error);
+    }
+    if (deferred.loading) {
+      this.visitDeferredBlockLoading(deferred.loading);
+    }
+  }
+  visitDeferredBlockPlaceholder(block: TmplAstDeferredBlockPlaceholder): void {
+    tmplAstVisitAll(this, block.children);
+  }
+  visitDeferredBlockError(block: TmplAstDeferredBlockError): void {
+    tmplAstVisitAll(this, block.children);
+  }
+  visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading): void {
+    tmplAstVisitAll(this, block.children);
+  }
   visitDeferredTrigger(): void {}
-  visitSwitchBlock(): void {}
+  visitSwitchBlock(block: TmplAstSwitchBlock): void {
+    for (const group of block.groups) {
+      this.visitSwitchBlockCaseGroup(group);
+    }
+  }
   visitSwitchBlockCase(): void {}
-  visitSwitchBlockCaseGroup(): void {}
-  visitForLoopBlock(): void {}
-  visitForLoopBlockEmpty(): void {}
-  visitIfBlock(): void {}
-  visitIfBlockBranch(): void {}
+  visitSwitchBlockCaseGroup(group: TmplAstSwitchBlockCaseGroup): void {
+    tmplAstVisitAll(this, group.children);
+  }
+  visitForLoopBlock(block: TmplAstForLoopBlock): void {
+    tmplAstVisitAll(this, block.children);
+    if (block.empty) {
+      this.visitForLoopBlockEmpty(block.empty);
+    }
+  }
+  visitForLoopBlockEmpty(block: TmplAstForLoopBlockEmpty): void {
+    tmplAstVisitAll(this, block.children);
+  }
+  visitIfBlock(block: TmplAstIfBlock): void {
+    for (const branch of block.branches) {
+      this.visitIfBlockBranch(branch);
+    }
+  }
+  visitIfBlockBranch(block: TmplAstIfBlockBranch): void {
+    tmplAstVisitAll(this, block.children);
+  }
   visitUnknownBlock(): void {}
   visitLetDeclaration(): void {}
   visitComponent(): void {}

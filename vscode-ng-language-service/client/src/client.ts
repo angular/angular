@@ -507,6 +507,12 @@ export class AngularLanguageClient implements vscode.Disposable {
       args.push('--useClientSideFileWatcher');
     }
 
+    // Verbose logging: enabled when angular.log === 'verbose' or angular.trace.server === 'verbose'
+    const traceServer: string = config.get('angular.trace.server', 'off');
+    if (ngLog === 'verbose' || traceServer === 'verbose') {
+      args.push('--verboseLogging');
+    }
+
     return args;
   }
 

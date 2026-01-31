@@ -71,6 +71,7 @@ interface CommandLineOptions {
   angularCoreVersion?: string;
   suppressAngularDiagnosticCodes?: string;
   useClientSideFileWatcher?: boolean;
+  verboseLogging?: boolean;
 }
 
 export function parseCommandLine(argv: string[]): CommandLineOptions {
@@ -97,6 +98,7 @@ export function parseCommandLine(argv: string[]): CommandLineOptions {
     angularCoreVersion: findArgument(argv, '--angularCoreVersion'),
     suppressAngularDiagnosticCodes: findArgument(argv, '--suppressAngularDiagnosticCodes'),
     useClientSideFileWatcher: hasArgument(argv, '--useClientSideFileWatcher'),
+    verboseLogging: hasArgument(argv, '--verboseLogging'),
   };
 }
 

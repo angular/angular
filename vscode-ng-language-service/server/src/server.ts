@@ -53,7 +53,17 @@ function main() {
     disableLetSyntax: options.disableLetSyntax,
     angularCoreVersion: options.angularCoreVersion ?? null,
     suppressAngularDiagnosticCodes: options.suppressAngularDiagnosticCodes ?? null,
+    verboseLogging: options.verboseLogging ?? false,
   });
+
+  // Also expose a process.env flag for the embedded language-service plugin.
+  // Prefer an explicit flag that indicates verbose logging was enabled by the client
+  // (i.e. the VS Code extension settings). Keep the legacy `NG_VERBOSE_LOGS`
+  // env var as a fallback for manual developer runs.
+  if (options.verboseLogging) {
+    process.env.NG_VERBOSE_FROM_CLIENT = 'true';
+    process.env.NG_VERBOSE_LOGS = 'true';
+  }
 
   // Log initialization info
   session.info(`Angular language server process ID: ${process.pid}`);

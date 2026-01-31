@@ -13,10 +13,12 @@ import {filePathToUri, tsTextSpanToLspRange} from '../utils';
 import {isInAngularProject} from './template_info';
 
 export function onCodeLens(session: Session, params: lsp.CodeLensParams): lsp.CodeLens[] | null {
+  session.debug(`onCodeLens: ${params.textDocument.uri}`);
   if (
     !params.textDocument.uri.endsWith('.html') ||
     !isInAngularProject(session, {textDocument: params.textDocument})
   ) {
+    session.debug(`onCodeLens: not an html or not in angular project`);
     return null;
   }
   const position = lsp.Position.create(0, 0);

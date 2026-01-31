@@ -61,6 +61,17 @@ The extension can also be installed with the following command:
 code --install-extension /path/to/ngls.vsix
 ```
 
+## Debugging / Verbose logging
+
+For end users, the recommended way to enable verbose server logs is via VS Code settings. Set one or both of the following in your user or workspace settings:
+
+- `"angular.log": "verbose"`
+- `"angular.trace.server": "verbose"`
+
+When enabled, the extension will instruct the language server to enable verbose logging. The server sets an internal flag (`NG_VERBOSE_FROM_CLIENT`) that the embedded language-service plugin prefers when deciding whether to emit extra debug traces.
+
+For developers running the server manually, you can also set the environment variable `NG_VERBOSE_LOGS=true` to enable plugin verbose logs. This legacy env var is kept as a developer convenience and is used as a fallback when the client-driven flag is not present.
+
 ## Angular Language Service for Other Editors
 
 - [coc-angular](https://github.com/iamcco/coc-angular) for ([Neo](https://neovim.io))[vim](https://www.vim.org/)

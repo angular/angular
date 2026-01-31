@@ -186,8 +186,12 @@ export async function onInlayHint(
   session: Session,
   params: lsp.InlayHintParams,
 ): Promise<lsp.InlayHint[] | null> {
+  session.debug(
+    `onInlayHint: ${params.textDocument.uri} range=${params.range.start.line}:${params.range.start.character}-${params.range.end.line}:${params.range.end.character}`,
+  );
   const lsInfo = session.getLSAndScriptInfo(params.textDocument);
   if (!lsInfo) {
+    session.debug(`onInlayHint: no language service for ${params.textDocument.uri}`);
     return null;
   }
 
@@ -232,12 +236,14 @@ export async function onInlayHint(
   //    This includes parameter names, return types, variable types, etc.
   try {
     const tsHints = languageService.provideInlayHints(scriptInfo.fileName, span, tsPreferences);
+    session.debug(`onInlayHint: TypeScript provided ${tsHints.length} hints`);
 
     for (const tsHint of tsHints) {
       const position = scriptInfo.positionToLineOffset(tsHint.position);
       hints.push(convertTsInlayHint(tsHint, position));
     }
   } catch (e) {
+    session.debug(`onInlayHint: TypeScript provideInlayHints threw: ${e}`);
     // TypeScript's provideInlayHints might fail for some edge cases
     // Silently ignore - TypeScript hints are optional
   }
@@ -255,15 +261,18 @@ export async function onInlayHint(
         span,
         angularConfig,
       );
+      session.debug(`onInlayHint: Angular provided ${angularHints.length} hints`);
       for (const angularHint of angularHints) {
         const position = scriptInfo.positionToLineOffset(angularHint.position);
         hints.push(convertAngularInlayHint(angularHint, position));
       }
     } catch (e) {
+      session.debug(`onInlayHint: Angular getAngularInlayHints threw: ${e}`);
       // Silently ignore - Angular hints are optional
     }
   }
 
+  session.debug(`onInlayHint: totalHints=${hints.length}`);
   return hints.length > 0 ? hints : null;
 }
 
