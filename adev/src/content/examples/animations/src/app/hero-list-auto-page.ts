@@ -8,7 +8,7 @@ import {HeroListAuto} from './hero-list-auto';
     <section>
       <h2>Automatic Calculation</h2>
 
-      <app-hero-list-auto [heroes]="heroes" (remove)="onRemove($event)"></app-hero-list-auto>
+      <app-hero-list-auto [heroes]="heroes" (remove)="onRemove($event)" />
     </section>
   `,
   imports: [HeroListAuto],
