@@ -1661,7 +1661,8 @@ describe('host directives', () => {
         ],
         standalone: false,
       })
-      class Dir {}
+      class Dir {
+      }
 
       @Component({
         template: '<button dir (wasClicked)="spy($event)"></button>',
@@ -3388,25 +3389,176 @@ describe('host directives', () => {
       });
     });
 
-    it('should throw an error if a host directive is applied multiple times to a root component', () => {
+    it('should share host directive that applied multiple times to a root component', () => {
+      @Directive()
+      class SharedDir {}
+
+      @Directive({hostDirectives: [SharedDir]})
+      class FirstDir {
+        readonly duplicateHostDir = inject(SharedDir);
+      }
+
+      @Directive({hostDirectives: [SharedDir]})
+      class SecondDir {
+        readonly duplicateHostDir = inject(SharedDir);
+      }
+
+      @Component({
+        hostDirectives: [FirstDir, SecondDir],
+        standalone: false,
+      })
+      class HostComp {}
+
+      const {ref} = createRootComponent(HostComp);
+
+      const firstDir = ref.injector.get(FirstDir);
+      const secondDir = ref.injector.get(SecondDir);
+
+      expect(firstDir.duplicateHostDir).toBe(secondDir.duplicateHostDir);
+    });
+
+    it('should not throw an error if a host directive matches multiple times in a template', () => {
+      @Directive({selector: '[dir]'})
+      class HostDir {}
+
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir],
+      })
+      class Dir {}
+
+      @Component({template: '<div dir></div>', imports: [HostDir, Dir]})
+      class App {}
+
+      expect(() => TestBed.createComponent(App)).not.toThrow();
+    });
+
+    it('should throw an error if a host directive matches multiple times on a component', () => {
+      @Directive({selector: '[dir]'})
+      class HostDir {}
+
+      @Component({
+        selector: 'comp',
+        hostDirectives: [HostDir],
+        template: '',
+      })
+      class Comp {}
+
+      const baseAppMetadata = {
+        template: '<comp dir></comp>',
+      };
+
+
+      // Note: the definition order in `imports` seems to affect the
+      // directive matching order so we test both scenarios.
+      expect(() => {
+        @Component({
+          ...baseAppMetadata,
+          imports: [Comp, HostDir],
+        })
+        class App {}
+        TestBed.createComponent(App);
+      }).not.toThrow();
+
+      expect(() => {
+        @Component({
+          ...baseAppMetadata,
+          imports: [HostDir, Comp],
+        })
+        class App {}
+        TestBed.createComponent(App);
+      }).not.toThrow();
+    });
+
+    it('should not throw an error if a host directive appears multiple times in a chain', () => {
       @Directive()
       class DuplicateHostDir {}
 
       @Directive({hostDirectives: [DuplicateHostDir]})
       class HostDir {}
 
-      @Directive({hostDirectives: [HostDir, DuplicateHostDir]})
+      @Directive({
+        selector: '[dir]',
+        hostDirectives: [HostDir, DuplicateHostDir],
+        standalone: false,
+      })
       class Dir {}
 
       @Component({
-        hostDirectives: [Dir],
+        template: '<div dir></div>',
+        standalone: false,
+      })
+      class App {}
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => TestBed.createComponent(App)).not.toThrow();
+    });
+
+    it('should combine all inputs of host directive that applied multiple times to a root component', () => {
+      @Directive()
+      class SharedDir {
+        @Input() firstInput = '';
+        @Input() secondInput = '';
+      }
+
+      @Directive({hostDirectives: [{directive: SharedDir, inputs: ['firstInput']}]})
+      class FirstDir {}
+
+      @Directive({hostDirectives: [{directive: SharedDir, inputs: ['secondInput']}]})
+      class SecondDir {}
+
+      @Component({
+        hostDirectives: [FirstDir, SecondDir],
         standalone: false,
       })
       class HostComp {}
 
-      expect(() => createRootComponent(HostComp)).toThrowError(
-        'NG0309: Directive DuplicateHostDir matches multiple times on the same element. Directives can only match an element once.',
-      );
+      const fixture = TestBed.createComponent(HostComp);
+
+      fixture.componentRef.setInput('firstInput', 'firstInputValue');
+      fixture.componentRef.setInput('secondInput', 'secondInputValue');
+
+      const sharedDir = fixture.componentRef.injector.get(SharedDir);
+
+      expect(sharedDir.firstInput).toBe('firstInputValue');
+      expect(sharedDir.secondInput).toBe('secondInputValue');
+    });
+
+    fit('should combine all outputs of host directive that applied multiple times to a root component', () => {
+      @Directive()
+      class SharedDir {
+        @Output() firstOutput = new EventEmitter();
+        @Output() secondOutput = new EventEmitter();
+      }
+
+      @Directive({hostDirectives: [{directive: SharedDir, outputs: ['firstOutput']}]})
+      class FirstDir {}
+
+      @Directive({hostDirectives: [{directive: SharedDir, outputs: ['secondOutput']}]})
+      class SecondDir {}
+
+      @Component({
+        hostDirectives: [FirstDir, SecondDir],
+        standalone: false,
+        host: {
+          '(firstOutput)': 'firstOutputSpy($event)',
+          '(secondOutput)': 'secondOutputSpy($event)',
+        },
+      })
+      class HostComp {
+        firstOutputSpy = jasmine.createSpy();
+        secondOutputSpy = jasmine.createSpy();
+      }
+
+      const fixture = TestBed.createComponent(HostComp);
+      const component = fixture.componentInstance;
+      const sharedDir = fixture.componentRef.injector.get(SharedDir);
+
+      sharedDir.firstOutput.emit('foo');
+
+      expect(component.firstOutputSpy).toHaveBeenCalledWith('foo');
+      expect(component.secondOutputSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -3431,7 +3583,7 @@ describe('host directives', () => {
 
       expect(() => TestBed.createComponent(App)).toThrowError(
         'NG0307: Could not resolve metadata for host directive HostDir. ' +
-          'Make sure that the HostDir class is annotated with an @Directive decorator.',
+        'Make sure that the HostDir class is annotated with an @Directive decorator.',
       );
     });
 
@@ -3459,17 +3611,11 @@ describe('host directives', () => {
       );
     });
 
-    it('should throw an error if a host directive matches multiple times in a template', () => {
-      @Directive({selector: '[dir]'})
+    it('should throw an error if a host directive passed multiple times', () => {
+      @Directive()
       class HostDir {}
 
-      @Directive({
-        selector: '[dir]',
-        hostDirectives: [HostDir],
-      })
-      class Dir {}
-
-      @Component({template: '<div dir></div>', imports: [HostDir, Dir]})
+      @Component({template: '', hostDirectives: [HostDir, HostDir]})
       class App {}
 
       expect(() => TestBed.createComponent(App)).toThrowError(
@@ -3477,69 +3623,15 @@ describe('host directives', () => {
       );
     });
 
-    it('should throw an error if a host directive matches multiple times on a component', () => {
-      @Directive({selector: '[dir]'})
+    it('should throw an error if a host directive applied multiple times', () => {
+      @Directive({selector: '[hostDir]'})
       class HostDir {}
 
-      @Component({
-        selector: 'comp',
-        hostDirectives: [HostDir],
-        template: '',
-      })
-      class Comp {}
-
-      const baseAppMetadata = {
-        template: '<comp dir></comp>',
-      };
-
-      const expectedError =
-        'NG0309: Directive HostDir matches multiple times on the same element. Directives can only match an element once.';
-
-      // Note: the definition order in `imports` seems to affect the
-      // directive matching order so we test both scenarios.
-      expect(() => {
-        @Component({
-          ...baseAppMetadata,
-          imports: [Comp, HostDir],
-        })
-        class App {}
-        TestBed.createComponent(App);
-      }).toThrowError(expectedError);
-
-      expect(() => {
-        @Component({
-          ...baseAppMetadata,
-          imports: [HostDir, Comp],
-        })
-        class App {}
-        TestBed.createComponent(App);
-      }).toThrowError(expectedError);
-    });
-
-    it('should throw an error if a host directive appears multiple times in a chain', () => {
-      @Directive()
-      class DuplicateHostDir {}
-
-      @Directive({hostDirectives: [DuplicateHostDir]})
-      class HostDir {}
-
-      @Directive({
-        selector: '[dir]',
-        hostDirectives: [HostDir, DuplicateHostDir],
-        standalone: false,
-      })
-      class Dir {}
-
-      @Component({
-        template: '<div dir></div>',
-        standalone: false,
-      })
+      @Component({template: '<div hostDir hostDir></div>'})
       class App {}
 
-      TestBed.configureTestingModule({declarations: [App, Dir]});
-
       expect(() => TestBed.createComponent(App)).toThrowError(
-        'NG0309: Directive DuplicateHostDir matches multiple times on the same element. Directives can only match an element once.',
+        'NG0309: Directive HostDir matches multiple times on the same element. Directives can only match an element once.',
       );
     });
 
@@ -3921,6 +4013,28 @@ describe('host directives', () => {
       expect(() => TestBed.createComponent(App)).toThrowError(
         'NG0309: Directive HostDir matches multiple times on the same element. Directives can only match an element once.',
       );
+    });
+
+    it('should throw an error if input of host directive exposed with different names to a root component', () => {
+      @Directive()
+      class SharedDir {
+        @Input() input = '';
+      }
+
+      @Directive({hostDirectives: [{directive: SharedDir, inputs: ['input: foo']}]})
+      class FirstDir {}
+
+      @Directive({hostDirectives: [{directive: SharedDir, inputs: ['input: bar']}]})
+      class SecondDir {}
+
+      @Component({
+        hostDirectives: [FirstDir, SecondDir],
+        standalone: false,
+      })
+      class HostComp {}
+
+      expect(() => TestBed.createComponent(HostComp))
+        .toThrowError('NG0318: Input `input` from host directive `SharedDir`, exposed with different aliases: `foo` and `bar`.');
     });
   });
 });
