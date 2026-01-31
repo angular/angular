@@ -29,7 +29,7 @@
     "@angular/build": "21.1.0-rc.0",
     "@angular/cli": "21.1.0-rc.0",
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
-    "@types/jasmine": "^5.0.0",
+    "@types/jasmine": "^6.0.0",
     "@types/node": "^20.14.8",
     "jasmine-core": "5.13.0",
     "jasmine-spec-reporter": "~7.0.0",
