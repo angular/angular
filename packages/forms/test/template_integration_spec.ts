@@ -7,16 +7,7 @@
  */
 
 import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
-import {
-  Component,
-  Directive,
-  ElementRef,
-  forwardRef,
-  Input,
-  provideZoneChangeDetection,
-  Type,
-  ViewChild,
-} from '@angular/core';
+import {Component, Directive, ElementRef, forwardRef, Input, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {
   AbstractControl,
@@ -45,7 +36,6 @@ describe('template-driven forms integration tests', () => {
     TestBed.configureTestingModule({
       declarations: [component, ...directives],
       imports: [FormsModule, CommonModule],
-      providers: [provideZoneChangeDetection()],
     });
     return TestBed.createComponent(component);
   }
@@ -166,6 +156,7 @@ describe('template-driven forms integration tests', () => {
       fixture.componentInstance.emailShowing = true;
       fixture.componentInstance.first = 'Nancy';
       fixture.componentInstance.email = 'some email';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -175,6 +166,7 @@ describe('template-driven forms integration tests', () => {
 
       // should remove individual control successfully
       fixture.componentInstance.emailShowing = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -186,6 +178,7 @@ describe('template-driven forms integration tests', () => {
 
       // should remove form group successfully
       fixture.componentInstance.groupShowing = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -234,27 +227,25 @@ describe('template-driven forms integration tests', () => {
       });
     }));
 
-    it('should set status classes with ngModel and async validators', fakeAsync(() => {
+    it('should set status classes with ngModel and async validators', async () => {
       const fixture = initTest(NgModelAsyncValidation, NgAsyncValidator);
-      fixture.whenStable().then(() => {
-        fixture.detectChanges();
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
+      const input = fixture.debugElement.query(By.css('input')).nativeElement;
+      expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
-        dispatchEvent(input, 'blur');
-        fixture.detectChanges();
+      dispatchEvent(input, 'blur');
+      fixture.detectChanges();
 
-        expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
+      expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-touched']);
 
-        input.value = 'updatedValue';
-        dispatchEvent(input, 'input');
-        tick();
-        fixture.detectChanges();
+      input.value = 'updatedValue';
+      dispatchEvent(input, 'input');
+      await fixture.whenStable();
 
-        expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-      });
-    }));
+      expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
+    });
 
     it('should set status classes with ngModelGroup and ngForm', waitForAsync(() => {
       const fixture = initTest(NgModelGroupForm);
@@ -378,26 +369,31 @@ describe('template-driven forms integration tests', () => {
         fixture.debugElement.queryAll(By.css('input')).map((el) => el.nativeElement.value);
       const fixture = initTest(App);
       fixture.componentInstance.add(3);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(getValues()).toEqual(['0', '1', '2']);
 
       fixture.componentInstance.remove(1);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(getValues()).toEqual(['0', '2']);
 
       fixture.componentInstance.add(1);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(getValues()).toEqual(['0', '2', '3']);
 
       fixture.componentInstance.items[1].value = '1';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(getValues()).toEqual(['0', '1', '3']);
 
       fixture.componentInstance.items[2].value = '2';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(getValues()).toEqual(['0', '1', '2']);
@@ -436,26 +432,31 @@ describe('template-driven forms integration tests', () => {
         fixture.debugElement.queryAll(By.css('input')).map((el) => el.nativeElement.value);
       const fixture = initTest(App);
       fixture.componentInstance.add(3);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(getValues()).toEqual(['0', '1', '2']);
 
       fixture.componentInstance.remove(1);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(getValues()).toEqual(['0', '2']);
 
       fixture.componentInstance.add(1);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(getValues()).toEqual(['0', '2', '3']);
 
       fixture.componentInstance.items[1].value = '1';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(getValues()).toEqual(['0', '1', '3']);
 
       fixture.componentInstance.items[2].value = '2';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(getValues()).toEqual(['0', '1', '2']);
@@ -550,10 +551,12 @@ describe('template-driven forms integration tests', () => {
         const fixture = initTest(NgModelForm);
         fixture.componentInstance.name = 'Nancy Drew';
         fixture.componentInstance.options = {updateOn: 'blur'};
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
         fixture.componentInstance.name = 'Carson';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
@@ -813,10 +816,12 @@ describe('template-driven forms integration tests', () => {
         const fixture = initTest(NgModelForm);
         fixture.componentInstance.name = 'Nancy Drew';
         fixture.componentInstance.options = {updateOn: 'submit'};
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
         fixture.componentInstance.name = 'Carson';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
@@ -1411,6 +1416,7 @@ describe('template-driven forms integration tests', () => {
       fixture.componentInstance.first = '';
       fixture.componentInstance.last = 'Drew';
       fixture.componentInstance.email = 'some email';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -1420,6 +1426,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.control.get('name.first')!.disabled).toBe(false);
 
       fixture.componentInstance.isDisabled = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -1502,6 +1509,7 @@ describe('template-driven forms integration tests', () => {
       expect(control.hasError('required')).toBe(false);
 
       fixture.componentInstance.required = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -1544,6 +1552,7 @@ describe('template-driven forms integration tests', () => {
       expect(control.hasError('email')).toBe(false);
 
       fixture.componentInstance.validatorEnabled = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -1790,6 +1799,7 @@ describe('template-driven forms integration tests', () => {
     it('should validate max', fakeAsync(() => {
       const fixture = initTest(NgModelMaxValidator);
       fixture.componentInstance.max = 10;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -1816,6 +1826,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['max'].errors).toBeNull();
 
       fixture.componentInstance.max = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       dispatchEvent(input, 'input');
@@ -1892,6 +1903,7 @@ describe('template-driven forms integration tests', () => {
     it('should re-validate if max changes', fakeAsync(() => {
       const fixture = initTest(NgModelMaxValidator);
       fixture.componentInstance.max = 10;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -1911,6 +1923,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['max'].errors).toBeNull();
 
       fixture.componentInstance.max = 5;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(form.valid).toEqual(false);
       expect(form.controls['max'].errors).toEqual({max: {max: 5, actual: 9}});
@@ -1919,6 +1932,7 @@ describe('template-driven forms integration tests', () => {
     it('should validate min', fakeAsync(() => {
       const fixture = initTest(NgModelMinValidator);
       fixture.componentInstance.min = 10;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -1945,6 +1959,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['min'].errors).toEqual({min: {min: 10, actual: 9}});
 
       fixture.componentInstance.min = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       input.value = -5;
@@ -2021,6 +2036,7 @@ describe('template-driven forms integration tests', () => {
     it('should re-validate if min changes', fakeAsync(() => {
       const fixture = initTest(NgModelMinValidator);
       fixture.componentInstance.min = 10;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -2040,6 +2056,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['min'].errors).toEqual({min: {min: 10, actual: 9}});
 
       fixture.componentInstance.min = 9;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(form.valid).toEqual(true);
       expect(form.controls['min'].errors).toBeNull();
@@ -2181,6 +2198,7 @@ describe('template-driven forms integration tests', () => {
         const setValidatorValues = (values: minmax) => {
           fixture.componentInstance.minlen = values.minlength;
           fixture.componentInstance.maxlen = values.maxlength;
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
         };
         const verifyFormState = (state: state) => {
@@ -2269,6 +2287,7 @@ describe('template-driven forms integration tests', () => {
         const setValidatorValues = (values: minmax) => {
           fixture.componentInstance.minlen = values.min;
           fixture.componentInstance.maxlen = values.max;
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
         };
         const verifyFormState = (state: state) => {
@@ -2426,6 +2445,7 @@ describe('template-driven forms integration tests', () => {
       const fixture = initTest(NgModelMinMaxValidator);
       fixture.componentInstance.min = 5;
       fixture.componentInstance.max = 10;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -2445,6 +2465,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['min_max'].errors).toEqual({max: {max: 10, actual: 12}});
 
       fixture.componentInstance.max = 12;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(form.valid).toEqual(true);
       expect(form.controls['min_max'].errors).toBeNull();
@@ -2462,6 +2483,7 @@ describe('template-driven forms integration tests', () => {
       expect(form.controls['min_max'].errors).toEqual({min: {min: 5, actual: 0}});
 
       fixture.componentInstance.min = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(form.valid).toEqual(true);
       expect(form.controls['min_max'].errors).toBeNull();
@@ -2600,6 +2622,7 @@ describe('template-driven forms integration tests', () => {
       expect(registerOnAsyncValidatorChangeFired).toBe(1);
 
       fixture.componentInstance.validatorInput = 'bar';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Changing validator inputs should not cause `registerOnValidatorChange` to be invoked,
@@ -2700,6 +2723,7 @@ describe('template-driven forms integration tests', () => {
     it('should update the view when the model is set back to what used to be in the view', fakeAsync(() => {
       const fixture = initTest(StandaloneNgModel);
       fixture.componentInstance.name = '';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
 
@@ -2714,12 +2738,14 @@ describe('template-driven forms integration tests', () => {
 
       // Programmatically update the input value to be "bb".
       fixture.componentInstance.name = 'bb';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(input.value).toEqual('bb');
 
       // Programatically set it back to "aa".
       fixture.componentInstance.name = 'aa';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       tick();
       expect(input.value).toEqual('aa');
