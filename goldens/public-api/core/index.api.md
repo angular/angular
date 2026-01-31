@@ -638,6 +638,12 @@ export interface DirectiveDecorator {
 }
 
 // @public
+export interface DirectiveWithBindings<T> {
+    bindings: Binding[];
+    type: Type<T>;
+}
+
+// @public
 export interface DoBootstrap {
     // (undocumented)
     ngDoBootstrap(appRef: ApplicationRef): void;
