@@ -486,6 +486,13 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             status: 'new',
           },
           {
+            label: 'Async operations',
+            path: 'guide/forms/signals/async-operations',
+            contentPath: 'guide/forms/signals/async-operations',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
             label: 'Custom controls',
             path: 'guide/forms/signals/custom-controls',
             contentPath: 'guide/forms/signals/custom-controls',
