@@ -144,6 +144,21 @@ export class AngularLanguageClient implements vscode.Disposable {
             return next(document, position, token);
           }
         },
+        provideReferences: async (
+          document: vscode.TextDocument,
+          position: vscode.Position,
+          context: vscode.ReferenceContext,
+          token: vscode.CancellationToken,
+          next,
+        ) => {
+          // Only provide references for Angular projects in template areas
+          if (
+            (await this.isInAngularProject(document)) &&
+            isNotTypescriptOrSupportedDecoratorField(document, position)
+          ) {
+            return next(document, position, context, token);
+          }
+        },
         provideHover: async (
           document: vscode.TextDocument,
           position: vscode.Position,
