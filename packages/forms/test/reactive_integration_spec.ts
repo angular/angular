@@ -14,7 +14,6 @@ import {
   forwardRef,
   Input,
   OnDestroy,
-  provideZoneChangeDetection,
   Type,
   ViewChild,
 } from '@angular/core';
@@ -144,7 +143,6 @@ describe('reactive forms integration tests', () => {
     TestBed.configureTestingModule({
       declarations: [component, ...directives],
       imports: [FormsModule, ReactiveFormsModule],
-      providers: [provideZoneChangeDetection()],
     });
     return TestBed.createComponent(component);
   }
@@ -222,6 +220,7 @@ describe('reactive forms integration tests', () => {
       fixture.detectChanges();
 
       fixture.componentInstance.form = new FormGroup({'login': new FormControl('newValue')});
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       const input = fixture.debugElement.query(By.css('input'));
@@ -235,6 +234,7 @@ describe('reactive forms integration tests', () => {
 
       const newForm = new FormGroup({'login': new FormControl('newValue')});
       fixture.componentInstance.form = newForm;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       const input = fixture.debugElement.query(By.css('input'));
@@ -263,6 +263,7 @@ describe('reactive forms integration tests', () => {
         }),
       });
       fixture.componentInstance.form = newForm;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       const inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -299,6 +300,7 @@ describe('reactive forms integration tests', () => {
         'pattern': new FormControl(''),
       });
       fixture.componentInstance.form = newForm;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(newForm.get('login')!.errors).toEqual({required: true});
@@ -317,6 +319,7 @@ describe('reactive forms integration tests', () => {
         'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')}),
       });
       fixture.componentInstance.form = newForm;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(form.get('signin')!.valid).toBe(false);
@@ -331,6 +334,7 @@ describe('reactive forms integration tests', () => {
       fixture.detectChanges();
 
       form.addControl('email', new FormControl('email'));
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       let emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
@@ -340,6 +344,7 @@ describe('reactive forms integration tests', () => {
         'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')}),
       });
       fixture.componentInstance.form = newForm;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
@@ -357,6 +362,7 @@ describe('reactive forms integration tests', () => {
       let inputs = fixture.debugElement.queryAll(By.css('input'));
       expect(inputs[2]).not.toBeDefined();
       cityArray.push(new FormControl('LA'));
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -366,6 +372,7 @@ describe('reactive forms integration tests', () => {
       const newForm = new FormGroup({cities: newArr});
       fixture.componentInstance.form = newForm;
       fixture.componentInstance.cityArray = newArr;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -405,6 +412,7 @@ describe('reactive forms integration tests', () => {
       expect(input.disabled).toBe(false);
 
       fixture.componentInstance.recreateAndDisable();
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(input.disabled).toBe(true);
     });
@@ -516,9 +524,11 @@ describe('reactive forms integration tests', () => {
         ]);
         fixture.componentInstance.cityArray = newArr;
         form.setControl('cities', newArr);
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         newArr.removeAt(0);
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         let inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -533,6 +543,7 @@ describe('reactive forms integration tests', () => {
         expect(newArr.value).toEqual(['new value', 'LA']);
 
         newArr.removeAt(0);
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         firstInput = fixture.debugElement.query(By.css('input')).nativeElement;
@@ -568,9 +579,11 @@ describe('reactive forms integration tests', () => {
         ]);
         fixture.componentInstance.cityArray = newArr;
         form.setControl('cities', newArr);
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         newArr.removeAt(0);
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         const formEl = fixture.debugElement.query(By.css('form'));
@@ -588,9 +601,11 @@ describe('reactive forms integration tests', () => {
         const newArr = new FormArray([new FormControl('SF'), new FormControl('NY')]);
         fixture.componentInstance.cityArray = newArr;
         form.setControl('cities', newArr);
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         newArr.insert(1, new FormControl('LA'));
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         let inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -646,6 +661,7 @@ describe('reactive forms integration tests', () => {
       fixture.detectChanges();
 
       cityArray.push(new FormControl('LA'));
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       const inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -818,6 +834,7 @@ describe('reactive forms integration tests', () => {
 
         const fixture = initTest(App);
         fixture.componentInstance.useStandaloneControl();
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         let input = fixture.nativeElement.querySelector('input');
@@ -827,6 +844,7 @@ describe('reactive forms integration tests', () => {
         // Replace `FormControl` with `FormGroup` at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useControlInsideGroup();
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         input = fixture.nativeElement.querySelector('input');
@@ -836,6 +854,7 @@ describe('reactive forms integration tests', () => {
         // Swap `FormGroup` with `FormControl` back at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useStandaloneControl();
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         input = fixture.nativeElement.querySelector('input');
@@ -878,6 +897,7 @@ describe('reactive forms integration tests', () => {
 
         const fixture = initTest(App);
         fixture.componentInstance.useStandaloneControl();
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         let input = fixture.nativeElement.querySelector('input');
@@ -887,6 +907,7 @@ describe('reactive forms integration tests', () => {
         // Replace `FormControl` with `FormArray` at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useControlInsideArray();
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         input = fixture.nativeElement.querySelector('input');
@@ -896,6 +917,7 @@ describe('reactive forms integration tests', () => {
         // Swap `FormArray` with `FormControl` back at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useStandaloneControl();
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         input = fixture.nativeElement.querySelector('input');
@@ -942,6 +964,7 @@ describe('reactive forms integration tests', () => {
 
         const fixture = initTest(App);
         fixture.componentInstance.useControlInsideGroup();
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         let input = fixture.nativeElement.querySelector('input');
@@ -951,6 +974,7 @@ describe('reactive forms integration tests', () => {
         // Replace `FormGroup` with `FormArray` at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useControlInsideArray();
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         input = fixture.nativeElement.querySelector('input');
@@ -960,6 +984,7 @@ describe('reactive forms integration tests', () => {
         // Swap `FormArray` with `FormGroup` back at the same location
         // in data model and trigger change detection.
         fixture.componentInstance.useControlInsideGroup();
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         input = fixture.nativeElement.querySelector('input');
@@ -2934,6 +2959,7 @@ describe('reactive forms integration tests', () => {
         );
 
         fixture.componentInstance.login = 'some value';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
@@ -2953,6 +2979,7 @@ describe('reactive forms integration tests', () => {
         );
 
         fixture.componentInstance.login = 'some value';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
@@ -3327,12 +3354,14 @@ describe('reactive forms integration tests', () => {
         'pattern': new FormControl(''),
       });
       fixture.componentInstance.form = newForm;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       fixture.componentInstance.required = false;
       fixture.componentInstance.minLen = null!;
       fixture.componentInstance.maxLen = null!;
       fixture.componentInstance.pattern = null!;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(newForm.hasError('required', ['login'])).toEqual(false);
@@ -3342,25 +3371,27 @@ describe('reactive forms integration tests', () => {
       expect(newForm.valid).toEqual(true);
     });
 
-    it('should use async validators defined in the html', fakeAsync(() => {
+    it('should use async validators defined in the html', async () => {
       const fixture = initTest(UniqLoginWrapper, UniqLoginValidator);
       const form = new FormGroup({'login': new FormControl('')});
-      tick();
       fixture.componentInstance.form = form;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(form.pending).toEqual(true);
-      tick(100);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(form.hasError('uniqLogin', ['login'])).toEqual(true);
 
       const input = fixture.debugElement.query(By.css('input'));
       input.nativeElement.value = 'expected';
       dispatchEvent(input.nativeElement, 'input');
-      tick(100);
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(form.valid).toEqual(true);
-    }));
+    });
 
     it('should use sync validators defined in the model', () => {
       const fixture = initTest(FormGroupComp);
@@ -3577,6 +3608,7 @@ describe('reactive forms integration tests', () => {
         const setValidatorValues = (values: minmax) => {
           fixture.componentInstance.minlen = values.minlength;
           fixture.componentInstance.maxlen = values.maxlength;
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
         };
         const verifyValidatorAttrValues = (values: {minlength: any; maxlength: any}) => {
@@ -3674,6 +3706,7 @@ describe('reactive forms integration tests', () => {
         const setValidatorValues = (values: minmax) => {
           fixture.componentInstance.minlen = values.min;
           fixture.componentInstance.maxlen = values.max;
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
         };
         const verifyValidatorAttrValues = (values: {min: any; max: any}) => {
@@ -3751,6 +3784,7 @@ describe('reactive forms integration tests', () => {
           expect(form.controls['pin'].errors).toBeNull();
 
           fixture.componentInstance.max = 1;
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
 
           expect(input.getAttribute('max')).toEqual('1');
@@ -3759,6 +3793,7 @@ describe('reactive forms integration tests', () => {
 
           fixture.componentInstance.min = 0;
           fixture.componentInstance.max = 0;
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
           expect(input.getAttribute('min')).toEqual('0');
           expect(input.getAttribute('max')).toEqual('0');
@@ -4108,6 +4143,7 @@ describe('reactive forms integration tests', () => {
         expect(registerOnAsyncValidatorChangeFired).toBe(1);
 
         fixture.componentInstance.validatorInput = 'baz';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         // Changing the validator input should not cause the onValidatorChange to be called
@@ -4639,6 +4675,7 @@ describe('reactive forms integration tests', () => {
 
       // Update `form` input with a new value.
       fixture.componentInstance.form = newForm;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       const validatorSpy = validatorSpyOn(ViewValidatorA);
@@ -4808,6 +4845,7 @@ describe('reactive forms integration tests', () => {
       // `formControlName` directive that is bound to the `control` FormControl instance.
       const newFormA = new FormGroup({login: new FormControl('new-a')});
       fixture.componentInstance.formA = newFormA;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       validatorSpy.calls.reset();
@@ -4863,6 +4901,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form control and verify no directive-related callbacks
       // (validators, value accessors) were invoked.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -4883,6 +4922,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: make the form control visible again and verify all callbacks are correctly
       // attached.
       fixture.componentInstance.visible = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -4947,6 +4987,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form control and verify no directive-related callbacks
       // (validators, value accessors) were invoked.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5023,6 +5064,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form control and verify no directive-related callbacks
       // (validators, value accessors) were invoked.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5104,6 +5146,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5130,6 +5173,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: make the form control visible again and verify all callbacks are correctly
       // attached and invoked.
       fixture.componentInstance.visible = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5205,6 +5249,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5291,6 +5336,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: update the list of logins which would result in cleanups for no longer needed
       // (thus destroyed) directives.
       fixture.componentInstance.logins = ['c', 'd'];
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5316,6 +5362,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5403,6 +5450,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5501,6 +5549,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5532,6 +5581,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: make the form array control available again and verify all callbacks are
       // correctly attached and invoked.
       fixture.componentInstance.visible = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5624,6 +5674,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5655,6 +5706,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: make the form group available again and verify all callbacks are correctly
       // attached and invoked.
       fixture.componentInstance.visible = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5763,6 +5815,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: remove ControlA from the view by updating the list of ids.
       // Verify that ControlA is detached from the view, but ControlB still works.
       fixture.componentInstance.ids = [1];
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5796,6 +5849,7 @@ describe('reactive forms integration tests', () => {
       // Case 3: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5898,6 +5952,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -5994,6 +6049,7 @@ describe('reactive forms integration tests', () => {
       // Case 2: hide form group and verify that no directive-related callbacks
       // (validators, value accessors) are invoked when we set control value later.
       fixture.componentInstance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Reset all spies again, prepare for next check.
@@ -6096,7 +6152,6 @@ describe('reactive forms integration tests', () => {
 
       it('should mark formArray as submitted on submit event', () => {
         const fixture = initTest(FormArrayComp);
-        const controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
         fixture.detectChanges();
 
         const formGroupDir = fixture.debugElement.children[0].injector.get(FormArrayDirective);
@@ -6143,12 +6198,14 @@ describe('reactive forms integration tests', () => {
         expect(inputs.length).toBe(3);
 
         controls.push(new FormControl('pineapple'));
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         inputs = fixture.debugElement.queryAll(By.css('input'));
         expect(inputs.length).toBe(4);
 
         controls.pop();
         controls.pop();
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         inputs = fixture.debugElement.queryAll(By.css('input'));
         expect(inputs.length).toBe(2);

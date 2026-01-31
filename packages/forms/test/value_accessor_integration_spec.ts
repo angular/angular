@@ -19,8 +19,6 @@ import {
   Input,
   NgZone,
   Output,
-  PLATFORM_ID,
-  provideZoneChangeDetection,
   RendererFactory2,
   Type,
   ViewChild,
@@ -49,7 +47,6 @@ describe('value accessors', () => {
     TestBed.configureTestingModule({
       declarations: [component, ...directives],
       imports: [FormsModule, ReactiveFormsModule],
-      providers: [{provide: PLATFORM_ID, useValue: 'browser'}, provideZoneChangeDetection()],
     });
     return TestBed.createComponent(component);
   }
@@ -287,6 +284,7 @@ describe('value accessors', () => {
           {id: 1, name: 'SF'},
           {id: 2, name: 'NY'},
         ];
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         // Now that the options array has been re-assigned, new option instances will
@@ -331,11 +329,13 @@ describe('value accessors', () => {
         const comp = fixture.componentInstance;
         comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
         comp.selectedCity = comp.cities[1];
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
         comp.cities.push({'name': 'Buffalo'});
         comp.selectedCity = comp.cities[2];
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
@@ -439,6 +439,7 @@ describe('value accessors', () => {
           {id: 1, name: 'SF'},
           {id: 2, name: 'NY'},
         ];
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
@@ -456,6 +457,7 @@ describe('value accessors', () => {
           {id: 1, name: 'SF'},
           {id: 2, name: 'NY'},
         ];
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
@@ -526,6 +528,7 @@ describe('value accessors', () => {
       });
 
       const detectChangesAndTick = (): void => {
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
       };
@@ -1128,6 +1131,7 @@ describe('value accessors', () => {
             {id: 1, name: 'SF'},
             {id: 2, name: 'NY'},
           ];
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
 
           // Now that the options array has been re-assigned, new option instances will
@@ -1159,6 +1163,7 @@ describe('value accessors', () => {
             {id: 3, name: 'LA'},
             {id: 4, name: 'BXL'},
           ];
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
 
           // using trackBy, instances can be re-used, the option IDs stays the same but their
@@ -1195,6 +1200,7 @@ describe('value accessors', () => {
             {id: 1, name: 'SF'},
             {id: 3, name: 'LA'},
           ];
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
 
           // Now that the options array has been re-assigned, new option instances will
@@ -1232,6 +1238,7 @@ describe('value accessors', () => {
 
           fixture.componentInstance.compareFnCalls = 0;
           fixture.componentInstance.cities.splice(2, 2);
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
 
           // compareWith should only be called once since first city is still selected
@@ -1271,11 +1278,13 @@ describe('value accessors', () => {
           const comp = fixture.componentInstance;
           comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
           comp.selectedCity = comp.cities[1];
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
           tick();
 
           comp.cities.push({'name': 'Buffalo'});
           comp.selectedCity = comp.cities[2];
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
           tick();
 
@@ -1294,6 +1303,7 @@ describe('value accessors', () => {
           tick();
 
           comp.cities.push({name: 'Minneapolis'});
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
           tick();
 
@@ -1448,6 +1458,7 @@ describe('value accessors', () => {
             {id: 1, name: 'SF'},
             {id: 2, name: 'NY'},
           ];
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
           tick();
 
@@ -1465,6 +1476,7 @@ describe('value accessors', () => {
             {id: 1, name: 'SF'},
             {id: 2, name: 'NY'},
           ];
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
           tick();
 
