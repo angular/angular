@@ -11,19 +11,21 @@ import type {} from 'zone.js';
 
 import {
   ApplicationRef,
-  ComponentFactory,
-  ComponentFactoryResolver,
+  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
+  ComponentMirror,
   ComponentRef,
+  createComponent,
+  EnvironmentInjector,
   EventEmitter,
   Injector,
-  NgZone,
-  Type,
-  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
-  ɵNotificationSource as NotificationSource,
-  ɵViewRef as ViewRef,
   ɵisViewDirty as isViewDirty,
   ɵmarkForRefresh as markForRefresh,
+  NgZone,
+  ɵNotificationSource as NotificationSource,
   OutputRef,
+  reflectComponentType,
+  Type,
+  ɵViewRef as ViewRef,
 } from '@angular/core';
 import {merge, Observable, ReplaySubject} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
@@ -44,21 +46,19 @@ const DESTROY_DELAY = 10;
  * constructor's injector's factory resolver and passes that factory to each strategy.
  */
 export class ComponentNgElementStrategyFactory implements NgElementStrategyFactory {
-  componentFactory: ComponentFactory<any>;
+  componentMirror: ComponentMirror<any>;
 
   inputMap = new Map<string, string>();
 
-  constructor(component: Type<any>, injector: Injector) {
-    this.componentFactory = injector
-      .get(ComponentFactoryResolver)
-      .resolveComponentFactory(component);
-    for (const input of this.componentFactory.inputs) {
+  constructor(private component: Type<any>) {
+    this.componentMirror = reflectComponentType(component)!;
+    for (const input of this.componentMirror.inputs) {
       this.inputMap.set(input.propName, input.templateName);
     }
   }
 
   create(injector: Injector) {
-    return new ComponentNgElementStrategy(this.componentFactory, injector, this.inputMap);
+    return new ComponentNgElementStrategy(this.component, injector, this.inputMap);
   }
 }
 
@@ -99,7 +99,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   private cdScheduler: ChangeDetectionScheduler;
 
   constructor(
-    private componentFactory: ComponentFactory<any>,
+    private component: Type<any>,
     private injector: Injector,
     private inputMap: Map<string, string>,
   ) {
@@ -201,9 +201,14 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     const childInjector = Injector.create({providers: [], parent: this.injector});
     const projectableNodes = extractProjectableNodes(
       element,
-      this.componentFactory.ngContentSelectors,
+      reflectComponentType(this.component)!.ngContentSelectors as string[],
     );
-    this.componentRef = this.componentFactory.create(childInjector, projectableNodes, element);
+    this.componentRef = createComponent(this.component, {
+      environmentInjector: this.injector as EnvironmentInjector,
+      elementInjector: childInjector,
+      hostElement: element,
+      projectableNodes,
+    });
 
     this.initializeInputs();
     this.initializeOutputs(this.componentRef);
@@ -223,15 +228,15 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Sets up listeners for the component's outputs so that the events stream emits the events. */
   protected initializeOutputs(componentRef: ComponentRef<any>): void {
-    const eventEmitters: Observable<NgElementStrategyEvent>[] = this.componentFactory.outputs.map(
-      ({propName, templateName}) => {
-        const emitter: EventEmitter<any> | OutputRef<any> = componentRef.instance[propName];
-        return new Observable((observer) => {
-          const sub = emitter.subscribe((value) => observer.next({name: templateName, value}));
-          return () => sub.unsubscribe();
-        });
-      },
-    );
+    const eventEmitters: Observable<NgElementStrategyEvent>[] = reflectComponentType(
+      this.component,
+    )!.outputs.map(({propName, templateName}) => {
+      const emitter: EventEmitter<any> | OutputRef<any> = componentRef.instance[propName];
+      return new Observable((observer) => {
+        const sub = emitter.subscribe((value) => observer.next({name: templateName, value}));
+        return () => sub.unsubscribe();
+      });
+    });
 
     this.eventEmitters.next(eventEmitters);
   }
