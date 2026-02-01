@@ -44,7 +44,9 @@ Here’s an example of how you’d access a route snapshot:
 ```angular-ts
 import {ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
 
-@Component({/*...*/})
+@Component({
+  /*...*/
+})
 export class UserProfile {
   readonly userId: string;
   private route = inject(ActivatedRoute);
@@ -81,12 +83,10 @@ Route parameters allow you to pass data to a component through the URL. This is 
 You can [define route parameters](/guide/routing/define-routes#define-url-paths-with-route-parameters) by prefixing the parameter name with a colon (`:`).
 
 ```angular-ts
-import { Routes } from '@angular/router';
-import { Product } from './product';
+import {Routes} from '@angular/router';
+import {Product} from './product';
 
-const routes: Routes = [
-  { path: 'product/:id', component: Product }
-];
+const routes: Routes = [{path: 'product/:id', component: Product}];
 ```
 
 You can access parameters by subscribing to `route.params`.

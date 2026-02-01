@@ -41,8 +41,8 @@ describe('UserProfile', () => {
 ```
 
 ```angular-ts {header: 'user-profile.ts'}
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component, inject} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   template: '<h1>User Profile: {{userId}}</h1>',
@@ -177,8 +177,8 @@ describe('App Router Outlet', () => {
 ```
 
 ```angular-ts {header: 'app.ts'}
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterOutlet, RouterLink} from '@angular/router';
 
 @Component({
   imports: [RouterOutlet, RouterLink],
@@ -241,8 +241,8 @@ describe('Nested Routes', () => {
 ```
 
 ```angular-ts {header: 'nested.ts'}
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
   imports: [RouterOutlet],
@@ -295,9 +295,9 @@ describe('Search', () => {
 ```
 
 ```angular-ts {header: 'search.ts'}
-import { Component, inject, computed } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import {Component, inject, computed} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Component({
   template: '<div>Search term: {{searchTerm()}}</div>',
