@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../directive_matching';
 import {
   AST,
   BindingPipe,
@@ -13,7 +14,6 @@ import {
   PropertyRead,
   SafePropertyRead,
 } from '../../expression_parser/ast';
-import {CssSelector, SelectorlessMatcher, SelectorMatcher} from '../../directive_matching';
 import {
   BoundAttribute,
   BoundEvent,
@@ -42,6 +42,7 @@ import {
   SwitchBlock,
   SwitchBlockCase,
   SwitchBlockCaseGroup,
+  SwitchExhaustiveCheck,
   Template,
   Text,
   TextAttribute,
@@ -51,6 +52,7 @@ import {
   Visitor,
 } from '../r3_ast';
 
+import {CombinedRecursiveAstVisitor} from '../../combined_visitor';
 import {
   BoundTarget,
   DirectiveMeta,
@@ -63,7 +65,6 @@ import {
 } from './t2_api';
 import {parseTemplate} from './template';
 import {createCssSelectorFromNode} from './util';
-import {CombinedRecursiveAstVisitor} from '../../combined_visitor';
 
 /**
  * Computes a difference between full list (first argument) and
@@ -397,6 +398,8 @@ class Scope implements Visitor {
     this.ingestScopedNode(block);
   }
 
+  visitSwitchExhaustiveCheck(block: SwitchExhaustiveCheck) {}
+
   visitForLoopBlock(block: ForLoopBlock) {
     this.ingestScopedNode(block);
     block.empty?.visit(this);
@@ -588,6 +591,8 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   visitSwitchBlockCaseGroup(block: SwitchBlockCaseGroup) {
     block.children.forEach((node) => node.visit(this));
   }
+
+  visitSwitchExhaustiveCheck(block: SwitchExhaustiveCheck) {}
 
   visitForLoopBlock(block: ForLoopBlock) {
     block.item.visit(this);
@@ -945,6 +950,10 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
   override visitSwitchBlockCaseGroup(block: SwitchBlockCaseGroup) {
     block.cases.forEach((caseNode) => caseNode.visit(this));
     this.ingestScopedNode(block);
+  }
+
+  override visitSwitchExhaustiveCheck(block: SwitchExhaustiveCheck) {
+    // There are no bindings/references in the exhaustive check block.
   }
 
   override visitForLoopBlock(block: ForLoopBlock) {

@@ -310,6 +310,14 @@ class _Tokenizer {
       if (this._attemptCharCode(chars.$RPAREN)) {
         // Allow spaces after the paren.
         this._attemptCharCodeUntilFn(isNotWhitespace);
+
+        if (startToken.parts[0] === 'default' && this._attemptCharCode(chars.$SEMICOLON)) {
+          this._beginToken(TokenType.BLOCK_OPEN_END);
+          this._endToken([]);
+          this._beginToken(TokenType.BLOCK_CLOSE);
+          this._endToken([]);
+          return;
+        }
       } else {
         startToken.type = TokenType.INCOMPLETE_BLOCK_OPEN;
         return;
