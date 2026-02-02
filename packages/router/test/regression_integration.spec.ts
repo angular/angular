@@ -12,7 +12,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ErrorHandler,
   Injectable,
   NgModule,
   TemplateRef,
@@ -20,7 +19,6 @@ import {
   ViewChild,
   ViewContainerRef,
   inject,
-  provideZonelessChangeDetection,
   signal,
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -28,7 +26,6 @@ import {
   ChildrenOutletContexts,
   DefaultUrlSerializer,
   NavigationCancel,
-  NavigationEnd,
   NavigationError,
   Router,
   RouterModule,
@@ -36,7 +33,7 @@ import {
   UrlSerializer,
   UrlTree,
 } from '../index';
-import {firstValueFrom, of} from 'rxjs';
+import {of} from 'rxjs';
 import {switchMap, filter, mapTo, take} from 'rxjs/operators';
 
 import {
@@ -550,7 +547,6 @@ describe('Integration', () => {
 
         const appRef = await bootstrapApplication(App, {
           providers: [
-            provideZonelessChangeDetection(),
             provideRouter(
               [{path: 'simple', component: SimpleCmp}],
               withDisabledInitialNavigation(),

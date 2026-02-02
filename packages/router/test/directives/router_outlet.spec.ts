@@ -7,15 +7,7 @@
  */
 
 import {CommonModule, NgForOf} from '@angular/common';
-import {
-  Component,
-  inject,
-  provideZonelessChangeDetection,
-  Input,
-  Type,
-  NgModule,
-  signal,
-} from '@angular/core';
+import {Component, inject, Input, Type, NgModule, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   provideRouter,
@@ -487,10 +479,7 @@ describe('router outlet data', () => {
     }
 
     TestBed.configureTestingModule({
-      providers: [
-        provideRouter([{path: '**', component: MyComponent}]),
-        provideZonelessChangeDetection(),
-      ],
+      providers: [provideRouter([{path: '**', component: MyComponent}])],
     });
 
     const harness = await RouterTestingHarness.create();
