@@ -139,7 +139,7 @@
           "isRequiredInput": false
         },
         {
-          "name": "onActivate",
+          "name": "activated",
           "type": "OutputEmitterRef<KeyboardEvent | FocusEvent | undefined>",
           "memberType": "property",
           "memberTags": [
@@ -148,10 +148,10 @@
           ],
           "description": "Emits when the widget is activated.",
           "jsdocTags": [],
-          "outputAlias": "onActivate"
+          "outputAlias": "activated"
         },
         {
-          "name": "onDeactivate",
+          "name": "deactivated",
           "type": "OutputEmitterRef<KeyboardEvent | FocusEvent | undefined>",
           "memberType": "property",
           "memberTags": [
@@ -160,7 +160,7 @@
           ],
           "description": "Emits when the widget is deactivated.",
           "jsdocTags": [],
-          "outputAlias": "onDeactivate"
+          "outputAlias": "deactivated"
         },
         {
           "name": "tabindex",
@@ -275,7 +275,7 @@
       "source": {
         "filePath": "src/aria/grid/grid-cell-widget.ts",
         "startLine": 42,
-        "endLine": 136
+        "endLine": 134
       }
     },
     {
@@ -786,11 +786,11 @@
       "@angular/aria/grid"
     ],
     [
-      "GridCellWidget.onActivate",
+      "GridCellWidget.activated",
       "@angular/aria/grid"
     ],
     [
-      "GridCellWidget.onDeactivate",
+      "GridCellWidget.deactivated",
       "@angular/aria/grid"
     ],
     [
