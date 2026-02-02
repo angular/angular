@@ -13,7 +13,7 @@ import {ActivatedRoute} from '@angular/router';
 @Component({
   selector: 'app-product',
 })
-export class ProductComponent {
+export class Product {
   private activatedRoute = inject(ActivatedRoute);
 
   constructor() {
@@ -47,7 +47,7 @@ import {ActivatedRoute, ActivatedRouteSnapshot} from '@angular/router';
 @Component({
   /*...*/
 })
-export class UserProfileComponent {
+export class UserProfile {
   readonly userId: string;
   private route = inject(ActivatedRoute);
 
@@ -84,9 +84,9 @@ You can [define route parameters](/guide/routing/define-routes#define-url-paths-
 
 ```angular-ts
 import {Routes} from '@angular/router';
-import {ProductComponent} from './product/product.component';
+import {Product} from './product';
 
-const routes: Routes = [{path: 'product/:id', component: ProductComponent}];
+const routes: Routes = [{path: 'product/:id', component: Product}];
 ```
 
 You can access parameters by subscribing to `route.params`.
@@ -99,7 +99,7 @@ import {ActivatedRoute} from '@angular/router';
   selector: 'app-product-detail',
   template: `<h1>Product Details: {{ productId() }}</h1>`,
 })
-export class ProductDetailComponent {
+export class ProductDetail {
   productId = signal('');
   private activatedRoute = inject(ActivatedRoute);
 
@@ -136,7 +136,7 @@ router.navigate(['/products'], {
 
 You can access query parameters with `route.queryParams`.
 
-Here is an example of a `ProductListComponent` that updates the query parameters that affect how it displays a list of products:
+Here is an example of a `ProductList` that updates the query parameters that affect how it displays a list of products:
 
 ```angular-ts
 import {ActivatedRoute, Router} from '@angular/router';
@@ -153,7 +153,7 @@ import {ActivatedRoute, Router} from '@angular/router';
     </div>
   `,
 })
-export class ProductListComponent implements OnInit {
+export class ProductList {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 

@@ -78,7 +78,7 @@ export const routes: Routes = [
 @Component({
   /* ... */
 })
-export class CustomerComponent {
+export class Customer {
   private route = inject(ActivatedRoute);
 
   orgId = this.route.parent?.parent?.snapshot.params['orgId'];
@@ -97,7 +97,7 @@ Using `'always'` ensures matrix parameters, route data, and resolved values are 
 @Component({
   /* ... */
 })
-export class CustomerComponent {
+export class Customer {
   private route = inject(ActivatedRoute);
 
   // All parent parameters are available directly
@@ -296,17 +296,17 @@ Routes can opt into reuse behavior through route configuration metadata. This ap
 export const routes: Routes = [
   {
     path: 'products',
-    component: ProductListComponent,
+    component: ProductList,
     data: {reuse: true}, // Component state persists across navigations
   },
   {
     path: 'products/:id',
-    component: ProductDetailComponent,
+    component: ProductDetail,
     // No reuse flag - component recreates on each navigation
   },
   {
     path: 'search',
-    component: SearchComponent,
+    component: Search,
     data: {reuse: true}, // Preserves search results and filter state
   },
 ];
@@ -514,7 +514,7 @@ export function versionMatcher(segments: UrlSegment[]): UrlMatchResult | null {
 export const routes: Routes = [
   {
     matcher: versionMatcher,
-    component: DocumentationComponent,
+    component: Documentation,
   },
   {
     path: 'latest/docs',
@@ -541,7 +541,7 @@ import {resource} from '@angular/core';
     }
   `,
 })
-export class DocumentationComponent {
+export class Documentation {
   // Route parameters are automatically bound to signal inputs
   version = input.required<string>(); // Receives the version parameter
   section = input.required<string>(); // Receives the section parameter
