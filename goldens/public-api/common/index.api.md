@@ -638,7 +638,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     static ngAcceptInputType_priority: unknown;
     // (undocumented)
     static ngAcceptInputType_width: unknown;
-    ngOnChanges(changes: SimpleChanges): void;
+    ngOnChanges(changes: SimpleChanges<NgOptimizedImage>): void;
     ngOnInit(): void;
     ngSrc: string;
     ngSrcset: string;

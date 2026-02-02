@@ -283,7 +283,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   /**
    * Calculate the rewritten `src` once and store it.
    * This is needed to avoid repetitive calculations and make sure the directive cleanup in the
-   * `ngOnDestroy` does not rely on the `IMAGE_LOADER` logic (which in turn can rely on some other
+   * `DestroyRef.onDestroy` does not rely on the `IMAGE_LOADER` logic (which in turn can rely on some other
    * instance that might be already destroyed).
    */
   private _renderedSrc: string | null = null;
@@ -454,7 +454,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
       assertNoLoaderParamsWithoutLoader(this, this.imageLoader);
 
       ngZone.runOutsideAngular(() => {
-        this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.ngSrc, this.priority);
+        this.lcpObserver!.registerImage(this.getRewrittenSrc(), this.priority);
       });
 
       if (this.priority) {
@@ -523,7 +523,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   }
 
   /** @docs-private */
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges<NgOptimizedImage>) {
     if (ngDevMode) {
       assertNoPostInitInputChange(this, changes, [
         'ngSrcset',
