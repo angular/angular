@@ -4,9 +4,9 @@ import {RouterLink, RouterOutlet} from '@angular/router';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  templateUrl: './app.html',
+  styleUrls: ['./app.css'],
 })
-export class AppComponent {
+export class App {
   name = 'Angular ' + VERSION.major;
 }

@@ -35,13 +35,13 @@ In addition to the default Angular application framework, you will also create a
    ng generate component profile
    ```
 
-1. In your code editor, locate the file, `profile.component.html` and replace the placeholder content with the following HTML.
+1. In your code editor, locate the file, `profile.html` and replace the placeholder content with the following HTML.
 
-   <docs-code header="profile.component.html" path="adev/src/content/examples/routing-with-urlmatcher/src/app/profile/profile.component.html"/>
+   <docs-code header="profile.html" path="adev/src/content/examples/routing-with-urlmatcher/src/app/profile/profile.html"/>
 
-1. In your code editor, locate the file, `app.component.html` and replace the placeholder content with the following HTML.
+1. In your code editor, locate the file, `app.html` and replace the placeholder content with the following HTML.
 
-   <docs-code header="app.component.html" path="adev/src/content/examples/routing-with-urlmatcher/src/app/app.component.html"/>
+   <docs-code header="app.html" path="adev/src/content/examples/routing-with-urlmatcher/src/app/app.html"/>
 
 ## Configure your routes for your application
 
@@ -77,7 +77,7 @@ HELPFUL: A custom URL matcher behaves like any other route definition. Define ch
 
 With the custom matcher in place, you can now bind the route parameter in the `profile` component.
 
-In your code editor, open your `profile.component.ts` file and create an `input` matching the `username` parameter.
+In your code editor, open your `profile.ts` file and create an `input` matching the `username` parameter.
 We added the `withComponentInputBinding` feature earlier
 in `provideRouter`. This allows the `Router` to bind information directly to the route components.
 
