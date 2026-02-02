@@ -716,9 +716,8 @@ export class Router {
 
     // Make sure that the error is propagated even though `processNavigations` catch
     // handler does not rethrow
-    return promise.catch((e: any) => {
-      return Promise.reject(e);
-    });
+    // perf: Use `.bind` to avoid holding the other closures in this scope while this promise is unsettled.
+    return promise.catch(Promise.reject.bind(Promise));
   }
 }
 
