@@ -148,11 +148,35 @@ default-src 'self'; style-src 'self' 'nonce-randomNonceGoesHere'; script-src 'se
 
 When serving your Angular application, the server should include a randomly-generated nonce in the HTTP header for each request.
 You must provide this nonce to Angular so that the framework can render `<style>` elements.
-You can set the nonce for Angular in one of two ways:
 
-1. Set the `autoCsp` option to `true` the [workspace configuration](reference/configs/workspace-config#extra-build-and-test-options).
-1. Set the `ngCspNonce` attribute on the root application element as `<app ngCspNonce="randomNonceGoesHere"></app>`. Use this approach if you have access to server-side templating that can add the nonce both to the header and the `index.html` when constructing the response.
-1. Provide the nonce using the `CSP_NONCE` injection token. Use this approach if you have access to the nonce at runtime and you want to be able to cache the `index.html`.
+### Adding a CSP nonce with build time methods
+
+The angular-cli can assist you with correctly appending the nonce to every `<script>` and `<style>` element of your application.
+There are two methods of preparing your app to support nonce declaration on your elements:
+
+Set the `autoCsp` option of the `security` option to `true` in your [workspace configuration](reference/configs/workspace-config#extra-build-and-test-options).
+This will setup nonce declaration for you. This is not compatible with server side rendering though.
+
+Another more manual, but SSR supported method would be:
+
+Set the `ngCspNonce` attribute on the root application element like so `<app ngCspNonce="{{__csp_nonce__}}"></app>` in your `index.html` file.
+This nonce should be a webpage unique placeholder, used by the server side renderer to annotate all necessary elements with the nonce attribute.
+The `ngCspNonce` attribute can be placed on any element in the `index.html`, but it's recommended to add it to the main app element.
+
+With this setup, either through a build step with `autoCsp`, or by the SSR `AngularNodeAppEngine`, all CSP related elements in your output html will have the nonce attribute.
+The next step is to replace the placeholder, with an actual, randomly generated nonce.
+
+This can be done with for example an express middleware, modifying the response body of the SSR handler or an ingress middleware.
+
+### Adding a CSP nonce with an injection token
+
+<docs-callout important title="Providing the nonce via the injection token does not work with SSR">
+  Due to the way the server side renderer handles features like event-replay and hydration, token only injection is not supported.
+  You can still provide the token, but the above method should be used to ensure all scripts are working on the browser.
+</docs-callout>
+
+Provide the nonce using the `CSP_NONCE` injection token.
+Use this approach if you have access to the nonce at runtime and you want to be able to cache the `index.html` or use the nonce to add custom `<script>` or `<style>` elements.
 
 ```ts
 import {bootstrapApplication, CSP_NONCE} from '@angular/core';
