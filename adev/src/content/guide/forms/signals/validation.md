@@ -495,8 +495,8 @@ Return an error object with `kind` and `message` when validation fails. Return `
 Create reusable validation rule functions by wrapping `validate()`:
 
 ```ts
-function url(field: any, options?: {message?: string}) {
-  validate(field, ({value}) => {
+function url(path: SchemaPath<string>, options?: {message?: string}) {
+  validate(path, ({value}) => {
     try {
       new URL(value());
       return null;
@@ -509,8 +509,8 @@ function url(field: any, options?: {message?: string}) {
   });
 }
 
-function phoneNumber(field: any, options?: {message?: string}) {
-  validate(field, ({value}) => {
+function phoneNumber(path: SchemaPath<string>, options?: {message?: string}) {
+  validate(path, ({value}) => {
     const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
 
     if (!phoneRegex.test(value())) {
