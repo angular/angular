@@ -15,7 +15,7 @@ import {RouterLink} from '@angular/router';
       <a routerLink="/user-profile">User profile</a>
       <a routerLink="/settings">Settings</a>
     </nav>
-  `
+  `,
   imports: [RouterLink],
   ...
 })
@@ -36,7 +36,7 @@ export class App {}
 
 In this example, the first example contains the full path with the protocol (i.e., `https://`) and the root domain (i.e., `angular.dev`) explicitly defined for the essentials page. In contrast, the second example assumes the user is already on the correct root domain for `/essentials`.
 
-Generally speaking, relative URLs are preferred because they are more maintainable across applications because they don’t need to know their absolute position within the routing hierarchy.
+Generally speaking, relative URLs are preferred as they are more maintainable across applications since they don’t need to know their absolute position within the routing hierarchy.
 
 ### How relative URLs work
 
@@ -56,7 +56,7 @@ When you need to define dynamic parameters in a relative URL, use the array synt
 <a [routerLink]="['user', currentUserId]">Current User</a>
 ```
 
-In addition, Angular routing allows you specify whether you want the path to be relative to the current URL or to the root domain based on whether the relative path is prefixed with a forward slash (`/`) or not.
+In addition, Angular routing allows you to specify whether you want the path to be relative to the current URL or to the root domain based on whether the relative path is prefixed with a forward slash (`/`) or not.
 
 For example, if the user is on `example.com/settings`, here is how different relative paths can be defined for various scenarios:
 
@@ -67,7 +67,7 @@ For example, if the user is on `example.com/settings`, here is how different rel
 
 <!-- Navigates to /team/:teamId/user/:userId -->
 <a routerLink="/team/123/user/456">User 456</a>
-<a [routerLink]="['/team', teamId, 'user', userId]">Current User</a>”
+<a [routerLink]="['/team', teamId, 'user', userId]">Current User</a>
 ```
 
 ## Programmatic navigation to routes
@@ -123,8 +123,6 @@ import {Router, ActivatedRoute} from '@angular/router';
 export class UserDetail {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-
-  constructor() {}
 
   // Navigate to a sibling route
   navigateToEdit() {
