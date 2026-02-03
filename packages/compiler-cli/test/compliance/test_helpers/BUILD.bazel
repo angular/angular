@@ -8,6 +8,7 @@ ts_project(
     ),
     visibility = [
         "//packages/compiler-cli/test/compliance:__subpackages__",
+        "//packages/compiler-cli/test/isolated_compliance:__subpackages__",
     ],
     deps = [
         "//:node_modules/typescript",

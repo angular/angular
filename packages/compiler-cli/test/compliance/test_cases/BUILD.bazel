@@ -8,4 +8,7 @@ copy_to_bin(
     srcs = glob(["*/**"]),
 )
 
-[partial_compliance_golden(filePath = path) for path in glob(include = ["**/TEST_CASES.json"])]
+[partial_compliance_golden(filePath = path) for path in glob(
+    include = ["**/TEST_CASES.json"],
+    exclude = ["**/isolated/TEST_CASES.json"],
+)]
