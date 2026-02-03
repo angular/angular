@@ -140,6 +140,24 @@ export class OpenBuffer {
   getSignatureHelpItems() {
     return this.ngLS.getSignatureHelpItems(this.scriptInfo.fileName, this._cursor);
   }
+
+  getInlayHints(
+    spanOrConfig?: ts.TextSpan | Record<string, unknown>,
+    config?: Record<string, unknown>,
+  ) {
+    let span: ts.TextSpan;
+    let inlayConfig: Record<string, unknown> | undefined;
+
+    if (spanOrConfig && typeof spanOrConfig === 'object' && 'start' in spanOrConfig) {
+      span = spanOrConfig as ts.TextSpan;
+      inlayConfig = config;
+    } else {
+      span = {start: 0, length: this.scriptInfo.getSnapshot().getLength()};
+      inlayConfig = spanOrConfig as Record<string, unknown> | undefined;
+    }
+
+    return this.ngLS.provideInlayHints(this.scriptInfo.fileName, span, inlayConfig);
+  }
 }
 
 /**
