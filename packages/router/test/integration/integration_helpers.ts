@@ -143,20 +143,6 @@ export class LinkWithState {}
 export class DivLinkWithState {}
 
 @Component({
-  selector: 'link-cmp',
-  template: `<a id="link" [routerLink]="['../simple']" [browserUrl]="'/custom'">link</a>`,
-  standalone: false,
-})
-export class LinkWithBrowserUrl {}
-
-@Component({
-  selector: 'div-link-cmp',
-  template: `<div id="link" [routerLink]="['../simple']" [browserUrl]="'/custom'">link</div>`,
-  standalone: false,
-})
-export class DivLinkWithBrowserUrl {}
-
-@Component({
   selector: 'simple-cmp',
   template: `simple`,
   standalone: false,
@@ -447,8 +433,6 @@ export class LazyComponent {}
     LinkWithQueryParamsAndFragment,
     DivLinkWithState,
     LinkWithState,
-    DivLinkWithBrowserUrl,
-    LinkWithBrowserUrl,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
@@ -481,8 +465,6 @@ export class LazyComponent {}
     LinkWithQueryParamsAndFragment,
     DivLinkWithState,
     LinkWithState,
-    DivLinkWithBrowserUrl,
-    LinkWithBrowserUrl,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
