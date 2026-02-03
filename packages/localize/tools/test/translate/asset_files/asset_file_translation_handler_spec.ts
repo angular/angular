@@ -12,8 +12,8 @@ import {
   getFileSystem,
   PathSegment,
   relativeFrom,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+} from '@angular/compiler-cli';
+import {runInEachFileSystem} from '@angular/compiler-cli/private/testing';
 
 import {Diagnostics} from '../../../src/diagnostics';
 import {AssetTranslationHandler} from '../../../src/translate/asset_files/asset_translation_handler';

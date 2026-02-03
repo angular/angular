@@ -13,8 +13,8 @@ import {
   TmplAstNode,
   TmplAstTextAttribute,
 } from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
+  NgCompiler,
   DirectiveSymbol,
   DomBindingSymbol,
   ElementSymbol,
@@ -29,7 +29,7 @@ import {
   SymbolKind,
   TcbLocation,
   VariableSymbol,
-} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+} from '@angular/compiler-cli/private/language_service';
 import ts from 'typescript';
 
 import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './utils/display_parts';

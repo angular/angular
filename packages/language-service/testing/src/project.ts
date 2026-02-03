@@ -7,18 +7,19 @@
  */
 
 import {
-  InternalOptions,
-  LegacyNgcOptions,
-  TypeCheckingOptions,
-} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {
   absoluteFrom,
   AbsoluteFsPath,
   FileSystem,
   getFileSystem,
   getSourceFileOrError,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+  OptimizeFor,
+} from '@angular/compiler-cli';
+import {
+  TemplateTypeChecker,
+  InternalOptions,
+  LegacyNgcOptions,
+  TypeCheckingOptions,
+} from '@angular/compiler-cli/private/language_service';
 import ts from 'typescript';
 
 import {LanguageService} from '../../src/language_service';
