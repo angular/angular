@@ -14,7 +14,6 @@ import {
   untracked,
   type WritableSignal,
 } from '@angular/core';
-import type {FormField} from '../directive/form_field_directive';
 import {
   MAX,
   MAX_LENGTH,
@@ -33,6 +32,7 @@ import type {
   FormSubmitOptions,
   OneOrMany,
 } from '../api/types';
+import type {FormField} from '../directive/form_field_directive';
 import {RuntimeErrorCode} from '../errors';
 import {DYNAMIC} from '../schema/logic';
 import {LogicNode} from '../schema/logic_node';
@@ -327,49 +327,51 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   async submit(options?: FormSubmitOptions<unknown, unknown>): Promise<boolean> {
-    return untracked(async () => {
-      const opts = {
-        ...(this.structure.fieldManager.submitOptions ?? {}),
-        ...(options ?? {}),
-      } as Partial<FormSubmitOptions<unknown, unknown>>;
+    const opts = {
+      ...(this.structure.fieldManager.submitOptions ?? {}),
+      ...(options ?? {}),
+    } as Partial<FormSubmitOptions<unknown, unknown>>;
 
-      const action = opts?.action;
-      if (!action) {
-        throw new RuntimeError(
-          RuntimeErrorCode.MISSING_SUBMIT_ACTION,
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
-            'Cannot submit form with no submit action. Specify the action when creating the form, or as an additional argument to `submit()`.',
-        );
-      }
+    const action = opts?.action;
+    if (!action) {
+      throw new RuntimeError(
+        RuntimeErrorCode.MISSING_SUBMIT_ACTION,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          'Cannot submit form with no submit action. Specify the action when creating the form, or as an additional argument to `submit()`.',
+      );
+    }
 
-      const onInvalid = opts?.onInvalid;
-      const ignoreValidators = opts?.ignoreValidators ?? 'pending';
+    const onInvalid = opts?.onInvalid;
+    const ignoreValidators = opts?.ignoreValidators ?? 'pending';
 
+    // Determine whether or not to run the action based on the current validity.
+    let shouldRunAction = true;
+    untracked(() => {
       this.markAllAsTouched();
 
-      // Determine whether or not to run the action based on the current validity.
-      let shouldRunAction = true;
       if (ignoreValidators === 'none') {
         shouldRunAction = this.valid();
       } else if (ignoreValidators === 'pending') {
         shouldRunAction = !this.invalid();
       }
-
-      // Run the action (or alternatively the `onInvalid` callback)
-      try {
-        if (shouldRunAction) {
-          this.submitState.selfSubmitting.set(true);
-          const errors = await action?.(this.structure.root.fieldProxy, this.fieldProxy);
-          errors && this.setSubmissionErrors(errors);
-          return !errors || (isArray(errors) && errors.length === 0);
-        } else {
-          onInvalid?.(this.structure.root.fieldProxy, this.fieldProxy);
-        }
-        return false;
-      } finally {
-        this.submitState.selfSubmitting.set(false);
-      }
     });
+
+    // Run the action (or alternatively the `onInvalid` callback)
+    try {
+      if (shouldRunAction) {
+        this.submitState.selfSubmitting.set(true);
+        const errors = await untracked(() =>
+          action?.(this.structure.root.fieldProxy, this.fieldProxy),
+        );
+        errors && this.setSubmissionErrors(errors);
+        return !errors || (isArray(errors) && errors.length === 0);
+      } else {
+        untracked(() => onInvalid?.(this.structure.root.fieldProxy, this.fieldProxy));
+      }
+      return false;
+    } finally {
+      this.submitState.selfSubmitting.set(false);
+    }
   }
 
   private setSubmissionErrors(errors: OneOrMany<ValidationError.WithOptionalFieldTree>) {
