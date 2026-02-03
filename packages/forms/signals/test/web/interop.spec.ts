@@ -6,16 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  Component,
-  Directive,
-  inject,
-  input,
-  provideZonelessChangeDetection,
-  resource,
-  signal,
-  viewChild,
-} from '@angular/core';
+import {Component, Directive, inject, input, resource, signal, viewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {
@@ -39,12 +30,6 @@ import {
 } from '@angular/forms/signals';
 
 describe('ControlValueAccessor', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
-  });
-
   @Component({
     selector: 'custom-control',
     template: `

@@ -6,23 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  provideZonelessChangeDetection,
-  signal,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {form, type FieldTree} from '../../public_api';
 
 describe('field proxy', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
-  });
-
   it('@for over array field should be reactive', () => {
     @Component({
       selector: 'iterate-field',
