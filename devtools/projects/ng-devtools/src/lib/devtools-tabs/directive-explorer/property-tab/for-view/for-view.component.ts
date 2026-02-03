@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {MatExpansionModule} from '@angular/material/expansion';
-import {ForLoopInfo} from '../../../../../../../protocol';
+import {ForBlock} from '../../../../../../../protocol';
 import {ObjectTreeExplorerComponent} from '../../../../shared/object-tree-explorer/object-tree-explorer.component';
 import {FlatNode} from '../../../../shared/object-tree-explorer/object-tree-types';
 import {buildForLoopDataTree} from './for-data-serializer';
@@ -21,7 +21,7 @@ import {buildForLoopDataTree} from './for-data-serializer';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ForViewComponent {
-  readonly forLoop = input.required<NonNullable<ForLoopInfo>>();
+  readonly forLoop = input.required<NonNullable<ForBlock>>();
 
   readonly collectionNodes = computed<FlatNode[]>(() => {
     return buildForLoopDataTree(this.forLoop().items);

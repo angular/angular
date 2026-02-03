@@ -16,6 +16,7 @@ import {ForViewComponent} from './for-view/for-view.component';
 import {PropertyViewComponent} from './property-view/property-view.component';
 import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
 import {DevtoolsSignalGraphNode} from '../signal-graph';
+import {BlockType} from '../../../shared/utils/control-flow';
 
 @Component({
   selector: 'ng-property-tab',
@@ -35,6 +36,8 @@ export class PropertyTabComponent {
   readonly viewSource = output<string>();
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly showSignalGraph = output<DevtoolsSignalGraphNode | null>();
+
+  readonly BlockType = BlockType;
 
   readonly currentDirectives = computed(() => {
     const selected = this.currentSelectedElement();

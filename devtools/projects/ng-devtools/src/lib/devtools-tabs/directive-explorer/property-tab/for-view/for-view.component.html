@@ -1,7 +1,7 @@
 <div class="for-details">
   <div class="info-row">
     <span class="label">track:</span>
-    <span class="value code">{{forLoop().trackExpression}}</span>
+    <span class="value code">{{ forLoop().trackExpression }}</span>
   </div>
   @if (forLoop().hasEmptyBlock) {
     <div class="info-row">
@@ -12,7 +12,7 @@
 
 <mat-expansion-panel [expanded]="false">
   <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
-    <mat-panel-title>Collection ({{forLoop().itemCount}} items)</mat-panel-title>
+    <mat-panel-title>Collection ({{ forLoop().items.length }} items)</mat-panel-title>
   </mat-expansion-panel-header>
   <div class="collection-content">
     <ng-object-tree-explorer

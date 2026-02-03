@@ -1,4 +1,4 @@
-/*!
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DeferBlockDetails, getDeferBlocks as getDeferBlocksInternal} from '../../defer/discovery';
+import {DeferBlockDetails} from '../../defer/discovery';
 import {
   DEFER_BLOCK_STATE,
   DeferBlockInternalState,
@@ -19,7 +19,11 @@ import {
   TDeferBlockDetails,
 } from '../../defer/interfaces';
 import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '../../defer/registry';
-import {getLDeferBlockDetails} from '../../defer/utils';
+import {
+  getLDeferBlockDetails,
+  getTDeferBlockDetails,
+  isTDeferBlockDetails,
+} from '../../defer/utils';
 import {NUM_ROOT_NODES} from '../../hydration/interfaces';
 import {NGH_DEFER_BLOCKS_KEY} from '../../hydration/utils';
 import {TransferState} from '../../transfer_state';
@@ -27,58 +31,34 @@ import {assertLView} from '../assert';
 import {collectNativeNodes} from '../collect_native_nodes';
 import {getLContext} from '../context_discovery';
 import {CONTAINER_HEADER_OFFSET, NATIVE} from '../interfaces/container';
-import {HOST, INJECTOR, LView, TVIEW} from '../interfaces/view';
+import {HOST, INJECTOR, LView, TVIEW, HEADER_OFFSET} from '../interfaces/view';
 import {getNativeByTNode} from './view_utils';
+import {TrackByFunction} from '../../change_detection';
+import {isLContainer, isLView} from '../interfaces/type_checks';
+import {LiveCollection} from '../list_reconciliation';
 
-/** Retrieved information about a `@defer` block. */
-export interface DeferBlockData {
-  /** Current state of the block. */
-  state: 'placeholder' | 'loading' | 'complete' | 'error' | 'initial';
+import {
+  ControlFlowBlock,
+  ControlFlowBlockType,
+  DeferBlockData,
+  ForLoopBlockData,
+} from './control_flow_types';
+import {TNode} from '../interfaces/node';
 
-  /** Hydration state of the block. */
-  incrementalHydrationState: 'not-configured' | 'hydrated' | 'dehydrated';
+// TODO(Georgi): Work in progress
+export function getControlFlowBlocks(node: Node): ControlFlowBlock[] {
+  const fors = getForLoopBlocks(node);
+  // const defers = getDeferBlocks(node);
+  const defers = [] as any;
 
-  /** Wherther the block has a connected `@error` block. */
-  hasErrorBlock: boolean;
-
-  /** Information about the connected `@loading` block. */
-  loadingBlock: {
-    /** Whether the block is defined. */
-    exists: boolean;
-
-    /** Minimum amount of milliseconds that the block should be shown. */
-    minimumTime: number | null;
-
-    /** Amount of time after which the block should be shown. */
-    afterTime: number | null;
-  };
-
-  /** Information about the connected `@placeholder` block. */
-  placeholderBlock: {
-    /** Whether the block is defined. */
-    exists: boolean;
-
-    /** Minimum amount of time that block should be shown. */
-    minimumTime: number | null;
-  };
-
-  /** Stringified version of the block's triggers. */
-  triggers: string[];
-
-  /** The comment host/container node next to which all of the root nodes are rendered. */
-  hostNode: Node;
-
-  /** Element root nodes that are currently being shown in the block. */
-  rootNodes: Node[];
+  return [...defers, ...fors];
 }
 
 /**
  * Gets all of the `@defer` blocks that are present inside the specified DOM node.
  * @param node Node in which to look for `@defer` blocks.
- *
- * @publicApi
  */
-export function getDeferBlocks(node: Node): DeferBlockData[] {
+function getDeferBlocks(node: Node): DeferBlockData[] {
   const results: DeferBlockData[] = [];
   const lView = getLContext(node)?.lView;
 
@@ -87,6 +67,48 @@ export function getDeferBlocks(node: Node): DeferBlockData[] {
   }
 
   return results;
+}
+
+/**
+ * Retrieves all defer blocks in a given LView.
+ *
+ * @param lView lView with defer blocks
+ * @param deferBlocks defer block aggregator array
+ */
+export function getDeferBlocksInternal(lView: LView, deferBlocks: DeferBlockDetails[]) {
+  const tView = lView[TVIEW];
+  for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
+    if (isLContainer(lView[i])) {
+      const lContainer = lView[i];
+      // An LContainer may represent an instance of a defer block, in which case
+      // we store it as a result. Otherwise, keep iterating over LContainer views and
+      // look for defer blocks.
+      const isLast = i === tView.bindingStartIndex - 1;
+      if (!isLast) {
+        const tNode = tView.data[i] as TNode;
+        const tDetails = getTDeferBlockDetails(tView, tNode);
+        if (isTDeferBlockDetails(tDetails)) {
+          deferBlocks.push({lContainer, lView, tNode, tDetails});
+          // This LContainer represents a defer block, so we exit
+          // this iteration and don't inspect views in this LContainer.
+          continue;
+        }
+      }
+
+      // The host can be an `LView` if this is the container
+      // for a component that injects `ViewContainerRef`.
+      if (isLView(lContainer[HOST])) {
+        getDeferBlocksInternal(lContainer[HOST], deferBlocks);
+      }
+
+      for (let j = CONTAINER_HEADER_OFFSET; j < lContainer.length; j++) {
+        getDeferBlocksInternal(lContainer[j] as LView, deferBlocks);
+      }
+    } else if (isLView(lView[i])) {
+      // This is a component, enter the `getDeferBlocks` recursively.
+      getDeferBlocksInternal(lView[i], deferBlocks);
+    }
+  }
 }
 
 /**
@@ -146,6 +168,7 @@ function findDeferBlocks(node: Node, lView: LView, results: DeferBlockData[]) {
     }
 
     const data: DeferBlockData = {
+      type: ControlFlowBlockType.Defer,
       state: stringifyState(lDetails[DEFER_BLOCK_STATE]),
       incrementalHydrationState: hydrationState,
       hasErrorBlock: tDetails.errorTmplIndex !== null,
@@ -231,4 +254,123 @@ function getRendererLView(details: DeferBlockDetails): LView | null {
   const lView = details.lContainer[CONTAINER_HEADER_OFFSET];
   ngDevMode && assertLView(lView);
   return lView;
+}
+
+/// @for
+
+interface RepeaterMetadataShape {
+  hasEmptyBlock: boolean;
+  trackByFn: TrackByFunction<unknown>;
+  liveCollection?: LiveCollection<unknown, unknown>;
+  originalTrackByFn?: TrackByFunction<unknown>;
+}
+
+/**
+ * Checks if a value looks like RepeaterMetadata by duck-typing.
+ * Can't use instanceof because that would require importing from control_flow.ts.
+ */
+function isRepeaterMetadata(value: unknown): value is RepeaterMetadataShape {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    'hasEmptyBlock' in value &&
+    'trackByFn' in value &&
+    typeof (value as RepeaterMetadataShape).trackByFn === 'function'
+  );
+}
+
+function getTrackExpression(metadata: RepeaterMetadataShape): string {
+  const trackByFn = metadata.trackByFn;
+  if (trackByFn.name === 'ɵɵrepeaterTrackByIndex') {
+    return '$index';
+  }
+  if (trackByFn.name === 'ɵɵrepeaterTrackByIdentity') {
+    return '$item';
+  }
+
+  const fnForDisplay = metadata.originalTrackByFn ?? trackByFn;
+  return fnForDisplay.toString();
+}
+
+/**
+ * Gets all of the `@for` loop blocks that are present inside the specified DOM node.
+ * @param node Node in which to look for `@for` blocks.
+ */
+function getForLoopBlocks(node: Node): ForLoopBlockData[] {
+  const results: ForLoopBlockData[] = [];
+  const lView = getLContext(node)?.lView;
+
+  if (lView) {
+    findForLoopBlocks(lView, results);
+  }
+
+  return results;
+}
+
+/**
+ * Finds all the `@for` blocks inside a specific view.
+ * @param lView View within which to search for blocks.
+ * @param results Array to which to add blocks once they're found.
+ */
+function findForLoopBlocks(lView: LView, results: ForLoopBlockData[]) {
+  const tView = lView[TVIEW];
+
+  for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
+    const slotValue = lView[i];
+
+    if (isRepeaterMetadata(slotValue)) {
+      const metadata = slotValue;
+      const liveCollection = metadata.liveCollection;
+      const items: unknown[] = [];
+
+      if (liveCollection) {
+        for (let j = 0; j < liveCollection.length; j++) {
+          items.push(liveCollection.at(j));
+        }
+      }
+
+      const containerIndex = i + 1;
+      const lContainer = lView[containerIndex];
+      const rootNodes: Node[] = [];
+
+      if (isLContainer(lContainer)) {
+        // Collect root nodes from each view in the container
+        for (let viewIdx = CONTAINER_HEADER_OFFSET; viewIdx < lContainer.length; viewIdx++) {
+          const viewAtIdx = lContainer[viewIdx];
+          if (isLView(viewAtIdx)) {
+            const viewTView = viewAtIdx[TVIEW];
+            const viewNodes = collectNativeNodes(viewTView, viewAtIdx, viewTView.firstChild, []);
+            rootNodes.push(...viewNodes);
+          }
+        }
+      }
+
+      results.push({
+        type: ControlFlowBlockType.For,
+        items,
+        hasEmptyBlock: metadata.hasEmptyBlock,
+        rootNodes,
+        hostNode: lContainer[HOST] as Node,
+        trackExpression: getTrackExpression(metadata),
+      });
+    }
+
+    // Recursively search in LContainers
+    if (isLContainer(slotValue)) {
+      const lContainer = slotValue;
+
+      if (isLView(lContainer[HOST])) {
+        findForLoopBlocks(lContainer[HOST], results);
+      }
+
+      for (let j = CONTAINER_HEADER_OFFSET; j < lContainer.length; j++) {
+        const viewAtIdx = lContainer[j];
+        if (isLView(viewAtIdx)) {
+          findForLoopBlocks(viewAtIdx, results);
+        }
+      }
+    } else if (isLView(slotValue)) {
+      findForLoopBlocks(slotValue, results);
+    }
+  }
 }

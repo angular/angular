@@ -287,7 +287,12 @@ export {
 export {compilePipe as ɵcompilePipe} from './render3/jit/pipe';
 export {isNgModule as ɵisNgModule} from './render3/jit/util';
 export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn} from './render3/metadata';
-export {DeferBlockData as ɵDeferBlockData} from './render3/util/defer';
+export {
+  ControlFlowBlockType as ɵControlFlowBlockType,
+  DeferBlockData as ɵDeferBlockData,
+  ForLoopBlockData as ɵForLoopBlockData,
+  ControlFlowBlock as ɵControlFlowBlock,
+} from './render3/util/control_flow_types';
 export {
   FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
   GlobalDevModeUtils as ɵGlobalDevModeUtils,
@@ -317,4 +322,3 @@ export {
   ɵɵvalidateAttribute,
 } from './sanitization/sanitization';
 export {noSideEffects as ɵnoSideEffects} from './util/closure';
-export {ForLoopBlockData as ɵForLoopBlockData} from './render3/util/repeater';
