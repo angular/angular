@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import ts from 'typescript';
+import type ts from 'typescript';
 
 import {
   ApplyRefactoringProgressFn,
@@ -352,20 +352,20 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   };
 }
 
-export function getExternalFiles(project: ts.server.Project): string[] {
+function getExternalFiles(tsModule: typeof ts, project: ts.server.Project): string[] {
   if (!project.hasRoots()) {
     return []; // project has not been initialized
   }
   const typecheckFiles: string[] = [];
   const resourceFiles: string[] = [];
   for (const scriptInfo of project.getScriptInfos()) {
-    if (scriptInfo.scriptKind === ts.ScriptKind.External) {
+    if (scriptInfo.scriptKind === tsModule.ScriptKind.External) {
       // script info for typecheck file is marked as external, see
       // getOrCreateTypeCheckScriptInfo() in
       // packages/language-service/src/language_service.ts
       typecheckFiles.push(scriptInfo.fileName);
     }
-    if (scriptInfo.scriptKind === ts.ScriptKind.Unknown) {
+    if (scriptInfo.scriptKind === tsModule.ScriptKind.Unknown) {
       // script info for resource file is marked as unknown.
       // Including these as external files is necessary because otherwise they will get removed from
       // the project when `updateNonInferredProjectFiles` is called as part of the
@@ -381,6 +381,6 @@ export function getExternalFiles(project: ts.server.Project): string[] {
 export function initialize(mod: {typescript: typeof ts}): ts.server.PluginModule {
   return {
     create,
-    getExternalFiles,
+    getExternalFiles: getExternalFiles.bind(undefined, mod.typescript),
   };
 }
