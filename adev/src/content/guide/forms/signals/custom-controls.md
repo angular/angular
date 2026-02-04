@@ -80,7 +80,7 @@ import {BasicToggle} from './basic-toggle';
 @Component({
   imports: [FormField, BasicInput, BasicToggle],
   template: `
-    <form>
+    <form novalidate>
       <label>
         Email
         <app-basic-input [formField]="registrationForm.email" />
@@ -213,7 +213,7 @@ import {CustomToggle} from './custom-toggle';
   selector: 'app-my-form',
   imports: [FormField, CustomInput, CustomToggle],
   template: `
-    <form>
+    <form novalidate>
       <app-custom-input [formField]="userForm.username" />
       <app-custom-toggle [formField]="userForm.subscribe" />
     </form>
@@ -315,7 +315,7 @@ import {StatefulInput} from './stateful-input';
 @Component({
   imports: [FormField, StatefulInput],
   template: `
-    <form>
+    <form novalidate>
       <label>
         Email
         <app-stateful-input [formField]="loginForm.email" />
