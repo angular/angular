@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {Component} from '@angular/core';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {
   FormBuilder,
   NonNullableFormBuilder,
@@ -15,6 +15,7 @@ import {
   Validators,
 } from '../index';
 import {of} from 'rxjs';
+import {timeout, useAutoTick} from './util';
 
 (function () {
   function syncValidator() {
@@ -26,6 +27,8 @@ import {of} from 'rxjs';
 
   describe('Form Builder', () => {
     let b: FormBuilder;
+
+    useAutoTick();
 
     beforeEach(() => {
       b = new FormBuilder();
@@ -233,7 +236,7 @@ import {of} from 'rxjs';
       expect(a.asyncValidator).toBe(asyncValidator);
     });
 
-    it('should create control arrays with multiple async validators', fakeAsync(() => {
+    it('should create control arrays with multiple async validators', async () => {
       function asyncValidator1() {
         return of({'async1': true});
       }
@@ -244,10 +247,10 @@ import {of} from 'rxjs';
       const a = b.array(['one', 'two'], null, [asyncValidator1, asyncValidator2]);
       expect(a.value).toEqual(['one', 'two']);
 
-      tick();
+      await timeout();
 
       expect(a.errors).toEqual({'async1': true, 'async2': true});
-    }));
+    });
 
     it('should create control arrays with multiple sync validators', () => {
       function syncValidator1() {

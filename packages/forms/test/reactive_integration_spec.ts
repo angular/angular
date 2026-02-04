@@ -17,7 +17,7 @@ import {
   Type,
   ViewChild,
 } from '@angular/core';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {dispatchEvent, isNode, sortedClassList} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
@@ -60,6 +60,7 @@ import {
 } from '../src/model/abstract_model';
 
 import {MyInput, MyInputForm} from './value_accessor_integration_spec';
+import {timeout, useAutoTick} from './util';
 
 // Produces a new @Directive (with a given selector) that represents a validator class.
 function createValidatorClass(selector: string) {
@@ -139,6 +140,8 @@ const ValueAccessorA = createControlValueAccessor('[cva-a]');
 const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
 describe('reactive forms integration tests', () => {
+  useAutoTick();
+
   function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
     TestBed.configureTestingModule({
       declarations: [component, ...directives],
@@ -1712,7 +1715,7 @@ describe('reactive forms integration tests', () => {
       expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
     });
 
-    it('should work with single fields and async validators', fakeAsync(() => {
+    it('should work with single fields and async validators', async () => {
       const fixture = initTest(FormControlComp);
       const control = new FormControl('', null!, uniqLoginAsyncValidator('good'));
       fixture.debugElement.componentInstance.control = control;
@@ -1727,13 +1730,13 @@ describe('reactive forms integration tests', () => {
 
       input.value = 'good';
       dispatchEvent(input, 'input');
-      tick();
+      await timeout();
       fixture.detectChanges();
 
       expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-    }));
+    });
 
-    it('should work with single fields that combines async and sync validators', fakeAsync(() => {
+    it('should work with single fields that combines async and sync validators', async () => {
       const fixture = initTest(FormControlComp);
       const control = new FormControl('', Validators.required, uniqLoginAsyncValidator('good'));
       fixture.debugElement.componentInstance.control = control;
@@ -1752,18 +1755,18 @@ describe('reactive forms integration tests', () => {
 
       expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-pending', 'ng-touched']);
 
-      tick();
+      await timeout();
       fixture.detectChanges();
 
       expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-invalid', 'ng-touched']);
 
       input.value = 'good';
       dispatchEvent(input, 'input');
-      tick();
+      await timeout();
       fixture.detectChanges();
 
       expect(sortedClassList(input)).toEqual(['ng-dirty', 'ng-touched', 'ng-valid']);
-    }));
+    });
 
     it('should work with single fields in parent forms', () => {
       const fixture = initTest(FormGroupComp);
@@ -2916,19 +2919,19 @@ describe('reactive forms integration tests', () => {
           .toBe(true);
       });
 
-      it('should not prevent the default action on forms with method="dialog"', fakeAsync(() => {
+      it('should not prevent the default action on forms with method="dialog"', async () => {
         if (typeof HTMLDialogElement === 'undefined') {
           return;
         }
 
         const fixture = initTest(NativeDialogForm);
         fixture.detectChanges();
-        tick();
+        await timeout();
         const event = dispatchEvent(fixture.componentInstance.form.nativeElement, 'submit');
         fixture.detectChanges();
 
         expect(event.defaultPrevented).toBe(false);
-      }));
+      });
     });
   });
 
@@ -2944,14 +2947,14 @@ describe('reactive forms integration tests', () => {
     });
 
     describe('deprecation warnings', () => {
-      it('should warn once by default when using ngModel with formControlName', fakeAsync(() => {
+      it('should warn once by default when using ngModel with formControlName', async () => {
         const fixture = initTest(FormGroupNgModel);
         fixture.componentInstance.form = new FormGroup({
           'login': new FormControl(''),
           'password': new FormControl(''),
         });
         fixture.detectChanges();
-        tick();
+        await timeout();
 
         expect(warnSpy.calls.count()).toEqual(1);
         expect(warnSpy.calls.mostRecent().args[0]).toMatch(
@@ -2961,17 +2964,17 @@ describe('reactive forms integration tests', () => {
         fixture.componentInstance.login = 'some value';
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
-        tick();
+        await timeout();
 
         expect(warnSpy.calls.count()).toEqual(1);
-      }));
+      });
 
-      it('should warn once by default when using ngModel with formControl', fakeAsync(() => {
+      it('should warn once by default when using ngModel with formControl', async () => {
         const fixture = initTest(FormControlNgModel);
         fixture.componentInstance.control = new FormControl('');
         fixture.componentInstance.passwordControl = new FormControl('');
         fixture.detectChanges();
-        tick();
+        await timeout();
 
         expect(warnSpy.calls.count()).toEqual(1);
         expect(warnSpy.calls.mostRecent().args[0]).toMatch(
@@ -2981,12 +2984,12 @@ describe('reactive forms integration tests', () => {
         fixture.componentInstance.login = 'some value';
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
-        tick();
+        await timeout();
 
         expect(warnSpy.calls.count()).toEqual(1);
-      }));
+      });
 
-      it('should warn once for each instance when global provider is provided with "always"', fakeAsync(() => {
+      it('should warn once for each instance when global provider is provided with "always"', async () => {
         TestBed.configureTestingModule({
           declarations: [FormControlNgModel],
           imports: [ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'always'})],
@@ -2996,15 +2999,15 @@ describe('reactive forms integration tests', () => {
         fixture.componentInstance.control = new FormControl('');
         fixture.componentInstance.passwordControl = new FormControl('');
         fixture.detectChanges();
-        tick();
+        await timeout();
 
         expect(warnSpy.calls.count()).toEqual(2);
         expect(warnSpy.calls.mostRecent().args[0]).toMatch(
           /It looks like you're using ngModel on the same form field as formControl/gi,
         );
-      }));
+      });
 
-      it('should silence warnings when global provider is provided with "never"', fakeAsync(() => {
+      it('should silence warnings when global provider is provided with "never"', async () => {
         TestBed.configureTestingModule({
           declarations: [FormControlNgModel],
           imports: [ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'})],
@@ -3014,13 +3017,13 @@ describe('reactive forms integration tests', () => {
         fixture.componentInstance.control = new FormControl('');
         fixture.componentInstance.passwordControl = new FormControl('');
         fixture.detectChanges();
-        tick();
+        await timeout();
 
         expect(warnSpy).not.toHaveBeenCalled();
-      }));
+      });
     });
 
-    it('should support ngModel for complex forms', fakeAsync(() => {
+    it('should support ngModel for complex forms', async () => {
       const fixture = initTest(FormGroupNgModel);
       fixture.componentInstance.form = new FormGroup({
         'login': new FormControl(''),
@@ -3028,7 +3031,7 @@ describe('reactive forms integration tests', () => {
       });
       fixture.componentInstance.login = 'oldValue';
       fixture.detectChanges();
-      tick();
+      await timeout();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
       expect(input.value).toEqual('oldValue');
@@ -3036,35 +3039,35 @@ describe('reactive forms integration tests', () => {
       input.value = 'updatedValue';
       dispatchEvent(input, 'input');
 
-      tick();
+      await timeout();
       expect(fixture.componentInstance.login).toEqual('updatedValue');
-    }));
+    });
 
-    it('should support ngModel for single fields', fakeAsync(() => {
+    it('should support ngModel for single fields', async () => {
       const fixture = initTest(FormControlNgModel);
       fixture.componentInstance.control = new FormControl('');
       fixture.componentInstance.passwordControl = new FormControl('');
       fixture.componentInstance.login = 'oldValue';
       fixture.detectChanges();
-      tick();
+      await timeout();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
       expect(input.value).toEqual('oldValue');
 
       input.value = 'updatedValue';
       dispatchEvent(input, 'input');
-      tick();
+      await timeout();
 
       expect(fixture.componentInstance.login).toEqual('updatedValue');
-    }));
+    });
 
-    it('should not update the view when the value initially came from the view', fakeAsync(() => {
+    it('should not update the view when the value initially came from the view', async () => {
       if (isNode) return;
       const fixture = initTest(FormControlNgModel);
       fixture.componentInstance.control = new FormControl('');
       fixture.componentInstance.passwordControl = new FormControl('');
       fixture.detectChanges();
-      tick();
+      await timeout();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
       input.value = 'aa';
@@ -3072,13 +3075,13 @@ describe('reactive forms integration tests', () => {
       dispatchEvent(input, 'input');
 
       fixture.detectChanges();
-      tick();
+      await timeout();
 
       // selection start has not changed because we did not reset the value
       expect(input.selectionStart).toEqual(1);
-    }));
+    });
 
-    it('should work with updateOn submit', fakeAsync(() => {
+    it('should work with updateOn submit', async () => {
       const fixture = initTest(FormGroupNgModel);
       const formGroup = new FormGroup({
         login: new FormControl('', {updateOn: 'submit'}),
@@ -3087,13 +3090,13 @@ describe('reactive forms integration tests', () => {
       fixture.componentInstance.form = formGroup;
       fixture.componentInstance.login = 'initial';
       fixture.detectChanges();
-      tick();
+      await timeout();
 
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
       input.value = 'Nancy';
       dispatchEvent(input, 'input');
       fixture.detectChanges();
-      tick();
+      await timeout();
 
       expect(fixture.componentInstance.login)
         .withContext('Expected ngModel value to remain unchanged on input.')
@@ -3102,12 +3105,12 @@ describe('reactive forms integration tests', () => {
       const form = fixture.debugElement.query(By.css('form')).nativeElement;
       dispatchEvent(form, 'submit');
       fixture.detectChanges();
-      tick();
+      await timeout();
 
       expect(fixture.componentInstance.login)
         .withContext('Expected ngModel value to update on submit.')
         .toEqual('Nancy');
-    }));
+    });
   });
 
   describe('validations', () => {
@@ -3381,14 +3384,14 @@ describe('reactive forms integration tests', () => {
 
       expect(form.pending).toEqual(true);
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await timeout(100);
 
       expect(form.hasError('uniqLogin', ['login'])).toEqual(true);
 
       const input = fixture.debugElement.query(By.css('input'));
       input.nativeElement.value = 'expected';
       dispatchEvent(input.nativeElement, 'input');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await timeout(100);
 
       expect(form.valid).toEqual(true);
     });
@@ -3407,13 +3410,13 @@ describe('reactive forms integration tests', () => {
       expect(form.valid).toEqual(false);
     });
 
-    it('should use async validators defined in the model', fakeAsync(() => {
+    it('should use async validators defined in the model', async () => {
       const fixture = initTest(FormGroupComp);
       const control = new FormControl('', Validators.required, uniqLoginAsyncValidator('expected'));
       const form = new FormGroup({'login': control});
       fixture.componentInstance.form = form;
       fixture.detectChanges();
-      tick();
+      await timeout();
 
       expect(form.hasError('required', ['login'])).toEqual(true);
 
@@ -3422,18 +3425,18 @@ describe('reactive forms integration tests', () => {
       dispatchEvent(input.nativeElement, 'input');
 
       expect(form.pending).toEqual(true);
-      tick();
+      await timeout();
 
       expect(form.hasError('uniqLogin', ['login'])).toEqual(true);
 
       input.nativeElement.value = 'expected';
       dispatchEvent(input.nativeElement, 'input');
-      tick();
+      await timeout();
 
       expect(form.valid).toEqual(true);
-    }));
+    });
 
-    it('async validator should not override result of sync validator', fakeAsync(() => {
+    it('async validator should not override result of sync validator', async () => {
       const fixture = initTest(FormGroupComp);
       const control = new FormControl(
         '',
@@ -3442,7 +3445,7 @@ describe('reactive forms integration tests', () => {
       );
       fixture.componentInstance.form = new FormGroup({'login': control});
       fixture.detectChanges();
-      tick();
+      await timeout();
 
       expect(control.hasError('required')).toEqual(true);
 
@@ -3454,12 +3457,12 @@ describe('reactive forms integration tests', () => {
 
       input.nativeElement.value = '';
       dispatchEvent(input.nativeElement, 'input');
-      tick(110);
+      await timeout(110);
 
       expect(control.valid).toEqual(false);
-    }));
+    });
 
-    it('should handle async validation changes in parent and child controls', fakeAsync(() => {
+    it('should handle async validation changes in parent and child controls', async () => {
       const fixture = initTest(FormGroupComp);
       const control = new FormControl(
         '',
@@ -3473,7 +3476,7 @@ describe('reactive forms integration tests', () => {
       );
       fixture.componentInstance.form = form;
       fixture.detectChanges();
-      tick();
+      await timeout();
 
       // Initially, the form is invalid because the nested mandatory control is empty
       expect(control.hasError('required')).toEqual(true);
@@ -3489,7 +3492,7 @@ describe('reactive forms integration tests', () => {
       // The form control asynchronous validation is in progress (for 100 ms)
       expect(control.pending).toEqual(true);
 
-      tick(100);
+      await timeout(100);
 
       // Now the asynchronous validation has resolved, and since the form control value
       // (`angul`) has a length > 3, the validation is successful
@@ -3499,7 +3502,7 @@ describe('reactive forms integration tests', () => {
       // waiting for its own validation
       expect(form.pending).toEqual(true);
 
-      tick(100);
+      await timeout(100);
 
       // Login form control is valid. However, the form control is invalid because `angul` does
       // not include `angular`
@@ -3514,23 +3517,23 @@ describe('reactive forms integration tests', () => {
       // Since the form control value changed, its asynchronous validation runs for 100ms
       expect(control.pending).toEqual(true);
 
-      tick(100);
+      await timeout(100);
 
       // Even if the child control is valid, the form control is pending because it is still
       // waiting for its own validation
       expect(control.invalid).toEqual(false);
       expect(form.pending).toEqual(true);
 
-      tick(100);
+      await timeout(100);
 
       // Now, the form is valid because its own asynchronous validation has resolved
       // successfully, because the form control value `angular` includes the `angular` string
       expect(control.invalid).toEqual(false);
       expect(form.pending).toEqual(false);
       expect(form.invalid).toEqual(false);
-    }));
+    });
 
-    it('should cancel observable properly between validation runs', fakeAsync(() => {
+    it('should cancel observable properly between validation runs', async () => {
       const fixture = initTest(FormControlComp);
       const resultArr: number[] = [];
       fixture.componentInstance.control = new FormControl(
@@ -3539,7 +3542,7 @@ describe('reactive forms integration tests', () => {
         observableValidator(resultArr),
       );
       fixture.detectChanges();
-      tick(100);
+      await timeout(100);
 
       expect(resultArr.length)
         .withContext(`Expected source observable to emit once on init.`)
@@ -3554,11 +3557,11 @@ describe('reactive forms integration tests', () => {
       dispatchEvent(input.nativeElement, 'input');
       fixture.detectChanges();
 
-      tick(100);
+      await timeout(100);
       expect(resultArr.length)
         .withContext(`Expected original observable to be canceled on the next value change.`)
         .toEqual(2);
-    }));
+    });
 
     describe('enabling validators conditionally', () => {
       it('should not activate minlength and maxlength validators if input is null', () => {
@@ -4719,7 +4722,7 @@ describe('reactive forms integration tests', () => {
       expectValidatorsToBeCalled(validatorSpy, asyncValidatorSpy, {ctx: newControl, count: 1});
     });
 
-    it('should keep control in pending state if async validator never emits', fakeAsync(() => {
+    it('should keep control in pending state if async validator never emits', async () => {
       const fixture = initTest(FormControlWithAsyncValidatorFn);
       fixture.detectChanges();
 
@@ -4727,12 +4730,12 @@ describe('reactive forms integration tests', () => {
       expect(control.status).toBe('PENDING');
 
       control.setValue('SOME-NEW-VALUE');
-      tick();
+      await timeout();
 
       // Since validator never emits, we expect a control to be retained in a pending state.
       expect(control.status).toBe('PENDING');
       expect(control.errors).toBe(null);
-    }));
+    });
 
     it('should call validators defined via `set[Async]Validators` after view init', () => {
       const fixture = initTest(FormControlWithValidators, ViewValidatorA, AsyncViewValidatorA);
