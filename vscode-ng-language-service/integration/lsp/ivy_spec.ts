@@ -973,6 +973,641 @@ describe('code fixes', () => {
   });
 });
 
+describe('Pull-based diagnostics (LSP 3.17)', () => {
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000; /* 10 seconds */
+
+  let client: MessageConnection;
+  /**
+   * Number of refresh requests received that have not yet been consumed by
+   * waitForDiagnosticRefresh().
+   */
+  let pendingDiagnosticRefreshCount = 0;
+  /** Resolver for the next waiter when there is no pending refresh signal. */
+  let resolveNextDiagnosticRefresh: (() => void) | null = null;
+
+  /**
+   * Wait for the server to signal it's ready for diagnostics to be pulled.
+   * The server sends workspace/diagnostic/refresh after processing document changes.
+   * This uses a pending-signal counter to avoid races where the refresh signal
+   * arrives before the test starts waiting.
+   */
+  function waitForDiagnosticRefresh(): Promise<void> {
+    if (pendingDiagnosticRefreshCount > 0) {
+      pendingDiagnosticRefreshCount--;
+      return Promise.resolve();
+    }
+    return new Promise((resolve) => {
+      resolveNextDiagnosticRefresh = resolve;
+    });
+  }
+
+  beforeEach(async () => {
+    pendingDiagnosticRefreshCount = 0;
+    resolveNextDiagnosticRefresh = null;
+
+    client = createConnection({});
+    // If debugging, set to
+    // - lsp.Trace.Messages to inspect request/response/notification, or
+    // - lsp.Trace.Verbose to inspect payload
+    client.trace(lsp.Trace.Off, createTracer());
+
+    // Handle the workspace/diagnostic/refresh request from the server.
+    // Resolves pending waiters or stores a pending signal for future waiters.
+    client.onRequest(lsp.DiagnosticRefreshRequest.type, () => {
+      if (resolveNextDiagnosticRefresh !== null) {
+        resolveNextDiagnosticRefresh();
+        resolveNextDiagnosticRefresh = null;
+      } else {
+        pendingDiagnosticRefreshCount++;
+      }
+    });
+
+    client.listen();
+    // Initialize with pull diagnostics enabled
+    await initializeServer(client, {enablePullDiagnostics: true});
+  });
+
+  afterEach(() => {
+    client.dispose();
+  });
+
+  it('should return diagnostics via textDocument/diagnostic', async () => {
+    // Open a document with an error
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    // Wait for the server to signal it's ready for diagnostics to be pulled
+    await waitForDiagnosticRefresh();
+
+    // Request pull diagnostics
+    const response = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+
+    expect(response.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = response as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(1);
+    expect(fullResponse.items[0].message).toBe(
+      `Property 'doesnotexist' does not exist on type 'FooComponent'.`,
+    );
+    expect(fullResponse.resultId).toBeDefined();
+  });
+
+  it('should return unchanged report when document has not changed', async () => {
+    // Open a document with an error
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
+
+    // First request to get the resultId
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = firstResponse as lsp.FullDocumentDiagnosticReport;
+    const resultId = fullResponse.resultId;
+    expect(resultId).toBeDefined();
+
+    // Second request with the previous resultId
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+      previousResultId: resultId,
+    });
+
+    // Should return unchanged since document hasn't been modified
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Unchanged);
+    expect((secondResponse as lsp.UnchangedDocumentDiagnosticReport).resultId).toBe(resultId!);
+  });
+
+  it('should return full report when document changes', async () => {
+    // Open a document with an error
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
+
+    // First request to get the resultId
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const resultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Change the document
+    client.sendNotification(lsp.DidChangeTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        version: 2,
+      },
+      contentChanges: [{text: `{{ alsoDoesNotExist }}`}],
+    });
+
+    // Wait for the server to signal it's ready after document change
+    await waitForDiagnosticRefresh();
+
+    // Request with previous resultId - should get full report since document changed
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+      previousResultId: resultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = secondResponse as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items[0].message).toContain('alsoDoesNotExist');
+  });
+
+  it('should return full report when dependent component changes', async () => {
+    // Start with a valid template that references `title` from FooComponent.
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ title }}`,
+      },
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Change the component without changing the template file itself.
+    openTextDocument(
+      client,
+      FOO_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'foo-component',
+  templateUrl: 'foo.component.html',
+})
+export class FooComponent {
+  title2 = 'Angular';
+}
+`,
+    );
+
+    await waitForDiagnosticRefresh();
+
+    // Even though template text/version is unchanged, diagnostics must be recomputed
+    // because its dependent TS component changed.
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+      previousResultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = secondResponse as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(1);
+    expect(fullResponse.items[0].message).toContain("Property 'title' does not exist");
+  });
+
+  it('should return full report when text change and broad invalidation happen in quick succession', async () => {
+    // Start from a template that depends on `title` from FooComponent.
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ title }}`,
+      },
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // 1) Precise invalidation trigger: component text change
+    openTextDocument(
+      client,
+      FOO_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'foo-component',
+  templateUrl: 'foo.component.html',
+})
+export class FooComponent {
+  title2 = 'Angular';
+}
+`,
+    );
+
+    // 2) Broad invalidation trigger shortly after (simulates a background project/config update)
+    client.sendNotification(lsp.DidChangeWatchedFilesNotification.type, {
+      changes: [
+        {
+          uri: pathToFileURL(join(PROJECT_PATH, 'tsconfig.json')).href,
+          type: lsp.FileChangeType.Changed,
+        },
+      ],
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+      previousResultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = secondResponse as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(1);
+    expect(fullResponse.items[0].message).toContain("Property 'title' does not exist");
+  });
+
+  it('should return full report when transitive dependency changes (C -> B -> A template)', async () => {
+    const tmpDir = makeTempDir();
+    const newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+    await cp(PROJECT_PATH, newProjectRoot, {
+      recursive: true,
+      mode: fs.constants.COPYFILE_FICLONE,
+    });
+
+    const aComponentPath = join(newProjectRoot, 'app', 'a.component.ts');
+    const aTemplatePath = join(newProjectRoot, 'app', 'a.component.html');
+    const bPath = join(newProjectRoot, 'app', 'b.ts');
+    const cPath = join(newProjectRoot, 'app', 'c.ts');
+
+    await writeFile(
+      aComponentPath,
+      `
+import {Component} from '@angular/core';
+import {value} from './b';
+
+@Component({
+  selector: 'a-component',
+  templateUrl: './a.component.html',
+})
+export class AComponent {
+  value = value;
+}
+`,
+    );
+    await writeFile(aTemplatePath, `{{ value.toFixed(2) }}`);
+    await writeFile(bPath, `export {value} from './c';\n`);
+    await writeFile(cPath, `export const value = 123;\n`);
+
+    openTextDocument(client, aComponentPath);
+    openTextDocument(client, aTemplatePath);
+
+    await waitForDiagnosticRefresh();
+
+    const aTemplateUri = pathToFileURL(aTemplatePath).href;
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    expect((firstResponse as lsp.FullDocumentDiagnosticReport).items.length).toBe(0);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Change C only. A template text and A/B files remain unchanged.
+    openTextDocument(client, cPath, `export const value = 'abc';\n`);
+
+    await waitForDiagnosticRefresh();
+
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+      previousResultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = secondResponse as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(1);
+    expect(fullResponse.items[0].message).toContain(
+      "Property 'toFixed' does not exist on type 'string'",
+    );
+  });
+
+  it('should return full report when unimported component selector changes', async () => {
+    const tmpDir = makeTempDir();
+    const newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+    await cp(PROJECT_PATH, newProjectRoot, {
+      recursive: true,
+      mode: fs.constants.COPYFILE_FICLONE,
+    });
+
+    const aComponentPath = join(newProjectRoot, 'app', 'a.component.ts');
+    const aTemplatePath = join(newProjectRoot, 'app', 'a.component.html');
+    const bComponentPath = join(newProjectRoot, 'app', 'b.component.ts');
+
+    await writeFile(
+      aComponentPath,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'a-component',
+  templateUrl: './a.component.html',
+})
+export class AComponent {}
+`,
+    );
+
+    await writeFile(aTemplatePath, `<component-b />`);
+
+    await writeFile(
+      bComponentPath,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'component-b',
+  template: '',
+})
+export class BComponent {}
+`,
+    );
+
+    openTextDocument(client, aComponentPath);
+    openTextDocument(client, aTemplatePath);
+
+    await waitForDiagnosticRefresh();
+
+    const aTemplateUri = pathToFileURL(aTemplatePath).href;
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    openTextDocument(
+      client,
+      bComponentPath,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'component-super-b',
+  template: '',
+})
+export class BComponent {}
+`,
+    );
+
+    await waitForDiagnosticRefresh();
+
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+      previousResultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = secondResponse as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBeGreaterThan(0);
+  });
+
+  it('should return full report when unrelated component implementation changes', async () => {
+    const tmpDir = makeTempDir();
+    const newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+    await cp(PROJECT_PATH, newProjectRoot, {
+      recursive: true,
+      mode: fs.constants.COPYFILE_FICLONE,
+    });
+
+    const aComponentPath = join(newProjectRoot, 'app', 'a.component.ts');
+    const aTemplatePath = join(newProjectRoot, 'app', 'a.component.html');
+    const bComponentPath = join(newProjectRoot, 'app', 'b.component.ts');
+
+    await writeFile(
+      aComponentPath,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'a-component',
+  templateUrl: './a.component.html',
+})
+export class AComponent {
+  value = 123;
+}
+`,
+    );
+
+    await writeFile(aTemplatePath, `{{ value.toFixed(2) }}`);
+
+    await writeFile(
+      bComponentPath,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'component-b',
+  template: '',
+})
+export class BComponent {
+  value = 1;
+}
+`,
+    );
+
+    openTextDocument(client, aComponentPath);
+    openTextDocument(client, aTemplatePath);
+    openTextDocument(client, bComponentPath);
+
+    await waitForDiagnosticRefresh();
+
+    const aTemplateUri = pathToFileURL(aTemplatePath).href;
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    expect((firstResponse as lsp.FullDocumentDiagnosticReport).items.length).toBe(0);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Change B implementation only (metadata/signature unchanged).
+    client.sendNotification(lsp.DidChangeTextDocumentNotification.type, {
+      textDocument: {
+        uri: pathToFileURL(bComponentPath).href,
+        version: 2,
+      },
+      contentChanges: [
+        {
+          text: `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'component-b',
+  template: '',
+})
+export class BComponent {
+  value = 2;
+}
+`,
+        },
+      ],
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+      previousResultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+  });
+
+  it('should return diagnostics for valid template', async () => {
+    // Open the app component which should have no errors
+    openTextDocument(client, APP_COMPONENT);
+
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
+
+    const response = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: APP_COMPONENT_URI},
+    });
+
+    expect(response.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = response as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(0);
+  });
+
+  it('should include relatedInformation in diagnostics', async () => {
+    // Open a template with an error
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
+
+    const response = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+
+    expect(response.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = response as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(1);
+    expect(fullResponse.items[0].relatedInformation).toBeDefined();
+    expect(fullResponse.items[0].relatedInformation!.length).toBe(1);
+    expect(fullResponse.items[0].relatedInformation![0].message).toBe(
+      `Error occurs in the template of component FooComponent.`,
+    );
+  });
+
+  it('should return full report after tsconfig change even when document text is unchanged', async () => {
+    const tmpDir = makeTempDir();
+    const newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+    const tsconfigPathTmp = join(newProjectRoot, 'tsconfig.json');
+    const fooTemplatePathTmp = join(newProjectRoot, 'app/foo.component.html');
+    const fooTemplateUriTmp = pathToFileURL(fooTemplatePathTmp).href;
+
+    await cp(PROJECT_PATH, newProjectRoot, {
+      recursive: true,
+      mode: fs.constants.COPYFILE_FICLONE,
+    });
+
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: fooTemplateUriTmp,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: fooTemplateUriTmp},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Notify watched-files path explicitly to simulate a tsconfig change without
+    // relying on writable sandbox files.
+    client.sendNotification(lsp.DidChangeWatchedFilesNotification.type, {
+      changes: [
+        {
+          uri: pathToFileURL(tsconfigPathTmp).href,
+          type: lsp.FileChangeType.Changed,
+        },
+      ],
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: fooTemplateUriTmp},
+      previousResultId,
+    });
+
+    // Config/project changes must force a full recomputation at least once.
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+  });
+
+  it('should handle workspace/diagnostic request', async () => {
+    // Open multiple files
+    openTextDocument(client, APP_COMPONENT);
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    // Wait for the server to signal it's ready (may receive multiple refresh signals)
+    await waitForDiagnosticRefresh();
+
+    // Request workspace diagnostics
+    const response = await client.sendRequest(lsp.WorkspaceDiagnosticRequest.type, {
+      previousResultIds: [],
+    });
+
+    expect(response.items).toBeDefined();
+    expect(response.items.length).toBeGreaterThanOrEqual(2);
+
+    // Find the FOO_TEMPLATE in the results
+    const fooTemplateDiag = response.items.find((item) => item.uri === FOO_TEMPLATE_URI);
+    expect(fooTemplateDiag).toBeDefined();
+    expect(fooTemplateDiag!.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullReport = fooTemplateDiag as lsp.WorkspaceFullDocumentDiagnosticReport;
+    expect(fullReport.items.length).toBe(1);
+  });
+});
+
 function onSuggestStrictMode(client: MessageConnection): Promise<string> {
   return new Promise((resolve) => {
     client.onNotification(SuggestStrictMode, (params: SuggestStrictModeParams) => {

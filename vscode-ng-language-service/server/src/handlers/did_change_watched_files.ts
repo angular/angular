@@ -10,6 +10,7 @@ import * as lsp from 'vscode-languageserver/node';
 import {uriToFilePath} from '../utils';
 import {ServerHost} from '../server_host';
 import * as ts from 'typescript/lib/tsserverlibrary';
+import {clearDiagnosticCache} from './diagnostics';
 
 export function onDidChangeWatchedFiles(
   params: lsp.DidChangeWatchedFilesParams,
@@ -20,5 +21,9 @@ export function onDidChangeWatchedFiles(
     const filePath = uriToFilePath(change.uri);
     logger.info(`Received file change event for ${filePath} type ${change.type}`);
     host.notifyFileChange(filePath, change.type);
+
+    if (change.type === lsp.FileChangeType.Deleted) {
+      clearDiagnosticCache(change.uri);
+    }
   }
 }
