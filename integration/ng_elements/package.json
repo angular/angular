@@ -18,7 +18,7 @@
     "@babel/core": "7.29.0",
     "@rollup/plugin-babel": "^6.0.0",
     "@rollup/plugin-node-resolve": "^16.0.0",
-    "@types/jasmine": "^5.0.0",
+    "@types/jasmine": "^6.0.0",
     "@types/jasminewd2": "^2.0.8",
     "concurrently": "9.2.1",
     "lite-server": "2.6.1",

@@ -833,7 +833,7 @@ describe('standalone components, directives, and pipes', () => {
       expect(fixture.nativeElement.textContent).toBe('standalone: input value');
     });
 
-    it('should allow extending a regular component and turn it into a standalone one', () => {
+    it('should allow extending a standalone component and turn it into a regular one', () => {
       @Component({selector: 'standalone', template: 'standalone: {{in}}'})
       class StandaloneCmp {
         @Input() input: string | undefined;

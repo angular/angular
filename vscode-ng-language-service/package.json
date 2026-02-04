@@ -275,14 +275,14 @@
     "typescript": "5.9.3"
   },
   "devDependencies": {
-    "@types/jasmine": "~5.1.9",
+    "@types/jasmine": "~6.0.0",
     "@types/jasmine-reporters": "~2.5.3",
     "@types/node": "^24.5.2",
     "@types/vscode": "^1.74.3",
     "@vscode/test-electron": "~2.5.2",
     "@vscode/vsce": "~3.7.0",
-    "jasmine": "~5.13.0",
-    "jasmine-core": "~5.13.0",
+    "jasmine": "6.0.0",
+    "jasmine-core": "6.0.0",
     "jasmine-reporters": "~2.5.2",
     "source-map-support": "^0.5.21",
     "vscode-jsonrpc": "8.2.0",

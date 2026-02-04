@@ -15,10 +15,8 @@ import {
   ensureArrayWithIdentifier,
   findTightestNode,
   generateImport,
-  hasImport,
   nonCollidingImportName,
   objectPropertyAssignmentForKey,
-  printNode,
   updateImport,
   updateObjectValueForKey,
 } from '../src/utils/ts_utils';
@@ -131,6 +129,12 @@ describe('TS util', () => {
         const newArr = addElementToArrayLiteral(oldArr, ts.factory.createStringLiteral('b'));
         expect(print(newArr)).toEqual('["a", "b"]');
       });
+
+      it('addElementToArrayLiteral', () => {
+        let arr = ensureArrayWithIdentifier('foo', ts.factory.createIdentifier('foo'));
+        arr = addElementToArrayLiteral(arr!, ts.factory.createIdentifier('bar'));
+        expect(print(arr)).toEqual('[foo, bar]');
+      });
     });
 
     describe('objectPropertyAssignmentForKey', () => {
@@ -189,12 +193,6 @@ describe('TS util', () => {
         const obj = updateObjectValueForKey(oldObj, 'foo', valueAppenderFn);
         expect(print(obj)).toBe('foo: "barbaz"');
       });
-    });
-
-    it('addElementToArrayLiteral', () => {
-      let arr = ensureArrayWithIdentifier('foo', ts.factory.createIdentifier('foo'));
-      arr = addElementToArrayLiteral(arr!, ts.factory.createIdentifier('bar'));
-      expect(print(arr)).toEqual('[foo, bar]');
     });
 
     it('ensureArrayWithIdentifier', () => {

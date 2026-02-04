@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {setProfiler, profiler} from '../../src/render3/profiler';
 import {ProfilerEvent} from '../../primitives/devtools';
+import {profiler, setProfiler} from '../../src/render3/profiler';
 import {TestBed} from '../../testing';
 
 import {
@@ -507,7 +507,7 @@ describe('profiler', () => {
       expect(p.hasEvents(ProfilerEvent.ComponentStart, ProfilerEvent.ComponentEnd)).toBeTrue();
     });
 
-    it('should capture child component change detection events when a template error occurs', () => {
+    it('should capture child component change detection events when a template error occurs (has start & end)', () => {
       @Component({selector: 'my-child', template: '{{ error() }}'})
       class ChildComponent {
         error() {
@@ -526,7 +526,7 @@ describe('profiler', () => {
       expect(p.hasEvents(ProfilerEvent.ComponentStart, ProfilerEvent.ComponentEnd)).toBeTrue();
     });
 
-    it('should capture child component change detection events when a template error occurs', () => {
+    it('should capture child component change detection events when a template error occurs (extensive check)', () => {
       @Component({selector: 'my-child', template: '{{ error() }}'})
       class ChildComponent {
         error() {

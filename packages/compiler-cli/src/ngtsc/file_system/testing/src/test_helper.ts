@@ -41,8 +41,12 @@ function runInEachFileSystemFn(callback: (os: string) => void) {
   FS_ALL.forEach((os) => runInFileSystem(os, callback, false));
 }
 
+// Jasmine require to have distinct top suite names.
+// Since this function creates top level suites, we need to ensure that they have distinct names.
+// We use a counter to ensure that each suite has a unique name, even if the same file system is tested multiple times.
+let counter = 0;
 function runInFileSystem(os: string, callback: (os: string) => void, error: boolean) {
-  describe(`<<FileSystem: ${os}>>`, () => {
+  describe(`<<FileSystem: ${os}>>/${counter++}`, () => {
     beforeEach(() => initMockFileSystem(os));
     afterEach(() => setFileSystem(new InvalidFileSystem()));
     callback(os);
