@@ -15,7 +15,6 @@ import {
   Validators,
   type AbstractControl,
   type FormControlStatus,
-  type NgControl,
   type ValidationErrors,
   type ValidatorFn,
 } from '@angular/forms';
@@ -30,20 +29,29 @@ import type {FieldState} from '../api/types';
 // - markAs[Touched,Dirty,etc.]
 
 /**
- * Properties of both NgControl & AbstractControl that are supported by the InteropNgControl.
+ * Represents a combination of `NgControl` and `AbstractControl`.
+ *
+ * Note: We have this separate interface, rather than implementing the relevant parts of the two
+ * controls with something like `InteropNgControl implements Pick<NgControl, ...>, Pick<AbstractControl, ...>`
+ * because it confuses the internal JS minifier which can cause collisions in field names.
  */
-export type InteropSharedKeys =
-  | 'value'
-  | 'valid'
-  | 'invalid'
-  | 'touched'
-  | 'untouched'
-  | 'disabled'
-  | 'enabled'
-  | 'errors'
-  | 'pristine'
-  | 'dirty'
-  | 'status';
+interface CombinedControl {
+  value: any;
+  valid: boolean;
+  invalid: boolean;
+  touched: boolean;
+  untouched: boolean;
+  disabled: boolean;
+  enabled: boolean;
+  errors: ValidationErrors | null;
+  pristine: boolean;
+  dirty: boolean;
+  status: FormControlStatus;
+  control: AbstractControl<any, any>;
+  valueAccessor: ControlValueAccessor | null;
+  hasValidator(validator: ValidatorFn): boolean;
+  updateValueAndValidity(): void;
+}
 
 /**
  * A fake version of `NgControl` provided by the `Field` directive. This allows interoperability
@@ -52,11 +60,7 @@ export type InteropSharedKeys =
  * the real `NgControl`, but does implement some of the most commonly used ones that have a clear
  * equivalent in signal forms.
  */
-export class InteropNgControl
-  implements
-    Pick<NgControl, InteropSharedKeys | 'control' | 'valueAccessor'>,
-    Pick<AbstractControl<unknown>, InteropSharedKeys | 'hasValidator'>
-{
+export class InteropNgControl implements CombinedControl {
   constructor(protected field: () => FieldState<unknown>) {}
 
   readonly control: AbstractControl<any, any> = this as unknown as AbstractControl<any, any>;
