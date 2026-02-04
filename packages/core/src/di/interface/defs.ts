@@ -171,7 +171,7 @@ export function ɵɵdefineInjectable<T>(opts: {
 }): unknown {
   return {
     token: opts.token,
-    providedIn: (opts.providedIn as any) || null,
+    providedIn: (opts.providedIn as any) ?? 'root',
     factory: opts.factory,
     value: undefined,
   } as ɵɵInjectableDeclaration<T>;

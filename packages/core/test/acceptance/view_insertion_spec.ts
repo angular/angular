@@ -7,12 +7,13 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
 import {
   ChangeDetectorRef,
   Component,
   Directive,
   EmbeddedViewRef,
-  Injectable,
+  inject,
   Injector,
   Input,
   provideZoneChangeDetection,
@@ -22,7 +23,6 @@ import {
   ViewRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
 
 describe('view insertion', () => {
   beforeEach(() => {
@@ -939,16 +939,14 @@ describe('view insertion', () => {
     });
 
     it('should consistently report errors raised by createEmbeddedView', () => {
-      // Intentionally hasn't been added to `providers` so that it throws a DI error.
-      @Injectable()
-      class DoesNotExist {}
-
       @Directive({
         selector: 'dir',
         standalone: false,
       })
       class Dir {
-        constructor(willCauseError: DoesNotExist) {}
+        constructor() {
+          const foo = inject('DoesNotExist' as any);
+        }
       }
 
       @Component({
