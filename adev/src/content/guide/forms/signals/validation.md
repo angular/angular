@@ -102,7 +102,6 @@ A field is considered "empty" when:
 | ------------------------ | ------- |
 | Value is `null`          | `null`, |
 | Value is an empty string | `''`    |
-| Value is an empty array  | `[]`    |
 
 For conditional requirements, use the `when` option:
 
@@ -116,6 +115,8 @@ registrationForm = form(this.registrationModel, (schemaPath) => {
 ```
 
 The validation rule only runs when the `when` function returns `true`.
+
+NOTE: `required` will return `true` for empty array. Use [`minLength()`](#minlength-and-maxlength) to validate arrays.
 
 ### email()
 
