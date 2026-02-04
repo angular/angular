@@ -25,7 +25,7 @@ describe('BabelAstFactory', () => {
   beforeEach(() => (factory = new BabelAstFactory('/original.ts')));
 
   describe('attachComments()', () => {
-    it('should add the comments to the given statement', () => {
+    it('should add the comments to the given statement (assignment)', () => {
       const stmt = statement.ast`x = 10;`;
       factory.attachComments(stmt, [
         leadingComment('comment 1', true),

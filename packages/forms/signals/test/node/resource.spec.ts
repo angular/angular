@@ -159,7 +159,7 @@ describe('resources', () => {
     ]);
   });
 
-  it('should support tree validation for resources', async () => {
+  it('should support tree validation for resources (multiple errors)', async () => {
     const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       validateAsync(p, {
         params: ({value}) => value(),

@@ -22,8 +22,8 @@ import {runInNativeFileSystem} from '../../helpers';
 
 const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
-runInNativeFileSystem(() => {
-  describe('translateFiles()', () => {
+runInNativeFileSystem('translateFiles()', () => {
+  describe('', () => {
     let fs: FileSystem;
     let testDir: AbsoluteFsPath;
     let testFilesDir: AbsoluteFsPath;

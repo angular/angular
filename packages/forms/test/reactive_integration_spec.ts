@@ -3766,7 +3766,7 @@ describe('reactive forms integration tests', () => {
       }
       // Run tests for both `FormControlName` and `FormControl` directives
       ['formControl', 'formControlName'].forEach((dir: string) => {
-        it('should validate max', () => {
+        it(`should validate max for ${dir}`, () => {
           const fixture = initTest(getComponent(dir));
           const control = new FormControl(5);
           fixture.componentInstance.control = control;
@@ -3810,7 +3810,7 @@ describe('reactive forms integration tests', () => {
           expect(form.controls['pin'].errors).toBeNull();
         });
 
-        it('should validate max for float number', () => {
+        it(`should validate max for float number for ${dir}`, () => {
           const fixture = initTest(getComponent(dir));
           const control = new FormControl(10.25);
           fixture.componentInstance.control = control;
@@ -3846,7 +3846,7 @@ describe('reactive forms integration tests', () => {
           expect(form.controls['pin'].errors).toBeNull();
         });
 
-        it('should apply max validation when control value is defined as a string', () => {
+        it(`should apply max validation when control value is defined as a string for ${dir}`, () => {
           const fixture = initTest(getComponent(dir));
           const control = new FormControl('5');
           fixture.componentInstance.control = control;
@@ -3873,7 +3873,7 @@ describe('reactive forms integration tests', () => {
           expect(form.controls['pin'].errors).toEqual({max: {max: 1, actual: 2}});
         });
 
-        it('should validate min', () => {
+        it(`should validate min for ${dir}`, () => {
           const fixture = initTest(getComponent(dir));
           const control = new FormControl(5);
           fixture.componentInstance.control = control;
@@ -3914,7 +3914,7 @@ describe('reactive forms integration tests', () => {
           expect(form.controls['pin'].errors).toBeNull();
         });
 
-        it('should validate min for float number', () => {
+        it(`should validate min for float number for ${dir}`, () => {
           const fixture = initTest(getComponent(dir));
           const control = new FormControl(10.25);
           fixture.componentInstance.control = control;
@@ -3951,7 +3951,7 @@ describe('reactive forms integration tests', () => {
           expect(form.controls['pin'].errors).toBeNull();
         });
 
-        it('should apply min validation when control value is defined as a string', () => {
+        it(`should apply min validation when control value is defined as a string for ${dir}`, () => {
           const fixture = initTest(getComponent(dir));
           const control = new FormControl('5');
           fixture.componentInstance.control = control;
@@ -3978,7 +3978,7 @@ describe('reactive forms integration tests', () => {
           expect(form.controls['pin'].errors).toEqual({min: {min: 5, actual: 2}});
         });
 
-        it('should run min/max validation for empty values', () => {
+        it(`should run min/max validation for empty values for ${dir}`, () => {
           const fixture = initTest(getComponent(dir));
           const minValidateFnSpy = spyOn(MinValidator.prototype, 'validate');
           const maxValidateFnSpy = spyOn(MaxValidator.prototype, 'validate');
@@ -3998,7 +3998,7 @@ describe('reactive forms integration tests', () => {
           expect(maxValidateFnSpy).toHaveBeenCalled();
         });
 
-        it('should run min/max validation when constraints are represented as strings', () => {
+        it(`should run min/max validation when constraints are represented as strings for ${dir}`, () => {
           const fixture = initTest(getComponent(dir));
           const control = new FormControl(5);
 
@@ -4035,7 +4035,7 @@ describe('reactive forms integration tests', () => {
           expect(form.controls['pin'].errors).toEqual({max: {max: 10, actual: 20}});
         });
 
-        it('should run min/max validation for negative values', () => {
+        it(`should run min/max validation for negative values for ${dir}`, () => {
           const fixture = initTest(getComponent(dir));
           const control = new FormControl(-30);
           fixture.componentInstance.control = control;
@@ -5485,7 +5485,7 @@ describe('reactive forms integration tests', () => {
       });
     });
 
-    it('should clean up when FormArrayName is destroyed (but parent FormGroup exists)', () => {
+    it('should clean up when FormArrayName is destroyed (but parent FormGroup exists, ngIf on formArrayName)', () => {
       // Scenario:
       // ---------
       // [formGroup]
@@ -5610,7 +5610,7 @@ describe('reactive forms integration tests', () => {
       });
     });
 
-    it('should clean up all child controls when FormGroup is destroyed', () => {
+    it('should clean up all child controls (formArrayName) when FormGroup is destroyed', () => {
       // Scenario:
       // ---------
       // [formGroup] *ngIf
@@ -5985,7 +5985,7 @@ describe('reactive forms integration tests', () => {
       });
     });
 
-    it('should clean up all child controls when FormGroup is destroyed', () => {
+    it('should clean up all child controls (formGroupName) when FormGroup is destroyed', () => {
       // Scenario:
       // ---------
       // [formGroup] *ngIf

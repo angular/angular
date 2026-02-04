@@ -55,6 +55,7 @@ export function runTests(
   } = {},
 ) {
   describe(`compliance tests (${type})`, () => {
+    let counter = 0;
     for (const test of getAllComplianceTests()) {
       if (!test.compilationModeFilter.includes(type)) {
         continue;
@@ -63,7 +64,7 @@ export function runTests(
         continue;
       }
 
-      describe(`[${test.relativePath}]`, () => {
+      describe(`[${test.relativePath}]/${counter++}`, () => {
         const itFn = test.focusTest ? fit : test.excludeTest ? xit : it;
         itFn(test.description, () => {
           if (type === 'linked compile' && test.compilerOptions?.['target'] === 'ES5') {
