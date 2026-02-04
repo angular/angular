@@ -51,7 +51,7 @@ const passwordErrors = f.password().errors(); // Returns CompatValidationError i
 In the template, use standard reactive syntax by binding the underlying control:
 
 ```angular-html
-<form>
+<form novalidate>
   <div>
     <label>
       Email:
@@ -113,7 +113,7 @@ The `shippingAddress` field acts as a branch in your Signal Form tree. You can b
 template by accessing the underlying legacy controls via `.control()`:
 
 ```angular-html
-<form>
+<form novalidate>
   <h3>Shipping Details</h3>
 
   <div>

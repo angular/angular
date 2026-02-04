@@ -177,7 +177,7 @@ The `dirty()` signal becomes `true` when the user modifies an interactive field'
 ```angular-ts
 @Component({
   template: `
-    <form>
+    <form novalidate>
       <input [formField]="profileForm.name" />
       <input [formField]="profileForm.bio" />
 
@@ -355,7 +355,7 @@ The root form is also a field in the field tree. When you call it as a function,
 ```angular-ts
 @Component({
   template: `
-    <form>
+    <form novalidate>
       <input [formField]="loginForm.email" />
       <input [formField]="loginForm.password" />
 
@@ -595,12 +595,22 @@ While field state typically updates through user interactions (typing, focusing,
 
 #### Form submission
 
-When a user submits a form, use the `submit()` function to handle validation and reveal errors:
+When a user submits a form, use the `submit()` function to handle validation and reveal errors.
 
-```ts
-import {Component, signal} from '@angular/core';
-import {form, submit, required, email} from '@angular/forms/signals';
+Signal Forms handles validation through its own system, so you need to prevent the browser's default form behavior. Add `novalidate` to the `<form>` element to disable native HTML validation (such as browser tooltip popups for `required` or `type="email"` fields), and call `$event.preventDefault()` in your submit handler to prevent the browser from reloading the page:
 
+```angular-ts
+@Component({
+  template: `
+    <form novalidate (submit)="onSubmit($event)">
+      <input [formField]="registrationForm.username" />
+      <input type="email" [formField]="registrationForm.email" />
+      <input type="password" [formField]="registrationForm.password" />
+
+      <button type="submit">Register</button>
+    </form>
+  `,
+})
 export class Registration {
   registrationModel = signal({username: '', email: '', password: ''});
 
@@ -610,13 +620,14 @@ export class Registration {
     required(schemaPath.password);
   });
 
-  onSubmit() {
+  onSubmit(event: Event) {
+    event.preventDefault();
     submit(this.registrationForm, async () => {
       this.submitToServer();
     });
   }
 
-  submitToServer() {
+  private submitToServer() {
     // Send data to server
   }
 }

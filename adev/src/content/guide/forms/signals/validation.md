@@ -68,7 +68,7 @@ import {form, FormField, required} from '@angular/forms/signals';
   selector: 'app-registration',
   imports: [FormField],
   template: `
-    <form>
+    <form novalidate>
       <label>
         Username
         <input [formField]="registrationForm.username" />
@@ -129,7 +129,7 @@ import {form, FormField, email} from '@angular/forms/signals';
   selector: 'app-contact',
   imports: [FormField],
   template: `
-    <form>
+    <form novalidate>
       <label>
         Your Email
         <input type="email" [formField]="contactForm.email" />
@@ -160,7 +160,7 @@ import {form, FormField, min, max} from '@angular/forms/signals';
   selector: 'app-age-form',
   imports: [FormField],
   template: `
-    <form>
+    <form novalidate>
       <label>
         Age
         <input type="number" [formField]="ageForm.age" />
@@ -211,7 +211,7 @@ import {form, FormField, minLength, maxLength} from '@angular/forms/signals';
   selector: 'app-password-form',
   imports: [FormField],
   template: `
-    <form>
+    <form novalidate>
       <label>
         Password
         <input type="password" [formField]="passwordForm.password" />
@@ -253,7 +253,7 @@ import {form, FormField, pattern} from '@angular/forms/signals';
   selector: 'app-phone-form',
   imports: [FormField],
   template: `
-    <form>
+    <form novalidate>
       <label>
         Phone Number
         <input [formField]="phoneForm.phone" placeholder="555-123-4567" />
@@ -362,7 +362,7 @@ import {form, FormField, required, minLength} from '@angular/forms/signals';
   selector: 'app-signup',
   imports: [FormField],
   template: `
-    <form>
+    <form novalidate>
       <label>
         Username
         <input [formField]="signupForm.username" />
@@ -435,7 +435,7 @@ import {form, FormField, validate} from '@angular/forms/signals';
   selector: 'app-url-form',
   imports: [FormField],
   template: `
-    <form>
+    <form novalidate>
       <label>
         Website URL
         <input [formField]="urlForm.website" />
@@ -548,7 +548,7 @@ import {form, FormField, required, minLength, validate} from '@angular/forms/sig
   selector: 'app-password-change',
   imports: [FormField],
   template: `
-    <form>
+    <form novalidate>
       <label>
         New Password
         <input type="password" [formField]="passwordForm.password" />
@@ -610,7 +610,7 @@ import {form, FormField, required, validateHttp} from '@angular/forms/signals';
   selector: 'app-username-form',|
   imports: [FormField],
   template: `
-    <form>
+    <form novalidate>
       <label>
         Username
         <input [formField]="usernameForm.username" />
