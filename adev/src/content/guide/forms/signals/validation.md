@@ -102,7 +102,6 @@ A field is considered "empty" when:
 | ------------------------ | ------- |
 | Value is `null`          | `null`, |
 | Value is an empty string | `''`    |
-| Value is an empty array  | `[]`    |
 
 For conditional requirements, use the `when` option:
 
