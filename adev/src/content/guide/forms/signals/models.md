@@ -92,7 +92,7 @@ const userModel = signal({
 });
 ```
 
-For optional fields, explicitly set them to `null` or an empty value:
+For optional fields, explicitly set them to an empty value or `null`:
 
 ```ts
 interface UserData {
@@ -107,6 +107,8 @@ const userModel = signal<UserData>({
   phoneNumber: null,
 });
 ```
+
+HELPFUL: Native text controls like `<input type=text>` and `<textarea>` don't support `null`, use `''` to represent an empty value.
 
 Fields set to `undefined` are excluded from the field tree. A model with `{value: undefined}` behaves identically to `{}` - accessing the field returns `undefined` rather than a `FieldTree`.
 
