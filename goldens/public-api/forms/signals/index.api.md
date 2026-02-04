@@ -16,7 +16,6 @@ import { Injector } from '@angular/core';
 import { InputSignal } from '@angular/core';
 import { InputSignalWithTransform } from '@angular/core';
 import { ModelSignal } from '@angular/core';
-import { NgControl } from '@angular/forms';
 import { OutputRef } from '@angular/core';
 import { Provider } from '@angular/core';
 import { ResourceRef } from '@angular/core';
