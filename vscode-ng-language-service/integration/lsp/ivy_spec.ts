@@ -973,6 +973,247 @@ describe('code fixes', () => {
   });
 });
 
+describe('Pull-based diagnostics (LSP 3.17)', () => {
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000; /* 10 seconds */
+
+  let client: MessageConnection;
+  /**
+   * Promise that resolves when the server sends a workspace/diagnostic/refresh request.
+   * This is more reliable than a fixed setTimeout as it waits for the server signal.
+   */
+  let diagnosticRefreshPromise: Promise<void>;
+  let resolveDiagnosticRefresh: () => void;
+
+  /**
+   * Wait for the server to signal it's ready for diagnostics to be pulled.
+   * The server sends workspace/diagnostic/refresh after processing document changes.
+   * This replaces fixed setTimeout waits with event-driven synchronization.
+   */
+  function waitForDiagnosticRefresh(): Promise<void> {
+    return diagnosticRefreshPromise;
+  }
+
+  /**
+   * Reset the diagnostic refresh promise for the next wait cycle.
+   * Should be called after consuming a refresh signal.
+   */
+  function resetDiagnosticRefresh(): void {
+    diagnosticRefreshPromise = new Promise((resolve) => {
+      resolveDiagnosticRefresh = resolve;
+    });
+  }
+
+  beforeEach(async () => {
+    // Initialize the diagnostic refresh promise
+    resetDiagnosticRefresh();
+
+    client = createConnection({});
+    // If debugging, set to
+    // - lsp.Trace.Messages to inspect request/response/notification, or
+    // - lsp.Trace.Verbose to inspect payload
+    client.trace(lsp.Trace.Off, createTracer());
+
+    // Handle the workspace/diagnostic/refresh request from the server.
+    // Resolves the promise so tests can await this signal instead of using setTimeout.
+    client.onRequest(lsp.DiagnosticRefreshRequest.type, () => {
+      resolveDiagnosticRefresh();
+      // Reset for next wait cycle
+      resetDiagnosticRefresh();
+    });
+
+    client.listen();
+    // Initialize with pull diagnostics enabled
+    await initializeServer(client, {enablePullDiagnostics: true});
+  });
+
+  afterEach(() => {
+    client.dispose();
+  });
+
+  it('should return diagnostics via textDocument/diagnostic', async () => {
+    // Open a document with an error
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    // Wait for the server to signal it's ready for diagnostics to be pulled
+    await waitForDiagnosticRefresh();
+
+    // Request pull diagnostics
+    const response = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+
+    expect(response.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = response as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(1);
+    expect(fullResponse.items[0].message).toBe(
+      `Property 'doesnotexist' does not exist on type 'FooComponent'.`,
+    );
+    expect(fullResponse.resultId).toBeDefined();
+  });
+
+  it('should return unchanged report when document has not changed', async () => {
+    // Open a document with an error
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
+
+    // First request to get the resultId
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = firstResponse as lsp.FullDocumentDiagnosticReport;
+    const resultId = fullResponse.resultId;
+    expect(resultId).toBeDefined();
+
+    // Second request with the previous resultId
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+      previousResultId: resultId,
+    });
+
+    // Should return unchanged since document hasn't been modified
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Unchanged);
+    expect((secondResponse as lsp.UnchangedDocumentDiagnosticReport).resultId).toBe(resultId!);
+  });
+
+  it('should return full report when document changes', async () => {
+    // Open a document with an error
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
+
+    // First request to get the resultId
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const resultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Change the document
+    client.sendNotification(lsp.DidChangeTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        version: 2,
+      },
+      contentChanges: [{text: `{{ alsoDoesNotExist }}`}],
+    });
+
+    // Wait for the server to signal it's ready after document change
+    await waitForDiagnosticRefresh();
+
+    // Request with previous resultId - should get full report since document changed
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+      previousResultId: resultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = secondResponse as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items[0].message).toContain('alsoDoesNotExist');
+  });
+
+  it('should return diagnostics for valid template', async () => {
+    // Open the app component which should have no errors
+    openTextDocument(client, APP_COMPONENT);
+
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
+
+    const response = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: APP_COMPONENT_URI},
+    });
+
+    expect(response.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = response as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(0);
+  });
+
+  it('should include relatedInformation in diagnostics', async () => {
+    // Open a template with an error
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    // Wait for the server to signal it's ready
+    await waitForDiagnosticRefresh();
+
+    const response = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+
+    expect(response.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = response as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(1);
+    expect(fullResponse.items[0].relatedInformation).toBeDefined();
+    expect(fullResponse.items[0].relatedInformation!.length).toBe(1);
+    expect(fullResponse.items[0].relatedInformation![0].message).toBe(
+      `Error occurs in the template of component FooComponent.`,
+    );
+  });
+
+  it('should handle workspace/diagnostic request', async () => {
+    // Open multiple files
+    openTextDocument(client, APP_COMPONENT);
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    // Wait for the server to signal it's ready (may receive multiple refresh signals)
+    await waitForDiagnosticRefresh();
+
+    // Request workspace diagnostics
+    const response = await client.sendRequest(lsp.WorkspaceDiagnosticRequest.type, {
+      previousResultIds: [],
+    });
+
+    expect(response.items).toBeDefined();
+    expect(response.items.length).toBeGreaterThanOrEqual(2);
+
+    // Find the FOO_TEMPLATE in the results
+    const fooTemplateDiag = response.items.find((item) => item.uri === FOO_TEMPLATE_URI);
+    expect(fooTemplateDiag).toBeDefined();
+    expect(fooTemplateDiag!.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullReport = fooTemplateDiag as lsp.WorkspaceFullDocumentDiagnosticReport;
+    expect(fullReport.items.length).toBe(1);
+  });
+});
+
 function onSuggestStrictMode(client: MessageConnection): Promise<string> {
   return new Promise((resolve) => {
     client.onNotification(SuggestStrictMode, (params: SuggestStrictModeParams) => {
