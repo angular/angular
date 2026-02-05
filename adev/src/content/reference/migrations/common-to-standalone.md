@@ -31,7 +31,7 @@ import {CommonModule} from '@angular/common';
     </div>
   `,
 })
-export class ExampleComponent {
+export class Example {
   show = true;
   data = Promise.resolve({message: 'Hello'});
 }
@@ -52,7 +52,7 @@ import {AsyncPipe, JsonPipe, NgIf} from '@angular/common';
     </div>
   `,
 })
-export class ExampleComponent {
+export class Example {
   show = true;
   data = Promise.resolve({message: 'Hello'});
 }

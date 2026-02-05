@@ -40,21 +40,21 @@ The Angular AOT compiler extracts **metadata** to interpret the parts of the app
 You can specify the metadata explicitly in **decorators** such as `@Component()`, or implicitly in the constructor declarations of the decorated classes.
 The metadata tells Angular how to construct instances of your application classes and interact with them at runtime.
 
-In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
+In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `Typical`.
 
 ```angular-ts
 @Component({
   selector: 'app-typical',
   template: '<div>A typical component for {{data.name}}</div>',
 })
-export class TypicalComponent {
+export class Typical {
   data = input.required<TypicalData>();
   private someService = inject(SomeService);
 }
 ```
 
-The Angular compiler extracts the metadata _once_ and generates a _factory_ for `TypicalComponent`.
-When it needs to create a `TypicalComponent` instance, Angular calls the factory, which produces a new visual element, bound to a new instance of the component class with its injected dependency.
+The Angular compiler extracts the metadata _once_ and generates a _factory_ for `Typical`.
+When it needs to create a `Typical` instance, Angular calls the factory, which produces a new visual element, bound to a new instance of the component class with its injected dependency.
 
 ### Compilation phases
 
@@ -192,7 +192,7 @@ const template = '<div>{{hero().name}}</div>';
   selector: 'app-hero',
   template: template,
 })
-export class HeroComponent {
+export class Hero {
   hero = input.required<Hero>();
 }
 ```
@@ -206,7 +206,7 @@ The effect is the same as if you had written:
   selector: 'app-hero',
   template: '<div>{{hero().name}}</div>',
 })
-export class HeroComponent {
+export class Hero {
   hero = input.required<Hero>();
 }
 ```
@@ -222,7 +222,7 @@ const template = '<div>{{hero().name}}</div>';
   selector: 'app-hero',
   template: template + '<div>{{hero().title}}</div>',
 })
-export class HeroComponent {
+export class Hero {
   hero = input.required<Hero>();
 }
 ```
@@ -309,7 +309,7 @@ You might use `wrapInArray()` like this:
 
 ```ts
 @NgModule({
-  declarations: wrapInArray(TypicalComponent),
+  declarations: wrapInArray(Typical),
 })
 export class TypicalModule {}
 ```
@@ -318,7 +318,7 @@ The compiler treats this usage as if you had written:
 
 ```ts
 @NgModule({
-  declarations: [TypicalComponent],
+  declarations: [Typical],
 })
 export class TypicalModule {}
 ```
