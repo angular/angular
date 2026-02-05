@@ -180,8 +180,41 @@ export class TcbNativeFieldOp extends TcbOp {
       ]);
     }
 
+    const hasNumericInputMode = this.hasNumericInputMode(node);
+
+    if (hasNumericInputMode) {
+      return ts.factory.createUnionTypeNode([
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+      ]);
+    }
+
     // Fall back to string if we couldn't map the type.
     return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
+  }
+
+  private hasNumericInputMode(node: TmplAstElement): boolean {
+    // Check static inputmode attribute
+    for (const attr of node.attributes) {
+      if (attr.name.toLowerCase() === 'inputmode') {
+        const value = attr.value.toLowerCase();
+        return value === 'numeric';
+      }
+    }
+
+    const inputs = node instanceof TmplAstHostElement ? node.bindings : node.inputs;
+    for (const input of inputs) {
+      if (
+        (input.type === BindingType.Property || input.type === BindingType.Attribute) &&
+        input.name.toLowerCase() === 'inputmode'
+      ) {
+        // If inputMode is dynamically bound, we can't determine its value at compile time,
+        // so we conservatively allow string | number to support the numeric case.
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private getUnsupportedType(): ts.TypeNode {
