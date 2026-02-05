@@ -110,4 +110,8 @@ export class SignalsTabComponent {
   expandCluster(clusterId: string) {
     this.visualizer().expandCluster(clusterId);
   }
+
+  highlightDeps({node, direction}: {node: DevtoolsSignalGraphNode; direction: 'up' | 'down'}) {
+    this.visualizer().highlightDependencies(node, direction);
+  }
 }
