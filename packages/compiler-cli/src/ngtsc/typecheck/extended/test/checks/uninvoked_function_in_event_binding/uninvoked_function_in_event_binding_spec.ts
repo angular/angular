@@ -193,6 +193,17 @@ runInEachFileSystem(() => {
 
       expect(diags.length).toBe(0);
     });
+
+    it('should produce a diagnostic when an event listener is declared as an arrow function', () => {
+      const diags = setupTestComponent(`<button (click)="() => 123"></button>`, ``);
+      expect(diags.length).toBe(1);
+      expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+      expect(diags[0].code).toBe(ngErrorCode(ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING));
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe(`(click)="() => 123"`);
+      expect(diags[0].messageText).toBe(
+        'Arrow function will not be invoked in this event listener. Did you intend to call a method?',
+      );
+    });
   });
 });
 
