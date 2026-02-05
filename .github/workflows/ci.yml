@@ -55,7 +55,7 @@ jobs:
       - name: Test build
         run: pnpm devtools:build:chrome
       - name: Cypress run
-        uses: cypress-io/github-action@0f330ebf0d60f87608ed72f1d6232e5644aa3171 # v7.1.1
+        uses: cypress-io/github-action@84d178e4bbce871e23f2ffa3085898cde0e4f0ec # v7.1.2
         with:
           command: pnpm devtools:test:e2e
           start: pnpm bazel run //devtools/src:devserver
