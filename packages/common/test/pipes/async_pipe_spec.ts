@@ -17,10 +17,12 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Observable, of, Subscribable, Unsubscribable} from 'rxjs';
+import {useAutoTick} from './util';
 
 describe('AsyncPipe', () => {
   let pipe: AsyncPipe;
   let ref: ChangeDetectorRef & jasmine.SpyObj<ChangeDetectorRef>;
+  useAutoTick();
 
   function getChangeDetectorRefSpy() {
     return jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck', 'detectChanges']);

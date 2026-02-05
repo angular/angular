@@ -8,7 +8,7 @@
 
 import {CommonModule, NgFor, NgForOf} from '../../index';
 import {Component} from '@angular/core';
-import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 
@@ -38,35 +38,35 @@ describe('ngFor', () => {
     });
   });
 
-  it('should reflect initial elements', waitForAsync(() => {
+  it('should reflect initial elements', () => {
     fixture = createTestComponent();
 
     detectChangesAndExpectText('1;2;');
-  }));
+  });
 
-  it('should reflect added elements', waitForAsync(() => {
+  it('should reflect added elements', () => {
     fixture = createTestComponent();
     fixture.detectChanges();
     getComponent().items.push(3);
     detectChangesAndExpectText('1;2;3;');
-  }));
+  });
 
-  it('should reflect removed elements', waitForAsync(() => {
+  it('should reflect removed elements', () => {
     fixture = createTestComponent();
     fixture.detectChanges();
     getComponent().items.splice(1, 1);
     detectChangesAndExpectText('1;');
-  }));
+  });
 
-  it('should reflect moved elements', waitForAsync(() => {
+  it('should reflect moved elements', () => {
     fixture = createTestComponent();
     fixture.detectChanges();
     getComponent().items.splice(0, 1);
     getComponent().items.push(1);
     detectChangesAndExpectText('2;1;');
-  }));
+  });
 
-  it('should reflect a mix of all changes (additions/removals/moves)', waitForAsync(() => {
+  it('should reflect a mix of all changes (additions/removals/moves)', () => {
     fixture = createTestComponent();
 
     getComponent().items = [0, 1, 2, 3, 4, 5];
@@ -75,9 +75,9 @@ describe('ngFor', () => {
     getComponent().items = [6, 2, 7, 0, 4, 8];
 
     detectChangesAndExpectText('6;2;7;0;4;8;');
-  }));
+  });
 
-  it('should iterate over an array of objects', waitForAsync(() => {
+  it('should iterate over an array of objects', () => {
     const template = '<ul><li *ngFor="let item of items">{{item["name"]}};</li></ul>';
     fixture = createTestComponent(template);
 
@@ -93,16 +93,16 @@ describe('ngFor', () => {
     getComponent().items.splice(2, 1);
     getComponent().items.splice(0, 1);
     detectChangesAndExpectText('shyam;');
-  }));
+  });
 
-  it('should gracefully handle nulls', waitForAsync(() => {
+  it('should gracefully handle nulls', () => {
     const template = '<ul><li *ngFor="let item of null">{{item}};</li></ul>';
     fixture = createTestComponent(template);
 
     detectChangesAndExpectText('');
-  }));
+  });
 
-  it('should gracefully handle ref changing to null and back', waitForAsync(() => {
+  it('should gracefully handle ref changing to null and back', () => {
     fixture = createTestComponent();
 
     detectChangesAndExpectText('1;2;');
@@ -112,44 +112,44 @@ describe('ngFor', () => {
 
     getComponent().items = [1, 2, 3];
     detectChangesAndExpectText('1;2;3;');
-  }));
+  });
 
-  it('should throw on non-iterable ref', waitForAsync(() => {
+  it('should throw on non-iterable ref', () => {
     fixture = createTestComponent();
 
     getComponent().items = <any>'whaaa';
     expect(() => fixture.detectChanges()).toThrowError(
       /NG02200: Cannot find a differ supporting object 'whaaa' of type 'string'\. NgFor only supports binding to Iterables, such as Arrays\. Find more at https:\/\/(?:next\.)?angular\.dev\/errors\/NG02200/,
     );
-  }));
+  });
 
-  it('should throw on non-iterable ref and suggest using an array ', waitForAsync(() => {
+  it('should throw on non-iterable ref and suggest using an array ', () => {
     fixture = createTestComponent();
 
     getComponent().items = <any>{'stuff': 'whaaa'};
     expect(() => fixture.detectChanges()).toThrowError(
       /NG02200: Cannot find a differ supporting object '\[object Object\]' of type 'object'\. NgFor only supports binding to Iterables, such as Arrays\. Did you mean to use the keyvalue pipe\? Find more at https:\/\/(?:next\.)?angular\.dev\/errors\/NG02200/,
     );
-  }));
+  });
 
-  it('should throw on ref changing to string', waitForAsync(() => {
+  it('should throw on ref changing to string', () => {
     fixture = createTestComponent();
 
     detectChangesAndExpectText('1;2;');
 
     getComponent().items = <any>'whaaa';
     expect(() => fixture.detectChanges()).toThrowError();
-  }));
+  });
 
-  it('should works with duplicates', waitForAsync(() => {
+  it('should works with duplicates', () => {
     fixture = createTestComponent();
 
     const a = new Foo();
     getComponent().items = [a, a];
     detectChangesAndExpectText('foo;foo;');
-  }));
+  });
 
-  it('should repeat over nested arrays', waitForAsync(() => {
+  it('should repeat over nested arrays', () => {
     const template =
       '<div *ngFor="let item of items">' +
       '<div *ngFor="let subitem of item">{{subitem}}-{{item.length}};</div>|' +
@@ -161,9 +161,9 @@ describe('ngFor', () => {
 
     getComponent().items = [['e'], ['f', 'g']];
     detectChangesAndExpectText('e-1;|f-2;g-2;|');
-  }));
+  });
 
-  it('should repeat over nested arrays with no intermediate element', waitForAsync(() => {
+  it('should repeat over nested arrays with no intermediate element', () => {
     const template =
       '<div *ngFor="let item of items">' +
       '<div *ngFor="let subitem of item">{{subitem}}-{{item.length}};</div>' +
@@ -175,9 +175,9 @@ describe('ngFor', () => {
 
     getComponent().items = [['e'], ['f', 'g']];
     detectChangesAndExpectText('e-1;f-2;g-2;');
-  }));
+  });
 
-  it('should repeat over nested ngIf that are the last node in the ngFor template', waitForAsync(() => {
+  it('should repeat over nested ngIf that are the last node in the ngFor template', () => {
     const template =
       `<div *ngFor="let item of items; let i=index">` +
       `<div>{{i}}|</div>` +
@@ -195,9 +195,9 @@ describe('ngFor', () => {
 
     items.push(1);
     detectChangesAndExpectText('0|even|1|2|even|');
-  }));
+  });
 
-  it('should allow of saving the collection', waitForAsync(() => {
+  it('should allow of saving the collection', () => {
     const template =
       '<ul><li *ngFor="let item of items as collection; index as i">{{i}}/{{collection.length}} - {{item}};</li></ul>';
     fixture = createTestComponent(template);
@@ -206,9 +206,9 @@ describe('ngFor', () => {
 
     getComponent().items = [1, 2, 3];
     detectChangesAndExpectText('0/3 - 1;1/3 - 2;2/3 - 3;');
-  }));
+  });
 
-  it('should display indices correctly', waitForAsync(() => {
+  it('should display indices correctly', () => {
     const template = '<span *ngFor ="let item of items; let i=index">{{i.toString()}}</span>';
     fixture = createTestComponent(template);
 
@@ -217,9 +217,9 @@ describe('ngFor', () => {
 
     getComponent().items = [1, 2, 6, 7, 4, 3, 5, 8, 9, 0];
     detectChangesAndExpectText('0123456789');
-  }));
+  });
 
-  it('should display count correctly', waitForAsync(() => {
+  it('should display count correctly', () => {
     const template = '<span *ngFor="let item of items; let len=count">{{len}}</span>';
     fixture = createTestComponent(template);
 
@@ -228,9 +228,9 @@ describe('ngFor', () => {
 
     getComponent().items = [4, 3, 2, 1, 0, -1];
     detectChangesAndExpectText('666666');
-  }));
+  });
 
-  it('should display first item correctly', waitForAsync(() => {
+  it('should display first item correctly', () => {
     const template =
       '<span *ngFor="let item of items; let isFirst=first">{{isFirst.toString()}}</span>';
     fixture = createTestComponent(template);
@@ -240,9 +240,9 @@ describe('ngFor', () => {
 
     getComponent().items = [2, 1];
     detectChangesAndExpectText('truefalse');
-  }));
+  });
 
-  it('should display last item correctly', waitForAsync(() => {
+  it('should display last item correctly', () => {
     const template =
       '<span *ngFor="let item of items; let isLast=last">{{isLast.toString()}}</span>';
     fixture = createTestComponent(template);
@@ -252,9 +252,9 @@ describe('ngFor', () => {
 
     getComponent().items = [2, 1];
     detectChangesAndExpectText('falsetrue');
-  }));
+  });
 
-  it('should display even items correctly', waitForAsync(() => {
+  it('should display even items correctly', () => {
     const template =
       '<span *ngFor="let item of items; let isEven=even">{{isEven.toString()}}</span>';
     fixture = createTestComponent(template);
@@ -264,9 +264,9 @@ describe('ngFor', () => {
 
     getComponent().items = [2, 1];
     detectChangesAndExpectText('truefalse');
-  }));
+  });
 
-  it('should display odd items correctly', waitForAsync(() => {
+  it('should display odd items correctly', () => {
     const template = '<span *ngFor="let item of items; let isOdd=odd">{{isOdd.toString()}}</span>';
     fixture = createTestComponent(template);
 
@@ -275,9 +275,9 @@ describe('ngFor', () => {
 
     getComponent().items = [2, 1];
     detectChangesAndExpectText('falsetrue');
-  }));
+  });
 
-  it('should allow to use a custom template', waitForAsync(() => {
+  it('should allow to use a custom template', () => {
     const template =
       '<ng-container *ngFor="let item of items; template: tpl"></ng-container>' +
       '<ng-template let-item let-i="index" #tpl><p>{{i}}: {{item}};</p></ng-template>';
@@ -285,17 +285,17 @@ describe('ngFor', () => {
     getComponent().items = ['a', 'b', 'c'];
     fixture.detectChanges();
     detectChangesAndExpectText('0: a;1: b;2: c;');
-  }));
+  });
 
-  it('should use a default template if a custom one is null', waitForAsync(() => {
+  it('should use a default template if a custom one is null', () => {
     const template = `<ul><ng-container *ngFor="let item of items; template: null; let i=index">{{i}}: {{item}};</ng-container></ul>`;
     fixture = createTestComponent(template);
     getComponent().items = ['a', 'b', 'c'];
     fixture.detectChanges();
     detectChangesAndExpectText('0: a;1: b;2: c;');
-  }));
+  });
 
-  it('should use a custom template when both default and a custom one are present', waitForAsync(() => {
+  it('should use a custom template when both default and a custom one are present', () => {
     const template =
       '<ng-container *ngFor="let item of items; template: tpl">{{i}};</ng-container>' +
       '<ng-template let-item let-i="index" #tpl>{{i}}: {{item}};</ng-template>';
@@ -304,19 +304,19 @@ describe('ngFor', () => {
     fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     detectChangesAndExpectText('0: a;1: b;2: c;');
-  }));
+  });
 
   describe('track by', () => {
-    it('should console.warn if trackBy is not a function', waitForAsync(() => {
+    it('should console.warn if trackBy is not a function', () => {
       // TODO(vicb): expect a warning message when we have a proper log service
       const template = `<p *ngFor="let item of items; trackBy: value"></p>`;
       fixture = createTestComponent(template);
       fixture.componentInstance.value = 0;
       fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
-    }));
+    });
 
-    it('should track by identity when trackBy is to `null` or `undefined`', waitForAsync(() => {
+    it('should track by identity when trackBy is to `null` or `undefined`', () => {
       // TODO(vicb): expect no warning message when we have a proper log service
       const template = `<p *ngFor="let item of items; trackBy: value">{{ item }}</p>`;
       fixture = createTestComponent(template);
@@ -325,9 +325,9 @@ describe('ngFor', () => {
       detectChangesAndExpectText('abc');
       fixture.componentInstance.value = undefined;
       detectChangesAndExpectText('abc');
-    }));
+    });
 
-    it('should set the context to the component instance', waitForAsync(() => {
+    it('should set the context to the component instance', () => {
       const template = `<p *ngFor="let item of items; trackBy: trackByContext.bind(this)"></p>`;
       fixture = createTestComponent(template);
 
@@ -335,9 +335,9 @@ describe('ngFor', () => {
       fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(thisArg).toBe(getComponent());
-    }));
+    });
 
-    it('should not replace tracked items', waitForAsync(() => {
+    it('should not replace tracked items', () => {
       const template = `<p *ngFor="let item of items; trackBy: trackById; let i=index">{{items[i]}}</p>`;
       fixture = createTestComponent(template);
 
@@ -351,9 +351,9 @@ describe('ngFor', () => {
       const firstP = buildItemList();
       const finalP = buildItemList();
       expect(finalP.nativeElement).toBe(firstP.nativeElement);
-    }));
+    });
 
-    it('should update implicit local variable on view', waitForAsync(() => {
+    it('should update implicit local variable on view', () => {
       const template = `<div *ngFor="let item of items; trackBy: trackById">{{item['color']}}</div>`;
       fixture = createTestComponent(template);
 
@@ -362,9 +362,9 @@ describe('ngFor', () => {
 
       getComponent().items = [{'id': 'a', 'color': 'red'}];
       detectChangesAndExpectText('red');
-    }));
+    });
 
-    it('should move items around and keep them updated ', waitForAsync(() => {
+    it('should move items around and keep them updated ', () => {
       const template = `<div *ngFor="let item of items; trackBy: trackById">{{item['color']}}</div>`;
       fixture = createTestComponent(template);
 
@@ -379,9 +379,9 @@ describe('ngFor', () => {
         {'id': 'a', 'color': 'red'},
       ];
       detectChangesAndExpectText('orangered');
-    }));
+    });
 
-    it('should handle added and removed items properly when tracking by index', waitForAsync(() => {
+    it('should handle added and removed items properly when tracking by index', () => {
       const template = `<div *ngFor="let item of items; trackBy: trackByIndex">{{item}}</div>`;
       fixture = createTestComponent(template);
 
@@ -393,7 +393,7 @@ describe('ngFor', () => {
       fixture.detectChanges();
       getComponent().items = ['e', 'f', 'h'];
       detectChangesAndExpectText('efh');
-    }));
+    });
   });
 
   it('should be available as a standalone directive', () => {
