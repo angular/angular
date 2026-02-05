@@ -1,3 +1,39 @@
+<a name="21.2.0-next.2"></a>
+# 21.2.0-next.2 (2026-02-04)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8d5210c9fe](https://github.com/angular/angular/commit/8d5210c9fedd8abdd810d7a89ec7ee9a1234f5c1) | feat | add ChangeDetectionStrategy.Eager alias for Default |
+| [aff9e36a98](https://github.com/angular/angular/commit/aff9e36a988ad7f11bc7a1ca903f75140d14c02c) | fix | `linkedSignal.update` should propagate errors |
+| [8ab433abdd](https://github.com/angular/angular/commit/8ab433abdd4c8984b6f9a16219b10af0c54b31f7) | fix | export DirectiveWithBindings |
+| [cab5ddd526](https://github.com/angular/angular/commit/cab5ddd526f5a6ba44b042ba0391f0526877cde6) | fix | hold constructors weakly in DepsTracker cache |
+| [c66a19f0de](https://github.com/angular/angular/commit/c66a19f0de1a4f8d0f50079b26f8bb52852be6e1) | fix | prevent element duplication with dynamic components |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [95ecce8334](https://github.com/angular/angular/commit/95ecce8334299defe55fb2b74264e5258ffd137c) | feat | allow setting submit options at form-level |
+| [3937afc316](https://github.com/angular/angular/commit/3937afc3167ce409eebb06d91d5fb122eea4e33d) | feat | introduce SignalFormControl for Reactive Forms compatibility |
+| [dd208ca259](https://github.com/angular/angular/commit/dd208ca2595258fcd1e289374f812ce0b56c7011) | feat | update submit function to accept options object |
+| [b1bf535f8e](https://github.com/angular/angular/commit/b1bf535f8e5cbeaec23e9dbb98c1a1bb99deb62a) | fix | Resolves debounce promise on abort in debounceForDuration |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [496967e7b1](https://github.com/angular/angular/commit/496967e7b13dfe1ebdde69724cd62880914beb60) | feat | add JSON schema for angularCompilerOptions |
+| [8c21866f49](https://github.com/angular/angular/commit/8c21866f49ff74344551395ae0a5df1841d54c0d) | feat | add linked editing ranges for HTML tag synchronization |
+### localize
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1c3b1cf18d](https://github.com/angular/angular/commit/1c3b1cf18d14eb795f949ed05c4a6741dc582485) | fix | add support for unit-test builder in ng-add schematic |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cf9620f7d0](https://github.com/angular/angular/commit/cf9620f7d072897f13b7f281b7bca6f51f69cfd0) | feat | Make match options optional in isActive |
+| [907a94dcec](https://github.com/angular/angular/commit/907a94dcec2926a5c7d0c4d36249bd62e31a2ae3) | feat | Update `IsActiveMatchOptions` APIs to accept a Partial |
+| [458bc4a2c8](https://github.com/angular/angular/commit/458bc4a2c88aa6f9f955c8f2bd58dd73ae35b0ad) | fix | limit UrlParser recursion depth to prevent stack overflow |
+| [3867cd8554](https://github.com/angular/angular/commit/3867cd85545bfb5bde9e92d46467651337b2b7ae) | perf | Use .bind to avoid holding other closures in memory |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.1.3"></a>
 # 21.1.3 (2026-02-04)
 ### core
