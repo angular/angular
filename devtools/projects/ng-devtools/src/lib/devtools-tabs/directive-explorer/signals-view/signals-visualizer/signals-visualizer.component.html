@@ -1,17 +1,35 @@
 <svg #host></svg>
 
-@if (expandedClusters().length) {
-  <div class="visible-clusters">
-    <p>Expanded nodes</p>
-    @for (cluster of expandedClusters(); track cluster.id) {
+@let hasExpandedClusters = expandedClusters().length;
+
+@if (hasExpandedClusters || highlightedNodeLabel()) {
+  <div class="menu">
+    @if (hasExpandedClusters) {
+      <p>Expanded nodes</p>
+      @for (cluster of expandedClusters(); track cluster.id) {
+        <button
+          ng-button
+          size="compact"
+          class="collapse"
+          (click)="collapseCluster(cluster.id)"
+          [attr.title]="'Collapse ' + cluster.name"
+        >
+          <mat-icon>close</mat-icon>
+          <span>{{ cluster.name }}</span>
+        </button>
+      }
+    }
+    @if (highlightedNodeLabel(); as nodeLabel) {
+      <p>Highlighted dependencies</p>
       <button
         ng-button
         size="compact"
-        (click)="collapseCluster(cluster.id)"
-        [attr.title]="'Collapse ' + cluster.name"
+        class="unhighlight"
+        (click)="unhighlightDependencies()"
+        [attr.title]="'Unhighlight ' + nodeLabel"
       >
         <mat-icon>close</mat-icon>
-        <span>{{ cluster.name }}</span>
+        <span>{{ nodeLabel }}</span>
       </button>
     }
   </div>

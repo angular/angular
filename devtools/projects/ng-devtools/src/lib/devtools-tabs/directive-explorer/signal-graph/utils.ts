@@ -82,3 +82,13 @@ export function checkClusterMatch(n: DebugSignalGraphNode): {
     signalName,
   };
 }
+
+/**
+ * Returns the actual name/label of the node.
+ */
+export function getNodeLabel(n: DevtoolsSignalGraphNode): string {
+  if (!n.label && isSignalNode(n)) {
+    return n.kind === 'effect' ? 'Effect' : 'Unnamed';
+  }
+  return getNodeNames(n).signalName;
+}
