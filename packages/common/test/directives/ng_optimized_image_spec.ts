@@ -981,7 +981,7 @@ describe('Image directive', () => {
         await fixture.whenStable();
 
         // trick to wait for the whenStable() to fire in the directive
-        await Promise.resolve();
+        await new Promise((resolve) => setTimeout(resolve));
 
         if (isBrowser) {
           expect(consoleWarnSpy.calls.count()).toBe(1);

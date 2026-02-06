@@ -8,7 +8,7 @@
 
 import {CommonModule, SlicePipe} from '../../index';
 import {Component} from '@angular/core';
-import {TestBed, waitForAsync} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
 
 describe('SlicePipe', () => {
@@ -103,7 +103,7 @@ describe('SlicePipe', () => {
       TestBed.configureTestingModule({declarations: [TestComp], imports: [CommonModule]});
     });
 
-    it('should work with mutable arrays', waitForAsync(() => {
+    it('should work with mutable arrays', () => {
       const fixture = TestBed.createComponent(TestComp);
       const mutable: number[] = [1, 2];
       fixture.componentInstance.data = mutable;
@@ -115,7 +115,7 @@ describe('SlicePipe', () => {
       fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText('2,3');
-    }));
+    });
   });
 
   it('should be available as a standalone pipe', () => {
