@@ -19,6 +19,7 @@ export function onInitialize(session: Session, params: lsp.InitializeParams): ls
   return {
     capabilities: {
       foldingRangeProvider: true,
+      selectionRangeProvider: true,
       codeLensProvider: {resolveProvider: true},
       textDocumentSync: lsp.TextDocumentSyncKind.Incremental,
       completionProvider: {

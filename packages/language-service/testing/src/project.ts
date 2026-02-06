@@ -302,6 +302,14 @@ export class Project {
     const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
     return [...this.ngLS.getSemanticDiagnostics(fileName)];
   }
+
+  getSelectionRangeAtPosition(
+    projectFileName: string,
+    position: number,
+  ): ts.SelectionRange | undefined {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    return this.ngLS.getSelectionRangeAtPosition(fileName, position);
+  }
 }
 
 function getClassOrError(sf: ts.SourceFile, name: string): ts.ClassDeclaration {
