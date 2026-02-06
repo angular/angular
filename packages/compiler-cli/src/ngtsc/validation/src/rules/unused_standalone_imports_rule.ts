@@ -62,15 +62,13 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
       return null;
     }
 
-    const unused = this.getUnusedSymbols(
-      metadata,
-      new Set(usedDirectives.map((dir) => dir.ref.node as ts.ClassDeclaration)),
-      new Set(usedPipes),
+    const usedDirectivesSet = new Set(
+      usedDirectives.map((dir) => dir.ref.node as ts.ClassDeclaration),
     );
 
-    if (unused === null) {
-      return null;
-    }
+    const usedPipesSet = new Set(usedPipes);
+
+    const unused = this.getUnusedSymbols(metadata, usedDirectivesSet, usedPipesSet);
 
     const propertyAssignment = closestNode(metadata.rawImports, ts.isPropertyAssignment);
     const category =
@@ -78,7 +76,11 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
         ? ts.DiagnosticCategory.Error
         : ts.DiagnosticCategory.Warning;
 
-    if (unused.length === metadata.imports.length && propertyAssignment !== null) {
+    if (
+      unused !== null &&
+      unused.length === metadata.imports.length &&
+      propertyAssignment !== null
+    ) {
       return makeDiagnostic(
         ErrorCode.UNUSED_STANDALONE_IMPORTS,
         propertyAssignment.name,
@@ -88,20 +90,37 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
       );
     }
 
-    return unused.map((ref) => {
-      const diagnosticNode =
-        ref.getIdentityInExpression(metadata.rawImports!) ||
-        ref.getIdentityIn(node.getSourceFile()) ||
-        metadata.rawImports!;
+    const diagnostics: ts.Diagnostic[] = [];
 
-      return makeDiagnostic(
-        ErrorCode.UNUSED_STANDALONE_IMPORTS,
-        diagnosticNode,
-        `${ref.node.name.text} is not used within the template of ${metadata.name}`,
-        undefined,
-        category,
-      );
-    });
+    const localArrayDiagnostics = this.checkLocalArraysAllUnused(
+      metadata,
+      usedDirectivesSet,
+      usedPipesSet,
+      category,
+    );
+
+    diagnostics.push(...localArrayDiagnostics);
+
+    if (unused !== null) {
+      for (const ref of unused) {
+        const diagnosticNode =
+          ref.getIdentityInExpression(metadata.rawImports!) ||
+          ref.getIdentityIn(node.getSourceFile()) ||
+          metadata.rawImports!;
+
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.UNUSED_STANDALONE_IMPORTS,
+            diagnosticNode,
+            `${ref.node.name.text} is not used within the template of ${metadata.name}`,
+            undefined,
+            category,
+          ),
+        );
+      }
+    }
+
+    return diagnostics.length > 0 ? diagnostics : null;
   }
 
   private getUnusedSymbols(
@@ -161,27 +180,177 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
       return false;
     }
 
-    // The reference might be shared if it comes from an exported array. If the variable is local
-    /// to the file, then it likely isn't shared. Note that this has the potential for false
-    // positives if a non-exported array of imports is shared between components in the same
-    // file. This scenario is unlikely and even if we report the diagnostic for it, it would be
-    // okay since the user only has to refactor components within the same file, rather than the
-    // entire application.
-    let current: ts.Node | null = reference.getIdentityIn(rawImports.getSourceFile());
+    // If the reference comes from any array variable (local or exported), we treat it as
+    // potentially shared and don't report individual unused items. The checkLocalArraysAllUnused
+    // method will report "All imports are unused" for local arrays where ALL elements are unused.
+    // This avoids noisy diagnostics for users who use arrays to group related imports.
+    return true;
+  }
 
-    while (current !== null) {
-      if (ts.isVariableStatement(current)) {
-        return !!current.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword);
-      }
-
-      // `Node.parent` can be undefined, but the TS types don't reflect it.
-      // Coerce to null so the value is consitent with the type.
-      current = current.parent ?? null;
+  private checkLocalArraysAllUnused(
+    metadata: TypeCheckableDirectiveMeta,
+    usedDirectives: Set<ts.ClassDeclaration>,
+    usedPipes: Set<string>,
+    category: ts.DiagnosticCategory,
+  ): ts.Diagnostic[] {
+    const {rawImports} = metadata;
+    if (rawImports === null) {
+      return [];
     }
 
-    // Otherwise the reference likely comes from an imported
-    // symbol like an array of shared common components.
+    const diagnostics: ts.Diagnostic[] = [];
+    const arrayIdentifiers = this.collectArrayIdentifiers(rawImports);
+
+    for (const {identifier, node: arrayNode} of arrayIdentifiers) {
+      const sourceFile = identifier.getSourceFile();
+      const declaration = this.findVariableDeclaration(identifier, sourceFile);
+
+      if (declaration === null || !declaration.initializer) {
+        continue;
+      }
+
+      // Check if this is a local (non-exported) variable
+      const variableStatement = this.findParentVariableStatement(declaration);
+      if (variableStatement === null) {
+        continue;
+      }
+
+      const isExported = variableStatement.modifiers?.some(
+        (m) => m.kind === ts.SyntaxKind.ExportKeyword,
+      );
+
+      if (isExported) {
+        continue;
+      }
+
+      if (!ts.isArrayLiteralExpression(declaration.initializer)) {
+        continue;
+      }
+
+      const allUnused = this.areAllArrayElementsUnused(
+        declaration.initializer,
+        usedDirectives,
+        usedPipes,
+      );
+
+      if (allUnused) {
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.UNUSED_STANDALONE_IMPORTS,
+            arrayNode,
+            'All imports are unused',
+            undefined,
+            category,
+          ),
+        );
+      }
+    }
+
+    return diagnostics;
+  }
+
+  /**
+   * Collects array identifiers from rawImports (both spread and direct references).
+   */
+  private collectArrayIdentifiers(
+    rawImports: ts.Expression,
+  ): Array<{identifier: ts.Identifier; node: ts.Node}> {
+    const result: Array<{identifier: ts.Identifier; node: ts.Node}> = [];
+
+    // Handle case where imports is directly an identifier (e.g., imports: importsAsArray)
+    if (ts.isIdentifier(rawImports)) {
+      result.push({identifier: rawImports, node: rawImports});
+      return result;
+    }
+
+    if (!ts.isArrayLiteralExpression(rawImports)) {
+      return result;
+    }
+
+    for (const element of rawImports.elements) {
+      if (ts.isSpreadElement(element)) {
+        // Handle spread syntax: ...ARRAY
+        if (ts.isIdentifier(element.expression)) {
+          result.push({identifier: element.expression, node: element});
+        }
+      } else if (ts.isIdentifier(element)) {
+        // Handle direct nested array: ARRAY (without spread)
+        result.push({identifier: element, node: element});
+      }
+    }
+
+    return result;
+  }
+
+  private areAllArrayElementsUnused(
+    arrayLiteral: ts.ArrayLiteralExpression,
+    usedDirectives: Set<ts.ClassDeclaration>,
+    usedPipes: Set<string>,
+  ): boolean {
+    if (arrayLiteral.elements.length === 0) {
+      return false;
+    }
+
+    for (const element of arrayLiteral.elements) {
+      if (!ts.isIdentifier(element)) {
+        return false;
+      }
+
+      const elementName = element.text;
+
+      for (const usedDir of usedDirectives) {
+        if (usedDir.name?.text === elementName) {
+          return false;
+        }
+      }
+
+      if (usedPipes.has(elementName)) {
+        return false;
+      }
+    }
+
     return true;
+  }
+
+  private findVariableDeclaration(
+    identifier: ts.Identifier,
+    sourceFile: ts.SourceFile,
+  ): ts.VariableDeclaration | null {
+    const targetText = identifier.text;
+    let foundDeclaration: ts.VariableDeclaration | null = null;
+
+    const visit = (node: ts.Node): void => {
+      if (foundDeclaration) {
+        return;
+      }
+
+      if (
+        ts.isVariableDeclaration(node) &&
+        ts.isIdentifier(node.name) &&
+        node.name.text === targetText
+      ) {
+        if (node.name.pos < identifier.pos) {
+          foundDeclaration = node;
+          return;
+        }
+      }
+
+      ts.forEachChild(node, visit);
+    };
+
+    visit(sourceFile);
+    return foundDeclaration;
+  }
+
+  private findParentVariableStatement(node: ts.Node): ts.VariableStatement | null {
+    let current: ts.Node | undefined = node;
+    while (current) {
+      if (ts.isVariableStatement(current)) {
+        return current;
+      }
+      current = current.parent;
+    }
+    return null;
   }
 }
 
