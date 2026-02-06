@@ -134,6 +134,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     // (undocumented)
     readonly errors: Signal<ValidationError.WithFieldTree[]>;
     readonly errorSummary: Signal<ValidationError.WithFieldTree[]>;
+    readonly fieldTree: FieldTree<unknown, TKey>;
     focusBoundControl(options?: FocusOptions): void;
     readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
     readonly hidden: Signal<boolean>;
