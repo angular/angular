@@ -589,7 +589,7 @@ function getBodyText(node: DevtoolsSignalGraphNode, graph: DevtoolsSignalGraph):
     return '</>';
   }
 
-  if (node.kind === 'effect') {
+  if (node.kind === 'effect' || node.kind === 'afterRenderEffectPhase') {
     return '() => {}';
   }
 
