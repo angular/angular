@@ -462,19 +462,6 @@ export class UrlFormComponent {
 }
 ```
 
-For submission errors that target specific fields, use the `fieldTree` property:
-
-```ts
-// In a submit function
-return [
-  {
-    fieldTree: registrationForm.username, // Target specific field
-    kind: 'server',
-    message: 'Username already taken',
-  },
-];
-```
-
 The validator function receives a `FieldContext` object with:
 
 | Property        | Type       | Description                                 |
@@ -490,6 +477,46 @@ The validator function receives a `FieldContext` object with:
 NOTE: Child fields also have a `key` signal, and array item fields have both `key` and `index` signals.
 
 Return an error object with `kind` and `message` when validation fails. Return `null` or `undefined` when validation passes.
+
+### Using validateTree()
+
+The `validateTree()` function creates custom validation rules that can target multiple fields or provide complex validation logic for a whole subtree.
+
+```angular-ts
+import {Component, model} from '@angular/core';
+import {form, FormField, validateTree} from '@angular/forms/signals';
+
+interface User {
+  firstName: string;
+  lastName: string;
+}
+
+@Component({
+  /* ... */
+})
+export class UserFormComponent {
+  readonly userModel = model<DTO>({
+    firstName: '',
+    lastName: '',
+  });
+
+  userForm = form(this.userModel, (path) => {
+    validateTree(path, (ctx) => {
+      if (ctx.valueOf(path.firstName).length < 5) {
+        return {
+          kind: 'minLength5',
+          message: 'First name must be at least 5 characters',
+          fieldTree: ctx.fieldTree.lastName,
+        };
+      }
+
+      return null;
+    });
+  });
+}
+```
+
+The `validateTree()` validator function receives the same `FieldContext` object as `validate()`.
 
 ### Reusable validation rules
 
