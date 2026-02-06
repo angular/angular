@@ -182,7 +182,7 @@ describe('submit', () => {
 
     expect(
       await submit(f, {
-        action: (_, field) => {
+        action: (field) => {
           return Promise.resolve({
             kind: 'lastName',
             fieldTree: field.last,
@@ -200,7 +200,7 @@ describe('submit', () => {
 
     expect(
       await submit(f, {
-        action: (_, field) => {
+        action: (field) => {
           return Promise.resolve([
             {
               kind: 'firstName',
@@ -351,8 +351,8 @@ describe('submit', () => {
 
     expect(
       await submit(f.first, {
-        action: (form, field) => {
-          submitSpy(form().value(), field().value());
+        action: (_, {root, submitted}) => {
+          submitSpy(root().value(), submitted().value());
           return Promise.resolve({kind: 'lastName'});
         },
       }),
@@ -495,7 +495,7 @@ describe('submit', () => {
       }),
     ).toBe(false);
 
-    expect(onInvalidSpy).toHaveBeenCalledWith(f, f);
+    expect(onInvalidSpy).toHaveBeenCalledWith(f, {root: f, submitted: f});
   });
 
   it('runs action on invalid form with ignoreValidators: all', async () => {
@@ -615,8 +615,8 @@ describe('submit', () => {
     const f = form(data, () => {}, {
       injector,
       submission: {
-        action: async (form, field) => {
-          submitSpy(form().value(), field().value());
+        action: async (_, {root, submitted}) => {
+          submitSpy(root().value(), submitted().value());
           return undefined;
         },
       },

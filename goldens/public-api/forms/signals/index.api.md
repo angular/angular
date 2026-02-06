@@ -152,7 +152,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     readonly readonly: Signal<boolean>;
     readonly required: Signal<boolean>;
     reset(value?: TValue): void;
-    submit(options?: FormSubmitOptions<unknown, TValue>): Promise<boolean>;
     readonly submitting: Signal<boolean>;
     readonly touched: Signal<boolean>;
     readonly valid: Signal<boolean>;
@@ -215,10 +214,16 @@ export interface FormOptions<TModel> {
 }
 
 // @public
-export interface FormSubmitOptions<TFormModel, TFieldModel> {
-    action: (form: FieldTree<TFormModel>, field: FieldTree<TFieldModel>) => Promise<TreeValidationResult>;
+export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
+    action: (field: FieldTree<TRootModel & TSubmittedModel>, detail: {
+        root: FieldTree<TRootModel>;
+        submitted: FieldTree<TSubmittedModel>;
+    }) => Promise<TreeValidationResult>;
     ignoreValidators?: 'pending' | 'none' | 'all';
-    onInvalid?: (form: FieldTree<TFormModel>, field: FieldTree<TFieldModel>) => void;
+    onInvalid?: (field: FieldTree<TRootModel & TSubmittedModel>, detail: {
+        root: FieldTree<TRootModel>;
+        submitted: FieldTree<TSubmittedModel>;
+    }) => void;
 }
 
 // @public
@@ -559,11 +564,11 @@ export type Subfields<TModel> = {
     [Symbol.iterator](): Iterator<[string, MaybeFieldTree<TModel[keyof TModel], string>]>;
 };
 
-// @public @deprecated
-export function submit<TModel>(form: FieldTree<TModel>, options?: FormSubmitOptions<unknown, TModel>): Promise<boolean>;
+// @public
+export function submit<TModel>(form: FieldTree<TModel>, options?: NoInfer<FormSubmitOptions<unknown, TModel>>): Promise<boolean>;
 
 // @public (undocumented)
-export function submit<TModel>(form: FieldTree<TModel>, action: FormSubmitOptions<unknown, TModel>['action']): Promise<boolean>;
+export function submit<TModel>(form: FieldTree<TModel>, action: NoInfer<FormSubmitOptions<unknown, TModel>['action']>): Promise<boolean>;
 
 // @public
 export type TreeValidationResult<E extends ValidationError.WithOptionalFieldTree = ValidationError.WithOptionalFieldTree> = ValidationSuccess | OneOrMany<E>;
