@@ -182,10 +182,10 @@ describe('submit', () => {
 
     expect(
       await submit(f, {
-        action: (form) => {
+        action: (field) => {
           return Promise.resolve({
             kind: 'lastName',
-            fieldTree: form.last,
+            fieldTree: field.last,
           });
         },
       }),
@@ -200,19 +200,19 @@ describe('submit', () => {
 
     expect(
       await submit(f, {
-        action: (form) => {
+        action: (field) => {
           return Promise.resolve([
             {
               kind: 'firstName',
-              fieldTree: form.first,
+              fieldTree: field.first,
             },
             {
               kind: 'lastName',
-              fieldTree: form.last,
+              fieldTree: field.last,
             },
             {
               kind: 'lastName2',
-              fieldTree: form.last,
+              fieldTree: field.last,
             },
           ]);
         },
@@ -351,14 +351,14 @@ describe('submit', () => {
 
     expect(
       await submit(f.first, {
-        action: (form) => {
-          submitSpy(form().value());
+        action: (_, {root, submitted}) => {
+          submitSpy(root().value(), submitted().value());
           return Promise.resolve({kind: 'lastName'});
         },
       }),
     ).toBe(false);
 
-    expect(submitSpy).toHaveBeenCalledWith('meow');
+    expect(submitSpy).toHaveBeenCalledWith({first: 'meow', last: 'wuf'}, 'meow');
   });
 
   it('recovers from errors thrown by submit action', async () => {
@@ -495,7 +495,7 @@ describe('submit', () => {
       }),
     ).toBe(false);
 
-    expect(onInvalidSpy).toHaveBeenCalledWith(f);
+    expect(onInvalidSpy).toHaveBeenCalledWith(f, {root: f, submitted: f});
   });
 
   it('runs action on invalid form with ignoreValidators: all', async () => {
@@ -589,6 +589,39 @@ describe('submit', () => {
 
     expect(defaultSpy).not.toHaveBeenCalled();
     expect(overrideSpy).toHaveBeenCalled();
+  });
+
+  it('uses the submitted field as the contextual field for options specified at submit time', async () => {
+    const data = signal({name: 'Alice'});
+    const submitSpy = jasmine.createSpy('submit');
+    const f = form(data, {injector});
+
+    expect(
+      await submit(f.name, {
+        action: async (field, {root, submitted}) => {
+          submitSpy(field().value(), root().value(), submitted().value());
+          return undefined;
+        },
+      }),
+    ).toBe(true);
+    expect(submitSpy).toHaveBeenCalledWith('Alice', {name: 'Alice'}, 'Alice');
+  });
+
+  it('uses the root field as the contextual field for options specified at form creation time', async () => {
+    const data = signal({name: 'Alice'});
+    const submitSpy = jasmine.createSpy('submit');
+    const f = form(data, {
+      injector,
+      submission: {
+        action: async (field, {root, submitted}) => {
+          submitSpy(field().value(), root().value(), submitted().value());
+          return undefined;
+        },
+      },
+    });
+
+    expect(await submit(f.name)).toBe(true);
+    expect(submitSpy).toHaveBeenCalledWith({name: 'Alice'}, {name: 'Alice'}, 'Alice');
   });
 });
 
