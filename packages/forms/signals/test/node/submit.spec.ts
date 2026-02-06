@@ -591,39 +591,37 @@ describe('submit', () => {
     expect(overrideSpy).toHaveBeenCalled();
   });
 
-  it('can be called directly on the FieldState', async () => {
-    const data = signal({first: 'John'});
+  it('uses the submitted field as the contextual field for options specified at submit time', async () => {
+    const data = signal({name: 'Alice'});
+    const submitSpy = jasmine.createSpy('submit');
     const f = form(data, {injector});
 
-    const submitSpy = jasmine.createSpy('submit');
     expect(
-      await submit(f, {
-        action: async (form) => {
-          submitSpy(form().value());
+      await submit(f.name, {
+        action: async (field, {root, submitted}) => {
+          submitSpy(field().value(), root().value(), submitted().value());
           return undefined;
         },
       }),
     ).toBe(true);
-
-    expect(submitSpy).toHaveBeenCalledWith({first: 'John'});
-    expect(f().touched()).toBe(true);
+    expect(submitSpy).toHaveBeenCalledWith('Alice', {name: 'Alice'}, 'Alice');
   });
 
-  it('falls back to form-level submit options on child field', async () => {
+  it('uses the root field as the contextual field for options specified at form creation time', async () => {
     const data = signal({name: 'Alice'});
     const submitSpy = jasmine.createSpy('submit');
-    const f = form(data, () => {}, {
+    const f = form(data, {
       injector,
       submission: {
-        action: async (_, {root, submitted}) => {
-          submitSpy(root().value(), submitted().value());
+        action: async (field, {root, submitted}) => {
+          submitSpy(field().value(), root().value(), submitted().value());
           return undefined;
         },
       },
     });
 
     expect(await submit(f.name)).toBe(true);
-    expect(submitSpy).toHaveBeenCalledWith({name: 'Alice'}, 'Alice');
+    expect(submitSpy).toHaveBeenCalledWith({name: 'Alice'}, {name: 'Alice'}, 'Alice');
   });
 });
 

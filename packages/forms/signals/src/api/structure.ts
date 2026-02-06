@@ -396,8 +396,7 @@ export async function submit<TModel>(
 ): Promise<boolean> {
   const node = untracked(form) as FieldState<unknown> as FieldNode;
 
-  const field =
-    options === undefined ? (node.structure.root.fieldProxy as FieldTree<TModel>) : form;
+  const field = options === undefined ? node.structure.root.fieldProxy : form;
   const detail = {root: node.structure.root.fieldProxy, submitted: form};
 
   // Normalize options.
@@ -407,7 +406,7 @@ export async function submit<TModel>(
       : (options ?? node.structure.fieldManager.submitOptions);
 
   // Verify that an action was provided.
-  const action = options?.action;
+  const action = options?.action as FormSubmitOptions<unknown, unknown>['action'];
   if (!action) {
     throw new RuntimeError(
       RuntimeErrorCode.MISSING_SUBMIT_ACTION,
@@ -416,7 +415,7 @@ export async function submit<TModel>(
     );
   }
 
-  const onInvalid = options?.onInvalid;
+  const onInvalid = options?.onInvalid as FormSubmitOptions<unknown, unknown>['onInvalid'];
   const ignoreValidators = options?.ignoreValidators ?? 'pending';
 
   // Determine whether or not to run the action based on the current validity.
