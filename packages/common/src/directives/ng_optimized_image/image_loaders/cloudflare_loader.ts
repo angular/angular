@@ -34,6 +34,10 @@ function createCloudflareUrl(path: string, config: ImageLoaderConfig) {
     params += `,width=${config.width}`;
   }
 
+  if (config.height) {
+    params += `,height=${config.height}`;
+  }
+
   // When requesting a placeholder image we ask for a low quality image to reduce the load time.
   if (config.isPlaceholder) {
     params += `,quality=${PLACEHOLDER_QUALITY}`;

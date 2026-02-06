@@ -562,12 +562,28 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     }
   }
 
+  /**
+   * Calculates the aspect ratio of the image based on width and height.
+   * Returns null if the aspect ratio cannot be calculated (missing dimensions or height is 0).
+   */
+  private getAspectRatio(): number | null {
+    if (this.width && this.height && this.height !== 0) {
+      return this.width / this.height;
+    }
+    return null;
+  }
+
   private callImageLoader(
     configWithoutCustomParams: Omit<ImageLoaderConfig, 'loaderParams'>,
   ): string {
     let augmentedConfig: ImageLoaderConfig = configWithoutCustomParams;
     if (this.loaderParams) {
       augmentedConfig.loaderParams = this.loaderParams;
+    }
+    // Calculate height if width is provided and aspect ratio is available
+    const ratio = this.getAspectRatio();
+    if (ratio !== null && augmentedConfig.width) {
+      augmentedConfig.height = Math.round(augmentedConfig.width / ratio);
     }
     return this.imageLoader(augmentedConfig);
   }
