@@ -167,3 +167,44 @@ if (typeof beforeEach == 'function') beforeEach(ensureDocument);
 if (typeof afterEach == 'function') afterEach(cleanupDocument);
 
 if (typeof afterEach === 'function') afterEach(resetJitOptions);
+
+/**
+ * Returns a promise that resolves after the specified time.
+ *
+ * @param ms - Time to wait in milliseconds. Defaults to 0.
+ *
+ * @example
+ * ```ts
+ * await timeout(100); // Wait 100ms
+ * ```
+ */
+export async function timeout(ms?: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+/**
+ * Installs Jasmine's fake clock with auto-tick enabled for all tests in the describe block.
+ * Call at the top level of a describe block to automatically advance time for async operations.
+ *
+ * @example
+ * ```ts
+ * describe('MyComponent', () => {
+ *   useAutoTick();
+ *
+ *   it('should handle timers', () => {
+ *     // setTimeout, setInterval, etc. will execute synchronously
+ *   });
+ * });
+ * ```
+ */
+export function useAutoTick() {
+  beforeEach(() => {
+    jasmine.clock().install();
+    jasmine.clock().autoTick();
+  });
+  afterEach(() => {
+    jasmine.clock().uninstall();
+  });
+}

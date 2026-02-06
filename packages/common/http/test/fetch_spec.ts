@@ -52,7 +52,7 @@ const TEST_POST_WITH_JSON_BODY = new HttpRequest(
 
 const XSSI_PREFIX = ")]}'\n";
 
-describe('FetchBackend', async () => {
+describe('FetchBackend', () => {
   let fetchMock: MockFetchFactory = null!;
   let backend: FetchBackend = null!;
   let fetchSpy: jasmine.Spy<typeof fetch>;
@@ -508,7 +508,7 @@ describe('FetchBackend', async () => {
       fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'Done');
     });
   });
-  describe('gets response URL', async () => {
+  describe('gets response URL', () => {
     it('from the response URL', (done) => {
       backend
         .handle(TEST_POST)
@@ -538,7 +538,7 @@ describe('FetchBackend', async () => {
       fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'Test');
     });
   });
-  describe('corrects for quirks', async () => {
+  describe('corrects for quirks', () => {
     it('by normalizing 0 status to 200 if a body is present', (done) => {
       backend
         .handle(TEST_POST)
