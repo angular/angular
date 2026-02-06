@@ -18,7 +18,7 @@ importers:
     dependencies:
       '@angular-devkit/build-angular':
         specifier: 21.1.0-rc.0
-        version: 21.1.0-rc.0(202d253d2aaa536c7c2d2c3ddd8a410e)
+        version: 21.1.0-rc.0(a9698b31197fd02de81ff3dee0370b25)
       '@angular-devkit/core':
         specifier: 21.1.0-rc.0
         version: 21.1.0-rc.0(chokidar@5.0.0)
@@ -33,7 +33,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 21.1.0-rc.0
-        version: 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.31)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
+        version: 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.31)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
       '@angular/cdk':
         specifier: 21.2.0-next.1
         version: 21.2.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -478,7 +478,7 @@ importers:
         version: 21.2.0-next.1(@angular/cdk@21.2.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 21.1.0-rc.0
-        version: 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.9)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
+        version: 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.9)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
       '@angular/cdk':
         specifier: 21.2.0-next.1
         version: 21.2.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -627,8 +627,8 @@ importers:
         specifier: 5.13.0
         version: 5.13.0
       jsdom:
-        specifier: 27.4.0
-        version: 27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        specifier: 28.0.0
+        version: 28.0.0
       karma-chrome-launcher:
         specifier: 3.2.0
         version: 3.2.0
@@ -730,8 +730,8 @@ importers:
         specifier: ^0.8.2
         version: 0.8.2
       jsdom:
-        specifier: ~27.4.0
-        version: 27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        specifier: ~28.0.0
+        version: 28.0.0
       marked:
         specifier: ~17.0.0
         version: 17.0.1
@@ -792,7 +792,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: 21.1.0-rc.0
-        version: 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.9)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
+        version: 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.9)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
       '@angular/cli':
         specifier: 21.1.0-rc.0
         version: 21.1.0-rc.0(@types/node@24.10.9)(chokidar@5.0.0)
@@ -800,14 +800,14 @@ importers:
         specifier: workspace:*
         version: link:../packages/compiler-cli
       jsdom:
-        specifier: ^27.0.0
-        version: 27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+        specifier: ^28.0.0
+        version: 28.0.0
       typescript:
         specifier: ~5.9.2
         version: 5.9.3
       vitest:
         specifier: ^4.0.0
-        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   integration:
     dependencies:
@@ -864,7 +864,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 21.1.0-rc.0
-        version: 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.9)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
+        version: 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.9)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1035,7 +1035,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 21.1.0-rc.0
-        version: 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.9)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
+        version: 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.9)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1290,7 +1290,7 @@ importers:
         version: 2.8.1
       vitest:
         specifier: ^4.0.0
-        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/zone.js/test/typings:
     dependencies:
@@ -6909,9 +6909,9 @@ packages:
     resolution: {integrity: sha512-ZYP5VBHshaDAiVZxjbRVcFJpc+4xGgT0bK3vzy1HLN8jTO975HEbuYzZJcHoQEY5K1a0z8YayJkyVETa08eNTg==}
     engines: {node: '>=18'}
 
-  data-urls@6.0.1:
-    resolution: {integrity: sha512-euIQENZg6x8mj3fO6o9+fOW8MimUI4PpD/fZBhJfeioZVy9TUpM4UY7KjQNVZFlqwJ0UdzRDzkycB997HEq1BQ==}
-    engines: {node: '>=20'}
+  data-urls@7.0.0:
+    resolution: {integrity: sha512-23XHcCF+coGYevirZceTVD7NdJOqVn+49IHyxgszm+JIiHLoB2TkmPtsYkNWT1pvRSGkc35L6NHs0yHkN2SumA==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   data-view-buffer@1.0.2:
     resolution: {integrity: sha512-EmKO5V3OLXh1rtK2wgXRansaK1/mtVdTUEiEI0W8RkvgT05kfxaH29PliLnpLP73yYO6142Q72QNa8Wx/A5CqQ==}
@@ -8973,8 +8973,8 @@ packages:
       canvas:
         optional: true
 
-  jsdom@27.4.0:
-    resolution: {integrity: sha512-mjzqwWRD9Y1J1KUi7W97Gja1bwOOM5Ug0EZ6UDK3xS7j7mndrkwozHtSblfomlzyB4NepioNt+B2sOSzczVgtQ==}
+  jsdom@28.0.0:
+    resolution: {integrity: sha512-KDYJgZ6T2TKdU8yBfYueq5EPG/EylMsBvCaenWMJb2OXmjgczzwveRCoJ+Hgj1lXPDyasvrgneSn4GBuR1hYyA==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
       canvas: ^3.0.0
@@ -12614,9 +12614,9 @@ packages:
     resolution: {integrity: sha512-De72GdQZzNTUBBChsXueQUnPKDkg/5A5zp7pFDuQAj5UFoENpiACU0wlCvzpAGnTkj++ihpKwKyYewn/XNUbKw==}
     engines: {node: '>=18'}
 
-  whatwg-url@15.1.0:
-    resolution: {integrity: sha512-2ytDk0kiEj/yu90JOAp44PVPUkO9+jVhyf+SybKlRHSDlvOOZhdPIrr7xTH64l4WixO2cP+wQIcgujkGBPPz6g==}
-    engines: {node: '>=20'}
+  whatwg-url@16.0.0:
+    resolution: {integrity: sha512-9CcxtEKsf53UFwkSUZjG+9vydAsFO4lFHBpJUtjBcoJOCJpKnSJNwCw813zrYJHpCJ7sgfbtOe0V5Ku7Pa1XMQ==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
@@ -13132,13 +13132,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@21.1.0-rc.0(202d253d2aaa536c7c2d2c3ddd8a410e)':
+  '@angular-devkit/build-angular@21.1.0-rc.0(a9698b31197fd02de81ff3dee0370b25)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2101.0-rc.0(chokidar@5.0.0)
       '@angular-devkit/build-webpack': 0.2101.0-rc.0(chokidar@5.0.0)(webpack-dev-server@5.2.2(bufferutil@4.1.0)(tslib@2.8.1)(utf-8-validate@6.0.6)(webpack@5.104.1(esbuild@0.27.2)))(webpack@5.104.1(esbuild@0.27.2))
       '@angular-devkit/core': 21.1.0-rc.0(chokidar@5.0.0)
-      '@angular/build': 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.31)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.4.2)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.44.1)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
+      '@angular/build': 21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.31)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.4.2)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.44.1)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@babel/core': 7.28.5
       '@babel/generator': 7.28.5
@@ -13262,7 +13262,7 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  '@angular/build@21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.31)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.4.2)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.44.1)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)':
+  '@angular/build@21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.31)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.4.2)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.44.1)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2101.0-rc.0(chokidar@5.0.0)
@@ -13307,7 +13307,7 @@ snapshots:
       lmdb: 3.4.4
       postcss: 8.5.6
       tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
-      vitest: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vitest: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -13321,7 +13321,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.31)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)':
+  '@angular/build@21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.31)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2101.0-rc.0(chokidar@5.0.0)
@@ -13366,7 +13366,7 @@ snapshots:
       lmdb: 3.4.4
       postcss: 8.5.6
       tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
-      vitest: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vitest: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -13380,7 +13380,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.9)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)':
+  '@angular/build@21.1.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.1.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.9)(chokidar@5.0.0)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(postcss@8.5.6)(tailwindcss@3.4.19(tsx@4.21.0)(yaml@2.8.2))(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2101.0-rc.0(chokidar@5.0.0)
@@ -13425,7 +13425,7 @@ snapshots:
       lmdb: 3.4.4
       postcss: 8.5.6
       tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
-      vitest: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vitest: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -19913,10 +19913,12 @@ snapshots:
       whatwg-mimetype: 4.0.0
       whatwg-url: 14.2.0
 
-  data-urls@6.0.1:
+  data-urls@7.0.0:
     dependencies:
       whatwg-mimetype: 5.0.0
-      whatwg-url: 15.1.0
+      whatwg-url: 16.0.0
+    transitivePeerDependencies:
+      - '@noble/hashes'
 
   data-view-buffer@1.0.2:
     dependencies:
@@ -22675,13 +22677,13 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6):
+  jsdom@28.0.0:
     dependencies:
       '@acemir/cssom': 0.9.31
       '@asamuzakjp/dom-selector': 6.7.7
       '@exodus/bytes': 1.11.0
       cssstyle: 5.3.7
-      data-urls: 6.0.1
+      data-urls: 7.0.0
       decimal.js: 10.6.0
       html-encoding-sniffer: 6.0.0
       http-proxy-agent: 7.0.2
@@ -22691,17 +22693,15 @@ snapshots:
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 6.0.0
+      undici: 7.20.0
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
-      whatwg-mimetype: 4.0.0
-      whatwg-url: 15.1.0
-      ws: 8.19.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      whatwg-mimetype: 5.0.0
+      whatwg-url: 16.0.0
       xml-name-validator: 5.0.0
     transitivePeerDependencies:
       - '@noble/hashes'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   jsesc@3.1.0: {}
 
@@ -26730,7 +26730,7 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.2
 
-  vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
+  vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.31)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.18
       '@vitest/mocker': 4.0.18(vite@7.3.1(@types/node@20.19.31)(jiti@2.6.1)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
@@ -26755,7 +26755,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/node': 20.19.31
-      jsdom: 27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      jsdom: 28.0.0
     transitivePeerDependencies:
       - jiti
       - less
@@ -26770,7 +26770,7 @@ snapshots:
       - yaml
     optional: true
 
-  vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
+  vitest@4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(jiti@2.6.1)(jsdom@28.0.0)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.18
       '@vitest/mocker': 4.0.18(vite@7.3.1(@types/node@24.10.9)(jiti@2.6.1)(less@4.5.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
@@ -26795,7 +26795,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/node': 24.10.9
-      jsdom: 27.4.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
+      jsdom: 28.0.0
     transitivePeerDependencies:
       - jiti
       - less
@@ -27105,10 +27105,13 @@ snapshots:
       tr46: 5.1.1
       webidl-conversions: 7.0.0
 
-  whatwg-url@15.1.0:
+  whatwg-url@16.0.0:
     dependencies:
+      '@exodus/bytes': 1.11.0
       tr46: 6.0.0
       webidl-conversions: 8.0.1
+    transitivePeerDependencies:
+      - '@noble/hashes'
 
   whatwg-url@5.0.0:
     dependencies:
