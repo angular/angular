@@ -1843,7 +1843,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(tcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
+      expect(tcb(TEMPLATE)).toContain('if (((this).shouldShow()) && (((this).isVisible))) { }');
     });
 
     it('should generate `prefetch when` trigger', () => {
@@ -1853,7 +1853,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(tcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
+      expect(tcb(TEMPLATE)).toContain('if (((this).shouldShow()) && (((this).isVisible))) { }');
     });
 
     it('should generate `hydrate when` trigger', () => {
@@ -1863,7 +1863,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(tcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
+      expect(tcb(TEMPLATE)).toContain('if (((this).shouldShow()) && (((this).isVisible))) { }');
     });
 
     it('should generate options for `viewport` trigger', () => {
