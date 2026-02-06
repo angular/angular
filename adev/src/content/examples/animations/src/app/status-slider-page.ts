@@ -6,7 +6,7 @@ import {StatusSlider} from './status-slider';
   template: `
     <section>
       <h2>Status Slider</h2>
-      <app-status-slider></app-status-slider>
+      <app-status-slider />
     </section>
   `,
   imports: [StatusSlider],
