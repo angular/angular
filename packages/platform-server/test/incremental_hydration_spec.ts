@@ -10,25 +10,38 @@ import {
   APP_ID,
   ApplicationRef,
   Component,
+  ɵDEHYDRATED_BLOCK_REGISTRY as DEHYDRATED_BLOCK_REGISTRY,
   destroyPlatform,
+  ɵgetDocument as getDocument,
   inject,
   Input,
-  NgZone,
+  ɵJSACTION_BLOCK_ELEMENT_MAP as JSACTION_BLOCK_ELEMENT_MAP,
+  ɵJSACTION_EVENT_CONTRACT as JSACTION_EVENT_CONTRACT,
+  PendingTasks,
   PLATFORM_ID,
   Provider,
   QueryList,
+  ɵresetIncrementalHydrationEnabledWarnedForTests as resetIncrementalHydrationEnabledWarnedForTests,
   signal,
+  ɵTimerScheduler as TimerScheduler,
   ViewChildren,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
-  ɵDEHYDRATED_BLOCK_REGISTRY as DEHYDRATED_BLOCK_REGISTRY,
-  ɵJSACTION_BLOCK_ELEMENT_MAP as JSACTION_BLOCK_ELEMENT_MAP,
-  ɵJSACTION_EVENT_CONTRACT as JSACTION_EVENT_CONTRACT,
-  ɵgetDocument as getDocument,
-  ɵresetIncrementalHydrationEnabledWarnedForTests as resetIncrementalHydrationEnabledWarnedForTests,
-  ɵTimerScheduler as TimerScheduler,
-  provideZoneChangeDetection,
 } from '@angular/core';
 
+import {
+  isPlatformServer,
+  Location,
+  ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
+  PlatformLocation,
+} from '@angular/common';
+import {MockPlatformLocation} from '@angular/common/testing';
+import {TestBed} from '@angular/core/testing';
+import {
+  provideClientHydration,
+  withEventReplay,
+  withIncrementalHydration,
+} from '@angular/platform-browser';
+import {provideRouter, RouterLink, RouterOutlet, Routes} from '@angular/router';
 import {getAppContents, prepareEnvironmentAndHydrate, resetTViewsFor} from './dom_utils';
 import {
   clearConsole,
@@ -41,20 +54,6 @@ import {
   verifyNodeWasNotHydrated,
   withDebugConsole,
 } from './hydration_utils';
-import {
-  isPlatformServer,
-  Location,
-  PlatformLocation,
-  ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
-} from '@angular/common';
-import {
-  provideClientHydration,
-  withEventReplay,
-  withIncrementalHydration,
-} from '@angular/platform-browser';
-import {TestBed} from '@angular/core/testing';
-import {provideRouter, RouterLink, RouterOutlet, Routes} from '@angular/router';
-import {MockPlatformLocation} from '@angular/common/testing';
 
 /**
  * Emulates a dynamic import promise.
@@ -1410,7 +1409,6 @@ describe('platform-server partial hydration integration', () => {
         ): number => {
           onIdleCallbackQueue.set(id, callback);
           expect(idleCallbacksRequested).toBe(0);
-          expect(NgZone.isInAngularZone()).toBe(true);
           idleCallbacksRequested++;
           return id++;
         };
@@ -1469,10 +1467,7 @@ describe('platform-server partial hydration integration', () => {
           }
 
           const appId = 'custom-app-id';
-          const providers = [
-            {provide: APP_ID, useValue: appId},
-            provideZoneChangeDetection() as any,
-          ];
+          const providers = [{provide: APP_ID, useValue: appId}];
           const hydrationFeatures = () => [withIncrementalHydration()];
 
           const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
@@ -2062,10 +2057,18 @@ describe('platform-server partial hydration integration', () => {
           this.value.set('end');
         }
         registry = inject(DEHYDRATED_BLOCK_REGISTRY);
+
+        constructor() {
+          // TODO: Understand why this is needed to get the full rendering of the HTML
+          // Without it, bindings aren't properly rendered in SSR and the test fails.
+          // There was no issue with the zone based scheduler.
+          const remove = inject(PendingTasks).add();
+          setTimeout(() => remove(), 10);
+        }
       }
 
       const appId = 'custom-app-id';
-      const providers = [{provide: APP_ID, useValue: appId}, provideZoneChangeDetection() as any];
+      const providers = [{provide: APP_ID, useValue: appId}];
       const hydrationFeatures = () => [withIncrementalHydration()];
 
       const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
