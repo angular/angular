@@ -19,7 +19,7 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {FormControl} from '@angular/forms';
 import {compatForm} from '../../compat';
-import {FormField, form, type FieldTree} from '../../public_api';
+import {FormField, form, type Field, type FieldTree} from '../../public_api';
 
 describe('FieldState focus behavior', () => {
   it('should focus a native control', async () => {
@@ -174,7 +174,7 @@ describe('FieldState focus behavior', () => {
       template: ``,
     })
     class CustomControl {
-      formField = input.required<FieldTree<string>>();
+      formField = input.required<Field<string>>();
     }
 
     @Component({
@@ -198,7 +198,7 @@ describe('FieldState focus behavior', () => {
       template: `<input #input />`,
     })
     class CustomControl {
-      formField = input.required<FieldTree<string>>();
+      formField = input.required<Field<string>>();
       input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
       constructor() {

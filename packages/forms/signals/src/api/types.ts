@@ -131,6 +131,20 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
   | 'pending';
 
 /**
+ * A field accessor function that returns the state of the field.
+ *
+ * @template TValue The type of the value stored in the field.
+ * @template TKey The type of the property key which this field resides under in its parent.
+ *
+ * @category types
+ * @experimental 21.2.0
+ */
+export type Field<TValue, TKey extends string | number = string | number> = () => FieldState<
+  TValue,
+  TKey
+>;
+
+/**
  * An object that represents a tree of fields in a form. This includes both primitive value fields
  * (e.g. fields that contain a `string` or `number`), as well as "grouping fields" that contain
  * sub-fields. `FieldTree` objects are arranged in a tree whose structure mimics the structure of the
