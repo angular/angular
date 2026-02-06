@@ -97,7 +97,7 @@ export function transformedValue<TValue, TRaw>(
   const parseErrors = signal<readonly ValidationError.WithoutFieldTree[]>([]);
   const rawValue = linkedSignal(() => format(value()));
 
-  const formFieldParseErrors = inject(FORM_FIELD_PARSE_ERRORS, {optional: true});
+  const formFieldParseErrors = inject(FORM_FIELD_PARSE_ERRORS, {self: true, optional: true});
   if (formFieldParseErrors) {
     formFieldParseErrors.set(parseErrors);
   }
