@@ -39,8 +39,8 @@ import {
 } from '../index';
 import {selectValueAccessor} from '../src/directives/shared';
 import {composeValidators} from '../src/validators';
-
-import {asyncValidator, timeout, useAutoTick} from './util';
+import {useAutoTick, timeout} from '@angular/private/testing';
+import {asyncValidator} from './util';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue: any;
