@@ -25,11 +25,10 @@ describe('markdown to html', () => {
     expect(samePageEl.textContent?.trim()).toBe('Same Page');
   });
 
-  it('should render external links with _blank target and iconography', () => {
+  it('should render external links with _blank target', () => {
     const samePageEl = markdownDocument.querySelectorAll('a.docs-pill')[1];
     expect(samePageEl.getAttribute('target')).toBe('_blank');
-    expect(samePageEl.textContent?.trim()).toContain('External Page');
-    expect(samePageEl.querySelector('docs-icon')?.textContent).toBe('open_in_new');
+    expect(samePageEl.textContent?.trim()).toBe('External Page');
   });
 
   it('should render internal links that are relative paths', () => {
