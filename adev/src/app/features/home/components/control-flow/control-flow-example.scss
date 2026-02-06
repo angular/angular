@@ -1,0 +1,80 @@
+@use '@angular/docs/styles/media-queries' as mq;
+
+.two-column-step {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  text-align: left;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  background-color: var(--card-background);
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.5rem;
+  padding: 2rem;
+
+  @include mq.for-tablet-down {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1.5rem;
+  }
+}
+
+.step-description {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .header {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  .description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--secondary-contrast);
+  }
+}
+
+.step-code {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .code-block {
+    background: var(--card-background);
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+
+    .code-header {
+      display: flex;
+      padding: 0.75rem;
+      background: var(--subtle-purple);
+      border-radius: 0.25rem 0.25rem 0 0;
+      transition: background 0.3s ease;
+
+      & > span {
+        background-image: var(--purple-to-blue-horizontal-gradient);
+        background-clip: text;
+        color: transparent;
+        font-size: 0.875rem;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 1.4rem;
+        letter-spacing: -0.00875rem;
+        margin: 0;
+        word-wrap: break-word;
+        width: fit-content;
+      }
+    }
+
+    pre {
+      font-family: 'JetBrains Mono', monospace;
+      margin: 0;
+      color: #a9b7c6;
+    }
+  }
+}

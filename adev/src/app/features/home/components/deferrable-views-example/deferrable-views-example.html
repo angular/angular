@@ -1,0 +1,38 @@
+<div class="two-column-step">
+  <div class="step-description">
+    <div class="header">Deferrable Views</div>
+    <div class="description">
+      Deferrable views (also known as <code>&#64;defer</code> blocks) reduce the initial bundle size
+      of your application by deferring the loading of code that is not strictly necessary for the
+      initial rendering of a page.
+    </div>
+
+    <button
+      class="docs-primary-btn"
+      [attr.text]="'Learn more about deferred loading'"
+      routerLink="/guide/templates/defer"
+    >
+      Learn more about deferred loading
+    </button>
+  </div>
+
+  <div class="step-code">
+    <div class="code-block">
+      <div class="code-header">
+        <span>data-visualization-page.html</span>
+        <span class="copy-icon"></span>
+      </div>
+
+      <adev-code-block [code]="exampleHtml" language="angular-html" />
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span>data-visualization-page.ts</span>
+        <span class="copy-icon"></span>
+      </div>
+
+      <adev-code-block [code]="exampleTs" />
+    </div>
+  </div>
+</div>
