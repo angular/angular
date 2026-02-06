@@ -6,20 +6,32 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/core';
+import {
+  inject,
+  Injector,
+  runInInjectionContext,
+  ɵRuntimeError as RuntimeError,
+  untracked,
+  WritableSignal,
+} from '@angular/core';
+import {RuntimeErrorCode} from '../errors';
 import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
+import {addDefaultField} from '../field/validation';
 import {DYNAMIC} from '../schema/logic';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema/schema';
 import {normalizeFormArgs} from '../util/normalize_form_args';
+import {isArray} from '../util/type_guards';
+import type {ValidationError} from './rules';
 import type {
   FieldState,
   FieldTree,
   FormSubmitOptions,
   ItemType,
   LogicFn,
+  OneOrMany,
   PathKind,
   Schema,
   SchemaFn,
@@ -369,7 +381,6 @@ export function applyWhenValue(
  *
  * @category submission
  * @experimental 21.0.0
- * @deprecated Use `form().submit(options)` instead.
  */
 export async function submit<TModel>(
   form: FieldTree<TModel>,
@@ -383,8 +394,53 @@ export async function submit<TModel>(
   form: FieldTree<TModel>,
   options?: FormSubmitOptions<unknown, TModel> | FormSubmitOptions<unknown, TModel>['action'],
 ): Promise<boolean> {
-  const opts = typeof options === 'function' ? {action: options} : options;
-  return (form() as FieldState<any>).submit(opts);
+  const node = form() as FieldState<unknown> as FieldNode;
+
+  // Normalize options.
+  options =
+    typeof options === 'function'
+      ? {action: options}
+      : (options ?? node.structure.fieldManager.submitOptions);
+
+  // Verify that an action was provided.
+  const action = options?.action;
+  if (!action) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_SUBMIT_ACTION,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        'Cannot submit form with no submit action. Specify the action when creating the form, or as an additional argument to `submit()`.',
+    );
+  }
+
+  const onInvalid = options?.onInvalid;
+  const ignoreValidators = options?.ignoreValidators ?? 'pending';
+
+  // Determine whether or not to run the action based on the current validity.
+  let shouldRunAction = true;
+  untracked(() => {
+    markAllAsTouched(node);
+
+    if (ignoreValidators === 'none') {
+      shouldRunAction = node.valid();
+    } else if (ignoreValidators === 'pending') {
+      shouldRunAction = !node.invalid();
+    }
+  });
+
+  // Run the action (or alternatively the `onInvalid` callback)
+  try {
+    if (shouldRunAction) {
+      node.submitState.selfSubmitting.set(true);
+      const errors = await untracked(() => action?.(node.structure.root.fieldProxy, form));
+      errors && setSubmissionErrors(node, errors);
+      return !errors || (isArray(errors) && errors.length === 0);
+    } else {
+      untracked(() => onInvalid?.(node.structure.root.fieldProxy, form));
+    }
+    return false;
+  } finally {
+    node.submitState.selfSubmitting.set(false);
+  }
 }
 
 /**
@@ -398,4 +454,47 @@ export async function submit<TModel>(
  */
 export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
   return SchemaImpl.create(fn) as unknown as Schema<TValue>;
+}
+
+/** Marks a {@link node} and its descendants as touched. */
+function markAllAsTouched(node: FieldNode) {
+  // Don't mark hidden, disabled, or readonly fields as touched since they don't contribute to the
+  // form's validity. This also prevents errors from appearing immediately if they're later made
+  // interactive.
+  if (node.validationState.shouldSkipValidation()) {
+    return;
+  }
+  node.markAsTouched();
+  for (const child of node.structure.children()) {
+    markAllAsTouched(child);
+  }
+}
+
+/**
+ * Sets a list of submission errors to their individual fields.
+ *
+ * @param submittedField The field that was submitted, resulting in the errors.
+ * @param errors The errors to set.
+ */
+function setSubmissionErrors(
+  submittedField: FieldNode,
+  errors: OneOrMany<ValidationError.WithOptionalFieldTree>,
+) {
+  if (!isArray(errors)) {
+    errors = [errors];
+  }
+  const errorsByField = new Map<FieldNode, ValidationError.WithFieldTree[]>();
+  for (const error of errors) {
+    const errorWithField = addDefaultField(error, submittedField.fieldProxy);
+    const field = errorWithField.fieldTree() as FieldNode;
+    let fieldErrors = errorsByField.get(field);
+    if (!fieldErrors) {
+      fieldErrors = [];
+      errorsByField.set(field, fieldErrors);
+    }
+    fieldErrors.push(errorWithField);
+  }
+  for (const [field, fieldErrors] of errorsByField) {
+    field.submitState.submissionErrors.set(fieldErrors);
+  }
 }

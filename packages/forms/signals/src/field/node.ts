@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  computed,
-  linkedSignal,
-  ɵRuntimeError as RuntimeError,
-  type Signal,
-  untracked,
-  type WritableSignal,
-} from '@angular/core';
+import {computed, linkedSignal, type Signal, untracked, type WritableSignal} from '@angular/core';
 import {
   MAX,
   MAX_LENGTH,
@@ -24,20 +17,11 @@ import {
   REQUIRED,
 } from '../api/rules/metadata';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
-import type {
-  DisabledReason,
-  FieldContext,
-  FieldState,
-  FieldTree,
-  FormSubmitOptions,
-  OneOrMany,
-} from '../api/types';
+import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
 import type {FormField} from '../directive/form_field_directive';
-import {RuntimeErrorCode} from '../errors';
 import {DYNAMIC} from '../schema/logic';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
-import {isArray} from '../util/type_guards';
 import {FieldNodeContext} from './context';
 import type {FieldAdapter} from './field_adapter';
 import type {FormFieldManager} from './manager';
@@ -52,7 +36,7 @@ import {
   type TrackingKey,
 } from './structure';
 import {FieldSubmitState} from './submit';
-import {addDefaultField, ValidationState} from './validation';
+import {ValidationState} from './validation';
 
 /**
  * Internal node in the form tree for a given field.
@@ -324,88 +308,6 @@ export class FieldNode implements FieldState<unknown> {
     };
 
     return controlValue;
-  }
-
-  async submit(options?: FormSubmitOptions<unknown, unknown>): Promise<boolean> {
-    const opts = {
-      ...(this.structure.fieldManager.submitOptions ?? {}),
-      ...(options ?? {}),
-    } as Partial<FormSubmitOptions<unknown, unknown>>;
-
-    const action = opts?.action;
-    if (!action) {
-      throw new RuntimeError(
-        RuntimeErrorCode.MISSING_SUBMIT_ACTION,
-        (typeof ngDevMode === 'undefined' || ngDevMode) &&
-          'Cannot submit form with no submit action. Specify the action when creating the form, or as an additional argument to `submit()`.',
-      );
-    }
-
-    const onInvalid = opts?.onInvalid;
-    const ignoreValidators = opts?.ignoreValidators ?? 'pending';
-
-    // Determine whether or not to run the action based on the current validity.
-    let shouldRunAction = true;
-    untracked(() => {
-      this.markAllAsTouched();
-
-      if (ignoreValidators === 'none') {
-        shouldRunAction = this.valid();
-      } else if (ignoreValidators === 'pending') {
-        shouldRunAction = !this.invalid();
-      }
-    });
-
-    // Run the action (or alternatively the `onInvalid` callback)
-    try {
-      if (shouldRunAction) {
-        this.submitState.selfSubmitting.set(true);
-        const errors = await untracked(() =>
-          action?.(this.structure.root.fieldProxy, this.fieldProxy),
-        );
-        errors && this.setSubmissionErrors(errors);
-        return !errors || (isArray(errors) && errors.length === 0);
-      } else {
-        untracked(() => onInvalid?.(this.structure.root.fieldProxy, this.fieldProxy));
-      }
-      return false;
-    } finally {
-      this.submitState.selfSubmitting.set(false);
-    }
-  }
-
-  private setSubmissionErrors(errors: OneOrMany<ValidationError.WithOptionalFieldTree>) {
-    if (!isArray(errors)) {
-      errors = [errors];
-    }
-    const errorsByField = new Map<FieldNode, ValidationError.WithFieldTree[]>();
-    for (const error of errors) {
-      const errorWithField = addDefaultField(error, this.fieldProxy);
-      const field = errorWithField.fieldTree() as FieldNode;
-      let fieldErrors = errorsByField.get(field);
-      if (!fieldErrors) {
-        fieldErrors = [];
-        errorsByField.set(field, fieldErrors);
-      }
-      fieldErrors.push(errorWithField);
-    }
-    for (const [field, fieldErrors] of errorsByField) {
-      field.submitState.submissionErrors.set(fieldErrors);
-    }
-  }
-
-  /** Marks this node and its descendants as touched. */
-  private markAllAsTouched() {
-    // Don't mark hidden, disabled, or readonly fields as touched since they don't contribute to the
-    // form's validity. This also prevents errors from appearing immediately if they're later made
-    // interactive.
-    if (this.validationState.shouldSkipValidation()) {
-      return;
-    }
-    this.markAsTouched();
-    for (const child of this.structure.children()) {
-      child.markAllAsTouched();
-    }
   }
 
   /**

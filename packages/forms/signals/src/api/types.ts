@@ -417,40 +417,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * @param options Optional focus options to pass to the native focus() method.
    */
   focusBoundControl(options?: FocusOptions): void;
-
-  /**
-   * Submits the form using the given action function and applies any submission errors
-   * resulting from the action to the field. Submission errors returned by the `action` will be integrated
-   * into the field as a `ValidationError` on the sub-field indicated by the `fieldTree` property of the
-   * submission error.
-   *
-   * @example
-   * ```ts
-   * async function registerNewUser(registrationForm: FieldTree<{username: string, password: string}>) {
-   *   const result = await myClient.registerNewUser(registrationForm().value());
-   *   if (result.errorCode === myClient.ErrorCode.USERNAME_TAKEN) {
-   *     return [{
-   *       fieldTree: registrationForm.username,
-   *       kind: 'server',
-   *       message: 'Username already taken'
-   *     }];
-   *   }
-   *   return undefined;
-   * }
-   *
-   * const registrationForm = form(signal({username: 'god', password: ''}));
-   * registrationForm().submit({
-   *   action: async (f) => {
-   *     return registerNewUser(registrationForm);
-   *   }
-   * });
-   * registrationForm.username().errors(); // [{kind: 'server', message: 'Username already taken'}]
-   * ```
-   *
-   * @param options Options for the submission.
-   * @returns Whether the submission was successful.
-   */
-  submit(options?: FormSubmitOptions<unknown, TValue>): Promise<boolean>;
 }
 
 /**

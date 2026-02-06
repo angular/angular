@@ -19,6 +19,7 @@ import {
   hidden,
   readonly,
   required,
+  submit,
   TreeValidationResult,
   validate,
   validateTree,
@@ -346,7 +347,7 @@ describe('Forms compat', () => {
 
       const {promise, resolve} = promiseWithResolvers<TreeValidationResult>();
 
-      const result = f().submit({
+      const result = submit(f, {
         action: () => {
           return promise;
         },
