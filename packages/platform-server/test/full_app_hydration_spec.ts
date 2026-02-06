@@ -46,8 +46,8 @@ import {
   PLATFORM_ID,
   Provider,
   provideZoneChangeDetection,
-  provideZonelessChangeDetection,
   QueryList,
+  signal,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -2821,9 +2821,9 @@ describe('platform-server full application hydration integration', () => {
           selector: 'app',
           imports: [MyLazyCmp],
           template: `
-            Visible: {{ isVisible }}.
+            Visible: {{ isVisible() }}.
 
-            @defer (when isVisible) {
+            @defer (when isVisible()) {
               <my-lazy-cmp />
             } @loading {
               Loading...
@@ -2835,19 +2835,21 @@ describe('platform-server full application hydration integration', () => {
           `,
         })
         class SimpleComponent {
-          isVisible = false;
+          isVisible = signal(false);
+          pendingTasks = inject(PendingTasks);
 
           ngOnInit() {
+            const removeTask = this.pendingTasks.add();
             setTimeout(() => {
               // This changes the triggering condition of the defer block,
               // but it should be ignored and the placeholder content should be visible.
-              this.isVisible = true;
+              this.isVisible.set(true);
+              removeTask();
             });
           }
         }
 
-        const envProviders = [provideZoneChangeDetection() as any];
-        const html = await ssr(SimpleComponent, {envProviders});
+        const html = await ssr(SimpleComponent);
 
         const ssrContents = getAppContents(html);
         expect(ssrContents).toContain('<app ngh');
@@ -2859,9 +2861,7 @@ describe('platform-server full application hydration integration', () => {
 
         resetTViewsFor(SimpleComponent);
 
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders,
-        });
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 
@@ -4591,103 +4591,129 @@ describe('platform-server full application hydration integration', () => {
         expect(clientContents).not.toContain('<b>This is a SERVER-ONLY content</b>');
       });
 
-      it('should trigger change detection after cleanup (immediate)', async () => {
-        const observedChildCountLog: number[] = [];
+      [true, false].forEach((zoneless) => {
+        it(`should trigger ${zoneless ? 'zoneless' : 'zone'} change detection after cleanup (immediate)`, async () => {
+          const observedChildCountLog: number[] = [];
 
-        @Component({
-          selector: 'app',
-          imports: [NgIf],
-          template: `
-            <span *ngIf="isServer">This is a SERVER-ONLY content</span>
-            <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
-          `,
-        })
-        class SimpleComponent {
-          isServer = isPlatformServer(inject(PLATFORM_ID));
-          elementRef = inject(ElementRef);
+          @Component({
+            selector: 'app',
+            imports: [NgIf],
+            template: `
+              <span *ngIf="isServer">This is a SERVER-ONLY content</span>
+              <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
+            `,
+          })
+          class SimpleComponent {
+            isServer = isPlatformServer(inject(PLATFORM_ID));
+            elementRef = inject(ElementRef);
 
-          constructor() {
-            afterEveryRender(() => {
-              observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
-            });
+            constructor() {
+              afterEveryRender(() => {
+                observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
+              });
+            }
           }
-        }
-        const envProviders = [provideZoneChangeDetection() as any];
-        const html = await ssr(SimpleComponent, {envProviders});
-        let ssrContents = getAppContents(html);
+          const envProviders = zoneless ? [] : [provideZoneChangeDetection() as any];
+          const html = await ssr(SimpleComponent, {envProviders});
+          let ssrContents = getAppContents(html);
 
-        expect(ssrContents).toContain('<app ngh');
+          expect(ssrContents).toContain('<app ngh');
 
-        resetTViewsFor(SimpleComponent);
+          resetTViewsFor(SimpleComponent);
 
-        // Before hydration
-        expect(observedChildCountLog).toEqual([]);
+          // Before hydration
+          expect(observedChildCountLog).toEqual([]);
 
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders,
-        });
-        await appRef.whenStable();
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders,
+          });
+          await appRef.whenStable();
 
-        // afterRender should be triggered by:
-        //   1.) Bootstrap
-        //   2.) Microtask empty event
-        //   3.) Stabilization + cleanup
-        expect(observedChildCountLog).toEqual([2, 2, 1]);
-      });
-
-      it('should trigger change detection after cleanup (deferred)', async () => {
-        const observedChildCountLog: number[] = [];
-
-        @Component({
-          selector: 'app',
-          imports: [NgIf],
-          template: `
-            <span *ngIf="isServer">This is a SERVER-ONLY content</span>
-            <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
-          `,
-        })
-        class SimpleComponent {
-          isServer = isPlatformServer(inject(PLATFORM_ID));
-          elementRef = inject(ElementRef);
-
-          constructor() {
-            afterEveryRender(() => {
-              observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
-            });
-
-            // Create a dummy promise to prevent stabilization
-            new Promise<void>((resolve) => {
-              setTimeout(resolve, 0);
-            });
+          if (zoneless) {
+            //   1.) Bootstrap
+            //   2.) After cleanup
+            expect(observedChildCountLog).toEqual([2, 1]);
+          } else {
+            // afterRender should be triggered by:
+            //   1.) Bootstrap
+            //   2.) Microtask empty event
+            //   3.) Stabilization + cleanup
+            expect(observedChildCountLog).toEqual([2, 2, 1]);
           }
-        }
-
-        const envProviders = [provideZoneChangeDetection() as any];
-        const html = await ssr(SimpleComponent, {envProviders});
-        let ssrContents = getAppContents(html);
-
-        expect(ssrContents).toContain('<app ngh');
-
-        resetTViewsFor(SimpleComponent);
-
-        // Before hydration
-        expect(observedChildCountLog).toEqual([]);
-
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders,
         });
 
-        // afterRender should be triggered by:
-        //   1.) Bootstrap
-        //   2.) Microtask empty event
-        expect(observedChildCountLog).toEqual([2, 2]);
+        it(`should trigger ${zoneless ? 'zoneless' : 'zone'} change detection after cleanup (deferred)`, async () => {
+          const observedChildCountLog: number[] = [];
 
-        await appRef.whenStable();
+          @Component({
+            selector: 'app',
+            imports: [NgIf],
+            template: `
+              <span *ngIf="isServer">This is a SERVER-ONLY content</span>
+              <span *ngIf="!isServer">This is a CLIENT-ONLY content</span>
+            `,
+          })
+          class SimpleComponent {
+            isServer = isPlatformServer(inject(PLATFORM_ID));
+            elementRef = inject(ElementRef);
 
-        // afterRender should be triggered by:
-        //   3.) Microtask empty event
-        //   4.) Stabilization + cleanup
-        expect(observedChildCountLog).toEqual([2, 2, 2, 1]);
+            constructor() {
+              afterEveryRender(() => {
+                observedChildCountLog.push(this.elementRef.nativeElement.childElementCount);
+              });
+
+              // Create a dummy promise to prevent stabilization
+              inject(PendingTasks).run(
+                async () =>
+                  await new Promise<void>((resolve) => {
+                    setTimeout(resolve, 0);
+                  }),
+              );
+            }
+          }
+
+          const envProviders = zoneless ? [] : [provideZoneChangeDetection() as any];
+          const html = await ssr(SimpleComponent, {envProviders});
+          let ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          // Before hydration
+          expect(observedChildCountLog).toEqual([]);
+
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders,
+          });
+
+          if (zoneless) {
+            // afterRender should be triggered by:
+            //   1.) Bootstrap
+            expect(observedChildCountLog).toEqual([2]);
+          } else {
+            // afterRender should be triggered by:
+            //   1.) Bootstrap
+            //   2.) Microtask empty event
+            expect(observedChildCountLog).toEqual([2, 2]);
+          }
+
+          // Cleanup will happen when stable, it will also schedule another change detection run, so we need to wait for stability again.
+          await appRef.whenStable();
+
+          await appRef.whenStable();
+
+          if (zoneless) {
+            // afterRender should be triggered by:
+            //   2.) After stablization & cleanup
+            expect(observedChildCountLog).toEqual([2, 1]);
+          } else {
+            // afterRender should be triggered by:
+            //   3.) Microtask empty event
+            //   4.) Stabilization + cleanup
+            expect(observedChildCountLog).toEqual([2, 2, 2, 2, 1]);
+          }
+        });
       });
     });
 
@@ -6896,13 +6922,16 @@ describe('platform-server full application hydration integration', () => {
           // and the server: we use it to test the logic to cleanup
           // dehydrated views.
           isServer = isPlatformServer(inject(PLATFORM_ID));
+          pendingTasks = inject(PendingTasks);
           ngOnInit() {
-            setTimeout(() => {}, 100);
+            const remove = this.pendingTasks.add();
+            setTimeout(() => {
+              remove();
+            }, 100);
           }
         }
 
-        const envProviders = [provideZoneChangeDetection() as any];
-        const html = await ssr(SimpleComponent, {envProviders});
+        const html = await ssr(SimpleComponent);
         let ssrContents = getAppContents(html);
 
         expect(ssrContents).toContain('<app ngh');
@@ -6916,9 +6945,7 @@ describe('platform-server full application hydration integration', () => {
         expect(ssrContents).toContain('<b>This is NgSwitch SERVER-ONLY content</b>');
 
         resetTViewsFor(SimpleComponent);
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders,
-        });
+        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent);
         const compRef = getComponentRef<SimpleComponent>(appRef);
         appRef.tick();
 
@@ -7629,46 +7656,6 @@ describe('platform-server full application hydration integration', () => {
       });
     });
 
-    describe('zoneless', () => {
-      it('should not produce "unsupported configuration" warnings for zoneless mode', async () => {
-        @Component({
-          selector: 'app',
-          template: `
-            <header>Header</header>
-            <footer>Footer</footer>
-          `,
-        })
-        class SimpleComponent {}
-
-        const html = await ssr(SimpleComponent);
-        const ssrContents = getAppContents(html);
-
-        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
-
-        resetTViewsFor(SimpleComponent);
-
-        const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders: [
-            withDebugConsole(),
-            provideZonelessChangeDetection() as unknown as Provider[],
-          ],
-        });
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-
-        // Make sure there are no extra logs in case zoneless mode is enabled.
-        verifyHasNoLog(
-          appRef,
-          'NG05000: Angular detected that hydration was enabled for an application ' +
-            'that uses a custom or a noop Zone.js implementation.',
-        );
-
-        const clientRootNode = compRef.location.nativeElement;
-        verifyAllNodesClaimedForHydration(clientRootNode);
-        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-      });
-    });
-
     describe('Router', () => {
       it('should wait for lazy routes before triggering post-hydration cleanup', async () => {
         const ngZone = TestBed.inject(NgZone);
@@ -7764,7 +7751,6 @@ describe('platform-server full application hydration integration', () => {
         class SimpleComponent {}
 
         const envProviders = [
-          provideZonelessChangeDetection(),
           {provide: PlatformLocation, useClass: MockPlatformLocation},
           provideRouter(routes),
         ] as unknown as Provider[];
