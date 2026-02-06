@@ -971,7 +971,7 @@ describe('HtmlLexer', () => {
             expect(result.nonNormalizedIcuExpressions).toEqual([]);
           });
 
-          it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+          it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined (escapedString:false)', () => {
             const result = tokenizeWithoutErrors(
               `{\r\n` +
                 `    messages.length,\r\n` +
@@ -1850,28 +1850,6 @@ describe('HtmlLexer', () => {
         [TokenType.ATTR_NAME, '', 'a'],
         [TokenType.ATTR_QUOTE, '"'],
         [TokenType.ATTR_VALUE_TEXT, ''],
-        [TokenType.ATTR_QUOTE, '"'],
-        [TokenType.TAG_OPEN_END],
-        [TokenType.EOF],
-      ]);
-    });
-
-    it('should parse bound inputs with expressions containing newlines', () => {
-      expect(
-        tokenizeAndHumanizeParts(`<app-component
-        [attr]="[
-        {text: 'some text',url:'//www.google.com'},
-        {text:'other text',url:'//www.google.com'}]">`),
-      ).toEqual([
-        [TokenType.TAG_OPEN_START, '', 'app-component'],
-        [TokenType.ATTR_NAME, '', '[attr]'],
-        [TokenType.ATTR_QUOTE, '"'],
-        [
-          TokenType.ATTR_VALUE_TEXT,
-          '[\n' +
-            "        {text: 'some text',url:'//www.google.com'},\n" +
-            "        {text:'other text',url:'//www.google.com'}]",
-        ],
         [TokenType.ATTR_QUOTE, '"'],
         [TokenType.TAG_OPEN_END],
         [TokenType.EOF],
@@ -2906,7 +2884,7 @@ describe('HtmlLexer', () => {
           expect(result.nonNormalizedIcuExpressions).toEqual([]);
         });
 
-        it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+        it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined (escapeString: false)', () => {
           const result = tokenizeWithoutErrors(
             `{\r\n` +
               `    messages.length,\r\n` +

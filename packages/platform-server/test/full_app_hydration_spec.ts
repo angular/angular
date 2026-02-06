@@ -27,12 +27,13 @@ import {
   afterEveryRender,
   ApplicationRef,
   ChangeDetectorRef,
+  ɵCLIENT_RENDER_MODE_FLAG as CLIENT_RENDER_MODE_FLAG,
   Component,
+  ContentChild,
   ContentChildren,
   createComponent,
   destroyPlatform,
   Directive,
-  ɵCLIENT_RENDER_MODE_FLAG as CLIENT_RENDER_MODE_FLAG,
   ElementRef,
   EnvironmentInjector,
   ErrorHandler,
@@ -43,16 +44,14 @@ import {
   Pipe,
   PipeTransform,
   PLATFORM_ID,
-  provideZonelessChangeDetection,
   Provider,
+  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
   QueryList,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
-  ɵNoopNgZone as NoopNgZone,
-  ContentChild,
-  provideZoneChangeDetection,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
@@ -1257,7 +1256,7 @@ describe('platform-server full application hydration integration', () => {
             verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
           });
 
-          it('should hydrate dynamically created components using root component as an anchor', async () => {
+          it('should hydrate dynamically created components using root component as an anchor (with nested components)', async () => {
             @Component({
               imports: [CommonModule],
               selector: 'nested-dynamic-a',
@@ -5233,7 +5232,7 @@ describe('platform-server full application hydration integration', () => {
       );
 
       describe('partial projection', () => {
-        it('should support cases when some element nodes are not projected', async () => {
+        it('should support cases when some element nodes are not projected (ng-content)', async () => {
           @Component({
             selector: 'projector-cmp',
             template: `
@@ -5278,7 +5277,7 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
         });
 
-        it('should support cases when some element nodes are not projected', async () => {
+        it('should support cases when some element nodes are not projected (@if)', async () => {
           @Component({
             selector: 'app-dropdown-content',
             template: `<ng-content />`,

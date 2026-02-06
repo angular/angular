@@ -88,7 +88,7 @@ runInEachFileSystem(() => {
       expect(diags[3].messageText).toBe(generateDiagnosticText('decrement()'));
     });
 
-    it('should produce a diagnostic when a function in a conditional is not invoked', () => {
+    it('should produce a diagnostic when no function in a conditional is not invoked', () => {
       const diags = setupTestComponent(
         `<button (click)="true ? increment : decrement"></button>`,
         `increment() { } decrement() { }`,
@@ -101,7 +101,7 @@ runInEachFileSystem(() => {
       expect(diags[1].messageText).toBe(generateDiagnosticText('decrement()'));
     });
 
-    it('should produce a diagnostic when a function in a conditional is not invoked', () => {
+    it('should produce a diagnostic when a function is not', () => {
       const diags = setupTestComponent(
         `<button (click)="true ? increment() : decrement"></button>`,
         `increment() { } decrement() { }`,

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {filter, map, of} from 'rxjs';
 import {
   AbstractControl,
   ControlEvent,
@@ -16,8 +17,8 @@ import {
   Validators,
   ValueChangeEvent,
 } from '../index';
-import {filter, map, of} from 'rxjs';
 
+import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model';
 import {
   asyncValidator,
   asyncValidatorReturningObservable,
@@ -26,7 +27,6 @@ import {
   timeout,
   useAutoTick,
 } from './util';
-import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model';
 
 (function () {
   function simpleValidator(c: AbstractControl): ValidationErrors | null {
@@ -854,7 +854,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
         });
 
-        it('should emit one statusChange event per reset control', () => {
+        it('should emit one statusChange event per reset control (with value)', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
           g.statusChanges.subscribe(() => logger.push('group'));
           c.statusChanges.subscribe(() => logger.push('control1'));

@@ -1004,12 +1004,9 @@ describe('definitions', () => {
     expect(definitions).toBeTruthy();
     return {textSpan, definitions: definitions!.map((d) => humanizeDocumentSpanLike(d, env))};
   }
-});
-
-describe('definitions', () => {
-  let env: LanguageServiceTestEnv;
 
   describe('when an input has a dollar sign', () => {
+    let env: LanguageServiceTestEnv;
     const files = {
       'app.ts': `
 	 import {Component, NgModule, Input} from '@angular/core';
@@ -1042,7 +1039,12 @@ describe('definitions', () => {
 
     it('can get definitions for input', () => {
       const project = env.addProject('test', files, {strictTemplates: false});
-      const definitions = getDefinitionsAndAssertBoundSpan(project, 'app.ts', '[o¦bs$]="greeting"');
+      const definitions = getDefinitionsAndAssertBoundSpanFromProject(
+        project,
+        'app.ts',
+        '[o¦bs$]="greeting"',
+        env,
+      );
       expect(definitions!.length).toEqual(1);
 
       assertTextSpans(definitions, ['obs$']);
@@ -1051,7 +1053,12 @@ describe('definitions', () => {
 
     it('can get definitions for component', () => {
       const project = env.addProject('test', files, {strictTemplates: false});
-      const definitions = getDefinitionsAndAssertBoundSpan(project, 'app.ts', '<dollar-cm¦p');
+      const definitions = getDefinitionsAndAssertBoundSpanFromProject(
+        project,
+        'app.ts',
+        '<dollar-cm¦p',
+        env,
+      );
       expect(definitions!.length).toEqual(1);
 
       assertTextSpans(definitions, ['DollarCmp']);
@@ -1060,6 +1067,7 @@ describe('definitions', () => {
   });
 
   describe('when a selector and input of a directive have a dollar sign', () => {
+    let env: LanguageServiceTestEnv;
     it('can get definitions', () => {
       initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
@@ -1088,10 +1096,11 @@ describe('definitions', () => {
        `,
       };
       const project = env.addProject('test', files, {strictTemplates: false});
-      const definitions = getDefinitionsAndAssertBoundSpan(
+      const definitions = getDefinitionsAndAssertBoundSpanFromProject(
         project,
         'app.ts',
         '[dollar¦$]="greeting"',
+        env,
       );
       expect(definitions!.length).toEqual(2);
 
@@ -1100,7 +1109,12 @@ describe('definitions', () => {
     });
   });
 
-  function getDefinitionsAndAssertBoundSpan(project: Project, file: string, targetText: string) {
+  function getDefinitionsAndAssertBoundSpanFromProject(
+    project: Project,
+    file: string,
+    targetText: string,
+    env: LanguageServiceTestEnv,
+  ) {
     const template = project.openFile(file);
     env.expectNoSourceDiagnostics();
     project.expectNoTemplateDiagnostics('app.ts', 'AppCmp');

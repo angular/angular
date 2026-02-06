@@ -25,9 +25,7 @@ describe('XtbTranslationParser', () => {
       expect(parser.analyze('/some/file.xmb', '').canParse).toBeFalse();
       expect(parser.analyze('/some/file.xtb', '').canParse).toBeFalse();
     });
-  });
 
-  describe('analyze()', () => {
     it('should return a success object if the file extension is `.xtb` or `.xmb` and it contains the `<translationbundle>` tag', () => {
       const parser = new XtbTranslationParser();
       expect(parser.analyze('/some/file.xtb', '<translationbundle>')).toEqual(

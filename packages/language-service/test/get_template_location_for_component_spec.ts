@@ -103,7 +103,7 @@ describe('get template location for component', () => {
     assertFileNames([result2], ['template2.html']);
   });
 
-  it('returns nothing when cursor is not in a component', () => {
+  it('returns nothing when cursor is not in a component (directive)', () => {
     const files = {
       'app.ts': `
       import {Directive} from '@angular/core';
@@ -124,7 +124,7 @@ describe('get template location for component', () => {
     expect(appFile.getTemplateLocationForComponent()).toBeUndefined();
   });
 
-  it('returns nothing when cursor is not in a component', () => {
+  it('returns nothing when cursor is not in a component (external const)', () => {
     const files = {
       'app.ts': `
       import {Component} from '@angular/core';

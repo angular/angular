@@ -22,9 +22,7 @@ describe('SimpleJsonTranslationParser', () => {
         parser.analyze('/some/file.json', '{ "locale" : "fr", "translations" : {}}').canParse,
       ).toBeTrue();
     });
-  });
 
-  describe('analyze()', () => {
     it('should return a success object if the file extension  is `.json` and contains top level `locale` and `translations` properties', () => {
       const parser = new SimpleJsonTranslationParser();
       expect(parser.analyze('/some/file.json', '{ "locale" : "fr", "translations" : {}}')).toEqual(

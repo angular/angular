@@ -31,4 +31,5 @@ jasmine_test(
         ":test_lib",
         "//:node_modules/tinyglobby",
     ],
+    shard_count = 4,
 )

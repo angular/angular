@@ -4741,7 +4741,7 @@ suppress
         );
       });
 
-      it('should check bindings to inherited host directive inputs', () => {
+      it('should check bindings to inherited host directive inputs 2', () => {
         env.write(
           'test.ts',
           `
@@ -4792,7 +4792,7 @@ suppress
         ]);
       });
 
-      it('should check bindings to inherited host directive outputs', () => {
+      it('should check bindings to inherited host directive outputs 2', () => {
         env.write(
           'test.ts',
           `

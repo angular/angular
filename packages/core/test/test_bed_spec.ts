@@ -7,15 +7,23 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID} from '@angular/common';
+import {By} from '@angular/platform-browser';
+import {expect} from '@angular/private/testing/matchers';
 import {
   APP_INITIALIZER,
   ChangeDetectorRef,
   Compiler,
-  provideZoneChangeDetection,
   Component,
+  ɵɵdefineComponent as defineComponent,
+  ɵɵdefineInjector as defineInjector,
+  ɵɵdefineNgModule as defineNgModule,
   Directive,
+  DOCUMENT,
+  ɵɵelementEnd as elementEnd,
   ElementRef,
+  ɵɵelementStart as elementStart,
   ErrorHandler,
+  EventEmitter,
   getNgModuleById,
   inject,
   Inject,
@@ -24,35 +32,27 @@ import {
   InjectOptions,
   Injector,
   Input,
+  inputBinding,
   LOCALE_ID,
   ModuleWithProviders,
   NgModule,
   Optional,
+  Output,
+  outputBinding,
   Pipe,
   PLATFORM_ID,
+  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
+  ɵsetClassMetadata as setClassMetadata,
+  ɵɵsetNgModuleScope as setNgModuleScope,
+  signal,
+  ɵɵtext as text,
+  twoWayBinding,
   Type,
   ViewChild,
-  ɵsetClassMetadata as setClassMetadata,
-  ɵɵdefineComponent as defineComponent,
-  ɵɵdefineInjector as defineInjector,
-  ɵɵdefineNgModule as defineNgModule,
-  ɵɵelementEnd as elementEnd,
-  ɵɵelementStart as elementStart,
-  ɵɵsetNgModuleScope as setNgModuleScope,
-  ɵɵtext as text,
-  DOCUMENT,
-  signal,
-  provideZonelessChangeDetection,
-  inputBinding,
-  Output,
-  EventEmitter,
-  outputBinding,
-  twoWayBinding,
 } from '../src/core';
 import {DeferBlockBehavior} from '../testing';
 import {TestBed, TestBedImpl} from '../testing/src/test_bed';
-import {By} from '@angular/platform-browser';
-import {expect} from '@angular/private/testing/matchers';
 
 import {NgModuleType} from '../src/render3';
 import {depsTracker} from '../src/render3/deps_tracker/deps_tracker';
@@ -194,7 +194,7 @@ export class ComponentWithInlineTemplate {}
 })
 export class HelloWorldModule {}
 
-describe('TestBed', () => {
+describe('TestBed (isolated)', () => {
   // This test is extracted to an individual `describe` block to avoid any extra TestBed
   // initialization logic that happens in the `beforeEach` functions in other `describe` sections.
   it('should apply scopes correctly for components in the lazy-loaded module', () => {
@@ -2713,19 +2713,6 @@ describe('TestBed module teardown', () => {
     expect(styleCountBefore).toBeGreaterThan(0);
     TestBed.resetTestingModule();
     expect(fixtureDocument.querySelectorAll('style').length).toBeLessThan(styleCountBefore);
-  });
-
-  it('should remove the fixture root element from the DOM when module teardown is enabled', () => {
-    TestBed.configureTestingModule({
-      declarations: [SimpleCmp],
-      teardown: {destroyAfterEach: true},
-    });
-    const fixture = TestBed.createComponent(SimpleCmp);
-    const fixtureDocument = fixture.nativeElement.ownerDocument;
-
-    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(true);
-    TestBed.resetTestingModule();
-    expect(fixtureDocument.body.contains(fixture.nativeElement)).toBe(false);
   });
 
   it('should rethrow errors based on the default teardown behavior', () => {

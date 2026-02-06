@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Observable, of, timer} from 'rxjs';
+import {first, map} from 'rxjs/operators';
 import {
   AbstractControl,
   AsyncValidator,
@@ -16,8 +18,6 @@ import {
   ValidatorFn,
   Validators,
 } from '../index';
-import {Observable, of, timer} from 'rxjs';
-import {first, map} from 'rxjs/operators';
 
 import {normalizeValidators} from '../src/validators';
 import {timeout, useAutoTick} from './util';
@@ -140,17 +140,17 @@ import {timeout, useAutoTick} from './util';
         expect(Validators.max(1.25)(new FormControl(1.25))).toBeNull();
       });
 
-      it('should return a validation error on big values', () => {
+      it('should return a max validation error on decimal values', () => {
         expect(Validators.max(1.25)(new FormControl(1.3))).toEqual({
           'max': {'max': 1.25, 'actual': 1.3},
         });
       });
 
-      it('should return a validation error on big values', () => {
+      it('should return a max validation error on integer', () => {
         expect(Validators.max(2)(new FormControl(3))).toEqual({'max': {'max': 2, 'actual': 3}});
       });
 
-      it('should return a validation error on big values converted from strings', () => {
+      it('should return a max validation error values converted from strings', () => {
         expect(Validators.max(2)(new FormControl('3'))).toEqual({'max': {'max': 2, 'actual': '3'}});
       });
 
@@ -318,11 +318,6 @@ import {timeout, useAutoTick} from './util';
         const value = new Set();
         expect(Validators.minLength(1)(new FormControl(value))).toBeNull();
       });
-
-      it('should return null when passing a boolean', () => {
-        expect(Validators.minLength(1)(new FormControl(true))).toBeNull();
-        expect(Validators.minLength(1)(new FormControl(false))).toBeNull();
-      });
     });
 
     describe('maxLength', () => {
@@ -365,14 +360,6 @@ import {timeout, useAutoTick} from './util';
         expect(Validators.maxLength(1)(new FormControl(1))).toBeNull();
         expect(Validators.maxLength(1)(new FormControl(-1))).toBeNull();
         expect(Validators.maxLength(1)(new FormControl(+1))).toBeNull();
-      });
-
-      it('should trigger validation for an object that contains numeric length property', () => {
-        const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
-        expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
-        expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
-          'maxlength': {'requiredLength': 1, 'actualLength': 5},
-        });
       });
 
       it('should trigger validation for an object that contains numeric length property', () => {

@@ -8,6 +8,8 @@
 
 import {state, style, transition, trigger} from '@angular/animations';
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
   AfterContentInit,
   Component,
@@ -19,7 +21,6 @@ import {
   HostListener,
   Injectable,
   Input,
-  NgModule,
   OnChanges,
   OnInit,
   provideZoneChangeDetection,
@@ -34,8 +35,6 @@ import {
   bypassSanitizationTrustUrl,
 } from '../../src/sanitization/bypass';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('host bindings', () => {
   beforeEach(() => {
@@ -1548,7 +1547,7 @@ describe('host bindings', () => {
       isAttribute: boolean = true,
       throws: boolean = false,
     ) {
-      it(`should sanitize <${tag} ${prop}> ${isAttribute ? 'properties' : 'attributes'}`, () => {
+      it(`should sanitize <${tag} ${prop}> ${isAttribute ? 'properties' : 'attributes'} (value=${value})`, () => {
         @Directive({
           selector: '[unsafeUrlHostBindingDir]',
           host: {

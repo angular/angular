@@ -7,6 +7,8 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
+import {BehaviorSubject} from 'rxjs';
 import {
   assertInInjectionContext,
   Attribute,
@@ -14,7 +16,10 @@ import {
   Component,
   ComponentRef,
   createEnvironmentInjector,
+  ɵcreateInjector as createInjector,
   createNgModule,
+  ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID,
+  DestroyRef,
   Directive,
   ElementRef,
   ENVIRONMENT_INITIALIZER,
@@ -35,6 +40,7 @@ import {
   INJECTOR,
   Injector,
   Input,
+  ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
   LOCALE_ID,
   makeEnvironmentProviders,
   ModuleWithProviders,
@@ -46,6 +52,7 @@ import {
   Pipe,
   PipeTransform,
   Provider,
+  provideZoneChangeDetection,
   runInInjectionContext,
   Self,
   SkipSelf,
@@ -55,19 +62,12 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
   ViewRef,
-  ɵcreateInjector as createInjector,
-  ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID,
   ɵINJECTOR_SCOPE,
-  ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
-  DestroyRef,
-  provideZoneChangeDetection,
 } from '../../src/core';
 import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 import {RuntimeError, RuntimeErrorCode} from '../../src/errors';
 import {ViewRef as ViewRefInternal} from '../../src/render3/view_ref';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
-import {BehaviorSubject} from 'rxjs';
 
 const getProvidersByToken = (
   providers: Provider[],
@@ -1203,7 +1203,7 @@ describe('di', () => {
       expect(cmp.componentInstance.testB.a.injector).toBe('standalone');
     });
 
-    it('should not have access to the directive injector in a standalone injector from within a directive-level provider factory', () => {
+    it('should not have access to the directive injector in a standalone injector from within a directive-level provider factory when using Optional', () => {
       class TestA {
         constructor(public injector: string) {}
       }
@@ -6742,7 +6742,7 @@ describe('di', () => {
       );
     });
 
-    it('should detect cyclic dependency in Module/Environment injector when `Injector.get` is used', () => {
+    it('should detect cyclic dependency in Module/Environment injector when `Injector.get` is used (multi=true)', () => {
       const A = new InjectionToken('A');
       const B = new InjectionToken('B');
       @Injectable()

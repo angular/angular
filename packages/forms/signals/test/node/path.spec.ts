@@ -70,7 +70,7 @@ describe('path', () => {
       );
     });
 
-    it('Disallows using parent paths for apply', () => {
+    it('Disallows using parent paths for apply with array', () => {
       const data = signal({
         needLastName: false,
         items: [{first: '', last: ''}],

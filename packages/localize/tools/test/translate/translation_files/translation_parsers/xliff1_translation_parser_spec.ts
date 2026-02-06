@@ -36,9 +36,7 @@ describe('Xliff1TranslationParser', () => {
       expect(parser.analyze('/some/file.xlf', '').canParse).toBeFalse();
       expect(parser.analyze('/some/file.json', '').canParse).toBeFalse();
     });
-  });
 
-  describe('analyze()', () => {
     it('should return a success object if the file contains an <xliff> element with version="1.2" attribute', () => {
       const parser = new Xliff1TranslationParser();
       expect(parser.analyze('/some/file.xlf', '<xliff version="1.2">')).toEqual(

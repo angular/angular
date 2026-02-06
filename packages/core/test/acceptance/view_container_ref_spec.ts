@@ -8,6 +8,10 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
+import {clearTranslations, loadTranslations} from '@angular/localize';
+import {By, DomSanitizer} from '@angular/platform-browser';
+import {expect} from '@angular/private/testing/matchers';
+import {ANIMATION_QUEUE} from '../../src/animation/queue';
 import {
   ChangeDetectorRef,
   Compiler,
@@ -45,10 +49,6 @@ import {
   ɵsetDocument,
 } from '../../src/core';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '../../testing';
-import {clearTranslations, loadTranslations} from '@angular/localize';
-import {By, DomSanitizer} from '@angular/platform-browser';
-import {expect} from '@angular/private/testing/matchers';
-import {ANIMATION_QUEUE} from '../../src/animation/queue';
 
 describe('ViewContainerRef', () => {
   /**
@@ -224,7 +224,7 @@ describe('ViewContainerRef', () => {
 
     describe('element namespaces', () => {
       function runTestWithSelectors(svgSelector: string, mathMLSelector: string) {
-        it('should be set correctly for host elements of dynamically created components', () => {
+        it(`should be set correctly for host elements of dynamically created components (${svgSelector})`, () => {
           @Component({
             selector: svgSelector,
             template: '<svg><g></g></svg>',
@@ -497,6 +497,42 @@ describe('ViewContainerRef', () => {
 
       expect(fixture.nativeElement.textContent).toEqual('012');
     });
+
+    it('should move embedded views and associated DOM nodes without recreating them', () => {
+      TestBed.configureTestingModule({declarations: [EmbeddedViewInsertionComp, VCRefDirective]});
+      const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
+      const vcRefDir = fixture.debugElement
+        .query(By.directive(VCRefDirective))
+        .injector.get(VCRefDirective);
+      fixture.detectChanges();
+
+      vcRefDir.createView('A');
+      vcRefDir.createView('B');
+      vcRefDir.createView('C');
+
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>ABC');
+
+      // The DOM is manually modified here to ensure that the text node is actually moved
+      fixture.nativeElement.childNodes[2].nodeValue = '**A**';
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>**A**BC');
+
+      let viewRef = vcRefDir.vcref.get(0);
+      vcRefDir.vcref.move(viewRef!, 2);
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>BC**A**');
+
+      vcRefDir.vcref.move(viewRef!, 0);
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>**A**BC');
+
+      vcRefDir.vcref.move(viewRef!, 1);
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>B**A**C');
+
+      expect(() => vcRefDir.vcref.move(viewRef!, -1)).toThrow();
+      expect(() => vcRefDir.vcref.move(viewRef!, 42)).toThrow();
+    });
   });
 
   it('should not throw when calling remove() on an empty container', () => {
@@ -753,44 +789,6 @@ describe('ViewContainerRef', () => {
 
       cmpt.vcr.remove(0);
       expect(cmpt.vcr.indexOf(viewRef)).toBe(-1);
-    });
-  });
-
-  describe('move', () => {
-    it('should move embedded views and associated DOM nodes without recreating them', () => {
-      TestBed.configureTestingModule({declarations: [EmbeddedViewInsertionComp, VCRefDirective]});
-      const fixture = TestBed.createComponent(EmbeddedViewInsertionComp);
-      const vcRefDir = fixture.debugElement
-        .query(By.directive(VCRefDirective))
-        .injector.get(VCRefDirective);
-      fixture.detectChanges();
-
-      vcRefDir.createView('A');
-      vcRefDir.createView('B');
-      vcRefDir.createView('C');
-
-      fixture.detectChanges();
-      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>ABC');
-
-      // The DOM is manually modified here to ensure that the text node is actually moved
-      fixture.nativeElement.childNodes[2].nodeValue = '**A**';
-      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>**A**BC');
-
-      let viewRef = vcRefDir.vcref.get(0);
-      vcRefDir.vcref.move(viewRef!, 2);
-      fixture.detectChanges();
-      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>BC**A**');
-
-      vcRefDir.vcref.move(viewRef!, 0);
-      fixture.detectChanges();
-      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>**A**BC');
-
-      vcRefDir.vcref.move(viewRef!, 1);
-      fixture.detectChanges();
-      expect(getElementHtml(fixture.nativeElement)).toEqual('<p vcref=""></p>B**A**C');
-
-      expect(() => vcRefDir.vcref.move(viewRef!, -1)).toThrow();
-      expect(() => vcRefDir.vcref.move(viewRef!, 42)).toThrow();
     });
   });
 

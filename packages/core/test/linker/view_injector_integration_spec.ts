@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {expect} from '@angular/private/testing/matchers';
 import {
   Attribute,
   ChangeDetectionStrategy,
@@ -23,7 +24,6 @@ import {
   InjectionToken,
   Injector,
   Input,
-  NgModule,
   Optional,
   Pipe,
   PipeTransform,
@@ -34,9 +34,8 @@ import {
   Type,
   ViewContainerRef,
 } from '../../src/core';
-import {ComponentFixture, fakeAsync, TestBed} from '../../testing';
-import {expect} from '@angular/private/testing/matchers';
 import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
+import {ComponentFixture, fakeAsync, TestBed} from '../../testing';
 
 @Directive({
   selector: '[simpleDirective]',
@@ -1014,7 +1013,7 @@ describe('View injector', () => {
       expect(compEl.nativeElement).toHaveText('0');
     });
 
-    it('should inject ViewContainerRef', () => {
+    it('should inject ViewContainerRef (injector)', () => {
       TestBed.configureTestingModule({declarations: [NeedsViewContainerRef]});
       const el = createComponent('<div needsViewContainerRef></div>');
       expect(
@@ -1022,7 +1021,7 @@ describe('View injector', () => {
       ).toBe(el.children[0].nativeElement);
     });
 
-    it('should inject ViewContainerRef', () => {
+    it('should inject ViewContainerRef (constructor DI)', () => {
       @Component({
         template: '',
         standalone: false,

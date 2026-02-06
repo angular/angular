@@ -1125,10 +1125,6 @@ describe('parser', () => {
           expectBindingError('a) => a + 1', "Unexpected token ')'");
         });
 
-        it('should report missing comma between arrow function parameters', () => {
-          expectBindingError('(a b) => a + b', 'Missing expected ,');
-        });
-
         it('should report an error inside the arrow function expression', () => {
           expectBindingError('(a) => a. + 1', 'Unexpected token +, expected identifier or keyword');
         });

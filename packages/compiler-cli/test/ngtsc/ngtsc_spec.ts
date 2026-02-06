@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {platform} from 'node:os';
+import ts from 'typescript';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {CompilerOptions} from '../../src/transformers/api';
 import {createCompilerHost} from '../../src/transformers/compiler_host';
-import {platform} from 'node:os';
-import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../src/ngtsc/file_system';
@@ -7326,8 +7326,8 @@ runInEachFileSystem((os: string) => {
       `,
       ];
 
-      cases.forEach((template) => {
-        it('should not throw', () => {
+      cases.forEach((template, index) => {
+        it(`should not throw [id=${index}]`, () => {
           env.write('test.ts', getComponentScript(template));
           const errors = env.driveDiagnostics();
           expect(errors.length).toBe(0);
@@ -7641,7 +7641,7 @@ runInEachFileSystem((os: string) => {
         expect(diags[1].messageText).toBe('NgModule "import" field contains a cycle');
       });
 
-      it('should report if an NgModule imports itself via a forwardRef', () => {
+      it('should report if an NgModule imports itself via a forwardRef (nested)', () => {
         env.write(
           'test.ts',
           `

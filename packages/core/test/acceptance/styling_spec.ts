@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {CommonModule} from '@angular/common';
+import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
+import {isBrowser} from '@angular/private/testing';
 import {
   Component,
   ComponentRef,
@@ -26,8 +28,6 @@ import {
   getSortedClassName,
   getSortedStyle,
 } from '../../testing/src/styling';
-import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
-import {isBrowser} from '@angular/private/testing';
 
 describe('styling', () => {
   beforeEach(() => {
@@ -2356,7 +2356,6 @@ describe('styling', () => {
     class Cmp {
       widthExp = '';
       bgImageExp = '';
-      styleMapExp: any = {};
     }
 
     TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2379,7 +2378,7 @@ describe('styling', () => {
     expect(div.style.getPropertyValue('width')).toEqual('789px');
   });
 
-  it('should not sanitize style values before writing them', () => {
+  it('should not sanitize style values before writing them with styleMap', () => {
     @Component({
       template: ` <div [style.width]="widthExp" [style]="styleMapExp"></div> `,
       standalone: false,
@@ -2439,29 +2438,6 @@ describe('styling', () => {
     fixture.detectChanges();
 
     expect(getSortedStyle(div)).toEqual('width: 0px;');
-  });
-
-  it('should be able to bind a SafeValue to clip-path', () => {
-    @Component({
-      template: '<div [style.clip-path]="path"></div>',
-      standalone: false,
-    })
-    class Cmp {
-      path!: SafeStyle;
-    }
-
-    TestBed.configureTestingModule({declarations: [Cmp]});
-    const fixture = TestBed.createComponent(Cmp);
-    const sanitizer: DomSanitizer = TestBed.inject(DomSanitizer);
-
-    fixture.componentInstance.path = sanitizer.bypassSecurityTrustStyle('url("#test")');
-    fixture.detectChanges();
-
-    const html = fixture.nativeElement.innerHTML;
-
-    // Note that check the raw HTML, because (at the time of writing) the Node-based renderer
-    // that we use to run tests doesn't support `clip-path` in `CSSStyleDeclaration`.
-    expect(html).toMatch(/style=["|']clip-path:\s*url\(.*#test.*\)/);
   });
 
   it('should handle values wrapped into SafeValue', () => {

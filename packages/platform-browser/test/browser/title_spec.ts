@@ -9,8 +9,8 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Injectable} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {BrowserModule, Title} from '../../index';
 import {expect} from '@angular/private/testing/matchers';
+import {BrowserModule, Title} from '../../index';
 
 describe('title service', () => {
   let doc: Document;
@@ -41,22 +41,22 @@ describe('title service', () => {
     titleService.setTitle(null!);
     expect(doc.title).toEqual('');
   });
-});
 
-describe('integration test', () => {
-  @Injectable()
-  class DependsOnTitle {
-    constructor(public title: Title) {}
-  }
+  describe('integration test', () => {
+    @Injectable()
+    class DependsOnTitle {
+      constructor(public title: Title) {}
+    }
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [BrowserModule],
-      providers: [DependsOnTitle],
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [BrowserModule],
+        providers: [DependsOnTitle],
+      });
     });
-  });
 
-  it('should inject Title service when using BrowserModule', () => {
-    expect(TestBed.inject(DependsOnTitle).title).toBeInstanceOf(Title);
+    it('should inject Title service when using BrowserModule', () => {
+      expect(TestBed.inject(DependsOnTitle).title).toBeInstanceOf(Title);
+    });
   });
 });

@@ -7,6 +7,9 @@
  */
 
 import {CommonModule, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
+import {isBrowser} from '@angular/private/testing';
+import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/router';
+import {Console} from '../../src/console';
 import {
   ApplicationRef,
   Attribute,
@@ -15,38 +18,35 @@ import {
   Component,
   createComponent,
   Directive,
+  ElementRef,
   EnvironmentInjector,
   ErrorHandler,
   inject,
   Injectable,
   InjectionToken,
+  Injector,
   Input,
   NgModule,
   NgZone,
   Pipe,
   PipeTransform,
   PLATFORM_ID,
+  provideZoneChangeDetection,
   QueryList,
+  ɵRuntimeError as RuntimeError,
   Type,
+  ViewChild,
   ViewChildren,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
-  ɵRuntimeError as RuntimeError,
-  Injector,
-  ElementRef,
-  ViewChild,
-  provideZoneChangeDetection,
 } from '../../src/core';
-import {getComponentDef} from '../../src/render3/def_getters';
-import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '../../testing';
-import {getInjectorResolutionPath} from '../../src/render3/util/injector_discovery_utils';
-import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/router';
-import {ChainedInjector} from '../../src/render3/chained_injector';
-import {global} from '../../src/util/global';
 import {TimerScheduler} from '../../src/defer/timer_scheduler';
-import {Console} from '../../src/console';
 import {formatRuntimeErrorCode, RuntimeErrorCode} from '../../src/errors';
 import {provideNgReflectAttributes} from '../../src/ng_reflect';
-import {isBrowser} from '@angular/private/testing';
+import {ChainedInjector} from '../../src/render3/chained_injector';
+import {getComponentDef} from '../../src/render3/def_getters';
+import {getInjectorResolutionPath} from '../../src/render3/util/injector_discovery_utils';
+import {global} from '../../src/util/global';
+import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '../../testing';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -2239,99 +2239,6 @@ describe('@defer', () => {
 
       // Expect that the loading resources function was not invoked again (counter remains 1).
       expect(loadingFnInvokedTimes).toBe(1);
-    });
-
-    it('should delay nested defer blocks with `on idle` triggers', async () => {
-      @Component({
-        selector: 'nested-cmp',
-        template: 'Primary block content.',
-      })
-      class NestedCmp {
-        @Input() block!: string;
-      }
-
-      @Component({
-        selector: 'another-nested-cmp',
-        template: 'Nested block component.',
-      })
-      class AnotherNestedCmp {}
-
-      @Component({
-        selector: 'root-app',
-        imports: [NestedCmp, AnotherNestedCmp],
-        template: `
-          @defer (on idle; prefetch on idle) {
-            <nested-cmp [block]="'primary for \`' + item + '\`'" />
-            <!--
-              Expecting that nested defer block would be initialized
-              in a subsequent "requestIdleCallback" call.
-            -->
-            @defer (on idle) {
-              <another-nested-cmp />
-            } @placeholder {
-              Nested block placeholder
-            } @loading {
-              Nested block loading
-            }
-          } @placeholder {
-            Root block placeholder
-          }
-        `,
-      })
-      class RootCmp {}
-
-      let loadingFnInvokedTimes = 0;
-      const deferDepsInterceptor = {
-        intercept() {
-          return () => {
-            loadingFnInvokedTimes++;
-            const nextDeferredComponent =
-              loadingFnInvokedTimes === 1 ? NestedCmp : AnotherNestedCmp;
-            return [dynamicImportOf(nextDeferredComponent)];
-          };
-        },
-      };
-
-      TestBed.configureTestingModule({
-        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
-      });
-
-      clearDirectiveDefs(RootCmp);
-
-      const fixture = TestBed.createComponent(RootCmp);
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.outerHTML).toContain('Root block placeholder');
-
-      // Make sure loading function is not yet invoked.
-      expect(loadingFnInvokedTimes).toBe(0);
-
-      // Trigger all scheduled callbacks and await all mocked dynamic imports.
-      triggerIdleCallbacks();
-      await allPendingDynamicImports();
-      fixture.detectChanges();
-
-      // Expect that the loading resources function was invoked once.
-      expect(loadingFnInvokedTimes).toBe(1);
-
-      // Verify primary blocks content.
-      expect(fixture.nativeElement.outerHTML).toContain('Primary block content');
-
-      // Verify that nested defer block is in a placeholder mode.
-      expect(fixture.nativeElement.outerHTML).toContain('Nested block placeholder');
-
-      // Expect that the loading resources function was not invoked again (counter remains 1).
-      expect(loadingFnInvokedTimes).toBe(1);
-
-      triggerIdleCallbacks();
-      await allPendingDynamicImports();
-      fixture.detectChanges();
-
-      // Verify that nested defer block now renders the main content.
-      expect(fixture.nativeElement.outerHTML).toContain('Nested block component');
-
-      // We loaded a nested block dependency, expect counter to be 2.
-      expect(loadingFnInvokedTimes).toBe(2);
     });
 
     it('should clear idle handlers when defer block is triggered', async () => {
