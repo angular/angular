@@ -130,6 +130,10 @@ export class FieldNode implements FieldState<unknown> {
     },
   });
 
+  get fieldTree(): FieldTree<unknown> {
+    return this.fieldProxy;
+  }
+
   get logicNode(): LogicNode {
     return this.structure.logic;
   }

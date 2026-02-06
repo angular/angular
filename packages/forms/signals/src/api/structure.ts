@@ -222,7 +222,7 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
 
-  return fieldRoot.fieldProxy as FieldTree<TModel>;
+  return fieldRoot.fieldTree as FieldTree<TModel>;
 }
 
 /**
@@ -475,7 +475,7 @@ function setSubmissionErrors(
   }
   const errorsByField = new Map<FieldNode, ValidationError.WithFieldTree[]>();
   for (const error of errors) {
-    const errorWithField = addDefaultField(error, submittedField.fieldProxy);
+    const errorWithField = addDefaultField(error, submittedField.fieldTree);
     const field = errorWithField.fieldTree() as FieldNode;
     let fieldErrors = errorsByField.get(field);
     if (!fieldErrors) {

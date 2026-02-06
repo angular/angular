@@ -95,7 +95,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
           }
         }
 
-        return field.fieldProxy;
+        return field.fieldTree;
       });
 
       this.cache.set(target, resolver);
