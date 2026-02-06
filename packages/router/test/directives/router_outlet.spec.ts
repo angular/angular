@@ -19,7 +19,7 @@ import {
 } from '../../index';
 import {RouterTestingHarness} from '../../testing';
 import {InjectionToken} from '../../../core/src/di';
-import {timeout, useAutoTick} from '../helpers';
+import {useAutoTick, timeout} from '@angular/private/testing';
 
 describe('router outlet name', () => {
   useAutoTick();
