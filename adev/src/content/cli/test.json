@@ -80,6 +80,11 @@
       "description": "Specifies a regular expression pattern to match against test suite and test names. Only tests with a name matching the pattern will be executed. For example, `^App` will run only tests in suites beginning with 'App'."
     },
     {
+      "name": "headless",
+      "type": "boolean",
+      "description": "Forces all configured browsers to run in headless mode. When using the Vitest runner, this option is ignored if no browsers are configured. The Karma runner does not support this option."
+    },
+    {
       "name": "help",
       "type": "boolean",
       "description": "Shows a help message for this command in the console."
