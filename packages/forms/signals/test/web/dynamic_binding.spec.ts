@@ -18,17 +18,17 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {
   disabled,
-  FieldTree,
   form,
   FormCheckboxControl,
   FormField,
   FormValueControl,
   required,
+  type Field,
 } from '@angular/forms/signals';
 
 describe('createComponent', () => {
   describe('FormValueControl', () => {
-    it(`synchronizes value from '[field]' binding`, () => {
+    it(`synchronizes value from '[formField]' binding`, () => {
       @Component({template: ''})
       class CustomInput implements FormValueControl<string> {
         readonly value = model.required<string>();
@@ -62,7 +62,7 @@ describe('createComponent', () => {
       expect(control().value()).toBe('from component');
     });
 
-    it(`synchronizes properties from '[field]' binding`, () => {
+    it(`synchronizes properties from '[formField]' binding`, () => {
       @Component({template: ''})
       class CustomInput implements FormValueControl<string> {
         readonly value = model.required<string>();
@@ -98,7 +98,7 @@ describe('createComponent', () => {
   });
 
   describe('FormCheckboxControl', () => {
-    it(`synchronizes value from '[field]' binding`, () => {
+    it(`synchronizes value from '[formField]' binding`, () => {
       @Component({template: ''})
       class CustomCheckbox implements FormCheckboxControl {
         readonly checked = model.required<boolean>();
@@ -132,7 +132,7 @@ describe('createComponent', () => {
       expect(control().value()).toBe(true);
     });
 
-    it(`synchronizes properties from '[field]' binding`, () => {
+    it(`synchronizes properties from '[formField]' binding`, () => {
       @Component({template: ''})
       class CustomCheckbox implements FormCheckboxControl {
         readonly checked = model.required<boolean>();
@@ -170,7 +170,7 @@ describe('createComponent', () => {
   it(`should not treat component with '[formField]' input as a control`, () => {
     @Component({template: ''})
     class TestCmp {
-      readonly formField = input.required<FieldTree<string>>();
+      readonly formField = input.required<Field<string>>();
       readonly value = model.required<string>();
     }
 
@@ -193,7 +193,7 @@ describe('createComponent', () => {
     expect(control().formFieldBindings()).toHaveSize(0);
   });
 
-  it(`should throw for invalid '[field]' binding host`, () => {
+  it(`should throw for invalid '[formField]' binding host`, () => {
     @Component({template: ''})
     class InvalidFieldHost {}
 

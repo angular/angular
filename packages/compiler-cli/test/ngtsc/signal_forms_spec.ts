@@ -48,7 +48,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type 'null' is not assignable to type 'FieldTree<any, string | number>'.`,
+        `Type 'null' is not assignable to type 'Field<any, string | number>'.`,
       );
     });
 
@@ -70,7 +70,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type 'string' is not assignable to type 'FieldTree<any, string | number>'.`,
+        `Type 'string' is not assignable to type 'Field<any, string | number>'.`,
       );
     });
 
