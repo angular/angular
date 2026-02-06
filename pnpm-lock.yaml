@@ -143,8 +143,8 @@ importers:
         specifier: 2.0.46
         version: 2.0.46
       '@types/jasmine':
-        specifier: ^5.0.0
-        version: 5.1.15
+        specifier: ^6.0.0
+        version: 6.0.0
       '@types/jasminewd2':
         specifier: ^2.0.8
         version: 2.0.13
@@ -221,11 +221,11 @@ importers:
         specifier: ^14.0.0
         version: 14.1.1
       jasmine:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.0
+        version: 6.0.0
       jasmine-core:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.1
+        version: 6.0.1
       jasmine-reporters:
         specifier: ^2.5.2
         version: 2.5.2
@@ -415,7 +415,7 @@ importers:
         version: 2.2.1
       karma-jasmine-html-reporter:
         specifier: ^2.1.0
-        version: 2.2.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+        version: 2.2.0(jasmine-core@6.0.1)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       karma-sauce-launcher:
         specifier: ^4.3.6
         version: 4.3.6(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@6.0.6)
@@ -585,8 +585,8 @@ importers:
         specifier: 1.0.6
         version: 1.0.6
       '@types/jasmine':
-        specifier: 5.1.15
-        version: 5.1.15
+        specifier: 6.0.0
+        version: 6.0.0
       '@types/jsdom':
         specifier: 27.0.0
         version: 27.0.0
@@ -624,8 +624,8 @@ importers:
         specifier: 0.8.2
         version: 0.8.2
       jasmine-core:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.1
+        version: 6.0.1
       jsdom:
         specifier: 28.0.0
         version: 28.0.0
@@ -640,7 +640,7 @@ importers:
         version: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       karma-jasmine-html-reporter:
         specifier: 2.2.0
-        version: 2.2.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+        version: 2.2.0(jasmine-core@6.0.1)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       marked:
         specifier: 17.0.1
         version: 17.0.1
@@ -896,8 +896,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/upgrade
       '@types/jasmine':
-        specifier: 5.1.15
-        version: 5.1.15
+        specifier: 6.0.0
+        version: 6.0.0
       '@types/jasminewd2':
         specifier: 2.0.13
         version: 2.0.13
@@ -1235,8 +1235,8 @@ importers:
         specifier: 1.5.0
         version: 1.5.0
       '@types/jasmine':
-        specifier: 5.1.15
-        version: 5.1.15
+        specifier: 6.0.0
+        version: 6.0.0
       '@types/node':
         specifier: ^24.3.0
         version: 24.10.9
@@ -1253,11 +1253,11 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       jasmine:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.0
+        version: 6.0.0
       jasmine-core:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.1
+        version: 6.0.1
       jasmine-reporters:
         specifier: 2.5.2
         version: 2.5.2
@@ -1321,8 +1321,8 @@ importers:
         version: 5.9.3
     devDependencies:
       '@types/jasmine':
-        specifier: ~5.1.9
-        version: 5.1.15
+        specifier: ~6.0.0
+        version: 6.0.0
       '@types/jasmine-reporters':
         specifier: ~2.5.3
         version: 2.5.3
@@ -1339,11 +1339,11 @@ importers:
         specifier: ~3.7.0
         version: 3.7.1
       jasmine:
-        specifier: ~5.13.0
-        version: 5.13.0
+        specifier: ~6.0.0
+        version: 6.0.0
       jasmine-core:
-        specifier: ~5.13.0
-        version: 5.13.0
+        specifier: ~6.0.0
+        version: 6.0.1
       jasmine-reporters:
         specifier: ~2.5.2
         version: 2.5.2
@@ -5008,9 +5008,6 @@ packages:
 
   '@types/jasmine-reporters@2.5.3':
     resolution: {integrity: sha512-8aojAUdgdiD9VQbllBJb/9gny3lOjz9T5gyMcbYlKe6npwGVsarbr8v2JYSFJSZSuFYXcPVzFG2lLX3ib0j/DA==}
-
-  '@types/jasmine@5.1.15':
-    resolution: {integrity: sha512-ZAC8KjmV2MJxbNTrwXFN+HKeajpXQZp6KpPiR6Aa4XvaEnjP6qh23lL/Rqb7AYzlp3h/rcwDrQ7Gg7q28cQTQg==}
 
   '@types/jasmine@6.0.0':
     resolution: {integrity: sha512-18lgGsLmEh3VJk9eZ5wAjTISxdqzl6YOwu8UdMpolajN57QOCNbl+AbHUd+Yu9ItrsFdB+c8LSZSGNg8nHaguw==}
@@ -8778,10 +8775,6 @@ packages:
 
   jasmine@2.8.0:
     resolution: {integrity: sha512-KbdGQTf5jbZgltoHs31XGiChAPumMSY64OZMWLNYnEnMfG5uwGBhffePwuskexjT+/Jea/gU3qAU8344hNohSw==}
-    hasBin: true
-
-  jasmine@5.13.0:
-    resolution: {integrity: sha512-oLCXIhEb5e0zzjn9GyuvcuisvLBwUjmgz7a0RNGWKwQtJCDld4m+vwKUpAIJVLB5vbmQFdtKhT86/tIZlJ5gYw==}
     hasBin: true
 
   jasmine@6.0.0:
@@ -17724,15 +17717,13 @@ snapshots:
 
   '@types/jasmine-reporters@2.5.3':
     dependencies:
-      '@types/jasmine': 5.1.15
-
-  '@types/jasmine@5.1.15': {}
+      '@types/jasmine': 6.0.0
 
   '@types/jasmine@6.0.0': {}
 
   '@types/jasminewd2@2.0.13':
     dependencies:
-      '@types/jasmine': 5.1.15
+      '@types/jasmine': 6.0.0
 
   '@types/jsdom@21.1.7':
     dependencies:
@@ -22178,11 +22169,6 @@ snapshots:
       glob: 7.2.3
       jasmine-core: 2.8.0
 
-  jasmine@5.13.0:
-    dependencies:
-      glob: 10.5.0
-      jasmine-core: 5.13.0
-
   jasmine@6.0.0:
     dependencies:
       '@jasminejs/reporters': 1.0.0
@@ -22812,9 +22798,9 @@ snapshots:
       is-wsl: 2.2.0
       which: 3.0.1
 
-  karma-jasmine-html-reporter@2.2.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)):
+  karma-jasmine-html-reporter@2.2.0(jasmine-core@6.0.1)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)):
     dependencies:
-      jasmine-core: 5.13.0
+      jasmine-core: 6.0.1
       karma: 6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6)
       karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.1.0)(utf-8-validate@6.0.6))
 

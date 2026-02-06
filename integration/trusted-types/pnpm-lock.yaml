@@ -55,14 +55,14 @@ importers:
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
       '@types/jasmine':
-        specifier: ^5.0.0
-        version: 5.1.15
+        specifier: ^6.0.0
+        version: 6.0.0
       '@types/node':
         specifier: ^20.14.8
         version: 20.19.31
       jasmine-core:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.1
+        version: 6.0.1
       jasmine-spec-reporter:
         specifier: ~7.0.0
         version: 7.0.0
@@ -80,7 +80,7 @@ importers:
         version: 5.1.0(karma@6.4.4)
       karma-jasmine-html-reporter:
         specifier: ^2.1.0
-        version: 2.2.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4)
+        version: 2.2.0(jasmine-core@6.0.1)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4)
       protractor:
         specifier: ^7.0.0
         version: 7.0.0
@@ -1927,8 +1927,8 @@ packages:
   '@types/http-proxy@1.17.17':
     resolution: {integrity: sha512-ED6LB+Z1AVylNTu7hdzuBqOgMnvG/ld6wGCG8wFnAzKX5uyW2K3WD52v0gnLCTK/VLpXtKckgWuyScYK6cSPaw==}
 
-  '@types/jasmine@5.1.15':
-    resolution: {integrity: sha512-ZAC8KjmV2MJxbNTrwXFN+HKeajpXQZp6KpPiR6Aa4XvaEnjP6qh23lL/Rqb7AYzlp3h/rcwDrQ7Gg7q28cQTQg==}
+  '@types/jasmine@6.0.0':
+    resolution: {integrity: sha512-18lgGsLmEh3VJk9eZ5wAjTISxdqzl6YOwu8UdMpolajN57QOCNbl+AbHUd+Yu9ItrsFdB+c8LSZSGNg8nHaguw==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -3282,8 +3282,8 @@ packages:
   jasmine-core@4.6.1:
     resolution: {integrity: sha512-VYz/BjjmC3klLJlLwA4Kw8ytk0zDSmbbDLNs794VnWmkcCB7I9aAL/D48VNQtmITyPvea2C3jdUMfc3kAoy0PQ==}
 
-  jasmine-core@5.13.0:
-    resolution: {integrity: sha512-vsYjfh7lyqvZX5QgqKc4YH8phs7g96Z8bsdIFNEU3VqXhlHaq+vov/Fgn/sr6MiUczdZkyXRC3TX369Ll4Nzbw==}
+  jasmine-core@6.0.1:
+    resolution: {integrity: sha512-gUtzV5ASR0MLBwDNqri4kBsgKNCcRQd9qOlNw/w/deavD0cl3JmWXXfH8JhKM4LTg6LPTt2IOQ4px3YYfgh2Xg==}
 
   jasmine-spec-reporter@7.0.0:
     resolution: {integrity: sha512-OtC7JRasiTcjsaCBPtMO0Tl8glCejM4J4/dNuOJdA8lBjz4PmWjYQ6pzb0uzpBNAWJMDudYuj9OdXJWqM2QTJg==}
@@ -6837,7 +6837,7 @@ snapshots:
     dependencies:
       '@types/node': 20.19.31
 
-  '@types/jasmine@5.1.15': {}
+  '@types/jasmine@6.0.0': {}
 
   '@types/json-schema@7.0.15': {}
 
@@ -8292,7 +8292,7 @@ snapshots:
 
   jasmine-core@4.6.1: {}
 
-  jasmine-core@5.13.0: {}
+  jasmine-core@6.0.1: {}
 
   jasmine-spec-reporter@7.0.0:
     dependencies:
@@ -8379,9 +8379,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  karma-jasmine-html-reporter@2.2.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4):
+  karma-jasmine-html-reporter@2.2.0(jasmine-core@6.0.1)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4):
     dependencies:
-      jasmine-core: 5.13.0
+      jasmine-core: 6.0.1
       karma: 6.4.4
       karma-jasmine: 5.1.0(karma@6.4.4)
 
