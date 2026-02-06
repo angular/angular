@@ -28,7 +28,6 @@ import {
   destroyPlatform,
   EnvironmentProviders,
   getPlatform,
-  HostListener,
   Inject,
   inject,
   Injectable,
@@ -43,6 +42,7 @@ import {
   provideNgReflectAttributes,
   Provider,
   provideZoneChangeDetection,
+  signal,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   TransferState,
   Type,
@@ -112,17 +112,17 @@ function createAppWithPendingTask(standalone: boolean) {
   @Component({
     standalone,
     selector: 'app',
-    template: `Completed: {{ completed }}`,
+    template: `Completed: {{ completed() }}`,
   })
   class PendingTasksApp {
-    completed = 'No';
+    completed = signal('No');
 
     constructor() {
       const pendingTasks = coreInject(PendingTasks);
       const removeTask = pendingTasks.add();
       setTimeout(() => {
         removeTask();
-        this.completed = 'Yes';
+        this.completed.set('Yes');
       });
     }
   }
@@ -138,7 +138,6 @@ const PendingTasksAppStandalone = createAppWithPendingTask(true);
   exports: [PendingTasksApp],
   imports: [ServerModule],
   bootstrap: [PendingTasksApp],
-  providers: [provideZoneChangeDetection()],
 })
 export class PendingTasksAppModule {}
 
@@ -309,23 +308,20 @@ class TitleAppModule {}
 function createMyAsyncServerApp(standalone: boolean) {
   @Component({
     selector: 'app',
-    template: '{{text}}<h1 [textContent]="h1"></h1>',
+    template: '{{text()}}<h1 [textContent]="h1()"></h1>',
     standalone,
   })
   class MyAsyncServerApp {
-    text = '';
-    h1 = '';
+    text = signal('');
+    h1 = signal('');
 
-    @HostListener('window:scroll')
-    track() {
-      console.error('scroll');
-    }
-
-    ngOnInit() {
+    constructor() {
+      const remove = inject(PendingTasks).add();
       Promise.resolve(null).then(() =>
         setTimeout(() => {
-          this.text = 'Works!';
-          this.h1 = 'fine';
+          this.text.set('Works!');
+          this.h1.set('fine');
+          remove();
         }, 10),
       );
     }
@@ -335,17 +331,19 @@ function createMyAsyncServerApp(standalone: boolean) {
 }
 
 const MyAsyncServerApp = createMyAsyncServerApp(false);
-const MyAsyncServerAppStandalone = getStandaloneBootstrapFn(createMyAsyncServerApp(true), [
-  provideZoneChangeDetection(),
-]);
+const MyAsyncServerAppStandalone = getStandaloneBootstrapFn(createMyAsyncServerApp(true), []);
 
-@NgModule({
-  declarations: [MyAsyncServerApp],
-  imports: [BrowserModule, ServerModule],
-  bootstrap: [MyAsyncServerApp],
-  providers: [provideZoneChangeDetection()],
-})
-class AsyncServerModule {}
+function createAsyncServerModule(zoneless: boolean) {
+  @NgModule({
+    declarations: [MyAsyncServerApp],
+    imports: [BrowserModule, ServerModule],
+    bootstrap: [MyAsyncServerApp],
+    providers: zoneless ? [] : [provideZoneChangeDetection()],
+  })
+  class AsyncServerModule {}
+
+  return AsyncServerModule;
+}
 
 function createSVGComponent(standalone: boolean) {
   @Component({
@@ -643,6 +641,7 @@ const MyHiddenComponentStandalone = getStandaloneBootstrapFn(createMyHiddenCompo
 })
 class HiddenModule {}
 
+// TODO: Remove that IIFE, angular_jasmine_test only runs on nodes.
 (function () {
   if (getDOM().supportsDOMEvents) return; // NODE only
 
@@ -765,542 +764,570 @@ class HiddenModule {}
         TestBed.resetTestingModule();
       });
 
-      it('should render with `createApplication`', async () => {
-        const output = await renderApplication(
-          async (context) => {
-            const appRef = await createApplication(
-              {
-                providers: [provideZoneChangeDetection()],
-              },
-              context,
-            );
-            appRef.bootstrap(createMyAsyncServerApp(true));
-            return appRef;
-          },
-          {document: doc},
-        );
+      [true, false].forEach((zoneless: boolean) => {
+        it(`should render with \`createApplication \` (zoneless:${zoneless})`, async () => {
+          const output = await renderApplication(
+            async (context) => {
+              const appRef = await createApplication(
+                {
+                  providers: [provideZoneChangeDetection()],
+                },
+                context,
+              );
+              appRef.bootstrap(createMyAsyncServerApp(true));
+              return appRef;
+            },
+            {document: doc},
+          );
 
-        expect(output).toBe(expectedOutput);
-      });
-
-      it('using long form should work', async () => {
-        const platform = platformServer([
-          {
-            provide: INITIAL_CONFIG,
-            useValue: {document: doc},
-          },
-        ]);
-
-        const moduleRef = await platform.bootstrapModule(AsyncServerModule);
-        const applicationRef = moduleRef.injector.get(ApplicationRef);
-        await applicationRef.whenStable();
-        // Note: the `ng-server-context` is not present in this output, since
-        // `renderModule` or `renderApplication` functions are not used here.
-        const expectedOutput =
-          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-          'Works!<h1>fine</h1></app></body></html>';
-
-        expect(platform.injector.get(PlatformState).renderToString()).toBe(expectedOutput);
-      });
-
-      // Run the set of tests with regular and standalone components.
-      [true, false].forEach((isStandalone: boolean) => {
-        it(`using ${isStandalone ? 'renderApplication' : 'renderModule'} should work`, async () => {
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(MyAsyncServerAppStandalone, options)
-            : renderModule(AsyncServerModule, options);
-          const output = await bootstrap;
           expect(output).toBe(expectedOutput);
         });
 
-        it(
-          `using ${isStandalone ? 'renderApplication' : 'renderModule'} ` +
-            `should allow passing a document reference`,
-          async () => {
-            const document = TestBed.inject(DOCUMENT);
-
-            // Append root element based on the app selector.
-            const rootEl = document.createElement('app');
-            document.body.appendChild(rootEl);
-
-            // Append a special marker to verify that we use a correct instance
-            // of the document for rendering.
-            const markerEl = document.createComment('test marker');
-            document.body.appendChild(markerEl);
-
-            const options = {document};
-            const bootstrap = isStandalone
-              ? renderApplication(MyAsyncServerAppStandalone, {document})
-              : renderModule(AsyncServerModule, options);
-            const output = await bootstrap.finally(() => {
-              rootEl.remove();
-              markerEl.remove();
-            });
-
-            expect(output).toBe(
-              '<html><head><title>fakeTitle</title></head>' +
-                '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
-                'Works!<h1>fine</h1></app>' +
-                '<!--test marker--></body></html>',
-            );
-          },
-        );
-
-        it(`works with SVG elements (standalone:${isStandalone})`, async () => {
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(SVGComponentStandalone, {...options})
-            : renderModule(SVGServerModule, options);
-          const output = await bootstrap;
-          expect(output).toBe(
-            '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
-              '<svg><use xlink:href="#clear"></use></svg></app></body></html>',
-          );
-        });
-
-        it('works with animation' + `(standalone:${isStandalone})`, async () => {
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(MyAnimationAppStandalone, options)
-            : renderModule(AnimationServerModule, options);
-          const output = await bootstrap;
-          expect(output).toContain('Works!');
-          expect(output).toContain('ng-trigger-myAnimation');
-          expect(output).toContain('opacity: 1;');
-          expect(output).toContain('transform: translate3d(0, 0, 0);');
-          expect(output).toContain('font-weight: bold;');
-        });
-
-        it(
-          'should handle ViewEncapsulation.ShadowDom' + `(standalone:${isStandalone})`,
-          async () => {
-            const options = {document: doc};
-            const bootstrap = isStandalone
-              ? renderApplication(ShadowDomEncapsulationAppStandalone, options)
-              : renderModule(ShadowDomExampleModule, options);
-            const output = await bootstrap;
-            expect(output).not.toBe('');
-            expect(output).toContain('color: red');
-          },
-        );
-
-        it(
-          'adds the `ng-server-context` attribute to host elements' +
-            `(standalone:${isStandalone})`,
-          async () => {
-            const options = {
-              document: doc,
-            };
-            const providers = [
-              {
-                provide: SERVER_CONTEXT,
-                useValue: 'ssg',
-              },
-            ];
-            const bootstrap = isStandalone
-              ? renderApplication(MyStylesAppStandalone, {
-                  ...options,
-                  platformProviders: providers,
-                })
-              : renderModule(ExampleStylesModule, {
-                  ...options,
-                  extraProviders: providers,
-                });
-            const output = await bootstrap;
-            expect(output).toMatch(
-              /<app ng-version="0.0.0-PLACEHOLDER" _nghost-ng-c\d+="" ng-server-context="ssg">/,
-            );
-          },
-        );
-
-        it('sanitizes the `serverContext` value' + `(standalone:${isStandalone})`, async () => {
-          const options = {
-            document: doc,
-          };
-          const providers = [
+        it(`using long form should work (zoneless:${zoneless})`, async () => {
+          const platform = platformServer([
             {
-              provide: SERVER_CONTEXT,
-              useValue: '!!!Some extra chars&& --><!--',
+              provide: INITIAL_CONFIG,
+              useValue: {document: doc},
             },
-          ];
-          const bootstrap = isStandalone
-            ? renderApplication(MyStylesAppStandalone, {
-                ...options,
-                platformProviders: providers,
-              })
-            : renderModule(ExampleStylesModule, {
-                ...options,
-                extraProviders: providers,
+          ]);
+
+          const moduleRef = await platform.bootstrapModule(createAsyncServerModule(zoneless));
+          const applicationRef = moduleRef.injector.get(ApplicationRef);
+          await applicationRef.whenStable();
+          // Note: the `ng-server-context` is not present in this output, since
+          // `renderModule` or `renderApplication` functions are not used here.
+          const expectedOutput =
+            '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+            'Works!<h1>fine</h1></app></body></html>';
+
+          expect(platform.injector.get(PlatformState).renderToString()).toBe(expectedOutput);
+        });
+
+        // Run the set of tests with regular and standalone components.
+        [true, false].forEach((isStandalone: boolean) => {
+          it(`using ${isStandalone ? 'renderApplication' : 'renderModule'} should work (zoneless:${zoneless})`, async () => {
+            const options = {document: doc};
+            const bootstrap = isStandalone
+              ? renderApplication(MyAsyncServerAppStandalone, options)
+              : renderModule(createAsyncServerModule(zoneless), options);
+            const output = await bootstrap;
+            expect(output).toBe(expectedOutput);
+          });
+
+          it(
+            `using ${isStandalone ? 'renderApplication' : 'renderModule'} ` +
+              `should allow passing a document reference (zoneless:${zoneless})`,
+            async () => {
+              const document = TestBed.inject(DOCUMENT);
+
+              // Append root element based on the app selector.
+              const rootEl = document.createElement('app');
+              document.body.appendChild(rootEl);
+
+              // Append a special marker to verify that we use a correct instance
+              // of the document for rendering.
+              const markerEl = document.createComment('test marker');
+              document.body.appendChild(markerEl);
+
+              const options = {document};
+              const bootstrap = isStandalone
+                ? renderApplication(MyAsyncServerAppStandalone, {document})
+                : renderModule(createAsyncServerModule(zoneless), options);
+              const output = await bootstrap.finally(() => {
+                rootEl.remove();
+                markerEl.remove();
               });
-          // All symbols other than [a-zA-Z0-9\-] are removed
-          const output = await bootstrap;
-          expect(output).toMatch(/ng-server-context="Someextrachars----"/);
-        });
 
-        it(
-          `using ${isStandalone ? 'renderApplication' : 'renderModule'} ` +
-            `should serialize transfer state only once`,
-          async () => {
+              expect(output).toBe(
+                '<html><head><title>fakeTitle</title></head>' +
+                  '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
+                  'Works!<h1>fine</h1></app>' +
+                  '<!--test marker--></body></html>',
+              );
+            },
+          );
+
+          it(`works with SVG elements (standalone:${isStandalone}, zoneless:${zoneless})`, async () => {
             const options = {document: doc};
             const bootstrap = isStandalone
-              ? renderApplication(MyTransferStateAppStandalone, options)
-              : renderModule(MyTransferStateModule, options);
-            const expectedOutput =
-              '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other"><div>Works!</div></app>' +
-              '<script id="ng-state" type="application/json">{"some-key":"some-value"}</script></body></html>';
-            const output = await bootstrap;
-            expect(output).toEqual(expectedOutput);
-          },
-        );
-
-        it(
-          'uses `other` as the `serverContext` value when all symbols are removed after sanitization' +
-            `(standalone:${isStandalone})`,
-          async () => {
-            const options = {
-              document: doc,
-            };
-            const providers = [
-              {
-                provide: SERVER_CONTEXT,
-                useValue: '!!! &&<>',
-              },
-            ];
-            const bootstrap = isStandalone
-              ? renderApplication(MyStylesAppStandalone, {
-                  ...options,
-                  platformProviders: providers,
-                })
-              : renderModule(ExampleStylesModule, {
-                  ...options,
-                  extraProviders: providers,
-                });
-            // All symbols other than [a-zA-Z0-9\-] are removed,
-            // the `other` is used as the default.
-            const output = await bootstrap;
-            expect(output).toMatch(/ng-server-context="other"/);
-          },
-        );
-
-        it(
-          'appends SSR integrity marker comment when hydration is enabled' +
-            `(standalone:${isStandalone})`,
-          async () => {
-            @Component({
-              selector: 'app',
-              template: ``,
-            })
-            class SimpleApp {}
-
-            const output = await renderApplication(
-              getStandaloneBootstrapFn(SimpleApp, [provideClientHydration()]),
-              {document: doc},
-            );
-
-            // HttpClient cache and DOM hydration are enabled by default.
-            expect(output).toContain(`<body><!--${SSR_CONTENT_INTEGRITY_MARKER}-->`);
-          },
-        );
-
-        it(
-          'should handle false values on attributes' + `(standalone:${isStandalone})`,
-          async () => {
-            const options = {document: doc};
-            const bootstrap = isStandalone
-              ? renderApplication(MyHostComponentStandalone, options)
-              : renderModule(FalseAttributesModule, options);
+              ? renderApplication(SVGComponentStandalone, {...options})
+              : renderModule(SVGServerModule, options);
             const output = await bootstrap;
             expect(output).toBe(
               '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
-                '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>',
+                '<svg><use xlink:href="#clear"></use></svg></app></body></html>',
             );
-          },
-        );
+          });
 
-        it('should handle element property "name"' + `(standalone:${isStandalone})`, async () => {
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(MyInputComponentStandalone, options)
-            : renderModule(NameModule, options);
-          const output = await bootstrap;
-          expect(output).toBe(
-            '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
-              '<input name=""></app></body></html>',
+          it(
+            'works with animation' + `(standalone:${isStandalone}, zoneless:${zoneless}`,
+            async () => {
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(MyAnimationAppStandalone, options)
+                : renderModule(AnimationServerModule, options);
+              const output = await bootstrap;
+              expect(output).toContain('Works!');
+              expect(output).toContain('ng-trigger-myAnimation');
+              expect(output).toContain('opacity: 1;');
+              expect(output).toContain('transform: translate3d(0, 0, 0);');
+              expect(output).toContain('font-weight: bold;');
+            },
           );
-        });
 
-        it(
-          'should work with sanitizer to handle "innerHTML"' + `(standalone:${isStandalone})`,
-          async () => {
-            // Clear out any global states. These should be set when platform-server
-            // is initialized.
-            (global as any).Node = undefined;
-            (global as any).Document = undefined;
-            const options = {document: doc};
-            const bootstrap = isStandalone
-              ? renderApplication(HTMLTypesAppStandalone, options)
-              : renderModule(HTMLTypesModule, options);
-            const output = await bootstrap;
-            expect(output).toBe(
-              '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
-                '<div><b>foo</b> bar</div></app></body></html>',
-            );
-          },
-        );
-
-        it('should handle element property "hidden"' + `(standalone:${isStandalone})`, async () => {
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(MyHiddenComponentStandalone, options)
-            : renderModule(HiddenModule, options);
-          const output = await bootstrap;
-          expect(output).toBe(
-            '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
-              '<input hidden=""><input></app></body></html>',
+          it(
+            'should handle ViewEncapsulation.ShadowDom' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(ShadowDomEncapsulationAppStandalone, options)
+                : renderModule(ShadowDomExampleModule, options);
+              const output = await bootstrap;
+              expect(output).not.toBe('');
+              expect(output).toContain('color: red');
+            },
           );
-        });
 
-        it('should call render hook' + `(standalone:${isStandalone})`, async () => {
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(
-                getStandaloneBootstrapFn(MyServerAppStandalone, RenderHookProviders),
-                options,
-              )
-            : renderModule(RenderHookModule, options);
-          const output = await bootstrap;
-          // title should be added by the render hook.
-          expect(output).toBe(
-            '<html><head><title>RenderHook</title></head><body>' +
-              '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
-          );
-        });
-
-        it('should call multiple render hooks' + `(standalone:${isStandalone})`, async () => {
-          const consoleSpy = spyOn(console, 'warn');
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(
-                getStandaloneBootstrapFn(MyServerAppStandalone, MultiRenderHookProviders),
-                options,
-              )
-            : renderModule(MultiRenderHookModule, options);
-          const output = await bootstrap;
-          // title should be added by the render hook.
-          expect(output).toBe(
-            '<html><head><title>RenderHook</title><meta name="description"></head>' +
-              '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
-          );
-          expect(consoleSpy).toHaveBeenCalled();
-        });
-
-        it('should call async render hooks' + `(standalone:${isStandalone})`, async () => {
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(
-                getStandaloneBootstrapFn(MyServerAppStandalone, AsyncRenderHookProviders),
-                options,
-              )
-            : renderModule(AsyncRenderHookModule, options);
-          const output = await bootstrap;
-          // title should be added by the render hook.
-          expect(output).toBe(
-            '<html><head><title>AsyncRenderHook</title></head><body>' +
-              '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
-          );
-        });
-
-        it(
-          'should call multiple async and sync render hooks' + `(standalone:${isStandalone})`,
-          async () => {
-            const consoleSpy = spyOn(console, 'warn');
-            const options = {document: doc};
-            const bootstrap = isStandalone
-              ? renderApplication(
-                  getStandaloneBootstrapFn(MyServerAppStandalone, AsyncMultiRenderHookProviders),
-                  options,
-                )
-              : renderModule(AsyncMultiRenderHookModule, options);
-            const output = await bootstrap;
-            // title should be added by the render hook.
-            expect(output).toBe(
-              '<html><head><meta name="description"><title>AsyncRenderHook</title></head>' +
-                '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
-            );
-            expect(consoleSpy).toHaveBeenCalled();
-          },
-        );
-
-        it(
-          `should wait for InitialRenderPendingTasks before serializing ` +
-            `(standalone: ${isStandalone})`,
-          async () => {
-            const options = {document: doc};
-            const bootstrap = isStandalone
-              ? renderApplication(
-                  getStandaloneBootstrapFn(PendingTasksAppStandalone, [
-                    provideZoneChangeDetection(),
-                  ]),
-                  options,
-                )
-              : renderModule(PendingTasksAppModule, options);
-            const output = await bootstrap;
-            expect(output).toBe(
-              '<html><head></head><body>' +
-                '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Completed: Yes</app>' +
-                '</body></html>',
-            );
-          },
-        );
-
-        it(
-          `should call onOnDestroy of a service after a successful render` +
-            `(standalone: ${isStandalone})`,
-          async () => {
-            let wasServiceNgOnDestroyCalled = false;
-
-            @Injectable({providedIn: 'root'})
-            class DestroyableService {
-              ngOnDestroy() {
-                wasServiceNgOnDestroyCalled = true;
-              }
-            }
-
-            const SuccessfulAppInitializerProviders = [
-              provideZoneChangeDetection(),
-              {
-                provide: APP_INITIALIZER,
-                useFactory: () => {
-                  inject(DestroyableService);
-                  return () => Promise.resolve(); // Success in APP_INITIALIZER
+          it(
+            'adds the `ng-server-context` attribute to host elements' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const options = {
+                document: doc,
+              };
+              const providers = [
+                {
+                  provide: SERVER_CONTEXT,
+                  useValue: 'ssg',
                 },
-                multi: true,
-              },
-            ];
+              ];
+              const bootstrap = isStandalone
+                ? renderApplication(MyStylesAppStandalone, {
+                    ...options,
+                    platformProviders: providers,
+                  })
+                : renderModule(ExampleStylesModule, {
+                    ...options,
+                    extraProviders: providers,
+                  });
+              const output = await bootstrap;
+              expect(output).toMatch(
+                /<app ng-version="0.0.0-PLACEHOLDER" _nghost-ng-c\d+="" ng-server-context="ssg">/,
+              );
+            },
+          );
 
-            @NgModule({
-              providers: SuccessfulAppInitializerProviders,
-              imports: [MyServerAppModule, ServerModule],
-              bootstrap: [MyServerApp],
-            })
-            class ServerSuccessfulAppInitializerModule {}
-
-            const ServerSuccessfulAppInitializerAppStandalone = getStandaloneBootstrapFn(
-              createMyServerApp(true),
-              SuccessfulAppInitializerProviders,
-            );
-
-            const options = {document: doc};
-            const bootstrap = isStandalone
-              ? renderApplication(ServerSuccessfulAppInitializerAppStandalone, options)
-              : renderModule(ServerSuccessfulAppInitializerModule, options);
-            await bootstrap;
-
-            expect(getPlatform()).withContext('PlatformRef should be destroyed').toBeNull();
-            expect(wasServiceNgOnDestroyCalled)
-              .withContext('DestroyableService.ngOnDestroy() should be called')
-              .toBeTrue();
-          },
-        );
-
-        it(
-          `should call onOnDestroy of a service after some APP_INITIALIZER fails ` +
-            `(standalone: ${isStandalone})`,
-          async () => {
-            let wasServiceNgOnDestroyCalled = false;
-
-            @Injectable({providedIn: 'root'})
-            class DestroyableService {
-              ngOnDestroy() {
-                wasServiceNgOnDestroyCalled = true;
-              }
-            }
-
-            const FailingAppInitializerProviders = [
-              {
-                provide: APP_INITIALIZER,
-                useFactory: () => {
-                  inject(DestroyableService);
-                  return () => Promise.reject('Error in APP_INITIALIZER');
+          it(
+            'sanitizes the `serverContext` value' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const options = {
+                document: doc,
+              };
+              const providers = [
+                {
+                  provide: SERVER_CONTEXT,
+                  useValue: '!!!Some extra chars&& --><!--',
                 },
-                multi: true,
-              },
-            ];
+              ];
+              const bootstrap = isStandalone
+                ? renderApplication(MyStylesAppStandalone, {
+                    ...options,
+                    platformProviders: providers,
+                  })
+                : renderModule(ExampleStylesModule, {
+                    ...options,
+                    extraProviders: providers,
+                  });
+              // All symbols other than [a-zA-Z0-9\-] are removed
+              const output = await bootstrap;
+              expect(output).toMatch(/ng-server-context="Someextrachars----"/);
+            },
+          );
 
-            @NgModule({
-              providers: FailingAppInitializerProviders,
-              imports: [MyServerAppModule, ServerModule],
-              bootstrap: [MyServerApp],
-            })
-            class ServerFailingAppInitializerModule {}
+          it(
+            `using ${isStandalone ? 'renderApplication' : 'renderModule'} ` +
+              `should serialize transfer state only once (zoneless:${zoneless})`,
+            async () => {
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(MyTransferStateAppStandalone, options)
+                : renderModule(MyTransferStateModule, options);
+              const expectedOutput =
+                '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other"><div>Works!</div></app>' +
+                '<script id="ng-state" type="application/json">{"some-key":"some-value"}</script></body></html>';
+              const output = await bootstrap;
+              expect(output).toEqual(expectedOutput);
+            },
+          );
 
-            const ServerFailingAppInitializerAppStandalone = getStandaloneBootstrapFn(
-              createMyServerApp(true),
-              FailingAppInitializerProviders,
-            );
+          it(
+            'uses `other` as the `serverContext` value when all symbols are removed after sanitization' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const options = {
+                document: doc,
+              };
+              const providers = [
+                {
+                  provide: SERVER_CONTEXT,
+                  useValue: '!!! &&<>',
+                },
+              ];
+              const bootstrap = isStandalone
+                ? renderApplication(MyStylesAppStandalone, {
+                    ...options,
+                    platformProviders: providers,
+                  })
+                : renderModule(ExampleStylesModule, {
+                    ...options,
+                    extraProviders: providers,
+                  });
+              // All symbols other than [a-zA-Z0-9\-] are removed,
+              // the `other` is used as the default.
+              const output = await bootstrap;
+              expect(output).toMatch(/ng-server-context="other"/);
+            },
+          );
 
-            const options = {document: doc};
-            const bootstrap = isStandalone
-              ? renderApplication(ServerFailingAppInitializerAppStandalone, options)
-              : renderModule(ServerFailingAppInitializerModule, options);
-            await expectAsync(bootstrap).toBeRejectedWith('Error in APP_INITIALIZER');
+          it(
+            'appends SSR integrity marker comment when hydration is enabled' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              @Component({
+                selector: 'app',
+                template: ``,
+              })
+              class SimpleApp {}
 
-            expect(getPlatform()).withContext('PlatformRef should be destroyed').toBeNull();
-            expect(wasServiceNgOnDestroyCalled)
-              .withContext('DestroyableService.ngOnDestroy() should be called')
-              .toBeTrue();
-          },
-        );
+              const output = await renderApplication(
+                getStandaloneBootstrapFn(SimpleApp, [provideClientHydration()]),
+                {document: doc},
+              );
 
-        it(
-          `should call onOnDestroy of a service after an error happens in a root component's constructor ` +
-            `(standalone: ${isStandalone})`,
-          async () => {
-            let wasServiceNgOnDestroyCalled = false;
+              // HttpClient cache and DOM hydration are enabled by default.
+              expect(output).toContain(`<body><!--${SSR_CONTENT_INTEGRITY_MARKER}-->`);
+            },
+          );
 
-            @Injectable({providedIn: 'root'})
-            class DestroyableService {
-              ngOnDestroy() {
-                wasServiceNgOnDestroyCalled = true;
+          it(
+            'should handle false values on attributes' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(MyHostComponentStandalone, options)
+                : renderModule(FalseAttributesModule, options);
+              const output = await bootstrap;
+              expect(output).toBe(
+                '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
+                  '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>',
+              );
+            },
+          );
+
+          it(
+            'should handle element property "name"' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(MyInputComponentStandalone, options)
+                : renderModule(NameModule, options);
+              const output = await bootstrap;
+              expect(output).toBe(
+                '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
+                  '<input name=""></app></body></html>',
+              );
+            },
+          );
+
+          it(
+            'should work with sanitizer to handle "innerHTML"' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              // Clear out any global states. These should be set when platform-server
+              // is initialized.
+              (global as any).Node = undefined;
+              (global as any).Document = undefined;
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(HTMLTypesAppStandalone, options)
+                : renderModule(HTMLTypesModule, options);
+              const output = await bootstrap;
+              expect(output).toBe(
+                '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
+                  '<div><b>foo</b> bar</div></app></body></html>',
+              );
+            },
+          );
+
+          it(
+            'should handle element property "hidden"' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(MyHiddenComponentStandalone, options)
+                : renderModule(HiddenModule, options);
+              const output = await bootstrap;
+              expect(output).toBe(
+                '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
+                  '<input hidden=""><input></app></body></html>',
+              );
+            },
+          );
+
+          it(
+            'should call render hook' + `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(
+                    getStandaloneBootstrapFn(MyServerAppStandalone, RenderHookProviders),
+                    options,
+                  )
+                : renderModule(RenderHookModule, options);
+              const output = await bootstrap;
+              // title should be added by the render hook.
+              expect(output).toBe(
+                '<html><head><title>RenderHook</title></head><body>' +
+                  '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
+              );
+            },
+          );
+
+          it(
+            'should call multiple render hooks' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const consoleSpy = spyOn(console, 'warn');
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(
+                    getStandaloneBootstrapFn(MyServerAppStandalone, MultiRenderHookProviders),
+                    options,
+                  )
+                : renderModule(MultiRenderHookModule, options);
+              const output = await bootstrap;
+              // title should be added by the render hook.
+              expect(output).toBe(
+                '<html><head><title>RenderHook</title><meta name="description"></head>' +
+                  '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
+              );
+              expect(consoleSpy).toHaveBeenCalled();
+            },
+          );
+
+          it(
+            'should call async render hooks' + `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(
+                    getStandaloneBootstrapFn(MyServerAppStandalone, AsyncRenderHookProviders),
+                    options,
+                  )
+                : renderModule(AsyncRenderHookModule, options);
+              const output = await bootstrap;
+              // title should be added by the render hook.
+              expect(output).toBe(
+                '<html><head><title>AsyncRenderHook</title></head><body>' +
+                  '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
+              );
+            },
+          );
+
+          it(
+            'should call multiple async and sync render hooks' +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const consoleSpy = spyOn(console, 'warn');
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(
+                    getStandaloneBootstrapFn(MyServerAppStandalone, AsyncMultiRenderHookProviders),
+                    options,
+                  )
+                : renderModule(AsyncMultiRenderHookModule, options);
+              const output = await bootstrap;
+              // title should be added by the render hook.
+              expect(output).toBe(
+                '<html><head><meta name="description"><title>AsyncRenderHook</title></head>' +
+                  '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
+              );
+              expect(consoleSpy).toHaveBeenCalled();
+            },
+          );
+
+          it(
+            `should wait for InitialRenderPendingTasks before serializing ` +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(
+                    getStandaloneBootstrapFn(PendingTasksAppStandalone, []),
+                    options,
+                  )
+                : renderModule(PendingTasksAppModule, options);
+              const output = await bootstrap;
+              expect(output).toBe(
+                '<html><head></head><body>' +
+                  '<app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Completed: Yes</app>' +
+                  '</body></html>',
+              );
+            },
+          );
+
+          it(
+            `should call onOnDestroy of a service after a successful render` +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              let wasServiceNgOnDestroyCalled = false;
+
+              @Injectable({providedIn: 'root'})
+              class DestroyableService {
+                ngOnDestroy() {
+                  wasServiceNgOnDestroyCalled = true;
+                }
               }
-            }
 
-            @Component({
-              standalone: isStandalone,
-              selector: 'app',
-              template: `Works!`,
-            })
-            class MyServerFailingConstructorApp {
-              constructor() {
-                inject(DestroyableService);
-                throw 'Error in constructor of the root component';
+              const SuccessfulAppInitializerProviders = [
+                {
+                  provide: APP_INITIALIZER,
+                  useFactory: () => {
+                    inject(DestroyableService);
+                    return () => Promise.resolve(); // Success in APP_INITIALIZER
+                  },
+                  multi: true,
+                },
+              ];
+
+              @NgModule({
+                providers: SuccessfulAppInitializerProviders,
+                imports: [MyServerAppModule, ServerModule],
+                bootstrap: [MyServerApp],
+              })
+              class ServerSuccessfulAppInitializerModule {}
+
+              const ServerSuccessfulAppInitializerAppStandalone = getStandaloneBootstrapFn(
+                createMyServerApp(true),
+                SuccessfulAppInitializerProviders,
+              );
+
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(ServerSuccessfulAppInitializerAppStandalone, options)
+                : renderModule(ServerSuccessfulAppInitializerModule, options);
+              await bootstrap;
+
+              expect(getPlatform()).withContext('PlatformRef should be destroyed').toBeNull();
+              expect(wasServiceNgOnDestroyCalled)
+                .withContext('DestroyableService.ngOnDestroy() should be called')
+                .toBeTrue();
+            },
+          );
+
+          it(
+            `should call onOnDestroy of a service after some APP_INITIALIZER fails ` +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              let wasServiceNgOnDestroyCalled = false;
+
+              @Injectable({providedIn: 'root'})
+              class DestroyableService {
+                ngOnDestroy() {
+                  wasServiceNgOnDestroyCalled = true;
+                }
               }
-            }
 
-            @NgModule({
-              declarations: [MyServerFailingConstructorApp],
-              imports: [MyServerAppModule, ServerModule],
-              bootstrap: [MyServerFailingConstructorApp],
-            })
-            class MyServerFailingConstructorAppModule {}
+              const FailingAppInitializerProviders = [
+                {
+                  provide: APP_INITIALIZER,
+                  useFactory: () => {
+                    inject(DestroyableService);
+                    return () => Promise.reject('Error in APP_INITIALIZER');
+                  },
+                  multi: true,
+                },
+              ];
 
-            const MyServerFailingConstructorAppStandalone = getStandaloneBootstrapFn(
-              MyServerFailingConstructorApp,
-            );
-            const options = {document: doc};
-            const bootstrap = isStandalone
-              ? renderApplication(MyServerFailingConstructorAppStandalone, options)
-              : renderModule(MyServerFailingConstructorAppModule, options);
-            await expectAsync(bootstrap).toBeRejectedWith(
-              'Error in constructor of the root component',
-            );
-            expect(getPlatform()).withContext('PlatformRef should be destroyed').toBeNull();
-            expect(wasServiceNgOnDestroyCalled)
-              .withContext('DestroyableService.ngOnDestroy() should be called')
-              .toBeTrue();
-          },
-        );
+              @NgModule({
+                providers: FailingAppInitializerProviders,
+                imports: [MyServerAppModule, ServerModule],
+                bootstrap: [MyServerApp],
+              })
+              class ServerFailingAppInitializerModule {}
+
+              const ServerFailingAppInitializerAppStandalone = getStandaloneBootstrapFn(
+                createMyServerApp(true),
+                FailingAppInitializerProviders,
+              );
+
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(ServerFailingAppInitializerAppStandalone, options)
+                : renderModule(ServerFailingAppInitializerModule, options);
+              await expectAsync(bootstrap).toBeRejectedWith('Error in APP_INITIALIZER');
+
+              expect(getPlatform()).withContext('PlatformRef should be destroyed').toBeNull();
+              expect(wasServiceNgOnDestroyCalled)
+                .withContext('DestroyableService.ngOnDestroy() should be called')
+                .toBeTrue();
+            },
+          );
+
+          it(
+            `should call onOnDestroy of a service after an error happens in a root component's constructor ` +
+              `(standalone:${isStandalone}, zoneless:${zoneless})`,
+            async () => {
+              let wasServiceNgOnDestroyCalled = false;
+
+              @Injectable({providedIn: 'root'})
+              class DestroyableService {
+                ngOnDestroy() {
+                  wasServiceNgOnDestroyCalled = true;
+                }
+              }
+
+              @Component({
+                standalone: isStandalone,
+                selector: 'app',
+                template: `Works!`,
+              })
+              class MyServerFailingConstructorApp {
+                constructor() {
+                  inject(DestroyableService);
+                  throw 'Error in constructor of the root component';
+                }
+              }
+
+              @NgModule({
+                declarations: [MyServerFailingConstructorApp],
+                imports: [MyServerAppModule, ServerModule],
+                bootstrap: [MyServerFailingConstructorApp],
+              })
+              class MyServerFailingConstructorAppModule {}
+
+              const MyServerFailingConstructorAppStandalone = getStandaloneBootstrapFn(
+                MyServerFailingConstructorApp,
+              );
+              const options = {document: doc};
+              const bootstrap = isStandalone
+                ? renderApplication(MyServerFailingConstructorAppStandalone, options)
+                : renderModule(MyServerFailingConstructorAppModule, options);
+              await expectAsync(bootstrap).toBeRejectedWith(
+                'Error in constructor of the root component',
+              );
+              expect(getPlatform()).withContext('PlatformRef should be destroyed').toBeNull();
+              expect(wasServiceNgOnDestroyCalled)
+                .withContext('DestroyableService.ngOnDestroy() should be called')
+                .toBeTrue();
+            },
+          );
+        });
       });
     });
 
