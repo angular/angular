@@ -348,7 +348,9 @@ describe('Forms compat', () => {
       const {promise, resolve} = promiseWithResolvers<TreeValidationResult>();
 
       const result = submit(f, {
-        action: () => {
+        action: (rootField, submittedField) => {
+          expect(submittedField.name().value()).toBe('pirojok-the-cat');
+          expect(submittedField.age().control()).toBe(control);
           return promise;
         },
       });
