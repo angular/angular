@@ -42,7 +42,7 @@ import {
 } from './integration_helpers';
 import {BehaviorSubject, filter, firstValueFrom} from 'rxjs';
 import {RouterTestingHarness} from '@angular/router/testing';
-import {timeout} from '../helpers';
+import {timeout} from '@angular/private/testing';
 
 export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigation') {
   function setup(routes?: Routes): Router {

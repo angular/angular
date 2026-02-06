@@ -46,7 +46,7 @@ import {
   advance,
   simulateLocationChange,
 } from './integration_helpers';
-import {timeout} from '../helpers';
+import {timeout} from '@angular/private/testing';
 
 export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'navigation') {
   it('should handle failed navigations gracefully', async () => {

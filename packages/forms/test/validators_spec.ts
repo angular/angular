@@ -20,7 +20,7 @@ import {Observable, of, timer} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
 import {normalizeValidators} from '../src/validators';
-import {timeout, useAutoTick} from './util';
+import {useAutoTick, timeout} from '@angular/private/testing';
 
 (function () {
   function validator(key: string, error: any): ValidatorFn {

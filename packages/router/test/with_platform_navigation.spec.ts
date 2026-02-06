@@ -9,7 +9,7 @@
 import {TestBed} from '@angular/core/testing';
 import {NavigationStart, provideRouter, Event, Router} from '../src';
 import {withExperimentalPlatformNavigation, withRouterConfig} from '../src/provide_router';
-import {withBody} from '@angular/private/testing';
+import {withBody, useAutoTick, timeout} from '@angular/private/testing';
 import {
   PlatformLocation,
   Location,
@@ -22,7 +22,6 @@ import {
   ɵFakeNavigationPlatformLocation as FakeNavigationPlatformLocation,
   provideLocationMocks,
 } from '@angular/common/testing';
-import {timeout, useAutoTick} from './helpers';
 import {inject} from '@angular/core';
 
 /// <reference types="dom-navigation" />

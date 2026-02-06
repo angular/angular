@@ -17,14 +17,13 @@ import {
   ValueChangeEvent,
 } from '../index';
 import {filter, map, of} from 'rxjs';
+import {useAutoTick, timeout} from '@angular/private/testing';
 
 import {
   asyncValidator,
   asyncValidatorReturningObservable,
   currentStateOf,
   simpleAsyncValidator,
-  timeout,
-  useAutoTick,
 } from './util';
 import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model';
 

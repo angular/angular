@@ -15,7 +15,7 @@ import {EMPTY, of} from 'rxjs';
 
 import {provideRouter, withExperimentalPlatformNavigation} from '../src/provide_router';
 import {isUrlTree} from '../src/url_tree';
-import {timeout, useAutoTick} from './helpers';
+import {useAutoTick, timeout} from '@angular/private/testing';
 import {afterNextNavigation} from '../src/utils/navigations';
 
 for (const browserAPI of ['navigation', 'history'] as const) {

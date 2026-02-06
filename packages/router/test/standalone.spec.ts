@@ -10,7 +10,7 @@ import {Component, inject, Injectable, InjectionToken, NgModule} from '@angular/
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {provideRoutes, Router, RouterModule, ROUTES} from '../index';
-import {timeout} from './helpers';
+import {timeout} from '@angular/private/testing';
 
 @Component({template: '<div>simple standalone</div>'})
 export class SimpleStandaloneComponent {}

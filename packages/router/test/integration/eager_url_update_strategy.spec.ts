@@ -31,7 +31,7 @@ import {
   advance,
 } from './integration_helpers';
 import {expect} from '@angular/private/testing/matchers';
-import {timeout} from '../helpers';
+import {timeout} from '@angular/private/testing';
 
 export function eagerUrlUpdateStrategyIntegrationSuite() {
   describe('"eager" urlUpdateStrategy', () => {
