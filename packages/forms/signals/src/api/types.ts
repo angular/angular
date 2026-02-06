@@ -219,6 +219,11 @@ export type MaybeFieldTree<TModel, TKey extends string | number = string | numbe
  */
 export interface FieldState<TValue, TKey extends string | number = string | number> {
   /**
+   * The {@link FieldTree} associated with this field state.
+   */
+  readonly fieldTree: FieldTree<unknown, TKey>;
+
+  /**
    * A writable signal containing the value for this field.
    *
    * Updating this signal will update the data model that the field is bound to.
