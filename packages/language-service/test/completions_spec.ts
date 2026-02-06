@@ -339,6 +339,18 @@ describe('completions', () => {
       ]);
     });
 
+    it('should return property access completions', () => {
+      const {templateFile} = setup(
+        `<input dir [myInput]="foo">`,
+        'foobar: string = "";',
+        signalInputDirectiveWithUnionType,
+      );
+      templateFile.moveCursorToText(`dir [myInput]="foo¦">`);
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, [`foobar`]);
+    });
+
     it(
       'should return completions of string literals, number literals, `true`, ' +
         '`false`, `null` and `undefined`',

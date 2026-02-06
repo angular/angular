@@ -7,26 +7,26 @@
  */
 
 import {
+  AST,
   ASTWithSource,
   Binary,
   BindingPipe,
   Conditional,
   Interpolation,
+  LiteralArray,
+  LiteralMap,
+  ParseTemplateOptions,
   PropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundText,
+  TmplAstComponent,
   TmplAstElement,
   TmplAstForLoopBlock,
+  TmplAstIfBlock,
+  TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
   TmplAstTemplate,
-  AST,
-  LiteralArray,
-  LiteralMap,
-  TmplAstIfBlock,
-  TmplAstLetDeclaration,
-  ParseTemplateOptions,
-  TmplAstComponent,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -52,17 +52,16 @@ import {
   TypeCheckingConfig,
   VariableSymbol,
 } from '../api';
+import {findNodeInFile} from '../src/tcb_util';
 import {
+  setup as baseTestSetup,
+  createNgCompilerForFile,
   getClass,
   ngForDeclaration,
   ngForTypeCheckTarget,
-  setup as baseTestSetup,
-  TypeCheckingTarget,
-  createNgCompilerForFile,
   TestDirective,
+  TypeCheckingTarget,
 } from '../testing';
-import {TsCreateProgramDriver} from '../../program_driver';
-import {findNodeInFile} from '../src/tcb_util';
 
 runInEachFileSystem(() => {
   describe('TemplateTypeChecker.getSymbolOfNode', () => {
@@ -1378,13 +1377,11 @@ runInEachFileSystem(() => {
         const testElement = ifBranchNode.children[0] as TmplAstElement;
 
         const inputAbinding = testElement.inputs[0];
-        const aSymbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp);
-        expect(aSymbol)
-          .withContext(
-            'Symbol builder does not return symbols for restricted inputs with ' +
-              '`honorAccessModifiersForInputBindings = false` (same for decorator inputs)',
-          )
-          .toBe(null);
+        const aSymbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp)!;
+        assertInputBindingSymbol(aSymbol);
+        expect(
+          (aSymbol.bindings[0].tsSymbol!.declarations![0] as ts.PropertyDeclaration).name.getText(),
+        ).toEqual('inputA');
       });
 
       it('does not retrieve a symbol for an input when undeclared', () => {
