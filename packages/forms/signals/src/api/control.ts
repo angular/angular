@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InputSignal, InputSignalWithTransform, ModelSignal, OutputRef, Signal} from '@angular/core';
+import {InputSignal, InputSignalWithTransform, ModelSignal, OutputRef} from '@angular/core';
 import type {FormFieldBindingOptions} from '../directive/form_field_directive';
 import type {ValidationError, WithOptionalFieldTree} from './rules/validation/validation_errors';
 import type {DisabledReason} from './types';
@@ -117,12 +117,6 @@ export interface FormUiControl<TValue> {
   readonly pattern?:
     | InputSignal<readonly RegExp[]>
     | InputSignalWithTransform<readonly RegExp[], unknown>;
-  /**
-   * A signal containing the current parse errors for the control.
-   * This allows the control to communicate to the form that there are additional validation errors
-   * beyond those produced by the schema, due to being unable to parse the user's input.
-   */
-  readonly parseErrors?: Signal<ValidationError.WithoutFieldTree[]>;
   /**
    * Focuses the UI control.
    *
