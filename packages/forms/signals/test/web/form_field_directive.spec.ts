@@ -3883,6 +3883,123 @@ describe('field directive', () => {
       });
       expect(cmp.f().value()).toBe('abc');
     });
+
+    it('should sync number field with text type input (inputmode="numeric")', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="text" inputmode="numeric" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal(123));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.value).toBe('123');
+      expect(input.type).toBe('text');
+
+      // Model -> View
+      act(() => cmp.f().value.set(456));
+      expect(input.value).toBe('456');
+
+      // View -> Model
+      act(() => {
+        input.value = '789';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe(789);
+
+      // Clearing the input should produce NaN
+      act(() => {
+        input.value = '';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBeNaN();
+
+      // Setting NaN should clear the input
+      act(() => cmp.f().value.set(NaN));
+      expect(input.value).toBe('');
+    });
+
+    it('should sync string field with text type input (inputmode="numeric")', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="text" inputmode="numeric" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal('123'));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state - should work as string
+      expect(input.value).toBe('123');
+
+      // Model -> View
+      act(() => cmp.f().value.set('456'));
+      expect(input.value).toBe('456');
+
+      // View -> Model (should remain as string)
+      act(() => {
+        input.value = '789';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe('789');
+    });
+
+    it('should handle non-numeric input with inputmode="numeric"', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="text" inputmode="numeric" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal(123));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+
+      // Non-numeric input should parse to NaN
+      act(() => {
+        input.value = 'abc';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(fix.componentInstance.f().value()).toBeNaN();
+      expect(input.value).toBe('');
+    });
+
+    it('should handle negative numbers with inputmode="numeric"', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="text" inputmode="numeric" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal(-123));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial negative value
+      expect(input.value).toBe('-123');
+
+      // Model -> View with negative
+      act(() => cmp.f().value.set(-456));
+      expect(input.value).toBe('-456');
+
+      // View -> Model with negative
+      act(() => {
+        input.value = '-789';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe(-789);
+    });
   });
 
   describe('should be marked dirty by user interaction', () => {
