@@ -62,7 +62,42 @@ export function createConnection(serverOptions: ServerOptions): MessageConnectio
   return connection;
 }
 
-export function initializeServer(client: MessageConnection): Promise<lsp.InitializeResult> {
+export interface InitOptions {
+  /**
+   * Enable pull-based diagnostics (LSP 3.17) support in client capabilities.
+   */
+  enablePullDiagnostics?: boolean;
+}
+
+export function initializeServer(
+  client: MessageConnection,
+  options: InitOptions = {},
+): Promise<lsp.InitializeResult> {
+  const textDocumentCapabilities: lsp.TextDocumentClientCapabilities = {
+    completion: {
+      completionItem: {
+        snippetSupport: true,
+      },
+    },
+    moniker: {},
+    definition: {linkSupport: true},
+    typeDefinition: {linkSupport: true},
+  };
+
+  // Add pull diagnostics capability if requested
+  if (options.enablePullDiagnostics) {
+    textDocumentCapabilities.diagnostic = {
+      dynamicRegistration: true,
+    };
+  }
+
+  const workspaceCapabilities: lsp.WorkspaceClientCapabilities = {};
+  if (options.enablePullDiagnostics) {
+    workspaceCapabilities.diagnostics = {
+      refreshSupport: true,
+    };
+  }
+
   return client.sendRequest(lsp.InitializeRequest.type, {
     /**
      * The process id of the parent process that started the server. It is
@@ -71,16 +106,8 @@ export function initializeServer(client: MessageConnection): Promise<lsp.Initial
     processId: process.pid,
     rootUri: `file://${PROJECT_PATH}`,
     capabilities: {
-      textDocument: {
-        completion: {
-          completionItem: {
-            snippetSupport: true,
-          },
-        },
-        moniker: {},
-        definition: {linkSupport: true},
-        typeDefinition: {linkSupport: true},
-      },
+      textDocument: textDocumentCapabilities,
+      workspace: workspaceCapabilities,
     },
     /**
      * Options are 'off' | 'messages' | 'verbose'.
