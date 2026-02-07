@@ -1129,22 +1129,26 @@ describe('reactive forms integration tests', () => {
       event: ControlEvent<T> | undefined,
       pristine: boolean,
       sourceControl: AbstractControl,
+      all: boolean,
     ) {
       const pristineEvent = event as PristineChangeEvent;
       expect(pristineEvent).toBeInstanceOf(PristineChangeEvent);
       expect(pristineEvent.source).toBe(sourceControl);
       expect(pristineEvent.pristine).toBe(pristine);
+      expect(pristineEvent.all).toBe(all);
     }
 
     function expectTouchedChangeEvent<T>(
       event: ControlEvent<T> | undefined,
       touched: boolean,
       sourceControl: AbstractControl,
+      all: boolean,
     ) {
       const touchedEvent = event as TouchedChangeEvent;
       expect(touchedEvent).toBeInstanceOf(TouchedChangeEvent);
       expect(touchedEvent.source).toBe(sourceControl);
       expect(touchedEvent.touched).toBe(touched);
+      expect(touchedEvent.all).toBe(all);
     }
 
     function expectStatusChangeEvent<T>(
@@ -1166,16 +1170,16 @@ describe('reactive forms integration tests', () => {
       expect(values.length).toBe(0);
 
       fc.markAsTouched();
-      expectTouchedChangeEvent(values.at(-1), true, fc);
+      expectTouchedChangeEvent(values.at(-1), true, fc, false);
 
       fc.markAsUntouched();
-      expectTouchedChangeEvent(values.at(-1), false, fc);
+      expectTouchedChangeEvent(values.at(-1), false, fc, false);
 
       fc.markAsDirty();
-      expectPristineChangeEvent(values.at(-1), false, fc);
+      expectPristineChangeEvent(values.at(-1), false, fc, false);
 
       fc.markAsPristine();
-      expectPristineChangeEvent(values.at(-1), true, fc);
+      expectPristineChangeEvent(values.at(-1), true, fc, false);
 
       fc.disable();
       expectValueChangeEvent(values.at(-2), 'foo', fc);
@@ -1210,6 +1214,20 @@ describe('reactive forms integration tests', () => {
       subject.complete();
       expectStatusChangeEvent(values.at(-1), 'VALID', fc);
       expect(values.length).toBe(15);
+    });
+
+    it('MarkAllAsToched and MarkAllAsDirty should have "all"-flag in Event', () => {
+      const fc = new FormControl<string | null>('foo', Validators.required);
+
+      const values: ControlEvent[] = [];
+      fc.events.subscribe((event) => values.push(event));
+      expect(values.length).toBe(0);
+
+      fc.markAllAsTouched();
+      expectTouchedChangeEvent(values.at(-1), true, fc, true);
+
+      fc.markAllAsDirty();
+      expectPristineChangeEvent(values.at(-1), false, fc, true);
     });
 
     it('should not emit twice the same value', () => {
@@ -1277,12 +1295,12 @@ describe('reactive forms integration tests', () => {
 
       // Marking children as pristine does not emit an event on the parent
       // Source control is itself
-      expectPristineChangeEvent(fgEvent.at(-1), true, fg);
+      expectPristineChangeEvent(fgEvent.at(-1), true, fg, false);
       expect(fgEvent.length).toBe(2);
 
       // Child that was dirty emits a pristine change
       // Source control is itself, as even are only bubbled up
-      expectPristineChangeEvent(fc1Event.at(-1), true, fc1);
+      expectPristineChangeEvent(fc1Event.at(-1), true, fc1, false);
       expect(fc1Event.length).toBe(2);
 
       // This child was already pristine, it doesn't emit a pristine change
@@ -1307,8 +1325,8 @@ describe('reactive forms integration tests', () => {
       expect(fc2Events.length).toBe(0);
 
       // sourceControl is the child control
-      expectPristineChangeEvent(fgEvents.at(-1), false, fc1);
-      expectPristineChangeEvent(fc1Events.at(-1), false, fc1);
+      expectPristineChangeEvent(fgEvents.at(-1), false, fc1, false);
+      expectPristineChangeEvent(fc1Events.at(-1), false, fc1, false);
     });
 
     it('Nested formControl should emit touched', () => {
@@ -1329,8 +1347,8 @@ describe('reactive forms integration tests', () => {
       expect(fc2Events.length).toBe(0);
 
       // sourceControl is the child control
-      expectTouchedChangeEvent(fgEvents.at(-1), true, fc1);
-      expectTouchedChangeEvent(fc1Events.at(-1), true, fc1);
+      expectTouchedChangeEvent(fgEvents.at(-1), true, fc1, false);
+      expectTouchedChangeEvent(fc1Events.at(-1), true, fc1, false);
     });
 
     it('Nested formControl should emit disabled', () => {
@@ -1354,7 +1372,7 @@ describe('reactive forms integration tests', () => {
 
       expectValueChangeEvent(fgEvents.at(-3), {fc2: 'bar'}, fg);
       expectStatusChangeEvent(fgEvents.at(-2), 'VALID', fg);
-      expectTouchedChangeEvent(fgEvents.at(-1), false, fc1);
+      expectTouchedChangeEvent(fgEvents.at(-1), false, fc1, false);
       // No prisitine event sent as fg was already pristine
 
       expectValueChangeEvent(fc1Events.at(-2), 'foo', fc1);
