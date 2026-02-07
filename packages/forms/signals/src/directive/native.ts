@@ -70,6 +70,8 @@ export function getNativeControlValue(
   element: NativeFormControl,
   currentValue: () => unknown,
 ): NativeControlValue {
+  let modelValue: unknown;
+
   if (element.validity.badInput) {
     return {
       errors: [new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>],
@@ -85,8 +87,9 @@ export function getNativeControlValue(
     case 'datetime-local':
       // We can read a `number` or a `string` from this input type. Prefer whichever is consistent
       // with the current type.
-      if (typeof untracked(currentValue) === 'number') {
-        return {value: element.valueAsNumber};
+      modelValue = untracked(currentValue);
+      if (typeof modelValue === 'number' || modelValue === null) {
+        return {value: element.value === '' ? null : element.valueAsNumber};
       }
       break;
     case 'date':
@@ -95,10 +98,10 @@ export function getNativeControlValue(
     case 'week':
       // We can read a `Date | null`, `number`, or `string` from this input type. Prefer whichever
       // is consistent with the current type.
-      const value = untracked(currentValue);
-      if (value === null || value instanceof Date) {
+      modelValue = untracked(currentValue);
+      if (modelValue === null || modelValue instanceof Date) {
         return {value: element.valueAsDate};
-      } else if (typeof value === 'number') {
+      } else if (typeof modelValue === 'number') {
         return {value: element.valueAsNumber};
       }
       break;
@@ -131,6 +134,9 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
       // This input type can receive a `number` or a `string`.
       if (typeof value === 'number') {
         setNativeNumberControlValue(element, value);
+        return;
+      } else if (value === null) {
+        element.value = '';
         return;
       }
       break;
