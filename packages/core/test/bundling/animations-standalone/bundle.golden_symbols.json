@@ -829,7 +829,6 @@
       "shouldBeIgnoredByZone",
       "shouldSearchParent",
       "storeLViewOnDestroy",
-      "stringify",
       "stringifyCSSSelector",
       "stringifyCSSSelectorList",
       "style",

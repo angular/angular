@@ -685,7 +685,6 @@
       "stashEventListenerImpl",
       "storeLViewOnDestroy",
       "storeListenerCleanup",
-      "stringify",
       "stringifyCSSSelector",
       "stringifyCSSSelectorList",
       "syncViewWithBlueprint",
