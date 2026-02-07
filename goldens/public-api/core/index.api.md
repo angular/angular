@@ -928,6 +928,7 @@ export interface InjectDecorator {
 
 // @public
 export class InjectionToken<T> {
+    __brand__: T;
     // @deprecated
     constructor(_desc: string, options: {
         providedIn: Type<any> | 'any';
