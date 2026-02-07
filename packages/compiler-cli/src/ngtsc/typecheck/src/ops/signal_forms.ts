@@ -1,4 +1,4 @@
-/*!
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -147,6 +147,7 @@ export class TcbNativeFieldOp extends TcbOp {
         return ts.factory.createUnionTypeNode([
           ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
           ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+          ts.factory.createLiteralTypeNode(ts.factory.createNull()),
         ]);
 
       case 'date':
