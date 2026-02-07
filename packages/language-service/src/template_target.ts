@@ -43,6 +43,7 @@ import {
   TmplAstSwitchBlock,
   TmplAstSwitchBlockCase,
   TmplAstSwitchBlockCaseGroup,
+  TmplAstSwitchExhaustiveCheck,
   TmplAstTemplate,
   TmplAstText,
   TmplAstTextAttribute,
@@ -662,6 +663,9 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     this.visitBinding(block.expression);
     this.visitAll(block.groups);
     this.visitAll(block.unknownBlocks);
+    if (block.exhaustiveCheck) {
+      this.visit(block.exhaustiveCheck);
+    }
   }
 
   visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {
@@ -672,6 +676,8 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     this.visitAll(block.cases);
     this.visitAll(block.children);
   }
+
+  visitSwitchExhaustiveCheck(block: TmplAstSwitchExhaustiveCheck) {}
 
   visitForLoopBlock(block: TmplAstForLoopBlock) {
     this.visit(block.item);

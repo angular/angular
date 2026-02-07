@@ -8,11 +8,11 @@
 
 import {TmplAstSwitchBlock, TmplAstSwitchBlockCaseGroup} from '@angular/compiler';
 import ts from 'typescript';
+import {markIgnoreDiagnostics} from '../comments';
 import {TcbOp} from './base';
-import type {Scope} from './scope';
 import type {Context} from './context';
 import {tcbExpression} from './expression';
-import {markIgnoreDiagnostics} from '../comments';
+import type {Scope} from './scope';
 
 /**
  * A `TcbOp` which renders a `switch` block as a TypeScript `switch` statement.
@@ -55,6 +55,28 @@ export class TcbSwitchOp extends TcbOp {
             );
       });
     });
+
+    if (this.block.exhaustiveCheck) {
+      const switchValue = tcbExpression(this.block.expression, this.tcb, this.scope);
+      clauses.push(
+        ts.factory.createDefaultClause([
+          ts.factory.createVariableStatement(
+            undefined,
+            ts.factory.createVariableDeclarationList(
+              [
+                ts.factory.createVariableDeclaration(
+                  ts.factory.createUniqueName('tcbExhaustive'),
+                  undefined,
+                  ts.factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword),
+                  switchValue,
+                ),
+              ],
+              ts.NodeFlags.Const,
+            ),
+          ),
+        ]),
+      );
+    }
 
     this.scope.addStatement(
       ts.factory.createSwitchStatement(switchExpression, ts.factory.createCaseBlock(clauses)),

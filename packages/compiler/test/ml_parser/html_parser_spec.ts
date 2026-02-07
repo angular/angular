@@ -1117,6 +1117,21 @@ describe('HtmlParser', () => {
         ]);
       });
 
+      it('should parse exhaustive default checks in a switch block', () => {
+        expect(
+          humanizeDom(
+            parser.parse(`@switch (expr) {@case ('foo') {} @default never;}`, `TestComp`),
+          ),
+        ).toEqual([
+          [html.Block, 'switch', 0],
+          [html.BlockParameter, 'expr'],
+          [html.Block, 'case', 1],
+          [html.BlockParameter, `'foo'`],
+          [html.Text, ' ', 1, [' ']],
+          [html.Block, 'default never', 1],
+        ]);
+      });
+
       it('should close void elements used right before a block', () => {
         expect(humanizeDom(parser.parse('<img>@defer {hello}', 'TestComp'))).toEqual([
           [html.Element, 'img', 0],
