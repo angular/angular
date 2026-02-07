@@ -84,7 +84,7 @@ export class TestDir {
     clickDecorator2 = new EventEmitter();
     _blaDecorator = new EventEmitter();
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, outputs: { click1: "click1", click2: "click2", click3: "click3", _bla: "decoratorPublicName", _bla2: "decoratorPublicName2", clickDecorator1: "clickDecorator1", clickDecorator2: "clickDecorator2", _blaDecorator: "decoratorPublicName" }, ngImport: i0 });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, outputs: { click1: "click1", click2: "click2", click3: "click3", _bla: "decoratorPublicName", _bla2: "decoratorPublicName2", clickDecorator1: "clickDecorator1", clickDecorator2: "clickDecorator2", _blaDecorator: "decoratorPublicName3" }, ngImport: i0 });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive
@@ -94,7 +94,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                 type: Output
             }], _blaDecorator: [{
                 type: Output,
-                args: ['decoratorPublicName']
+                args: ['decoratorPublicName3']
             }] } });
 
 /****************************************************************************************************
@@ -112,6 +112,6 @@ export declare class TestDir {
     clickDecorator2: EventEmitter<boolean>;
     _blaDecorator: EventEmitter<void>;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, { "click1": "click1"; "click2": "click2"; "click3": "click3"; "_bla": "decoratorPublicName"; "_bla2": "decoratorPublicName2"; "clickDecorator1": "clickDecorator1"; "clickDecorator2": "clickDecorator2"; "_blaDecorator": "decoratorPublicName"; }, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, { "click1": "click1"; "click2": "click2"; "click3": "click3"; "_bla": "decoratorPublicName"; "_bla2": "decoratorPublicName2"; "clickDecorator1": "clickDecorator1"; "clickDecorator2": "clickDecorator2"; "_blaDecorator": "decoratorPublicName3"; }, never, never, true, never>;
 }
 
