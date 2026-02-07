@@ -274,6 +274,36 @@ describe('parse errors', () => {
     expect(comp.model()).toBe(null);
     expect(comp.f().errors().length).toBe(0);
   });
+
+  it('should clear parse errors on one control when another control for the same field updates the model', async () => {
+    @Component({
+      imports: [TestNumberInput, FormField],
+      template: `
+        <test-number-input id="input1" [formField]="f" />
+        <test-number-input id="input2" [formField]="f" />
+      `,
+    })
+    class TestCmp {
+      state = signal<number | null>(5);
+      f = form(this.state);
+    }
+
+    const testEl = (await act(() => TestBed.createComponent(TestCmp))).nativeElement as HTMLElement;
+    const input1: HTMLInputElement = testEl.querySelector('#input1 input')!;
+    const input2: HTMLInputElement = testEl.querySelector('#input2 input')!;
+
+    input1.value = 'joe';
+    await act(() => input1.dispatchEvent(new Event('input')));
+    let errors1 = [...testEl.querySelectorAll('#input1 .error')].map((el) => el.textContent);
+    expect(errors1).toEqual(['joe is not numeric']);
+
+    input2.value = '42';
+    await act(() => input2.dispatchEvent(new Event('input')));
+
+    errors1 = [...testEl.querySelectorAll('#input1 .error')].map((el) => el.textContent);
+    expect(errors1).toEqual([]);
+    expect(input1.value).toBe('42');
+  });
 });
 
 @Component({
