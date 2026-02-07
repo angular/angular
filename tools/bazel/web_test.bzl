@@ -7,7 +7,9 @@ def web_test(name, tags = [], deps = [], bootstrap = [], tsconfig = "//packages:
         testonly = True,
         srcs = [tsconfig],
         tsconfig = tsconfig,
-        bootstrap = bootstrap,
+        bootstrap = [
+            "//tools/testing:jasmine_config",
+        ] + bootstrap,
         deps = deps,
         tags = [
             "manual",
