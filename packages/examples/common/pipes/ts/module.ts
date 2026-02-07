@@ -43,37 +43,37 @@ import {TitleCasePipeComponent} from './titlecase_pipe';
     <h1>Pipe Example</h1>
 
     <h2><code>async</code></h2>
-    <async-promise-pipe></async-promise-pipe>
-    <async-observable-pipe></async-observable-pipe>
+    <async-promise-pipe />
+    <async-observable-pipe />
 
     <h2><code>date</code></h2>
-    <date-pipe></date-pipe>
-    <deprecated-date-pipe></deprecated-date-pipe>
+    <date-pipe />
+    <deprecated-date-pipe />
 
     <h2><code>json</code></h2>
-    <json-pipe></json-pipe>
+    <json-pipe />
 
     <h2><code>lower</code>, <code>upper</code></h2>
-    <lowerupper-pipe></lowerupper-pipe>
+    <lowerupper-pipe />
 
     <h2><code>titlecase</code></h2>
-    <titlecase-pipe></titlecase-pipe>
+    <titlecase-pipe />
 
     <h2><code>number</code></h2>
-    <number-pipe></number-pipe>
-    <percent-pipe></percent-pipe>
-    <currency-pipe></currency-pipe>
+    <number-pipe />
+    <percent-pipe />
+    <currency-pipe />
 
     <h2><code>slice</code></h2>
-    <slice-string-pipe></slice-string-pipe>
-    <slice-list-pipe></slice-list-pipe>
+    <slice-string-pipe />
+    <slice-list-pipe />
 
     <h2><code>i18n</code></h2>
-    <i18n-plural-pipe></i18n-plural-pipe>
-    <i18n-select-pipe></i18n-select-pipe>
+    <i18n-plural-pipe />
+    <i18n-select-pipe />
 
     <h2><code>keyvalue</code></h2>
-    <keyvalue-pipe></keyvalue-pipe>
+    <keyvalue-pipe />
   `,
 })
 export class AppComponent {}

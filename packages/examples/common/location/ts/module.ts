@@ -7,22 +7,19 @@
  */
 
 import {APP_BASE_HREF} from '@angular/common';
-import {Component, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {Component} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 import {HashLocationComponent} from './hash_location_component';
 import {PathLocationComponent} from './path_location_component';
 
 @Component({
   selector: 'example-app',
-  template: `<hash-location></hash-location><path-location></path-location>`,
-  standalone: false,
+  template: `<hash-location /><path-location />`,
+  imports: [PathLocationComponent, HashLocationComponent],
 })
 export class AppComponent {}
 
-@NgModule({
-  declarations: [AppComponent, PathLocationComponent, HashLocationComponent],
+bootstrapApplication(AppComponent, {
   providers: [{provide: APP_BASE_HREF, useValue: '/'}],
-  imports: [BrowserModule],
-})
-export class AppModule {}
+});

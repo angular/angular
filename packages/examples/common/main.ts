@@ -8,8 +8,8 @@
 
 import 'zone.js';
 
-import {platformBrowser} from '@angular/platform-browser';
+import {bootstrapApplication} from '@angular/platform-browser';
 
-import {TestsAppModule} from './test_module';
+import {TestsAppComponent} from './test_module';
 
-platformBrowser().bootstrapModule(TestsAppModule);
+bootstrapApplication(TestsAppComponent);
