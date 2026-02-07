@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ChangeDetectorRef} from '../../change_detection/change_detector_ref';
 import {ENVIRONMENT_INITIALIZER} from '../../di/initializer_token';
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
@@ -17,7 +18,11 @@ import {NullInjector} from '../../di/null_injector';
 import {SingleProvider, walkProviderTree} from '../../di/provider_collection';
 import {EnvironmentInjector, R3Injector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
+import {DestroyRef} from '../../linker/destroy_ref';
+import {ElementRef} from '../../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../../linker/ng_module_factory';
+import {TemplateRef} from '../../linker/template_ref';
+import {ViewContainerRef} from '../../linker/view_container_ref';
 import {deepForEach} from '../../util/array_utils';
 import {throwError} from '../../util/assert';
 import {assertTNode, assertTNodeForLView} from '../assert';
@@ -35,6 +40,7 @@ import {NodeInjectorOffset} from '../interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
 import {INJECTOR, LView, TVIEW} from '../interfaces/view';
+import {Renderer2} from '../../render/api';
 
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './injector_utils';
 import {getNativeByTNode} from './view_utils';
@@ -209,6 +215,42 @@ function getProviderImportsContainer(injector: Injector): Type<unknown> | null {
 }
 
 /**
+ * Special providers that are always available in a NodeInjector.
+ */
+const NODE_INJECTOR_SPECIAL_PROVIDERS: ProviderRecord[] = [
+  {
+    token: ElementRef as Type<ElementRef>,
+    isViewProvider: false,
+    provider: ElementRef as unknown as SingleProvider,
+  },
+  {
+    token: Renderer2 as unknown as Type<Renderer2>,
+    isViewProvider: false,
+    provider: Renderer2 as unknown as SingleProvider,
+  },
+  {
+    token: ViewContainerRef as unknown as Type<ViewContainerRef>,
+    isViewProvider: false,
+    provider: ViewContainerRef as unknown as SingleProvider,
+  },
+  {
+    token: DestroyRef as unknown as Type<DestroyRef>,
+    isViewProvider: false,
+    provider: DestroyRef as unknown as SingleProvider,
+  },
+  {
+    token: ChangeDetectorRef as unknown as Type<ChangeDetectorRef>,
+    isViewProvider: false,
+    provider: ChangeDetectorRef as unknown as SingleProvider,
+  },
+  {
+    token: Injector as unknown as Type<Injector>,
+    isViewProvider: false,
+    provider: Injector as unknown as SingleProvider,
+  },
+];
+
+/**
  * Gets the providers configured on a NodeInjector
  *
  * @param injector A NodeInjector instance
@@ -218,7 +260,9 @@ function getProviderImportsContainer(injector: Injector): Type<unknown> | null {
 function getNodeInjectorProviders(injector: NodeInjector): ProviderRecord[] {
   const diResolver = getNodeInjectorTNode(injector);
   const {resolverToProviders} = getFrameworkDIDebugData();
-  return resolverToProviders.get(diResolver as TNode) ?? [];
+  const existingProviders = resolverToProviders.get(diResolver as TNode) ?? [];
+
+  return [...existingProviders, ...NODE_INJECTOR_SPECIAL_PROVIDERS];
 }
 
 /**
