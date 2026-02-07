@@ -13,7 +13,7 @@
     "@angular/platform-browser": "workspace:*",
     "@angular/router": "workspace:*",
     "@angular/upgrade": "workspace:*",
-    "@types/jasmine": "5.1.15",
+    "@types/jasmine": "6.0.0",
     "@types/jasminewd2": "2.0.13",
     "@types/node": "24.10.11",
     "@types/selenium-webdriver": "3.0.7",
