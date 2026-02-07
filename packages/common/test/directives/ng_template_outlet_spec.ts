@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgTemplateOutlet} from '../../index';
 import {
   Component,
   ContentChildren,
@@ -17,12 +16,16 @@ import {
   Injector,
   NO_ERRORS_SCHEMA,
   OnDestroy,
+  Optional,
   Provider,
   QueryList,
+  SkipSelf,
   TemplateRef,
+  inject,
 } from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
+import {CommonModule, NgTemplateOutlet} from '../../index';
 
 describe('NgTemplateOutlet', () => {
   let fixture: ComponentFixture<any>;
@@ -49,6 +52,8 @@ describe('NgTemplateOutlet', () => {
         DestroyableCmpt,
         MultiContextComponent,
         InjectValueComponent,
+        ProvideValueComponent,
+        NestingCounter,
       ],
       imports: [CommonModule],
       providers: [DestroyedSpyService],
@@ -360,6 +365,43 @@ describe('NgTemplateOutlet', () => {
     detectChangesAndExpectText('Hello world');
   }));
 
+  it('should be able to inherit outlet injector', () => {
+    const template = `
+      <ng-template #tpl><inject-value></inject-value></ng-template>
+      <provide-value>
+        <ng-container *ngTemplateOutlet="tpl; injector: 'outlet'"></ng-container>
+      </provide-value>
+    `;
+    fixture = createTestComponent(template, [{provide: templateToken, useValue: 'root'}]);
+    detectChangesAndExpectText('Hello provide-value');
+  });
+
+  it('should be able to inherit outlet injector in a deeply nested structure', () => {
+    // This template should create the following rendered structure
+    // (Spaces & newlines added for readability):
+    // <nesting-counter> 1
+    //   <nesting counter> 2
+    //     <nesting-counter> 3
+    //       <nesting-counter> 4 </nesting-counter>
+    //     </nesting-counter>
+    //   </nesting-counter>
+    //   <nesting-counter> 2 </nesting-counter>
+    // </nesting-counter>
+    const template = `
+      <ng-container *ngTemplateOutlet="node; context: {$implicit: [[[[]]], []]}" />
+
+      <ng-template #node let-data>
+        <nesting-counter>
+          @for (item of data; track $index) {
+            <ng-container *ngTemplateOutlet="node; context: {$implicit: item}; injector: 'outlet'" />
+          } 
+        </nesting-counter>
+      </ng-template>
+    `;
+    fixture = createTestComponent(template);
+    detectChangesAndExpectText('12342');
+  });
+
   it('should be available as a standalone directive', () => {
     @Component({
       selector: 'test-component',
@@ -444,6 +486,14 @@ class TestComponent {
 }
 
 @Component({
+  selector: 'provide-value',
+  template: '<ng-content />',
+  providers: [{provide: templateToken, useValue: 'provide-value'}],
+  standalone: false,
+})
+class ProvideValueComponent {}
+
+@Component({
   selector: 'inject-value',
   template: 'Hello {{tokenValue}}',
   standalone: false,
@@ -464,6 +514,24 @@ class InjectValueComponent {
 class MultiContextComponent {
   context1: {name: string} | undefined;
   context2: {name: string} | undefined;
+}
+
+const NESTING_DEPTH = new InjectionToken<number>('NESTING_DEPTH');
+
+@Component({
+  selector: 'nesting-counter',
+  template: '{{depth}}<ng-content />',
+  providers: [
+    {
+      provide: NESTING_DEPTH,
+      useFactory: (l: number) => (l ? l + 1 : 1),
+      deps: [[new Optional(), new SkipSelf(), NESTING_DEPTH]],
+    },
+  ],
+  standalone: false,
+})
+class NestingCounter {
+  depth = inject(NESTING_DEPTH);
 }
 
 function createTestComponent(
