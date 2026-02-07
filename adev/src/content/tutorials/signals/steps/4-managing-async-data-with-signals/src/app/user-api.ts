@@ -1,5 +1,5 @@
 // Mock API function for loading user data
-export async function loadUser(id: number): Promise<{name: string; email: string}> {
+export async function getUserData(id: number): Promise<{name: string; email: string}> {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
