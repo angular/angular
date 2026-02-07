@@ -29,8 +29,9 @@ import {
   DevtoolsSignalGraph,
   DevtoolsSignalGraphCluster,
   DevtoolsSignalGraphNode,
+  getNodeLabel,
 } from '../../signal-graph';
-import {SignalsGraphVisualizer} from './signals-visualizer';
+import {DependenciesHighlightEvent, SignalsGraphVisualizer} from './signals-visualizer';
 import {ElementPosition} from '../../../../../../../protocol';
 import {ButtonComponent} from '../../../../shared/button/button.component';
 
@@ -53,6 +54,7 @@ export class SignalsVisualizerComponent {
   protected readonly nodeClick = output<DevtoolsSignalGraphNode>();
   protected readonly clusterCollapse = output<void>();
 
+  protected readonly highlightedNodeLabel = signal<string | null>(null);
   private readonly expandedClustersIds = signal<Set<string>>(new Set());
   protected readonly expandedClusters = computed<DevtoolsSignalGraphCluster[]>(() => {
     const clusterIds = this.expandedClustersIds();
@@ -126,15 +128,25 @@ export class SignalsVisualizerComponent {
     this.signalsVisualizer?.setClusterState(id, true);
   }
 
+  highlightDependencies(node: DevtoolsSignalGraphNode, direction: 'up' | 'down') {
+    this.signalsVisualizer?.highlightDependencies(node, direction);
+  }
+
+  unhighlightDependencies() {
+    this.signalsVisualizer?.unhighlightDependencies();
+  }
+
   protected collapseCluster(id: string) {
     this.signalsVisualizer?.setClusterState(id, false);
   }
 
   private setUpSignalsVisualizer() {
     this.signalsVisualizer = new SignalsGraphVisualizer(this.svgHost().nativeElement);
+
     this.signalsVisualizer.onNodeClick((node) => {
       this.nodeClick.emit(node);
     });
+
     this.signalsVisualizer.onClustersStateChange((expandedClusters) => {
       const collapsed = new Set(this.expandedClustersIds());
       for (const expanded of Array.from(expandedClusters)) {
@@ -145,6 +157,15 @@ export class SignalsVisualizerComponent {
 
       if (collapsed.size) {
         this.clusterCollapse.emit();
+      }
+    });
+
+    this.signalsVisualizer.onDependenciesHighlight((e: DependenciesHighlightEvent) => {
+      if (e.state === 'highlighted') {
+        const label = getNodeLabel(e.node);
+        this.highlightedNodeLabel.set(label);
+      } else {
+        this.highlightedNodeLabel.set(null);
       }
     });
   }
