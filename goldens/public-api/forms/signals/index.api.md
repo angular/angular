@@ -203,7 +203,6 @@ export class FormField<T> {
 // @public (undocumented)
 export interface FormFieldBindingOptions {
     readonly focus?: (focusOptions?: FocusOptions) => void;
-    readonly parseErrors?: Signal<ValidationError.WithoutFieldTree[]>;
 }
 
 // @public
@@ -234,7 +233,6 @@ export interface FormUiControl<TValue> {
     readonly min?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
     readonly minLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
     readonly name?: InputSignal<string> | InputSignalWithTransform<string, unknown>;
-    readonly parseErrors?: Signal<ValidationError.WithoutFieldTree[]>;
     readonly pattern?: InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], unknown>;
     readonly pending?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly readonly?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
@@ -400,10 +398,16 @@ export class MinValidationError extends BaseNgValidationError {
 }
 
 // @public
+export class NativeInputParseError extends BaseNgValidationError {
+    // (undocumented)
+    readonly kind = "parse";
+}
+
+// @public
 export const NgValidationError: abstract new () => NgValidationError;
 
 // @public (undocumented)
-export type NgValidationError = RequiredValidationError | MinValidationError | MaxValidationError | MinLengthValidationError | MaxLengthValidationError | PatternValidationError | EmailValidationError | StandardSchemaValidationError;
+export type NgValidationError = RequiredValidationError | MinValidationError | MaxValidationError | MinLengthValidationError | MaxLengthValidationError | PatternValidationError | EmailValidationError | StandardSchemaValidationError | NativeInputParseError;
 
 // @public
 export type OneOrMany<T> = T | readonly T[];
@@ -563,6 +567,23 @@ export function submit<TModel>(form: FieldTree<TModel>, options?: FormSubmitOpti
 
 // @public (undocumented)
 export function submit<TModel>(form: FieldTree<TModel>, action: FormSubmitOptions<TModel>['action']): Promise<boolean>;
+
+// @public
+export function transformedValue<TValue, TRaw>(value: ModelSignal<TValue>, options: TransformedValueOptions<TValue, TRaw>): TransformedValueSignal<TRaw>;
+
+// @public
+export interface TransformedValueOptions<TValue, TRaw> {
+    format: (value: TValue) => TRaw;
+    parse: (rawValue: TRaw) => {
+        value?: TValue;
+        errors?: readonly ValidationError.WithoutFieldTree[];
+    };
+}
+
+// @public
+export interface TransformedValueSignal<TRaw> extends WritableSignal<TRaw> {
+    readonly parseErrors: Signal<readonly ValidationError.WithoutFieldTree[]>;
+}
 
 // @public
 export type TreeValidationResult<E extends ValidationError.WithOptionalFieldTree = ValidationError.WithOptionalFieldTree> = ValidationSuccess | OneOrMany<E>;
