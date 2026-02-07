@@ -720,7 +720,6 @@
       "shouldTriggerDeferBlock",
       "storeLViewOnDestroy",
       "storeTriggerCleanupFn",
-      "stringify",
       "stringifyCSSSelector",
       "stringifyCSSSelectorList",
       "syncViewWithBlueprint",

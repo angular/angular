@@ -769,7 +769,6 @@
       "skipTextNodes",
       "sortAndConcatParams",
       "storeLViewOnDestroy",
-      "stringify",
       "stringifyCSSSelector",
       "stringifyCSSSelectorList",
       "subscribeOn",
