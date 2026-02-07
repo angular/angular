@@ -32,6 +32,8 @@ jobs:
         run: pnpm ng-dev ngbot verify
       - name: Confirm code builds with typescript as expected
         run: pnpm check-tooling-setup
+      - name: Validate agent skills
+        run: pnpm ng-dev ai skills validate
       - name: Check commit message
         run: pnpm ng-dev commit-message validate-range ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
       - name: Check code format
