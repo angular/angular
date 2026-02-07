@@ -205,7 +205,7 @@ export class FieldValidationState implements ValidationState {
    * rather than a descendant.
    */
   readonly syncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(() =>
-    this.rawSyncTreeErrors().filter((err) => err.fieldTree === this.node.fieldProxy),
+    this.rawSyncTreeErrors().filter((err) => err.fieldTree === this.node.fieldTree),
   );
 
   /**
@@ -237,7 +237,7 @@ export class FieldValidationState implements ValidationState {
       return [];
     }
     return this.rawAsyncErrors().filter(
-      (err) => err === 'pending' || err.fieldTree === this.node.fieldProxy,
+      (err) => err === 'pending' || err.fieldTree === this.node.fieldTree,
     );
   });
 

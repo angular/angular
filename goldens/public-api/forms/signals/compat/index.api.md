@@ -5,7 +5,6 @@
 ```ts
 
 import { AbstractControl } from '@angular/forms';
-import * as _angular_forms from '@angular/forms';
 import { ControlValueAccessor } from '@angular/forms';
 import { EventEmitter } from '@angular/core';
 import { FormControlState } from '@angular/forms';

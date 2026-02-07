@@ -159,6 +159,26 @@ describe('FieldNode', () => {
     });
   });
 
+  describe('fieldTree', () => {
+    it('should return the associated field tree from state produced by the root field tree', () => {
+      const f = form(signal(''), {injector: TestBed.inject(Injector)});
+
+      expect(f().fieldTree).toBe(f);
+    });
+
+    it('should return the associated field tree from state produced by a child field tree', () => {
+      const f = form(signal({a: 1, b: 2}), {injector: TestBed.inject(Injector)});
+
+      expect(f.a().fieldTree).toBe(f.a);
+    });
+
+    it('should return the associated field tree from state produced by an array item field tree', () => {
+      const f = form(signal([1, 2, 3]), {injector: TestBed.inject(Injector)});
+
+      expect(f[0]().fieldTree).toBe(f[0]);
+    });
+  });
+
   describe('dirty', () => {
     it('is not dirty initially', () => {
       const f = form(

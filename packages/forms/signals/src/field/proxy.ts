@@ -22,7 +22,7 @@ export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
     if (child !== undefined) {
       // If so, return the child node's `FieldTree` proxy, allowing the developer to continue
       // navigating the form structure.
-      return child.fieldProxy;
+      return child.fieldTree;
     }
 
     // Otherwise, we need to consider whether the properties they're accessing are related to array
@@ -49,7 +49,7 @@ export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
           //
           // Instead, side-effectfully read the value here to ensure iterator creation is reactive.
           tgt.value();
-          return Array.prototype[Symbol.iterator].apply(tgt.fieldProxy);
+          return Array.prototype[Symbol.iterator].apply(tgt.fieldTree);
         };
       }
       // Note: We can consider supporting additional array methods if we want in the future,
