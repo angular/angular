@@ -729,10 +729,12 @@ export class NgSwitchDefault {
 export class NgTemplateOutlet<C = unknown> implements OnChanges {
     constructor(_viewContainerRef: ViewContainerRef);
     // (undocumented)
+    protected injector: Injector;
+    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     ngTemplateOutlet: TemplateRef<C> | null | undefined;
     ngTemplateOutletContext: C | null | undefined;
-    ngTemplateOutletInjector: Injector | null | undefined;
+    ngTemplateOutletInjector: Injector | 'outlet' | null | undefined;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgTemplateOutlet<any>, "[ngTemplateOutlet]", never, { "ngTemplateOutletContext": { "alias": "ngTemplateOutletContext"; "required": false; }; "ngTemplateOutlet": { "alias": "ngTemplateOutlet"; "required": false; }; "ngTemplateOutletInjector": { "alias": "ngTemplateOutletInjector"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
