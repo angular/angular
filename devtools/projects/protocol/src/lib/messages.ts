@@ -78,10 +78,18 @@ export type HydrationStatus =
       actualNodeDetails: string | null;
     };
 
-export type RenderedDeferBlock = 'defer' | 'placeholder' | 'loading' | 'error';
+export enum ControlFlowBlockType {
+  Defer,
+  For,
+}
 
-export interface DeferInfo {
+export interface ControlFlowBlock {
   id: string;
+  type: ControlFlowBlockType;
+}
+
+export interface DeferBlock extends ControlFlowBlock {
+  type: ControlFlowBlockType.Defer;
   state: 'placeholder' | 'loading' | 'complete' | 'error' | 'initial';
   renderedBlock: RenderedDeferBlock | null;
   triggers: {
@@ -89,13 +97,22 @@ export interface DeferInfo {
     hydrate: string[];
     prefetch: string[];
   };
-  blocks: BlockDetails;
+  blocks: DeferBlockDetails;
 }
 
-export interface BlockDetails {
+export type RenderedDeferBlock = 'defer' | 'placeholder' | 'loading' | 'error';
+
+export interface DeferBlockDetails {
   hasErrorBlock: boolean;
   placeholderBlock: {exists: boolean; minimumTime: number | null};
   loadingBlock: {exists: boolean; minimumTime: number | null; afterTime: number | null};
+}
+
+export interface ForBlock extends ControlFlowBlock {
+  type: ControlFlowBlockType.For;
+  hasEmptyBlock: boolean;
+  items: Descriptor[];
+  trackExpression: string;
 }
 
 // TODO: refactor to remove nativeElement as it is not serializable
@@ -108,7 +125,7 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   nativeElement?: Node;
   resolutionPath?: SerializedInjector[];
   hydration: HydrationStatus;
-  defer: DeferInfo | null;
+  controlFlowBlock: ControlFlowBlock | null;
   onPush?: boolean;
 }
 
@@ -294,7 +311,7 @@ export interface DirectiveProfile {
 export interface ElementProfile {
   directives: DirectiveProfile[];
   children: ElementProfile[];
-  type: 'defer' | 'element';
+  type: 'element' | 'defer' | 'for';
 }
 
 export interface ProfilerFrame {

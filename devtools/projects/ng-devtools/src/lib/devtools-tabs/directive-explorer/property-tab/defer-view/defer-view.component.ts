@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {MatToolbar} from '@angular/material/toolbar';
-import {DeferInfo} from '../../../../../../../protocol';
+import {DeferBlock} from '../../../../../../../protocol';
 
 @Component({
   templateUrl: './defer-view.component.html',
@@ -18,7 +18,7 @@ import {DeferInfo} from '../../../../../../../protocol';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeferViewComponent {
-  readonly defer = input.required<NonNullable<DeferInfo>>();
+  readonly defer = input.required<NonNullable<DeferBlock>>();
 
   readonly loadingBlockInfo = computed(() => {
     const loadingBlock = this.defer().blocks.loadingBlock;

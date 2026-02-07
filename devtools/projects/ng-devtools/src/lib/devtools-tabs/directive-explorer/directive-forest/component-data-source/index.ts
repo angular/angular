@@ -10,7 +10,13 @@ import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DefaultIterableDiffer, TrackByFunction} from '@angular/core';
 import {MatTreeFlattener} from '@angular/material/tree';
-import {DeferInfo, DevToolsNode, HydrationStatus} from '../../../../../../../protocol';
+import {
+  DeferBlock,
+  DevToolsNode,
+  ForBlock,
+  ControlFlowBlock,
+  HydrationStatus,
+} from '../../../../../../../protocol';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -28,7 +34,7 @@ export interface FlatNode {
   original: IndexedNode;
   newItem?: boolean;
   hydration: HydrationStatus;
-  defer: DeferInfo | null;
+  controlFlowBlock: ControlFlowBlock | null;
   onPush?: boolean;
   hasNativeElement: boolean;
 }
@@ -39,8 +45,8 @@ const trackBy: TrackByFunction<FlatNode> = (_: number, item: FlatNode) =>
   `${item.id}#${item.expandable}`;
 
 const getId = (node: IndexedNode) => {
-  if (node.defer) {
-    return node.defer.id;
+  if (node.controlFlowBlock) {
+    return node.controlFlowBlock.id;
   } else if (node.hydration?.status === 'dehydrated') {
     return node.position.join('-');
   }
@@ -103,7 +109,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         original: node,
         level,
         hydration: node.hydration,
-        defer: node.defer,
+        controlFlowBlock: node.controlFlowBlock,
         onPush: node.onPush,
         hasNativeElement: node.hasNativeElement,
       };
@@ -129,6 +135,14 @@ export class ComponentDataSource extends DataSource<FlatNode> {
 
   getFlatNodeFromIndexedNode(indexedNode: IndexedNode): FlatNode | undefined {
     return this._nodeToFlat.get(indexedNode);
+  }
+
+  getFlatNodeByPosition(position: number[]): FlatNode | undefined {
+    return this.data.find(
+      (node) =>
+        node.position.length === position.length &&
+        node.position.every((p, i) => p === position[i]),
+    );
   }
 
   update(

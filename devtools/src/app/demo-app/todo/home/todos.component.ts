@@ -84,6 +84,8 @@ export class TodosComponent implements OnInit, OnDestroy {
     },
   ];
 
+  testArr = [1, 2, 3];
+
   readonly update = output<Todo>();
   readonly delete = output<Todo>();
   readonly add = output<Todo>();

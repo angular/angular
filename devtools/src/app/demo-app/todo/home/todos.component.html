@@ -25,6 +25,9 @@
           (delete)="onDelete($event)"
           (update)="onChange($event)"
         />
+        @for (test of testArr; track $index) {
+          <p>{{ test }}</p>
+        }
       }
     </ul>
   </section>
