@@ -6,8 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {signal, WritableSignal} from '@angular/core';
-import {FieldTree, form, required, schema, SchemaFn} from '../../public_api';
+import {signal, WritableSignal, Signal} from '@angular/core';
+import {
+  FieldTree,
+  form,
+  required,
+  schema,
+  SchemaFn,
+  FieldStateSnapshot,
+  FormFieldSnapshot,
+  SignalFormsConfig,
+} from '../../public_api';
 
 interface Order {
   id: string;
@@ -111,6 +120,136 @@ function typeVerificationOnlyDoNotRunMe() {
         const p: FieldTree<string> = product;
         p().value();
       }
+    });
+
+    describe('FieldStateSnapshot', () => {
+      it('should not expose mutation methods', () => {
+        const state: FieldStateSnapshot<string> = null!;
+        // @ts-expect-error
+        state.markAsDirty;
+        // @ts-expect-error
+        state.markAsTouched;
+        // @ts-expect-error
+        state.reset;
+        // @ts-expect-error
+        state.metadata;
+        // @ts-expect-error
+        state.focusBoundControl;
+        // @ts-expect-error
+        state.formFieldBindings;
+        // @ts-expect-error
+        state.value;
+        // @ts-expect-error
+        state.controlValue;
+      });
+
+      it('should expose read-only signal properties', () => {
+        const state: FieldStateSnapshot<string> = null!;
+        state.dirty;
+        state.touched;
+        state.valid;
+        state.invalid;
+        state.pending;
+        state.disabled;
+        state.errors;
+        state.errorSummary;
+        state.hidden;
+        state.readonly;
+        state.required;
+        state.name;
+        state.pattern;
+        state.disabledReasons;
+        state.submitting;
+        state.keyInParent;
+        state.max;
+        state.min;
+        state.maxLength;
+        state.minLength;
+      });
+    });
+
+    describe('FormFieldSnapshot', () => {
+      it('should not expose mutation methods', () => {
+        const snapshot: FormFieldSnapshot = null!;
+        // @ts-expect-error
+        snapshot.focus;
+        // @ts-expect-error
+        snapshot.registerAsBinding;
+        // @ts-expect-error
+        snapshot.fieldTree;
+        // @ts-expect-error
+        snapshot.state.markAsDirty;
+        // @ts-expect-error
+        snapshot.state.markAsTouched;
+        // @ts-expect-error
+        snapshot.state.reset;
+        // @ts-expect-error
+        snapshot.state.value;
+        // @ts-expect-error
+        snapshot.state.controlValue;
+      });
+
+      it('should expose read-only properties', () => {
+        const snapshot: FormFieldSnapshot = null!;
+        snapshot.element;
+        snapshot.errors;
+        snapshot.parseErrors;
+        snapshot.state;
+        snapshot.state.dirty;
+        snapshot.state.touched;
+        snapshot.state.valid;
+        snapshot.state.invalid;
+        snapshot.state.disabled;
+        snapshot.state.errors;
+        snapshot.state.hidden;
+      });
+    });
+
+    describe('SignalFormsConfig', () => {
+      it('should accept FormFieldSnapshot in classes predicate', () => {
+        const config: SignalFormsConfig = {
+          classes: {
+            'my-class': (state: FormFieldSnapshot) => {
+              // Can access readonly properties
+              state.element;
+              state.errors;
+              state.parseErrors;
+              state.state.valid;
+              state.state.invalid;
+              state.state.dirty;
+              state.state.touched;
+              state.state.disabled;
+              return state.state.valid();
+            },
+          },
+        };
+      });
+
+      it('should not allow mutation methods in classes predicate', () => {
+        const config: SignalFormsConfig = {
+          classes: {
+            'invalid-class': (state: FormFieldSnapshot) => {
+              // @ts-expect-error
+              state.focus;
+              // @ts-expect-error
+              state.registerAsBinding;
+              // @ts-expect-error
+              state.fieldTree;
+              // @ts-expect-error
+              state.state.markAsDirty;
+              // @ts-expect-error
+              state.state.markAsTouched;
+              // @ts-expect-error
+              state.state.reset;
+              // @ts-expect-error
+              state.state.value;
+              // @ts-expect-error
+              state.state.controlValue;
+              return false;
+            },
+          },
+        };
+      });
     });
   });
 }

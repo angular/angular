@@ -9,6 +9,17 @@
 import {type Provider} from '@angular/core';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FormField} from '../directive/form_field_directive';
+import type {FieldStateSnapshot} from './types';
+
+/**
+ * A readonly snapshot of a form field.
+ *
+ * @category control
+ * @experimental 21.0.0
+ */
+export type FormFieldSnapshot = Pick<FormField<unknown>, 'element' | 'errors' | 'parseErrors'> & {
+  readonly state: FieldStateSnapshot<unknown>;
+};
 
 /**
  * Configuration options for signal forms.
@@ -17,7 +28,7 @@ import type {FormField} from '../directive/form_field_directive';
  */
 export interface SignalFormsConfig {
   /** A map of CSS class names to predicate functions that determine when to apply them. */
-  classes?: {[className: string]: (state: FormField<unknown>) => boolean};
+  classes?: {[className: string]: (state: FormFieldSnapshot) => boolean};
 }
 
 /**

@@ -398,6 +398,28 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
 }
 
 /**
+ * A readonly snapshot of a field's state.
+ *
+ * This type removes all mutable operations from {@link FieldState}, providing only readonly access
+ * to the field's current state values. This is useful for scenarios where code needs to read the
+ * state without being able to modify it, such as in CSS class predicates.
+ *
+ * @category structure
+ * @experimental 21.0.0
+ */
+export type FieldStateSnapshot<TValue, TKey extends string | number = string | number> = Omit<
+  FieldState<TValue, TKey>,
+  | 'markAsDirty'
+  | 'markAsTouched'
+  | 'metadata'
+  | 'reset'
+  | 'focusBoundControl'
+  | 'formFieldBindings'
+  | 'value'
+  | 'controlValue'
+>;
+
+/**
  * This is FieldState also providing access to the wrapped FormControl.
  *
  * @category interop

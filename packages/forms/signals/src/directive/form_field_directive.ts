@@ -30,6 +30,7 @@ import {RuntimeErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
 import type {FieldTree} from '../api/types';
+import type {FormFieldSnapshot} from '../api/di';
 import {
   isNativeFormElement,
   isNumericFormElement,
@@ -193,7 +194,7 @@ export class FormField<T> {
   private installClassBindingEffect(): void {
     const classes = Object.entries(this.config?.classes ?? {}).map(
       ([className, computation]) =>
-        [className, computed(() => computation(this as FormField<unknown>))] as const,
+        [className, computed(() => computation(this as FormFieldSnapshot))] as const,
     );
     if (classes.length === 0) {
       return;
