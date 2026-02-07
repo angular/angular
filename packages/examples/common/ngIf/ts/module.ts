@@ -109,13 +109,13 @@ export class NgIfAs {
   selector: 'example-app',
   imports: [NgIfSimple, NgIfElse, NgIfThenElse, NgIfAs],
   template: `
-    <ng-if-simple></ng-if-simple>
+    <ng-if-simple />
     <hr />
-    <ng-if-else></ng-if-else>
+    <ng-if-else />
     <hr />
-    <ng-if-then-else></ng-if-then-else>
+    <ng-if-then-else />
     <hr />
-    <ng-if-as></ng-if-as>
+    <ng-if-as />
     <hr />
   `,
 })

@@ -6,29 +6,26 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, NgModule} from '@angular/core';
-import {RouterModule} from '@angular/router';
+import {Component} from '@angular/core';
+import {provideRouter, RouterOutlet} from '@angular/router';
 
 import * as locationExample from './location/ts/module';
 import * as ngComponentOutletExample from './ngComponentOutlet/ts/module';
 import * as ngIfExample from './ngIf/ts/module';
 import * as ngTemplateOutletExample from './ngTemplateOutlet/ts/module';
 import * as pipesExample from './pipes/ts/module';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
   selector: 'example-app:not(y)',
-  template: '<router-outlet></router-outlet>',
-  standalone: false,
+  template: '<router-outlet />',
+  imports: [RouterOutlet],
 })
 export class TestsAppComponent {}
 
-@NgModule({
-  imports: [
-    locationExample.AppModule,
-
-    // Router configuration so that the individual e2e tests can load their
-    // app components.
-    RouterModule.forRoot([
+bootstrapApplication(TestsAppComponent, {
+  providers: [
+    provideRouter([
       {path: 'location', component: locationExample.AppComponent},
       {path: 'ngComponentOutlet', component: ngComponentOutletExample.AppComponent},
       {path: 'ngIf', component: ngIfExample.AppComponent},
@@ -36,7 +33,4 @@ export class TestsAppComponent {}
       {path: 'pipes', component: pipesExample.AppComponent},
     ]),
   ],
-  declarations: [TestsAppComponent],
-  bootstrap: [TestsAppComponent],
-})
-export class TestsAppModule {}
+});
