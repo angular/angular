@@ -92,6 +92,74 @@ describe('numeric inputs', () => {
       expect(input2.value).toBe('42');
     });
   });
+
+  describe('nullability', () => {
+    it('should initialize with null', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="number" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(null);
+        readonly f = form(this.data);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+      expect(input.value).toBe('');
+      expect(fixture.componentInstance.f().value()).toBeNull();
+      expect(fixture.componentInstance.f().errors()).toEqual([]);
+    });
+
+    it('should initialize with NaN', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="number" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(NaN);
+        readonly f = form(this.data);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+      expect(input.value).toBe('');
+      expect(fixture.componentInstance.f().value()).toEqual(NaN);
+      // No parse errors if its `NaN` from the model
+      expect(fixture.componentInstance.f().errors()).toEqual([]);
+    });
+
+    it('should update model to null when user clears input', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="number" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<number | null>(NaN);
+        readonly f = form(this.data);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      patchNumberInput(input);
+
+      act(() => {
+        input.value = '4';
+        input.dispatchEvent(new Event('input'));
+      });
+
+      expect(fixture.componentInstance.f().value()).toBe(4);
+
+      act(() => {
+        input.value = '';
+        input.dispatchEvent(new Event('input'));
+      });
+
+      expect(fixture.componentInstance.f().value()).toBeNull();
+    });
+  });
 });
 
 function act<T>(fn: () => T): T {
@@ -102,7 +170,13 @@ function act<T>(fn: () => T): T {
   }
 }
 
-/** Patch a number input to make its validity work as it would in a normal browser. */
+/**
+ * Patch a number input to make its validity work as it would if the user was actually typing.
+ *
+ * `validity.badInput` is updated when the user types in the `<input>`, but when we simulate it
+ * by setting the value and dispatching an event, that flag is not updated. To work around this
+ * we patch the input.
+ */
 function patchNumberInput(input: HTMLInputElement) {
   let value = input.value;
   Object.defineProperties(input, {
