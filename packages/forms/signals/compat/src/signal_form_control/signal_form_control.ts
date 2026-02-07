@@ -346,7 +346,7 @@ export class SignalFormControl<T> extends AbstractControl {
 
   override set dirty(_: boolean) {
     throw unsupportedFeatureError(
-      'Setting dirty directly is not supported. Instead use markAsDirty().',
+      ngDevMode && 'Setting dirty directly is not supported. Instead use markAsDirty().',
     );
   }
 
@@ -356,7 +356,7 @@ export class SignalFormControl<T> extends AbstractControl {
 
   override set pristine(_: boolean) {
     throw unsupportedFeatureError(
-      'Setting pristine directly is not supported. Instead use reset().',
+      ngDevMode && 'Setting pristine directly is not supported. Instead use reset().',
     );
   }
 
@@ -366,7 +366,8 @@ export class SignalFormControl<T> extends AbstractControl {
 
   override set touched(_: boolean) {
     throw unsupportedFeatureError(
-      'Setting touched directly is not supported. Instead use markAsTouched() or reset().',
+      ngDevMode &&
+        'Setting touched directly is not supported. Instead use markAsTouched() or reset().',
     );
   }
 
@@ -376,7 +377,7 @@ export class SignalFormControl<T> extends AbstractControl {
 
   override set untouched(_: boolean) {
     throw unsupportedFeatureError(
-      'Setting untouched directly is not supported. Instead use reset().',
+      ngDevMode && 'Setting untouched directly is not supported. Instead use reset().',
     );
   }
 
