@@ -1402,7 +1402,7 @@ export interface OutputRefSubscription {
 
 // @public
 export class PendingTasks {
-    add(): () => void;
+    add(): (() => void) & Disposable;
     run(fn: () => Promise<unknown>): void;
     // (undocumented)
     static ɵprov: unknown;
