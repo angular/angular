@@ -13,16 +13,26 @@ export interface MovedRecord {
   previousIndex: number;
 }
 
-export const diff = <T>(
+/**
+ * Performs a diff between a host and a new array.
+ * The host array is modified in-place with the diff.
+ *
+ * @param differ
+ * @param a Host array
+ * @param b New array
+ * @returns A report with all updates in the form of an object
+ */
+export const diff = <T extends Record<string, any>>(
   differ: DefaultIterableDiffer<T>,
   a: T[],
   b: T[],
-): {newItems: T[]; removedItems: T[]; movedItems: T[]} => {
+): {newItems: T[]; removedItems: T[]; movedItems: T[]; updatedItems: T[]} => {
   differ.diff(a);
   differ.diff(b);
 
   const alreadySet: boolean[] = [];
   const movedItems: T[] = [];
+  const alteredItems = new Set<number>();
 
   // We first have to set the moved items to their correct positions.
   // Keep in mind that the track by function may not guarantee
@@ -47,18 +57,19 @@ export const diff = <T>(
     } else {
       a[record.currentIndex] = {} as unknown as T;
     }
-    Object.keys(b[record.currentIndex] as unknown as {}).forEach((prop) => {
+    Object.keys(b[record.currentIndex]).forEach((prop) => {
       // TypeScript's type inference didn't follow the check from above.
       if (record.currentIndex === null) {
         return;
       }
-      (a[record.currentIndex] as any)[prop] = (b[record.currentIndex] as any)[prop];
+      (a[record.currentIndex] as any)[prop] = b[record.currentIndex][prop];
     });
     if (!alreadySet[record.previousIndex]) {
       a[record.previousIndex] = null!;
     }
     alreadySet[record.currentIndex] = true;
     movedItems.push(a[record.currentIndex]);
+    alteredItems.add(record.currentIndex);
   });
 
   // Now we can set the new items and remove the deleted ones.
@@ -69,6 +80,7 @@ export const diff = <T>(
       a[record.currentIndex] = record.item;
       alreadySet[record.currentIndex] = true;
       newItems.push(record.item);
+      alteredItems.add(record.currentIndex);
     }
   });
 
@@ -78,8 +90,27 @@ export const diff = <T>(
     }
     if (record.currentIndex === null && !alreadySet[record.previousIndex]) {
       a[record.previousIndex] = null!;
+      alteredItems.add(record.previousIndex);
     }
     removedItems.push(record.item);
+  });
+
+  const updatedItems: T[] = [];
+  differ.forEachIdentityChange((record) => {
+    const currIdx = record.currentIndex;
+
+    // For all remaining cases, where we detect an identity/ref change,
+    // but the index hasn't changed, that is, an update of the object's
+    // internals*, we update the internal properties with the new internals
+    // similarly to 'forEachMovedItem'.
+    // * Simply said, this handles object updates where the position/index
+    // remains the same.
+    if (currIdx !== null && currIdx === record.previousIndex && !alteredItems.has(currIdx)) {
+      for (const prop of Object.keys(b[currIdx])) {
+        (a[currIdx] as any)[prop] = b[currIdx][prop];
+      }
+      updatedItems.push(a[currIdx]);
+    }
   });
 
   for (let i = a.length - 1; i >= 0; i--) {
@@ -88,5 +119,5 @@ export const diff = <T>(
     }
   }
 
-  return {newItems, removedItems, movedItems};
+  return {newItems, removedItems, movedItems, updatedItems};
 };
