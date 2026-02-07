@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ValidationErrors} from '@angular/forms';
 import type {FormField} from '../../../directive/form_field_directive';
 import type {FieldTree} from '../../types';
 import type {StandardSchemaValidationError} from './standard_schema';
@@ -454,6 +453,16 @@ export class EmailValidationError extends BaseNgValidationError {
 }
 
 /**
+ * An error used to indicate that a value entered in a native input does not parse.
+ *
+ * @category validation
+ * @experimental 21.2.0
+ */
+export class NativeInputParseError extends BaseNgValidationError {
+  override readonly kind = 'parse';
+}
+
+/**
  * The base class for all built-in, non-custom errors. This class can be used to check if an error
  * is one of the standard kinds, allowing you to switch on the kind to further narrow the type.
  *
@@ -487,4 +496,5 @@ export type NgValidationError =
   | MaxLengthValidationError
   | PatternValidationError
   | EmailValidationError
-  | StandardSchemaValidationError;
+  | StandardSchemaValidationError
+  | NativeInputParseError;

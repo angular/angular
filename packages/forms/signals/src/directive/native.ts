@@ -7,6 +7,7 @@
  */
 
 import {type Renderer2, untracked} from '@angular/core';
+import {NativeInputParseError, WithoutFieldTree} from '../api/rules';
 
 /**
  * Supported native control element types.
@@ -48,6 +49,11 @@ export function isTextualFormElement(element: HTMLElement): boolean {
   return element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
 }
 
+export interface NativeControlValue {
+  value?: unknown;
+  errors?: readonly WithoutFieldTree<NativeInputParseError>[];
+}
+
 /**
  * Returns the value from a native control element.
  *
@@ -63,18 +69,24 @@ export function isTextualFormElement(element: HTMLElement): boolean {
 export function getNativeControlValue(
   element: NativeFormControl,
   currentValue: () => unknown,
-): unknown {
+): NativeControlValue {
+  if (element.validity.badInput) {
+    return {
+      errors: [new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>],
+    };
+  }
+
   // Special cases for specific input types.
   switch (element.type) {
     case 'checkbox':
-      return element.checked;
+      return {value: element.checked};
     case 'number':
     case 'range':
     case 'datetime-local':
       // We can read a `number` or a `string` from this input type. Prefer whichever is consistent
       // with the current type.
       if (typeof untracked(currentValue) === 'number') {
-        return element.valueAsNumber;
+        return {value: element.valueAsNumber};
       }
       break;
     case 'date':
@@ -85,15 +97,15 @@ export function getNativeControlValue(
       // is consistent with the current type.
       const value = untracked(currentValue);
       if (value === null || value instanceof Date) {
-        return element.valueAsDate;
+        return {value: element.valueAsDate};
       } else if (typeof value === 'number') {
-        return element.valueAsNumber;
+        return {value: element.valueAsNumber};
       }
       break;
   }
 
   // Default to reading the value as a string.
-  return element.value;
+  return {value: element.value};
 }
 
 /**
