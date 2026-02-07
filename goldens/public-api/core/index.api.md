@@ -1768,6 +1768,21 @@ export interface SelfDecorator {
 export function setTestabilityGetter(getter: GetTestability): void;
 
 // @public
+export const SHARED_STYLES_HOST: InjectionToken<SharedStylesHost>;
+
+// @public
+export interface SharedStylesHost {
+    // (undocumented)
+    addHost(hostNode: Node): void;
+    // (undocumented)
+    addStyles(styles: string[]): void;
+    // (undocumented)
+    removeHost(hostNode: Node): void;
+    // (undocumented)
+    removeStyles(styles: string[]): void;
+}
+
+// @public
 export type Signal<T> = (() => T) & {
     [SIGNAL]: unknown;
 };

@@ -44,6 +44,7 @@ import {
   getInitialLViewFlagsFromDef,
   getOrCreateComponentTView,
 } from './view/construction';
+import {SHARED_STYLES_HOST} from '../core';
 
 /** Represents `import.meta` plus some information that's not in the built-in types. */
 type ImportMetaExtended = ImportMeta & {
@@ -249,9 +250,19 @@ function recreateLView(
       oldDef.encapsulation === ViewEncapsulation.ShadowDom ||
       oldDef.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom
     ) {
+      const sharedStylesHost = lView[INJECTOR].get(SHARED_STYLES_HOST);
+      if (oldDef.encapsulation === ViewEncapsulation.ShadowDom) {
+        // Only legacy shadow DOM uses SSH.
+        sharedStylesHost.removeHost(host.shadowRoot!);
+      }
+
       const newHost = host.cloneNode(false) as HTMLElement;
       host.replaceWith(newHost);
       host = newHost;
+
+      // if (oldDef.encapsulation === ViewEncapsulation.ShadowDom) {
+      //   sharedStylesHost.addHost(host.shadowRoot!);
+      // }
     }
 
     // Recreate the TView since the template might've changed.
