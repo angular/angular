@@ -158,7 +158,8 @@ export class HttpRequest<T> {
    * Progress events are expensive (change detection runs on each event) and so
    * they should only be requested if the consumer intends to monitor them.
    *
-   * Note: The `FetchBackend` doesn't support progress report on uploads.
+   * Note: The default `HttpBackend` based on fetch, does not support progress report for uploads.
+   * Set the `HttpXhrBackend` with `withXhr()` if you need this feature.
    */
   readonly reportProgress: boolean = false;
 
