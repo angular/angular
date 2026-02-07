@@ -836,6 +836,8 @@ export class NgCompiler {
         compilation.isCore,
         this.closureCompilerEnabled,
         this.emitDeclarationOnly,
+        compilation.refEmitter,
+        !!this.options['_experimentalEmitIntermediateTs'],
       ),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       defaultImportTracker.importPreservingTransformer(),
@@ -1632,6 +1634,7 @@ export class NgCompiler {
       semanticDepGraphUpdater,
       this.adapter,
       this.emitDeclarationOnly,
+      !!this.options['_experimentalEmitIntermediateTs'],
     );
 
     // Template type-checking may use the `ProgramDriver` to produce new `ts.Program`(s). If this

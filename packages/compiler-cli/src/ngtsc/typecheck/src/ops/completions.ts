@@ -27,10 +27,18 @@ export class TcbComponentContextCompletionOp extends TcbOp {
 
   override execute(): null {
     const ctx = ts.factory.createThis();
-    const ctxDot = ts.factory.createPropertyAccessExpression(ctx, '');
+    const ctxDot = ts.factory.createPropertyAccessExpression(ctx, '_COMPLETION');
     markIgnoreDiagnostics(ctxDot);
     addExpressionIdentifier(ctxDot, ExpressionIdentifier.COMPONENT_COMPLETION);
-    this.scope.addStatement(ts.factory.createExpressionStatement(ctxDot));
+    const stmt = ts.factory.createExpressionStatement(ctxDot);
+    ts.addSyntheticLeadingComment(
+      stmt,
+      ts.SyntaxKind.SingleLineCommentTrivia,
+      // Suppress error about _COMPLETION not existing, while preserving the type of `this` for the LS.
+      ' @ts-ignore',
+      /* hasTrailingNewLine */ true,
+    );
+    this.scope.addStatement(stmt);
     return null;
   }
 }
