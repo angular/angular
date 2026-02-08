@@ -22,10 +22,15 @@
 | `NG0505`  | [No hydration info in server response](errors/NG0505)                                |
 | `NG0506`  | [NgZone remains unstable](errors/NG0506)                                             |
 | `NG0507`  | [HTML content was altered after SSR](errors/NG0507)                                  |
+| `NG0602`  | [Disallowed function call inside reactive context](errors/NG0602)                    |
 | `NG0750`  | [@defer dependencies failed to load](errors/NG0750)                                  |
+| `NG0751`  | [@defer behavior when HMR is enabled](errors/NG0751)                                 |
 | `NG0910`  | [Unsafe bindings on an iframe element](errors/NG0910)                                |
 | `NG0912`  | [Component ID generation collision](errors/NG0912)                                   |
+| `NG0913`  | [Runtime Performance Warnings](errors/NG0913)                                        |
 | `NG0919`  | [Circular Dependency Detected](errors/NG0919)                                        |
+| `NG0950`  | [Required input is accessed before a value is set](errors/NG0950)                    |
+| `NG0951`  | [Child query result is required but no value is available](errors/NG0951)            |
 | `NG0955`  | [Track expression resulted in duplicated keys for a given collection](errors/NG0955) |
 | `NG0956`  | [Tracking expression caused re-creation of the DOM structure](errors/NG0956)         |
 | `NG01101` | [Wrong Async Validator Return Type](errors/NG01101)                                  |
