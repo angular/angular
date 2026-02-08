@@ -7,7 +7,7 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Injectable} from '@angular/core';
+import {DOCUMENT, Injectable} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule, Title} from '../../index';
 import {expect} from '@angular/private/testing/matchers';
@@ -20,7 +20,15 @@ describe('title service', () => {
   beforeEach(() => {
     doc = getDOM().createHtmlDocument();
     initialTitle = doc.title;
-    titleService = new Title(doc);
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: DOCUMENT,
+          useValue: doc,
+        },
+      ],
+    });
+    titleService = TestBed.inject(Title);
   });
 
   afterEach(() => {

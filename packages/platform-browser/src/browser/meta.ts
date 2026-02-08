@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT, ɵDomAdapter as DomAdapter, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 
 /**
  * Represents the attributes of an HTML `<meta>` element. The element itself is
@@ -57,10 +57,9 @@ export type MetaDefinition = {
  */
 @Injectable({providedIn: 'root'})
 export class Meta {
-  private _dom: DomAdapter;
-  constructor(@Inject(DOCUMENT) private _doc: any) {
-    this._dom = getDOM();
-  }
+  private _dom: DomAdapter = getDOM();
+  private readonly _doc = inject(DOCUMENT);
+
   /**
    * Retrieves or creates a specific `<meta>` tag element in the current HTML document.
    * In searching for an existing tag, Angular attempts to match the `name` or `property` attribute

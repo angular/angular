@@ -163,7 +163,6 @@ export enum HydrationFeatureKind {
 
 // @public
 export class Meta {
-    constructor(_doc: any);
     addTag(tag: MetaDefinition, forceCreation?: boolean): HTMLMetaElement | null;
     addTags(tags: MetaDefinition[], forceCreation?: boolean): HTMLMetaElement[];
     getTag(attrSelector: string): HTMLMetaElement | null;
@@ -230,7 +229,6 @@ export interface SafeValue {
 
 // @public
 export class Title {
-    constructor(_doc: any);
     getTitle(): string;
     setTitle(newTitle: string): void;
     // (undocumented)

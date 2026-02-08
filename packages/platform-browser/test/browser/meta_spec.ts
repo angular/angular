@@ -7,7 +7,7 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Injectable} from '@angular/core';
+import {DOCUMENT, Injectable} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule, Meta} from '../../index';
 import {expect} from '@angular/private/testing/matchers';
@@ -19,7 +19,15 @@ describe('Meta service', () => {
 
   beforeEach(() => {
     doc = getDOM().createHtmlDocument();
-    metaService = new Meta(doc);
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: DOCUMENT,
+          useValue: doc,
+        },
+      ],
+    });
+    metaService = TestBed.inject(Meta);
     defaultMeta = getDOM().createElement('meta', doc) as HTMLMetaElement;
     defaultMeta.setAttribute('property', 'fb:app_id');
     defaultMeta.setAttribute('content', '123456789');

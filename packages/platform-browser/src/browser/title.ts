@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 
 /**
  * A service that can be used to get and set the title of a current HTML document.
@@ -21,7 +21,7 @@ import {Inject, Injectable} from '@angular/core';
  */
 @Injectable({providedIn: 'root'})
 export class Title {
-  constructor(@Inject(DOCUMENT) private _doc: any) {}
+  private readonly _doc = inject(DOCUMENT);
   /**
    * Get the title of the current HTML document.
    */

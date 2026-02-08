@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {SharedStylesHost} from '../../src/dom/shared_styles_host';
 import {expect} from '@angular/private/testing/matchers';
+import {TestBed} from '@angular/core/testing';
+import {APP_ID} from '@angular/core';
 
 describe('SharedStylesHost', () => {
   let doc: Document;
@@ -17,7 +19,13 @@ describe('SharedStylesHost', () => {
   beforeEach(() => {
     doc = getDOM().createHtmlDocument();
     doc.title = '';
-    ssh = new SharedStylesHost(doc, 'app-id');
+    TestBed.configureTestingModule({
+      providers: [
+        {provide: DOCUMENT, useValue: doc},
+        {provide: APP_ID, useValue: 'app-id'},
+      ],
+    });
+    ssh = TestBed.inject(SharedStylesHost);
     someHost = getDOM().createElement('div');
   });
 
