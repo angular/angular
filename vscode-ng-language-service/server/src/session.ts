@@ -97,6 +97,7 @@ export class Session {
   readonly includeCompletionsForModuleExports: boolean;
   snippetSupport: boolean | undefined;
   private diagnosticsTimeout: NodeJS.Timeout | null = null;
+  private progressiveInitCancelled = false;
   isProjectLoading = false;
   /**
    * Whether the client supports pull-based diagnostics (LSP 3.17).
@@ -287,10 +288,12 @@ export class Session {
     }
     this.info(`Enabling language service for ${projectName}.`);
     this.handleCompilerOptionsDiagnostics(project);
-    // Send diagnostics since we skipped this step when opening the file.
-    // First, make sure the Angular project is complete.
+    // Run the initial Angular analysis synchronously so that the language
+    // service is functional immediately for the currently open file.
     this.runGlobalAnalysisForNewlyLoadedProject(project);
-    project.refreshDiagnostics();
+    // Process diagnostics for open files progressively in the background,
+    // yielding to the event loop between chunks so LSP requests can be served.
+    this.initializeProjectProgressively(project);
   }
 
   private disableLanguageServiceForProject(project: ts.server.Project, reason: string): void {
@@ -402,6 +405,84 @@ export class Session {
   }
 
   /**
+   * Progressively compute and send diagnostics for all open files after a
+   * project finishes loading. Files are processed in chunks with yields
+   * between chunks so that the event loop remains responsive and other LSP
+   * requests (completions, hover, etc.) can be served during startup.
+   *
+   * This replaces the previous `project.refreshDiagnostics()` call which
+   * sent a single event for all open files. Progressive initialization
+   * provides:
+   *  - Immediate feedback: users see diagnostics appearing file-by-file
+   *  - Responsiveness: the event loop is not blocked between chunks
+   *  - Cancellation: stops processing if the project is closed or a new
+   *    diagnostics request arrives (e.g., user starts typing)
+   */
+  private async initializeProjectProgressively(project: ts.server.Project): Promise<void> {
+    // Cancel any previously running progressive init.
+    this.progressiveInitCancelled = true;
+    // Allow microtask queue to flush the cancellation.
+    await setImmediateP();
+    this.progressiveInitCancelled = false;
+
+    const CHUNK_SIZE = 10;
+    const openFiles = this.openFiles.getAll();
+
+    if (isDebugMode) {
+      this.info(
+        `Progressive init: processing ${openFiles.length} open files ` +
+          `in chunks of ${CHUNK_SIZE} for ${project.getProjectName()}`,
+      );
+    }
+
+    for (let i = 0; i < openFiles.length; i += CHUNK_SIZE) {
+      // Abort if the project was closed during initialization.
+      if (project.isClosed()) {
+        this.info(
+          `Progressive init: project ${project.getProjectName()} ` +
+            `was closed, stopping initialization.`,
+        );
+        return;
+      }
+      // Abort if cancelled (e.g., a new diagnostics request arrived or
+      // another progressive init was started).
+      if (this.progressiveInitCancelled) {
+        this.info(`Progressive init: cancelled for ${project.getProjectName()}.`);
+        return;
+      }
+
+      const chunk = openFiles.slice(i, i + CHUNK_SIZE);
+      for (const fileName of chunk) {
+        const result = this.getLSAndScriptInfo(fileName);
+        if (!result) {
+          continue;
+        }
+        const diagnostics = result.languageService.getSemanticDiagnostics(fileName);
+        diagnostics.push(...result.languageService.getSuggestionDiagnostics(fileName));
+
+        // Send diagnostics immediately so the user sees results progressively.
+        this.connection.sendDiagnostics({
+          uri: filePathToUri(fileName),
+          diagnostics: diagnostics.map((d) => tsDiagnosticToLspDiagnostic(d, this.projectService)),
+        });
+      }
+
+      // Yield to the event loop between chunks so that incoming LSP requests
+      // (completions, hover, navigation, etc.) can be processed.
+      if (i + CHUNK_SIZE < openFiles.length) {
+        await setImmediateP();
+      }
+    }
+
+    if (isDebugMode) {
+      this.info(
+        `Progressive init: completed for ${project.getProjectName()} ` +
+          `(${openFiles.length} files processed).`,
+      );
+    }
+  }
+
+  /**
    * Request diagnostics to be computed due to the specified `file` being opened
    * or changed.
    * @param file File opened / changed
@@ -435,6 +516,9 @@ export class Session {
   private triggerDiagnostics(files: string[], reason: string, delay: number = 300) {
     // Do not immediately send a diagnostics request. Send only after user has
     // stopped typing after the specified delay.
+    // Cancel any ongoing progressive initialization — the user is actively
+    // editing, so those startup diagnostics will be superseded.
+    this.progressiveInitCancelled = true;
     if (this.diagnosticsTimeout) {
       // If there's an existing timeout, cancel it
       clearTimeout(this.diagnosticsTimeout);
