@@ -997,8 +997,8 @@ export abstract class AbstractControl<
     this.touched = true;
 
     const sourceControl = opts.sourceControl ?? this;
-    if (this._parent && !opts.onlySelf) {
-      this._parent.markAsTouched({...opts, sourceControl});
+    if (!opts.onlySelf) {
+      this._parent?.markAsTouched({...opts, sourceControl});
     }
 
     if (changed && opts.emitEvent !== false) {
@@ -1087,8 +1087,8 @@ export abstract class AbstractControl<
       control.markAsUntouched({onlySelf: true, emitEvent: opts.emitEvent, sourceControl});
     });
 
-    if (this._parent && !opts.onlySelf) {
-      this._parent._updateTouched(opts, sourceControl);
+    if (!opts.onlySelf) {
+      this._parent?._updateTouched(opts, sourceControl);
     }
 
     if (changed && opts.emitEvent !== false) {
@@ -1131,8 +1131,8 @@ export abstract class AbstractControl<
     this.pristine = false;
 
     const sourceControl = opts.sourceControl ?? this;
-    if (this._parent && !opts.onlySelf) {
-      this._parent.markAsDirty({...opts, sourceControl});
+    if (!opts.onlySelf) {
+      this._parent?.markAsDirty({...opts, sourceControl});
     }
 
     if (changed && opts.emitEvent !== false) {
@@ -1184,8 +1184,8 @@ export abstract class AbstractControl<
       control.markAsPristine({onlySelf: true, emitEvent: opts.emitEvent});
     });
 
-    if (this._parent && !opts.onlySelf) {
-      this._parent._updatePristine(opts, sourceControl);
+    if (!opts.onlySelf) {
+      this._parent?._updatePristine(opts, sourceControl);
     }
 
     if (changed && opts.emitEvent !== false) {
@@ -1230,8 +1230,8 @@ export abstract class AbstractControl<
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
     }
 
-    if (this._parent && !opts.onlySelf) {
-      this._parent.markAsPending({...opts, sourceControl});
+    if (!opts.onlySelf) {
+      this._parent?.markAsPending({...opts, sourceControl});
     }
   }
 
@@ -1321,12 +1321,12 @@ export abstract class AbstractControl<
     opts: {onlySelf?: boolean; emitEvent?: boolean; skipPristineCheck?: boolean},
     sourceControl: AbstractControl,
   ): void {
-    if (this._parent && !opts.onlySelf) {
-      this._parent.updateValueAndValidity(opts);
+    if (!opts.onlySelf) {
+      this._parent?.updateValueAndValidity(opts);
       if (!opts.skipPristineCheck) {
-        this._parent._updatePristine({}, sourceControl);
+        this._parent?._updatePristine({}, sourceControl);
       }
-      this._parent._updateTouched({}, sourceControl);
+      this._parent?._updateTouched({}, sourceControl);
     }
   }
 
@@ -1415,8 +1415,8 @@ export abstract class AbstractControl<
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
     }
 
-    if (this._parent && !opts.onlySelf) {
-      this._parent.updateValueAndValidity({...opts, sourceControl});
+    if (!opts.onlySelf) {
+      this._parent?.updateValueAndValidity({...opts, sourceControl});
     }
   }
 
@@ -1604,7 +1604,7 @@ export abstract class AbstractControl<
    */
   getError(errorCode: string, path?: Array<string | number> | string): any {
     const control = path ? this.get(path) : this;
-    return control && control.errors ? control.errors[errorCode] : null;
+    return control?.errors ? control.errors[errorCode] : null;
   }
 
   /**
@@ -1729,8 +1729,8 @@ export abstract class AbstractControl<
     const changed = this.pristine !== newPristine;
     this.pristine = newPristine;
 
-    if (this._parent && !opts.onlySelf) {
-      this._parent._updatePristine(opts, changedControl);
+    if (!opts.onlySelf) {
+      this._parent?._updatePristine(opts, changedControl);
     }
 
     if (changed) {
@@ -1743,8 +1743,8 @@ export abstract class AbstractControl<
     this.touched = this._anyControlsTouched();
     this._events.next(new TouchedChangeEvent(this.touched, changedControl));
 
-    if (this._parent && !opts.onlySelf) {
-      this._parent._updateTouched(opts, changedControl);
+    if (!opts.onlySelf) {
+      this._parent?._updateTouched(opts, changedControl);
     }
   }
 
@@ -1768,8 +1768,7 @@ export abstract class AbstractControl<
    * @internal
    */
   private _parentMarkedDirty(onlySelf?: boolean): boolean {
-    const parentDirty = this._parent && this._parent.dirty;
-    return !onlySelf && !!parentDirty && !this._parent!._anyControlsDirty();
+    return !onlySelf && !!this._parent?.dirty && !this._parent!._anyControlsDirty();
   }
 
   /** @internal */
