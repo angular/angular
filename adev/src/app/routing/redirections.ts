@@ -32,10 +32,6 @@ export const REDIRECT_ROUTES: Route[] = [
     redirectTo: '/guide/templates/defer',
   },
   {
-    path: 'guide/components/importing',
-    redirectTo: '/guide/components/anatomy-of-components#using-components',
-  },
-  {
     path: 'guide/templates/attribute-binding',
     redirectTo: '/guide/templates/binding#binding-dynamic-properties-and-attributes',
   },

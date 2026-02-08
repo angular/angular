@@ -63,9 +63,9 @@ export interface BootstrapContext {
 }
 
 /**
- * Bootstraps an instance of an Angular application and renders a standalone component as the
- * application's root component. More information about standalone components can be found in [this
- * guide](guide/components/importing).
+ * Bootstraps an instance of an Angular application and renders component as the
+ * application's root component. More information about components can be found in [this
+ * guide](guide/components).
  *
  * @usageNotes
  * The root component passed into this function **must** be a standalone one
