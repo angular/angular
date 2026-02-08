@@ -222,7 +222,7 @@ Each parameter is written as an attribute prefixed with `let-` with a value matc
 </ng-template>
 ```
 
-### Using `NgTemplateOutlet`
+### Using `NgTemplateOutlet` {#using-ngtemplateoutlet-with-parameters}
 
 You can bind a context object to the `ngTemplateOutletContext` input:
 
@@ -234,11 +234,11 @@ You can bind a context object to the `ngTemplateOutletContext` input:
 <ng-container [ngTemplateOutlet]="myFragment" [ngTemplateOutletContext]="{topping: 'onion'}" />
 ```
 
-### Using `ViewContainerRef`
+### Using `ViewContainerRef` {#using-viewcontainerref-with-parameters}
 
 You can pass a context object as the second argument to `createEmbeddedView`:
 
-```angular-ts
+```ts
 this.viewContainer.createEmbeddedView(this.myFragment, {topping: 'onion'});
 ```
 
