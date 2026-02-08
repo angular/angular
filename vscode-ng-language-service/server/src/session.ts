@@ -410,6 +410,12 @@ export class Session {
    * between chunks so that the event loop remains responsive and other LSP
    * requests (completions, hover, etc.) can be served during startup.
    *
+   * When pull-based diagnostics (LSP 3.17) is enabled, this method sends a
+   * `workspace/diagnostic/refresh` notification instead of computing and
+   * pushing diagnostics. This tells the client to re-pull diagnostics on its
+   * own schedule, avoiding wasted computation of diagnostics that would be
+   * discarded by the pull-based client.
+   *
    * This replaces the previous `project.refreshDiagnostics()` call which
    * sent a single event for all open files. Progressive initialization
    * provides:
@@ -424,6 +430,18 @@ export class Session {
     // Allow microtask queue to flush the cancellation.
     await setImmediateP();
     this.progressiveInitCancelled = false;
+
+    // When pull-based diagnostics is active, the client requests diagnostics
+    // on-demand. We only need to notify it that fresh diagnostics are available
+    // after the initial analysis — no need to compute them proactively.
+    if (this.usePullDiagnostics) {
+      this.logger.info(
+        `Progressive init: pull-based diagnostics active, ` +
+          `requesting client refresh for ${project.getProjectName()}.`,
+      );
+      this.connection.languages.diagnostics.refresh();
+      return;
+    }
 
     const CHUNK_SIZE = 10;
     const openFiles = this.openFiles.getAll();
