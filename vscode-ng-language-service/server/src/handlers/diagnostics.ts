@@ -8,6 +8,7 @@
 
 import * as lsp from 'vscode-languageserver/node';
 import type {CancellationToken, ResultProgressReporter} from 'vscode-languageserver/node';
+import {promisify} from 'util';
 import {Session} from '../session';
 import {tsDiagnosticToLspDiagnostic} from '../diagnostic';
 import {isDebugMode, filePathToUri, uriToFilePath} from '../utils';
@@ -20,6 +21,12 @@ import {isDebugMode, filePathToUri, uriToFilePath} from '../utils';
  */
 const diagnosticResultCache = new Map<string, {resultId: string; version: string}>();
 
+/**
+ * Promisified setImmediate, used to yield to the event loop between files.
+ * This is the same pattern used in session.ts for sendPendingDiagnostics.
+ */
+const setImmediateP = promisify(setImmediate);
+
 /** Monotonically increasing counter for generating unique result IDs. */
 let nextResultId = 1;
 
@@ -28,14 +35,6 @@ let nextResultId = 1;
  */
 function generateResultId(): string {
   return String(nextResultId++);
-}
-
-/**
- * Yield to the event loop to allow other requests to be processed.
- * This prevents blocking when processing many files in workspace diagnostics.
- */
-function yieldToEventLoop(): Promise<void> {
-  return new Promise((resolve) => setImmediate(resolve));
 }
 
 /**
@@ -153,7 +152,7 @@ export async function onWorkspaceDiagnostic(
     }
 
     // Yield to event loop between files to allow other requests (hover, completion) to be handled
-    await yieldToEventLoop();
+    await setImmediateP();
 
     const uri = filePathToUri(filePath);
     const previousResultId = previousResults.get(uri);
