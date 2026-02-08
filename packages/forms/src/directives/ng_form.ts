@@ -256,9 +256,9 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   removeControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      if (container) {
-        container.removeControl(dir.name);
-      }
+
+      container?.removeControl(dir.name);
+
       this._directives.delete(dir);
     });
   }
@@ -288,9 +288,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   removeFormGroup(dir: NgModelGroup): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      if (container) {
-        container.removeControl(dir.name);
-      }
+      container?.removeControl?.(dir.name);
     });
   }
 
