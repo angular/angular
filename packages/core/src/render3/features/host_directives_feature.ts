@@ -21,6 +21,7 @@ import type {
   HostDirectiveRanges,
   HostDirectiveResolution,
 } from '../interfaces/definition';
+import {assertNoDuplicateHostDirectives} from '../assert';
 
 /**
  * This feature adds the host directives behavior to a directive definition by patching a
@@ -69,7 +70,7 @@ export function ɵɵHostDirectivesFeature(
  * @param matches Directives resolved through selector matching.
  */
 function resolveHostDirectives(matches: DirectiveDef<unknown>[]): HostDirectiveResolution {
-  const allDirectiveDefs: DirectiveDef<unknown>[] = [];
+  const allDirectiveDefs = new Set<DirectiveDef<unknown>>();
   let hasComponent = false;
   let hostDirectiveDefs: HostDirectiveDefs | null = null;
   let hostDirectiveRanges: HostDirectiveRanges | null = null;
@@ -88,57 +89,66 @@ function resolveHostDirectives(matches: DirectiveDef<unknown>[]): HostDirectiveR
     const def = matches[i];
 
     if (def.hostDirectives !== null) {
-      const start = allDirectiveDefs.length;
+      const start = allDirectiveDefs.size;
 
       hostDirectiveDefs ??= new Map();
       hostDirectiveRanges ??= new Map();
 
       // TODO(pk): probably could return matches instead of taking in an array to fill in?
-      findHostDirectiveDefs(def, allDirectiveDefs, hostDirectiveDefs);
+      findHostDirectiveDefs(def, hostDirectiveDefs);
+
+      for (const hostDirectiveDef of hostDirectiveDefs.keys()) {
+        allDirectiveDefs.add(hostDirectiveDef);
+      }
 
       // Note that these indexes are within the offset by `directiveStart`. We can't do the
       // offsetting here, because `directiveStart` hasn't been initialized on the TNode yet.
-      hostDirectiveRanges.set(def, [start, allDirectiveDefs.length - 1]);
+      hostDirectiveRanges.set(def, [start, allDirectiveDefs.size - 1]);
     }
 
     // Component definition is always first and needs to be
     // pushed early to maintain the correct ordering.
     if (i === 0 && isComponentDef(def)) {
       hasComponent = true;
-      allDirectiveDefs.push(def);
+      allDirectiveDefs.add(def);
     }
   }
 
   for (let i = hasComponent ? 1 : 0; i < matches.length; i++) {
-    allDirectiveDefs.push(matches[i]);
+    allDirectiveDefs.add(matches[i]);
   }
 
-  return [allDirectiveDefs, hostDirectiveDefs, hostDirectiveRanges];
+  return [[...allDirectiveDefs], hostDirectiveDefs, hostDirectiveRanges];
 }
 
 function findHostDirectiveDefs(
   currentDef: DirectiveDef<unknown>,
-  matchedDefs: DirectiveDef<unknown>[],
   hostDirectiveDefs: HostDirectiveDefs,
 ): void {
+  const currentHostDirectivesDefs: HostDirectiveDef[] = [];
+
   if (currentDef.hostDirectives !== null) {
     for (const configOrFn of currentDef.hostDirectives) {
       if (typeof configOrFn === 'function') {
         const resolved = configOrFn();
         for (const config of resolved) {
-          trackHostDirectiveDef(createHostDirectiveDef(config), matchedDefs, hostDirectiveDefs);
+          const hostDirectiveDef = createHostDirectiveDef(config);
+          trackHostDirectiveDef(hostDirectiveDef, hostDirectiveDefs);
+          currentHostDirectivesDefs.push(hostDirectiveDef);
         }
       } else {
-        trackHostDirectiveDef(configOrFn, matchedDefs, hostDirectiveDefs);
+        trackHostDirectiveDef(configOrFn, hostDirectiveDefs);
+        currentHostDirectivesDefs.push(configOrFn);
       }
     }
   }
+
+  assertNoDuplicateHostDirectives(currentHostDirectivesDefs);
 }
 
 /** Tracks a single host directive during directive matching. */
 function trackHostDirectiveDef(
   def: HostDirectiveDef,
-  matchedDefs: DirectiveDef<unknown>[],
   hostDirectiveDefs: HostDirectiveDefs,
 ) {
   const hostDirectiveDef = getDirectiveDef(def.directive)!;
@@ -152,9 +162,58 @@ function trackHostDirectiveDef(
   patchDeclaredInputs(hostDirectiveDef.declaredInputs, def.inputs);
 
   // Host directives execute before the host so that its host bindings can be overwritten.
-  findHostDirectiveDefs(hostDirectiveDef, matchedDefs, hostDirectiveDefs);
-  hostDirectiveDefs.set(hostDirectiveDef, def);
-  matchedDefs.push(hostDirectiveDef);
+  findHostDirectiveDefs(hostDirectiveDef, hostDirectiveDefs);
+  hostDirectiveDefs.set(
+    hostDirectiveDef,
+    mergeHostDirectiveDefs(
+      hostDirectiveDefs.get(hostDirectiveDef),
+      def,
+    ),
+  );
+}
+
+function mergeHostDirectiveDefInputs(existingInputs: HostDirectiveBindingMap, newInputs: HostDirectiveBindingMap, hostDirectiveName: string): HostDirectiveBindingMap {
+  const inputs: HostDirectiveBindingMap = {...existingInputs};
+
+  for (const [input, alias] of Object.entries(newInputs)) {
+    if (input in inputs && inputs[input] !== alias) {
+      throw new RuntimeError(
+        RuntimeErrorCode.DUPLICATE_DIRECTIVE_INPUTS,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          `Input \`${input}\` from host directive \`${hostDirectiveName}\`, exposed with different aliases: \`${inputs[input]}\` and \`${alias}\`.`,
+      );
+    }
+
+    inputs[input] = alias;
+  }
+
+  return inputs;
+}
+
+function mergeHostDirectiveDefOutputs(existingOutputs: HostDirectiveBindingMap, newOutputs: HostDirectiveBindingMap): HostDirectiveBindingMap {
+  return {
+    ...existingOutputs,
+    ...newOutputs,
+  };
+}
+
+function mergeHostDirectiveDefs(existingDef: HostDirectiveDef | undefined, newDef: HostDirectiveDef): HostDirectiveDef {
+  if (!existingDef) {
+    return newDef;
+  }
+
+  if (existingDef.directive !== newDef.directive) {
+    throw new Error(
+      `Host directives merge conflict: tried to merge different directives ` +
+      `("${existingDef.directive.name}" vs "${newDef.directive.name}"). This should never happen.`
+    );
+  }
+
+  return {
+    directive: existingDef.directive,
+    inputs: mergeHostDirectiveDefInputs(existingDef.inputs, newDef.inputs, existingDef.directive.name),
+    outputs: mergeHostDirectiveDefOutputs(existingDef.outputs, newDef.outputs),
+  };
 }
 
 /** Creates a `HostDirectiveDef` from a used-defined host directive configuration. */
