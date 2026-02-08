@@ -104,6 +104,10 @@ describe('markdown to html', () => {
 
     expect(h2HeaderId).toBe('my-custom-id');
     expect(h2AnchorHref).toBe(`#${h2HeaderId}`);
+
+    // Verify that the custom ID syntax is removed from the displayed text
+    expect(h2Anchor?.textContent?.trim()).toBe('My heading');
+    expect(h2Anchor?.textContent).not.toContain('{#');
   });
 
   it('should be able to parse heading with a valid tag in a code block', () => {
