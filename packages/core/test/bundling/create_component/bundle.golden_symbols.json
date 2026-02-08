@@ -361,6 +361,8 @@
       "diPublicInInjector",
       "directiveHostEndFirstCreatePass",
       "directiveHostFirstCreatePass",
+      "disableStyles",
+      "enableStyles",
       "enterDI",
       "enterView",
       "epoch",
