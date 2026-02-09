@@ -39,9 +39,8 @@ import {
   Validators,
 } from '../index';
 import {By, ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
-import {dispatchEvent, isNode} from '@angular/private/testing';
+import {dispatchEvent, useAutoTick, timeout, isNode} from '@angular/private/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {timeout, useAutoTick} from './util';
 
 describe('value accessors', () => {
   useAutoTick();

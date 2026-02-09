@@ -19,7 +19,13 @@ import {
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {dispatchEvent, isNode, sortedClassList} from '@angular/private/testing';
+import {
+  dispatchEvent,
+  isNode,
+  sortedClassList,
+  useAutoTick,
+  timeout,
+} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {merge, NEVER, Observable, of, Subject, Subscription, timer} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
@@ -60,7 +66,6 @@ import {
 } from '../src/model/abstract_model';
 
 import {MyInput, MyInputForm} from './value_accessor_integration_spec';
-import {timeout, useAutoTick} from './util';
 
 // Produces a new @Directive (with a given selector) that represents a validator class.
 function createValidatorClass(selector: string) {

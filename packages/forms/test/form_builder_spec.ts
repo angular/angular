@@ -15,7 +15,7 @@ import {
   Validators,
 } from '../index';
 import {of} from 'rxjs';
-import {timeout, useAutoTick} from './util';
+import {useAutoTick, timeout} from '@angular/private/testing';
 
 (function () {
   function syncValidator() {
