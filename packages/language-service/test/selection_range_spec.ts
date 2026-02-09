@@ -127,8 +127,9 @@ function verifySelectionRanges(
 
   // --- Inline template mode ---
   {
-    // Use backticks so single quotes and newlines in template work without escaping
-    const escapedForBacktick = template.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    // Use backticks so single quotes and newlines in template work without escaping.
+    // Only escape ${ (template literal interpolation), not bare $ (e.g. $event).
+    const escapedForBacktick = template.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
     const inlineFiles = {
       'app.ts': `
         import {Component} from '@angular/core';
@@ -171,53 +172,22 @@ describe('selection range', () => {
 
   describe('external templates', () => {
     it('should return selection range for element in external template', () => {
-      const files = {
-        'app.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-app',
-            templateUrl: './app.html',
-          })
-          export class AppComponent {}
-        `,
-        'app.html': '<div>content</div>',
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const template = '<div>content</div>';
-
-      // Position on "content" text (offset 5 is 'c' in content)
-      const selectionRange = project.getSelectionRangeAtPosition('app.html', 5);
-
-      // Verify the exact expansion chain: content → <div>content</div>
-      verifyExpansionChain(selectionRange, template, ['content', '<div>content</div>']);
+      verifySelectionRanges(env, '<div>content</div>', '', [
+        {
+          label: 'content text',
+          cursorAt: 'content',
+          chain: ['content', '<div>content</div>'],
+        },
+      ]);
     });
 
     it('should return selection range for nested elements', () => {
-      const files = {
-        'app.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-app',
-            templateUrl: './app.html',
-          })
-          export class AppComponent {}
-        `,
-        'app.html': '<div><span>nested</span></div>',
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const template = '<div><span>nested</span></div>';
-      // Position on "nested" text (offset 11 is 'n' in nested)
-      const selectionRange = project.getSelectionRangeAtPosition('app.html', 11);
-
-      // Verify the exact expansion chain: nested → <span>nested</span> → <div><span>nested</span></div>
-      verifyExpansionChain(selectionRange, template, [
-        'nested',
-        '<span>nested</span>',
-        '<div><span>nested</span></div>',
+      verifySelectionRanges(env, '<div><span>nested</span></div>', '', [
+        {
+          label: 'nested text',
+          cursorAt: 'nested',
+          chain: ['nested', '<span>nested</span>', '<div><span>nested</span></div>'],
+        },
       ]);
     });
   });
@@ -748,171 +718,79 @@ describe('selection range', () => {
       });
 
       it('should expand through nested property access', () => {
-        // In {{user.address.city}}, cursor on "city" should expand through the full property chain
-        const files = {
-          'app.html': '<span>{{user.address.city}}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              user = {address: {city: 'NYC'}};
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = '<span>{{user.address.city}}</span>';
-        // Position on "city" - offset 23 is 'c' in city
-        const cityPos = 23;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', cityPos);
-
-        // Verify expansion chain - tests AST traversal through property access nodes
-        // Cursor on 'city' → only city's containing node, no ancestor receivers
-        verifyExpansionChain(selectionRange, template, [
-          'user.address.city',
-          '{{user.address.city}}',
-          '<span>{{user.address.city}}</span>',
+        verifySelectionRanges(env, '<span>{{user.address.city}}</span>', `user = {address: {city: 'NYC'}};`, [
+          {
+            label: 'cursor on city',
+            cursorAt: 'city',
+            chain: ['user.address.city', '{{user.address.city}}', '<span>{{user.address.city}}</span>'],
+          },
         ]);
       });
 
       it('should handle control flow blocks', () => {
-        // @if block should expand properly
-        const files = {
-          'app.html': '@if (show) { <span>content</span> }',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              show = true;
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "content" text
-        const contentPos = 20;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', contentPos);
-
-        const template = files['app.html'];
-
-        // content → <span>content</span> → @if branch body → @if block
-        verifyExpansionChain(selectionRange, template, [
-          'content',
-          '<span>content</span>',
-          ' <span>content</span> ',
-          '@if (show) { <span>content</span> }',
+        verifySelectionRanges(env, '@if (show) { <span>content</span> }', `show = true;`, [
+          {
+            label: 'cursor on content',
+            cursorAt: 'content',
+            chain: [
+              'content',
+              '<span>content</span>',
+              ' <span>content</span> ',
+              '@if (show) { <span>content</span> }',
+            ],
+          },
         ]);
       });
 
       it('should handle bound attributes', () => {
-        // Selection in [value]="expr" should expand properly
-        const files = {
-          'app.html': '<input [value]="userName">',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              userName = 'test';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = '<input [value]="userName">';
-        // Position on "userName" in the binding (offset 17 is 'u' in userName)
-        const userNamePos = 17;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', userNamePos);
-
-        // Verify expansion: userName → value → [value]="userName" → <input [value]="userName">
-        verifyExpansionChain(selectionRange, template, [
-          'userName',
-          'value',
-          '[value]="userName"',
-          '<input [value]="userName">',
+        verifySelectionRanges(env, '<input [value]="userName">', `userName = 'test';`, [
+          {
+            label: 'cursor on userName',
+            cursorAt: 'userName',
+            chain: ['userName', 'value', '[value]="userName"', '<input [value]="userName">'],
+          },
         ]);
       });
 
       it('should handle event handlers', () => {
-        // Selection in (click)="handler()" should expand properly
-        const files = {
-          'app.html': '<button (click)="handleClick()">Click</button>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              handleClick() {}
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "handleClick" in the event
-        const handlePos = 18;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', handlePos);
-
-        const template = files['app.html'];
-
-        // handleClick → handleClick() → click → (click)="handleClick()" → <button>
-        verifyExpansionChain(selectionRange, template, [
-          'handleClick',
-          'handleClick()',
-          'click',
-          '(click)="handleClick()"',
+        verifySelectionRanges(
+          env,
           '<button (click)="handleClick()">Click</button>',
-        ]);
+          `handleClick() {}`,
+          [
+            {
+              label: 'cursor on handleClick',
+              cursorAt: 'handleClick',
+              chain: [
+                'handleClick',
+                'handleClick()',
+                'click',
+                '(click)="handleClick()"',
+                '<button (click)="handleClick()">Click</button>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should group multiple attributes as siblings', () => {
-        // Selection in one attribute should be able to expand to include all sibling attributes
-        const files = {
-          'app.html': '<input id="name" class="form-control" type="text" placeholder="Enter name">',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template =
-          '<input id="name" class="form-control" type="text" placeholder="Enter name">';
-        // Position on "name" value in id attribute (offset 11 is 'n' in name)
-        const namePos = 11;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
-
-        // Verify expansion includes attribute sibling grouping
-        // Should expand: name → id="name" → [all attributes] → <input ...>
-        verifyExpansionChain(selectionRange, template, [
-          'name',
-          'id="name"',
-          'id="name" class="form-control" type="text" placeholder="Enter name"',
+        verifySelectionRanges(
+          env,
           '<input id="name" class="form-control" type="text" placeholder="Enter name">',
-        ]);
+          ``,
+          [
+            {
+              label: 'cursor on name value in id attribute',
+              cursorAt: 'name',
+              chain: [
+                'name',
+                'id="name"',
+                'id="name" class="form-control" type="text" placeholder="Enter name"',
+                '<input id="name" class="form-control" type="text" placeholder="Enter name">',
+              ],
+            },
+          ],
+        );
       });
     });
   });
@@ -920,38 +798,26 @@ describe('selection range', () => {
   describe('control flow blocks', () => {
     describe('@for blocks', () => {
       it('should handle @for loop with track expression', () => {
-        const files = {
-          'app.html': '@for (item of items; track item.id) { <div>{{item.name}}</div> }',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              items = [{id: 1, name: 'Item 1'}];
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "item.name" in interpolation
-        const namePos = files['app.html'].indexOf('item.name');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
-
-        const template = files['app.html'];
-
-        // item → item.name → {{item.name}} → <div>...</div> → @for body → @for block
-        verifyExpansionChain(selectionRange, template, [
-          'item',
-          'item.name',
-          '{{item.name}}',
-          '<div>{{item.name}}</div>',
-          ' <div>{{item.name}}</div> ',
+        const template = '@for (item of items; track item.id) { <div>{{item.name}}</div> }';
+        verifySelectionRanges(
+          env,
           template,
-        ]);
+          `items = [{id: 1, name: 'Item 1'}];`,
+          [
+            {
+              label: 'cursor on item in item.name',
+              cursorAt: 'item.name',
+              chain: [
+                'item',
+                'item.name',
+                '{{item.name}}',
+                '<div>{{item.name}}</div>',
+                ' <div>{{item.name}}</div> ',
+                template,
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle @for with @empty block', () => {
@@ -1604,77 +1470,52 @@ describe('selection range', () => {
 
     describe('method calls', () => {
       it('should expand from call argument through argument list to full call', () => {
-        // Cursor on "currency" argument inside fn(value, "currency", 2)
-        const files = {
-          'app.html': '<span>{{ formatValue(value, "currency", 2) }}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              value = 100;
-              formatValue(v: number, type: string, decimals: number) { return v.toString(); }
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "currency" (inside quotes)
-        const currencyPos = template.indexOf('currency');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', currencyPos);
-
-        // currency → "currency" → value, "currency", 2 → formatValue(...) → {{ ... }} → <span>...</span>
-        verifyExpansionChain(selectionRange, template, [
-          'currency',
-          '"currency"',
-          'value, "currency", 2',
-          'formatValue(value, "currency", 2)',
-          '{{ formatValue(value, "currency", 2) }}',
+        verifySelectionRanges(
+          env,
           '<span>{{ formatValue(value, "currency", 2) }}</span>',
-        ]);
+          `value = 100;
+        formatValue(v: number, type: string, decimals: number) { return v.toString(); }`,
+          [
+            {
+              label: 'cursor on currency string argument',
+              cursorAt: 'currency',
+              chain: [
+                'currency',
+                '"currency"',
+                'value, "currency", 2',
+                'formatValue(value, "currency", 2)',
+                '{{ formatValue(value, "currency", 2) }}',
+                '<span>{{ formatValue(value, "currency", 2) }}</span>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should expand from method name through property chain', () => {
-        const files = {
-          'app.html': '<span>{{ items.filter(isActive).map(getName).join(", ") }}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              items: any[] = [];
-              isActive = (x: any) => true;
-              getName = (x: any) => x.name;
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "filter" — in a property chain
-        const filterPos = template.indexOf('filter');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', filterPos);
-
-        // items.filter (PropertyRead) → items.filter(isActive) (Call) → ...map → ...map(getName) → ...join → ...join(", ") → {{ ... }} → <span>...</span>
-        verifyExpansionChain(selectionRange, template, [
-          'items.filter',
-          'items.filter(isActive)',
-          'items.filter(isActive).map',
-          'items.filter(isActive).map(getName)',
-          'items.filter(isActive).map(getName).join',
-          'items.filter(isActive).map(getName).join(", ")',
-          '{{ items.filter(isActive).map(getName).join(", ") }}',
+        verifySelectionRanges(
+          env,
           '<span>{{ items.filter(isActive).map(getName).join(", ") }}</span>',
-        ]);
+          `items: any[] = [];
+        isActive = (x: any) => true;
+        getName = (x: any) => x.name;`,
+          [
+            {
+              label: 'cursor on filter in method chain',
+              cursorAt: 'filter',
+              chain: [
+                'items.filter',
+                'items.filter(isActive)',
+                'items.filter(isActive).map',
+                'items.filter(isActive).map(getName)',
+                'items.filter(isActive).map(getName).join',
+                'items.filter(isActive).map(getName).join(", ")',
+                '{{ items.filter(isActive).map(getName).join(", ") }}',
+                '<span>{{ items.filter(isActive).map(getName).join(", ") }}</span>',
+              ],
+            },
+          ],
+        );
       });
     });
 
@@ -1724,37 +1565,26 @@ describe('selection range', () => {
       });
 
       it('should handle nested ternary', () => {
-        const files = {
-          'app.html': '<span>{{ a ? b ? "AB" : "A" : "None" }}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              a = true;
-              b = true;
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on inner "b"
-        const bPos = template.indexOf(' b ') + 1;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', bPos);
-
-        // b → inner ternary → outer ternary → interpolation → element
-        verifyExpansionChain(selectionRange, template, [
-          'b',
-          'b ? "AB" : "A"',
-          'a ? b ? "AB" : "A" : "None"',
-          '{{ a ? b ? "AB" : "A" : "None" }}',
+        verifySelectionRanges(
+          env,
           '<span>{{ a ? b ? "AB" : "A" : "None" }}</span>',
-        ]);
+          `a = true;
+        b = true;`,
+          [
+            {
+              label: 'cursor on inner b',
+              cursorAt: ' b ',
+              offset: 1,
+              chain: [
+                'b',
+                'b ? "AB" : "A"',
+                'a ? b ? "AB" : "A" : "None"',
+                '{{ a ? b ? "AB" : "A" : "None" }}',
+                '<span>{{ a ? b ? "AB" : "A" : "None" }}</span>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle nullish coalescing from both sides', () => {
@@ -1900,267 +1730,151 @@ describe('selection range', () => {
 
     describe('literal expressions', () => {
       it('should handle array literal in binding', () => {
-        const files = {
-          'app.html': '<app-list [items]="[1, 2, 3, 4, 5]"></app-list>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position inside the array literal (on the opening bracket)
-        const arrayPos = template.indexOf('[1,');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', arrayPos);
-
-        // [1, 2, 3, 4, 5] → items key → full attribute → element
-        verifyExpansionChain(selectionRange, template, [
-          '[1, 2, 3, 4, 5]',
-          'items',
-          '[items]="[1, 2, 3, 4, 5]"',
+        verifySelectionRanges(
+          env,
           '<app-list [items]="[1, 2, 3, 4, 5]"></app-list>',
-        ]);
+          ``,
+          [
+            {
+              label: 'cursor on array literal',
+              cursorAt: '[1,',
+              chain: [
+                '[1, 2, 3, 4, 5]',
+                'items',
+                '[items]="[1, 2, 3, 4, 5]"',
+                '<app-list [items]="[1, 2, 3, 4, 5]"></app-list>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle object literal in binding', () => {
-        const files = {
-          'app.html': `<app-config [options]="{theme: 'dark', size: 'large'}"></app-config>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "theme" key in object literal
-        const themePos = template.indexOf('theme');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', themePos);
-
-        // Cursor on "theme" key in LiteralMap - Angular doesn't give individual spans for map keys
-        // So the innermost node is the entire LiteralMap
-        verifyExpansionChain(selectionRange, template, [
-          "{theme: 'dark', size: 'large'}",
-          'options',
-          `[options]="{theme: 'dark', size: 'large'}"`,
+        verifySelectionRanges(
+          env,
           `<app-config [options]="{theme: 'dark', size: 'large'}"></app-config>`,
-        ]);
+          ``,
+          [
+            {
+              label: 'cursor on theme key in object literal',
+              cursorAt: 'theme',
+              chain: [
+                "{theme: 'dark', size: 'large'}",
+                'options',
+                `[options]="{theme: 'dark', size: 'large'}"`,
+                `<app-config [options]="{theme: 'dark', size: 'large'}"></app-config>`,
+              ],
+            },
+          ],
+        );
       });
     });
 
     describe('arrow function expressions', () => {
       it('should expand through arrow function body', () => {
-        const files = {
-          'app.html': `<div>{{ x => x * 2 }}</div>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-
-        // Position on the first "x" in the body expression
-        const xPos = template.indexOf('x * 2');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', xPos);
-
-        // x → x * 2 (Binary) → x => x * 2 (arrow function) → interpolation → element
-        verifyExpansionChain(selectionRange, template, [
-          'x',
-          'x * 2',
-          'x => x * 2',
-          '{{ x => x * 2 }}',
-          '<div>{{ x => x * 2 }}</div>',
+        verifySelectionRanges(env, `<div>{{ x => x * 2 }}</div>`, ``, [
+          {
+            label: 'cursor on x in body',
+            cursorAt: 'x * 2',
+            chain: ['x', 'x * 2', 'x => x * 2', '{{ x => x * 2 }}', '<div>{{ x => x * 2 }}</div>'],
+          },
         ]);
       });
 
       it('should handle arrow function in property binding', () => {
-        const files = {
-          'app.html': `<button [disabled]="items.some(item => item.invalid)">Submit</button>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              items = [{invalid: false}];
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-
-        // Position on "item" in "item.invalid" (inside arrow function)
-        const itemPos = template.indexOf('item.invalid');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', itemPos);
-
-        // item → item.invalid → item => item.invalid → args span → items.some(...) → disabled key → full attribute → element
-        verifyExpansionChain(selectionRange, template, [
-          'item',
-          'item.invalid',
-          'item => item.invalid',
-          'items.some(item => item.invalid)',
-          'disabled',
-          '[disabled]="items.some(item => item.invalid)"',
-          '<button [disabled]="items.some(item => item.invalid)">Submit</button>',
-        ]);
+        verifySelectionRanges(
+          env,
+          `<button [disabled]="items.some(item => item.invalid)">Submit</button>`,
+          `items = [{invalid: false}];`,
+          [
+            {
+              label: 'cursor on item in item.invalid',
+              cursorAt: 'item.invalid',
+              chain: [
+                'item',
+                'item.invalid',
+                'item => item.invalid',
+                'items.some(item => item.invalid)',
+                'disabled',
+                '[disabled]="items.some(item => item.invalid)"',
+                '<button [disabled]="items.some(item => item.invalid)">Submit</button>',
+              ],
+            },
+          ],
+        );
       });
     });
 
     describe('pipe expressions', () => {
       it('should expand through pipe chains from input expression', () => {
-        const files = {
-          'app.html': `<div>{{ name | uppercase | slice:0:5 }}</div>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              name = 'Angular';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        const namePos = template.indexOf('name');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
-
-        // name → name | uppercase → name | uppercase | slice:0:5 → {{ ... }} → <div>...</div>
-        verifyExpansionChain(selectionRange, template, [
-          'name',
-          'name | uppercase',
-          'name | uppercase | slice:0:5',
-          '{{ name | uppercase | slice:0:5 }}',
-          '<div>{{ name | uppercase | slice:0:5 }}</div>',
-        ]);
+        verifySelectionRanges(
+          env,
+          `<div>{{ name | uppercase | slice:0:5 }}</div>`,
+          `name = 'Angular';`,
+          [
+            {
+              label: 'cursor on name',
+              cursorAt: 'name',
+              chain: [
+                'name',
+                'name | uppercase',
+                'name | uppercase | slice:0:5',
+                '{{ name | uppercase | slice:0:5 }}',
+                '<div>{{ name | uppercase | slice:0:5 }}</div>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should expand from pipe argument in chained pipes', () => {
-        const files = {
-          'app.html': `<div>{{ name | uppercase | slice:0:5 }}</div>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              name = 'Angular';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "5" in slice:0:5 (the second arg to slice pipe)
-        const fivePos = template.indexOf(':5') + 1;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', fivePos);
-
-        // 5 → slice:0:5 → name | uppercase | slice:0:5 → {{ ... }} → <div>...</div>
-        verifyExpansionChain(selectionRange, template, [
-          '5',
-          'slice:0:5',
-          'name | uppercase | slice:0:5',
-          '{{ name | uppercase | slice:0:5 }}',
-          '<div>{{ name | uppercase | slice:0:5 }}</div>',
-        ]);
+        verifySelectionRanges(
+          env,
+          `<div>{{ name | uppercase | slice:0:5 }}</div>`,
+          `name = 'Angular';`,
+          [
+            {
+              label: 'cursor on 5 (second arg to slice pipe)',
+              cursorAt: ':5',
+              offset: 1,
+              chain: [
+                '5',
+                'slice:0:5',
+                'name | uppercase | slice:0:5',
+                '{{ name | uppercase | slice:0:5 }}',
+                '<div>{{ name | uppercase | slice:0:5 }}</div>',
+              ],
+            },
+          ],
+        );
       });
     });
 
     describe('literal expressions', () => {
       it('should expand through array literals', () => {
-        const files = {
-          'app.html': `<div [items]="[1, 2, 3]"></div>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-
-        // Position on "1" (first element of array)
-        const onePos = template.indexOf('1');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', onePos);
-
-        // 1 → [1, 2, 3] → items key → full attribute → element
-        verifyExpansionChain(selectionRange, template, [
-          '1',
-          '[1, 2, 3]',
-          'items',
-          '[items]="[1, 2, 3]"',
-          '<div [items]="[1, 2, 3]"></div>',
+        verifySelectionRanges(env, `<div [items]="[1, 2, 3]"></div>`, ``, [
+          {
+            label: 'cursor on first element',
+            cursorAt: '1',
+            chain: ['1', '[1, 2, 3]', 'items', '[items]="[1, 2, 3]"', '<div [items]="[1, 2, 3]"></div>'],
+          },
         ]);
       });
 
       it('should expand through object literals', () => {
-        const files = {
-          'app.html': `<div [config]="{theme: 'dark', size: 10}"></div>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-
-        // Position on 'dark' (string literal)
-        const darkPos = template.indexOf("'dark'");
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', darkPos);
-
-        // Cursor on 'dark' string literal value - has inner content span (dark) then quoted span ('dark')
-        verifyExpansionChain(selectionRange, template, [
-          'dark',
-          "'dark'",
-          "{theme: 'dark', size: 10}",
-          'config',
-          `[config]="{theme: 'dark', size: 10}"`,
-          `<div [config]="{theme: 'dark', size: 10}"></div>`,
+        verifySelectionRanges(env, `<div [config]="{theme: 'dark', size: 10}"></div>`, ``, [
+          {
+            label: 'cursor on dark string literal',
+            cursorAt: "'dark'",
+            chain: [
+              'dark',
+              "'dark'",
+              "{theme: 'dark', size: 10}",
+              'config',
+              `[config]="{theme: 'dark', size: 10}"`,
+              `<div [config]="{theme: 'dark', size: 10}"></div>`,
+            ],
+          },
         ]);
       });
     });
@@ -2246,143 +1960,93 @@ describe('selection range', () => {
   describe('binding patterns', () => {
     describe('two-way binding', () => {
       it('should handle banana-in-a-box syntax', () => {
-        const files = {
-          'app.html': '<input [(ngModel)]="userName">',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              userName = '';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "userName"
-        const userPos = template.indexOf('userName');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', userPos);
-
-        // userName → ngModel key → [(ngModel)]="userName" → element
-        verifyExpansionChain(selectionRange, template, [
-          'userName',
-          'ngModel',
-          '[(ngModel)]="userName"',
+        verifySelectionRanges(
+          env,
           '<input [(ngModel)]="userName">',
-        ]);
+          `userName = '';`,
+          [
+            {
+              label: 'cursor on userName',
+              cursorAt: 'userName',
+              chain: [
+                'userName',
+                'ngModel',
+                '[(ngModel)]="userName"',
+                '<input [(ngModel)]="userName">',
+              ],
+            },
+          ],
+        );
       });
     });
 
     describe('class and style bindings', () => {
       it('should handle [class.name] binding', () => {
-        const files = {
-          'app.html': '<div [class.active]="isActive" [class.disabled]="isDisabled">Content</div>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              isActive = true;
-              isDisabled = false;
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "isActive" in first binding
-        const activePos = template.indexOf('isActive');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', activePos);
-
-        // isActive → class.active key → [class.active]="isActive" → attribute group → element
-        verifyExpansionChain(selectionRange, template, [
-          'isActive',
-          'class.active',
-          '[class.active]="isActive"',
-          '[class.active]="isActive" [class.disabled]="isDisabled"',
+        verifySelectionRanges(
+          env,
           '<div [class.active]="isActive" [class.disabled]="isDisabled">Content</div>',
-        ]);
+          `isActive = true;
+        isDisabled = false;`,
+          [
+            {
+              label: 'cursor on isActive',
+              cursorAt: 'isActive',
+              chain: [
+                'isActive',
+                'class.active',
+                '[class.active]="isActive"',
+                '[class.active]="isActive" [class.disabled]="isDisabled"',
+                '<div [class.active]="isActive" [class.disabled]="isDisabled">Content</div>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle [style.property] binding', () => {
-        const files = {
-          'app.html':
-            '<div [style.width.px]="containerWidth" [style.background-color]="bgColor">Content</div>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              containerWidth = 200;
-              bgColor = 'blue';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "containerWidth"
-        const widthPos = template.indexOf('containerWidth');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', widthPos);
-
-        // containerWidth → style.width.px key → full attribute → attribute group → element
-        verifyExpansionChain(selectionRange, template, [
-          'containerWidth',
-          'style.width.px',
-          '[style.width.px]="containerWidth"',
-          '[style.width.px]="containerWidth" [style.background-color]="bgColor"',
+        verifySelectionRanges(
+          env,
           '<div [style.width.px]="containerWidth" [style.background-color]="bgColor">Content</div>',
-        ]);
+          `containerWidth = 200;
+        bgColor = 'blue';`,
+          [
+            {
+              label: 'cursor on containerWidth',
+              cursorAt: 'containerWidth',
+              chain: [
+                'containerWidth',
+                'style.width.px',
+                '[style.width.px]="containerWidth"',
+                '[style.width.px]="containerWidth" [style.background-color]="bgColor"',
+                '<div [style.width.px]="containerWidth" [style.background-color]="bgColor">Content</div>',
+              ],
+            },
+          ],
+        );
       });
     });
 
     describe('attribute bindings', () => {
       it('should handle [attr.name] binding', () => {
-        const files = {
-          'app.html':
-            '<button [attr.aria-label]="buttonLabel" [attr.data-testid]="testId">Click</button>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              buttonLabel = 'Submit form';
-              testId = 'submit-btn';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "buttonLabel"
-        const labelPos = template.indexOf('buttonLabel');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', labelPos);
-
-        // buttonLabel → attr.aria-label key → full attribute → attribute group → element
-        verifyExpansionChain(selectionRange, template, [
-          'buttonLabel',
-          'attr.aria-label',
-          '[attr.aria-label]="buttonLabel"',
-          '[attr.aria-label]="buttonLabel" [attr.data-testid]="testId"',
+        verifySelectionRanges(
+          env,
           '<button [attr.aria-label]="buttonLabel" [attr.data-testid]="testId">Click</button>',
-        ]);
+          `buttonLabel = 'Submit form';
+        testId = 'submit-btn';`,
+          [
+            {
+              label: 'cursor on buttonLabel',
+              cursorAt: 'buttonLabel',
+              chain: [
+                'buttonLabel',
+                'attr.aria-label',
+                '[attr.aria-label]="buttonLabel"',
+                '[attr.aria-label]="buttonLabel" [attr.data-testid]="testId"',
+                '<button [attr.aria-label]="buttonLabel" [attr.data-testid]="testId">Click</button>',
+              ],
+            },
+          ],
+        );
       });
     });
   });
@@ -2670,116 +2334,79 @@ describe('selection range', () => {
 
     describe('mixed content', () => {
       it('should handle elements with mixed text, interpolation and elements', () => {
-        const files = {
-          'app.html':
-            '<p>Hello <strong>{{user.name}}</strong>, welcome to <em>{{siteName}}</em>!</p>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              user = {name: 'John'};
-              siteName = 'My App';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "user" in "user.name" interpolation inside <strong>
-        const namePos = template.indexOf('user.name');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
-
-        // user → user.name → {{user.name}} → <strong> → children (siblings) → <p>
-        verifyExpansionChain(selectionRange, template, [
-          'user',
-          'user.name',
-          '{{user.name}}',
-          '<strong>{{user.name}}</strong>',
-          'Hello <strong>{{user.name}}</strong>, welcome to <em>{{siteName}}</em>!',
+        verifySelectionRanges(
+          env,
           '<p>Hello <strong>{{user.name}}</strong>, welcome to <em>{{siteName}}</em>!</p>',
-        ]);
+          `user = {name: 'John'};
+        siteName = 'My App';`,
+          [
+            {
+              label: 'cursor on user in user.name',
+              cursorAt: 'user.name',
+              chain: [
+                'user',
+                'user.name',
+                '{{user.name}}',
+                '<strong>{{user.name}}</strong>',
+                'Hello <strong>{{user.name}}</strong>, welcome to <em>{{siteName}}</em>!',
+                '<p>Hello <strong>{{user.name}}</strong>, welcome to <em>{{siteName}}</em>!</p>',
+              ],
+            },
+          ],
+        );
       });
     });
 
     describe('component inputs with complex expressions', () => {
       it('should handle input with function call returning object', () => {
-        const files = {
-          'app.html':
-            '<app-config [settings]="getSettings({theme: currentTheme, locale: userLocale})"></app-config>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              currentTheme = 'dark';
-              userLocale = 'en-US';
-              getSettings(opts: any) { return opts; }
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        const themePos = template.indexOf('currentTheme');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', themePos);
-
-        // currentTheme → {theme: currentTheme, locale: userLocale} (object arg) → getSettings(...) → settings key → full attribute → element
-        verifyExpansionChain(selectionRange, template, [
-          'currentTheme',
-          '{theme: currentTheme, locale: userLocale}',
-          'getSettings({theme: currentTheme, locale: userLocale})',
-          'settings',
-          '[settings]="getSettings({theme: currentTheme, locale: userLocale})"',
+        verifySelectionRanges(
+          env,
           '<app-config [settings]="getSettings({theme: currentTheme, locale: userLocale})"></app-config>',
-        ]);
+          `currentTheme = 'dark';
+        userLocale = 'en-US';
+        getSettings(opts: any) { return opts; }`,
+          [
+            {
+              label: 'cursor on currentTheme',
+              cursorAt: 'currentTheme',
+              chain: [
+                'currentTheme',
+                '{theme: currentTheme, locale: userLocale}',
+                'getSettings({theme: currentTheme, locale: userLocale})',
+                'settings',
+                '[settings]="getSettings({theme: currentTheme, locale: userLocale})"',
+                '<app-config [settings]="getSettings({theme: currentTheme, locale: userLocale})"></app-config>',
+              ],
+            },
+          ],
+        );
       });
     });
 
     describe('event handlers with complex expressions', () => {
       it('should handle event with ternary and method call', () => {
-        const files = {
-          'app.html':
-            '<button (click)="isEnabled ? handleClick($event, item.id) : noOp()">Action</button>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              isEnabled = true;
-              item = {id: 1};
-              handleClick(event: Event, id: number) {}
-              noOp() {}
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        const clickPos = template.indexOf('handleClick');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', clickPos);
-
-        // handleClick → handleClick($event, item.id) → ternary → click key → event binding → element
-        verifyExpansionChain(selectionRange, template, [
-          'handleClick',
-          'handleClick($event, item.id)',
-          'isEnabled ? handleClick($event, item.id) : noOp()',
-          'click',
-          '(click)="isEnabled ? handleClick($event, item.id) : noOp()"',
+        verifySelectionRanges(
+          env,
           '<button (click)="isEnabled ? handleClick($event, item.id) : noOp()">Action</button>',
-        ]);
+          `isEnabled = true;
+        item = {id: 1};
+        handleClick(event: Event, id: number) {}
+        noOp() {}`,
+          [
+            {
+              label: 'cursor on handleClick',
+              cursorAt: 'handleClick',
+              chain: [
+                'handleClick',
+                'handleClick($event, item.id)',
+                'isEnabled ? handleClick($event, item.id) : noOp()',
+                'click',
+                '(click)="isEnabled ? handleClick($event, item.id) : noOp()"',
+                '<button (click)="isEnabled ? handleClick($event, item.id) : noOp()">Action</button>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle event with arrow function', () => {
@@ -2945,68 +2572,45 @@ describe('selection range', () => {
       });
 
       it('should handle self-closing element', () => {
-        const files = {
-          'app.html': '<input type="text" [value]="name" />',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              name = '';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "name" in [value]="name" (single-line self-closing)
-        const namePos = template.indexOf('name');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
-
-        // name → value key → [value]="name" → attribute group → element
-        verifyExpansionChain(selectionRange, template, [
-          'name',
-          'value',
-          '[value]="name"',
-          'type="text" [value]="name"',
+        verifySelectionRanges(
+          env,
           '<input type="text" [value]="name" />',
-        ]);
+          `name = '';`,
+          [
+            {
+              label: 'cursor on name in [value]',
+              cursorAt: 'name',
+              chain: [
+                'name',
+                'value',
+                '[value]="name"',
+                'type="text" [value]="name"',
+                '<input type="text" [value]="name" />',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle multiple interpolations in single text node', () => {
-        const files = {
-          'app.html': '<span>{{a}} + {{b}} = {{a + b}}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              a = 1;
-              b = 2;
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on first "a" in {{a}}
-        const aPos = template.indexOf('{{a}}') + 2;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', aPos);
-
-        // a → children (siblings) → element
-        verifyExpansionChain(selectionRange, template, [
-          'a',
-          '{{a}} + {{b}} = {{a + b}}',
+        verifySelectionRanges(
+          env,
           '<span>{{a}} + {{b}} = {{a + b}}</span>',
-        ]);
+          `a = 1;
+        b = 2;`,
+          [
+            {
+              label: 'cursor on first a in {{a}}',
+              cursorAt: '{{a}}',
+              offset: 2,
+              chain: [
+                'a',
+                '{{a}} + {{b}} = {{a + b}}',
+                '<span>{{a}} + {{b}} = {{a + b}}</span>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle whitespace-only text nodes', () => {
@@ -3044,32 +2648,22 @@ describe('selection range', () => {
       });
 
       it('should handle attribute with empty value', () => {
-        const files = {
-          'app.html': '<input disabled="">',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "disabled"
-        const attrPos = template.indexOf('disabled');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', attrPos);
-
-        // disabled → disabled="" → <input disabled="">
-        verifyExpansionChain(selectionRange, template, [
-          'disabled',
-          'disabled=""',
+        verifySelectionRanges(
+          env,
           '<input disabled="">',
-        ]);
+          ``,
+          [
+            {
+              label: 'cursor on disabled',
+              cursorAt: 'disabled',
+              chain: [
+                'disabled',
+                'disabled=""',
+                '<input disabled="">',
+              ],
+            },
+          ],
+        );
       });
     });
 
@@ -3078,35 +2672,24 @@ describe('selection range', () => {
         // Bug reproduction: selecting text inside element content should expand to:
         // text → element containing text → children grouped → full element
         // NOT: text → partial opening tag + content
-        const files = {
-          'app.html': `<div data-test-id="test1" style="border: 1px solid"><strong>BLUE text</strong><br>More content</div>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "BLUE" in the content
-        const bluePos = template.indexOf('BLUE');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', bluePos);
-
-        // Verify expansion now includes word as the innermost step
-        // Note: Line span same as text node so one gets deduplicated
-        verifyExpansionChain(selectionRange, template, [
-          'BLUE', // Word at cursor
-          'BLUE text', // Text node (line is same, deduplicated)
-          '<strong>BLUE text</strong>', // Strong element
-          '<strong>BLUE text</strong><br>More content', // Siblings grouped
-          '<div data-test-id="test1" style="border: 1px solid"><strong>BLUE text</strong><br>More content</div>', // Full element
-        ]);
+        verifySelectionRanges(
+          env,
+          '<div data-test-id="test1" style="border: 1px solid"><strong>BLUE text</strong><br>More content</div>',
+          ``,
+          [
+            {
+              label: 'cursor on BLUE',
+              cursorAt: 'BLUE',
+              chain: [
+                'BLUE', // Word at cursor
+                'BLUE text', // Text node (line is same, deduplicated)
+                '<strong>BLUE text</strong>', // Strong element
+                '<strong>BLUE text</strong><br>More content', // Siblings grouped
+                '<div data-test-id="test1" style="border: 1px solid"><strong>BLUE text</strong><br>More content</div>', // Full element
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle complex element with many attributes and bound properties', () => {
@@ -3196,127 +2779,87 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
       // These tests verify the core Angular AST selection behavior.
 
       it('should select full style attribute value', () => {
-        const files = {
-          'app.html': '<div style="color: red; background: blue">Content</div>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "red" in style value - core LS gives full value, CSS LSP enhances
-        const redPos = template.indexOf('red');
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', redPos);
-
-        // Core LS provides: full value → full attribute → element
-        // CSS LSP in VS Code server adds: property-value → declaration → ... (granular)
-        verifyExpansionChain(selectionRange, template, [
-          'color: red; background: blue', // Full style value (core LS)
-          'style="color: red; background: blue"', // Full attribute
-          '<div style="color: red; background: blue">Content</div>', // Full element
-        ]);
+        verifySelectionRanges(
+          env,
+          '<div style="color: red; background: blue">Content</div>',
+          ``,
+          [
+            {
+              label: 'cursor on red in style value',
+              cursorAt: 'red',
+              chain: [
+                'color: red; background: blue', // Full style value (core LS)
+                'style="color: red; background: blue"', // Full attribute
+                '<div style="color: red; background: blue">Content</div>', // Full element
+              ],
+            },
+          ],
+        );
       });
 
       it('should select full class attribute value', () => {
-        const files = {
-          'app.html': '<div class="foo bar baz">Content</div>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "bar" in class value - core LS gives full value
-        const barPos = template.indexOf('bar');
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', barPos);
-
-        // Core LS provides: full value → full attribute → element
-        // CSS LSP in VS Code server adds individual class name selection
-        verifyExpansionChain(selectionRange, template, [
-          'foo bar baz', // Full class value (core LS)
-          'class="foo bar baz"', // Full attribute
-          '<div class="foo bar baz">Content</div>', // Full element
-        ]);
+        verifySelectionRanges(
+          env,
+          '<div class="foo bar baz">Content</div>',
+          ``,
+          [
+            {
+              label: 'cursor on bar in class value',
+              cursorAt: 'bar',
+              chain: [
+                'foo bar baz', // Full class value (core LS)
+                'class="foo bar baz"', // Full attribute
+                '<div class="foo bar baz">Content</div>', // Full element
+              ],
+            },
+          ],
+        );
       });
     });
 
     describe('nested plain elements', () => {
       it('should expand through nested divs when cursor is on style attribute', () => {
         // Reproduces bug where expanding from style attribute skips parent elements
-        const template = `<div style="padding: 20px;"><div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div></div>`;
-        const files = {
-          'app.html': template,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "color: red" VALUE (inside the quotes) in the <strong style="...">
-        const colorValuePos = template.indexOf('color: red');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', colorValuePos);
-
-        // The expansion chain should include ALL parent elements
-        verifyExpansionChain(selectionRange, template, [
-          'color: red;', // attribute value
-          'style="color: red;"', // full attribute
-          '<strong style="color: red;">TEXT</strong>', // strong element
-          '<div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div>', // inner div
-          template, // outer div
-        ]);
+        verifySelectionRanges(
+          env,
+          '<div style="padding: 20px;"><div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div></div>',
+          ``,
+          [
+            {
+              label: 'cursor on color: red value',
+              cursorAt: 'color: red',
+              chain: [
+                'color: red;', // attribute value
+                'style="color: red;"', // full attribute
+                '<strong style="color: red;">TEXT</strong>', // strong element
+                '<div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div>', // inner div
+                '<div style="padding: 20px;"><div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div></div>', // outer div
+              ],
+            },
+          ],
+        );
       });
 
       it('should not skip parent elements for deeply nested elements', () => {
-        const template = `<div id="outer"><h2>Title</h2><div id="inner"><strong style="color: #080;">PASS</strong><br>Info text</div></div>`;
-        const files = {
-          'app.html': template,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "PASS" text inside <strong>
-        const passPos = template.indexOf('PASS');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', passPos);
-
-        // PASS → <strong...>PASS</strong> → siblings → <div id="inner">...</div> → siblings → <div id="outer">...</div>
-        verifyExpansionChain(selectionRange, template, [
-          'PASS',
-          '<strong style="color: #080;">PASS</strong>',
-          '<strong style="color: #080;">PASS</strong><br>Info text',
-          '<div id="inner"><strong style="color: #080;">PASS</strong><br>Info text</div>',
-          '<h2>Title</h2><div id="inner"><strong style="color: #080;">PASS</strong><br>Info text</div>',
-          template,
-        ]);
+        verifySelectionRanges(
+          env,
+          '<div id="outer"><h2>Title</h2><div id="inner"><strong style="color: #080;">PASS</strong><br>Info text</div></div>',
+          ``,
+          [
+            {
+              label: 'cursor on PASS',
+              cursorAt: 'PASS',
+              chain: [
+                'PASS',
+                '<strong style="color: #080;">PASS</strong>',
+                '<strong style="color: #080;">PASS</strong><br>Info text',
+                '<div id="inner"><strong style="color: #080;">PASS</strong><br>Info text</div>',
+                '<h2>Title</h2><div id="inner"><strong style="color: #080;">PASS</strong><br>Info text</div>',
+                '<div id="outer"><h2>Title</h2><div id="inner"><strong style="color: #080;">PASS</strong><br>Info text</div></div>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should expand correctly from text content in multi-line element', () => {
