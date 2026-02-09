@@ -2811,4 +2811,66 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
       });
     });
   });
+
+  describe('preserveWhitespaces', () => {
+    it('should produce identical chain for compact templates regardless of preserveWhitespaces', () => {
+      // For compact single-line templates, preserveWhitespaces has no effect
+      verifySelectionRanges(
+        env,
+        `<div><span>text</span></div>`,
+        ``,
+        [
+          {
+            label: 'compact template with preserveWhitespaces',
+            cursorAt: 'text',
+            chain: ['text', '<span>text</span>', '<div><span>text</span></div>'],
+          },
+        ],
+        {preserveWhitespaces: true},
+      );
+    });
+
+    it('should include whitespace text nodes as siblings when preserveWhitespaces is true', () => {
+      // With preserveWhitespaces: true, the newlines/indentation become Text nodes,
+      // which affects the sibling span (all children grouped together).
+      const template = `<div>\n  <span>content</span>\n</div>`;
+      verifySelectionRanges(
+        env,
+        template,
+        ``,
+        [
+          {
+            label: 'whitespace-preserved multiline',
+            cursorAt: 'content',
+            chain: [
+              'content',
+              '<span>content</span>',
+              '\n  <span>content</span>\n',
+              '<div>\n  <span>content</span>\n</div>',
+            ],
+          },
+        ],
+        {preserveWhitespaces: true},
+      );
+    });
+
+    it('should handle interpolation in whitespace-preserved template', () => {
+      // With preserveWhitespaces, the interpolation is embedded in a larger text block
+      // that includes surrounding whitespace, so {{ name }} is not a separate step.
+      const template = `<div>\n  {{ name }}\n</div>`;
+      verifySelectionRanges(
+        env,
+        template,
+        `name = 'test';`,
+        [
+          {
+            label: 'interpolation with preserved whitespace',
+            cursorAt: 'name',
+            chain: ['name', '\n  {{ name }}\n', '<div>\n  {{ name }}\n</div>'],
+          },
+        ],
+        {preserveWhitespaces: true},
+      );
+    });
+  });
 });
