@@ -392,7 +392,7 @@ export function extractDirectiveMetadata(
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
   const sourceFile = clazz.getSourceFile();
-  const type = wrapTypeReference(reflector, clazz);
+  const type = wrapTypeReference(clazz);
 
   const rawHostDirectives = directive.get('hostDirectives') || null;
   const hostDirectives =
