@@ -1241,9 +1241,79 @@ describe('selection range', () => {
 
   describe('expression patterns', () => {
     describe('pipe expressions', () => {
-      it('should handle single pipe', () => {
+      it('should expand from pipe argument through pipe name+args to full pipe', () => {
+        // Cursor on 'short' string content inside pipe arg
         const files = {
-          'app.html': '<span>{{ value | uppercase }}</span>',
+          'app.html': `<span>{{ value | date:'short' }}</span>`,
+          'app.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'my-app',
+              templateUrl: './app.html',
+            })
+            export class AppComponent {
+              value = new Date();
+            }
+          `,
+        };
+
+        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
+        // Position on "short" (inside the quotes)
+        const shortPos = template.indexOf('short');
+
+        const selectionRange = project.getSelectionRangeAtPosition('app.html', shortPos);
+
+        // short → 'short' → date:'short' → value | date:'short' → {{ ... }} → <span>...</span>
+        verifyExpansionChain(selectionRange, template, [
+          'short',
+          `'short'`,
+          `date:'short'`,
+          `value | date:'short'`,
+          `{{ value | date:'short' }}`,
+          `<span>{{ value | date:'short' }}</span>`,
+        ]);
+      });
+
+      it('should expand from pipe name through pipe name+args to full pipe', () => {
+        // Cursor on pipe name 'date'
+        const files = {
+          'app.html': `<span>{{ value | date:'short' }}</span>`,
+          'app.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'my-app',
+              templateUrl: './app.html',
+            })
+            export class AppComponent {
+              value = new Date();
+            }
+          `,
+        };
+
+        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
+        // Position on "date" pipe name
+        const datePos = template.indexOf('date');
+
+        const selectionRange = project.getSelectionRangeAtPosition('app.html', datePos);
+
+        // date → date:'short' → value | date:'short' → {{ ... }} → <span>...</span>
+        verifyExpansionChain(selectionRange, template, [
+          'date',
+          `date:'short'`,
+          `value | date:'short'`,
+          `{{ value | date:'short' }}`,
+          `<span>{{ value | date:'short' }}</span>`,
+        ]);
+      });
+
+      it('should expand from pipe input expression to full pipe', () => {
+        // Cursor on input expression 'value'
+        const files = {
+          'app.html': `<span>{{ value | uppercase }}</span>`,
           'app.ts': `
             import {Component} from '@angular/core';
 
@@ -1258,15 +1328,56 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "value"
-        const valuePos = files['app.html'].indexOf('value');
+        const template = files['app.html'];
+        const valuePos = template.indexOf('value');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', valuePos);
 
-        expect(selectionRange).toBeDefined();
+        // value → value | uppercase → {{ value | uppercase }} → <span>...</span>
+        verifyExpansionChain(selectionRange, template, [
+          'value',
+          'value | uppercase',
+          '{{ value | uppercase }}',
+          '<span>{{ value | uppercase }}</span>',
+        ]);
       });
 
-      it('should handle chained pipes', () => {
+      it('should handle pipe with multiple arguments', () => {
+        // For date:'fullDate':'UTC', cursor on 'UTC'
+        const files = {
+          'app.html': `<span>{{ birthday | date:'fullDate':'UTC' }}</span>`,
+          'app.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'my-app',
+              templateUrl: './app.html',
+            })
+            export class AppComponent {
+              birthday = new Date();
+            }
+          `,
+        };
+
+        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
+        // Position on "UTC" (inside quotes)
+        const utcPos = template.indexOf('UTC');
+
+        const selectionRange = project.getSelectionRangeAtPosition('app.html', utcPos);
+
+        // UTC → 'UTC' → date:'fullDate':'UTC' → birthday | date:'fullDate':'UTC' → {{ ... }} → <span>...</span>
+        verifyExpansionChain(selectionRange, template, [
+          'UTC',
+          `'UTC'`,
+          `date:'fullDate':'UTC'`,
+          `birthday | date:'fullDate':'UTC'`,
+          `{{ birthday | date:'fullDate':'UTC' }}`,
+          `<span>{{ birthday | date:'fullDate':'UTC' }}</span>`,
+        ]);
+      });
+
+      it('should handle chained pipes from input expression', () => {
         const files = {
           'app.html': '<span>{{ data | async | json }}</span>',
           'app.ts': `
@@ -1284,42 +1395,25 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "data"
-        const dataPos = files['app.html'].indexOf('data');
+        const template = files['app.html'];
+        const dataPos = template.indexOf('data');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', dataPos);
 
-        expect(selectionRange).toBeDefined();
-      });
-
-      it('should handle pipe with arguments', () => {
-        const files = {
-          'app.html': `<span>{{ birthday | date:'fullDate':'UTC' }}</span>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              birthday = new Date();
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "birthday"
-        const birthdayPos = files['app.html'].indexOf('birthday');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', birthdayPos);
-
-        expect(selectionRange).toBeDefined();
+        // data → data | async → data | async | json → {{ ... }} → <span>...</span>
+        verifyExpansionChain(selectionRange, template, [
+          'data',
+          'data | async',
+          'data | async | json',
+          '{{ data | async | json }}',
+          '<span>{{ data | async | json }}</span>',
+        ]);
       });
     });
 
     describe('method calls', () => {
-      it('should handle method call with arguments', () => {
+      it('should expand from call argument through argument list to full call', () => {
+        // Cursor on "currency" argument inside fn(value, "currency", 2)
         const files = {
           'app.html': '<span>{{ formatValue(value, "currency", 2) }}</span>',
           'app.ts': `
@@ -1337,15 +1431,24 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "formatValue"
-        const methodPos = files['app.html'].indexOf('formatValue');
+        const template = files['app.html'];
+        // Position on "currency" (inside quotes)
+        const currencyPos = template.indexOf('currency');
 
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', methodPos);
+        const selectionRange = project.getSelectionRangeAtPosition('app.html', currencyPos);
 
-        expect(selectionRange).toBeDefined();
+        // currency → "currency" → value, "currency", 2 → formatValue(...) → {{ ... }} → <span>...</span>
+        verifyExpansionChain(selectionRange, template, [
+          'currency',
+          '"currency"',
+          'value, "currency", 2',
+          'formatValue(value, "currency", 2)',
+          '{{ formatValue(value, "currency", 2) }}',
+          '<span>{{ formatValue(value, "currency", 2) }}</span>',
+        ]);
       });
 
-      it('should handle chained method calls', () => {
+      it('should expand from method name through property chain', () => {
         const files = {
           'app.html': '<span>{{ items.filter(isActive).map(getName).join(", ") }}</span>',
           'app.ts': `
@@ -1364,12 +1467,27 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "filter"
-        const filterPos = files['app.html'].indexOf('filter');
+        const template = files['app.html'];
+        // Position on "filter" — in a property chain
+        const filterPos = template.indexOf('filter');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', filterPos);
 
         expect(selectionRange).toBeDefined();
+        if (!selectionRange) return;
+
+        // Collect chain texts
+        const chain: string[] = [];
+        let range: ts.SelectionRange | undefined = selectionRange;
+        while (range) {
+          chain.push(template.substring(range.textSpan.start, range.textSpan.start + range.textSpan.length));
+          range = range.parent;
+        }
+
+        // "filter" is a property read in a chain, so expansion should include chain steps
+        // The chain should include items.filter(isActive) and outer calls
+        expect(chain.some(s => s.includes('items'))).toBe(true);
+        expect(chain.some(s => s.includes('join'))).toBe(true);
       });
     });
 
@@ -1676,7 +1794,7 @@ describe('selection range', () => {
     });
 
     describe('pipe expressions', () => {
-      it('should expand through pipe chains', () => {
+      it('should expand through pipe chains from input expression', () => {
         const files = {
           'app.html': `<div>{{ name | uppercase | slice:0:5 }}</div>`,
           'app.ts': `
@@ -1694,14 +1812,51 @@ describe('selection range', () => {
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
         const template = files['app.html'];
-
-        // Position on  "name"
         const namePos = template.indexOf('name');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
 
-        expect(selectionRange).toBeDefined();
-        // Should have: name → name | uppercase → name | uppercase | slice:0:5
+        // name → name | uppercase → name | uppercase | slice:0:5 → {{ ... }} → <div>...</div>
+        verifyExpansionChain(selectionRange, template, [
+          'name',
+          'name | uppercase',
+          'name | uppercase | slice:0:5',
+          '{{ name | uppercase | slice:0:5 }}',
+          '<div>{{ name | uppercase | slice:0:5 }}</div>',
+        ]);
+      });
+
+      it('should expand from pipe argument in chained pipes', () => {
+        const files = {
+          'app.html': `<div>{{ name | uppercase | slice:0:5 }}</div>`,
+          'app.ts': `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'my-app',
+              templateUrl: './app.html',
+            })
+            export class AppComponent {
+              name = 'Angular';
+            }
+          `,
+        };
+
+        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
+        // Position on "5" in slice:0:5 (the second arg to slice pipe)
+        const fivePos = template.indexOf(':5') + 1;
+
+        const selectionRange = project.getSelectionRangeAtPosition('app.html', fivePos);
+
+        // 5 → slice:0:5 → name | uppercase | slice:0:5 → {{ ... }} → <div>...</div>
+        verifyExpansionChain(selectionRange, template, [
+          '5',
+          'slice:0:5',
+          'name | uppercase | slice:0:5',
+          '{{ name | uppercase | slice:0:5 }}',
+          '<div>{{ name | uppercase | slice:0:5 }}</div>',
+        ]);
       });
     });
 

@@ -8,29 +8,18 @@
 
 import {
   AST,
-  ArrowFunction,
   ASTWithSource,
-  Binary,
   BindingPipe,
   Call,
-  Chain,
-  Conditional,
   Interpolation,
   KeyedRead,
-  LiteralArray,
-  LiteralMap,
   LiteralPrimitive,
-  NonNullAssert,
-  ParenthesizedExpression,
   ParseSourceSpan,
-  PrefixNot,
   PropertyRead,
-  RegularExpressionLiteral,
+  RecursiveAstVisitor,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
-  SpreadElement,
-  TaggedTemplateLiteral,
   TemplateLiteral,
   TemplateLiteralElement,
   ThisReceiver,
@@ -66,8 +55,6 @@ import {
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
   TmplAstVisitor,
-  TypeofExpression,
-  VoidExpression,
 } from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import ts from 'typescript';
@@ -336,6 +323,230 @@ function getSiblingsSpan(siblings: TmplAstNode[], currentNode: TmplAstNode): Spa
 
   return {start, end};
 }
+
+// ============================================================================
+// Expression Visitor (extends RecursiveAstVisitor for automatic dispatch)
+// ============================================================================
+
+/**
+ * Expression-level visitor for selection range.
+ *
+ * Extends `RecursiveAstVisitor` so that all expression types (`Binary`,
+ * `Conditional`, `BindingPipe`, `PrefixNot`, `Unary`, `Call`, `SafeCall`,
+ * `LiteralArray`, `LiteralMap`, etc.) get automatic position-based recursion
+ * via the centralized `visit()` override.
+ *
+ * Only overrides expression types that need special span-insertion behaviour:
+ * property chains, string literal inner spans, template literal `${...}`,
+ * and `Interpolation` dispatch.
+ */
+class SelectionRangeExpressionVisitor extends RecursiveAstVisitor {
+  readonly path: PathEntry[] = [];
+
+  constructor(private readonly position: number) {
+    super();
+  }
+
+  // ------------------------------------------------------------------
+  // Central dispatch – position filtering + path recording
+  // ------------------------------------------------------------------
+
+  override visit(ast: AST, context?: any): any {
+    // Unwrap ASTWithSource first (like CombinedRecursiveAstVisitor)
+    if (ast instanceof ASTWithSource) {
+      const outerSpan = ast.sourceSpan;
+      if (!isWithin(this.position, outerSpan)) return;
+      this.path.push({node: ast, span: {start: outerSpan.start, end: outerSpan.end}});
+      return this.visit(ast.ast, context);
+    }
+
+    const span = ast.sourceSpan;
+    if (!isWithin(this.position, span)) return;
+
+    // Skip zero-length spans (ImplicitReceiver, ThisReceiver, etc.)
+    if (span.start !== span.end) {
+      this.path.push({node: ast, span: {start: span.start, end: span.end}});
+    }
+
+    // Dispatch to visitBinary, visitCall, visitConditional, etc.
+    // Each visit method calls this.visit() on children,
+    // which re-enters this override for position checking.
+    return ast.visit(this, context);
+  }
+
+  // ------------------------------------------------------------------
+  // Special cases that need custom behaviour
+  // ------------------------------------------------------------------
+
+  /**
+   * Property chains: add ALL ancestor receivers regardless of position.
+   * For `user.address.city`, selecting near `city` yields:
+   *   user → user.address → user.address.city
+   */
+  override visitPropertyRead(ast: PropertyRead, context: any): any {
+    this.addPropertyChainReceiver(ast.receiver);
+  }
+
+  override visitSafePropertyRead(ast: SafePropertyRead, context: any): any {
+    this.addPropertyChainReceiver(ast.receiver);
+  }
+
+  override visitKeyedRead(ast: KeyedRead, context: any): any {
+    this.addPropertyChainReceiver(ast.receiver);
+    this.visit(ast.key, context);
+  }
+
+  override visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any {
+    this.addPropertyChainReceiver(ast.receiver);
+    this.visit(ast.key, context);
+  }
+
+  /**
+   * Pipes: add intermediate span for pipe name + args.
+   * For `now() | date:'short'`, produces:
+   *   short → 'short' → date:'short' → now() | date:'short'
+   *
+   * For multiple args like `date:'short':'pl'`:
+   *   pl → 'pl' → date:'short':'pl' → now() | date:'short':'pl'
+   */
+  override visitPipe(ast: BindingPipe, context: any): any {
+    // Compute the pipe name (+ args) region span: `date:'short'`
+    const pipeNameStart = ast.nameSpan.start;
+    const lastArgEnd =
+      ast.args.length > 0
+        ? ast.args[ast.args.length - 1].sourceSpan.end
+        : ast.nameSpan.end;
+
+    // Only add intermediate spans if cursor is within the pipe name + args region
+    if (this.position >= pipeNameStart && this.position <= lastArgEnd) {
+      // Add full pipe-region span: `date:'short'` (only if different from just the name)
+      if (lastArgEnd > ast.nameSpan.end) {
+        this.path.push({node: null, span: {start: pipeNameStart, end: lastArgEnd}});
+      }
+      // Add pipe name span: `date` — only if cursor is actually on the pipe name
+      if (
+        ast.nameSpan.end > ast.nameSpan.start &&
+        this.position >= ast.nameSpan.start &&
+        this.position <= ast.nameSpan.end
+      ) {
+        this.path.push({
+          node: null,
+          span: {start: ast.nameSpan.start, end: ast.nameSpan.end},
+        });
+      }
+    }
+
+    // Continue recursion into exp and args
+    this.visit(ast.exp, context);
+    this.visitAll(ast.args, context);
+  }
+
+  /**
+   * Calls: add intermediate span for arguments list.
+   * For `fn(a, b, c)`, produces: b → a, b, c → fn(a, b, c)
+   * Matches TypeScript's smart selection behaviour.
+   */
+  override visitCall(ast: Call, context: any): any {
+    this.addCallArgumentsSpan(ast);
+    this.visit(ast.receiver, context);
+    this.visitAll(ast.args, context);
+  }
+
+  override visitSafeCall(ast: SafeCall, context: any): any {
+    this.addCallArgumentsSpan(ast);
+    this.visit(ast.receiver, context);
+    this.visitAll(ast.args, context);
+  }
+
+  private addCallArgumentsSpan(ast: Call | SafeCall): void {
+    if (ast.args.length > 0) {
+      const argSpan = ast.argumentSpan;
+      if (
+        argSpan.end > argSpan.start &&
+        this.position >= argSpan.start &&
+        this.position <= argSpan.end
+      ) {
+        this.path.push({node: null, span: {start: argSpan.start, end: argSpan.end}});
+      }
+    }
+  }
+
+  /**
+   * String literals: add inner span (without quotes).
+   * For `'hello'`, produces: `hello` → `'hello'`
+   */
+  override visitLiteralPrimitive(ast: LiteralPrimitive, context: any): any {
+    if (typeof ast.value === 'string') {
+      const span = ast.sourceSpan;
+      if (span.end - span.start >= 2) {
+        this.path.push({
+          node: null,
+          span: {start: span.start + 1, end: span.end - 1},
+        });
+      }
+    }
+  }
+
+  /**
+   * Template literals: add `${...}` wrapper spans around the active expression.
+   */
+  override visitTemplateLiteral(ast: TemplateLiteral, context: any): any {
+    for (let i = 0; i < ast.expressions.length; i++) {
+      const expr = ast.expressions[i];
+      if (isWithin(this.position, expr.sourceSpan)) {
+        // Compute ${...} wrapper span using element boundaries
+        let templateExprStart = expr.sourceSpan.start - 2; // `${`
+        let templateExprEnd = expr.sourceSpan.end + 1; // `}`
+        if (ast.elements[i]) {
+          templateExprStart = ast.elements[i].sourceSpan.end;
+        }
+        if (ast.elements[i + 1]) {
+          templateExprEnd = ast.elements[i + 1].sourceSpan.start;
+        }
+        this.path.push({node: null, span: {start: templateExprStart, end: templateExprEnd}});
+        this.visit(expr, context);
+        break;
+      }
+    }
+  }
+
+  /**
+   * Interpolation: find and visit the specific expression containing position.
+   */
+  override visitInterpolation(ast: Interpolation, context: any): any {
+    for (const expr of ast.expressions) {
+      if (isWithin(this.position, expr.sourceSpan)) {
+        this.visit(expr, context);
+        break;
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // Helper: build property / keyed-access chain path
+  // ------------------------------------------------------------------
+
+  private addPropertyChainReceiver(receiver: AST): void {
+    const span = receiver.sourceSpan;
+    if (span.start === span.end) return; // Skip ImplicitReceiver / ThisReceiver
+
+    this.path.push({node: receiver, span: {start: span.start, end: span.end}});
+
+    let inner = receiver instanceof ASTWithSource ? receiver.ast : receiver;
+    if (
+      inner instanceof PropertyRead ||
+      inner instanceof SafePropertyRead ||
+      inner instanceof KeyedRead ||
+      inner instanceof SafeKeyedRead
+    ) {
+      this.addPropertyChainReceiver(inner.receiver);
+    }
+  }
+}
+
+// ============================================================================
+// Template Visitor (custom TmplAstVisitor with position snapping & siblings)
+// ============================================================================
 
 /**
  * Visitor to collect the path from root to the deepest node containing the position.
@@ -918,225 +1129,14 @@ class SelectionRangeVisitor implements TmplAstVisitor {
     }
   }
 
-  private visitExpression(ast: AST): void {
-    const span = ast.sourceSpan;
-    if (!isWithin(this.position, span)) {
-      return;
-    }
-
-    // Unwrap ASTWithSource
-    let innerAst = ast;
-    if (ast instanceof ASTWithSource) {
-      innerAst = ast.ast;
-    }
-
-    // Add the current expression's span
-    this.path.push({node: ast, span: {start: span.start, end: span.end}});
-
-    // Recursively visit sub-expressions based on AST type
-    if (innerAst instanceof Interpolation) {
-      // For Interpolation, find and visit the specific expression containing the position
-      for (const expr of innerAst.expressions) {
-        const exprSpan = expr.sourceSpan;
-        if (isWithin(this.position, exprSpan)) {
-          this.visitExpression(expr);
-          break;
-        }
-      }
-    } else if (innerAst instanceof PropertyRead || innerAst instanceof SafePropertyRead) {
-      // For property access (user.name), ALWAYS visit the receiver (user)
-      // This creates chain: user → user.name (even if cursor is on "name")
-      // The receiver won't be added if position isn't within its span (caught by check at top)
-      // But we still need to try visiting it to build the full chain
-      if (innerAst.receiver) {
-        // Temporarily bypass the position check for receivers in property chains
-        // We want to add all ancestor receivers to the path
-        this.visitPropertyChainReceiver(innerAst.receiver);
-      }
-    } else if (innerAst instanceof KeyedRead || innerAst instanceof SafeKeyedRead) {
-      // For keyed access (arr[0]), visit object
-      // Only visit key if position is within it
-      if (innerAst.receiver) {
-        this.visitPropertyChainReceiver(innerAst.receiver);
-      }
-      if (innerAst.key && isWithin(this.position, innerAst.key.sourceSpan)) {
-        this.visitExpression(innerAst.key);
-      }
-    } else if (innerAst instanceof Call || innerAst instanceof SafeCall) {
-      // For method calls (doThing(arg)), visit receiver
-      if (innerAst.receiver) {
-        this.visitExpression(innerAst.receiver);
-      }
-      // Visit arguments only if position is within them
-      for (const arg of innerAst.args) {
-        if (isWithin(this.position, arg.sourceSpan)) {
-          this.visitExpression(arg);
-        }
-      }
-    } else if (innerAst instanceof Binary) {
-      // For binary expressions (a + b), visit the operand containing the position
-      if (isWithin(this.position, innerAst.left.sourceSpan)) {
-        this.visitExpression(innerAst.left);
-      } else if (isWithin(this.position, innerAst.right.sourceSpan)) {
-        this.visitExpression(innerAst.right);
-      }
-    } else if (innerAst instanceof Conditional) {
-      // For ternary (cond ? a : b), visit the part containing the position
-      if (isWithin(this.position, innerAst.condition.sourceSpan)) {
-        this.visitExpression(innerAst.condition);
-      } else if (isWithin(this.position, innerAst.trueExp.sourceSpan)) {
-        this.visitExpression(innerAst.trueExp);
-      } else if (isWithin(this.position, innerAst.falseExp.sourceSpan)) {
-        this.visitExpression(innerAst.falseExp);
-      }
-    } else if (innerAst instanceof NonNullAssert) {
-      // For non-null assertion (user!), visit the expression
-      this.visitExpression(innerAst.expression);
-    } else if (innerAst instanceof TemplateLiteral) {
-      // For template strings `text ${expr} more`, visit expressions in ${...}
-      // Like TypeScript's handling of template literals
-      for (let i = 0; i < innerAst.expressions.length; i++) {
-        const expr = innerAst.expressions[i];
-        if (isWithin(this.position, expr.sourceSpan)) {
-          // Add the ${...} span using the boundaries from template literal elements
-          // elements[i] ends before ${, elements[i+1] starts after }
-          // So ${expr} spans from elements[i].end to elements[i+1].start
-          const exprSpan = expr.sourceSpan;
-          let templateExprStart = exprSpan.start - 2; // Default: 2 chars for ${
-          let templateExprEnd = exprSpan.end + 1; // Default: 1 char for }
-
-          // Use actual element boundaries if available
-          if (innerAst.elements[i]) {
-            templateExprStart = innerAst.elements[i].sourceSpan.end;
-          }
-          if (innerAst.elements[i + 1]) {
-            templateExprEnd = innerAst.elements[i + 1].sourceSpan.start;
-          }
-
-          this.path.push({node: null, span: {start: templateExprStart, end: templateExprEnd}});
-          this.visitExpression(expr);
-          break;
-        }
-      }
-    } else if (innerAst instanceof LiteralPrimitive && typeof innerAst.value === 'string') {
-      // For string literals 'foo' or "foo", like TypeScript, add both:
-      // - inside quotes: foo
-      // - with quotes: 'foo'
-      // The outer span is already added above, now add inner span
-      const literalSpan = innerAst.sourceSpan;
-      if (literalSpan.end - literalSpan.start >= 2) {
-        // Add span inside quotes (start+1 to end-1)
-        this.path.push({
-          node: null,
-          span: {start: literalSpan.start + 1, end: literalSpan.end - 1},
-        });
-      }
-    } else if (innerAst instanceof ArrowFunction) {
-      // For arrow functions (a, b) => a + b, visit body
-      // Parameters are handled by spans - each param has its own sourceSpan
-      // The full function span is already added above
-      // For selection: param → params list → body → full arrow function
-      if (innerAst.body && isWithin(this.position, innerAst.body.sourceSpan)) {
-        this.visitExpression(innerAst.body);
-      }
-    } else if (innerAst instanceof BindingPipe) {
-      // For pipes (value | uppercase | slice:0:10), visit expression and arguments
-      // Expansion: arg → pipe → piped expr → next pipe → full chain
-      if (isWithin(this.position, innerAst.exp.sourceSpan)) {
-        this.visitExpression(innerAst.exp);
-      }
-      // Visit pipe arguments
-      for (const arg of innerAst.args) {
-        if (isWithin(this.position, arg.sourceSpan)) {
-          this.visitExpression(arg);
-        }
-      }
-    } else if (innerAst instanceof LiteralArray) {
-      // For array literals [1, 2, 3], visit elements
-      for (const element of innerAst.expressions) {
-        if (isWithin(this.position, element.sourceSpan)) {
-          this.visitExpression(element);
-        }
-      }
-    } else if (innerAst instanceof LiteralMap) {
-      // For object literals {key: value}, visit values
-      for (const value of innerAst.values) {
-        if (isWithin(this.position, value.sourceSpan)) {
-          this.visitExpression(value);
-        }
-      }
-    } else if (innerAst instanceof PrefixNot) {
-      // For prefix not !value, visit expression
-      if (isWithin(this.position, innerAst.expression.sourceSpan)) {
-        this.visitExpression(innerAst.expression);
-      }
-    } else if (innerAst instanceof TypeofExpression) {
-      // For typeof expression, visit the expression
-      if (isWithin(this.position, innerAst.expression.sourceSpan)) {
-        this.visitExpression(innerAst.expression);
-      }
-    } else if (innerAst instanceof SpreadElement) {
-      // For spread ...expr, visit the expression
-      if (isWithin(this.position, innerAst.expression.sourceSpan)) {
-        this.visitExpression(innerAst.expression);
-      }
-    } else if (innerAst instanceof Chain) {
-      // For chain a; b; c (multiple statements), visit each expression
-      for (const expr of innerAst.expressions) {
-        if (isWithin(this.position, expr.sourceSpan)) {
-          this.visitExpression(expr);
-        }
-      }
-    } else if (innerAst instanceof TaggedTemplateLiteral) {
-      // For tagged template tag`str ${expr}`, visit tag and template
-      if (isWithin(this.position, innerAst.tag.sourceSpan)) {
-        this.visitExpression(innerAst.tag);
-      }
-      if (isWithin(this.position, innerAst.template.sourceSpan)) {
-        this.visitExpression(innerAst.template);
-      }
-    } else if (innerAst instanceof VoidExpression) {
-      // For void expr, visit the expression
-      if (isWithin(this.position, innerAst.expression.sourceSpan)) {
-        this.visitExpression(innerAst.expression);
-      }
-    } else if (innerAst instanceof ParenthesizedExpression) {
-      // For parenthesized (expr), visit the inner expression
-      // The parentheses themselves are just syntactic - the expression is what matters
-      if (isWithin(this.position, innerAst.expression.sourceSpan)) {
-        this.visitExpression(innerAst.expression);
-      }
-    }
-    // ThisReceiver, ImplicitReceiver, EmptyExpr, TemplateLiteralElement,
-    // and RegularExpressionLiteral have no sub-expressions to visit
-    // They are leaf nodes in the expression tree
-    // Other expression types (ImplicitReceiver, numbers, etc.) have no sub-expressions
-  }
-
   /**
-   * Visit receivers in a property/keyed access chain, adding all ancestor nodes.
-   * For user.address.city, this adds: user → user.address → user.address.city
+   * Delegate expression traversal to `SelectionRangeExpressionVisitor`,
+   * which extends `RecursiveAstVisitor` for automatic dispatch of all
+   * expression types with centralized position filtering.
    */
-  private visitPropertyChainReceiver(receiver: AST): void {
-    // Always add the receiver to build the full chain, regardless of position
-    const span = receiver.sourceSpan;
-    this.path.push({node: receiver, span: {start: span.start, end: span.end}});
-
-    // Continue up the chain if receiver is also a property/keyed access
-    let innerReceiver = receiver;
-    if (receiver instanceof ASTWithSource) {
-      innerReceiver = receiver.ast;
-    }
-
-    if (
-      innerReceiver instanceof PropertyRead ||
-      innerReceiver instanceof SafePropertyRead ||
-      innerReceiver instanceof KeyedRead ||
-      innerReceiver instanceof SafeKeyedRead
-    ) {
-      if (innerReceiver.receiver) {
-        this.visitPropertyChainReceiver(innerReceiver.receiver);
-      }
-    }
+  private visitExpression(ast: AST): void {
+    const exprVisitor = new SelectionRangeExpressionVisitor(this.position);
+    exprVisitor.visit(ast);
+    this.path.push(...exprVisitor.path);
   }
 }
