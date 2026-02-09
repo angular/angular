@@ -613,37 +613,6 @@ describe('import manager', () => {
     );
   });
 
-  it('should avoid collisions with generated identifiers', () => {
-    const {testFile, emit} = createTestProgram(``);
-    const manager = new ImportManager();
-
-    const inputRef = manager.addImport({
-      exportModuleSpecifier: '@angular/core',
-      exportSymbolName: 'input',
-      requestedFile: testFile,
-    });
-
-    const inputRef2 = manager.addImport({
-      exportModuleSpecifier: '@angular/core2',
-      exportSymbolName: 'input',
-      requestedFile: testFile,
-    });
-
-    const res = emit(manager, [
-      ts.factory.createExpressionStatement(inputRef),
-      ts.factory.createExpressionStatement(inputRef2),
-    ]);
-
-    expect(res).toBe(
-      omitLeadingWhitespace(`
-      import { input } from "@angular/core";
-      import { input as input_1 } from "@angular/core2";
-      input;
-      input_1;
-    `),
-    );
-  });
-
   it('should re-use previous similar generated imports', () => {
     const {testFile, emit} = createTestProgram(``);
     const manager = new ImportManager();

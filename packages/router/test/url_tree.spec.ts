@@ -99,7 +99,7 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
       });
 
-      it('should return false when queryParams are not the same', () => {
+      it('should return false when queryParams are not the same (multiple params)', () => {
         const t1 = serializer.parse('/one/two?test=4&test=4&test=2');
         const t2 = serializer.parse('/one/two?test=4&test=3&test=2');
         expect(containsTree(t1, t2, subsetMatchOptions)).toBe(false);
@@ -111,7 +111,7 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
       });
 
-      it('should return true when queryParams are the same in different order', () => {
+      it('should return true when queryParams are the same in different order (with duplicates)', () => {
         const t1 = serializer.parse('/one/two?test=4&test=4&test=1');
         const t2 = serializer.parse('/one/two?test=1&test=4&test=4');
         expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);

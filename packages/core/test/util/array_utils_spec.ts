@@ -73,7 +73,7 @@ describe('array_utils', () => {
       expectArrayInsert([0, 1, 2], 3, 'A').toEqual([0, 1, 2, 'A']);
     });
 
-    it('should insert items', () => {
+    it('should insert two items at once', () => {
       expectArrayInsert2([], 0, 'A', 'B').toEqual(['A', 'B']);
       expectArrayInsert2([0], 0, 'A', 'B').toEqual(['A', 'B', 0]);
       expectArrayInsert2([0], 1, 'A', 'B').toEqual([0, 'A', 'B']);

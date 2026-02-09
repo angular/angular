@@ -10,8 +10,8 @@ import {
   AbsoluteFsPath,
   FileSystem,
   getFileSystem,
-  setFileSystem,
   InvalidFileSystem,
+  setFileSystem,
 } from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
@@ -25,7 +25,7 @@ import {toAttributes} from '../translation_files/utils';
 
 const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
-runInNativeFileSystem(() => {
+runInNativeFileSystem('extractTranslations()', () => {
   let fs: FileSystem;
   let logger: MockLogger;
   let rootPath: AbsoluteFsPath;
@@ -48,7 +48,7 @@ runInNativeFileSystem(() => {
     setFileSystem(new InvalidFileSystem());
   });
 
-  describe('extractTranslations()', () => {
+  describe('', () => {
     it('should ignore non-code files', () => {
       extractTranslations({
         rootPath,
@@ -311,7 +311,7 @@ runInNativeFileSystem(() => {
             );
           });
 
-          it('should extract translations from source code, and write as XLIFF 2 format', () => {
+          it(`should extract translations from source code, and write as XLIFF 2 format (${JSON.stringify(formatOptions)})`, () => {
             extractTranslations({
               rootPath,
               sourceLocale: 'en-AU',

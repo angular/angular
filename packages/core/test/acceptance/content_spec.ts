@@ -8,6 +8,8 @@
 
 import {CommonModule} from '@angular/common';
 import {loadTranslations} from '@angular/localize';
+import {By} from '@angular/platform-browser';
+import {expect} from '@angular/private/testing/matchers';
 import {
   ChangeDetectorRef,
   Component,
@@ -23,8 +25,6 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
-import {expect} from '@angular/private/testing/matchers';
 
 describe('projection', () => {
   beforeEach(() => {
@@ -874,7 +874,7 @@ describe('projection', () => {
      * Descending into projected content for selector-matching purposes is not supported
      * today: https://plnkr.co/edit/MYQcNfHSTKp9KvbzJWVQ?p=preview
      */
-    it('should not descend into re-projected content', () => {
+    it('should not descend into re-projected content for selector matching', () => {
       @Component({
         selector: 'grand-child',
         template: `<ng-content select="span"></ng-content>
@@ -910,7 +910,7 @@ describe('projection', () => {
       );
     });
 
-    it('should not descend into re-projected content', () => {
+    it('should match selectors against the ng-content element when re-projecting', () => {
       @Component({
         selector: 'card',
         template: `<ng-content select="[card-title]"></ng-content>
@@ -1025,7 +1025,7 @@ describe('projection', () => {
     });
   });
 
-  it('should handle projected containers inside other containers', () => {
+  it('should handle projected containers inside other containers 2', () => {
     @Component({
       selector: 'child-comp', //
       template: '<ng-content></ng-content>',

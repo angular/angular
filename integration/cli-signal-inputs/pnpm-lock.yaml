@@ -49,8 +49,8 @@ importers:
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
       '@types/jasmine':
-        specifier: ^5.0.0
-        version: 5.1.15
+        specifier: ^6.0.0
+        version: 6.0.0
       '@types/jasminewd2':
         specifier: ^2.0.8
         version: 2.0.13
@@ -58,8 +58,8 @@ importers:
         specifier: ^20.14.8
         version: 20.19.30
       jasmine-core:
-        specifier: 5.13.0
-        version: 5.13.0
+        specifier: 6.0.0
+        version: 6.0.0
       jasmine-spec-reporter:
         specifier: ~7.0.0
         version: 7.0.0
@@ -76,8 +76,8 @@ importers:
         specifier: ^5.0.0
         version: 5.1.0(karma@6.4.4)
       karma-jasmine-html-reporter:
-        specifier: ^2.1.0
-        version: 2.2.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4)
+        specifier: ^2.2.0
+        version: 2.2.0(jasmine-core@6.0.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4)
       protractor:
         specifier: ^7.0.0
         version: 7.0.0
@@ -1909,8 +1909,8 @@ packages:
   '@types/http-proxy@1.17.17':
     resolution: {integrity: sha512-ED6LB+Z1AVylNTu7hdzuBqOgMnvG/ld6wGCG8wFnAzKX5uyW2K3WD52v0gnLCTK/VLpXtKckgWuyScYK6cSPaw==}
 
-  '@types/jasmine@5.1.15':
-    resolution: {integrity: sha512-ZAC8KjmV2MJxbNTrwXFN+HKeajpXQZp6KpPiR6Aa4XvaEnjP6qh23lL/Rqb7AYzlp3h/rcwDrQ7Gg7q28cQTQg==}
+  '@types/jasmine@6.0.0':
+    resolution: {integrity: sha512-18lgGsLmEh3VJk9eZ5wAjTISxdqzl6YOwu8UdMpolajN57QOCNbl+AbHUd+Yu9ItrsFdB+c8LSZSGNg8nHaguw==}
 
   '@types/jasminewd2@2.0.13':
     resolution: {integrity: sha512-aJ3wj8tXMpBrzQ5ghIaqMisD8C3FIrcO6sDKHqFbuqAsI7yOxj0fA7MrRCPLZHIVUjERIwsMmGn/vB0UQ9u0Hg==}
@@ -3271,8 +3271,8 @@ packages:
   jasmine-core@4.6.1:
     resolution: {integrity: sha512-VYz/BjjmC3klLJlLwA4Kw8ytk0zDSmbbDLNs794VnWmkcCB7I9aAL/D48VNQtmITyPvea2C3jdUMfc3kAoy0PQ==}
 
-  jasmine-core@5.13.0:
-    resolution: {integrity: sha512-vsYjfh7lyqvZX5QgqKc4YH8phs7g96Z8bsdIFNEU3VqXhlHaq+vov/Fgn/sr6MiUczdZkyXRC3TX369Ll4Nzbw==}
+  jasmine-core@6.0.0:
+    resolution: {integrity: sha512-fmBb8aruz2mEIDBUGWOGNmxhXwFJs44SSzwbMcBDqQnNChavPTq3Ra9A6WAn6WdxvxWEdakKTcEb3NzeR3yD1A==}
 
   jasmine-spec-reporter@7.0.0:
     resolution: {integrity: sha512-OtC7JRasiTcjsaCBPtMO0Tl8glCejM4J4/dNuOJdA8lBjz4PmWjYQ6pzb0uzpBNAWJMDudYuj9OdXJWqM2QTJg==}
@@ -4442,6 +4442,7 @@ packages:
   tar@7.5.7:
     resolution: {integrity: sha512-fov56fJiRuThVFXD6o6/Q354S7pnWMJIVlDBYijsTNx6jKSE4pvrDTs6lUnmGvNyfJwFQQwWy3owKz1ucIhveQ==}
     engines: {node: '>=18'}
+    deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   terser-webpack-plugin@5.3.16:
     resolution: {integrity: sha512-h9oBFCWrq78NyWWVcSwZarJkZ01c2AyGrzs1crmHZO3QUg9D61Wu4NPjBy69n7JqylFF5y+CsUZYmYEIZ3mR+Q==}
@@ -6786,11 +6787,11 @@ snapshots:
     dependencies:
       '@types/node': 20.19.30
 
-  '@types/jasmine@5.1.15': {}
+  '@types/jasmine@6.0.0': {}
 
   '@types/jasminewd2@2.0.13':
     dependencies:
-      '@types/jasmine': 5.1.15
+      '@types/jasmine': 6.0.0
 
   '@types/json-schema@7.0.15': {}
 
@@ -8242,7 +8243,7 @@ snapshots:
 
   jasmine-core@4.6.1: {}
 
-  jasmine-core@5.13.0: {}
+  jasmine-core@6.0.0: {}
 
   jasmine-spec-reporter@7.0.0:
     dependencies:
@@ -8328,9 +8329,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  karma-jasmine-html-reporter@2.2.0(jasmine-core@5.13.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4):
+  karma-jasmine-html-reporter@2.2.0(jasmine-core@6.0.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4):
     dependencies:
-      jasmine-core: 5.13.0
+      jasmine-core: 6.0.0
       karma: 6.4.4
       karma-jasmine: 5.1.0(karma@6.4.4)
 

@@ -6,29 +6,29 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {expect} from '@angular/private/testing/matchers';
 import {
   AbsoluteSourceSpan,
   ASTWithSource,
   BindingPipe,
+  BindingPipeType,
   Call,
   EmptyExpr,
   Interpolation,
   LiteralMap,
+  LiteralMapPropertyKey,
+  ParseSpan,
   PropertyRead,
   TemplateBinding,
   VariableBinding,
-  BindingPipeType,
-  ParseSpan,
-  LiteralMapPropertyKey,
 } from '../../src/expression_parser/ast';
-import {ParseError} from '../../src/parse_util';
 import {Lexer} from '../../src/expression_parser/lexer';
 import {Parser, SplitInterpolation} from '../../src/expression_parser/parser';
-import {expect} from '@angular/private/testing/matchers';
+import {ParseError} from '../../src/parse_util';
 
+import {getFakeSpan} from './utils/span';
 import {unparse, unparseWithSpan} from './utils/unparser';
 import {validate} from './utils/validator';
-import {getFakeSpan} from './utils/span';
 
 describe('parser', () => {
   describe('parseAction', () => {

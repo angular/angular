@@ -2261,7 +2261,7 @@ describe('acceptance integration tests', () => {
     expect(content).toContain(`<span title="Your last name is Baggins">`);
   });
 
-  it('should handle safe keyed reads inside templates', () => {
+  it('should handle safe keyed reads inside templates (indexed access)', () => {
     @Component({
       template: `
         <span [title]="'Your last name is ' + (unknownNames?.[0] || 'unknown')">
