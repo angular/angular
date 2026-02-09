@@ -313,9 +313,11 @@ export class SignalsGraphVisualizer {
           this.updateDagreNode(n, existingNode, signalGraph);
           updatedNodes.push(n.id);
         } else if (isClusterNode(n) && !this.expandedClustersIds.has(n.id)) {
-          const previewNode = signalGraph.nodes[n.previewNode ?? -1] as DevtoolsSignalNode;
+          const previewNode = signalGraph.nodes[n.previewNode ?? -1] as
+            | DevtoolsSignalNode
+            | undefined;
 
-          if (previewNode.epoch !== existingNode.epoch) {
+          if (previewNode && previewNode.epoch !== existingNode.epoch) {
             this.updateDagreNode(previewNode, existingNode, signalGraph);
             updatedNodes.push(n.id);
           }
