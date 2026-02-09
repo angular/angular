@@ -10,6 +10,7 @@ import {Location, PlatformNavigation} from '@angular/common';
 import {ApplicationRef, Component, inject, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {RouterTestingHarness} from '@angular/router/testing';
+import {timeout} from '@angular/private/testing';
 import {BehaviorSubject, filter, firstValueFrom} from 'rxjs';
 import {
   ActivatedRoute,
@@ -32,7 +33,6 @@ import {
   Routes,
   withRouterConfig,
 } from '../../src';
-import {timeout} from '../helpers';
 import {
   advance,
   createRoot,

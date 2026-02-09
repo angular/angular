@@ -22,7 +22,7 @@ import {
   UrlTree,
 } from '../src/url_tree';
 import {getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
-import {useAutoTick} from './helpers';
+import {useAutoTick} from '@angular/private/testing';
 
 describe('redirects', () => {
   useAutoTick();

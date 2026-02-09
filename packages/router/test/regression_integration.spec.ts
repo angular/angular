@@ -43,8 +43,7 @@ import {
   withViewTransitions,
 } from '../src/provide_router';
 import {afterNextNavigation} from '../src/utils/navigations';
-import {timeout} from './helpers';
-import {isBrowser, withBody} from '@angular/private/testing';
+import {isBrowser, withBody, timeout} from '@angular/private/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 describe('Integration', () => {

@@ -73,7 +73,7 @@ import {
   createRoot,
   advance,
 } from './integration_helpers';
-import {timeout} from '../helpers';
+import {timeout} from '@angular/private/testing';
 
 export function guardsIntegrationSuite() {
   describe('guards', () => {
