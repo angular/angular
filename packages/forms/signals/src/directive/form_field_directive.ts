@@ -97,7 +97,7 @@ export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
   ],
 })
 export class FormField<T> {
-  readonly formField = input.required<Field<T>>();
+  readonly field = input.required<Field<T>>({alias: 'formField'});
 
   /** @internal */
   readonly renderer = inject(Renderer2);
@@ -108,7 +108,7 @@ export class FormField<T> {
   /**
    * `FieldState` for the currently bound field.
    */
-  readonly state = computed(() => this.formField()());
+  readonly state = computed(() => this.field()());
 
   /**
    * The node injector for the element this field binding.
