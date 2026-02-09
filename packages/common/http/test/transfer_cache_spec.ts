@@ -15,8 +15,8 @@ import {
   TransferState,
   makeStateKey,
 } from '@angular/core';
-import {fakeAsync, flush, TestBed} from '@angular/core/testing';
-import {withBody} from '@angular/private/testing';
+import {TestBed} from '@angular/core/testing';
+import {useAutoTick, timeout, withBody} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
 
 import {HttpClient, HttpResponse, provideHttpClient} from '../public_api';
@@ -52,6 +52,7 @@ type RequestBody =
   | null;
 
 describe('TransferCache', () => {
+  useAutoTick();
   @Component({
     selector: 'test-app-http',
     template: 'hello',
@@ -169,13 +170,13 @@ describe('TransferCache', () => {
       expect(response.size).toBe(5);
     });
 
-    it('should stop storing HTTP calls in `TransferState` after application becomes stable', fakeAsync(() => {
+    it('should stop storing HTTP calls in `TransferState` after application becomes stable', async () => {
       makeRequestAndExpectOne('/test-1', 'foo');
       makeRequestAndExpectOne('/test-2', 'buzz');
 
       isStable.next(true);
 
-      flush();
+      await timeout();
 
       makeRequestAndExpectOne('/test-3', 'bar');
 
@@ -198,7 +199,7 @@ describe('TransferCache', () => {
           [RESPONSE_TYPE]: 'json',
         },
       });
-    }));
+    });
 
     it(`should use calls from cache when present and application is not stable`, () => {
       makeRequestAndExpectOne('/test-1', 'foo');
@@ -206,14 +207,14 @@ describe('TransferCache', () => {
       makeRequestAndExpectNone('/test-1');
     });
 
-    it(`should not use calls from cache when present and application is stable`, fakeAsync(() => {
+    it(`should not use calls from cache when present and application is stable`, async () => {
       makeRequestAndExpectOne('/test-1', 'foo');
 
       isStable.next(true);
-      flush();
+      await timeout();
       // Do the same call, this time it should go through as application is stable.
       makeRequestAndExpectOne('/test-1', 'foo');
-    }));
+    });
 
     it(`should differentiate calls with different parameters`, async () => {
       // make calls with different parameters. All of which should be saved in the state.
