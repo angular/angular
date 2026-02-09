@@ -405,6 +405,18 @@ export class MinValidationError extends BaseNgValidationError {
 }
 
 // @public
+export class NgSignalForm<T> {
+    // (undocumented)
+    readonly fieldTree: i0.InputSignal<FieldTree<T>>;
+    // (undocumented)
+    protected onSubmit(event: Event): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgSignalForm<any>, "form[ngSignalForm]", never, { "fieldTree": { "alias": "ngSignalForm"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NgSignalForm<any>, never>;
+}
+
+// @public
 export const NgValidationError: abstract new () => NgValidationError;
 
 // @public (undocumented)

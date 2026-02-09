@@ -25,7 +25,6 @@ class TestCmp {
     submission: {
       action: async () => {
         this.submitted = true;
-        return undefined;
       },
     },
   });
@@ -50,13 +49,9 @@ describe('NgSignalForm', () => {
     const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;
 
     const event = new Event('submit', {cancelable: true});
-    spyOn(event, 'preventDefault');
     act(() => formElement.dispatchEvent(event));
 
-    expect(event.preventDefault).toHaveBeenCalled();
-
-    await fixture.whenStable();
-
+    expect(event.defaultPrevented).toBe(true);
     expect(component.submitted).toBeTrue();
   });
 });
