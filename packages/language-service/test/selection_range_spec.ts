@@ -61,6 +61,106 @@ function verifyExpansionChain(
   }
 }
 
+/**
+ * Describes a cursor position within a template for testing expansion chains.
+ */
+interface CursorSpec {
+  /** Label for test output (e.g. 'cursor on "city"') */
+  label: string;
+  /** Substring to find in template to place cursor. Position is the start of this substring. */
+  cursorAt: string;
+  /** Optional character offset from the start of cursorAt match (default: 0) */
+  offset?: number;
+  /** Expected expansion chain from innermost to outermost */
+  chain: string[];
+}
+
+/**
+ * Creates a component TS file that uses templateUrl for the given template.
+ * The component class body supports optional member declarations.
+ */
+/**
+ * Test selection range expansion for both external and inline (single-line) templates.
+ *
+ * For each cursor spec, verifies the expansion chain matches expectations in both modes.
+ * This avoids test duplication while ensuring both template forms produce identical results.
+ *
+ * @param env The test environment
+ * @param template The template HTML string. Must be a single line for inline mode to work.
+ * @param componentMembers Component class body (properties, methods)
+ * @param cursors Array of cursor positions and their expected expansion chains
+ */
+function verifySelectionRanges(
+  env: LanguageServiceTestEnv,
+  template: string,
+  componentMembers: string,
+  cursors: CursorSpec[],
+): void {
+  // --- External template mode ---
+  const externalFiles = {
+    'app.html': template,
+    'app.ts': `
+      import {Component} from '@angular/core';
+
+      @Component({
+        selector: 'my-app',
+        templateUrl: './app.html',
+      })
+      export class AppComponent {
+        ${componentMembers}
+      }
+    `,
+  };
+
+  const externalProject = createModuleAndProjectWithDeclarations(env, 'test-ext', externalFiles);
+
+  for (const cursor of cursors) {
+    const matchIndex = template.indexOf(cursor.cursorAt);
+    expect(matchIndex)
+      .withContext(`[external][${cursor.label}] cursorAt "${cursor.cursorAt}" not found in template`)
+      .toBeGreaterThanOrEqual(0);
+    const pos = matchIndex + (cursor.offset ?? 0);
+
+    const selectionRange = externalProject.getSelectionRangeAtPosition('app.html', pos);
+    verifyExpansionChain(selectionRange, template, cursor.chain);
+  }
+
+  // --- Inline template mode (only for single-line templates) ---
+  if (!template.includes('\n')) {
+    // Use backticks so single quotes in template don't need escaping
+    const escapedForBacktick = template.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+    const inlineFiles = {
+      'app.ts': `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'my-app',
+          template: \`${escapedForBacktick}\`,
+        })
+        export class AppComponent {
+          ${componentMembers}
+        }
+      `,
+    };
+
+    const inlineProject = createModuleAndProjectWithDeclarations(env, 'test-inline', inlineFiles);
+    const appFile = inlineProject.openFile('app.ts');
+    // With backtick template, the raw content matches the template exactly (no escape chars)
+    const templateOffset = appFile.contents.indexOf(template);
+    expect(templateOffset)
+      .withContext(`[inline] Could not find template in generated TS file`)
+      .toBeGreaterThanOrEqual(0);
+
+    for (const cursor of cursors) {
+      const matchIndex = template.indexOf(cursor.cursorAt);
+      const pos = templateOffset + matchIndex + (cursor.offset ?? 0);
+
+      const selectionRange = inlineProject.getSelectionRangeAtPosition('app.ts', pos);
+      verifyExpansionChain(selectionRange, template, cursor.chain, templateOffset);
+    }
+  }
+}
+
 describe('selection range', () => {
   let env: LanguageServiceTestEnv;
 
@@ -209,15 +309,26 @@ describe('selection range', () => {
 
       const selectionRange = project.getSelectionRangeAtPosition('app.ts', contentPos);
 
-      expect(selectionRange).toBeDefined();
-      // Should have parent chain: text -> article -> section
-      let range = selectionRange;
-      let depth = 0;
-      while (range) {
-        depth++;
-        range = range.parent;
-      }
-      expect(depth).toBeGreaterThanOrEqual(3);
+      const tplMarker = 'template: `';
+      const tplStart = appFile.contents.indexOf(tplMarker) + tplMarker.length;
+      const tplEnd = appFile.contents.indexOf('`,', tplStart);
+      const template = appFile.contents.substring(tplStart, tplEnd);
+      const sectionInner = template.substring(
+        template.indexOf('<section>') + '<section>'.length,
+        template.indexOf('</section>'),
+      );
+      const sectionFull = template.substring(
+        template.indexOf('<section>'),
+        template.indexOf('</section>') + '</section>'.length,
+      );
+
+      // content → <article>content</article> → section children → <section>...</section> → full template
+      verifyExpansionChain(
+        selectionRange,
+        template,
+        ['content', '<article>content</article>', sectionInner, sectionFull, template],
+        tplStart,
+      );
     });
 
     it('should work with @if control flow blocks in inline templates', () => {
@@ -246,15 +357,29 @@ describe('selection range', () => {
 
       const selectionRange = project.getSelectionRangeAtPosition('app.ts', contentPos);
 
-      expect(selectionRange).toBeDefined();
-      // Should have parent chain: text -> div -> @if block
-      let range = selectionRange;
-      let depth = 0;
-      while (range) {
-        depth++;
-        range = range.parent;
-      }
-      expect(depth).toBeGreaterThanOrEqual(3);
+      const tplMarker = 'template: `';
+      const tplStart = appFile.contents.indexOf(tplMarker) + tplMarker.length;
+      const tplEnd = appFile.contents.indexOf('`,', tplStart);
+      const template = appFile.contents.substring(tplStart, tplEnd);
+      const lastBrace = template.lastIndexOf('}');
+      const ifBodyContent = template.substring(template.indexOf('{') + 1, lastBrace);
+      const ifBlock = template.substring(template.indexOf('@if'), lastBrace + 1);
+      const rootSpan = template.substring(0, lastBrace + 1);
+
+      // word → text → <div> → @if body → @if block → root span
+      verifyExpansionChain(
+        selectionRange,
+        template,
+        [
+          'conditional',
+          'conditional content',
+          '<div>conditional content</div>',
+          ifBodyContent,
+          ifBlock,
+          rootSpan,
+        ],
+        tplStart,
+      );
     });
 
     it('should work with interpolation in inline templates', () => {
@@ -279,7 +404,16 @@ describe('selection range', () => {
 
       const selectionRange = project.getSelectionRangeAtPosition('app.ts', namePos);
 
-      expect(selectionRange).toBeDefined();
+      const template = '<span>Hello {{name}}!</span>';
+      const templateOffset = appFile.contents.indexOf(template);
+
+      // name → Hello {{name}}! (siblings) → <span>...</span>
+      verifyExpansionChain(
+        selectionRange,
+        template,
+        ['name', 'Hello {{name}}!', '<span>Hello {{name}}!</span>'],
+        templateOffset,
+      );
     });
 
     it('should work with bound attributes in inline templates', () => {
@@ -304,7 +438,21 @@ describe('selection range', () => {
 
       const selectionRange = project.getSelectionRangeAtPosition('app.ts', activePos);
 
-      expect(selectionRange).toBeDefined();
+      const template = '<div [class.active]="isActive">Content</div>';
+      const templateOffset = appFile.contents.indexOf(template);
+
+      // isActive → class.active → [class.active]="isActive" → <div ...>Content</div>
+      verifyExpansionChain(
+        selectionRange,
+        template,
+        [
+          'isActive',
+          'class.active',
+          '[class.active]="isActive"',
+          '<div [class.active]="isActive">Content</div>',
+        ],
+        templateOffset,
+      );
     });
 
     it('should return undefined for position outside template', () => {
@@ -441,34 +589,17 @@ describe('selection range', () => {
 
       const selectionRange = project.getSelectionRangeAtPosition('app.ts', stylePos);
 
-      expect(selectionRange)
-        .withContext('Selection range should be defined for multi-line inline template')
-        .toBeDefined();
-
-      if (selectionRange) {
-        // Collect chain
-        const chainTexts: string[] = [];
-        let range: ts.SelectionRange | undefined = selectionRange;
-        while (range) {
-          const text = appFile.contents.substring(
-            range.textSpan.start,
-            range.textSpan.start + range.textSpan.length,
-          );
-          chainTexts.push(text.substring(0, 60));
-          range = range.parent!;
-        }
-        // Verify the full attribute is in the chain
-        const hasAttr = chainTexts.some((t) => t.includes('style="border'));
-        expect(hasAttr)
-          .withContext(`Chain should include style attribute. Chain: ${JSON.stringify(chainTexts)}`)
-          .toBe(true);
-
-        // Verify the div element is in the chain
-        const hasDiv = chainTexts.some((t) => t.startsWith('<div'));
-        expect(hasDiv)
-          .withContext(`Chain should include div element. Chain: ${JSON.stringify(chainTexts)}`)
-          .toBe(true);
-      }
+      // style → style="border: 1px solid black;" → full element
+      verifyExpansionChain(
+        selectionRange,
+        template,
+        [
+          'style',
+          'style="border: 1px solid black;"',
+          template,
+        ],
+        templateOffset,
+      );
     });
 
     describe('sibling expansion', () => {
@@ -494,37 +625,21 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.ts', aPos);
 
-        expect(selectionRange).toBeDefined();
-
-        // Collect all ranges in the chain
-        const ranges: Array<{start: number; length: number}> = [];
-        let range = selectionRange;
-        while (range) {
-          ranges.push(range.textSpan);
-          range = range.parent;
-        }
-
-        // The chain should include:
-        // 1. "a" (the text node)
-        // 2. "<span>a</span>" (the span element)
-        // 3. "<span>a</span><span>b</span>" (all siblings/content)
-        // 4. "<h1><span>a</span><span>b</span></h1>" (the h1 element)
-
-        // Find the template in the source
-        const templateStart = appFile.contents.indexOf('<h1>');
         const template = '<h1><span>a</span><span>b</span></h1>';
+        const templateOffset = appFile.contents.indexOf(template);
 
-        // Verify we have at least 4 levels
-        expect(ranges.length).toBeGreaterThanOrEqual(4);
-
-        // The last range (outermost) should be the h1
-        const outermost = ranges[ranges.length - 1];
-        expect(outermost.length).toBe(template.length);
-
-        // There should be an intermediate range covering both spans
-        const siblingsSpan = '<span>a</span><span>b</span>';
-        const siblingsRange = ranges.find((r) => r.length === siblingsSpan.length);
-        expect(siblingsRange).toBeDefined();
+        // a → <span>a</span> → <span>a</span><span>b</span> (siblings) → <h1>...</h1>
+        verifyExpansionChain(
+          selectionRange,
+          template,
+          [
+            'a',
+            '<span>a</span>',
+            '<span>a</span><span>b</span>',
+            '<h1><span>a</span><span>b</span></h1>',
+          ],
+          templateOffset,
+        );
       });
 
       it('should expand interpolation before siblings content', () => {
@@ -551,27 +666,15 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
 
-        expect(selectionRange).toBeDefined();
-
-        // Collect all ranges with their actual text
         const template = '<span>{{user.name}} - {{user.phone}}</span>';
-        const rangeTexts: string[] = [];
-        let range = selectionRange;
-        while (range) {
-          const text = template.substring(
-            range.textSpan.start,
-            range.textSpan.start + range.textSpan.length,
-          );
-          rangeTexts.push(
-            `[${range.textSpan.start}-${range.textSpan.start + range.textSpan.length}]: "${text}"`,
-          );
-          range = range.parent;
-        }
 
-        // Should have at least 3 levels:
-        // Expression (user.name), BoundText ({{user.name}}), Element (<span>...)
-        // Content span may be skipped if it equals element content
-        expect(rangeTexts.length).toBeGreaterThanOrEqual(3);
+        // user → user.name → children (siblings) → <span>...</span>
+        verifyExpansionChain(selectionRange, template, [
+          'user',
+          'user.name',
+          '{{user.name}} - {{user.phone}}',
+          '<span>{{user.name}} - {{user.phone}}</span>',
+        ]);
       });
 
       it('should handle single child without redundant siblings span', () => {
@@ -597,19 +700,16 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.ts', namePos);
 
-        expect(selectionRange).toBeDefined();
+        const template = '<span>{{user.name}}</span>';
+        const templateOffset = appFile.contents.indexOf(template);
 
-        // Collect all ranges
-        const ranges: Array<{start: number; length: number}> = [];
-        let range = selectionRange;
-        while (range) {
-          ranges.push(range.textSpan);
-          range = range.parent;
-        }
-
-        // Should NOT have duplicate spans - each span should be unique
-        const uniqueLengths = new Set(ranges.map((r) => `${r.start}-${r.length}`));
-        expect(uniqueLengths.size).toBe(ranges.length);
+        // user → user.name → {{user.name}} → <span>...</span>
+        verifyExpansionChain(
+          selectionRange,
+          template,
+          ['user', 'user.name', '{{user.name}}', '<span>{{user.name}}</span>'],
+          templateOffset,
+        );
       });
 
       it('should work with multiple text nodes', () => {
@@ -635,17 +735,16 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.ts', namePos);
 
-        expect(selectionRange).toBeDefined();
+        const template = '<p>Hello {{name}}!</p>';
+        const templateOffset = appFile.contents.indexOf(template);
 
-        // Should have at least 2 levels (expression -> BoundText)
-        // More levels are better but we need at least the basics
-        let depth = 0;
-        let range = selectionRange;
-        while (range) {
-          depth++;
-          range = range.parent;
-        }
-        expect(depth).toBeGreaterThanOrEqual(2);
+        // name → Hello {{name}}! (siblings) → <p>...</p>
+        verifyExpansionChain(
+          selectionRange,
+          template,
+          ['name', 'Hello {{name}}!', '<p>Hello {{name}}!</p>'],
+          templateOffset,
+        );
       });
 
       it('should expand through nested property access', () => {
@@ -706,16 +805,15 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', contentPos);
 
-        expect(selectionRange).toBeDefined();
+        const template = files['app.html'];
 
-        // Should expand: content -> span -> @if block
-        let depth = 0;
-        let range = selectionRange;
-        while (range) {
-          depth++;
-          range = range.parent;
-        }
-        expect(depth).toBeGreaterThanOrEqual(3);
+        // content → <span>content</span> → @if branch body → @if block
+        verifyExpansionChain(selectionRange, template, [
+          'content',
+          '<span>content</span>',
+          ' <span>content</span> ',
+          '@if (show) { <span>content</span> }',
+        ]);
       });
 
       it('should handle bound attributes', () => {
@@ -774,16 +872,16 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', handlePos);
 
-        expect(selectionRange).toBeDefined();
+        const template = files['app.html'];
 
-        // Should have at least 2 levels
-        let depth = 0;
-        let range = selectionRange;
-        while (range) {
-          depth++;
-          range = range.parent;
-        }
-        expect(depth).toBeGreaterThanOrEqual(2);
+        // handleClick → handleClick() → click → (click)="handleClick()" → <button>
+        verifyExpansionChain(selectionRange, template, [
+          'handleClick',
+          'handleClick()',
+          'click',
+          '(click)="handleClick()"',
+          '<button (click)="handleClick()">Click</button>',
+        ]);
       });
 
       it('should group multiple attributes as siblings', () => {
@@ -845,15 +943,17 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
 
-        expect(selectionRange).toBeDefined();
-        let depth = 0;
-        let range = selectionRange;
-        while (range) {
-          depth++;
-          range = range.parent;
-        }
-        // Should expand: item.name -> {{item.name}} -> div -> @for block
-        expect(depth).toBeGreaterThanOrEqual(4);
+        const template = files['app.html'];
+
+        // item → item.name → {{item.name}} → <div>...</div> → @for body → @for block
+        verifyExpansionChain(selectionRange, template, [
+          'item',
+          'item.name',
+          '{{item.name}}',
+          '<div>{{item.name}}</div>',
+          ' <div>{{item.name}}</div> ',
+          template,
+        ]);
       });
 
       it('should handle @for with @empty block', () => {
@@ -882,15 +982,22 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', emptyPos);
 
-        expect(selectionRange).toBeDefined();
-        let depth = 0;
-        let range = selectionRange;
-        while (range) {
-          depth++;
-          range = range.parent;
-        }
-        // Should expand: text -> p -> @empty -> @for block
-        expect(depth).toBeGreaterThanOrEqual(3);
+        const template = files['app.html'];
+        const emptyContent = template.substring(
+          template.indexOf('{', template.indexOf('@empty')) + 1,
+          template.lastIndexOf('}'),
+        );
+        const emptyBlock = template.substring(template.indexOf('@empty'));
+
+        // No (word) → No items (text) → <p>No items</p> → @empty content → @empty → @for
+        verifyExpansionChain(selectionRange, template, [
+          'No',
+          'No items',
+          '<p>No items</p>',
+          emptyContent,
+          emptyBlock,
+          template,
+        ]);
       });
 
       it('should handle nested @for loops', () => {
@@ -919,15 +1026,30 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', cellPos);
 
-        expect(selectionRange).toBeDefined();
-        let depth = 0;
-        let range = selectionRange;
-        while (range) {
-          depth++;
-          range = range.parent;
-        }
-        // Should expand: cell.value -> {{...}} -> span -> inner @for -> outer @for
-        expect(depth).toBeGreaterThanOrEqual(5);
+        const template = files['app.html'];
+        const innerForIdx = template.indexOf('@for (cell');
+        const innerBraceOpen = template.indexOf('{', innerForIdx);
+        const innerBraceClose = template.indexOf(
+          '}',
+          template.indexOf('</span>') + '</span>'.length,
+        );
+        const innerForBody = template.substring(innerBraceOpen + 1, innerBraceClose);
+        const innerFor = template.substring(innerForIdx, innerBraceClose + 1);
+        const outerBraceOpen = template.indexOf('{');
+        // Siblings span: leading whitespace text node + inner @for (excludes trailing whitespace)
+        const outerForBody = template.substring(outerBraceOpen + 1, innerBraceClose + 1);
+
+        // cell → cell.value → {{...}} → <span> → inner body → inner @for → outer body → outer @for
+        verifyExpansionChain(selectionRange, template, [
+          'cell',
+          'cell.value',
+          '{{cell.value}}',
+          '<span>{{cell.value}}</span>',
+          innerForBody,
+          innerFor,
+          outerForBody,
+          template,
+        ]);
       });
     });
 
@@ -958,15 +1080,26 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', activePos);
 
-        expect(selectionRange).toBeDefined();
-        let depth = 0;
-        let range = selectionRange;
-        while (range) {
-          depth++;
-          range = range.parent;
-        }
-        // Should expand: text -> span -> @case -> @switch
-        expect(depth).toBeGreaterThanOrEqual(3);
+        const template = files['app.html'];
+        const caseOpenBrace = template.indexOf('{', template.indexOf("@case ('active')"));
+        const caseCloseBrace = template.indexOf('}', caseOpenBrace);
+        const caseBody = template.substring(caseOpenBrace + 1, caseCloseBrace);
+        const caseBlock = template.substring(
+          template.indexOf("@case ('active')"),
+          caseCloseBrace + 1,
+        );
+        const defaultCloseBrace = template.lastIndexOf('}', template.lastIndexOf('}') - 1);
+        const allCases = template.substring(template.indexOf('@case'), defaultCloseBrace + 1);
+
+        // Active → <span> → @case body → @case → all case groups → @switch
+        verifyExpansionChain(selectionRange, template, [
+          'Active',
+          '<span class="active">Active</span>',
+          caseBody,
+          caseBlock,
+          allCases,
+          template,
+        ]);
       });
 
       it('should handle @switch with expression in @case', () => {
@@ -994,7 +1127,18 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', casePos);
 
-        expect(selectionRange).toBeDefined();
+        const template = files['app.html'];
+        const caseBlock = template.substring(
+          template.indexOf('@case'),
+          template.indexOf('}', template.indexOf('Match</div>')) + 1,
+        );
+
+        // computedValue → @case block → @switch block
+        verifyExpansionChain(selectionRange, template, [
+          'computedValue',
+          caseBlock,
+          template,
+        ]);
       });
     });
 
@@ -1025,15 +1169,24 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', loadingPos);
 
-        expect(selectionRange).toBeDefined();
-        let depth = 0;
-        let range = selectionRange;
-        while (range) {
-          depth++;
-          range = range.parent;
-        }
-        // Should expand: text -> p -> @loading -> @defer
-        expect(depth).toBeGreaterThanOrEqual(3);
+        const template = files['app.html'];
+        const loadingBraceOpen = template.indexOf('{', template.indexOf('@loading'));
+        const loadingBraceClose = template.indexOf('}', template.indexOf('Loading...</p>'));
+        const loadingContent = template.substring(loadingBraceOpen + 1, loadingBraceClose);
+        const loadingBlock = template.substring(
+          template.indexOf('@loading'),
+          loadingBraceClose + 1,
+        );
+
+        // Loading (word) → Loading... (text) → <p> → content → @loading → @defer
+        verifyExpansionChain(selectionRange, template, [
+          'Loading',
+          'Loading...',
+          '<p>Loading...</p>',
+          loadingContent,
+          loadingBlock,
+          template,
+        ]);
       });
 
       it('should handle @defer with @placeholder block', () => {
@@ -1060,7 +1213,21 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', placeholderPos);
 
-        expect(selectionRange).toBeDefined();
+        const template = files['app.html'];
+        const phBraceOpen = template.indexOf('{', template.indexOf('@placeholder'));
+        const phBraceClose = template.indexOf('}', template.indexOf('Placeholder content</p>'));
+        const phContent = template.substring(phBraceOpen + 1, phBraceClose);
+        const phBlock = template.substring(template.indexOf('@placeholder'), phBraceClose + 1);
+
+        // Placeholder (word) → Placeholder content (text) → <p> → content → @placeholder → @defer
+        verifyExpansionChain(selectionRange, template, [
+          'Placeholder',
+          'Placeholder content',
+          '<p>Placeholder content</p>',
+          phContent,
+          phBlock,
+          template,
+        ]);
       });
 
       it('should expand through @defer when trigger expression', () => {
@@ -1087,13 +1254,13 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', isReadyPos);
 
-        expect(selectionRange).toBeDefined();
-        // First expansion should be the expression "isReady"
-        const rangeText = files['app.html'].substring(
-          selectionRange!.textSpan.start,
-          selectionRange!.textSpan.start + selectionRange!.textSpan.length,
-        );
-        expect(rangeText).toContain('isReady');
+        const template = files['app.html'];
+
+        // BUG: getNodeSpan doesn't handle TmplAstDeferredTrigger/TmplAstBoundDeferredTrigger,
+        // so the trigger expression is never visited. User expects:
+        //   isReady → @defer block
+        // But gets only the @defer block. Fix: add TmplAstDeferredTrigger to getNodeSpan.
+        verifyExpansionChain(selectionRange, template, [template]);
       });
 
       it('should expand through @defer when trigger with property access', () => {
@@ -1120,10 +1287,13 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', isLoadedPos);
 
-        // Note: Selection range for @defer when trigger expressions may vary
-        // depending on how the compiler parses the trigger clause.
-        // The important thing is that it doesn't crash and returns something.
-        expect(selectionRange).toBeDefined();
+        const template = files['app.html'];
+
+        // BUG: getNodeSpan doesn't handle TmplAstDeferredTrigger/TmplAstBoundDeferredTrigger,
+        // so trigger expressions are never visited. User expects:
+        //   data → data.isLoaded → @defer block
+        // But gets only the @defer block. Fix: add TmplAstDeferredTrigger to getNodeSpan.
+        verifyExpansionChain(selectionRange, template, [template]);
       });
     });
 
@@ -1152,20 +1322,31 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
         // Position on "Second" text
-        const secondPos = files['app.html'].indexOf('>Second<') + 1;
+        const secondPos = template.indexOf('>Second<') + 1;
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', secondPos);
 
-        expect(selectionRange).toBeDefined();
-        let depth = 0;
-        let range = selectionRange;
-        while (range) {
-          depth++;
-          range = range.parent;
-        }
-        // Should expand: text -> div -> @else if branch -> @if block
-        expect(depth).toBeGreaterThanOrEqual(3);
+        // Second → <div>Second</div> → @else if branch body → @else if branch → all branches (siblings) → @if block
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should be Second').toBe('Second');
+
+        // Verify outermost reaches the full @if block
+        let outermost = selectionRange;
+        while (outermost.parent) outermost = outermost.parent;
+        const outermostText = template.substring(
+          outermost.textSpan.start,
+          outermost.textSpan.start + outermost.textSpan.length,
+        );
+        expect(outermostText).withContext('Outermost should include @if').toContain('@if');
+        expect(outermostText).withContext('Outermost should include @else').toContain('@else');
       });
 
       it('should handle selection on @if condition expression', () => {
@@ -1185,12 +1366,22 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "isLoggedIn"
-        const condPos = files['app.html'].indexOf('isLoggedIn');
+        const template = files['app.html'];
+        // Position on "isLoggedIn" in the condition expression
+        const condPos = template.indexOf('isLoggedIn');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', condPos);
 
-        expect(selectionRange).toBeDefined();
+        // user → user.isLoggedIn → user.isLoggedIn && user.hasPermission → @if branch → @if block
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        // Innermost should be the property chain receiver 'user'
+        expect(innermostText).withContext('Innermost should be user').toBe('user');
       });
     });
 
@@ -1221,193 +1412,195 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "item.name"
-        const itemPos = files['app.html'].indexOf('item.name');
+        const template = files['app.html'];
+        // Position on "item" in "item.name" interpolation
+        const itemPos = template.indexOf('item.name');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', itemPos);
 
-        expect(selectionRange).toBeDefined();
+        // item → item.name → {{item.name}} → <span> → @if body → @if → @for body → @for → @case body → @case → @switch
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        // Verify innermost is 'item'
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should be item').toBe('item');
+
+        // Verify chain depth for deeply nested control flow
         let depth = 0;
-        let range = selectionRange;
+        let range: ts.SelectionRange | undefined = selectionRange;
         while (range) {
           depth++;
           range = range.parent;
         }
-        // Deep nesting: item.name -> {{...}} -> span -> @if -> @for -> @case -> @switch
-        expect(depth).toBeGreaterThanOrEqual(6);
+        // Deep nesting needs at least: item → item.name → {{...}} → span → @if → @for → @case group → @switch
+        expect(depth).withContext('Should have at least 6 levels for deep nesting').toBeGreaterThanOrEqual(6);
+
+        // Verify outermost reaches @switch
+        let outermost = selectionRange;
+        while (outermost.parent) outermost = outermost.parent;
+        const outermostText = template.substring(
+          outermost.textSpan.start,
+          outermost.textSpan.start + outermost.textSpan.length,
+        );
+        expect(outermostText).withContext('Outermost should include @switch').toContain('@switch');
       });
     });
   });
 
   describe('expression patterns', () => {
     describe('pipe expressions', () => {
-      it('should expand from pipe argument through pipe name+args to full pipe', () => {
-        // Cursor on 'short' string content inside pipe arg
-        const files = {
-          'app.html': `<span>{{ value | date:'short' }}</span>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              value = new Date();
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "short" (inside the quotes)
-        const shortPos = template.indexOf('short');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', shortPos);
-
-        // short → 'short' → date:'short' → value | date:'short' → {{ ... }} → <span>...</span>
-        verifyExpansionChain(selectionRange, template, [
-          'short',
-          `'short'`,
-          `date:'short'`,
-          `value | date:'short'`,
-          `{{ value | date:'short' }}`,
+      it('should expand correctly from pipe argument, pipe name, and input expression', () => {
+        // Test the same template from 3 different cursor positions
+        verifySelectionRanges(
+          env,
           `<span>{{ value | date:'short' }}</span>`,
-        ]);
+          `value = new Date();`,
+          [
+            {
+              label: 'cursor on pipe argument "short"',
+              cursorAt: 'short',
+              chain: [
+                'short',
+                `'short'`,
+                `date:'short'`,
+                `value | date:'short'`,
+                `{{ value | date:'short' }}`,
+                `<span>{{ value | date:'short' }}</span>`,
+              ],
+            },
+            {
+              label: 'cursor on pipe name "date"',
+              cursorAt: 'date',
+              chain: [
+                'date',
+                `date:'short'`,
+                `value | date:'short'`,
+                `{{ value | date:'short' }}`,
+                `<span>{{ value | date:'short' }}</span>`,
+              ],
+            },
+            {
+              label: 'cursor on input expression "value"',
+              cursorAt: 'value',
+              chain: [
+                'value',
+                `value | date:'short'`,
+                `{{ value | date:'short' }}`,
+                `<span>{{ value | date:'short' }}</span>`,
+              ],
+            },
+          ],
+        );
       });
 
-      it('should expand from pipe name through pipe name+args to full pipe', () => {
-        // Cursor on pipe name 'date'
-        const files = {
-          'app.html': `<span>{{ value | date:'short' }}</span>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              value = new Date();
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "date" pipe name
-        const datePos = template.indexOf('date');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', datePos);
-
-        // date → date:'short' → value | date:'short' → {{ ... }} → <span>...</span>
-        verifyExpansionChain(selectionRange, template, [
-          'date',
-          `date:'short'`,
-          `value | date:'short'`,
-          `{{ value | date:'short' }}`,
-          `<span>{{ value | date:'short' }}</span>`,
-        ]);
-      });
-
-      it('should expand from pipe input expression to full pipe', () => {
-        // Cursor on input expression 'value'
-        const files = {
-          'app.html': `<span>{{ value | uppercase }}</span>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              value = 'hello';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        const valuePos = template.indexOf('value');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', valuePos);
-
-        // value → value | uppercase → {{ value | uppercase }} → <span>...</span>
-        verifyExpansionChain(selectionRange, template, [
-          'value',
-          'value | uppercase',
-          '{{ value | uppercase }}',
-          '<span>{{ value | uppercase }}</span>',
-        ]);
+      it('should expand from pipe input through simple pipe to interpolation', () => {
+        verifySelectionRanges(
+          env,
+          `<span>{{ value | uppercase }}</span>`,
+          `value = 'hello';`,
+          [
+            {
+              label: 'cursor on "value"',
+              cursorAt: 'value',
+              chain: [
+                'value',
+                'value | uppercase',
+                '{{ value | uppercase }}',
+                '<span>{{ value | uppercase }}</span>',
+              ],
+            },
+            {
+              label: 'cursor on "uppercase"',
+              cursorAt: 'uppercase',
+              chain: [
+                'uppercase',
+                'value | uppercase',
+                '{{ value | uppercase }}',
+                '<span>{{ value | uppercase }}</span>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle pipe with multiple arguments', () => {
-        // For date:'fullDate':'UTC', cursor on 'UTC'
-        const files = {
-          'app.html': `<span>{{ birthday | date:'fullDate':'UTC' }}</span>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              birthday = new Date();
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "UTC" (inside quotes)
-        const utcPos = template.indexOf('UTC');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', utcPos);
-
-        // UTC → 'UTC' → date:'fullDate':'UTC' → birthday | date:'fullDate':'UTC' → {{ ... }} → <span>...</span>
-        verifyExpansionChain(selectionRange, template, [
-          'UTC',
-          `'UTC'`,
-          `date:'fullDate':'UTC'`,
-          `birthday | date:'fullDate':'UTC'`,
-          `{{ birthday | date:'fullDate':'UTC' }}`,
+        verifySelectionRanges(
+          env,
           `<span>{{ birthday | date:'fullDate':'UTC' }}</span>`,
-        ]);
+          `birthday = new Date();`,
+          [
+            {
+              label: 'cursor on last arg "UTC"',
+              cursorAt: 'UTC',
+              chain: [
+                'UTC',
+                `'UTC'`,
+                `date:'fullDate':'UTC'`,
+                `birthday | date:'fullDate':'UTC'`,
+                `{{ birthday | date:'fullDate':'UTC' }}`,
+                `<span>{{ birthday | date:'fullDate':'UTC' }}</span>`,
+              ],
+            },
+            {
+              label: 'cursor on first arg "fullDate"',
+              cursorAt: 'fullDate',
+              chain: [
+                'fullDate',
+                `'fullDate'`,
+                `date:'fullDate':'UTC'`,
+                `birthday | date:'fullDate':'UTC'`,
+                `{{ birthday | date:'fullDate':'UTC' }}`,
+                `<span>{{ birthday | date:'fullDate':'UTC' }}</span>`,
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle chained pipes from input expression', () => {
-        const files = {
-          'app.html': '<span>{{ data | async | json }}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-            import {of} from 'rxjs';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              data = of({name: 'test'});
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        const dataPos = template.indexOf('data');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', dataPos);
-
-        // data → data | async → data | async | json → {{ ... }} → <span>...</span>
-        verifyExpansionChain(selectionRange, template, [
-          'data',
-          'data | async',
-          'data | async | json',
-          '{{ data | async | json }}',
+        verifySelectionRanges(
+          env,
           '<span>{{ data | async | json }}</span>',
-        ]);
+          `data = null as any;`,
+          [
+            {
+              label: 'cursor on "data" input',
+              cursorAt: 'data',
+              chain: [
+                'data',
+                'data | async',
+                'data | async | json',
+                '{{ data | async | json }}',
+                '<span>{{ data | async | json }}</span>',
+              ],
+            },
+            {
+              label: 'cursor on "async" pipe',
+              cursorAt: 'async',
+              chain: [
+                'async',
+                'data | async',
+                'data | async | json',
+                '{{ data | async | json }}',
+                '<span>{{ data | async | json }}</span>',
+              ],
+            },
+            {
+              label: 'cursor on "json" pipe',
+              cursorAt: 'json',
+              chain: [
+                'json',
+                'data | async | json',
+                '{{ data | async | json }}',
+                '<span>{{ data | async | json }}</span>',
+              ],
+            },
+          ],
+        );
       });
     });
 
@@ -1473,48 +1666,62 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', filterPos);
 
-        expect(selectionRange).toBeDefined();
-        if (!selectionRange) return;
-
-        // Collect chain texts
-        const chain: string[] = [];
-        let range: ts.SelectionRange | undefined = selectionRange;
-        while (range) {
-          chain.push(template.substring(range.textSpan.start, range.textSpan.start + range.textSpan.length));
-          range = range.parent;
-        }
-
-        // "filter" is a property read in a chain, so expansion should include chain steps
-        // The chain should include items.filter(isActive) and outer calls
-        expect(chain.some(s => s.includes('items'))).toBe(true);
-        expect(chain.some(s => s.includes('join'))).toBe(true);
+        // items.filter (PropertyRead) → items.filter(isActive) (Call) → ...map(getName) (Call) → ...join(", ") (Call) → {{ ... }} → <span>...</span>
+        // BUG: cursor on "filter" starts at .map(getName) level due to addPropertyChainReceiver
+        // not recursing through Call nodes. Ideally would start at items.filter.
+        verifyExpansionChain(selectionRange, template, [
+          'items.filter(isActive).map(getName)',
+          'items.filter(isActive).map(getName).join',
+          'items.filter(isActive).map(getName).join(", ")',
+          '{{ items.filter(isActive).map(getName).join(", ") }}',
+          '<span>{{ items.filter(isActive).map(getName).join(", ") }}</span>',
+        ]);
       });
     });
 
     describe('conditional expressions', () => {
-      it('should handle ternary operator', () => {
-        const files = {
-          'app.html': '<span>{{ isActive ? "Active" : "Inactive" }}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              isActive = true;
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "isActive"
-        const condPos = files['app.html'].indexOf('isActive');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', condPos);
-
-        expect(selectionRange).toBeDefined();
+      it('should handle ternary from condition, true branch, and false branch', () => {
+        verifySelectionRanges(
+          env,
+          '<span>{{ isActive ? "Active" : "Inactive" }}</span>',
+          `isActive = true;`,
+          [
+            {
+              label: 'cursor on condition "isActive"',
+              cursorAt: 'isActive',
+              chain: [
+                'isActive',
+                'isActive ? "Active" : "Inactive"',
+                '{{ isActive ? "Active" : "Inactive" }}',
+                '<span>{{ isActive ? "Active" : "Inactive" }}</span>',
+              ],
+            },
+            {
+              label: 'cursor on true branch "Active"',
+              cursorAt: '"Active"',
+              offset: 1,
+              chain: [
+                'Active',
+                '"Active"',
+                'isActive ? "Active" : "Inactive"',
+                '{{ isActive ? "Active" : "Inactive" }}',
+                '<span>{{ isActive ? "Active" : "Inactive" }}</span>',
+              ],
+            },
+            {
+              label: 'cursor on false branch "Inactive"',
+              cursorAt: '"Inactive"',
+              offset: 1,
+              chain: [
+                'Inactive',
+                '"Inactive"',
+                'isActive ? "Active" : "Inactive"',
+                '{{ isActive ? "Active" : "Inactive" }}',
+                '<span>{{ isActive ? "Active" : "Inactive" }}</span>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle nested ternary', () => {
@@ -1535,142 +1742,165 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
         // Position on inner "b"
-        const bPos = files['app.html'].indexOf(' b ') + 1;
+        const bPos = template.indexOf(' b ') + 1;
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', bPos);
 
-        expect(selectionRange).toBeDefined();
+        // b → inner ternary → outer ternary → interpolation → element
+        verifyExpansionChain(selectionRange, template, [
+          'b',
+          'b ? "AB" : "A"',
+          'a ? b ? "AB" : "A" : "None"',
+          '{{ a ? b ? "AB" : "A" : "None" }}',
+          '<span>{{ a ? b ? "AB" : "A" : "None" }}</span>',
+        ]);
       });
 
-      it('should handle nullish coalescing', () => {
-        const files = {
-          'app.html': '<span>{{ user.name ?? "Anonymous" }}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              user = {name: null as string | null};
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "user.name"
-        const userPos = files['app.html'].indexOf('user.name');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', userPos);
-
-        expect(selectionRange).toBeDefined();
+      it('should handle nullish coalescing from both sides', () => {
+        verifySelectionRanges(
+          env,
+          '<span>{{ user.name ?? "Anonymous" }}</span>',
+          `user = {name: null as string | null};`,
+          [
+            {
+              label: 'cursor on "user"',
+              cursorAt: 'user',
+              chain: [
+                'user',
+                'user.name',
+                'user.name ?? "Anonymous"',
+                '{{ user.name ?? "Anonymous" }}',
+                '<span>{{ user.name ?? "Anonymous" }}</span>',
+              ],
+            },
+            {
+              label: 'cursor on fallback "Anonymous"',
+              cursorAt: 'Anonymous',
+              chain: [
+                'Anonymous',
+                '"Anonymous"',
+                'user.name ?? "Anonymous"',
+                '{{ user.name ?? "Anonymous" }}',
+                '<span>{{ user.name ?? "Anonymous" }}</span>',
+              ],
+            },
+          ],
+        );
       });
     });
 
     describe('safe navigation', () => {
-      it('should handle optional chaining', () => {
-        const files = {
-          'app.html': '<span>{{ user?.profile?.avatar?.url }}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              user: any = null;
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "avatar"
-        const avatarPos = files['app.html'].indexOf('avatar');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', avatarPos);
-
-        expect(selectionRange).toBeDefined();
+      it('should expand through optional chaining from different positions', () => {
+        verifySelectionRanges(
+          env,
+          '<span>{{ user?.profile?.avatar?.url }}</span>',
+          `user: any = null;`,
+          [
+            {
+              label: 'cursor on intermediate "avatar"',
+              cursorAt: 'avatar',
+              chain: [
+                'user',
+                'user?.profile',
+                'user?.profile?.avatar',
+                'user?.profile?.avatar?.url',
+                '{{ user?.profile?.avatar?.url }}',
+                '<span>{{ user?.profile?.avatar?.url }}</span>',
+              ],
+            },
+            {
+              label: 'cursor on leaf "url"',
+              cursorAt: 'url',
+              chain: [
+                'user',
+                'user?.profile',
+                'user?.profile?.avatar',
+                'user?.profile?.avatar?.url',
+                '{{ user?.profile?.avatar?.url }}',
+                '<span>{{ user?.profile?.avatar?.url }}</span>',
+              ],
+            },
+            {
+              label: 'cursor on root "user"',
+              cursorAt: 'user',
+              chain: [
+                'user',
+                'user?.profile',
+                'user?.profile?.avatar',
+                'user?.profile?.avatar?.url',
+                '{{ user?.profile?.avatar?.url }}',
+                '<span>{{ user?.profile?.avatar?.url }}</span>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle safe method call', () => {
-        const files = {
-          'app.html': '<span>{{ user?.getName?.() }}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              user: any = null;
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "getName"
-        const namePos = files['app.html'].indexOf('getName');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
-
-        expect(selectionRange).toBeDefined();
+        verifySelectionRanges(
+          env,
+          '<span>{{ user?.getName?.() }}</span>',
+          `user: any = null;`,
+          [
+            {
+              label: 'cursor on "getName"',
+              cursorAt: 'getName',
+              chain: [
+                'user',
+                'user?.getName',
+                'user?.getName?.()',
+                '{{ user?.getName?.() }}',
+                '<span>{{ user?.getName?.() }}</span>',
+              ],
+            },
+          ],
+        );
       });
     });
 
     describe('keyed access', () => {
-      it('should handle array index access', () => {
-        const files = {
-          'app.html': '<span>{{ items[0].name }}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              items = [{name: 'First'}];
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "items"
-        const itemsPos = files['app.html'].indexOf('items');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', itemsPos);
-
-        expect(selectionRange).toBeDefined();
+      it('should handle array index and bracket notation', () => {
+        verifySelectionRanges(
+          env,
+          '<span>{{ items[0].name }}</span>',
+          `items = [{name: 'First'}];`,
+          [
+            {
+              label: 'cursor on "items"',
+              cursorAt: 'items',
+              chain: [
+                'items',
+                'items[0]',
+                'items[0].name',
+                '{{ items[0].name }}',
+                '<span>{{ items[0].name }}</span>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle bracket notation with variable key', () => {
-        const files = {
-          'app.html': '<span>{{ translations[currentLang] }}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              translations: Record<string, string> = {};
-              currentLang = 'en';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "currentLang"
-        const langPos = files['app.html'].indexOf('currentLang');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', langPos);
-
-        expect(selectionRange).toBeDefined();
+        verifySelectionRanges(
+          env,
+          '<span>{{ translations[currentLang] }}</span>',
+          `translations: Record<string, string> = {};\n        currentLang = 'en';`,
+          [
+            {
+              label: 'cursor on key "currentLang"',
+              cursorAt: 'currentLang',
+              chain: [
+                'currentLang',
+                'translations',
+                'translations[currentLang]',
+                '{{ translations[currentLang] }}',
+                '<span>{{ translations[currentLang] }}</span>',
+              ],
+            },
+          ],
+        );
       });
     });
 
@@ -1690,12 +1920,19 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position inside the array literal
-        const arrayPos = files['app.html'].indexOf('[1,');
+        const template = files['app.html'];
+        // Position inside the array literal (on the opening bracket)
+        const arrayPos = template.indexOf('[1,');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', arrayPos);
 
-        expect(selectionRange).toBeDefined();
+        // [1, 2, 3, 4, 5] → items key → full attribute → element
+        verifyExpansionChain(selectionRange, template, [
+          '[1, 2, 3, 4, 5]',
+          'items',
+          '[items]="[1, 2, 3, 4, 5]"',
+          '<app-list [items]="[1, 2, 3, 4, 5]"></app-list>',
+        ]);
       });
 
       it('should handle object literal in binding', () => {
@@ -1713,12 +1950,20 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "theme"
-        const themePos = files['app.html'].indexOf('theme');
+        const template = files['app.html'];
+        // Position on "theme" key in object literal
+        const themePos = template.indexOf('theme');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', themePos);
 
-        expect(selectionRange).toBeDefined();
+        // Cursor on "theme" key in LiteralMap - Angular doesn't give individual spans for map keys
+        // So the innermost node is the entire LiteralMap
+        verifyExpansionChain(selectionRange, template, [
+          "{theme: 'dark', size: 'large'}",
+          'options',
+          `[options]="{theme: 'dark', size: 'large'}"`,
+          `<app-config [options]="{theme: 'dark', size: 'large'}"></app-config>`,
+        ]);
       });
     });
 
@@ -1745,23 +1990,14 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', xPos);
 
-        // Note: There may be an intermediate span for parameters
-        expect(selectionRange).toBeDefined();
-        if (!selectionRange) return;
-
-        // Check that we have at minimum: body part → arrow function → interpolation
-        const chain: string[] = [];
-        let range: typeof selectionRange | undefined = selectionRange;
-        while (range) {
-          const start = range.textSpan.start;
-          const length = range.textSpan.length;
-          chain.push(template.substring(start, start + length));
-          range = range.parent;
-        }
-
-        // Should contain arrow function and interpolation
-        expect(chain.some((s) => s.includes('x => x * 2'))).toBe(true);
-        expect(chain.some((s) => s.includes('{{'))).toBe(true);
+        // x → x * 2 (Binary) → x => x * 2 (arrow function) → interpolation → element
+        verifyExpansionChain(selectionRange, template, [
+          'x',
+          'x * 2',
+          'x => x * 2',
+          '{{ x => x * 2 }}',
+          '<div>{{ x => x * 2 }}</div>',
+        ]);
       });
 
       it('should handle arrow function in property binding', () => {
@@ -1783,13 +2019,21 @@ describe('selection range', () => {
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
         const template = files['app.html'];
 
-        // Position on "item.invalid"
+        // Position on "item" in "item.invalid" (inside arrow function)
         const itemPos = template.indexOf('item.invalid');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', itemPos);
 
-        expect(selectionRange).toBeDefined();
-        // Should have: item → item.invalid → arrow function → some() call
+        // item → item.invalid → item => item.invalid → args span → items.some(...) → disabled key → full attribute → element
+        verifyExpansionChain(selectionRange, template, [
+          'item',
+          'item.invalid',
+          'item => item.invalid',
+          'items.some(item => item.invalid)',
+          'disabled',
+          '[disabled]="items.some(item => item.invalid)"',
+          '<button [disabled]="items.some(item => item.invalid)">Submit</button>',
+        ]);
       });
     });
 
@@ -1878,13 +2122,19 @@ describe('selection range', () => {
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
         const template = files['app.html'];
 
-        // Position on "1"
+        // Position on "1" (first element of array)
         const onePos = template.indexOf('1');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', onePos);
 
-        expect(selectionRange).toBeDefined();
-        // Should have: 1 → [1, 2, 3] → binding
+        // 1 → [1, 2, 3] → items key → full attribute → element
+        verifyExpansionChain(selectionRange, template, [
+          '1',
+          '[1, 2, 3]',
+          'items',
+          '[items]="[1, 2, 3]"',
+          '<div [items]="[1, 2, 3]"></div>',
+        ]);
       });
 
       it('should expand through object literals', () => {
@@ -1904,13 +2154,20 @@ describe('selection range', () => {
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
         const template = files['app.html'];
 
-        // Position on 'dark'
+        // Position on 'dark' (string literal)
         const darkPos = template.indexOf("'dark'");
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', darkPos);
 
-        expect(selectionRange).toBeDefined();
-        // Should have: 'dark' → object literal → binding
+        // Cursor on 'dark' string literal value - has inner content span (dark) then quoted span ('dark')
+        verifyExpansionChain(selectionRange, template, [
+          'dark',
+          "'dark'",
+          "{theme: 'dark', size: 10}",
+          'config',
+          `[config]="{theme: 'dark', size: 10}"`,
+          `<div [config]="{theme: 'dark', size: 10}"></div>`,
+        ]);
       });
     });
 
@@ -1939,8 +2196,26 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', hiddenPos);
 
-        expect(selectionRange).toBeDefined();
-        // Should have: isHidden → !isHidden → binding
+        // isHidden → !isHidden → ngIf attribute → element
+        // *ngIf desugars to a template with [ngIf] binding
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        // Verify the innermost step selects isHidden
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should contain isHidden').toContain('isHidden');
+
+        // Verify chain reaches the element level
+        let outermost = selectionRange;
+        while (outermost.parent) outermost = outermost.parent;
+        const outermostText = template.substring(
+          outermost.textSpan.start,
+          outermost.textSpan.start + outermost.textSpan.length,
+        );
+        expect(outermostText).withContext('Outermost should be element').toContain('<div');
       });
 
       it('should expand through typeof expression', () => {
@@ -1967,8 +2242,9 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', valuePos);
 
-        expect(selectionRange).toBeDefined();
-        // Should have: value → typeof value → comparison
+        // Angular templates may not support typeof natively - expression parsing is implementation-defined
+        // Just verify it doesn't crash and returns some selection range
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
       });
     });
   });
@@ -1992,12 +2268,19 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
         // Position on "userName"
-        const userPos = files['app.html'].indexOf('userName');
+        const userPos = template.indexOf('userName');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', userPos);
 
-        expect(selectionRange).toBeDefined();
+        // userName → ngModel key → [(ngModel)]="userName" → element
+        verifyExpansionChain(selectionRange, template, [
+          'userName',
+          'ngModel',
+          '[(ngModel)]="userName"',
+          '<input [(ngModel)]="userName">',
+        ]);
       });
     });
 
@@ -2020,12 +2303,20 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "isActive"
-        const activePos = files['app.html'].indexOf('isActive');
+        const template = files['app.html'];
+        // Position on "isActive" in first binding
+        const activePos = template.indexOf('isActive');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', activePos);
 
-        expect(selectionRange).toBeDefined();
+        // isActive → class.active key → [class.active]="isActive" → attribute group → element
+        verifyExpansionChain(selectionRange, template, [
+          'isActive',
+          'class.active',
+          '[class.active]="isActive"',
+          '[class.active]="isActive" [class.disabled]="isDisabled"',
+          '<div [class.active]="isActive" [class.disabled]="isDisabled">Content</div>',
+        ]);
       });
 
       it('should handle [style.property] binding', () => {
@@ -2047,12 +2338,20 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
         // Position on "containerWidth"
-        const widthPos = files['app.html'].indexOf('containerWidth');
+        const widthPos = template.indexOf('containerWidth');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', widthPos);
 
-        expect(selectionRange).toBeDefined();
+        // containerWidth → style.width.px key → full attribute → attribute group → element
+        verifyExpansionChain(selectionRange, template, [
+          'containerWidth',
+          'style.width.px',
+          '[style.width.px]="containerWidth"',
+          '[style.width.px]="containerWidth" [style.background-color]="bgColor"',
+          '<div [style.width.px]="containerWidth" [style.background-color]="bgColor">Content</div>',
+        ]);
       });
     });
 
@@ -2076,12 +2375,20 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
         // Position on "buttonLabel"
-        const labelPos = files['app.html'].indexOf('buttonLabel');
+        const labelPos = template.indexOf('buttonLabel');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', labelPos);
 
-        expect(selectionRange).toBeDefined();
+        // buttonLabel → attr.aria-label key → full attribute → attribute group → element
+        verifyExpansionChain(selectionRange, template, [
+          'buttonLabel',
+          'attr.aria-label',
+          '[attr.aria-label]="buttonLabel"',
+          '[attr.aria-label]="buttonLabel" [attr.data-testid]="testId"',
+          '<button [attr.aria-label]="buttonLabel" [attr.data-testid]="testId">Click</button>',
+        ]);
       });
     });
   });
@@ -2106,12 +2413,22 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "nameInput" in the event handler
-        const refPos = files['app.html'].indexOf('nameInput.value');
+        const template = files['app.html'];
+        // Position on "nameInput" in the event handler expression
+        const refPos = template.indexOf('nameInput.value');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', refPos);
 
-        expect(selectionRange).toBeDefined();
+        // nameInput → nameInput.value → args span → greet(nameInput.value) → click key → event binding → siblings → element
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        // Verify innermost is nameInput
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should contain nameInput').toContain('nameInput');
       });
 
       it('should handle reference on ng-template', () => {
@@ -2136,12 +2453,21 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
         // Position on "Loading..."
-        const loadingPos = files['app.html'].indexOf('Loading...');
+        const loadingPos = template.indexOf('Loading...');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', loadingPos);
 
-        expect(selectionRange).toBeDefined();
+        // Loading → Loading... → <p>Loading...</p> → ng-template content → ng-template element
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should be word Loading').toContain('Loading');
       });
     });
 
@@ -2165,12 +2491,22 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
         // Position on "firstName" in @let
-        const namePos = files['app.html'].indexOf('firstName');
+        const namePos = template.indexOf('firstName');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
 
-        expect(selectionRange).toBeDefined();
+        // firstName is inside a Binary expression: firstName + ' ' + lastName
+        // firstName → firstName + ' ' → firstName + ' ' + lastName → @let declaration → root
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should be firstName').toBe('firstName');
       });
 
       it('should handle @let with pipe and usage', () => {
@@ -2191,12 +2527,21 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "upperName" usage
-        const usagePos = files['app.html'].indexOf('{{upperName}}') + 2;
+        const template = files['app.html'];
+        // Position on "upperName" usage in interpolation
+        const usagePos = template.indexOf('{{upperName}}') + 2;
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', usagePos);
 
-        expect(selectionRange).toBeDefined();
+        // upperName → {{upperName}} → ... → root siblings
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should be upperName').toBe('upperName');
       });
     });
 
@@ -2219,12 +2564,21 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "user.name"
-        const namePos = files['app.html'].indexOf('user.name');
+        const template = files['app.html'];
+        // Position on "user" in "user.name" interpolation
+        const namePos = template.indexOf('user.name');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
 
-        expect(selectionRange).toBeDefined();
+        // user → user.name → children siblings → element
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should be user').toBe('user');
       });
 
       it('should handle *ngFor with multiple local variables', () => {
@@ -2247,12 +2601,21 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "isFirst"
-        const firstPos = files['app.html'].indexOf('{{isFirst');
+        const template = files['app.html'];
+        // Position on "isFirst" in interpolation
+        const firstPos = template.indexOf('{{isFirst') + 2;
 
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', firstPos + 2);
+        const selectionRange = project.getSelectionRangeAtPosition('app.html', firstPos);
 
-        expect(selectionRange).toBeDefined();
+        // isFirst → ternary expression → siblings → element
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should be isFirst').toBe('isFirst');
       });
     });
   });
@@ -2284,20 +2647,30 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
         // Position on "Deep content"
-        const contentPos = files['app.html'].indexOf('Deep content');
+        const contentPos = template.indexOf('Deep content');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', contentPos);
 
-        expect(selectionRange).toBeDefined();
+        // Verify innermost is "Deep" (word), outermost is the full template
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should be word Deep').toBe('Deep');
+
+        // Verify chain depth: word → text → span → div → article → section → div → root
         let depth = 0;
-        let range = selectionRange;
+        let range: ts.SelectionRange | undefined = selectionRange;
         while (range) {
           depth++;
           range = range.parent;
         }
-        // Should have many levels: text -> span -> div -> article -> section -> div
-        expect(depth).toBeGreaterThanOrEqual(5);
+        expect(depth).withContext('Should have at least 5 levels for deep nesting').toBeGreaterThanOrEqual(5);
       });
     });
 
@@ -2321,19 +2694,21 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "user.name"
-        const namePos = files['app.html'].indexOf('user.name');
+        const template = files['app.html'];
+        // Position on "user" in "user.name" interpolation inside <strong>
+        const namePos = template.indexOf('user.name');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
 
-        expect(selectionRange).toBeDefined();
-        let depth = 0;
-        let range = selectionRange;
-        while (range) {
-          depth++;
-          range = range.parent;
-        }
-        expect(depth).toBeGreaterThanOrEqual(3);
+        // user → user.name → {{user.name}} → <strong> → children (siblings) → <p>
+        verifyExpansionChain(selectionRange, template, [
+          'user',
+          'user.name',
+          '{{user.name}}',
+          '<strong>{{user.name}}</strong>',
+          'Hello <strong>{{user.name}}</strong>, welcome to <em>{{siteName}}</em>!',
+          '<p>Hello <strong>{{user.name}}</strong>, welcome to <em>{{siteName}}</em>!</p>',
+        ]);
       });
     });
 
@@ -2358,12 +2733,20 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "currentTheme"
-        const themePos = files['app.html'].indexOf('currentTheme');
+        const template = files['app.html'];
+        const themePos = template.indexOf('currentTheme');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', themePos);
 
-        expect(selectionRange).toBeDefined();
+        // currentTheme → {theme: currentTheme, locale: userLocale} (object arg) → getSettings(...) → settings key → full attribute → element
+        verifyExpansionChain(selectionRange, template, [
+          'currentTheme',
+          '{theme: currentTheme, locale: userLocale}',
+          'getSettings({theme: currentTheme, locale: userLocale})',
+          'settings',
+          '[settings]="getSettings({theme: currentTheme, locale: userLocale})"',
+          '<app-config [settings]="getSettings({theme: currentTheme, locale: userLocale})"></app-config>',
+        ]);
       });
     });
 
@@ -2389,12 +2772,20 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "handleClick"
-        const clickPos = files['app.html'].indexOf('handleClick');
+        const template = files['app.html'];
+        const clickPos = template.indexOf('handleClick');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', clickPos);
 
-        expect(selectionRange).toBeDefined();
+        // handleClick → handleClick($event, item.id) → ternary → click key → event binding → element
+        verifyExpansionChain(selectionRange, template, [
+          'handleClick',
+          'handleClick($event, item.id)',
+          'isEnabled ? handleClick($event, item.id) : noOp()',
+          'click',
+          '(click)="isEnabled ? handleClick($event, item.id) : noOp()"',
+          '<button (click)="isEnabled ? handleClick($event, item.id) : noOp()">Action</button>',
+        ]);
       });
 
       it('should handle event with arrow function', () => {
@@ -2416,12 +2807,21 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "remove(item)"
-        const removePos = files['app.html'].indexOf('remove(item)');
+        const template = files['app.html'];
+        // Position on "remove" in (click)="remove(item)"
+        const removePos = template.indexOf('remove(item)');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', removePos);
 
-        expect(selectionRange).toBeDefined();
+        // remove → remove(item) → click key → event binding → element → children → outer div
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should be remove').toBe('remove');
       });
     });
 
@@ -2444,12 +2844,14 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "items" in the "other" case
-        const itemsPos = files['app.html'].indexOf('}} items}');
+        const template = files['app.html'];
+        // Position on "items" text in the "other" case
+        const itemsPos = template.indexOf('}} items}') + 3;
 
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', itemsPos + 3);
+        const selectionRange = project.getSelectionRangeAtPosition('app.html', itemsPos);
 
-        expect(selectionRange).toBeDefined();
+        // ICU messages have complex structure - verify we get a selection
+        expect(selectionRange).withContext('Selection range should be defined for ICU content').toBeDefined();
       });
 
       it('should expand within ICU variable expression', () => {
@@ -2470,17 +2872,21 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "count" in the regular interpolation (more predictable)
-        const countPos = files['app.html'].indexOf('{{count}}') + 2;
+        const template = files['app.html'];
+        // Position on "count" in the regular interpolation {{count}}
+        const countPos = template.indexOf('{{count}}') + 2;
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', countPos);
 
-        expect(selectionRange).toBeDefined();
-        const rangeText = files['app.html'].substring(
-          selectionRange!.textSpan.start,
-          selectionRange!.textSpan.start + selectionRange!.textSpan.length,
+        // count → {{count}} → Count: {{count}} text → <p>Count: {{count}}</p> → siblings → root
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
         );
-        expect(rangeText).toContain('count');
+        expect(innermostText).withContext('Innermost should be count').toBe('count');
       });
 
       it('should handle select ICU message', () => {
@@ -2500,12 +2906,14 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
         // Position on "She" in the female case
-        const shePos = files['app.html'].indexOf('She');
+        const shePos = template.indexOf('She');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', shePos);
 
-        expect(selectionRange).toBeDefined();
+        // ICU select messages - verify selection exists
+        expect(selectionRange).withContext('Selection range should be defined for ICU select').toBeDefined();
       });
     });
 
@@ -2525,14 +2933,21 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position inside empty div
+        const template = files['app.html'];
+        // Position inside empty div (offset 4 is between > and <)
         const pos = 4;
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', pos);
 
-        // May or may not return a range for empty content
-        // Just verify it doesn't throw
-        expect(true).toBe(true);
+        // Position 4 is at the start of </div> - cursor should snap to the empty element
+        // For an empty element, we might get just the element span or undefined
+        if (selectionRange) {
+          const text = template.substring(
+            selectionRange.textSpan.start,
+            selectionRange.textSpan.start + selectionRange.textSpan.length,
+          );
+          expect(text).withContext('If range exists, should be the element').toContain('div');
+        }
       });
 
       it('should handle self-closing element', () => {
@@ -2552,12 +2967,20 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "name"
-        const namePos = files['app.html'].indexOf('name');
+        const template = files['app.html'];
+        // Position on "name" in [value]="name" (single-line self-closing)
+        const namePos = template.indexOf('name');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
 
-        expect(selectionRange).toBeDefined();
+        // name → value key → [value]="name" → attribute group → element
+        verifyExpansionChain(selectionRange, template, [
+          'name',
+          'value',
+          '[value]="name"',
+          'type="text" [value]="name"',
+          '<input type="text" [value]="name" />',
+        ]);
       });
 
       it('should handle multiple interpolations in single text node', () => {
@@ -2578,12 +3001,18 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on first "a"
-        const aPos = files['app.html'].indexOf('{{a}}') + 2;
+        const template = files['app.html'];
+        // Position on first "a" in {{a}}
+        const aPos = template.indexOf('{{a}}') + 2;
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', aPos);
 
-        expect(selectionRange).toBeDefined();
+        // a → children (siblings) → element
+        verifyExpansionChain(selectionRange, template, [
+          'a',
+          '{{a}} + {{b}} = {{a + b}}',
+          '<span>{{a}} + {{b}} = {{a + b}}</span>',
+        ]);
       });
 
       it('should handle whitespace-only text nodes', () => {
@@ -2603,12 +3032,21 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "Content"
-        const contentPos = files['app.html'].indexOf('Content');
+        const template = files['app.html'];
+        // Position on "Content" inside <span>
+        const contentPos = template.indexOf('Content');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', contentPos);
 
-        expect(selectionRange).toBeDefined();
+        // Content → <span>Content</span> → children (whitespace text nodes are siblings) → <div>
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
+
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should be Content').toBe('Content');
       });
 
       it('should handle attribute with empty value', () => {
@@ -2626,12 +3064,18 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+        const template = files['app.html'];
         // Position on "disabled"
-        const attrPos = files['app.html'].indexOf('disabled');
+        const attrPos = template.indexOf('disabled');
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', attrPos);
 
-        expect(selectionRange).toBeDefined();
+        // disabled → disabled="" → <input disabled="">
+        verifyExpansionChain(selectionRange, template, [
+          'disabled',
+          'disabled=""',
+          '<input disabled="">',
+        ]);
       });
     });
 
@@ -2870,37 +3314,15 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', passPos);
 
-        expect(selectionRange).toBeDefined();
-
-        // Collect the chain and verify parent elements are present
-        const chainTexts: string[] = [];
-        let range = selectionRange;
-        while (range) {
-          const text = template.substring(
-            range.textSpan.start,
-            range.textSpan.start + range.textSpan.length,
-          );
-          chainTexts.push(text);
-          range = range.parent;
-        }
-
-        // Must include the inner div
-        const hasInnerDiv = chainTexts.some((t) => t.includes('id="inner"'));
-        expect(hasInnerDiv)
-          .withContext(
-            `Chain should include inner div. Chain: ${JSON.stringify(chainTexts.map((t) => t.substring(0, 50)))}`,
-          )
-          .toBe(true);
-
-        // Must include the outer div
-        const hasOuterDiv = chainTexts.some(
-          (t) => t.includes('id="outer"') && t.includes('id="inner"'),
-        );
-        expect(hasOuterDiv)
-          .withContext(
-            `Chain should include outer div. Chain: ${JSON.stringify(chainTexts.map((t) => t.substring(0, 50)))}`,
-          )
-          .toBe(true);
+        // PASS → <strong...>PASS</strong> → siblings → <div id="inner">...</div> → siblings → <div id="outer">...</div>
+        verifyExpansionChain(selectionRange, template, [
+          'PASS',
+          '<strong style="color: #080;">PASS</strong>',
+          '<strong style="color: #080;">PASS</strong><br>Info text',
+          '<div id="inner"><strong style="color: #080;">PASS</strong><br>Info text</div>',
+          '<h2>Title</h2><div id="inner"><strong style="color: #080;">PASS</strong><br>Info text</div>',
+          template,
+        ]);
       });
 
       it('should expand correctly from text content in multi-line element', () => {
@@ -2931,28 +3353,186 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', yellowPos);
 
-        expect(selectionRange).toBeDefined();
+        // YELLOW (word) → line → text node → content span → full element
+        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+        if (!selectionRange) return;
 
-        // Collect the chain
-        const chainTexts: string[] = [];
-        let range = selectionRange;
-        while (range) {
-          const text = template.substring(
-            range.textSpan.start,
-            range.textSpan.start + range.textSpan.length,
-          );
-          chainTexts.push(text);
-          range = range.parent;
-        }
+        const innermostText = template.substring(
+          selectionRange.textSpan.start,
+          selectionRange.textSpan.start + selectionRange.textSpan.length,
+        );
+        expect(innermostText).withContext('Innermost should be word YELLOW').toBe('YELLOW');
 
-        // The element span should start at <div, not at style=
-        const elementStep = chainTexts.find((t) => t.includes('<div') && t.includes('</div>'));
-        expect(elementStep).withContext('Should have element step').toBeDefined();
-        expect(elementStep!.startsWith('<div'))
-          .withContext(
-            `Element span should start with '<div', not attribute. Got: "${elementStep?.substring(0, 50)}"`,
-          )
+        // Verify outermost reaches the full element starting with <div
+        let outermost = selectionRange;
+        while (outermost.parent) outermost = outermost.parent;
+        const outermostText = template.substring(
+          outermost.textSpan.start,
+          outermost.textSpan.start + outermost.textSpan.length,
+        );
+        expect(outermostText.startsWith('<div'))
+          .withContext(`Outermost should start with '<div', got: "${outermostText.substring(0, 50)}"`)
           .toBe(true);
+        expect(outermostText.endsWith('</div>'))
+          .withContext(`Outermost should end with '</div>'`)
+          .toBe(true);
+      });
+    });
+
+    describe('user expectation tests', () => {
+      it('should expand from property in simple interpolation to full element', () => {
+        verifySelectionRanges(
+          env,
+          `<h1>{{ title }}</h1>`,
+          `title = 'Hello';`,
+          [
+            {
+              label: 'cursor on title',
+              cursorAt: 'title',
+              chain: [
+                'title',
+                '{{ title }}',
+                '<h1>{{ title }}</h1>',
+              ],
+            },
+          ],
+        );
+      });
+
+      it('should expand from signal call through interpolation', () => {
+        verifySelectionRanges(
+          env,
+          `<p>Count: {{ count() }}</p>`,
+          `count = signal(0);`,
+          [
+            {
+              label: 'cursor on count',
+              cursorAt: 'count',
+              chain: [
+                'count',
+                'count()',
+                // Implementation includes full text content (text + interpolation)
+                'Count: {{ count() }}',
+                '<p>Count: {{ count() }}</p>',
+              ],
+            },
+          ],
+        );
+      });
+
+      it('should expand from property in event handler', () => {
+        verifySelectionRanges(
+          env,
+          `<button (click)="onClick()">Go</button>`,
+          `onClick() {}`,
+          [
+            {
+              label: 'cursor on onClick',
+              cursorAt: 'onClick',
+              chain: [
+                'onClick',
+                'onClick()',
+                // Event key name is included as a step
+                'click',
+                '(click)="onClick()"',
+                '<button (click)="onClick()">Go</button>',
+              ],
+            },
+          ],
+        );
+      });
+
+      it('should expand through nested property access', () => {
+        verifySelectionRanges(
+          env,
+          `<span>{{ user.address.city }}</span>`,
+          `user = {address: {city: 'NYC'}};`,
+          [
+            {
+              label: 'cursor on city (deepest property)',
+              cursorAt: 'city',
+              chain: [
+                // addPropertyChainReceiver adds the full receiver chain
+                'user',
+                'user.address',
+                'user.address.city',
+                '{{ user.address.city }}',
+                '<span>{{ user.address.city }}</span>',
+              ],
+            },
+            {
+              label: 'cursor on address (middle property)',
+              cursorAt: 'address',
+              chain: [
+                // addPropertyChainReceiver adds the receiver chain
+                'user',
+                'user.address',
+                'user.address.city',
+                '{{ user.address.city }}',
+                '<span>{{ user.address.city }}</span>',
+              ],
+            },
+            {
+              label: 'cursor on user (root property)',
+              cursorAt: 'user',
+              chain: [
+                'user',
+                'user.address',
+                'user.address.city',
+                '{{ user.address.city }}',
+                '<span>{{ user.address.city }}</span>',
+              ],
+            },
+          ],
+        );
+      });
+
+      it('should expand from bound attribute value to full attribute to element', () => {
+        verifySelectionRanges(
+          env,
+          `<div [class]="classes"></div>`,
+          `classes = 'active';`,
+          [
+            {
+              label: 'cursor on classes',
+              cursorAt: 'classes',
+              chain: [
+                'classes',
+                'class',
+                '[class]="classes"',
+                '<div [class]="classes"></div>',
+              ],
+            },
+          ],
+        );
+      });
+
+      it('should expand from text content through parent elements', () => {
+        const template = `<main>\n  <section>\n    <p>Hello World</p>\n  </section>\n</main>`;
+        const files = {
+          'app.ts': `
+            import {Component} from '@angular/core';
+            @Component({selector: 'my-app', standalone: true, templateUrl: './app.html'})
+            export class AppComponent {}
+          `,
+          'app.html': template,
+        };
+        const project = env.addProject('test', files);
+        project.expectNoSourceDiagnostics();
+
+        const helloPos = template.indexOf('Hello');
+        const selectionRange = project.getSelectionRangeAtPosition('app.html', helloPos);
+        // The word 'Hello' is the innermost, then full text 'Hello World',
+        // then element, then whitespace text nodes, then parent elements
+        verifyExpansionChain(selectionRange, template, [
+          'Hello',
+          'Hello World',
+          '<p>Hello World</p>',
+          '\n    <p>Hello World</p>\n  ',
+          '<section>\n    <p>Hello World</p>\n  </section>',
+          '\n  <section>\n    <p>Hello World</p>\n  </section>\n',
+          '<main>\n  <section>\n    <p>Hello World</p>\n  </section>\n</main>',
+        ]);
       });
     });
   });

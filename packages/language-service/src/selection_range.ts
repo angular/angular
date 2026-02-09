@@ -11,6 +11,7 @@ import {
   ASTWithSource,
   BindingPipe,
   Call,
+  ImplicitReceiver,
   Interpolation,
   KeyedRead,
   LiteralPrimitive,
@@ -360,10 +361,13 @@ class SelectionRangeExpressionVisitor extends RecursiveAstVisitor {
       return this.visit(ast.ast, context);
     }
 
+    // Skip ImplicitReceiver/ThisReceiver - never selectable (some contexts give non-zero spans)
+    if (ast instanceof ImplicitReceiver) return;
+
     const span = ast.sourceSpan;
     if (!isWithin(this.position, span)) return;
 
-    // Skip zero-length spans (ImplicitReceiver, ThisReceiver, etc.)
+    // Skip zero-length spans
     if (span.start !== span.end) {
       this.path.push({node: ast, span: {start: span.start, end: span.end}});
     }
@@ -527,8 +531,10 @@ class SelectionRangeExpressionVisitor extends RecursiveAstVisitor {
   // ------------------------------------------------------------------
 
   private addPropertyChainReceiver(receiver: AST): void {
+    // Skip ImplicitReceiver/ThisReceiver by type check - some contexts give them non-zero spans
+    if (receiver instanceof ImplicitReceiver) return;
     const span = receiver.sourceSpan;
-    if (span.start === span.end) return; // Skip ImplicitReceiver / ThisReceiver
+    if (span.start === span.end) return; // Skip other zero-length nodes
 
     this.path.push({node: receiver, span: {start: span.start, end: span.end}});
 
