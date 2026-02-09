@@ -187,17 +187,16 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
     });
   });
 
-  if (!isNode) {
-    it('generate a new schema', () => {
-      let schema = '\n';
-      extractSchema()!.forEach((props, name) => {
-        schema += `'${name}|${props.join(',')}',\n`;
-      });
-      // Uncomment this line to see:
-      // the generated schema which can then be pasted to the DomElementSchemaRegistry
-      // console.log(schema);
-    });
-  }
+  // Uncomment to see the generated schema which can then be pasted to the DomElementSchemaRegistry
+  // if (!isNode) {
+  //   it('generate a new schema', () => {
+  //     let schema = '\n';
+  //     extractSchema()!.forEach((props, name) => {
+  //       schema += `'${name}|${props.join(',')}',\n`;
+  //     });
+  //     console.log(schema);
+  //   });
+  // }
 
   describe('normalizeAnimationStyleProperty', () => {
     it('should normalize the given CSS property to camelCase', () => {
