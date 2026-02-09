@@ -240,7 +240,9 @@ export class FormField<T> {
     if (this.isFieldBinding) {
       throw new RuntimeError(
         RuntimeErrorCode.BINDING_ALREADY_REGISTERED,
-        ngDevMode && 'FormField already registered as a binding',
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
+          'FormField already registered as a binding',
       );
     }
     this.isFieldBinding = true;
@@ -269,6 +271,22 @@ export class FormField<T> {
       },
       {injector: this.injector},
     );
+
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      effect(
+        () => {
+          const fieldNode = this.state() as unknown as FieldNode;
+          if (fieldNode.hidden()) {
+            const path = fieldNode.structure.pathKeys().join('.') || '<root>';
+            console.warn(
+              `Field '${path}' is hidden but is being rendered. ` +
+                `Hidden fields should be removed from the DOM using @if.`,
+            );
+          }
+        },
+        {injector: this.injector},
+      );
+    }
   }
 
   /**
@@ -301,7 +319,8 @@ export class FormField<T> {
     } else {
       throw new RuntimeError(
         RuntimeErrorCode.INVALID_FIELD_DIRECTIVE_HOST,
-        ngDevMode &&
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
           `${host.descriptor} is an invalid [formField] directive host. The host must be a native form control ` +
             `(such as <input>', '<select>', or '<textarea>') or a custom form control with a 'value' or ` +
             `'checked' model.`,

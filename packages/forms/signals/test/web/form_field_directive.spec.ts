@@ -779,6 +779,44 @@ describe('field directive', () => {
         act(() => component.field.set(component.f.y));
         expect(component.customControl().hidden()).toBe(false);
       });
+
+      it('should warn when a hidden field is rendered', () => {
+        const warnSpy = spyOn(console, 'warn');
+        @Component({
+          imports: [FormField],
+          template: `<input [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly f = form(signal(''), (p) => {
+            hidden(p, () => true);
+          });
+        }
+
+        act(() => TestBed.createComponent(TestCmp));
+        expect(warnSpy).toHaveBeenCalledWith(
+          jasmine.stringMatching(/Field '.*' is hidden but is being rendered/),
+        );
+      });
+
+      it('should not warn when a hidden field is guarded by @if', () => {
+        const warnSpy = spyOn(console, 'warn');
+        @Component({
+          imports: [FormField],
+          template: `
+            @if (!f().hidden()) {
+              <input [formField]="f" />
+            }
+          `,
+        })
+        class TestCmp {
+          readonly f = form(signal(''), (p) => {
+            hidden(p, () => true);
+          });
+        }
+
+        act(() => TestBed.createComponent(TestCmp));
+        expect(warnSpy).not.toHaveBeenCalled();
+      });
     });
 
     describe('invalid', () => {
