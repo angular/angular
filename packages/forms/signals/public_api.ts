@@ -21,3 +21,4 @@ export * from './src/api/structure';
 export * from './src/api/transformed_value';
 export * from './src/api/types';
 export * from './src/directive/form_field_directive';
+export * from './src/directive/ng_signal_form';
