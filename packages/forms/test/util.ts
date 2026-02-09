@@ -91,19 +91,3 @@ export function asyncValidatorReturningObservable(c: AbstractControl): EventEmit
   });
   return e;
 }
-
-export async function timeout(ms?: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
-export function useAutoTick() {
-  beforeEach(() => {
-    jasmine.clock().install();
-    jasmine.clock().autoTick();
-  });
-  afterEach(() => {
-    jasmine.clock().uninstall();
-  });
-}

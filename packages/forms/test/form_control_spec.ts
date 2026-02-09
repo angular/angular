@@ -8,7 +8,8 @@
 
 import {AsyncValidatorFn, FormArray, FormControl, FormGroup, Validators} from '../index';
 
-import {asyncValidator, asyncValidatorReturningObservable, timeout, useAutoTick} from './util';
+import {asyncValidator, asyncValidatorReturningObservable} from './util';
+import {useAutoTick, timeout} from '@angular/private/testing';
 
 (function () {
   function otherAsyncValidator() {

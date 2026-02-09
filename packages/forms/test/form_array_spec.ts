@@ -17,7 +17,8 @@ import {
 import {Validators} from '../src/validators';
 import {of} from 'rxjs';
 
-import {asyncValidator, timeout, useAutoTick} from './util';
+import {useAutoTick, timeout} from '@angular/private/testing';
+import {asyncValidator} from './util';
 
 (function () {
   describe('FormArray', () => {

@@ -17,6 +17,7 @@ import {
   Validators,
   ValueChangeEvent,
 } from '../index';
+import {useAutoTick, timeout} from '@angular/private/testing';
 
 import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model';
 import {
@@ -24,8 +25,6 @@ import {
   asyncValidatorReturningObservable,
   currentStateOf,
   simpleAsyncValidator,
-  timeout,
-  useAutoTick,
 } from './util';
 
 (function () {

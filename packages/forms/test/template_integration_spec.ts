@@ -26,11 +26,10 @@ import {
   Validator,
 } from '../index';
 import {By} from '@angular/platform-browser';
-import {dispatchEvent, sortedClassList} from '@angular/private/testing';
+import {dispatchEvent, useAutoTick, timeout, sortedClassList} from '@angular/private/testing';
 import {merge} from 'rxjs';
 
 import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
-import {timeout, useAutoTick} from './util';
 
 describe('template-driven forms integration tests', () => {
   useAutoTick();
