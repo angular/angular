@@ -89,22 +89,37 @@ interface CursorSpec {
  * @param template The template HTML string. Must be a single line for inline mode to work.
  * @param componentMembers Component class body (properties, methods)
  * @param cursors Array of cursor positions and their expected expansion chains
+ * @param options Optional configuration for imports, standalone components, etc.
  */
 function verifySelectionRanges(
   env: LanguageServiceTestEnv,
   template: string,
   componentMembers: string,
   cursors: CursorSpec[],
+  options?: {
+    /** Additional imports for the component module (e.g. ['NgStyle', 'NgIf']). Source: @angular/common */
+    imports?: string[];
+  },
 ): void {
+  const angularImports = options?.imports ?? [];
+  const importStatement = angularImports.length > 0
+    ? `import {${angularImports.join(', ')}} from '@angular/common';`
+    : '';
+  const importsArray = angularImports.length > 0
+    ? `imports: [${angularImports.join(', ')}],`
+    : '';
+
   // --- External template mode ---
   const externalFiles = {
     'app.html': template,
     'app.ts': `
       import {Component} from '@angular/core';
+      ${importStatement}
 
       @Component({
         selector: 'my-app',
         templateUrl: './app.html',
+        ${importsArray}
       })
       export class AppComponent {
         ${componentMembers}
@@ -133,10 +148,12 @@ function verifySelectionRanges(
     const inlineFiles = {
       'app.ts': `
         import {Component} from '@angular/core';
+        ${importStatement}
 
         @Component({
           selector: 'my-app',
           template: \`${escapedForBacktick}\`,
+          ${importsArray}
         })
         export class AppComponent {
           ${componentMembers}
@@ -193,235 +210,95 @@ describe('selection range', () => {
   });
 
   describe('inline templates', () => {
-    it('should return selection range for element in inline template', () => {
-      const files = {
-        'app.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-app',
-            template: '<div>content</div>',
-          })
-          export class AppComponent {}
-        `,
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const appFile = project.openFile('app.ts');
-      const template = '<div>content</div>';
-      // Position inside the template on "content"
-      const contentPos = appFile.contents.indexOf('content');
-      const templateOffset = appFile.contents.indexOf('<div>');
-
-      const selectionRange = project.getSelectionRangeAtPosition('app.ts', contentPos);
-
-      // Verify the exact expansion chain: content → <div>content</div>
-      verifyExpansionChain(
-        selectionRange,
-        template,
-        ['content', '<div>content</div>'],
-        templateOffset,
-      );
-    });
-
-    it('should return selection range for nested elements in inline template', () => {
-      const files = {
-        'app.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-app',
-            template: '<div><span>nested</span></div>',
-          })
-          export class AppComponent {}
-        `,
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const appFile = project.openFile('app.ts');
-      const template = '<div><span>nested</span></div>';
-      // Position on "nested" text
-      const nestedPos = appFile.contents.indexOf('nested');
-      const templateOffset = appFile.contents.indexOf('<div>');
-
-      const selectionRange = project.getSelectionRangeAtPosition('app.ts', nestedPos);
-
-      // Verify the exact expansion chain: nested → <span>nested</span> → <div><span>nested</span></div>
-      verifyExpansionChain(
-        selectionRange,
-        template,
-        ['nested', '<span>nested</span>', '<div><span>nested</span></div>'],
-        templateOffset,
-      );
-    });
-
     it('should handle template literals (backtick templates)', () => {
-      const files = {
-        'app.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-app',
-            template: \`
+      // Multiline template with nested elements — tests whitespace handling
+      const template = `
               <section>
                 <article>content</article>
               </section>
-            \`,
-          })
-          export class AppComponent {}
-        `,
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const appFile = project.openFile('app.ts');
-      // Position on "content"
-      const contentPos = appFile.contents.indexOf('>content<') + 1;
-
-      const selectionRange = project.getSelectionRangeAtPosition('app.ts', contentPos);
-
-      const tplMarker = 'template: `';
-      const tplStart = appFile.contents.indexOf(tplMarker) + tplMarker.length;
-      const tplEnd = appFile.contents.indexOf('`,', tplStart);
-      const template = appFile.contents.substring(tplStart, tplEnd);
-      const sectionInner = template.substring(
-        template.indexOf('<section>') + '<section>'.length,
-        template.indexOf('</section>'),
-      );
-      const sectionFull = template.substring(
-        template.indexOf('<section>'),
-        template.indexOf('</section>') + '</section>'.length,
-      );
-
-      // content → <article>content</article> → section children → <section>...</section> → full template
-      verifyExpansionChain(
-        selectionRange,
-        template,
-        ['content', '<article>content</article>', sectionInner, sectionFull, template],
-        tplStart,
-      );
+            `;
+      verifySelectionRanges(env, template, '', [
+        {
+          label: 'cursor on content text inside article',
+          cursorAt: 'content',
+          chain: [
+            'content',
+            '<article>content</article>',
+            // Children span (whitespace + article + whitespace inside section)
+            `
+                <article>content</article>
+              `,
+            // Full section element
+            `<section>
+                <article>content</article>
+              </section>`,
+            // Full template (whitespace before section + section + whitespace after)
+            template,
+          ],
+        },
+      ]);
     });
 
     it('should work with @if control flow blocks in inline templates', () => {
-      const files = {
-        'app.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-app',
-            template: \`
+      const template = `
               @if (show) {
                 <div>conditional content</div>
               }
-            \`,
-          })
-          export class AppComponent {
-            show = true;
-          }
-        `,
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const appFile = project.openFile('app.ts');
-      // Position on "conditional content"
-      const contentPos = appFile.contents.indexOf('conditional content');
-
-      const selectionRange = project.getSelectionRangeAtPosition('app.ts', contentPos);
-
-      const tplMarker = 'template: `';
-      const tplStart = appFile.contents.indexOf(tplMarker) + tplMarker.length;
-      const tplEnd = appFile.contents.indexOf('`,', tplStart);
-      const template = appFile.contents.substring(tplStart, tplEnd);
-      const lastBrace = template.lastIndexOf('}');
-      const ifBodyContent = template.substring(template.indexOf('{') + 1, lastBrace);
-      const ifBlock = template.substring(template.indexOf('@if'), lastBrace + 1);
-      const rootSpan = template.substring(0, lastBrace + 1);
-
-      // word → text → <div> → @if body → @if block → root span
-      verifyExpansionChain(
-        selectionRange,
-        template,
-        [
-          'conditional',
-          'conditional content',
-          '<div>conditional content</div>',
-          ifBodyContent,
-          ifBlock,
-          rootSpan,
-        ],
-        tplStart,
-      );
+            `;
+      // Manually compute the expected intermediate substrings:
+      const ifBody = `
+                <div>conditional content</div>
+              `;
+      const ifBlock = `@if (show) {
+                <div>conditional content</div>
+              }`;
+      // Root span: from start whitespace up to closing brace (the full meaningful content)
+      const rootSpan = template.substring(0, template.lastIndexOf('}') + 1);
+      verifySelectionRanges(env, template, `show = true;`, [
+        {
+          label: 'cursor on conditional text content',
+          cursorAt: 'conditional content',
+          chain: [
+            'conditional',
+            'conditional content',
+            '<div>conditional content</div>',
+            ifBody,
+            ifBlock,
+            rootSpan,
+          ],
+        },
+      ]);
     });
 
     it('should work with interpolation in inline templates', () => {
-      const files = {
-        'app.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-app',
-            template: '<span>Hello {{name}}!</span>',
-          })
-          export class AppComponent {
-            name = 'World';
-          }
-        `,
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const appFile = project.openFile('app.ts');
-      // Position on "name" in interpolation
-      const namePos = appFile.contents.indexOf('{{name}}') + 2;
-
-      const selectionRange = project.getSelectionRangeAtPosition('app.ts', namePos);
-
-      const template = '<span>Hello {{name}}!</span>';
-      const templateOffset = appFile.contents.indexOf(template);
-
-      // name → Hello {{name}}! (siblings) → <span>...</span>
-      verifyExpansionChain(
-        selectionRange,
-        template,
-        ['name', 'Hello {{name}}!', '<span>Hello {{name}}!</span>'],
-        templateOffset,
-      );
+      // name → siblings text → <span>
+      verifySelectionRanges(env, '<span>Hello {{name}}!</span>', `name = 'World';`, [
+        {
+          label: 'cursor on name in interpolation',
+          cursorAt: 'name',
+          chain: ['name', 'Hello {{name}}!', '<span>Hello {{name}}!</span>'],
+        },
+      ]);
     });
 
     it('should work with bound attributes in inline templates', () => {
-      const files = {
-        'app.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-app',
-            template: '<div [class.active]="isActive">Content</div>',
-          })
-          export class AppComponent {
-            isActive = true;
-          }
-        `,
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const appFile = project.openFile('app.ts');
-      // Position on "isActive" in binding
-      const activePos = appFile.contents.indexOf('isActive">');
-
-      const selectionRange = project.getSelectionRangeAtPosition('app.ts', activePos);
-
-      const template = '<div [class.active]="isActive">Content</div>';
-      const templateOffset = appFile.contents.indexOf(template);
-
-      // isActive → class.active → [class.active]="isActive" → <div ...>Content</div>
-      verifyExpansionChain(
-        selectionRange,
-        template,
+      // isActive → class.active (attr name) → [class.active]="isActive" (full attr) → element
+      verifySelectionRanges(
+        env,
+        '<div [class.active]="isActive">Content</div>',
+        `isActive = true;`,
         [
-          'isActive',
-          'class.active',
-          '[class.active]="isActive"',
-          '<div [class.active]="isActive">Content</div>',
+          {
+            label: 'cursor on isActive in class binding',
+            cursorAt: 'isActive"',
+            chain: [
+              'isActive',
+              'class.active',
+              '[class.active]="isActive"',
+              '<div [class.active]="isActive">Content</div>',
+            ],
+          },
         ],
-        templateOffset,
       );
     });
 
@@ -452,269 +329,122 @@ describe('selection range', () => {
     });
 
     it('should handle inline template with complex element and multiple attributes', () => {
-      // Test inline template with complex attributes - similar to user bug report
-      const files = {
-        'app.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-app',
-            template: '<div data-test="test1" [style.color]="color" style="border: 1px solid"><strong>TEST 1</strong><br>Actual: BLUE text</div>',
-          })
-          export class AppComponent {
-            color = 'blue';
-          }
-        `,
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const appFile = project.openFile('app.ts');
+      // Complex element with text attributes, bound attributes, and mixed content
       const template =
         '<div data-test="test1" [style.color]="color" style="border: 1px solid"><strong>TEST 1</strong><br>Actual: BLUE text</div>';
-
-      // Position on "BLUE" in the text content (inside "Actual: BLUE text")
-      const bluePos = appFile.contents.indexOf('BLUE');
-      const templateOffset = appFile.contents.indexOf('<div data-test');
-
-      const selectionRange = project.getSelectionRangeAtPosition('app.ts', bluePos);
-
-      // Verify expansion now includes word as innermost step
-      verifyExpansionChain(
-        selectionRange,
-        template,
-        [
-          'BLUE', // Word at cursor
-          'Actual: BLUE text', // Text node
-          '<strong>TEST 1</strong><br>Actual: BLUE text', // Children grouped
-          '<div data-test="test1" [style.color]="color" style="border: 1px solid"><strong>TEST 1</strong><br>Actual: BLUE text</div>', // Full element
-        ],
-        templateOffset,
-      );
+      verifySelectionRanges(env, template, `color = 'blue';`, [
+        {
+          label: 'cursor on BLUE in text content',
+          cursorAt: 'BLUE',
+          chain: [
+            'BLUE',
+            'Actual: BLUE text',
+            '<strong>TEST 1</strong><br>Actual: BLUE text',
+            template,
+          ],
+        },
+      ]);
     });
 
     it('should expand through nested elements in backtick inline template', () => {
-      // Reproduces user bug: expanding from style attr inside nested divs in backtick template
-      const files = {
-        'app.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-app',
-            template: \`<div style="padding: 20px;"><div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div></div>\`,
-          })
-          export class AppComponent {}
-        `,
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const appFile = project.openFile('app.ts');
-      const template = `<div style="padding: 20px;"><div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div></div>`;
-      const templateOffset = appFile.contents.indexOf('<div style="padding');
-      // Position on "color: red;" VALUE (inside the quotes) in <strong style="color: red;">
-      // This tests expansion from the value
-      const colorValuePos = appFile.contents.indexOf('color: red');
-
-      const selectionRange = project.getSelectionRangeAtPosition('app.ts', colorValuePos);
-
-      // Verify exact expansion chain from attribute value
-      verifyExpansionChain(
-        selectionRange,
-        template,
-        [
-          'color: red;', // attribute value
-          'style="color: red;"', // full attribute
-          '<strong style="color: red;">TEXT</strong>', // strong element
-          '<div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div>', // inner div
-          template, // outer div
-        ],
-        templateOffset,
-      );
+      // Nested divs with style attributes — expansion from style attribute value
+      const template = '<div style="padding: 20px;"><div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div></div>';
+      verifySelectionRanges(env, template, '', [
+        {
+          label: 'cursor on color in strong style value',
+          cursorAt: 'color: red',
+          chain: [
+            'color: red;',
+            'style="color: red;"',
+            '<strong style="color: red;">TEXT</strong>',
+            '<div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div>',
+            template,
+          ],
+        },
+      ]);
     });
 
     it('should handle multi-line opening tag in backtick inline template', () => {
-      const files = {
-        'app.ts': `
-          import {Component} from '@angular/core';
-
-          @Component({
-            selector: 'my-app',
-            template: \`<div
-              style="border: 1px solid black;">
-              Actual content
-            </div>\`,
-          })
-          export class AppComponent {}
-        `,
-      };
-
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-      const appFile = project.openFile('app.ts');
+      // Multiline element with attributes on separate lines
       const template = `<div
               style="border: 1px solid black;">
               Actual content
             </div>`;
-      const templateOffset = appFile.contents.indexOf('<div');
-      // Position on "style" keyword inside the multi-line opening tag
-      const stylePos = appFile.contents.indexOf('style="border');
-
-      const selectionRange = project.getSelectionRangeAtPosition('app.ts', stylePos);
-
-      // style → style="border: 1px solid black;" → full element
-      verifyExpansionChain(
-        selectionRange,
-        template,
-        [
-          'style',
-          'style="border: 1px solid black;"',
-          template,
-        ],
-        templateOffset,
-      );
+      verifySelectionRanges(env, template, '', [
+        {
+          label: 'cursor on style keyword in multiline opening tag',
+          cursorAt: 'style',
+          chain: [
+            'style',
+            'style="border: 1px solid black;"',
+            template,
+          ],
+        },
+      ]);
     });
 
     describe('sibling expansion', () => {
       it('should include all siblings before parent element', () => {
         // In <h1><span>a</span><span>b</span></h1>, selection should expand:
-        // a -> <span>a</span> -> <span>a</span><span>b</span> -> <h1>...</h1>
-        const files = {
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              template: '<h1><span>a</span><span>b</span></h1>',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const appFile = project.openFile('app.ts');
-        // Position on "a" text inside first span
-        const aPos = appFile.contents.indexOf('>a<') + 1;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.ts', aPos);
-
-        const template = '<h1><span>a</span><span>b</span></h1>';
-        const templateOffset = appFile.contents.indexOf(template);
-
         // a → <span>a</span> → <span>a</span><span>b</span> (siblings) → <h1>...</h1>
-        verifyExpansionChain(
-          selectionRange,
-          template,
-          [
-            'a',
-            '<span>a</span>',
-            '<span>a</span><span>b</span>',
-            '<h1><span>a</span><span>b</span></h1>',
-          ],
-          templateOffset,
-        );
+        verifySelectionRanges(env, '<h1><span>a</span><span>b</span></h1>', '', [
+          {
+            label: 'cursor on a text inside first span',
+            cursorAt: '>a<',
+            offset: 1, // skip the '>' to land on 'a'
+            chain: [
+              'a',
+              '<span>a</span>',
+              '<span>a</span><span>b</span>',
+              '<h1><span>a</span><span>b</span></h1>',
+            ],
+          },
+        ]);
       });
 
       it('should expand interpolation before siblings content', () => {
         // In <span>{{user.name}} - {{user.phone}}</span>, selection should expand:
-        // user.name -> {{user.name}} -> {{user.name}} - {{user.phone}} -> <span>...</span>
-        const files = {
-          'app.html': '<span>{{user.name}} - {{user.phone}}</span>',
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              user = {name: 'John', phone: '123'};
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on 'r' in 'user' of {{user.name}} (offset 11 from template start)
-        const namePos = 11;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
-
-        const template = '<span>{{user.name}} - {{user.phone}}</span>';
-
-        // user → user.name → children (siblings) → <span>...</span>
-        verifyExpansionChain(selectionRange, template, [
-          'user',
-          'user.name',
-          '{{user.name}} - {{user.phone}}',
+        // user → user.name → siblings text + interpolation → <span>...</span>
+        verifySelectionRanges(
+          env,
           '<span>{{user.name}} - {{user.phone}}</span>',
-        ]);
+          `user = {name: 'John', phone: '123'};`,
+          [
+            {
+              label: 'cursor on user in user.name',
+              cursorAt: 'user.name',
+              chain: [
+                'user',
+                'user.name',
+                '{{user.name}} - {{user.phone}}',
+                '<span>{{user.name}} - {{user.phone}}</span>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle single child without redundant siblings span', () => {
-        // In <span>{{user.name}}</span>, with only one child, we shouldn't add siblings span
-        const files = {
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              template: '<span>{{user.name}}</span>',
-            })
-            export class AppComponent {
-              user = {name: 'John'};
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const appFile = project.openFile('app.ts');
-        // Position on "name"
-        const namePos = appFile.contents.indexOf('user.name') + 5;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.ts', namePos);
-
-        const template = '<span>{{user.name}}</span>';
-        const templateOffset = appFile.contents.indexOf(template);
-
-        // user.name → {{user.name}} → <span>...</span>
-        verifyExpansionChain(
-          selectionRange,
-          template,
-          ['user.name', '{{user.name}}', '<span>{{user.name}}</span>'],
-          templateOffset,
-        );
+        // In <span>{{user.name}}</span>, with only one child, siblings span is skipped
+        verifySelectionRanges(env, '<span>{{user.name}}</span>', `user = {name: 'John'};`, [
+          {
+            label: 'cursor on name in user.name',
+            cursorAt: 'name',
+            chain: ['user.name', '{{user.name}}', '<span>{{user.name}}</span>'],
+          },
+        ]);
       });
 
       it('should work with multiple text nodes', () => {
-        // In <p>Hello {{name}}!</p>, should expand properly
-        const files = {
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              template: '<p>Hello {{name}}!</p>',
-            })
-            export class AppComponent {
-              name = 'World';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const appFile = project.openFile('app.ts');
-        // Position on "name"
-        const namePos = appFile.contents.indexOf('{{name}}') + 2;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.ts', namePos);
-
-        const template = '<p>Hello {{name}}!</p>';
-        const templateOffset = appFile.contents.indexOf(template);
-
-        // name → Hello {{name}}! (siblings) → <p>...</p>
-        verifyExpansionChain(
-          selectionRange,
-          template,
-          ['name', 'Hello {{name}}!', '<p>Hello {{name}}!</p>'],
-          templateOffset,
-        );
+        // In <p>Hello {{name}}!</p>, text + interpolation are siblings
+        // name → combined siblings → <p>
+        verifySelectionRanges(env, '<p>Hello {{name}}!</p>', `name = 'World';`, [
+          {
+            label: 'cursor on name in interpolation',
+            cursorAt: 'name',
+            chain: ['name', 'Hello {{name}}!', '<p>Hello {{name}}!</p>'],
+          },
+        ]);
       });
 
       it('should expand through nested property access', () => {
@@ -821,345 +551,205 @@ describe('selection range', () => {
       });
 
       it('should handle @for with @empty block', () => {
-        const files = {
-          'app.html': `@for (item of items; track item) {
+        // @for with @empty: cursor on text inside @empty block
+        const template = `@for (item of items; track item) {
             <li>{{item}}</li>
           } @empty {
             <p>No items</p>
-          }`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              items: string[] = [];
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "No items" text in @empty block
-        const emptyPos = files['app.html'].indexOf('No items');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', emptyPos);
-
-        const template = files['app.html'];
+          }`;
+        // Compute expected chain substrings from the template
         const emptyContent = template.substring(
           template.indexOf('{', template.indexOf('@empty')) + 1,
           template.lastIndexOf('}'),
         );
         const emptyBlock = template.substring(template.indexOf('@empty'));
 
-        // No (word) → No items (text) → <p>No items</p> → @empty content → @empty → @for
-        verifyExpansionChain(selectionRange, template, [
-          'No',
-          'No items',
-          '<p>No items</p>',
-          emptyContent,
-          emptyBlock,
-          template,
+        verifySelectionRanges(env, template, `items: string[] = [];`, [
+          {
+            label: 'cursor on No in empty block',
+            cursorAt: 'No items',
+            // No (word) → No items (text) → <p> → @empty content → @empty block → full @for
+            chain: ['No', 'No items', '<p>No items</p>', emptyContent, emptyBlock, template],
+          },
         ]);
       });
 
       it('should handle nested @for loops', () => {
-        const files = {
-          'app.html': `@for (row of rows; track row) {
+        // Nested @for: cursor on property access inside inner loop
+        const template = `@for (row of rows; track row) {
             @for (cell of row.cells; track cell) {
               <span>{{cell.value}}</span>
             }
-          }`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              rows = [{cells: [{value: 'A1'}]}];
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "cell.value"
-        const cellPos = files['app.html'].indexOf('cell.value');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', cellPos);
-
-        const template = files['app.html'];
+          }`;
+        // Compute expected chain substrings
         const innerForIdx = template.indexOf('@for (cell');
         const innerBraceOpen = template.indexOf('{', innerForIdx);
-        const innerBraceClose = template.indexOf(
-          '}',
-          template.indexOf('</span>') + '</span>'.length,
-        );
+        const innerBraceClose = template.indexOf('}', template.indexOf('</span>') + '</span>'.length);
         const innerForBody = template.substring(innerBraceOpen + 1, innerBraceClose);
         const innerFor = template.substring(innerForIdx, innerBraceClose + 1);
         const outerBraceOpen = template.indexOf('{');
-        // Siblings span: leading whitespace text node + inner @for (excludes trailing whitespace)
         const outerForBody = template.substring(outerBraceOpen + 1, innerBraceClose + 1);
 
-        // cell → cell.value → {{...}} → <span> → inner body → inner @for → outer body → outer @for
-        verifyExpansionChain(selectionRange, template, [
-          'cell',
-          'cell.value',
-          '{{cell.value}}',
-          '<span>{{cell.value}}</span>',
-          innerForBody,
-          innerFor,
-          outerForBody,
-          template,
+        verifySelectionRanges(env, template, `rows = [{cells: [{value: 'A1'}]}];`, [
+          {
+            label: 'cursor on cell in cell.value',
+            cursorAt: 'cell.value',
+            // cell → cell.value → {{cell.value}} → <span> → inner body → inner @for → outer body → outer @for
+            chain: [
+              'cell',
+              'cell.value',
+              '{{cell.value}}',
+              '<span>{{cell.value}}</span>',
+              innerForBody,
+              innerFor,
+              outerForBody,
+              template,
+            ],
+          },
         ]);
       });
     });
 
     describe('@switch blocks', () => {
       it('should handle @switch with multiple @case blocks', () => {
-        const files = {
-          'app.html': `@switch (status) {
+        // @switch with @case and @default: cursor on text inside first @case
+        const template = `@switch (status) {
             @case ('active') { <span class="active">Active</span> }
             @case ('inactive') { <span class="inactive">Inactive</span> }
             @default { <span>Unknown</span> }
-          }`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              status = 'active';
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "Active" text
-        const activePos = files['app.html'].indexOf('>Active<') + 1;
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', activePos);
-
-        const template = files['app.html'];
+          }`;
+        // Compute expected chain substrings
         const caseOpenBrace = template.indexOf('{', template.indexOf("@case ('active')"));
         const caseCloseBrace = template.indexOf('}', caseOpenBrace);
         const caseBody = template.substring(caseOpenBrace + 1, caseCloseBrace);
-        const caseBlock = template.substring(
-          template.indexOf("@case ('active')"),
-          caseCloseBrace + 1,
-        );
+        const caseBlock = template.substring(template.indexOf("@case ('active')"), caseCloseBrace + 1);
         const defaultCloseBrace = template.lastIndexOf('}', template.lastIndexOf('}') - 1);
         const allCases = template.substring(template.indexOf('@case'), defaultCloseBrace + 1);
 
-        // Active → <span> → @case body → @case → all case groups → @switch
-        verifyExpansionChain(selectionRange, template, [
-          'Active',
-          '<span class="active">Active</span>',
-          caseBody,
-          caseBlock,
-          allCases,
-          template,
+        verifySelectionRanges(env, template, `status = 'active';`, [
+          {
+            label: 'cursor on Active text inside first @case',
+            cursorAt: '>Active<',
+            offset: 1,
+            // Active → <span> → @case body → @case block → all case groups → @switch
+            chain: [
+              'Active',
+              '<span class="active">Active</span>',
+              caseBody,
+              caseBlock,
+              allCases,
+              template,
+            ],
+          },
         ]);
       });
 
       it('should handle @switch with expression in @case', () => {
-        const files = {
-          'app.html': `@switch (value) {
+        // @switch with expression in @case: cursor on @case expression
+        const template = `@switch (value) {
             @case (computedValue) { <div>Match</div> }
-          }`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              value = 1;
-              computedValue = 1;
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "computedValue" in @case
-        const casePos = files['app.html'].indexOf('computedValue');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', casePos);
-
-        const template = files['app.html'];
+          }`;
         const caseBlock = template.substring(
           template.indexOf('@case'),
           template.indexOf('}', template.indexOf('Match</div>')) + 1,
         );
 
-        // computedValue → @case block → @switch block
-        verifyExpansionChain(selectionRange, template, [
-          'computedValue',
-          caseBlock,
-          template,
+        verifySelectionRanges(env, template, `value = 1;\n        computedValue = 1;`, [
+          {
+            label: 'cursor on computedValue in @case condition',
+            cursorAt: 'computedValue',
+            // computedValue → @case block → @switch block
+            chain: ['computedValue', caseBlock, template],
+          },
         ]);
       });
     });
 
     describe('@defer blocks', () => {
       it('should handle @defer with @loading and @error blocks', () => {
-        const files = {
-          'app.html': `@defer {
+        const template = `@defer {
             <heavy-component />
           } @loading {
             <p>Loading...</p>
           } @error {
             <p>Error occurred</p>
-          }`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "Loading..." text
-        const loadingPos = files['app.html'].indexOf('Loading...');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', loadingPos);
-
-        const template = files['app.html'];
+          }`;
         const loadingBraceOpen = template.indexOf('{', template.indexOf('@loading'));
         const loadingBraceClose = template.indexOf('}', template.indexOf('Loading...</p>'));
         const loadingContent = template.substring(loadingBraceOpen + 1, loadingBraceClose);
-        const loadingBlock = template.substring(
-          template.indexOf('@loading'),
-          loadingBraceClose + 1,
-        );
+        const loadingBlock = template.substring(template.indexOf('@loading'), loadingBraceClose + 1);
 
-        // Loading (word) → Loading... (text) → <p> → content → @loading → @defer
-        verifyExpansionChain(selectionRange, template, [
-          'Loading',
-          'Loading...',
-          '<p>Loading...</p>',
-          loadingContent,
-          loadingBlock,
-          template,
+        verifySelectionRanges(env, template, '', [
+          {
+            label: 'cursor on Loading text inside @loading block',
+            cursorAt: 'Loading...',
+            // Loading (word) → Loading... (text) → <p> → @loading content → @loading → @defer
+            chain: [
+              'Loading',
+              'Loading...',
+              '<p>Loading...</p>',
+              loadingContent,
+              loadingBlock,
+              template,
+            ],
+          },
         ]);
       });
 
       it('should handle @defer with @placeholder block', () => {
-        const files = {
-          'app.html': `@defer {
+        const template = `@defer {
             <main-content />
           } @placeholder (minimum 500ms) {
             <p>Placeholder content</p>
-          }`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "Placeholder content"
-        const placeholderPos = files['app.html'].indexOf('Placeholder content');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', placeholderPos);
-
-        const template = files['app.html'];
+          }`;
         const phBraceOpen = template.indexOf('{', template.indexOf('@placeholder'));
         const phBraceClose = template.indexOf('}', template.indexOf('Placeholder content</p>'));
         const phContent = template.substring(phBraceOpen + 1, phBraceClose);
         const phBlock = template.substring(template.indexOf('@placeholder'), phBraceClose + 1);
 
-        // Placeholder (word) → Placeholder content (text) → <p> → content → @placeholder → @defer
-        verifyExpansionChain(selectionRange, template, [
-          'Placeholder',
-          'Placeholder content',
-          '<p>Placeholder content</p>',
-          phContent,
-          phBlock,
-          template,
+        verifySelectionRanges(env, template, '', [
+          {
+            label: 'cursor on Placeholder text inside @placeholder block',
+            cursorAt: 'Placeholder content',
+            // Placeholder (word) → Placeholder content (text) → <p> → content → @placeholder → @defer
+            chain: [
+              'Placeholder',
+              'Placeholder content',
+              '<p>Placeholder content</p>',
+              phContent,
+              phBlock,
+              template,
+            ],
+          },
         ]);
       });
 
       it('should expand through @defer when trigger expression', () => {
-        const files = {
-          'app.html': `@defer (when isReady) {
+        const template = `@defer (when isReady) {
             <heavy-component />
-          }`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              isReady = false;
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "isReady" in the when condition
-        const isReadyPos = files['app.html'].indexOf('isReady');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', isReadyPos);
-
-        const template = files['app.html'];
-
-        // isReady → when isReady (trigger span) → @defer block
-        verifyExpansionChain(selectionRange, template, [
-          'isReady',
-          'when isReady',
-          template,
+          }`;
+        verifySelectionRanges(env, template, `isReady = false;`, [
+          {
+            label: 'cursor on isReady in when condition',
+            cursorAt: 'isReady',
+            // isReady → when isReady (trigger span) → @defer block
+            chain: ['isReady', 'when isReady', template],
+          },
         ]);
       });
 
       it('should expand through @defer when trigger with property access', () => {
-        const files = {
-          'app.html': `@defer (when data.isLoaded) {
+        const template = `@defer (when data.isLoaded) {
             <result-view [data]="data" />
-          }`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              data = { isLoaded: false };
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "isLoaded" in the when condition
-        const isLoadedPos = files['app.html'].indexOf('isLoaded');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', isLoadedPos);
-
-        const template = files['app.html'];
-
-        // Cursor on "isLoaded" is within the PropertyRead span for "data.isLoaded"
-        // data.isLoaded → when data.isLoaded (trigger span) → @defer block
-        verifyExpansionChain(selectionRange, template, [
-          'data.isLoaded',
-          'when data.isLoaded',
-          template,
+          }`;
+        verifySelectionRanges(env, template, `data = { isLoaded: false };`, [
+          {
+            label: 'cursor on isLoaded in when condition with property access',
+            cursorAt: 'isLoaded',
+            // Cursor on "isLoaded" is within the PropertyRead span for "data.isLoaded"
+            // data.isLoaded → when data.isLoaded (trigger) → @defer block
+            chain: ['data.isLoaded', 'when data.isLoaded', template],
+          },
         ]);
       });
     });
@@ -1884,45 +1474,27 @@ describe('selection range', () => {
 
     describe('unary expressions', () => {
       it('should expand through prefix not', () => {
-        const files = {
-          'app.html': `<div *ngIf="!isHidden">Content</div>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-            })
-            export class AppComponent {
-              isHidden = false;
-            }
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-
-        // Position on "isHidden"
-        const hiddenPos = template.indexOf('isHidden');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', hiddenPos);
-
-        // *ngIf desugars in the template AST. The chain walks through:
-        // isHidden → !isHidden → ngIf (attribute name) → ngIf="!isHidden (partial attr) → Content (sibling text) → full element
-        // Note: The intermediate steps through the desugared attribute are an artifact of how
-        // structural directives expose their attribute spans. The user-visible effect is:
-        // isHidden → !isHidden → ... → <div *ngIf="!isHidden">Content</div>
-        expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
-        if (!selectionRange) return;
-
-        verifyExpansionChain(selectionRange, template, [
-          'isHidden',
-          '!isHidden',
-          'ngIf',
-          'ngIf="!isHidden',
-          'Content',
+        // *ngIf desugars in the template AST. The chain walks through the desugared attribute.
+        // isHidden → !isHidden → ngIf (attr name) → ngIf="!isHidden (partial attr) → Content → element
+        verifySelectionRanges(
+          env,
           '<div *ngIf="!isHidden">Content</div>',
-        ]);
+          `isHidden = false;`,
+          [
+            {
+              label: 'cursor on isHidden in *ngIf',
+              cursorAt: 'isHidden',
+              chain: [
+                'isHidden',
+                '!isHidden',
+                'ngIf',
+                'ngIf="!isHidden',
+                'Content',
+                '<div *ngIf="!isHidden">Content</div>',
+              ],
+            },
+          ],
+        );
       });
     });
   });
@@ -2663,41 +2235,30 @@ describe('selection range', () => {
       });
 
       it('should handle complex element with many attributes and bound properties', () => {
-        // Complex template similar to user's bug report
-        const files = {
-          'app.html': `<div data-test-id="test1" myDirectiveA [style.backgroundColor]="'rgb(0, 0, 255)'" [style.color]="'rgb(255, 255, 0)'" [ngStyle]="{'border': '5px solid green'}" [style]="{'padding': '20px', 'margin': '10px'}" style="border: 1px 2px 3px var(--help);"><strong>TEST 1: Template</strong><br>Expected: BLUE background<br>Actual: This should be BLUE with YELLOW text</div>`,
-          'app.ts': `
-            import {Component} from '@angular/core';
-            import {NgStyle} from '@angular/common';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-              imports: [NgStyle],
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const template = files['app.html'];
-        // Position on "BLUE" in the text content (not in attributes!)
-        const bluePos = template.indexOf('should be BLUE');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', bluePos);
-
-        // Verify expansion now includes word as the innermost step
-        // Note: Line and text node have same span so one gets deduplicated
-        verifyExpansionChain(selectionRange, template, [
-          'should', // Word at cursor
-          'Actual: This should be BLUE with YELLOW text', // Text node (line is same, deduplicated)
-          '<strong>TEST 1: Template</strong><br>Expected: BLUE background<br>Actual: This should be BLUE with YELLOW text', // Content span
-          `<div data-test-id="test1" myDirectiveA [style.backgroundColor]="'rgb(0, 0, 255)'" [style.color]="'rgb(255, 255, 0)'" [ngStyle]="{'border': '5px solid green'}" [style]="{'padding': '20px', 'margin': '10px'}" style="border: 1px 2px 3px var(--help);"><strong>TEST 1: Template</strong><br>Expected: BLUE background<br>Actual: This should be BLUE with YELLOW text</div>`, // Full element
-        ]);
+        // Complex template similar to user's bug report — many attributes + NgStyle
+        const template = `<div data-test-id="test1" myDirectiveA [style.backgroundColor]="'rgb(0, 0, 255)'" [style.color]="'rgb(255, 255, 0)'" [ngStyle]="{'border': '5px solid green'}" [style]="{'padding': '20px', 'margin': '10px'}" style="border: 1px 2px 3px var(--help);"><strong>TEST 1: Template</strong><br>Expected: BLUE background<br>Actual: This should be BLUE with YELLOW text</div>`;
+        verifySelectionRanges(
+          env,
+          template,
+          '',
+          [
+            {
+              label: 'cursor on should in text content (not in attributes)',
+              cursorAt: 'should be BLUE',
+              chain: [
+                'should',
+                'Actual: This should be BLUE with YELLOW text',
+                '<strong>TEST 1: Template</strong><br>Expected: BLUE background<br>Actual: This should be BLUE with YELLOW text',
+                template,
+              ],
+            },
+          ],
+          {imports: ['NgStyle']},
+        );
       });
 
       it('should handle multiline template similar to user bug report', () => {
-        // Template with newlines - similar to the user's actual template
+        // Template with newlines — similar to the user's actual template
         const template = `<div data-test-id="test1" myDirectiveA 
 [style.backgroundColor]="'rgb(0, 0, 255)'" 
 [style.color]="'rgb(255, 255, 0)'" 
@@ -2710,36 +2271,25 @@ Expected: YELLOW text rgb(255, 255, 0)<br>
 Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
 </div>`;
 
-        const files = {
-          'app.html': template,
-          'app.ts': `
-            import {Component} from '@angular/core';
-            import {NgStyle} from '@angular/common';
-
-            @Component({
-              selector: 'my-app',
-              templateUrl: './app.html',
-              imports: [NgStyle],
-            })
-            export class AppComponent {}
-          `,
-        };
-
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "BLUE" in the text content
-        const bluePos = template.indexOf('should be BLUE');
-
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', bluePos);
-
-        // Verify expansion: word → line → text node → content → element
-        // Word is innermost, element is outermost
-        verifyExpansionChain(selectionRange, template, [
-          `should`, // Word at cursor (innermost)
-          `Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS`, // Line content (trimmed) - larger than word
-          `\nActual: This should be BLUE with YELLOW text ← TEMPLATE WINS\n`, // Full text node with newlines
-          `\n<strong>TEST 1: Template [style.backgroundColor]</strong><br>\nExpected: BLUE background rgb(0, 0, 255)<br>\nExpected: YELLOW text rgb(255, 255, 0)<br>\nActual: This should be BLUE with YELLOW text ← TEMPLATE WINS\n`, // Content span
-          template, // Full element (outermost)
-        ]);
+        verifySelectionRanges(
+          env,
+          template,
+          '',
+          [
+            {
+              label: 'cursor on should in multiline text content',
+              cursorAt: 'should be BLUE',
+              chain: [
+                'should',
+                'Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS',
+                '\nActual: This should be BLUE with YELLOW text ← TEMPLATE WINS\n',
+                '\n<strong>TEST 1: Template [style.backgroundColor]</strong><br>\nExpected: BLUE background rgb(0, 0, 255)<br>\nExpected: YELLOW text rgb(255, 255, 0)<br>\nActual: This should be BLUE with YELLOW text ← TEMPLATE WINS\n',
+                template,
+              ],
+            },
+          ],
+          {imports: ['NgStyle']},
+        );
       });
     });
 
