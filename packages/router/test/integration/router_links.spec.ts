@@ -27,7 +27,6 @@ import {
   createRoot,
   advance,
 } from './integration_helpers';
-import {timeout} from '../helpers';
 
 export function routerLinkIntegrationSpec() {
   describe('router links', () => {

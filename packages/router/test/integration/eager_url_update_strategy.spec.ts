@@ -22,16 +22,17 @@ import {
   provideRouter,
   withRouterConfig,
 } from '../../src';
-import {timeout} from '../helpers';
+
 import {
-  AbsoluteSimpleLinkCmp,
-  BlankCmp,
-  RootCmp,
-  SimpleCmp,
   TeamCmp,
-  advance,
+  RootCmp,
+  BlankCmp,
+  SimpleCmp,
+  AbsoluteSimpleLinkCmp,
   createRoot,
+  advance,
 } from './integration_helpers';
+import {timeout} from '@angular/private/testing';
 
 export function eagerUrlUpdateStrategyIntegrationSuite() {
   describe('"eager" urlUpdateStrategy', () => {

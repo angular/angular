@@ -33,20 +33,20 @@ import {
   withRouterConfig,
 } from '../../src';
 import {RouterTestingHarness} from '../../testing';
-import {timeout} from '../helpers';
 import {
-  advance,
-  BlankCmp,
-  ConditionalThrowingCmp,
-  createRoot,
-  EmptyQueryParamsCmp,
-  expectEvents,
   RootCmp,
-  SimpleCmp,
-  simulateLocationChange,
-  ThrowingCmp,
+  BlankCmp,
   UserCmp,
+  expectEvents,
+  SimpleCmp,
+  ThrowingCmp,
+  ConditionalThrowingCmp,
+  EmptyQueryParamsCmp,
+  createRoot,
+  advance,
+  simulateLocationChange,
 } from './integration_helpers';
+import {timeout} from '@angular/private/testing';
 
 export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'navigation') {
   it('should handle failed navigations gracefully', async () => {

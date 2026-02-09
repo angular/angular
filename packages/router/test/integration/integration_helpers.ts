@@ -24,7 +24,7 @@ import {
 } from '../../index';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {timeout} from '../helpers';
+import {timeout} from '@angular/private/testing';
 
 export const ROUTER_DIRECTIVES = [RouterLink, RouterLinkActive, RouterOutlet];
 
