@@ -399,9 +399,7 @@ class SelectionRangeExpressionVisitor extends RecursiveAstVisitor {
     // Compute the pipe name (+ args) region span: `date:'short'`
     const pipeNameStart = ast.nameSpan.start;
     const lastArgEnd =
-      ast.args.length > 0
-        ? ast.args[ast.args.length - 1].sourceSpan.end
-        : ast.nameSpan.end;
+      ast.args.length > 0 ? ast.args[ast.args.length - 1].sourceSpan.end : ast.nameSpan.end;
 
     // Only add intermediate spans if cursor is within the pipe name + args region
     if (this.position >= pipeNameStart && this.position <= lastArgEnd) {
@@ -507,7 +505,6 @@ class SelectionRangeExpressionVisitor extends RecursiveAstVisitor {
       }
     }
   }
-
 }
 
 // ============================================================================
@@ -756,34 +753,44 @@ class SelectionRangeVisitor implements TmplAstVisitor {
   }
 
   visitBoundAttribute(attribute: TmplAstBoundAttribute): void {
-    // First add the attribute key (name) span to the path
-    // This will be an outer level since path is built innermost-to-outermost
+    // Only add the attribute key span if the cursor is within it.
+    // Adding it unconditionally violates LSP SelectionRange containment:
+    // parent.range must contain this.range. If cursor is in the expression,
+    // the keySpan is disjoint and must not appear in the parent chain.
     if (attribute.keySpan) {
       const keySpan = {
         start: attribute.keySpan.start.offset,
         end: attribute.keySpan.end.offset,
       };
-      this.path.push({node: null, span: keySpan});
+      if (positionShouldSnapToSpan(this.position, keySpan)) {
+        this.path.push({node: null, span: keySpan});
+      }
     }
 
-    // Then visit the expression (adds innermost node - the expression value)
-    // This creates expansion: expression → key → full attribute → element
+    // Visit the expression value (adds innermost node)
+    // When cursor is on expression: expression → full attribute → element
+    // When cursor is on key: key → full attribute → element
     this.visitExpression(attribute.value);
   }
 
   visitBoundEvent(event: TmplAstBoundEvent): void {
-    // First add the event key (name) span to the path
-    // This will be an outer level since path is built innermost-to-outermost
+    // Only add the event key span if the cursor is within it.
+    // Adding it unconditionally violates LSP SelectionRange containment:
+    // parent.range must contain this.range. If cursor is in the handler,
+    // the keySpan is disjoint and must not appear in the parent chain.
     if (event.keySpan) {
       const keySpan = {
         start: event.keySpan.start.offset,
         end: event.keySpan.end.offset,
       };
-      this.path.push({node: null, span: keySpan});
+      if (positionShouldSnapToSpan(this.position, keySpan)) {
+        this.path.push({node: null, span: keySpan});
+      }
     }
 
-    // Then visit the handler expression (adds innermost node)
-    // This creates expansion: expression → key → full event → element
+    // Visit the handler expression (adds innermost node)
+    // When cursor is on handler: expression → full event → element
+    // When cursor is on key: key → full event → element
     this.visitExpression(event.handler);
   }
 

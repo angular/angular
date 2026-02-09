@@ -291,7 +291,8 @@ describe('selection range', () => {
     });
 
     it('should work with bound attributes in inline templates', () => {
-      // isActive → class.active (attr name) → [class.active]="isActive" (full attr) → element
+      // isActive → [class.active]="isActive" (full attr) → element
+      // keySpan (class.active) is NOT included when cursor is on the expression
       verifySelectionRanges(
         env,
         '<div [class.active]="isActive">Content</div>',
@@ -302,7 +303,6 @@ describe('selection range', () => {
             cursorAt: 'isActive"',
             chain: [
               'isActive',
-              'class.active',
               '[class.active]="isActive"',
               '<div [class.active]="isActive">Content</div>',
             ],
@@ -492,7 +492,7 @@ describe('selection range', () => {
           {
             label: 'cursor on userName',
             cursorAt: 'userName',
-            chain: ['userName', 'value', '[value]="userName"', '<input [value]="userName">'],
+            chain: ['userName', '[value]="userName"', '<input [value]="userName">'],
           },
         ]);
       });
@@ -509,7 +509,6 @@ describe('selection range', () => {
               chain: [
                 'handleClick',
                 'handleClick()',
-                'click',
                 '(click)="handleClick()"',
                 '<button (click)="handleClick()">Click</button>',
               ],
@@ -1342,7 +1341,6 @@ describe('selection range', () => {
             cursorAt: '[1,',
             chain: [
               '[1, 2, 3, 4, 5]',
-              'items',
               '[items]="[1, 2, 3, 4, 5]"',
               '<app-list [items]="[1, 2, 3, 4, 5]"></app-list>',
             ],
@@ -1361,7 +1359,6 @@ describe('selection range', () => {
               cursorAt: 'theme',
               chain: [
                 "{theme: 'dark', size: 'large'}",
-                'options',
                 `[options]="{theme: 'dark', size: 'large'}"`,
                 `<app-config [options]="{theme: 'dark', size: 'large'}"></app-config>`,
               ],
@@ -1396,7 +1393,6 @@ describe('selection range', () => {
                 'item.invalid',
                 'item => item.invalid',
                 'items.some(item => item.invalid)',
-                'disabled',
                 '[disabled]="items.some(item => item.invalid)"',
                 '<button [disabled]="items.some(item => item.invalid)">Submit</button>',
               ],
@@ -1457,13 +1453,7 @@ describe('selection range', () => {
           {
             label: 'cursor on first element',
             cursorAt: '1',
-            chain: [
-              '1',
-              '[1, 2, 3]',
-              'items',
-              '[items]="[1, 2, 3]"',
-              '<div [items]="[1, 2, 3]"></div>',
-            ],
+            chain: ['1', '[1, 2, 3]', '[items]="[1, 2, 3]"', '<div [items]="[1, 2, 3]"></div>'],
           },
         ]);
       });
@@ -1477,7 +1467,6 @@ describe('selection range', () => {
               'dark',
               "'dark'",
               "{theme: 'dark', size: 10}",
-              'config',
               `[config]="{theme: 'dark', size: 10}"`,
               `<div [config]="{theme: 'dark', size: 10}"></div>`,
             ],
@@ -1489,7 +1478,8 @@ describe('selection range', () => {
     describe('unary expressions', () => {
       it('should expand through prefix not', () => {
         // *ngIf desugars in the template AST. The chain walks through the desugared attribute.
-        // isHidden → !isHidden → ngIf (attr name) → ngIf="!isHidden (partial attr) → Content → element
+        // isHidden → !isHidden → ngIf="!isHidden (partial attr) → Content → element
+        // keySpan (ngIf) is NOT included when cursor is on the expression
         verifySelectionRanges(env, '<div *ngIf="!isHidden">Content</div>', `isHidden = false;`, [
           {
             label: 'cursor on isHidden in *ngIf',
@@ -1497,7 +1487,6 @@ describe('selection range', () => {
             chain: [
               'isHidden',
               '!isHidden',
-              'ngIf',
               'ngIf="!isHidden',
               'Content',
               '<div *ngIf="!isHidden">Content</div>',
@@ -1543,7 +1532,6 @@ describe('selection range', () => {
             chain: [
               'count',
               'count > 10',
-              'hidden',
               '[hidden]="count > 10"',
               '<div [hidden]="count > 10">Content</div>',
             ],
@@ -1553,6 +1541,7 @@ describe('selection range', () => {
 
       it('should expand through logical AND', () => {
         // Structural directive with logical AND — desugars like *ngIf
+        // keySpan (ngIf) is NOT included when cursor is on the expression
         verifySelectionRanges(
           env,
           '<div *ngIf="isA && isB">Visible</div>',
@@ -1564,7 +1553,6 @@ describe('selection range', () => {
               chain: [
                 'isB',
                 'isA && isB',
-                'ngIf',
                 'ngIf="isA && isB',
                 'Visible',
                 '<div *ngIf="isA && isB">Visible</div>',
@@ -1623,7 +1611,8 @@ describe('selection range', () => {
     describe('chain expressions', () => {
       it('should expand through semicolon chain in event', () => {
         // Event binding with multiple statements separated by semicolons
-        // doA → doA() (Call) → doA(); doB() (Chain) → click (event name) → full attr → element
+        // doA → doA() (Call) → doA(); doB() (Chain) → full attr → element
+        // keySpan (click) NOT included when cursor is on the handler expression
         verifySelectionRanges(
           env,
           '<button (click)="doA(); doB()">Click</button>',
@@ -1636,7 +1625,6 @@ describe('selection range', () => {
                 'doA',
                 'doA()',
                 'doA(); doB()',
-                'click',
                 '(click)="doA(); doB()"',
                 '<button (click)="doA(); doB()">Click</button>',
               ],
@@ -1660,12 +1648,13 @@ describe('selection range', () => {
       });
 
       it('should handle self-closing element with binding', () => {
-        // Self-closing element: expansion goes expression → attr name → full attr → element
+        // Self-closing element: expression → full attr → element
+        // keySpan (value) NOT included when cursor is on the expression
         verifySelectionRanges(env, '<input [value]="name" />', `name = 'test';`, [
           {
             label: 'cursor on name in self-closing input',
             cursorAt: 'name"',
-            chain: ['name', 'value', '[value]="name"', '<input [value]="name" />'],
+            chain: ['name', '[value]="name"', '<input [value]="name" />'],
           },
         ]);
       });
@@ -1712,6 +1701,7 @@ describe('selection range', () => {
 
       it('should handle multiple bindings on same element', () => {
         // Element with multiple bindings: each binding has its own chain ending at the element
+        // keySpan NOT included when cursor is on the expression
         const template =
           '<div [title]="titleVal" [hidden]="isHidden" (click)="onClick()">Text</div>';
         verifySelectionRanges(env, template, `titleVal = 'hi'; isHidden = false; onClick() {}`, [
@@ -1720,7 +1710,6 @@ describe('selection range', () => {
             cursorAt: 'titleVal',
             chain: [
               'titleVal',
-              'title',
               '[title]="titleVal"',
               '[title]="titleVal" [hidden]="isHidden" (click)="onClick()"',
               template,
@@ -1731,7 +1720,6 @@ describe('selection range', () => {
             cursorAt: 'isHidden',
             chain: [
               'isHidden',
-              'hidden',
               '[hidden]="isHidden"',
               '[title]="titleVal" [hidden]="isHidden" (click)="onClick()"',
               template,
@@ -1771,12 +1759,7 @@ describe('selection range', () => {
           {
             label: 'cursor on userName',
             cursorAt: 'userName',
-            chain: [
-              'userName',
-              'ngModel',
-              '[(ngModel)]="userName"',
-              '<input [(ngModel)]="userName">',
-            ],
+            chain: ['userName', '[(ngModel)]="userName"', '<input [(ngModel)]="userName">'],
           },
         ]);
       });
@@ -1795,7 +1778,6 @@ describe('selection range', () => {
               cursorAt: 'isActive',
               chain: [
                 'isActive',
-                'class.active',
                 '[class.active]="isActive"',
                 '[class.active]="isActive" [class.disabled]="isDisabled"',
                 '<div [class.active]="isActive" [class.disabled]="isDisabled">Content</div>',
@@ -1817,7 +1799,6 @@ describe('selection range', () => {
               cursorAt: 'containerWidth',
               chain: [
                 'containerWidth',
-                'style.width.px',
                 '[style.width.px]="containerWidth"',
                 '[style.width.px]="containerWidth" [style.background-color]="bgColor"',
                 '<div [style.width.px]="containerWidth" [style.background-color]="bgColor">Content</div>',
@@ -1841,7 +1822,6 @@ describe('selection range', () => {
               cursorAt: 'buttonLabel',
               chain: [
                 'buttonLabel',
-                'attr.aria-label',
                 '[attr.aria-label]="buttonLabel"',
                 '[attr.aria-label]="buttonLabel" [attr.data-testid]="testId"',
                 '<button [attr.aria-label]="buttonLabel" [attr.data-testid]="testId">Click</button>',
@@ -2179,7 +2159,6 @@ describe('selection range', () => {
                 'currentTheme',
                 '{theme: currentTheme, locale: userLocale}',
                 'getSettings({theme: currentTheme, locale: userLocale})',
-                'settings',
                 '[settings]="getSettings({theme: currentTheme, locale: userLocale})"',
                 '<app-config [settings]="getSettings({theme: currentTheme, locale: userLocale})"></app-config>',
               ],
@@ -2206,7 +2185,6 @@ describe('selection range', () => {
                 'handleClick',
                 'handleClick($event, item.id)',
                 'isEnabled ? handleClick($event, item.id) : noOp()',
-                'click',
                 '(click)="isEnabled ? handleClick($event, item.id) : noOp()"',
                 '<button (click)="isEnabled ? handleClick($event, item.id) : noOp()">Action</button>',
               ],
@@ -2388,7 +2366,6 @@ describe('selection range', () => {
             cursorAt: 'name',
             chain: [
               'name',
-              'value',
               '[value]="name"',
               'type="text" [value]="name"',
               '<input type="text" [value]="name" />',
@@ -2713,8 +2690,6 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
             chain: [
               'onClick',
               'onClick()',
-              // Event key name is included as a step
-              'click',
               '(click)="onClick()"',
               '<button (click)="onClick()">Go</button>',
             ],
@@ -2769,7 +2744,7 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
           {
             label: 'cursor on classes',
             cursorAt: 'classes',
-            chain: ['classes', 'class', '[class]="classes"', '<div [class]="classes"></div>'],
+            chain: ['classes', '[class]="classes"', '<div [class]="classes"></div>'],
           },
         ]);
       });
