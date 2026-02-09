@@ -211,7 +211,8 @@ function getNodeSpan(node: TmplAstNode | AST): Span | undefined {
     node instanceof TmplAstDeferredBlock ||
     node instanceof TmplAstDeferredBlockPlaceholder ||
     node instanceof TmplAstDeferredBlockLoading ||
-    node instanceof TmplAstDeferredBlockError
+    node instanceof TmplAstDeferredBlockError ||
+    node instanceof TmplAstDeferredTrigger
   ) {
     return {start: node.sourceSpan.start.offset, end: node.sourceSpan.end.offset};
   }

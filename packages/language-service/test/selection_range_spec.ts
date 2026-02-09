@@ -1120,11 +1120,12 @@ describe('selection range', () => {
 
         const template = files['app.html'];
 
-        // BUG: getNodeSpan doesn't handle TmplAstDeferredTrigger/TmplAstBoundDeferredTrigger,
-        // so the trigger expression is never visited. User expects:
-        //   isReady → @defer block
-        // But gets only the @defer block. Fix: add TmplAstDeferredTrigger to getNodeSpan.
-        verifyExpansionChain(selectionRange, template, [template]);
+        // isReady → when isReady (trigger span) → @defer block
+        verifyExpansionChain(selectionRange, template, [
+          'isReady',
+          'when isReady',
+          template,
+        ]);
       });
 
       it('should expand through @defer when trigger with property access', () => {
@@ -1153,11 +1154,13 @@ describe('selection range', () => {
 
         const template = files['app.html'];
 
-        // BUG: getNodeSpan doesn't handle TmplAstDeferredTrigger/TmplAstBoundDeferredTrigger,
-        // so trigger expressions are never visited. User expects:
-        //   data → data.isLoaded → @defer block
-        // But gets only the @defer block. Fix: add TmplAstDeferredTrigger to getNodeSpan.
-        verifyExpansionChain(selectionRange, template, [template]);
+        // Cursor on "isLoaded" is within the PropertyRead span for "data.isLoaded"
+        // data.isLoaded → when data.isLoaded (trigger span) → @defer block
+        verifyExpansionChain(selectionRange, template, [
+          'data.isLoaded',
+          'when data.isLoaded',
+          template,
+        ]);
       });
     });
 
