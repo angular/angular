@@ -595,14 +595,13 @@ While field state typically updates through user interactions (typing, focusing,
 
 #### Form submission
 
-When a user submits a form, use the `submit()` function to handle validation and reveal errors.
-
-Signal Forms handles validation through its own system, so you need to prevent the browser's default form behavior. Add `novalidate` to the `<form>` element to disable native HTML validation (such as browser tooltip popups for `required` or `type="email"` fields), and call `$event.preventDefault()` in your submit handler to prevent the browser from reloading the page:
+Signal Forms provides a `NgSignalForm` directive that simplifies form submission. It automatically prevents the default browser form submission behavior and sets the `novalidate` attribute on the `<form>` element.
 
 ```angular-ts
 @Component({
+  imports: [NgSignalForm, FormField],
   template: `
-    <form novalidate (submit)="onSubmit($event)">
+    <form [ngSignalForm]="registrationForm">
       <input [formField]="registrationForm.username" />
       <input type="email" [formField]="registrationForm.email" />
       <input type="password" [formField]="registrationForm.password" />
@@ -614,18 +613,19 @@ Signal Forms handles validation through its own system, so you need to prevent t
 export class Registration {
   registrationModel = signal({username: '', email: '', password: ''});
 
-  registrationForm = form(this.registrationModel, (schemaPath) => {
-    required(schemaPath.username);
-    email(schemaPath.email);
-    required(schemaPath.password);
-  });
-
-  onSubmit(event: Event) {
-    event.preventDefault();
-    submit(this.registrationForm, async () => {
-      this.submitToServer();
-    });
-  }
+  registrationForm = form(
+    this.registrationModel,
+    (schemaPath) => {
+      required(schemaPath.username);
+      email(schemaPath.email);
+      required(schemaPath.password);
+    },
+    {
+      submission: {
+        action: async () => this.submitToServer(),
+      },
+    },
+  );
 
   private submitToServer() {
     // Send data to server
@@ -633,32 +633,31 @@ export class Registration {
 }
 ```
 
-The `submit()` function automatically marks all fields as touched (revealing validation errors) and only executes your callback if the form is valid.
+When you use `NgSignalForm`, submitting the form automatically calls the `submit()` function, which marks all fields as touched (revealing validation errors) and executes your `action` callback if the form is valid.
+
+You can also submit a form manually, without using the directive, by calling `submit(this.registrationForm)`. When explicitly calling the `submit` function like this, you can pass a `FormSubmitOptions` to override the default `submission` logic for the form: `submit(this.registrationForm, {action: () => /* ... */ })`.
 
 #### Resetting forms after submission
 
-After successfully submitting a form, you may want to return it to its initial state - clearing both user interaction history and field values. The `reset()` method clears the touched and dirty flags but doesn't change field values, so you need to update your model separately:
+After successfully submitting a form, you may want to return it to its initial state - clearing both user interaction history and field values. The `reset()` method clears the touched and dirty flags. You can also pass an optional value to `reset()` to update the model data:
 
 ```ts
 export class Contact {
-  contactModel = signal({name: '', email: '', message: ''});
-  contactForm = form(this.contactModel);
-
-  async onSubmit() {
-    if (!this.contactForm().valid()) return;
-
-    await this.api.sendMessage(this.contactModel());
-
-    // Clear interaction state (touched, dirty)
-    this.contactForm().reset();
-
-    // Clear values
-    this.contactModel.set({name: '', email: '', message: ''});
-  }
+  private readonly INITIAL_MODEL = {name: '', email: '', message: ''};
+  contactModel = signal({...this.INITIAL_MODEL});
+  contactForm = form(this.contactModel, {
+    submission: {
+      action: async (f) => {
+        await this.api.sendMessage(this.contactModel());
+        // Clear interaction state (touched, dirty) and reset to initial values
+        f().reset({...this.INITIAL_MODEL});
+      },
+    },
+  });
 }
 ```
 
-This two-step reset ensures the form is ready for new input without showing stale error messages or dirty state indicators.
+This ensures the form is ready for new input without showing stale error messages or dirty state indicators.
 
 ## Styling based on validation state
 
