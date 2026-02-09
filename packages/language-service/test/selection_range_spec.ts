@@ -99,15 +99,17 @@ function verifySelectionRanges(
   options?: {
     /** Additional imports for the component module (e.g. ['NgStyle', 'NgIf']). Source: @angular/common */
     imports?: string[];
+    /** When true, sets preserveWhitespaces: true in @Component decorator */
+    preserveWhitespaces?: boolean;
   },
 ): void {
   const angularImports = options?.imports ?? [];
-  const importStatement = angularImports.length > 0
-    ? `import {${angularImports.join(', ')}} from '@angular/common';`
-    : '';
-  const importsArray = angularImports.length > 0
-    ? `imports: [${angularImports.join(', ')}],`
-    : '';
+  const importStatement =
+    angularImports.length > 0
+      ? `import {${angularImports.join(', ')}} from '@angular/common';`
+      : '';
+  const importsArray = angularImports.length > 0 ? `imports: [${angularImports.join(', ')}],` : '';
+  const preserveWS = options?.preserveWhitespaces ? 'preserveWhitespaces: true,' : '';
 
   // --- External template mode ---
   const externalFiles = {
@@ -120,6 +122,7 @@ function verifySelectionRanges(
         selector: 'my-app',
         templateUrl: './app.html',
         ${importsArray}
+        ${preserveWS}
       })
       export class AppComponent {
         ${componentMembers}
@@ -132,7 +135,9 @@ function verifySelectionRanges(
   for (const cursor of cursors) {
     const matchIndex = template.indexOf(cursor.cursorAt);
     expect(matchIndex)
-      .withContext(`[external][${cursor.label}] cursorAt "${cursor.cursorAt}" not found in template`)
+      .withContext(
+        `[external][${cursor.label}] cursorAt "${cursor.cursorAt}" not found in template`,
+      )
       .toBeGreaterThanOrEqual(0);
     const pos = matchIndex + (cursor.offset ?? 0);
 
@@ -144,7 +149,10 @@ function verifySelectionRanges(
   {
     // Use backticks so single quotes and newlines in template work without escaping.
     // Only escape ${ (template literal interpolation), not bare $ (e.g. $event).
-    const escapedForBacktick = template.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+    const escapedForBacktick = template
+      .replace(/\\/g, '\\\\')
+      .replace(/`/g, '\\`')
+      .replace(/\$\{/g, '\\${');
     const inlineFiles = {
       'app.ts': `
         import {Component} from '@angular/core';
@@ -154,6 +162,7 @@ function verifySelectionRanges(
           selector: 'my-app',
           template: \`${escapedForBacktick}\`,
           ${importsArray}
+          ${preserveWS}
         })
         export class AppComponent {
           ${componentMembers}
@@ -348,7 +357,8 @@ describe('selection range', () => {
 
     it('should expand through nested elements in backtick inline template', () => {
       // Nested divs with style attributes — expansion from style attribute value
-      const template = '<div style="padding: 20px;"><div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div></div>';
+      const template =
+        '<div style="padding: 20px;"><div style="margin: 10px;"><strong style="color: red;">TEXT</strong></div></div>';
       verifySelectionRanges(env, template, '', [
         {
           label: 'cursor on color in strong style value',
@@ -374,11 +384,7 @@ describe('selection range', () => {
         {
           label: 'cursor on style keyword in multiline opening tag',
           cursorAt: 'style',
-          chain: [
-            'style',
-            'style="border: 1px solid black;"',
-            template,
-          ],
+          chain: ['style', 'style="border: 1px solid black;"', template],
         },
       ]);
     });
@@ -448,13 +454,22 @@ describe('selection range', () => {
       });
 
       it('should expand through nested property access', () => {
-        verifySelectionRanges(env, '<span>{{user.address.city}}</span>', `user = {address: {city: 'NYC'}};`, [
-          {
-            label: 'cursor on city',
-            cursorAt: 'city',
-            chain: ['user.address.city', '{{user.address.city}}', '<span>{{user.address.city}}</span>'],
-          },
-        ]);
+        verifySelectionRanges(
+          env,
+          '<span>{{user.address.city}}</span>',
+          `user = {address: {city: 'NYC'}};`,
+          [
+            {
+              label: 'cursor on city',
+              cursorAt: 'city',
+              chain: [
+                'user.address.city',
+                '{{user.address.city}}',
+                '<span>{{user.address.city}}</span>',
+              ],
+            },
+          ],
+        );
       });
 
       it('should handle control flow blocks', () => {
@@ -529,25 +544,20 @@ describe('selection range', () => {
     describe('@for blocks', () => {
       it('should handle @for loop with track expression', () => {
         const template = '@for (item of items; track item.id) { <div>{{item.name}}</div> }';
-        verifySelectionRanges(
-          env,
-          template,
-          `items = [{id: 1, name: 'Item 1'}];`,
-          [
-            {
-              label: 'cursor on item in item.name',
-              cursorAt: 'item.name',
-              chain: [
-                'item',
-                'item.name',
-                '{{item.name}}',
-                '<div>{{item.name}}</div>',
-                ' <div>{{item.name}}</div> ',
-                template,
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, template, `items = [{id: 1, name: 'Item 1'}];`, [
+          {
+            label: 'cursor on item in item.name',
+            cursorAt: 'item.name',
+            chain: [
+              'item',
+              'item.name',
+              '{{item.name}}',
+              '<div>{{item.name}}</div>',
+              ' <div>{{item.name}}</div> ',
+              template,
+            ],
+          },
+        ]);
       });
 
       it('should handle @for with @empty block', () => {
@@ -584,7 +594,10 @@ describe('selection range', () => {
         // Compute expected chain substrings
         const innerForIdx = template.indexOf('@for (cell');
         const innerBraceOpen = template.indexOf('{', innerForIdx);
-        const innerBraceClose = template.indexOf('}', template.indexOf('</span>') + '</span>'.length);
+        const innerBraceClose = template.indexOf(
+          '}',
+          template.indexOf('</span>') + '</span>'.length,
+        );
         const innerForBody = template.substring(innerBraceOpen + 1, innerBraceClose);
         const innerFor = template.substring(innerForIdx, innerBraceClose + 1);
         const outerBraceOpen = template.indexOf('{');
@@ -622,7 +635,10 @@ describe('selection range', () => {
         const caseOpenBrace = template.indexOf('{', template.indexOf("@case ('active')"));
         const caseCloseBrace = template.indexOf('}', caseOpenBrace);
         const caseBody = template.substring(caseOpenBrace + 1, caseCloseBrace);
-        const caseBlock = template.substring(template.indexOf("@case ('active')"), caseCloseBrace + 1);
+        const caseBlock = template.substring(
+          template.indexOf("@case ('active')"),
+          caseCloseBrace + 1,
+        );
         const defaultCloseBrace = template.lastIndexOf('}', template.lastIndexOf('}') - 1);
         const allCases = template.substring(template.indexOf('@case'), defaultCloseBrace + 1);
 
@@ -677,7 +693,10 @@ describe('selection range', () => {
         const loadingBraceOpen = template.indexOf('{', template.indexOf('@loading'));
         const loadingBraceClose = template.indexOf('}', template.indexOf('Loading...</p>'));
         const loadingContent = template.substring(loadingBraceOpen + 1, loadingBraceClose);
-        const loadingBlock = template.substring(template.indexOf('@loading'), loadingBraceClose + 1);
+        const loadingBlock = template.substring(
+          template.indexOf('@loading'),
+          loadingBraceClose + 1,
+        );
 
         verifySelectionRanges(env, template, '', [
           {
@@ -838,7 +857,9 @@ describe('selection range', () => {
           selectionRange.textSpan.start + selectionRange.textSpan.length,
         );
         // Cursor is on 'isLoggedIn', so innermost should be 'user.isLoggedIn'
-        expect(innermostText).withContext('Innermost should be user.isLoggedIn').toBe('user.isLoggedIn');
+        expect(innermostText)
+          .withContext('Innermost should be user.isLoggedIn')
+          .toBe('user.isLoggedIn');
       });
     });
 
@@ -894,7 +915,9 @@ describe('selection range', () => {
           range = range.parent;
         }
         // Deep nesting needs at least: item → item.name → {{...}} → span → @if → @for → @case group → @switch
-        expect(depth).withContext('Should have at least 6 levels for deep nesting').toBeGreaterThanOrEqual(6);
+        expect(depth)
+          .withContext('Should have at least 6 levels for deep nesting')
+          .toBeGreaterThanOrEqual(6);
 
         // Verify outermost reaches @switch
         let outermost = selectionRange;
@@ -955,33 +978,28 @@ describe('selection range', () => {
       });
 
       it('should expand from pipe input through simple pipe to interpolation', () => {
-        verifySelectionRanges(
-          env,
-          `<span>{{ value | uppercase }}</span>`,
-          `value = 'hello';`,
-          [
-            {
-              label: 'cursor on "value"',
-              cursorAt: 'value',
-              chain: [
-                'value',
-                'value | uppercase',
-                '{{ value | uppercase }}',
-                '<span>{{ value | uppercase }}</span>',
-              ],
-            },
-            {
-              label: 'cursor on "uppercase"',
-              cursorAt: 'uppercase',
-              chain: [
-                'uppercase',
-                'value | uppercase',
-                '{{ value | uppercase }}',
-                '<span>{{ value | uppercase }}</span>',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, `<span>{{ value | uppercase }}</span>`, `value = 'hello';`, [
+          {
+            label: 'cursor on "value"',
+            cursorAt: 'value',
+            chain: [
+              'value',
+              'value | uppercase',
+              '{{ value | uppercase }}',
+              '<span>{{ value | uppercase }}</span>',
+            ],
+          },
+          {
+            label: 'cursor on "uppercase"',
+            cursorAt: 'uppercase',
+            chain: [
+              'uppercase',
+              'value | uppercase',
+              '{{ value | uppercase }}',
+              '<span>{{ value | uppercase }}</span>',
+            ],
+          },
+        ]);
       });
 
       it('should handle pipe with multiple arguments', () => {
@@ -1257,24 +1275,19 @@ describe('selection range', () => {
       });
 
       it('should handle safe method call', () => {
-        verifySelectionRanges(
-          env,
-          '<span>{{ user?.getName?.() }}</span>',
-          `user: any = null;`,
-          [
-            {
-              label: 'cursor on "getName"',
-              cursorAt: 'getName',
-              chain: [
-                // Cursor is on getName - user receiver doesn't contain cursor
-                'user?.getName',
-                'user?.getName?.()',
-                '{{ user?.getName?.() }}',
-                '<span>{{ user?.getName?.() }}</span>',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, '<span>{{ user?.getName?.() }}</span>', `user: any = null;`, [
+          {
+            label: 'cursor on "getName"',
+            cursorAt: 'getName',
+            chain: [
+              // Cursor is on getName - user receiver doesn't contain cursor
+              'user?.getName',
+              'user?.getName?.()',
+              '{{ user?.getName?.() }}',
+              '<span>{{ user?.getName?.() }}</span>',
+            ],
+          },
+        ]);
       });
     });
 
@@ -1323,23 +1336,18 @@ describe('selection range', () => {
 
     describe('literal expressions', () => {
       it('should handle array literal in binding', () => {
-        verifySelectionRanges(
-          env,
-          '<app-list [items]="[1, 2, 3, 4, 5]"></app-list>',
-          ``,
-          [
-            {
-              label: 'cursor on array literal',
-              cursorAt: '[1,',
-              chain: [
-                '[1, 2, 3, 4, 5]',
-                'items',
-                '[items]="[1, 2, 3, 4, 5]"',
-                '<app-list [items]="[1, 2, 3, 4, 5]"></app-list>',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, '<app-list [items]="[1, 2, 3, 4, 5]"></app-list>', ``, [
+          {
+            label: 'cursor on array literal',
+            cursorAt: '[1,',
+            chain: [
+              '[1, 2, 3, 4, 5]',
+              'items',
+              '[items]="[1, 2, 3, 4, 5]"',
+              '<app-list [items]="[1, 2, 3, 4, 5]"></app-list>',
+            ],
+          },
+        ]);
       });
 
       it('should handle object literal in binding', () => {
@@ -1449,7 +1457,13 @@ describe('selection range', () => {
           {
             label: 'cursor on first element',
             cursorAt: '1',
-            chain: ['1', '[1, 2, 3]', 'items', '[items]="[1, 2, 3]"', '<div [items]="[1, 2, 3]"></div>'],
+            chain: [
+              '1',
+              '[1, 2, 3]',
+              'items',
+              '[items]="[1, 2, 3]"',
+              '<div [items]="[1, 2, 3]"></div>',
+            ],
           },
         ]);
       });
@@ -1476,25 +1490,20 @@ describe('selection range', () => {
       it('should expand through prefix not', () => {
         // *ngIf desugars in the template AST. The chain walks through the desugared attribute.
         // isHidden → !isHidden → ngIf (attr name) → ngIf="!isHidden (partial attr) → Content → element
-        verifySelectionRanges(
-          env,
-          '<div *ngIf="!isHidden">Content</div>',
-          `isHidden = false;`,
-          [
-            {
-              label: 'cursor on isHidden in *ngIf',
-              cursorAt: 'isHidden',
-              chain: [
-                'isHidden',
-                '!isHidden',
-                'ngIf',
-                'ngIf="!isHidden',
-                'Content',
-                '<div *ngIf="!isHidden">Content</div>',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, '<div *ngIf="!isHidden">Content</div>', `isHidden = false;`, [
+          {
+            label: 'cursor on isHidden in *ngIf',
+            cursorAt: 'isHidden',
+            chain: [
+              'isHidden',
+              '!isHidden',
+              'ngIf',
+              'ngIf="!isHidden',
+              'Content',
+              '<div *ngIf="!isHidden">Content</div>',
+            ],
+          },
+        ]);
       });
     });
 
@@ -1527,24 +1536,19 @@ describe('selection range', () => {
 
       it('should expand through comparison operator', () => {
         // count > 10 in a bound attribute binding
-        verifySelectionRanges(
-          env,
-          '<div [hidden]="count > 10">Content</div>',
-          `count = 5;`,
-          [
-            {
-              label: 'cursor on count in count > 10',
-              cursorAt: 'count',
-              chain: [
-                'count',
-                'count > 10',
-                'hidden',
-                '[hidden]="count > 10"',
-                '<div [hidden]="count > 10">Content</div>',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, '<div [hidden]="count > 10">Content</div>', `count = 5;`, [
+          {
+            label: 'cursor on count in count > 10',
+            cursorAt: 'count',
+            chain: [
+              'count',
+              'count > 10',
+              'hidden',
+              '[hidden]="count > 10"',
+              '<div [hidden]="count > 10">Content</div>',
+            ],
+          },
+        ]);
       });
 
       it('should expand through logical AND', () => {
@@ -1582,7 +1586,13 @@ describe('selection range', () => {
               label: 'cursor on b in nullish coalescing chain',
               cursorAt: ' b ',
               offset: 1,
-              chain: ['b', 'a ?? b', 'a ?? b ?? c', '{{a ?? b ?? c}}', '<span>{{a ?? b ?? c}}</span>'],
+              chain: [
+                'b',
+                'a ?? b',
+                'a ?? b ?? c',
+                '{{a ?? b ?? c}}',
+                '<span>{{a ?? b ?? c}}</span>',
+              ],
             },
           ],
         );
@@ -1597,7 +1607,14 @@ describe('selection range', () => {
           {
             label: 'cursor on a in (a + b)',
             cursorAt: 'a + b',
-            chain: ['a', 'a + b', '(a + b)', '(a + b) * c', '{{(a + b) * c}}', '<span>{{(a + b) * c}}</span>'],
+            chain: [
+              'a',
+              'a + b',
+              '(a + b)',
+              '(a + b) * c',
+              '{{(a + b) * c}}',
+              '<span>{{(a + b) * c}}</span>',
+            ],
           },
         ]);
       });
@@ -1695,36 +1712,32 @@ describe('selection range', () => {
 
       it('should handle multiple bindings on same element', () => {
         // Element with multiple bindings: each binding has its own chain ending at the element
-        const template = '<div [title]="titleVal" [hidden]="isHidden" (click)="onClick()">Text</div>';
-        verifySelectionRanges(
-          env,
-          template,
-          `titleVal = 'hi'; isHidden = false; onClick() {}`,
-          [
-            {
-              label: 'cursor on titleVal in title binding',
-              cursorAt: 'titleVal',
-              chain: [
-                'titleVal',
-                'title',
-                '[title]="titleVal"',
-                '[title]="titleVal" [hidden]="isHidden" (click)="onClick()"',
-                template,
-              ],
-            },
-            {
-              label: 'cursor on isHidden in hidden binding',
-              cursorAt: 'isHidden',
-              chain: [
-                'isHidden',
-                'hidden',
-                '[hidden]="isHidden"',
-                '[title]="titleVal" [hidden]="isHidden" (click)="onClick()"',
-                template,
-              ],
-            },
-          ],
-        );
+        const template =
+          '<div [title]="titleVal" [hidden]="isHidden" (click)="onClick()">Text</div>';
+        verifySelectionRanges(env, template, `titleVal = 'hi'; isHidden = false; onClick() {}`, [
+          {
+            label: 'cursor on titleVal in title binding',
+            cursorAt: 'titleVal',
+            chain: [
+              'titleVal',
+              'title',
+              '[title]="titleVal"',
+              '[title]="titleVal" [hidden]="isHidden" (click)="onClick()"',
+              template,
+            ],
+          },
+          {
+            label: 'cursor on isHidden in hidden binding',
+            cursorAt: 'isHidden',
+            chain: [
+              'isHidden',
+              'hidden',
+              '[hidden]="isHidden"',
+              '[title]="titleVal" [hidden]="isHidden" (click)="onClick()"',
+              template,
+            ],
+          },
+        ]);
       });
 
       it('should handle @let declaration', () => {
@@ -1754,23 +1767,18 @@ describe('selection range', () => {
   describe('binding patterns', () => {
     describe('two-way binding', () => {
       it('should handle banana-in-a-box syntax', () => {
-        verifySelectionRanges(
-          env,
-          '<input [(ngModel)]="userName">',
-          `userName = '';`,
-          [
-            {
-              label: 'cursor on userName',
-              cursorAt: 'userName',
-              chain: [
-                'userName',
-                'ngModel',
-                '[(ngModel)]="userName"',
-                '<input [(ngModel)]="userName">',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, '<input [(ngModel)]="userName">', `userName = '';`, [
+          {
+            label: 'cursor on userName',
+            cursorAt: 'userName',
+            chain: [
+              'userName',
+              'ngModel',
+              '[(ngModel)]="userName"',
+              '<input [(ngModel)]="userName">',
+            ],
+          },
+        ]);
       });
     });
 
@@ -1880,7 +1888,9 @@ describe('selection range', () => {
           selectionRange.textSpan.start,
           selectionRange.textSpan.start + selectionRange.textSpan.length,
         );
-        expect(innermostText).withContext('Innermost should contain nameInput').toContain('nameInput');
+        expect(innermostText)
+          .withContext('Innermost should contain nameInput')
+          .toContain('nameInput');
       });
 
       it('should handle reference on ng-template', () => {
@@ -2122,7 +2132,9 @@ describe('selection range', () => {
           depth++;
           range = range.parent;
         }
-        expect(depth).withContext('Should have at least 5 levels for deep nesting').toBeGreaterThanOrEqual(5);
+        expect(depth)
+          .withContext('Should have at least 5 levels for deep nesting')
+          .toBeGreaterThanOrEqual(5);
       });
     });
 
@@ -2266,7 +2278,9 @@ describe('selection range', () => {
         const selectionRange = project.getSelectionRangeAtPosition('app.html', itemsPos);
 
         // ICU messages have complex structure - verify we get a selection
-        expect(selectionRange).withContext('Selection range should be defined for ICU content').toBeDefined();
+        expect(selectionRange)
+          .withContext('Selection range should be defined for ICU content')
+          .toBeDefined();
       });
 
       it('should expand within ICU variable expression', () => {
@@ -2328,7 +2342,9 @@ describe('selection range', () => {
         const selectionRange = project.getSelectionRangeAtPosition('app.html', shePos);
 
         // ICU select messages - verify selection exists
-        expect(selectionRange).withContext('Selection range should be defined for ICU select').toBeDefined();
+        expect(selectionRange)
+          .withContext('Selection range should be defined for ICU select')
+          .toBeDefined();
       });
     });
 
@@ -2366,24 +2382,19 @@ describe('selection range', () => {
       });
 
       it('should handle self-closing element', () => {
-        verifySelectionRanges(
-          env,
-          '<input type="text" [value]="name" />',
-          `name = '';`,
-          [
-            {
-              label: 'cursor on name in [value]',
-              cursorAt: 'name',
-              chain: [
-                'name',
-                'value',
-                '[value]="name"',
-                'type="text" [value]="name"',
-                '<input type="text" [value]="name" />',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, '<input type="text" [value]="name" />', `name = '';`, [
+          {
+            label: 'cursor on name in [value]',
+            cursorAt: 'name',
+            chain: [
+              'name',
+              'value',
+              '[value]="name"',
+              'type="text" [value]="name"',
+              '<input type="text" [value]="name" />',
+            ],
+          },
+        ]);
       });
 
       it('should handle multiple interpolations in single text node', () => {
@@ -2397,11 +2408,7 @@ describe('selection range', () => {
               label: 'cursor on first a in {{a}}',
               cursorAt: '{{a}}',
               offset: 2,
-              chain: [
-                'a',
-                '{{a}} + {{b}} = {{a + b}}',
-                '<span>{{a}} + {{b}} = {{a + b}}</span>',
-              ],
+              chain: ['a', '{{a}} + {{b}} = {{a + b}}', '<span>{{a}} + {{b}} = {{a + b}}</span>'],
             },
           ],
         );
@@ -2442,22 +2449,13 @@ describe('selection range', () => {
       });
 
       it('should handle attribute with empty value', () => {
-        verifySelectionRanges(
-          env,
-          '<input disabled="">',
-          ``,
-          [
-            {
-              label: 'cursor on disabled',
-              cursorAt: 'disabled',
-              chain: [
-                'disabled',
-                'disabled=""',
-                '<input disabled="">',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, '<input disabled="">', ``, [
+          {
+            label: 'cursor on disabled',
+            cursorAt: 'disabled',
+            chain: ['disabled', 'disabled=""', '<input disabled="">'],
+          },
+        ]);
       });
     });
 
@@ -2551,41 +2549,31 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
       // These tests verify the core Angular AST selection behavior.
 
       it('should select full style attribute value', () => {
-        verifySelectionRanges(
-          env,
-          '<div style="color: red; background: blue">Content</div>',
-          ``,
-          [
-            {
-              label: 'cursor on red in style value',
-              cursorAt: 'red',
-              chain: [
-                'color: red; background: blue', // Full style value (core LS)
-                'style="color: red; background: blue"', // Full attribute
-                '<div style="color: red; background: blue">Content</div>', // Full element
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, '<div style="color: red; background: blue">Content</div>', ``, [
+          {
+            label: 'cursor on red in style value',
+            cursorAt: 'red',
+            chain: [
+              'color: red; background: blue', // Full style value (core LS)
+              'style="color: red; background: blue"', // Full attribute
+              '<div style="color: red; background: blue">Content</div>', // Full element
+            ],
+          },
+        ]);
       });
 
       it('should select full class attribute value', () => {
-        verifySelectionRanges(
-          env,
-          '<div class="foo bar baz">Content</div>',
-          ``,
-          [
-            {
-              label: 'cursor on bar in class value',
-              cursorAt: 'bar',
-              chain: [
-                'foo bar baz', // Full class value (core LS)
-                'class="foo bar baz"', // Full attribute
-                '<div class="foo bar baz">Content</div>', // Full element
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, '<div class="foo bar baz">Content</div>', ``, [
+          {
+            label: 'cursor on bar in class value',
+            cursorAt: 'bar',
+            chain: [
+              'foo bar baz', // Full class value (core LS)
+              'class="foo bar baz"', // Full attribute
+              '<div class="foo bar baz">Content</div>', // Full element
+            ],
+          },
+        ]);
       });
     });
 
@@ -2680,7 +2668,9 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
           outermost.textSpan.start + outermost.textSpan.length,
         );
         expect(outermostText.startsWith('<div'))
-          .withContext(`Outermost should start with '<div', got: "${outermostText.substring(0, 50)}"`)
+          .withContext(
+            `Outermost should start with '<div', got: "${outermostText.substring(0, 50)}"`,
+          )
           .toBe(true);
         expect(outermostText.endsWith('</div>'))
           .withContext(`Outermost should end with '</div>'`)
@@ -2690,65 +2680,46 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
 
     describe('user expectation tests', () => {
       it('should expand from property in simple interpolation to full element', () => {
-        verifySelectionRanges(
-          env,
-          `<h1>{{ title }}</h1>`,
-          `title = 'Hello';`,
-          [
-            {
-              label: 'cursor on title',
-              cursorAt: 'title',
-              chain: [
-                'title',
-                '{{ title }}',
-                '<h1>{{ title }}</h1>',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, `<h1>{{ title }}</h1>`, `title = 'Hello';`, [
+          {
+            label: 'cursor on title',
+            cursorAt: 'title',
+            chain: ['title', '{{ title }}', '<h1>{{ title }}</h1>'],
+          },
+        ]);
       });
 
       it('should expand from signal call through interpolation', () => {
-        verifySelectionRanges(
-          env,
-          `<p>Count: {{ count() }}</p>`,
-          `count = signal(0);`,
-          [
-            {
-              label: 'cursor on count',
-              cursorAt: 'count',
-              chain: [
-                'count',
-                'count()',
-                // Implementation includes full text content (text + interpolation)
-                'Count: {{ count() }}',
-                '<p>Count: {{ count() }}</p>',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, `<p>Count: {{ count() }}</p>`, `count = signal(0);`, [
+          {
+            label: 'cursor on count',
+            cursorAt: 'count',
+            chain: [
+              'count',
+              'count()',
+              // Implementation includes full text content (text + interpolation)
+              'Count: {{ count() }}',
+              '<p>Count: {{ count() }}</p>',
+            ],
+          },
+        ]);
       });
 
       it('should expand from property in event handler', () => {
-        verifySelectionRanges(
-          env,
-          `<button (click)="onClick()">Go</button>`,
-          `onClick() {}`,
-          [
-            {
-              label: 'cursor on onClick',
-              cursorAt: 'onClick',
-              chain: [
-                'onClick',
-                'onClick()',
-                // Event key name is included as a step
-                'click',
-                '(click)="onClick()"',
-                '<button (click)="onClick()">Go</button>',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, `<button (click)="onClick()">Go</button>`, `onClick() {}`, [
+          {
+            label: 'cursor on onClick',
+            cursorAt: 'onClick',
+            chain: [
+              'onClick',
+              'onClick()',
+              // Event key name is included as a step
+              'click',
+              '(click)="onClick()"',
+              '<button (click)="onClick()">Go</button>',
+            ],
+          },
+        ]);
       });
 
       it('should expand through nested property access', () => {
@@ -2794,69 +2765,49 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
       });
 
       it('should expand from bound attribute value to full attribute to element', () => {
-        verifySelectionRanges(
-          env,
-          `<div [class]="classes"></div>`,
-          `classes = 'active';`,
-          [
-            {
-              label: 'cursor on classes',
-              cursorAt: 'classes',
-              chain: [
-                'classes',
-                'class',
-                '[class]="classes"',
-                '<div [class]="classes"></div>',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, `<div [class]="classes"></div>`, `classes = 'active';`, [
+          {
+            label: 'cursor on classes',
+            cursorAt: 'classes',
+            chain: ['classes', 'class', '[class]="classes"', '<div [class]="classes"></div>'],
+          },
+        ]);
       });
 
       it('should expand from text content through parent elements', () => {
         const template = `<main>\n  <section>\n    <p>Hello World</p>\n  </section>\n</main>`;
         // Use verifySelectionRanges to test BOTH external (.html) and inline (backtick) templates
-        verifySelectionRanges(
-          env,
-          template,
-          ``,
-          [
-            {
-              label: 'cursor on Hello in nested multiline',
-              cursorAt: 'Hello',
-              chain: [
-                'Hello',
-                'Hello World',
-                '<p>Hello World</p>',
-                '\n    <p>Hello World</p>\n  ',
-                '<section>\n    <p>Hello World</p>\n  </section>',
-                '\n  <section>\n    <p>Hello World</p>\n  </section>\n',
-                '<main>\n  <section>\n    <p>Hello World</p>\n  </section>\n</main>',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, template, ``, [
+          {
+            label: 'cursor on Hello in nested multiline',
+            cursorAt: 'Hello',
+            chain: [
+              'Hello',
+              'Hello World',
+              '<p>Hello World</p>',
+              '\n    <p>Hello World</p>\n  ',
+              '<section>\n    <p>Hello World</p>\n  </section>',
+              '\n  <section>\n    <p>Hello World</p>\n  </section>\n',
+              '<main>\n  <section>\n    <p>Hello World</p>\n  </section>\n</main>',
+            ],
+          },
+        ]);
       });
 
       it('should handle multiline template with interpolation in inline mode', () => {
-        verifySelectionRanges(
-          env,
-          `<div>\n  <span>{{ value }}</span>\n</div>`,
-          `value = 42;`,
-          [
-            {
-              label: 'cursor on value in multiline template',
-              cursorAt: 'value',
-              chain: [
-                'value',
-                '{{ value }}',
-                '<span>{{ value }}</span>',
-                '\n  <span>{{ value }}</span>\n',
-                '<div>\n  <span>{{ value }}</span>\n</div>',
-              ],
-            },
-          ],
-        );
+        verifySelectionRanges(env, `<div>\n  <span>{{ value }}</span>\n</div>`, `value = 42;`, [
+          {
+            label: 'cursor on value in multiline template',
+            cursorAt: 'value',
+            chain: [
+              'value',
+              '{{ value }}',
+              '<span>{{ value }}</span>',
+              '\n  <span>{{ value }}</span>\n',
+              '<div>\n  <span>{{ value }}</span>\n</div>',
+            ],
+          },
+        ]);
       });
     });
   });
