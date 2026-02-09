@@ -125,9 +125,9 @@ function verifySelectionRanges(
     verifyExpansionChain(selectionRange, template, cursor.chain);
   }
 
-  // --- Inline template mode (only for single-line templates) ---
-  if (!template.includes('\n')) {
-    // Use backticks so single quotes in template don't need escaping
+  // --- Inline template mode ---
+  {
+    // Use backticks so single quotes and newlines in template work without escaping
     const escapedForBacktick = template.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
     const inlineFiles = {
       'app.ts': `
@@ -661,7 +661,7 @@ describe('selection range', () => {
         };
 
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        // Position on "name" in {{user.name}} - position 11 is 'n' in user.name
+        // Position on 'r' in 'user' of {{user.name}} (offset 11 from template start)
         const namePos = 11;
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', namePos);
@@ -703,11 +703,11 @@ describe('selection range', () => {
         const template = '<span>{{user.name}}</span>';
         const templateOffset = appFile.contents.indexOf(template);
 
-        // user → user.name → {{user.name}} → <span>...</span>
+        // user.name → {{user.name}} → <span>...</span>
         verifyExpansionChain(
           selectionRange,
           template,
-          ['user', 'user.name', '{{user.name}}', '<span>{{user.name}}</span>'],
+          ['user.name', '{{user.name}}', '<span>{{user.name}}</span>'],
           templateOffset,
         );
       });
@@ -772,10 +772,8 @@ describe('selection range', () => {
         const selectionRange = project.getSelectionRangeAtPosition('app.html', cityPos);
 
         // Verify expansion chain - tests AST traversal through property access nodes
-        // Should expand through entire property chain: user → user.address → user.address.city → interpolation → element
+        // Cursor on 'city' → only city's containing node, no ancestor receivers
         verifyExpansionChain(selectionRange, template, [
-          'user',
-          'user.address',
           'user.address.city',
           '{{user.address.city}}',
           '<span>{{user.address.city}}</span>',
@@ -1380,8 +1378,8 @@ describe('selection range', () => {
           selectionRange.textSpan.start,
           selectionRange.textSpan.start + selectionRange.textSpan.length,
         );
-        // Innermost should be the property chain receiver 'user'
-        expect(innermostText).withContext('Innermost should be user').toBe('user');
+        // Cursor is on 'isLoggedIn', so innermost should be 'user.isLoggedIn'
+        expect(innermostText).withContext('Innermost should be user.isLoggedIn').toBe('user.isLoggedIn');
       });
     });
 
@@ -1666,10 +1664,11 @@ describe('selection range', () => {
 
         const selectionRange = project.getSelectionRangeAtPosition('app.html', filterPos);
 
-        // items.filter (PropertyRead) → items.filter(isActive) (Call) → ...map(getName) (Call) → ...join(", ") (Call) → {{ ... }} → <span>...</span>
-        // BUG: cursor on "filter" starts at .map(getName) level due to addPropertyChainReceiver
-        // not recursing through Call nodes. Ideally would start at items.filter.
+        // items.filter (PropertyRead) → items.filter(isActive) (Call) → ...map → ...map(getName) → ...join → ...join(", ") → {{ ... }} → <span>...</span>
         verifyExpansionChain(selectionRange, template, [
+          'items.filter',
+          'items.filter(isActive)',
+          'items.filter(isActive).map',
           'items.filter(isActive).map(getName)',
           'items.filter(isActive).map(getName).join',
           'items.filter(isActive).map(getName).join(", ")',
@@ -1802,8 +1801,7 @@ describe('selection range', () => {
               label: 'cursor on intermediate "avatar"',
               cursorAt: 'avatar',
               chain: [
-                'user',
-                'user?.profile',
+                // Only nodes whose spans contain the cursor are included
                 'user?.profile?.avatar',
                 'user?.profile?.avatar?.url',
                 '{{ user?.profile?.avatar?.url }}',
@@ -1814,9 +1812,6 @@ describe('selection range', () => {
               label: 'cursor on leaf "url"',
               cursorAt: 'url',
               chain: [
-                'user',
-                'user?.profile',
-                'user?.profile?.avatar',
                 'user?.profile?.avatar?.url',
                 '{{ user?.profile?.avatar?.url }}',
                 '<span>{{ user?.profile?.avatar?.url }}</span>',
@@ -1848,7 +1843,7 @@ describe('selection range', () => {
               label: 'cursor on "getName"',
               cursorAt: 'getName',
               chain: [
-                'user',
+                // Cursor is on getName - user receiver doesn't contain cursor
                 'user?.getName',
                 'user?.getName?.()',
                 '{{ user?.getName?.() }}',
@@ -1893,7 +1888,6 @@ describe('selection range', () => {
               cursorAt: 'currentLang',
               chain: [
                 'currentLang',
-                'translations',
                 'translations[currentLang]',
                 '{{ translations[currentLang] }}',
                 '<span>{{ translations[currentLang] }}</span>',
@@ -3452,9 +3446,7 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
               label: 'cursor on city (deepest property)',
               cursorAt: 'city',
               chain: [
-                // addPropertyChainReceiver adds the full receiver chain
-                'user',
-                'user.address',
+                // Only the innermost node containing cursor is included
                 'user.address.city',
                 '{{ user.address.city }}',
                 '<span>{{ user.address.city }}</span>',
@@ -3464,8 +3456,7 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
               label: 'cursor on address (middle property)',
               cursorAt: 'address',
               chain: [
-                // addPropertyChainReceiver adds the receiver chain
-                'user',
+                // cursor on address: user.address contains cursor, then outer
                 'user.address',
                 'user.address.city',
                 '{{ user.address.city }}',
@@ -3509,30 +3500,48 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
 
       it('should expand from text content through parent elements', () => {
         const template = `<main>\n  <section>\n    <p>Hello World</p>\n  </section>\n</main>`;
-        const files = {
-          'app.ts': `
-            import {Component} from '@angular/core';
-            @Component({selector: 'my-app', standalone: true, templateUrl: './app.html'})
-            export class AppComponent {}
-          `,
-          'app.html': template,
-        };
-        const project = env.addProject('test', files);
-        project.expectNoSourceDiagnostics();
+        // Use verifySelectionRanges to test BOTH external (.html) and inline (backtick) templates
+        verifySelectionRanges(
+          env,
+          template,
+          ``,
+          [
+            {
+              label: 'cursor on Hello in nested multiline',
+              cursorAt: 'Hello',
+              chain: [
+                'Hello',
+                'Hello World',
+                '<p>Hello World</p>',
+                '\n    <p>Hello World</p>\n  ',
+                '<section>\n    <p>Hello World</p>\n  </section>',
+                '\n  <section>\n    <p>Hello World</p>\n  </section>\n',
+                '<main>\n  <section>\n    <p>Hello World</p>\n  </section>\n</main>',
+              ],
+            },
+          ],
+        );
+      });
 
-        const helloPos = template.indexOf('Hello');
-        const selectionRange = project.getSelectionRangeAtPosition('app.html', helloPos);
-        // The word 'Hello' is the innermost, then full text 'Hello World',
-        // then element, then whitespace text nodes, then parent elements
-        verifyExpansionChain(selectionRange, template, [
-          'Hello',
-          'Hello World',
-          '<p>Hello World</p>',
-          '\n    <p>Hello World</p>\n  ',
-          '<section>\n    <p>Hello World</p>\n  </section>',
-          '\n  <section>\n    <p>Hello World</p>\n  </section>\n',
-          '<main>\n  <section>\n    <p>Hello World</p>\n  </section>\n</main>',
-        ]);
+      it('should handle multiline template with interpolation in inline mode', () => {
+        verifySelectionRanges(
+          env,
+          `<div>\n  <span>{{ value }}</span>\n</div>`,
+          `value = 42;`,
+          [
+            {
+              label: 'cursor on value in multiline template',
+              cursorAt: 'value',
+              chain: [
+                'value',
+                '{{ value }}',
+                '<span>{{ value }}</span>',
+                '\n  <span>{{ value }}</span>\n',
+                '<div>\n  <span>{{ value }}</span>\n</div>',
+              ],
+            },
+          ],
+        );
       });
     });
   });

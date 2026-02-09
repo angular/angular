@@ -13,14 +13,10 @@ import {
   Call,
   ImplicitReceiver,
   Interpolation,
-  KeyedRead,
   LiteralPrimitive,
   ParseSourceSpan,
-  PropertyRead,
   RecursiveAstVisitor,
   SafeCall,
-  SafeKeyedRead,
-  SafePropertyRead,
   TemplateLiteral,
   TemplateLiteralElement,
   ThisReceiver,
@@ -382,28 +378,13 @@ class SelectionRangeExpressionVisitor extends RecursiveAstVisitor {
   // Special cases that need custom behaviour
   // ------------------------------------------------------------------
 
-  /**
-   * Property chains: add ALL ancestor receivers regardless of position.
-   * For `user.address.city`, selecting near `city` yields:
-   *   user → user.address → user.address.city
-   */
-  override visitPropertyRead(ast: PropertyRead, context: any): any {
-    this.addPropertyChainReceiver(ast.receiver);
-  }
-
-  override visitSafePropertyRead(ast: SafePropertyRead, context: any): any {
-    this.addPropertyChainReceiver(ast.receiver);
-  }
-
-  override visitKeyedRead(ast: KeyedRead, context: any): any {
-    this.addPropertyChainReceiver(ast.receiver);
-    this.visit(ast.key, context);
-  }
-
-  override visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any {
-    this.addPropertyChainReceiver(ast.receiver);
-    this.visit(ast.key, context);
-  }
+  // Property reads (PropertyRead, SafePropertyRead, KeyedRead, SafeKeyedRead)
+  // use RecursiveAstVisitor's default traversal. The visit() override above
+  // already filters by isWithin(position, span), so only receivers that
+  // contain the cursor are added to the path - producing a correct chain:
+  //   cursor on "city"    → user.address.city
+  //   cursor on "address" → user.address → user.address.city
+  //   cursor on "user"    → user → user.address → user.address.city
 
   /**
    * Pipes: add intermediate span for pipe name + args.
@@ -526,28 +507,6 @@ class SelectionRangeExpressionVisitor extends RecursiveAstVisitor {
     }
   }
 
-  // ------------------------------------------------------------------
-  // Helper: build property / keyed-access chain path
-  // ------------------------------------------------------------------
-
-  private addPropertyChainReceiver(receiver: AST): void {
-    // Skip ImplicitReceiver/ThisReceiver by type check - some contexts give them non-zero spans
-    if (receiver instanceof ImplicitReceiver) return;
-    const span = receiver.sourceSpan;
-    if (span.start === span.end) return; // Skip other zero-length nodes
-
-    this.path.push({node: receiver, span: {start: span.start, end: span.end}});
-
-    let inner = receiver instanceof ASTWithSource ? receiver.ast : receiver;
-    if (
-      inner instanceof PropertyRead ||
-      inner instanceof SafePropertyRead ||
-      inner instanceof KeyedRead ||
-      inner instanceof SafeKeyedRead
-    ) {
-      this.addPropertyChainReceiver(inner.receiver);
-    }
-  }
 }
 
 // ============================================================================
