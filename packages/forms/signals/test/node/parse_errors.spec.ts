@@ -6,54 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ApplicationRef,
-  Component,
-  computed,
-  inject,
-  input,
-  linkedSignal,
-  model,
-  signal,
-} from '@angular/core';
+import {ApplicationRef, Component, input, model, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   form,
   FormField,
+  transformedValue,
   validate,
-  type FieldTree,
   type FormValueControl,
   type ValidationError,
 } from '../../public_api';
 
 describe('parse errors', () => {
-  it('should show parse error', async () => {
-    @Component({
-      selector: 'custom-control',
-      template: ``,
-    })
-    class CustomControl implements FormValueControl<string> {
-      readonly value = model.required<string>();
-      readonly parseErrors = computed(() => (this.value() === 'ERROR' ? [{kind: 'parse'}] : []));
-    }
-
-    @Component({
-      imports: [CustomControl, FormField],
-      template: `<custom-control [formField]="f" />`,
-    })
-    class TestCmp {
-      state = signal<string>('');
-      f = form(this.state);
-    }
-
-    const cmp = await act(() => TestBed.createComponent(TestCmp).componentInstance);
-    expect(cmp.f().errors().length).toBe(0);
-
-    await act(() => cmp.state.set('ERROR'));
-    expect(cmp.f().errors().length).toBe(1);
-    expect(cmp.f().errors()[0]).toEqual(jasmine.objectContaining({kind: 'parse'}));
-  });
-
   it('should only pass parse errors through to the originating custom control', async () => {
     @Component({
       imports: [TestNumberInput, FormField],
@@ -118,41 +82,6 @@ describe('parse errors', () => {
     ]);
   });
 
-  it('should allow pass-through style control to register parse errors', async () => {
-    @Component({
-      selector: 'custom-control',
-      template: ``,
-    })
-    class CustomControl {
-      readonly fieldTree = input.required<FieldTree<string>>({alias: 'formField'});
-      readonly formField = inject(FormField, {optional: true, self: true});
-
-      constructor() {
-        this.formField?.registerAsBinding({
-          parseErrors: computed(() =>
-            this.fieldTree()().value() === 'ERROR' ? [{kind: 'parse'}] : [],
-          ),
-        });
-      }
-    }
-
-    @Component({
-      imports: [CustomControl, FormField],
-      template: `<custom-control [formField]="f" />`,
-    })
-    class TestCmp {
-      state = signal<string>('');
-      f = form(this.state);
-    }
-
-    const cmp = await act(() => TestBed.createComponent(TestCmp).componentInstance);
-    expect(cmp.f().errors().length).toBe(0);
-
-    await act(() => cmp.state.set('ERROR'));
-    expect(cmp.f().errors().length).toBe(1);
-    expect(cmp.f().errors()[0]).toEqual(jasmine.objectContaining({kind: 'parse'}));
-  });
-
   it('should sort parse errors mixed with validation errors by DOM position', async () => {
     @Component({
       imports: [TestNumberInput, FormField],
@@ -213,12 +142,144 @@ describe('parse errors', () => {
       jasmine.objectContaining({message: 'joe is not numeric'}),
     ]);
   });
+
+  it('should update model signal when parsing succeeds', async () => {
+    @Component({
+      imports: [TestNumberInput, FormField],
+      template: `<test-number-input [formField]="f" />`,
+    })
+    class TestCmp {
+      model = signal<number | null>(5);
+      f = form(this.model);
+    }
+
+    const fix = await act(() => TestBed.createComponent(TestCmp));
+    const comp = fix.componentInstance;
+    const input: HTMLInputElement = fix.nativeElement.querySelector('input')!;
+
+    input.value = '42';
+    await act(() => input.dispatchEvent(new Event('input')));
+
+    expect(comp.model()).toBe(42);
+    expect(comp.f().errors().length).toBe(0);
+  });
+
+  it('should not update model signal when parsing fails', async () => {
+    @Component({
+      imports: [TestNumberInput, FormField],
+      template: `<test-number-input [formField]="f" />`,
+    })
+    class TestCmp {
+      model = signal<number | null>(5);
+      f = form(this.model);
+    }
+
+    const fix = await act(() => TestBed.createComponent(TestCmp));
+    const comp = fix.componentInstance;
+    const input: HTMLInputElement = fix.nativeElement.querySelector('input')!;
+
+    input.value = 'invalid';
+    await act(() => input.dispatchEvent(new Event('input')));
+
+    expect(comp.model()).toBe(5);
+    expect(comp.f().value()).toBe(5);
+  });
+
+  it('should populate parseErrors on FormField when parsing fails', async () => {
+    @Component({
+      imports: [TestNumberInput, FormField],
+      template: `<test-number-input [formField]="f" />`,
+    })
+    class TestCmp {
+      model = signal<number | null>(5);
+      f = form(this.model);
+    }
+
+    const fix = await act(() => TestBed.createComponent(TestCmp));
+    const comp = fix.componentInstance;
+    const input: HTMLInputElement = fix.nativeElement.querySelector('input')!;
+
+    input.value = 'abc';
+    await act(() => input.dispatchEvent(new Event('input')));
+
+    expect(comp.f().errors().length).toBe(1);
+    expect(comp.f().errors()[0]).toEqual(jasmine.objectContaining({kind: 'parse'}));
+  });
+
+  it('should update rawValue when model is updated externally', async () => {
+    @Component({
+      imports: [TestNumberInput, FormField],
+      template: `<test-number-input [formField]="f" />`,
+    })
+    class TestCmp {
+      model = signal<number | null>(5);
+      f = form(this.model);
+    }
+
+    const fix = await act(() => TestBed.createComponent(TestCmp));
+    const comp = fix.componentInstance;
+    const input: HTMLInputElement = fix.nativeElement.querySelector('input')!;
+
+    expect(input.value).toBe('5');
+
+    await act(() => comp.model.set(123));
+    fix.detectChanges();
+
+    expect(input.value).toBe('123');
+  });
+
+  it('should clear parse errors when parsing succeeds after failure', async () => {
+    @Component({
+      imports: [TestNumberInput, FormField],
+      template: `<test-number-input [formField]="f" />`,
+    })
+    class TestCmp {
+      model = signal<number | null>(5);
+      f = form(this.model);
+    }
+
+    const fix = await act(() => TestBed.createComponent(TestCmp));
+    const comp = fix.componentInstance;
+    const input: HTMLInputElement = fix.nativeElement.querySelector('input')!;
+
+    // First, create a parse error
+    input.value = 'invalid';
+    await act(() => input.dispatchEvent(new Event('input')));
+    expect(comp.f().errors().length).toBe(1);
+
+    // Now enter valid input
+    input.value = '99';
+    await act(() => input.dispatchEvent(new Event('input')));
+    expect(comp.f().errors().length).toBe(0);
+    expect(comp.model()).toBe(99);
+  });
+
+  it('should handle empty string parsing to null', async () => {
+    @Component({
+      imports: [TestNumberInput, FormField],
+      template: `<test-number-input [formField]="f" />`,
+    })
+    class TestCmp {
+      model = signal<number | null>(5);
+      f = form(this.model);
+    }
+
+    const fix = await act(() => TestBed.createComponent(TestCmp));
+    const comp = fix.componentInstance;
+    const input: HTMLInputElement = fix.nativeElement.querySelector('input')!;
+
+    input.value = '';
+    await act(() => input.dispatchEvent(new Event('input')));
+
+    expect(comp.model()).toBe(null);
+    expect(comp.f().errors().length).toBe(0);
+  });
 });
 
 @Component({
   selector: 'test-number-input',
   template: `
-    <input type="text" [value]="rawValue()" (input)="write($event.target.value)" />
+    <input type="text" [value]="rawValue()" (input)="rawValue.set($event.target.value)" />
     @for (e of errors(); track $index) {
       <p class="error">{{ e.message }}</p>
     }
@@ -227,33 +288,21 @@ describe('parse errors', () => {
 class TestNumberInput implements FormValueControl<number | null> {
   readonly value = model.required<number | null>();
   readonly errors = input<readonly ValidationError[]>([]);
-  readonly parseErrors = computed(() => this.parsedResult().errors ?? []);
 
-  protected rawValue = linkedSignal(() => this.format(this.value()));
-  private parsedResult = computed(() => this.parse(this.rawValue()));
-
-  private format(value: number | null) {
-    if (value === null || Number.isNaN(value)) return '';
-    return value.toString();
-  }
-
-  private parse(
-    rawValue: string,
-  ): {value: number | null; errors?: never} | {value?: never; errors: ValidationError[]} {
-    if (rawValue === '') return {value: null};
-    const value = Number(rawValue);
-    if (Number.isNaN(value)) {
-      return {errors: [{kind: 'parse', message: `${rawValue} is not numeric`}]};
-    }
-    return {value};
-  }
-
-  protected write(rawValue: string) {
-    this.rawValue.set(rawValue);
-    const result = this.parsedResult();
-    this.value.set(result.value === undefined ? NaN : result.value);
-    this.rawValue.set(rawValue);
-  }
+  protected readonly rawValue = transformedValue(this.value, {
+    parse: (rawValue) => {
+      if (rawValue === '') return {value: null};
+      const value = Number(rawValue);
+      if (Number.isNaN(value)) {
+        return {errors: [{kind: 'parse', message: `${rawValue} is not numeric`}]};
+      }
+      return {value};
+    },
+    format: (value) => {
+      if (value === null || Number.isNaN(value)) return '';
+      return value.toString();
+    },
+  });
 }
 
 async function act<T>(fn: () => T): Promise<T> {

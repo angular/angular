@@ -7,7 +7,9 @@
  */
 
 import {
+  afterRenderEffect,
   computed,
+  type ɵControlDirectiveHost as ControlDirectiveHost,
   DestroyRef,
   Directive,
   effect,
@@ -17,30 +19,29 @@ import {
   Injector,
   input,
   Renderer2,
-  type ɵControlDirectiveHost as ControlDirectiveHost,
-  afterRenderEffect,
-  type Signal,
   ɵRuntimeError as RuntimeError,
+  type Signal,
   signal,
   untracked,
 } from '@angular/core';
 import {type ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
+import {type ValidationError} from '../api/rules';
+import type {FieldTree} from '../api/types';
 import {InteropNgControl} from '../controls/interop_ng_control';
 import {RuntimeErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
-import type {FieldTree} from '../api/types';
+import {bindingUpdated, type ControlBindingKey, createBindings} from './bindings';
+import {customControlCreate} from './control_custom';
+import {cvaControlCreate} from './control_cva';
+import {nativeControlCreate} from './control_native';
 import {
   isNativeFormElement,
   isNumericFormElement,
   isTextualFormElement,
   type NativeFormControl,
 } from './native';
-import {bindingUpdated, type ControlBindingKey, createBindings} from './bindings';
-import {cvaControlCreate} from './control_cva';
-import {customControlCreate} from './control_custom';
-import {nativeControlCreate} from './control_native';
-import {type ValidationError} from '../api/rules';
+import {FORM_FIELD_PARSE_ERRORS} from './parse_errors';
 
 export const ɵNgFieldDirective: unique symbol = Symbol();
 
@@ -52,11 +53,6 @@ export interface FormFieldBindingOptions {
    * asked to focus this binding.
    */
   readonly focus?: (focusOptions?: FocusOptions) => void;
-
-  /**
-   * Source of parse errors for this binding.
-   */
-  readonly parseErrors?: Signal<ValidationError.WithoutFieldTree[]>;
 }
 
 /**
@@ -94,6 +90,10 @@ export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
   providers: [
     {provide: FORM_FIELD, useExisting: FormField},
     {provide: NgControl, useFactory: () => inject(FormField).interopNgControl},
+    {
+      provide: FORM_FIELD_PARSE_ERRORS,
+      useFactory: () => inject(FormField).parseErrorsSource,
+    },
   ],
 })
 export class FormField<T> {
@@ -249,10 +249,6 @@ export class FormField<T> {
 
     if (bindingOptions?.focus) {
       this.focuser = bindingOptions.focus;
-    }
-
-    if (bindingOptions?.parseErrors) {
-      this.parseErrorsSource.set(bindingOptions.parseErrors);
     }
 
     // Register this control on the field state it is currently bound to. We do this at the end of
