@@ -10,8 +10,8 @@ import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
-import {resolve} from 'node:path';
 import {rmSync} from 'node:fs';
+import {resolve} from 'node:path';
 
 describe('inject migration', () => {
   let runner: SchematicTestRunner;
@@ -303,33 +303,6 @@ describe('inject migration', () => {
       `})`,
       `class MyDir {`,
       `  private foo = inject<Foo>(FOO_TOKEN, { optional: true });`,
-      `}`,
-    ]);
-  });
-
-  it('should migrate an aliased decorator to use inject()', async () => {
-    writeFile(
-      '/dir.ts',
-      [
-        `import { Directive as NgDirective } from '@angular/core';`,
-        `import { Foo } from 'foo';`,
-        ``,
-        `@NgDirective()`,
-        `class MyDir {`,
-        `  constructor(private foo: Foo) {}`,
-        `}`,
-      ].join('\n'),
-    );
-
-    await runMigration();
-
-    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
-      `import { Directive as NgDirective, inject } from '@angular/core';`,
-      `import { Foo } from 'foo';`,
-      ``,
-      `@NgDirective()`,
-      `class MyDir {`,
-      `  private foo = inject(Foo);`,
       `}`,
     ]);
   });

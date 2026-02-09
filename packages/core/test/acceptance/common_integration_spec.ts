@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {By} from '@angular/platform-browser';
 import {Component, Directive, provideZoneChangeDetection} from '../../src/core';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
 
 describe('@angular/common integration', () => {
   beforeEach(() => {
@@ -571,7 +571,7 @@ describe('@angular/common integration', () => {
   });
 
   describe('NgTemplateOutlet', () => {
-    it('should create and remove embedded views', () => {
+    it('should create and remove embedded views (ng-template)', () => {
       @Component({
         selector: 'app-multi',
         template: `<ng-template #tpl>from tpl</ng-template>
@@ -597,7 +597,7 @@ describe('@angular/common integration', () => {
       expect(fixture.nativeElement.textContent).not.toBe('from tpl');
     });
 
-    it('should create and remove embedded views', () => {
+    it('should create and remove embedded views (ng-container)', () => {
       @Component({
         selector: 'app-multi',
         template: `<ng-template #tpl>from tpl</ng-template>

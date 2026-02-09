@@ -322,7 +322,7 @@ runInEachFileSystem(() => {
       expect(getBirthdayMember.memberTags).toContain(MemberTags.Optional);
     });
 
-    it('should extract member tags', () => {
+    it('should not extract internal member tags', () => {
       // Test both properties and methods with zero, one, and multiple tags.
       env.write(
         'index.ts',

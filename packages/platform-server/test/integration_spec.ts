@@ -8,7 +8,7 @@
 import '@angular/compiler';
 
 import {animate, AnimationBuilder, state, style, transition, trigger} from '@angular/animations';
-import {DOCUMENT, isPlatformServer, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT, ɵgetDOM as getDOM, isPlatformServer, PlatformLocation} from '@angular/common';
 import {
   HTTP_INTERCEPTORS,
   HttpClient,
@@ -20,14 +20,17 @@ import {
 } from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {
+  APP_INITIALIZER,
   ApplicationConfig,
   ApplicationRef,
   Component,
+  inject as coreInject,
   destroyPlatform,
   EnvironmentProviders,
+  getPlatform,
   HostListener,
   Inject,
-  inject as coreInject,
+  inject,
   Injectable,
   Input,
   makeStateKey,
@@ -35,29 +38,27 @@ import {
   NgModule,
   NgModuleRef,
   NgZone,
+  PendingTasks,
   PLATFORM_ID,
+  provideNgReflectAttributes,
   Provider,
+  provideZoneChangeDetection,
+  ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   TransferState,
   Type,
   ViewEncapsulation,
-  PendingTasks,
-  APP_INITIALIZER,
-  inject,
-  getPlatform,
-  provideNgReflectAttributes,
-  ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
-  provideZoneChangeDetection,
-  signal,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   bootstrapApplication,
-  createApplication,
   BootstrapContext,
   BrowserModule,
+  createApplication,
   provideClientHydration,
   Title,
 } from '@angular/platform-browser';
+import {provideRouter, RouterOutlet, Routes} from '@angular/router';
+import {Observable} from 'rxjs';
 import {
   BEFORE_APP_SERIALIZED,
   INITIAL_CONFIG,
@@ -67,11 +68,9 @@ import {
   renderModule,
   ServerModule,
 } from '../index';
-import {provideRouter, RouterOutlet, Routes} from '@angular/router';
-import {Observable} from 'rxjs';
 
-import {renderApplication, SERVER_CONTEXT} from '../src/utils';
 import {BrowserAnimationsModule, provideAnimations} from '@angular/platform-browser/animations';
+import {renderApplication, SERVER_CONTEXT} from '../src/utils';
 
 const APP_CONFIG: ApplicationConfig = {
   providers: [provideServerRendering()],
@@ -848,7 +847,7 @@ class HiddenModule {}
           },
         );
 
-        it('works with SVG elements', async () => {
+        it(`works with SVG elements (standalone:${isStandalone})`, async () => {
           const options = {document: doc};
           const bootstrap = isStandalone
             ? renderApplication(SVGComponentStandalone, {...options})
@@ -860,7 +859,7 @@ class HiddenModule {}
           );
         });
 
-        it('works with animation', async () => {
+        it('works with animation' + `(standalone:${isStandalone})`, async () => {
           const options = {document: doc};
           const bootstrap = isStandalone
             ? renderApplication(MyAnimationAppStandalone, options)
@@ -873,42 +872,49 @@ class HiddenModule {}
           expect(output).toContain('font-weight: bold;');
         });
 
-        it('should handle ViewEncapsulation.ShadowDom', async () => {
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(ShadowDomEncapsulationAppStandalone, options)
-            : renderModule(ShadowDomExampleModule, options);
-          const output = await bootstrap;
-          expect(output).not.toBe('');
-          expect(output).toContain('color: red');
-        });
+        it(
+          'should handle ViewEncapsulation.ShadowDom' + `(standalone:${isStandalone})`,
+          async () => {
+            const options = {document: doc};
+            const bootstrap = isStandalone
+              ? renderApplication(ShadowDomEncapsulationAppStandalone, options)
+              : renderModule(ShadowDomExampleModule, options);
+            const output = await bootstrap;
+            expect(output).not.toBe('');
+            expect(output).toContain('color: red');
+          },
+        );
 
-        it('adds the `ng-server-context` attribute to host elements', async () => {
-          const options = {
-            document: doc,
-          };
-          const providers = [
-            {
-              provide: SERVER_CONTEXT,
-              useValue: 'ssg',
-            },
-          ];
-          const bootstrap = isStandalone
-            ? renderApplication(MyStylesAppStandalone, {
-                ...options,
-                platformProviders: providers,
-              })
-            : renderModule(ExampleStylesModule, {
-                ...options,
-                extraProviders: providers,
-              });
-          const output = await bootstrap;
-          expect(output).toMatch(
-            /<app ng-version="0.0.0-PLACEHOLDER" _nghost-ng-c\d+="" ng-server-context="ssg">/,
-          );
-        });
+        it(
+          'adds the `ng-server-context` attribute to host elements' +
+            `(standalone:${isStandalone})`,
+          async () => {
+            const options = {
+              document: doc,
+            };
+            const providers = [
+              {
+                provide: SERVER_CONTEXT,
+                useValue: 'ssg',
+              },
+            ];
+            const bootstrap = isStandalone
+              ? renderApplication(MyStylesAppStandalone, {
+                  ...options,
+                  platformProviders: providers,
+                })
+              : renderModule(ExampleStylesModule, {
+                  ...options,
+                  extraProviders: providers,
+                });
+            const output = await bootstrap;
+            expect(output).toMatch(
+              /<app ng-version="0.0.0-PLACEHOLDER" _nghost-ng-c\d+="" ng-server-context="ssg">/,
+            );
+          },
+        );
 
-        it('sanitizes the `serverContext` value', async () => {
+        it('sanitizes the `serverContext` value' + `(standalone:${isStandalone})`, async () => {
           const options = {
             document: doc,
           };
@@ -948,60 +954,71 @@ class HiddenModule {}
           },
         );
 
-        it('uses `other` as the `serverContext` value when all symbols are removed after sanitization', async () => {
-          const options = {
-            document: doc,
-          };
-          const providers = [
-            {
-              provide: SERVER_CONTEXT,
-              useValue: '!!! &&<>',
-            },
-          ];
-          const bootstrap = isStandalone
-            ? renderApplication(MyStylesAppStandalone, {
-                ...options,
-                platformProviders: providers,
-              })
-            : renderModule(ExampleStylesModule, {
-                ...options,
-                extraProviders: providers,
-              });
-          // All symbols other than [a-zA-Z0-9\-] are removed,
-          // the `other` is used as the default.
-          const output = await bootstrap;
-          expect(output).toMatch(/ng-server-context="other"/);
-        });
+        it(
+          'uses `other` as the `serverContext` value when all symbols are removed after sanitization' +
+            `(standalone:${isStandalone})`,
+          async () => {
+            const options = {
+              document: doc,
+            };
+            const providers = [
+              {
+                provide: SERVER_CONTEXT,
+                useValue: '!!! &&<>',
+              },
+            ];
+            const bootstrap = isStandalone
+              ? renderApplication(MyStylesAppStandalone, {
+                  ...options,
+                  platformProviders: providers,
+                })
+              : renderModule(ExampleStylesModule, {
+                  ...options,
+                  extraProviders: providers,
+                });
+            // All symbols other than [a-zA-Z0-9\-] are removed,
+            // the `other` is used as the default.
+            const output = await bootstrap;
+            expect(output).toMatch(/ng-server-context="other"/);
+          },
+        );
 
-        it('appends SSR integrity marker comment when hydration is enabled', async () => {
-          @Component({
-            selector: 'app',
-            template: ``,
-          })
-          class SimpleApp {}
+        it(
+          'appends SSR integrity marker comment when hydration is enabled' +
+            `(standalone:${isStandalone})`,
+          async () => {
+            @Component({
+              selector: 'app',
+              template: ``,
+            })
+            class SimpleApp {}
 
-          const output = await renderApplication(
-            getStandaloneBootstrapFn(SimpleApp, [provideClientHydration()]),
-            {document: doc},
-          );
+            const output = await renderApplication(
+              getStandaloneBootstrapFn(SimpleApp, [provideClientHydration()]),
+              {document: doc},
+            );
 
-          // HttpClient cache and DOM hydration are enabled by default.
-          expect(output).toContain(`<body><!--${SSR_CONTENT_INTEGRITY_MARKER}-->`);
-        });
+            // HttpClient cache and DOM hydration are enabled by default.
+            expect(output).toContain(`<body><!--${SSR_CONTENT_INTEGRITY_MARKER}-->`);
+          },
+        );
 
-        it('should handle false values on attributes', async () => {
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(MyHostComponentStandalone, options)
-            : renderModule(FalseAttributesModule, options);
-          const output = await bootstrap;
-          expect(output).toBe(
-            '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
-              '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>',
-          );
-        });
+        it(
+          'should handle false values on attributes' + `(standalone:${isStandalone})`,
+          async () => {
+            const options = {document: doc};
+            const bootstrap = isStandalone
+              ? renderApplication(MyHostComponentStandalone, options)
+              : renderModule(FalseAttributesModule, options);
+            const output = await bootstrap;
+            expect(output).toBe(
+              '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
+                '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>',
+            );
+          },
+        );
 
-        it('should handle element property "name"', async () => {
+        it('should handle element property "name"' + `(standalone:${isStandalone})`, async () => {
           const options = {document: doc};
           const bootstrap = isStandalone
             ? renderApplication(MyInputComponentStandalone, options)
@@ -1013,23 +1030,26 @@ class HiddenModule {}
           );
         });
 
-        it('should work with sanitizer to handle "innerHTML"', async () => {
-          // Clear out any global states. These should be set when platform-server
-          // is initialized.
-          (global as any).Node = undefined;
-          (global as any).Document = undefined;
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(HTMLTypesAppStandalone, options)
-            : renderModule(HTMLTypesModule, options);
-          const output = await bootstrap;
-          expect(output).toBe(
-            '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
-              '<div><b>foo</b> bar</div></app></body></html>',
-          );
-        });
+        it(
+          'should work with sanitizer to handle "innerHTML"' + `(standalone:${isStandalone})`,
+          async () => {
+            // Clear out any global states. These should be set when platform-server
+            // is initialized.
+            (global as any).Node = undefined;
+            (global as any).Document = undefined;
+            const options = {document: doc};
+            const bootstrap = isStandalone
+              ? renderApplication(HTMLTypesAppStandalone, options)
+              : renderModule(HTMLTypesModule, options);
+            const output = await bootstrap;
+            expect(output).toBe(
+              '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">' +
+                '<div><b>foo</b> bar</div></app></body></html>',
+            );
+          },
+        );
 
-        it('should handle element property "hidden"', async () => {
+        it('should handle element property "hidden"' + `(standalone:${isStandalone})`, async () => {
           const options = {document: doc};
           const bootstrap = isStandalone
             ? renderApplication(MyHiddenComponentStandalone, options)
@@ -1041,7 +1061,7 @@ class HiddenModule {}
           );
         });
 
-        it('should call render hook', async () => {
+        it('should call render hook' + `(standalone:${isStandalone})`, async () => {
           const options = {document: doc};
           const bootstrap = isStandalone
             ? renderApplication(
@@ -1057,7 +1077,7 @@ class HiddenModule {}
           );
         });
 
-        it('should call multiple render hooks', async () => {
+        it('should call multiple render hooks' + `(standalone:${isStandalone})`, async () => {
           const consoleSpy = spyOn(console, 'warn');
           const options = {document: doc};
           const bootstrap = isStandalone
@@ -1075,7 +1095,7 @@ class HiddenModule {}
           expect(consoleSpy).toHaveBeenCalled();
         });
 
-        it('should call async render hooks', async () => {
+        it('should call async render hooks' + `(standalone:${isStandalone})`, async () => {
           const options = {document: doc};
           const bootstrap = isStandalone
             ? renderApplication(
@@ -1091,23 +1111,26 @@ class HiddenModule {}
           );
         });
 
-        it('should call multiple async and sync render hooks', async () => {
-          const consoleSpy = spyOn(console, 'warn');
-          const options = {document: doc};
-          const bootstrap = isStandalone
-            ? renderApplication(
-                getStandaloneBootstrapFn(MyServerAppStandalone, AsyncMultiRenderHookProviders),
-                options,
-              )
-            : renderModule(AsyncMultiRenderHookModule, options);
-          const output = await bootstrap;
-          // title should be added by the render hook.
-          expect(output).toBe(
-            '<html><head><meta name="description"><title>AsyncRenderHook</title></head>' +
-              '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
-          );
-          expect(consoleSpy).toHaveBeenCalled();
-        });
+        it(
+          'should call multiple async and sync render hooks' + `(standalone:${isStandalone})`,
+          async () => {
+            const consoleSpy = spyOn(console, 'warn');
+            const options = {document: doc};
+            const bootstrap = isStandalone
+              ? renderApplication(
+                  getStandaloneBootstrapFn(MyServerAppStandalone, AsyncMultiRenderHookProviders),
+                  options,
+                )
+              : renderModule(AsyncMultiRenderHookModule, options);
+            const output = await bootstrap;
+            // title should be added by the render hook.
+            expect(output).toBe(
+              '<html><head><meta name="description"><title>AsyncRenderHook</title></head>' +
+                '<body><app ng-version="0.0.0-PLACEHOLDER" ng-server-context="other">Works!</app></body></html>',
+            );
+            expect(consoleSpy).toHaveBeenCalled();
+          },
+        );
 
         it(
           `should wait for InitialRenderPendingTasks before serializing ` +

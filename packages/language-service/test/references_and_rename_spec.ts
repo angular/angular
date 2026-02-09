@@ -822,7 +822,7 @@ describe('find references and rename locations', () => {
       });
     });
 
-    describe('when cursor is on property read of variable', () => {
+    describe('when cursor is on property read of variable (inside listener callback)', () => {
       let file: OpenBuffer;
       beforeEach(() => {
         const files = {

@@ -55,7 +55,7 @@ describe('FieldNode', () => {
       expect(f.a).toBe(child);
     });
 
-    it('should get the same instance when asking for a child multiple times', () => {
+    it('should get the same instance when asking for a child multiple times (after update)', () => {
       const value = signal<{a: number; b?: number}>({a: 1, b: 2});
       const f = form(value, {injector: TestBed.inject(Injector)});
       const child = f.a;
@@ -75,18 +75,6 @@ describe('FieldNode', () => {
       },
     );
     expect(f.c).toBeUndefined();
-  });
-
-  it('can get a child inside of a computed', () => {
-    const f = form(
-      signal({
-        a: 1,
-        b: 2,
-      }),
-      {injector: TestBed.inject(Injector)},
-    );
-    const childA = computed(() => f.a);
-    expect(childA()).toBeDefined();
   });
 
   it('can get a child inside of a computed', () => {
