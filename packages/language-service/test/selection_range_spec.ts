@@ -1497,6 +1497,258 @@ describe('selection range', () => {
         );
       });
     });
+
+    describe('non-null assertion', () => {
+      it('should expand through non-null assertion', () => {
+        // NonNullAssert(user).name — cursor on "name" lands on the PropertyRead
+        // The chain shows user!.name (whole expression) directly since cursor is on the property
+        verifySelectionRanges(env, '<span>{{user!.name}}</span>', `user: any;`, [
+          {
+            label: 'cursor on name in user!.name',
+            cursorAt: 'name',
+            chain: ['user!.name', '{{user!.name}}', '<span>{{user!.name}}</span>'],
+          },
+        ]);
+      });
+    });
+
+    describe('binary expressions', () => {
+      it('should expand through arithmetic with precedence', () => {
+        // a + b * c: Binary(+, a, Binary(*, b, c))
+        // Cursor on b: b → b * c (inner Binary) → a + b * c (outer Binary) → interpolation → element
+        verifySelectionRanges(env, '<span>{{a + b * c}}</span>', `a = 1; b = 2; c = 3;`, [
+          {
+            label: 'cursor on b in b * c',
+            cursorAt: 'b * c',
+            chain: ['b', 'b * c', 'a + b * c', '{{a + b * c}}', '<span>{{a + b * c}}</span>'],
+          },
+        ]);
+      });
+
+      it('should expand through comparison operator', () => {
+        // count > 10 in a bound attribute binding
+        verifySelectionRanges(
+          env,
+          '<div [hidden]="count > 10">Content</div>',
+          `count = 5;`,
+          [
+            {
+              label: 'cursor on count in count > 10',
+              cursorAt: 'count',
+              chain: [
+                'count',
+                'count > 10',
+                'hidden',
+                '[hidden]="count > 10"',
+                '<div [hidden]="count > 10">Content</div>',
+              ],
+            },
+          ],
+        );
+      });
+
+      it('should expand through logical AND', () => {
+        // Structural directive with logical AND — desugars like *ngIf
+        verifySelectionRanges(
+          env,
+          '<div *ngIf="isA && isB">Visible</div>',
+          `isA = true; isB = true;`,
+          [
+            {
+              label: 'cursor on isB in logical AND',
+              cursorAt: 'isB',
+              chain: [
+                'isB',
+                'isA && isB',
+                'ngIf',
+                'ngIf="isA && isB',
+                'Visible',
+                '<div *ngIf="isA && isB">Visible</div>',
+              ],
+            },
+          ],
+        );
+      });
+
+      it('should expand through nullish coalescing chain', () => {
+        // a ?? b ?? c: left-associative Binary(??, Binary(??, a, b), c)
+        // Cursor on b: b → a ?? b (inner Binary) → a ?? b ?? c (outer) → interpolation → element
+        verifySelectionRanges(
+          env,
+          '<span>{{a ?? b ?? c}}</span>',
+          `a: string | null = null; b: string | null = null; c = 'default';`,
+          [
+            {
+              label: 'cursor on b in nullish coalescing chain',
+              cursorAt: ' b ',
+              offset: 1,
+              chain: ['b', 'a ?? b', 'a ?? b ?? c', '{{a ?? b ?? c}}', '<span>{{a ?? b ?? c}}</span>'],
+            },
+          ],
+        );
+      });
+    });
+
+    describe('parenthesized expressions', () => {
+      it('should expand through parenthesized expression', () => {
+        // (a + b) * c: parentheses create an intermediate grouping step
+        // a → a + b (inner Binary) → (a + b) (parens) → (a + b) * c (outer Binary) → interpolation → element
+        verifySelectionRanges(env, '<span>{{(a + b) * c}}</span>', `a = 1; b = 2; c = 3;`, [
+          {
+            label: 'cursor on a in (a + b)',
+            cursorAt: 'a + b',
+            chain: ['a', 'a + b', '(a + b)', '(a + b) * c', '{{(a + b) * c}}', '<span>{{(a + b) * c}}</span>'],
+          },
+        ]);
+      });
+    });
+
+    describe('chain expressions', () => {
+      it('should expand through semicolon chain in event', () => {
+        // Event binding with multiple statements separated by semicolons
+        // doA → doA() (Call) → doA(); doB() (Chain) → click (event name) → full attr → element
+        verifySelectionRanges(
+          env,
+          '<button (click)="doA(); doB()">Click</button>',
+          `doA() {} doB() {}`,
+          [
+            {
+              label: 'cursor on doA in semicolon chain',
+              cursorAt: 'doA',
+              chain: [
+                'doA',
+                'doA()',
+                'doA(); doB()',
+                'click',
+                '(click)="doA(); doB()"',
+                '<button (click)="doA(); doB()">Click</button>',
+              ],
+            },
+          ],
+        );
+      });
+    });
+
+    describe('edge cases', () => {
+      it('should handle empty interpolation', () => {
+        // Empty interpolation {{}} has no expression nodes, just the interpolation itself
+        verifySelectionRanges(env, '<span>{{}}</span>', '', [
+          {
+            label: 'cursor inside empty interpolation',
+            cursorAt: '{{}}',
+            offset: 2,
+            chain: ['{{}}', '<span>{{}}</span>'],
+          },
+        ]);
+      });
+
+      it('should handle self-closing element with binding', () => {
+        // Self-closing element: expansion goes expression → attr name → full attr → element
+        verifySelectionRanges(env, '<input [value]="name" />', `name = 'test';`, [
+          {
+            label: 'cursor on name in self-closing input',
+            cursorAt: 'name"',
+            chain: ['name', 'value', '[value]="name"', '<input [value]="name" />'],
+          },
+        ]);
+      });
+
+      it('should handle template reference variable', () => {
+        // Reference variable #myInput used in sibling interpolation
+        verifySelectionRanges(env, '<input #myInput><span>{{myInput.value}}</span>', ``, [
+          {
+            label: 'cursor on myInput in interpolation',
+            cursorAt: 'myInput.value',
+            chain: [
+              'myInput',
+              'myInput.value',
+              '{{myInput.value}}',
+              '<span>{{myInput.value}}</span>',
+              '<input #myInput><span>{{myInput.value}}</span>',
+            ],
+          },
+        ]);
+      });
+
+      it('should handle deeply nested elements', () => {
+        // 5-level nesting: each level becomes a step in the chain
+        verifySelectionRanges(
+          env,
+          '<div><section><article><p><span>deep</span></p></article></section></div>',
+          '',
+          [
+            {
+              label: 'cursor on deep in deeply nested span',
+              cursorAt: 'deep',
+              chain: [
+                'deep',
+                '<span>deep</span>',
+                '<p><span>deep</span></p>',
+                '<article><p><span>deep</span></p></article>',
+                '<section><article><p><span>deep</span></p></article></section>',
+                '<div><section><article><p><span>deep</span></p></article></section></div>',
+              ],
+            },
+          ],
+        );
+      });
+
+      it('should handle multiple bindings on same element', () => {
+        // Element with multiple bindings: each binding has its own chain ending at the element
+        const template = '<div [title]="titleVal" [hidden]="isHidden" (click)="onClick()">Text</div>';
+        verifySelectionRanges(
+          env,
+          template,
+          `titleVal = 'hi'; isHidden = false; onClick() {}`,
+          [
+            {
+              label: 'cursor on titleVal in title binding',
+              cursorAt: 'titleVal',
+              chain: [
+                'titleVal',
+                'title',
+                '[title]="titleVal"',
+                '[title]="titleVal" [hidden]="isHidden" (click)="onClick()"',
+                template,
+              ],
+            },
+            {
+              label: 'cursor on isHidden in hidden binding',
+              cursorAt: 'isHidden',
+              chain: [
+                'isHidden',
+                'hidden',
+                '[hidden]="isHidden"',
+                '[title]="titleVal" [hidden]="isHidden" (click)="onClick()"',
+                template,
+              ],
+            },
+          ],
+        );
+      });
+
+      it('should handle @let declaration', () => {
+        // @let creates a template variable — cursor on usage in interpolation
+        verifySelectionRanges(
+          env,
+          '@let total = price * quantity; <span>{{total}}</span>',
+          `price = 10; quantity = 3;`,
+          [
+            {
+              label: 'cursor on total in interpolation',
+              cursorAt: '{{total}}',
+              offset: 2,
+              chain: [
+                'total',
+                '{{total}}',
+                '<span>{{total}}</span>',
+                '@let total = price * quantity; <span>{{total}}</span>',
+              ],
+            },
+          ],
+        );
+      });
+    });
   });
 
   describe('binding patterns', () => {
