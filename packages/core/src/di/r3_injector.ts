@@ -454,6 +454,7 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
     }
   }
 
+  //@ts-ignore
   override toString() {
     if (ngDevMode) {
       const tokens: string[] = [];
@@ -463,7 +464,6 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
       }
       return `R3Injector[${tokens.join(', ')}]`;
     }
-    return '';
   }
 
   /**
