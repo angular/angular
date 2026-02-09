@@ -9,7 +9,7 @@
 import {APP_ID as APP_ID_TOKEN, PLATFORM_ID} from '../src/core';
 import {TestBed} from '../testing';
 
-import {getDocument} from '../src/render3/interfaces/document';
+import {DOCUMENT} from '../src/document';
 import {makeStateKey, TransferState} from '../src/transfer_state';
 
 function removeScriptTag(doc: Document, id: string) {
@@ -38,13 +38,13 @@ describe('TransferState', () => {
   const DELAYED_KEY = makeStateKey<string>('delayed');
 
   beforeEach(() => {
-    doc = getDocument();
     TestBed.configureTestingModule({
       providers: [
         {provide: APP_ID_TOKEN, useValue: APP_ID},
         {provide: PLATFORM_ID, useValue: 'browser'},
       ],
     });
+    doc = TestBed.inject(DOCUMENT);
   });
 
   afterEach(() => {
