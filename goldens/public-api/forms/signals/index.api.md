@@ -190,15 +190,15 @@ export class FormField<T> {
     readonly [ɵNgFieldDirective]: true;
     readonly element: HTMLElement;
     readonly errors: Signal<ValidationError.WithFieldTree[]>;
-    focus(options?: FocusOptions): void;
     // (undocumented)
-    readonly formField: i0.InputSignal<Field<T>>;
+    readonly field: i0.InputSignal<Field<T>>;
+    focus(options?: FocusOptions): void;
     readonly injector: Injector;
     protected get interopNgControl(): InteropNgControl;
     registerAsBinding(bindingOptions?: FormFieldBindingOptions): void;
     readonly state: Signal<FieldState<T, string | number>>;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormField<any>, "[formField]", ["formField"], { "formField": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormField<any>, "[formField]", ["formField"], { "field": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormField<any>, never>;
 }
