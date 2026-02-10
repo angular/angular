@@ -595,13 +595,13 @@ While field state typically updates through user interactions (typing, focusing,
 
 #### Form submission
 
-Signal Forms provides a `NgSignalForm` directive that simplifies form submission. It automatically prevents the default browser form submission behavior and sets the `novalidate` attribute on the `<form>` element.
+Signal Forms provides a `FormRoot` directive that simplifies form submission. It automatically prevents the default browser form submission behavior and sets the `novalidate` attribute on the `<form>` element.
 
 ```angular-ts
 @Component({
-  imports: [NgSignalForm, FormField],
+  imports: [FormRoot, FormField],
   template: `
-    <form [ngSignalForm]="registrationForm">
+    <form [formRoot]="registrationForm">
       <input [formField]="registrationForm.username" />
       <input type="email" [formField]="registrationForm.email" />
       <input type="password" [formField]="registrationForm.password" />
@@ -633,7 +633,7 @@ export class Registration {
 }
 ```
 
-When you use `NgSignalForm`, submitting the form automatically calls the `submit()` function, which marks all fields as touched (revealing validation errors) and executes your `action` callback if the form is valid.
+When you use `FormRoot`, submitting the form automatically calls the `submit()` function, which marks all fields as touched (revealing validation errors) and executes your `action` callback if the form is valid.
 
 You can also submit a form manually, without using the directive, by calling `submit(this.registrationForm)`. When explicitly calling the `submit` function like this, you can pass a `FormSubmitOptions` to override the default `submission` logic for the form: `submit(this.registrationForm, {action: () => /* ... */ })`.
 

@@ -10,15 +10,15 @@ import {Component, provideZonelessChangeDetection, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import {form, NgSignalForm} from '../../public_api';
+import {form, FormRoot} from '../../public_api';
 
 @Component({
   template: `
-    <form [ngSignalForm]="f">
+    <form [formRoot]="f">
       <button type="submit">Submit</button>
     </form>
   `,
-  imports: [NgSignalForm],
+  imports: [FormRoot],
 })
 class TestCmp {
   submitted = false;
@@ -31,7 +31,7 @@ class TestCmp {
   });
 }
 
-describe('NgSignalForm', () => {
+describe('FormRoot', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
@@ -59,11 +59,11 @@ describe('NgSignalForm', () => {
   it('works when FormsModule is imported', () => {
     @Component({
       template: `
-        <form [ngSignalForm]="f">
+        <form [formRoot]="f">
           <button type="submit">Submit</button>
         </form>
       `,
-      imports: [NgSignalForm, FormsModule],
+      imports: [FormRoot, FormsModule],
     })
     class TestCmp {
       submitted = false;
@@ -90,11 +90,11 @@ describe('NgSignalForm', () => {
   it('works when ReactiveFormsModule is imported', () => {
     @Component({
       template: `
-        <form [ngSignalForm]="f">
+        <form [formRoot]="f">
           <button type="submit">Submit</button>
         </form>
       `,
-      imports: [NgSignalForm, ReactiveFormsModule],
+      imports: [FormRoot, ReactiveFormsModule],
     })
     class TestCmp {
       submitted = false;

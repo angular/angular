@@ -22,7 +22,7 @@ import {FieldTree} from '../api/types';
  * @usageNotes
  *
  * ```html
- * <form [ngSignalForm]="myFieldTree">
+ * <form [formRoot]="myFieldTree">
  *   ...
  * </form>
  * ```
@@ -31,14 +31,14 @@ import {FieldTree} from '../api/types';
  * @experimental 21.0.0
  */
 @Directive({
-  selector: 'form[ngSignalForm]',
+  selector: 'form[formRoot]',
   host: {
     'novalidate': '',
     '(submit)': 'onSubmit($event)',
   },
 })
-export class NgSignalForm<T> {
-  readonly fieldTree = input.required<FieldTree<T>>({alias: 'ngSignalForm'});
+export class FormRoot<T> {
+  readonly fieldTree = input.required<FieldTree<T>>({alias: 'formRoot'});
 
   protected onSubmit(event: Event): void {
     event.preventDefault();
