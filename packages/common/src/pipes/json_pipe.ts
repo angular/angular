@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
+import {isSignal, Pipe, PipeTransform} from '@angular/core';
 
 /**
  * @ngModule CommonModule
@@ -34,6 +34,10 @@ export class JsonPipe implements PipeTransform {
    * @param value A value of any type to convert into a JSON-format string.
    */
   transform(value: any): string {
+    if (ngDevMode && isSignal(value)) {
+      console.warn(`The JsonPipe does not unwrap signals. Received a signal with value:`, value());
+    }
+
     return JSON.stringify(value, null, 2);
   }
 }
