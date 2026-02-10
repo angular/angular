@@ -119,18 +119,6 @@
             "styles": ["src/styles.css"],
             "scripts": []
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:private-protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "angular.io-example:serve:fr"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "angular.io-example:serve:production"
-            }
-          }
         }
         // #docregion locale-config, build-single-locale, build-production-french, i18n-subPath
       }
