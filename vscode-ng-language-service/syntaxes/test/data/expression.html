@@ -37,6 +37,7 @@
 {{ call()?.conditional; }}
 {{ call()!.conditional }}
 {{ call()!.conditional; }}
+{{ call?.()}}
 
 <!-- Property read and method call: received -->
 {{ object.call() }}
@@ -47,6 +48,7 @@
 {{ object?.call()?.conditional; }}
 {{ object!.call()!.conditional }}
 {{ object!.call()!.conditional; }}
+{{ object.call?.()}}
 
 <!-- Method call with parameters -->
 {{ call(withParams) }}
