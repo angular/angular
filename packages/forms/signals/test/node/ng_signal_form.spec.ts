@@ -8,6 +8,7 @@
 
 import {Component, provideZonelessChangeDetection, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {form, NgSignalForm} from '../../public_api';
 
@@ -44,6 +45,68 @@ describe('NgSignalForm', () => {
   });
 
   it('should call submit on the field tree when form is submitted', async () => {
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const component = fixture.componentInstance;
+    const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+
+    const event = new Event('submit', {cancelable: true});
+    act(() => formElement.dispatchEvent(event));
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(component.submitted).toBeTrue();
+  });
+
+  it('works when FormsModule is imported', () => {
+    @Component({
+      template: `
+        <form [ngSignalForm]="f">
+          <button type="submit">Submit</button>
+        </form>
+      `,
+      imports: [NgSignalForm, FormsModule],
+    })
+    class TestCmp {
+      submitted = false;
+      readonly f = form(signal({}), {
+        submission: {
+          action: async () => {
+            this.submitted = true;
+          },
+        },
+      });
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const component = fixture.componentInstance;
+    const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+
+    const event = new Event('submit', {cancelable: true});
+    act(() => formElement.dispatchEvent(event));
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(component.submitted).toBeTrue();
+  });
+
+  it('works when ReactiveFormsModule is imported', () => {
+    @Component({
+      template: `
+        <form [ngSignalForm]="f">
+          <button type="submit">Submit</button>
+        </form>
+      `,
+      imports: [NgSignalForm, ReactiveFormsModule],
+    })
+    class TestCmp {
+      submitted = false;
+      readonly f = form(signal({}), {
+        submission: {
+          action: async () => {
+            this.submitted = true;
+          },
+        },
+      });
+    }
+
     const fixture = act(() => TestBed.createComponent(TestCmp));
     const component = fixture.componentInstance;
     const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;
