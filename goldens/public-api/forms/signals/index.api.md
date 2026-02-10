@@ -214,6 +214,18 @@ export interface FormOptions<TModel> {
 }
 
 // @public
+export class FormRoot<T> {
+    // (undocumented)
+    readonly fieldTree: i0.InputSignal<FieldTree<T>>;
+    // (undocumented)
+    protected onSubmit(event: Event): void;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormRoot<any>, "form[formRoot]", never, { "fieldTree": { "alias": "formRoot"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<FormRoot<any>, never>;
+}
+
+// @public
 export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
     action: (field: FieldTree<TRootModel & TSubmittedModel>, detail: {
         root: FieldTree<TRootModel>;
