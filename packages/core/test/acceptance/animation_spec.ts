@@ -11,12 +11,17 @@ import {ViewEncapsulation} from '@angular/compiler';
 import {
   AfterViewInit,
   AnimationCallbackEvent,
+  ApplicationRef,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
+  createComponent as createComponentFn,
+  createEnvironmentInjector,
   Directive,
   ElementRef,
+  EnvironmentInjector,
+  ErrorHandler,
   inject,
   NgModule,
   OnDestroy,
@@ -2298,6 +2303,72 @@ describe('Animation', () => {
       // show is true. Only one element should be present.
       expect(fixture.debugElement.query(By.css('p.all-there-is'))).not.toBeNull();
       expect(fixture.debugElement.query(By.css('p.not-here'))).toBeNull();
+    }));
+
+    it('should not throw INJECTOR_ALREADY_DESTROYED when lView injector is destroyed before animation queue runs', fakeAsync(() => {
+      const animateStyles = `
+        .fade-out {
+          animation: fade-out 100ms;
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'animated-child',
+        template: `
+          @if (show()) {
+            <div class="item" animate.leave="fade-out">Item</div>
+          }
+        `,
+        styles: [animateStyles],
+        encapsulation: ViewEncapsulation.None,
+      })
+      class AnimatedChild {
+        show = signal(true);
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const rootEnvInjector = TestBed.inject(EnvironmentInjector);
+      const childEnvInjector = createEnvironmentInjector([], rootEnvInjector);
+      const appRef = TestBed.inject(ApplicationRef);
+      const errorHandler = TestBed.inject(ErrorHandler);
+      spyOn(errorHandler, 'handleError');
+
+      const hostEl = document.createElement('animated-child');
+      const compRef = createComponentFn(AnimatedChild, {
+        environmentInjector: childEnvInjector,
+        hostElement: hostEl,
+      });
+      appRef.attachView(compRef.hostView);
+      appRef.tick();
+      tickAnimationFrames(1);
+
+      expect(hostEl.querySelector('.item')).not.toBeNull();
+
+      // Trigger leave animation via local detectChanges (queues animation
+      // without flushing the queue - afterNextRender only runs during tick)
+      compRef.instance.show.set(false);
+      compRef.changeDetectorRef.detectChanges();
+
+      // Destroy the child injector before the animation queue flushes.
+      // This simulates what happens when a component's lView injector is
+      // destroyed while leave animations are pending.
+      childEnvInjector.destroy();
+
+      // Tick to flush the animation queue. Without the fix, the animation
+      // function would call lView[INJECTOR].get(NgZone) which delegates to
+      // the destroyed childEnvInjector, throwing NG0205.
+      appRef.tick();
+      tickAnimationFrames(1);
+
+      expect(errorHandler.handleError).not.toHaveBeenCalled();
     }));
   });
 
