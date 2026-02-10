@@ -30,6 +30,7 @@ const TYPE_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
   'afterRenderEffectPhase': 'type-effect',
   'template': 'type-template',
   'linkedSignal': 'type-linked-signal',
+  'childSignalProp': 'type-child-signal-prop',
   'unknown': 'type-unknown',
 };
 

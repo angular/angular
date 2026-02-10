@@ -37,6 +37,7 @@ const KIND_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
   'afterRenderEffectPhase': 'kind-effect',
   'template': 'kind-template',
   'linkedSignal': 'kind-linked-signal',
+  'childSignalProp': 'kind-child-signal-prop',
   'unknown': 'kind-unknown',
 };
 
