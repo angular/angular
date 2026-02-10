@@ -593,10 +593,7 @@ export function transformedValue<TValue, TRaw>(value: ModelSignal<TValue>, optio
 // @public
 export interface TransformedValueOptions<TValue, TRaw> {
     format: (value: TValue) => TRaw;
-    parse: (rawValue: TRaw) => {
-        value?: TValue;
-        errors?: readonly ValidationError.WithoutFieldTree[];
-    };
+    parse: (rawValue: TRaw) => ParseResult<TValue>;
 }
 
 // @public
