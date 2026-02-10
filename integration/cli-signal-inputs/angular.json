@@ -92,25 +92,6 @@
             "tsConfig": ["tsconfig.app.json", "tsconfig.spec.json", "e2e/tsconfig.json"],
             "exclude": ["**/node_modules/**"]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:private-protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "cli-signal-inputs:serve",
-            "webdriverUpdate": false
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "cli-signal-inputs:serve:production"
-            },
-            "ci": {
-              "devServerTarget": "cli-signal-inputs:serve:ci"
-            },
-            "ci-production": {
-              "devServerTarget": "cli-signal-inputs:serve:ci-production"
-            }
-          }
         }
       }
     }
