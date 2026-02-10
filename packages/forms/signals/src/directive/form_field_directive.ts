@@ -14,6 +14,7 @@ import {
   Directive,
   effect,
   ElementRef,
+  ɵformatRuntimeError as formatRuntimeError,
   inject,
   InjectionToken,
   Injector,
@@ -279,8 +280,11 @@ export class FormField<T> {
           if (fieldNode.hidden()) {
             const path = fieldNode.structure.pathKeys().join('.') || '<root>';
             console.warn(
-              `Field '${path}' is hidden but is being rendered. ` +
-                `Hidden fields should be removed from the DOM using @if.`,
+              formatRuntimeError(
+                RuntimeErrorCode.RENDERED_HIDDEN_FIELD,
+                `Field '${path}' is hidden but is being rendered. ` +
+                  `Hidden fields should be removed from the DOM using @if.`,
+              ),
             );
           }
         },

@@ -799,6 +799,7 @@ describe('field directive', () => {
       });
 
       it('should not warn when a hidden field is guarded by @if', () => {
+        const isHidden = signal(false);
         const warnSpy = spyOn(console, 'warn');
         @Component({
           imports: [FormField],
@@ -810,11 +811,17 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly f = form(signal(''), (p) => {
-            hidden(p, () => true);
+            hidden(p, isHidden);
           });
         }
 
         act(() => TestBed.createComponent(TestCmp));
+        expect(warnSpy).not.toHaveBeenCalled();
+
+        act(() => isHidden.set(true));
+        expect(warnSpy).not.toHaveBeenCalled();
+
+        act(() => isHidden.set(false));
         expect(warnSpy).not.toHaveBeenCalled();
       });
     });
