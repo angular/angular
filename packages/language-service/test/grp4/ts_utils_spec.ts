@@ -19,8 +19,8 @@ import {
   objectPropertyAssignmentForKey,
   updateImport,
   updateObjectValueForKey,
-} from '../src/utils/ts_utils';
-import {LanguageServiceTestEnv, OpenBuffer, Project} from '../testing';
+} from '../../src/utils/ts_utils';
+import {LanguageServiceTestEnv, OpenBuffer, Project} from '../../testing';
 
 describe('TS util', () => {
   describe('collectMemberMethods', () => {

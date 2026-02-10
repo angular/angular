@@ -8,8 +8,8 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {LanguageServiceTestEnv} from '../testing';
-import {createModuleAndProjectWithDeclarations} from '../testing/src/util';
+import {LanguageServiceTestEnv} from '../../testing';
+import {createModuleAndProjectWithDeclarations} from '../../testing/src/util';
 
 describe('linked editing ranges', () => {
   let env: LanguageServiceTestEnv;

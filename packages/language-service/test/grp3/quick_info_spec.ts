@@ -9,7 +9,11 @@
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
-import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv, Project} from '../testing';
+import {
+  createModuleAndProjectWithDeclarations,
+  LanguageServiceTestEnv,
+  Project,
+} from '../../testing';
 
 function quickInfoSkeleton(): {[fileName: string]: string} {
   return {
