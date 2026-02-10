@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ControlEvent, FormControlStatus, FormGroup, FormResetEvent} from '@angular/forms';
-import {disabled, required, validateAsync, ValidationError} from '@angular/forms/signals';
+import {disabled, required, validate, validateAsync, ValidationError} from '@angular/forms/signals';
 import {SchemaFn} from '../../../src/api/types';
 import {SignalFormControl} from '../../../compat';
 
@@ -150,6 +150,21 @@ describe('SignalFormControl', () => {
 
       expect(form.disabled).toBe(true);
       expect(form.status).toBe('DISABLED');
+    });
+
+    it('should revalidate when updateValueAndValidity is triggered', () => {
+      let externalInvalid = false;
+
+      const form = createSignalFormControl('alice', (p) => {
+        validate(p, () => (externalInvalid ? {kind: 'external'} : null));
+      });
+
+      expect(form.valid).toBeTrue();
+
+      externalInvalid = true;
+      form.updateValueAndValidity();
+
+      expect(form.invalid).toBeTrue();
     });
   });
 

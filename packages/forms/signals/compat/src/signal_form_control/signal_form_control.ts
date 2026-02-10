@@ -401,7 +401,9 @@ export class SignalFormControl<T> extends AbstractControl {
     this.propagateToParent(opts, (parent) => parent.markAsUntouched(opts));
   }
 
-  override updateValueAndValidity(_opts?: Object): void {}
+  override updateValueAndValidity(_opts?: Object): void {
+    this.fieldState.updateValueAndValidity();
+  }
 
   /** @internal */
   // @ts-ignore

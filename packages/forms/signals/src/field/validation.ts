@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal, untracked, ɵWritable} from '@angular/core';
+import {computed, signal, Signal, untracked, ɵWritable} from '@angular/core';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
 import type {FieldTree, TreeValidationResult, ValidationResult} from '../api/types';
 import {isArray} from '../util/type_guards';
@@ -129,6 +129,11 @@ export interface ValidationState {
    * or readonly.
    */
   shouldSkipValidation: Signal<boolean>;
+
+  /**
+   * Triggers a manual re-evaluation of the field's validation state.
+   */
+  updateValueAndValidity(): void;
 }
 
 /**
@@ -147,6 +152,8 @@ export interface ValidationState {
  *    form submit fails with errors.
  */
 export class FieldValidationState implements ValidationState {
+  private readonly revalidationTick = signal(0);
+
   constructor(readonly node: FieldNode) {}
 
   /**
@@ -154,6 +161,8 @@ export class FieldValidationState implements ValidationState {
    * targeted at a descendant field rather than at this field.
    */
   readonly rawSyncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(() => {
+    this.revalidationTick();
+
     if (this.shouldSkipValidation()) {
       return [];
     }
@@ -171,6 +180,8 @@ export class FieldValidationState implements ValidationState {
    * pending state.
    */
   readonly syncErrors: Signal<ValidationError.WithFieldTree[]> = computed(() => {
+    this.revalidationTick();
+
     // Short-circuit running validators if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return [];
@@ -214,6 +225,8 @@ export class FieldValidationState implements ValidationState {
    * indicating that the validator is still running and an error could still occur.
    */
   readonly rawAsyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = computed(() => {
+    this.revalidationTick();
+
     // Short-circuit running validators if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return [];
@@ -345,6 +358,10 @@ export class FieldValidationState implements ValidationState {
   readonly shouldSkipValidation = computed(
     () => this.node.hidden() || this.node.disabled() || this.node.readonly(),
   );
+
+  updateValueAndValidity(): void {
+    this.revalidationTick.update((value) => value + 1);
+  }
 }
 
 /** Normalizes a validation result to a list of validation errors. */

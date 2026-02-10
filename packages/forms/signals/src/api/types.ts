@@ -436,6 +436,11 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   reset(value?: TValue): void;
 
   /**
+   * Triggers a manual re-evaluation of the field's validation state.
+   */
+  updateValueAndValidity(): void;
+
+  /**
    * Focuses the first UI control in the DOM that is bound to this field state.
    * If no UI control is bound, does nothing.
    * @param options Optional focus options to pass to the native focus() method.

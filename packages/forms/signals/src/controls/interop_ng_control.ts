@@ -140,7 +140,6 @@ export class InteropNgControl implements CombinedControl {
   }
 
   updateValueAndValidity() {
-    // No-op since value and validity are always up to date in signal forms.
-    // We offer this method so that reactive forms code attempting to call it doesn't error.
+    this.field().updateValueAndValidity();
   }
 }

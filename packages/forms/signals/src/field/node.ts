@@ -269,6 +269,11 @@ export class FieldNode implements FieldState<unknown> {
     this.nodeState.markAsUntouched();
   }
 
+  /** Triggers a manual re-evaluation of this field's validation state. */
+  updateValueAndValidity(): void {
+    this.validationState.updateValueAndValidity();
+  }
+
   /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
    *
