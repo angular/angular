@@ -281,6 +281,13 @@ export interface AstFactory<TStatement, TExpression> {
   createRegularExpressionLiteral(body: string, flags: string | null): TExpression;
 
   /**
+   * Create a spread element, typically in an array or function call. E.g. `[...a]` or `fn(...b)`.
+   *
+   * @param target Expression of the spread element.
+   */
+  createSpreadElement(expression: TExpression): TExpression;
+
+  /**
    * Attach a source map range to the given node.
    *
    * @param node the node to which the range should be attached.
@@ -326,7 +333,6 @@ export type BinaryOperator =
   | '||'
   | '+'
   | '??'
-  | 'in'
   | '='
   | '+='
   | '-='
@@ -336,7 +342,9 @@ export type BinaryOperator =
   | '**='
   | '&&='
   | '||='
-  | '??=';
+  | '??='
+  | 'in'
+  | 'instanceof';
 
 /**
  * The original location of the start or end of a node created by the `AstFactory`.
@@ -361,9 +369,11 @@ export interface SourceMapRange {
 }
 
 /**
- * Information used by the `AstFactory` to create a property on an object literal expression.
+ * Information used by the `AstFactory` to create a property assignment
+ * on an object literal expression.
  */
-export interface ObjectLiteralProperty<TExpression> {
+export interface ObjectLiteralAssignment<TExpression> {
+  kind: 'property';
   propertyName: string;
   value: TExpression;
   /**
@@ -371,6 +381,19 @@ export interface ObjectLiteralProperty<TExpression> {
    */
   quoted: boolean;
 }
+
+/**
+ * Information used by the `AstFactory` to create a spread on an object literal expression.
+ */
+export interface ObjectLiteralSpread<TExpression> {
+  kind: 'spread';
+  expression: TExpression;
+}
+
+/** Possible properties in an object literal. */
+export type ObjectLiteralProperty<TExpression> =
+  | ObjectLiteralAssignment<TExpression>
+  | ObjectLiteralSpread<TExpression>;
 
 /**
  * Information used by the `AstFactory` to create a template literal string (i.e. a back-ticked

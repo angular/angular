@@ -69,17 +69,15 @@ You can inject dependencies using Angular's `inject()` function.
 Here is an example of a navigation bar that injects `AnalyticsLogger` and Angular `Router` service to allow users to navigate to a different page while tracking the event.
 
 ```angular-ts
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { AnalyticsLogger } from './analytics-logger';
+import {Component, inject} from '@angular/core';
+import {Router} from '@angular/router';
+import {AnalyticsLogger} from './analytics-logger';
 
 @Component({
   selector: 'app-navbar',
-  template: `
-    <a href="#" (click)="navigateToDetail($event)">Detail Page</a>
-  `,
+  template: `<a href="#" (click)="navigateToDetail($event)">Detail Page</a>`,
 })
-export class NavbarComponent {
+export class Navbar {
   private router = inject(Router);
   private analytics = inject(AnalyticsLogger);
 
@@ -96,7 +94,9 @@ export class NavbarComponent {
 You can inject dependencies during construction of a component, directive, or service. The call to [`inject`](/api/core/inject) can appear in either the `constructor` or in a field initializer. Here are some common examples:
 
 ```ts
-@Component({...})
+@Component({
+  /*...*/
+})
 export class MyComponent {
   // ✅ In class field initializer
   private service = inject(MyService);

@@ -13,6 +13,7 @@ import {
   LiteralPrimitive,
   PropertyRead,
   SafePropertyRead,
+  ThisReceiver,
   TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
@@ -133,7 +134,10 @@ export class CompletionEngine {
       }
     }
 
-    if (node instanceof PropertyRead && node.receiver instanceof ImplicitReceiver) {
+    if (
+      node instanceof PropertyRead &&
+      (node.receiver instanceof ImplicitReceiver || node.receiver instanceof ThisReceiver)
+    ) {
       const nodeLocation = findFirstMatchingNode(this.tcb, {
         filter: ts.isPropertyAccessExpression,
         withSpan: node.sourceSpan,

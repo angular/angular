@@ -70,7 +70,7 @@ describe('DirectiveExplorerComponent', () => {
   let contentScriptConnected = (frameId: number, name: string, url: string) => {};
   let frameConnected = (frameId: number) => {};
 
-  beforeEach(() => {
+  beforeEach(async () => {
     applicationOperationsSpy = jasmine.createSpyObj<ApplicationOperations>('_appOperations', [
       'viewSource',
       'selectDomElement',
@@ -130,7 +130,7 @@ describe('DirectiveExplorerComponent', () => {
 
     TestBed.inject(FrameManager);
     comp = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create instance from class', () => {
@@ -208,14 +208,14 @@ describe('DirectiveExplorerComponent', () => {
       expect(messageBusMock.emit).toHaveBeenCalledWith('removeHydrationOverlay');
     });
 
-    it('should show hydration checkbox toggle', () => {
+    it('should show hydration checkbox toggle', async () => {
       fixture.componentRef.setInput('isHydrationEnabled', true);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const toggle = fixture.debugElement.query(By.css('#show-hydration-overlays'));
       expect(toggle).toBeTruthy();
 
       fixture.componentRef.setInput('isHydrationEnabled', false);
-      fixture.detectChanges();
+      await fixture.whenStable();
       const toggle2 = fixture.debugElement.query(By.css('#show-hydration-overlays'));
       expect(toggle2).toBeFalsy();
     });
@@ -356,7 +356,7 @@ describe('DirectiveExplorerComponent', () => {
         expect(messageBusMock.emit).toHaveBeenCalledWith('log', [
           {
             level: 'warn',
-            message: `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`,
+            message: `The currently inspected frame does not have a unique URL on this page. Cannot inspect object.`,
           },
         ]);
       });

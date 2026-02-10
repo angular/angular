@@ -29,7 +29,7 @@ import {
 } from '@angular/platform-browser';
 ...
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [provideClientHydration()]
 });
 ```
@@ -41,9 +41,9 @@ import {provideClientHydration} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 
 @NgModule({
-  declarations: [AppComponent],
-  exports: [AppComponent],
-  bootstrap: [AppComponent],
+  declarations: [App],
+  exports: [App],
+  bootstrap: [App],
   providers: [provideClientHydration()],
 })
 export class AppModule {}
@@ -183,7 +183,7 @@ import {provideStabilityDebugging} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import 'zone.js/plugins/task-tracking'; // Use if you have Zone.js with `provideZoneChangeDetection`
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [provideStabilityDebugging()],
 });
 ```
@@ -206,7 +206,7 @@ import {
 } from '@angular/platform-browser';
 ...
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [provideClientHydration(withI18nSupport())]
 });
 ```

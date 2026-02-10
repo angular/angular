@@ -7,6 +7,7 @@ function TestCmp_Defer_0_Template(rf, ctx) {
 }
 
 export class LocalDep {
+  …
 }
 
 …

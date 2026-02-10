@@ -9,29 +9,32 @@
 import {Tokens} from 'marked';
 import {AdevDocsRenderer} from '../renderer.mjs';
 
-export function headingRender(this: AdevDocsRenderer, {depth, tokens}: Tokens.Heading): string {
-  const text = this?.parser.parseInline(tokens);
+export function headingRender(
+  this: AdevDocsRenderer,
+  {depth, tokens, text: headingText, raw}: Tokens.Heading,
+): string {
+  this.context.disableAutoLinking = true;
+  const parsedText = this?.parser.parseInline(tokens, this);
+  this.context.disableAutoLinking = false;
   if (depth === 1) {
     return `
     <header class="docs-header">
       <docs-breadcrumb></docs-breadcrumb>
-      ${getPageTitle(text, this.context.markdownFilePath)}
+      ${getPageTitle(parsedText, this.context.markdownFilePath)}
     </header>
     `;
   }
 
-  // Nested anchor elements are invalid in HTML
-  // They might happen when we have a code block in a heading
-  // regex aren't perfect for that but this one should be "good enough"
-  const regex = /<a\s+(?:[^>]*?\s+)?href.*?>(.*?)<\/a>/gi;
-  const anchorLessText = text.replace(regex, '$1');
-
   // extract the extended markdown heading id
   // ex:  ## MyHeading {# myId}
+  // This is recommended in case we end up having duplicate Ids but we still want the same heading text.
+  // We don't want to make Id generation stateful/too complex to handle duplicates automatically.
   const customIdRegex = /{#\s*([\w-]+)\s*}/g;
-  const customId = customIdRegex.exec(anchorLessText)?.[1];
-  const link = customId ?? this.getHeaderId(anchorLessText);
-  const label = anchorLessText.replace(/`(.*?)`/g, '<code>$1</code>').replace(customIdRegex, '');
+  const customId = customIdRegex.exec(headingText)?.[1];
+
+  const link = customId ?? getIdFromHeading(headingText);
+
+  const label = parsedText.replace(/`(.*?)`/g, '<code>$1</code>');
   const normalizedLabel = label.replace(/<\/?code>/g, '');
 
   return `
@@ -61,4 +64,11 @@ export function getPageTitle(text: string, filePath?: string): string {
         : ''
     }
   </div>`;
+}
+
+function getIdFromHeading(heading: string): string {
+  return heading
+    .toLowerCase()
+    .replace(/\s|\//g, '-') // replace spaces and slashes with dashes
+    .replace(/[^\p{L}\d\-]/gu, ''); // only keep letters, digits & dashes
 }

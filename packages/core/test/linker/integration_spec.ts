@@ -1240,7 +1240,7 @@ describe('integration tests', function () {
           ref.destroy();
           expect(() => {
             dynamicVp.insert(ref.hostView);
-          }).toThrowError('Cannot insert a destroyed View in a ViewContainer!');
+          }).toThrowError(/Cannot insert a destroyed View in a ViewContainer!/);
         }));
       });
 
@@ -1257,7 +1257,7 @@ describe('integration tests', function () {
           ref.destroy();
           expect(() => {
             dynamicVp.move(ref.hostView, 1);
-          }).toThrowError('Cannot move a destroyed View in a ViewContainer!');
+          }).toThrowError(/Cannot move a destroyed View in a ViewContainer!/);
         }));
       });
     });

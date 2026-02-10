@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {NgModuleType} from '../metadata/ng_module_def';
 import {stringify} from '../util/stringify';
@@ -24,8 +25,10 @@ let checkForDuplicateNgModules = true;
 
 function assertSameOrNotExisting(id: string, type: Type<any> | null, incoming: Type<any>): void {
   if (type && type !== incoming && checkForDuplicateNgModules) {
-    throw new Error(
-      `Duplicate module registered for ${id} - ${stringify(type)} vs ${stringify(type.name)}`,
+    throw new RuntimeError(
+      RuntimeErrorCode.DUPLICATE_NG_MODULE_ID,
+      ngDevMode &&
+        `Duplicate module registered for ${id} - ${stringify(type)} vs ${stringify(type.name)}`,
     );
   }
 }

@@ -38,6 +38,17 @@ function transformLiteralArray(expr: o.LiteralArrayExpr): o.Expression {
   const derivedEntries: o.Expression[] = [];
   const nonConstantArgs: o.Expression[] = [];
   for (const entry of expr.entries) {
+    if (entry instanceof o.SpreadElementExpr) {
+      if (entry.expression.isConstant()) {
+        derivedEntries.push(entry);
+      } else {
+        const idx = nonConstantArgs.length;
+        nonConstantArgs.push(entry.expression);
+        derivedEntries.push(new o.SpreadElementExpr(new ir.PureFunctionParameterExpr(idx)));
+      }
+      continue;
+    }
+
     if (entry.isConstant()) {
       derivedEntries.push(entry);
     } else {
@@ -53,15 +64,32 @@ function transformLiteralMap(expr: o.LiteralMapExpr): o.Expression {
   let derivedEntries: o.LiteralMapEntry[] = [];
   const nonConstantArgs: o.Expression[] = [];
   for (const entry of expr.entries) {
+    if (entry instanceof o.LiteralMapSpreadAssignment) {
+      if (entry.expression.isConstant()) {
+        derivedEntries.push(entry);
+      } else {
+        const idx = nonConstantArgs.length;
+        nonConstantArgs.push(entry.expression);
+        derivedEntries.push(
+          new o.LiteralMapSpreadAssignment(new ir.PureFunctionParameterExpr(idx)),
+        );
+      }
+      continue;
+    }
+
     if (entry.value.isConstant()) {
       derivedEntries.push(entry);
     } else {
       const idx = nonConstantArgs.length;
       nonConstantArgs.push(entry.value);
       derivedEntries.push(
-        new o.LiteralMapEntry(entry.key, new ir.PureFunctionParameterExpr(idx), entry.quoted),
+        new o.LiteralMapPropertyAssignment(
+          entry.key,
+          new ir.PureFunctionParameterExpr(idx),
+          entry.quoted,
+        ),
       );
     }
   }
-  return new ir.PureFunctionExpr(o.literalMap(derivedEntries), nonConstantArgs);
+  return new ir.PureFunctionExpr(new o.LiteralMapExpr(derivedEntries), nonConstantArgs);
 }

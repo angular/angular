@@ -7,7 +7,7 @@ TIP: If you're familiar with other web frameworks, input properties are similar 
 When you use a component, you commonly want to pass some data to it. A component specifies the data that it accepts by declaring
 **inputs**:
 
-```ts {highlight:[5]}
+```ts {highlight:[8]}
 import {Component, input} from '@angular/core';
 
 @Component({
@@ -63,7 +63,7 @@ When extending a component class, **inputs are inherited by the child class.**
 
 The `input` function returns an `InputSignal`. You can read the value by calling the signal:
 
-```ts {highlight:[5]}
+```ts {highlight:[11]}
 import {Component, input, computed} from '@angular/core';
 
 @Component({
@@ -84,7 +84,7 @@ Signals created by the `input` function are read-only.
 
 You can declare that an input is `required` by calling `input.required` instead of `input`:
 
-```ts {highlight:[3]}
+```ts {highlight:[6]}
 @Component({
   /*...*/
 })
@@ -176,7 +176,7 @@ _presence_ of the attribute indicates a "true" value. However, Angular's `boolea
 
 You can specify the `alias` option to change the name of an input in templates.
 
-```ts {highlight:[3]}
+```ts {highlight:[5]}
 @Component({
   /*...*/
 })
@@ -273,7 +273,7 @@ See [Custom events with outputs](guide/components/outputs) for more details on o
 
 ### Customizing model inputs
 
-You can mark a model input as required or provide an alias in the same way as a [standard input](guide/signals/inputs).
+You can mark a model input as required or provide an alias in the same way as a [standard input](guide/components/inputs).
 
 Model inputs do not support input transforms.
 
@@ -293,8 +293,10 @@ TIP: While the Angular team recommends using the signal-based `input` function f
 
 You can alternatively declare component inputs by adding the `@Input` decorator to a property:
 
-```ts {highlight:[3]}
-@Component({...})
+```ts {highlight:[5]}
+@Component({
+  /*...*/
+})
 export class CustomSlider {
   @Input() value = 0;
 }
@@ -314,8 +316,10 @@ The `@Input` decorator accepts a config object that lets you change the way that
 
 You can specify the `required` option to enforce that a given input must always have a value.
 
-```ts {highlight:[3]}
-@Component({...})
+```ts {highlight:[5]}
+@Component({
+  /*...*/
+})
 export class CustomSlider {
   @Input({required: true}) value = 0;
 }
@@ -345,8 +349,10 @@ function trimString(value: string | undefined) {
 
 You can specify the `alias` option to change the name of an input in templates.
 
-```ts {highlight:[3]}
-@Component({...})
+```ts {highlight:[5]}
+@Component({
+  /*...*/
+})
 export class CustomSlider {
   @Input({alias: 'sliderValue'}) value = 0;
 }

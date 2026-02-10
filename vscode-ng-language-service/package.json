@@ -153,6 +153,11 @@
           "type": "string",
           "default": "",
           "markdownDescription": "A comma-separated list of error codes in templates whose diagnostics should be ignored."
+        },
+        "angular.server.useClientSideFileWatcher": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "When enabled, the Angular Language Service will delegate file watching to VS Code instead of creating its own internal file watchers. This can significantly improve performance (greater than 10x faster initialization) and reduce resource usage in large repositories."
         }
       }
     },
@@ -237,6 +242,12 @@
         "path": "./syntaxes/expression.json",
         "scopeName": "expression.ng"
       }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": "tsconfig*.json",
+        "url": "./schemas/tsconfig-ng.schema.json"
+      }
     ]
   },
   "activationEvents": [
@@ -257,7 +268,7 @@
     "test:inspect-common": "bazel run --config=debug //vscode-ng-language-service/common/tests:test",
     "test:inspect-server": "bazel run --config=debug //vscode-ng-language-service/server/src/tests:test",
     "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test",
-    "release": "tsx --tsconfig=tools/tsconfig.json tools/release.mts"
+    "release": "node tools/release.mts"
   },
   "dependencies": {
     "@angular/language-service": "workspace:*",
@@ -274,10 +285,10 @@
     "jasmine-core": "~5.13.0",
     "jasmine-reporters": "~2.5.2",
     "source-map-support": "^0.5.21",
-    "vscode-jsonrpc": "6.0.0",
-    "vscode-languageclient": "7.0.0",
-    "vscode-languageserver": "7.0.0",
-    "vscode-languageserver-protocol": "3.16.0",
+    "vscode-jsonrpc": "8.2.0",
+    "vscode-languageclient": "9.0.1",
+    "vscode-languageserver": "9.0.1",
+    "vscode-languageserver-protocol": "3.17.5",
     "vscode-languageserver-textdocument": "1.0.12",
     "vscode-tmgrammar-test": "0.1.3",
     "vscode-uri": "3.1.0",

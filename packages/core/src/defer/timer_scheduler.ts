@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {OnDestroy} from '../core';
 import {Injector, ɵɵdefineInjectable} from '../di';
 import {arrayInsert2, arraySplice} from '../util/array_utils';
 import {NgZone} from '../zone';
@@ -39,7 +40,7 @@ export function scheduleTimerTrigger(delay: number, callback: VoidFunction, inje
  * to avoid calling `setTimeout` for each defer block (e.g. if defer blocks
  * are created inside a for loop).
  */
-export class TimerScheduler {
+export class TimerScheduler implements OnDestroy {
   // Indicates whether current callbacks are being invoked.
   executingCallbacks = false;
 

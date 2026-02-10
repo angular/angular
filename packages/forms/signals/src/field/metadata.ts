@@ -6,8 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, runInInjectionContext, untracked} from '@angular/core';
+import {
+  computed,
+  runInInjectionContext,
+  untracked,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 import {MetadataKey} from '../api/rules/metadata';
+import {RuntimeErrorCode} from '../errors';
 import type {FieldNode} from './node';
 
 /**
@@ -39,7 +45,10 @@ export class FieldMetadataState {
     if (this.has(key)) {
       if (!this.metadata.has(key)) {
         if (key.create) {
-          throw Error('Managed metadata cannot be created lazily');
+          throw new RuntimeError(
+            RuntimeErrorCode.MANAGED_METADATA_LAZY_CREATION,
+            ngDevMode && 'Managed metadata cannot be created lazily',
+          );
         }
         const logic = this.node.logicNode.logic.getMetadata(key);
         this.metadata.set(

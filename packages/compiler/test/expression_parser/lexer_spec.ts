@@ -222,6 +222,12 @@ describe('lexer', () => {
       expect(tokens[0].isKeywordIn()).toBe(true);
     });
 
+    it('should tokenize instanceof keyword', () => {
+      const tokens: Token[] = lex('instanceof');
+      expectKeywordToken(tokens[0], 0, 10, 'instanceof');
+      expect(tokens[0].isKeywordInstanceOf()).toBe(true);
+    });
+
     it('should ignore whitespace', () => {
       const tokens: Token[] = lex('a \t \n \r b');
       expectIdentifierToken(tokens[0], 0, 1, 'a');
@@ -428,6 +434,29 @@ describe('lexer', () => {
       expectOperatorToken(lex('&&=')[0], 0, 3, '&&=');
       expectOperatorToken(lex('||=')[0], 0, 3, '||=');
       expectOperatorToken(lex('??=')[0], 0, 3, '??=');
+    });
+
+    it('should tokenize a spread operator', () => {
+      const tokens = lex('{...foo}');
+      expect(tokens.length).toEqual(4);
+      expectCharacterToken(tokens[0], 0, 1, '{');
+      expectOperatorToken(tokens[1], 1, 4, '...');
+      expectIdentifierToken(tokens[2], 4, 7, 'foo');
+      expectCharacterToken(tokens[3], 7, 8, '}');
+    });
+
+    it('should produce an error for a spread with two dots', () => {
+      const tokens = lex('{..foo}');
+      expect(tokens.length).toEqual(4);
+      expectCharacterToken(tokens[0], 0, 1, '{');
+      expectErrorToken(
+        tokens[1],
+        3,
+        3,
+        'Lexer Error: Unexpected character [.] at column 3 in expression [{..foo}]',
+      );
+      expectIdentifierToken(tokens[2], 3, 6, 'foo');
+      expectCharacterToken(tokens[3], 6, 7, '}');
     });
 
     describe('template literals', () => {
@@ -943,6 +972,30 @@ describe('lexer', () => {
           2,
           'Lexer Error: Unterminated regular expression at column 2 in expression [/a]',
         );
+      });
+
+      it('should tokenize an arrow function without parenthesis', () => {
+        const tokens = lex('a => a + 1');
+        expect(tokens.length).toBe(5);
+        expectIdentifierToken(tokens[0], 0, 1, 'a');
+        expectOperatorToken(tokens[1], 2, 4, '=>');
+        expectIdentifierToken(tokens[2], 5, 6, 'a');
+        expectOperatorToken(tokens[3], 7, 8, '+');
+        expectNumberToken(tokens[4], 9, 10, 1);
+      });
+
+      it('should tokenize an arrow function with parenthesis', () => {
+        const tokens = lex('(a, b) => a + b');
+        expect(tokens.length).toBe(9);
+        expectCharacterToken(tokens[0], 0, 1, '(');
+        expectIdentifierToken(tokens[1], 1, 2, 'a');
+        expectCharacterToken(tokens[2], 2, 3, ',');
+        expectIdentifierToken(tokens[3], 4, 5, 'b');
+        expectCharacterToken(tokens[4], 5, 6, ')');
+        expectOperatorToken(tokens[5], 7, 9, '=>');
+        expectIdentifierToken(tokens[6], 10, 11, 'a');
+        expectOperatorToken(tokens[7], 12, 13, '+');
+        expectIdentifierToken(tokens[8], 14, 15, 'b');
       });
     });
   });

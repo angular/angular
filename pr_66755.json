@@ -1,0 +1,57 @@
+{
+  "body": "# PR: feat(language-service): add Angular-specific Inlay Hints (LSP 3.17)\n\n\u003e **Note:** This PR supersedes #66731 which was closed for rebasing.\n\n## ⚠️ Dependency\n\nThis PR depends on #66734 (feat(language-server): add shared workspace/configuration utilities) and must be merged after that PR.\n\n**Merge Order:**\n1. First merge #66734 (workspace/configuration infrastructure)\n2. Then this PR can be merged\n\n## Description\n\nImplements comprehensive Angular-specific Inlay Hints for the Angular Language Service, providing inline type annotations directly in template code. This feature achieves **full parity with TypeScript's inlay hints** while adding Angular-specific capabilities.\n\n---\n\n## 📍 Inlay Hints by Location\n\nThis PR implements **13 hint locations** with full configuration:\n1. `@for` loop variables\n2. `@if`/`@else if` alias variables\n3. `@let` declarations\n4. Template references (`#ref`)\n5. Event bindings (`(event)`)\n6. Property bindings (`[property]`)\n7. Two-way bindings (`[(model)]`)\n8. Pipes (`| pipe`)\n9. Function calls (parameter names)\n10. Arrow functions\n11. `@switch` expressions\n12. `@defer` triggers\n13. Host bindings (`@HostListener`/`@HostBinding`/`host:`)\n\n---\n\n## 🎯 TypeScript Parity Summary\n\n| TypeScript Option | Angular Implementation | Status |\n|---|---|---|\n| `includeInlayVariableTypeHints` | `forLoopVariableTypes`, `ifAliasTypes`, `letDeclarationTypes`, `referenceVariableTypes` | ✅ |\n| `includeInlayVariableTypeHintsWhenTypeMatchesName` | `variableTypeHintsWhenTypeMatchesName` | ✅ |\n| `includeInlayParameterNameHints` | `parameterNameHints` | ✅ |\n| `includeInlayParameterNameHintsWhenArgumentMatchesName` | `parameterNameHintsWhenArgumentMatchesName` | ✅ |\n| `includeInlayFunctionParameterTypeHints` | `arrowFunctionParameterTypes` | ✅ |\n| `includeInlayFunctionLikeReturnTypeHints` | `arrowFunctionReturnTypes` | ✅ |\n| `interactiveInlayHints` | `interactiveInlayHints` | ✅ |\n\n---\n\n## 🧪 Test Coverage\n\n- **95+ unit tests** covering all hint types\n- **LSP integration tests** for end-to-end testing\n- **Edge cases**: nested blocks, generics, overloads, signals, required inputs\n\n---\n\n## ⚙️ Configuration\n\nConfiguration is fetched dynamically via LSP `workspace/configuration` request using the shared utilities from #66734, allowing settings to take effect immediately without restarting the language server.\n\n---\n\n## 🔄 Breaking Changes\n\nNone\n\n---\n\n## 📚 Related Issues\n\nCloses #66730 (feat: Angular-specific Inlay Hints)\n\n---\n\n## 🤖 AI Disclosure\n\nThis PR was developed using Claude Opus 4.5 AI assistant under human orchestration and review by @kbrilla.\n",
+  "comments": [],
+  "files": [
+    {"additions": 279, "deletions": 0, "path": "packages/language-service/api.ts"},
+    {"additions": 2169, "deletions": 0, "path": "packages/language-service/src/inlay_hints.ts"},
+    {"additions": 81, "deletions": 0, "path": "packages/language-service/src/language_service.ts"},
+    {"additions": 11, "deletions": 0, "path": "packages/language-service/src/ts_plugin.ts"},
+    {
+      "additions": 3532,
+      "deletions": 0,
+      "path": "packages/language-service/test/inlay_hints_spec.ts"
+    },
+    {"additions": 18, "deletions": 0, "path": "packages/language-service/testing/src/buffer.ts"},
+    {"additions": 53, "deletions": 0, "path": "vscode-ng-language-service/README.md"},
+    {"additions": 12, "deletions": 0, "path": "vscode-ng-language-service/client/src/client.ts"},
+    {
+      "additions": 688,
+      "deletions": 4,
+      "path": "vscode-ng-language-service/integration/lsp/ivy_spec.ts"
+    },
+    {
+      "additions": 14,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/integration/lsp/test_utils.ts"
+    },
+    {
+      "additions": 2,
+      "deletions": 1,
+      "path": "vscode-ng-language-service/integration/project/app/app.module.ts"
+    },
+    {
+      "additions": 27,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/integration/project/app/highlight.directive.ts"
+    },
+    {"additions": 108, "deletions": 0, "path": "vscode-ng-language-service/package.json"},
+    {"additions": 145, "deletions": 0, "path": "vscode-ng-language-service/server/src/config.ts"},
+    {
+      "additions": 5,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/server/src/handlers/initialization.ts"
+    },
+    {
+      "additions": 403,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/server/src/handlers/inlay_hints.ts"
+    },
+    {"additions": 16, "deletions": 1, "path": "vscode-ng-language-service/server/src/session.ts"},
+    {
+      "additions": 85,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/server/src/tests/config_spec.ts"
+    }
+  ],
+  "title": "feat(language-service): add Angular-specific Inlay Hints (LSP 3.17)"
+}

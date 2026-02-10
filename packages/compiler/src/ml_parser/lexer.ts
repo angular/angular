@@ -153,12 +153,9 @@ const SUPPORTED_BLOCKS = [
   '@placeholder',
   '@loading',
   '@error',
-];
+] as const;
 
-const INTERPOLATION = {
-  start: '{{',
-  end: '}}',
-};
+const INTERPOLATION = {start: '{{', end: '}}'} as const;
 
 // See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
@@ -321,6 +318,15 @@ class _Tokenizer {
 
     if (this._attemptCharCode(chars.$LBRACE)) {
       this._beginToken(TokenType.BLOCK_OPEN_END);
+      this._endToken([]);
+    } else if (
+      this._isBlockStart() &&
+      (startToken.parts[0] === 'case' || startToken.parts[0] === 'default')
+    ) {
+      // We only allow @case statements to be consecutive without a block in between.
+      this._beginToken(TokenType.BLOCK_OPEN_END);
+      this._endToken([]);
+      this._beginToken(TokenType.BLOCK_CLOSE);
       this._endToken([]);
     } else {
       startToken.type = TokenType.INCOMPLETE_BLOCK_OPEN;

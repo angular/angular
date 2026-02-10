@@ -816,6 +816,26 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toContain(`Type 'string' is not assignable to type 'object'`);
     });
 
+    it('should error on invalid instanceof binary expressions', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+        @Component({
+          template: \` {{'foo' instanceof String}} \`,
+        })
+        class TestCmp {
+        }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(2);
+      expect(diags[0].messageText).toContain(
+        `The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.`,
+      );
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write(
@@ -3340,6 +3360,80 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should type check object spread assignments in templates', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '@let obj = {a: 1, ...foo}; {{checkObj(obj)}}',
+        })
+        export class TestCmp {
+          foo = {b: 'two'};
+
+          checkObj(obj: {a: number, b: number}) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(1);
+      expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toContain(
+        `Argument of type '{ b: string; a: number; }' is not assignable to parameter of type '{ a: number; b: number; }'.`,
+      );
+    });
+
+    it('should type check array spread elements in templates', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '@let array = [1, ...foo]; {{checkArray(array)}}',
+        })
+        export class TestCmp {
+          foo = ['two'];
+
+          checkArray(arr: number[]) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(1);
+      expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toBe(
+        `Argument of type '(string | number)[]' is not assignable to parameter of type 'number[]'.`,
+      );
+    });
+
+    it('should type check rest arguments in a function call', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: \`{{fn('one', ...rest)}}\`,
+        })
+        export class TestCmp {
+          rest = [2];
+          fn(first: string, ...rest: string[]) {}
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(1);
+      expect(diags[0].messageText).toBe(
+        `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+      );
+    });
+
     describe('template literals', () => {
       it('should treat template literals as strings', () => {
         env.write(
@@ -4597,7 +4691,7 @@ suppress
 
       it('generates diagnostic when the library does not export the host directive', () => {
         env.tsconfig({
-          paths: {'post': ['dist/post']},
+          paths: {'post': ['./dist/post']},
           strictTemplates: true,
           _enableTemplateTypeChecker: true,
         });
@@ -4607,37 +4701,37 @@ suppress
         env.write(
           'dist/post/index.d.ts',
           `
-      export { PostComponent, PostModule } from './lib/post.component';
-    `,
+            export { PostComponent, PostModule } from './lib/post.component';
+          `,
         );
 
         env.write(
           'dist/post/lib/post.component.d.ts',
           `
-      import * as i0 from "@angular/core";
-      export declare class HostBindDirective {
-          static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindDirective, never, never, {}, {}, never, never, true, never>;
-      }
-      export declare class PostComponent {
-          static ɵcmp: i0.ɵɵComponentDeclaration<PostComponent, "lib-post", never, {}, {}, never, never, false, [{ directive: typeof HostBindDirective; inputs: {}; outputs: {}; }]>;
-      }
-      export declare class PostModule {
-          static ɵmod: i0.ɵɵNgModuleDeclaration<PostModule, [typeof PostComponent], never, [typeof PostComponent]>;
-          static ɵinj: i0.ɵɵInjectorDeclaration<PostModule>;
-      }
-      `,
+            import * as i0 from "@angular/core";
+            export declare class HostBindDirective {
+                static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindDirective, never, never, {}, {}, never, never, true, never>;
+            }
+            export declare class PostComponent {
+                static ɵcmp: i0.ɵɵComponentDeclaration<PostComponent, "lib-post", never, {}, {}, never, never, false, [{ directive: typeof HostBindDirective; inputs: {}; outputs: {}; }]>;
+            }
+            export declare class PostModule {
+                static ɵmod: i0.ɵɵNgModuleDeclaration<PostModule, [typeof PostComponent], never, [typeof PostComponent]>;
+                static ɵinj: i0.ɵɵInjectorDeclaration<PostModule>;
+            }
+        `,
         );
         env.write(
           'test.ts',
           `
-      import {Component} from '@angular/core';
-      import {PostModule} from 'post';
+            import {Component} from '@angular/core';
+            import {PostModule} from 'post';
 
-      @Component({
-        template: '<lib-post />',
-        imports: [PostModule],
-      })
-      export class Main { }
+            @Component({
+              template: '<lib-post />',
+              imports: [PostModule],
+            })
+            export class Main { }
        `,
         );
         const diags = env.driveDiagnostics();
@@ -7019,6 +7113,37 @@ suppress
             `not be projected into the specific slot because the surrounding @default has more than one node at its root.`,
         );
       });
+
+      it('should work with @switch block declared in an ng-template with template scoped variables', () => {
+        env.write(
+          'test.ts',
+          `import {Component} from '@angular/core';
+           import {CommonModule} from '@angular/common';
+
+          @Component({
+            imports: [CommonModule],
+            template: \`
+                <ng-template #template let-foo="fooValue" let-bar="fooValue">
+                  @switch (bar) {
+                    @case (foo) {
+                      {{bar}}
+                    }
+                  }
+                </ng-template>
+
+                <ng-container *ngTemplateOutlet="template; context: {fooValue: expr}"></ng-container>
+            \`,
+          })
+          class TestCmp {
+            expr = 2;
+          }
+        `,
+        );
+        const diags = env
+          .driveDiagnostics()
+          .map((d) => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(0); // Template variables should be accessible
+      });
     });
 
     describe('@let declarations', () => {
@@ -8482,6 +8607,101 @@ suppress
         expect(diags[0].messageText).toBe(
           `Argument of type 'boolean' is not assignable to parameter of type 'number'.`,
         );
+      });
+    });
+
+    describe('arrow functions', () => {
+      it('should infer the types of parameters of arrow functions passed in as callbacks', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, signal} from '@angular/core';
+
+            @Component({
+              template: '<button (click)="sig.update(prev => acceptsString(prev))"></button>',
+            })
+            class TestCmp {
+              sig = signal(1);
+              acceptsString(value: string): number {
+                return 1;
+              }
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should infer the return type of arrow functions', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, signal} from '@angular/core';
+
+            @Component({
+              template: \`<button (click)="sig.update(() => 'hello')"></button>\`,
+            })
+            class TestCmp {
+              sig = signal(1);
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(`Type 'string' is not assignable to type 'number'.`);
+      });
+
+      it('should infer the parameter type of arrow functions when they are called immediately', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, signal} from '@angular/core';
+
+            @Component({
+              template: \`{{((a) => acceptsString(a))(1)}}\`,
+            })
+            class TestCmp {
+              sig = signal(1);
+              acceptsString(value: string) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        );
+      });
+
+      it('should not report implicit any errors on arrow functions defined in @let', () => {
+        env.tsconfig(undefined, {
+          strict: true,
+          noImplicitAny: true,
+        });
+
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: \`
+                @let arrowFn = a => a;
+                {{arrowFn(1)}}
+              \`,
+            })
+            class TestCmp {}
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
       });
     });
   });

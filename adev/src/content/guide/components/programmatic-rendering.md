@@ -20,10 +20,10 @@ chunks automatically and loaded only when necessary, based on the configured tri
 template.
 
 ```angular-ts
-@Component({ ... })
+@Component({/*...*/})
 export class AdminBio { /* ... */ }
 
-@Component({ ... })
+@Component({/*...*/})
 export class StandardBio { /* ... */ }
 
 @Component({
@@ -41,6 +41,144 @@ export class CustomDialog {
 }
 ```
 
+### Passing inputs to dynamically rendered components
+
+You can pass inputs to the dynamically rendered component using the `ngComponentOutletInputs` property. This property accepts an object where keys are input names and values are the input values.
+
+```angular-ts
+@Component({
+  selector: 'user-greeting',
+  template: `
+    <div>
+      <p>User: {{ username() }}</p>
+      <p>Role: {{ role() }}</p>
+    </div>
+  `,
+})
+export class UserGreeting {
+  username = input.required<string>();
+  role = input('guest');
+}
+
+@Component({
+  selector: 'profile-view',
+  imports: [NgComponentOutlet],
+  template: `<ng-container *ngComponentOutlet="greetingComponent; inputs: greetingInputs()" />`,
+})
+export class ProfileView {
+  greetingComponent = UserGreeting;
+  greetingInputs = signal({username: 'ngAwesome', role: 'admin'});
+}
+```
+
+The inputs are updated whenever the `greetingInputs` signal changes, keeping the dynamic component in sync with the parent's state.
+
+### Providing content projection
+
+Use `ngComponentOutletContent` to pass projected content to the dynamically rendered component. This is useful when the dynamic component uses `<ng-content>` to display content.
+
+```angular-ts
+@Component({
+  selector: 'card-wrapper',
+  template: `
+    <div class="card">
+      <ng-content />
+    </div>
+  `,
+})
+export class CardWrapper {}
+
+@Component({
+  imports: [NgComponentOutlet],
+  template: `
+    <ng-container *ngComponentOutlet="cardComponent; content: cardContent()" />
+
+    <ng-template #contentTemplate>
+      <h3>Dynamic Content</h3>
+      <p>This content is projected into the card.</p>
+    </ng-template>
+  `,
+})
+export class DynamicCard {
+  private vcr = inject(ViewContainerRef);
+  cardComponent = CardWrapper;
+
+  private contentTemplate = viewChild<TemplateRef<unknown>>('contentTemplate');
+
+  cardContent = computed(() => {
+    const template = this.contentTemplate();
+    if (!template) return [];
+    // Returns an array of projection slots. Each element represents one <ng-content> slot.
+    // CardWrapper has one <ng-content>, so we return an array with one element.
+    return [this.vcr.createEmbeddedView(template).rootNodes];
+  });
+}
+```
+
+NOTE: Hydration does not support projecting DOM nodes created with native DOM APIs. This causes an [NG0503 error](/errors/NG0503). Use Angular APIs to create projected content or add `ngSkipHydration` to the component.
+
+### Providing injectors
+
+You can provide a custom injector to the dynamically created component using `ngComponentOutletInjector`. This is useful for providing component-specific services or configuration.
+
+```angular-ts
+export const THEME_DATA = new InjectionToken<string>('THEME_DATA', {
+  factory: () => 'light',
+});
+
+@Component({
+  selector: 'themed-panel',
+  template: `<div [class]="theme">...</div>`,
+})
+export class ThemedPanel {
+  theme = inject(THEME_DATA);
+}
+
+@Component({
+  selector: 'dynamic-panel',
+  imports: [NgComponentOutlet],
+  template: `<ng-container *ngComponentOutlet="panelComponent; injector: customInjector" />`,
+})
+export class DynamicPanel {
+  panelComponent = ThemedPanel;
+
+  customInjector = Injector.create({
+    providers: [{provide: THEME_DATA, useValue: 'dark'}],
+  });
+}
+```
+
+### Accessing the component instance
+
+You can access the dynamically created component's instance using the directive's `exportAs` feature:
+
+```angular-ts
+@Component({
+  selector: 'counter',
+  template: `<p>Count: {{ count() }}</p>`,
+})
+export class Counter {
+  count = signal(0);
+  increment() {
+    this.count.update((c) => c + 1);
+  }
+}
+
+@Component({
+  imports: [NgComponentOutlet],
+  template: `
+    <ng-container [ngComponentOutlet]="counterComponent" #outlet="ngComponentOutlet" />
+
+    <button (click)="outlet.componentInstance?.increment()">Increment</button>
+  `,
+})
+export class CounterHost {
+  counterComponent = Counter;
+}
+```
+
+NOTE: The `componentInstance` property is `null` before the component is rendered.
+
 See the [NgComponentOutlet API reference](api/common/NgComponentOutlet) for more information on the
 directive's capabilities.
 
@@ -57,9 +195,7 @@ DOM as the next sibling of the component or directive that injected the `ViewCon
 ```angular-ts
 @Component({
   selector: 'leaf-content',
-  template: `
-    This is the leaf content
-  `,
+  template: `This is the leaf content`,
 })
 export class LeafContent {}
 
@@ -75,9 +211,7 @@ export class OuterContainer {}
 
 @Component({
   selector: 'inner-item',
-  template: `
-    <button (click)="loadContent()">Load content</button>
-  `,
+  template: `<button (click)="loadContent()">Load content</button>`,
 })
 export class InnerItem {
   private viewContainer = inject(ViewContainerRef);
@@ -153,20 +287,20 @@ To simplify this, both `createComponent` and `ViewContainerRef.createComponent` 
 By contrast, the standalone `createComponent` API does not attach the new component to any existing view or DOM location — it returns a `ComponentRef` and gives you explicit control over where to place the component’s host element.
 
 ```angular-ts
-import { Component, input, model, output } from "@angular/core";
+import {Component, input, model, output} from '@angular/core';
 
 @Component({
   selector: 'app-warning',
   template: `
-      @if(isExpanded()) {
-        <section>
-            <p>Warning: Action needed!</p>
-            <button (click)="close.emit(true)">Close</button>
-        </section>
-      }
-  `
+    @if (isExpanded()) {
+      <section>
+        <p>Warning: Action needed!</p>
+        <button (click)="close.emit(true)">Close</button>
+      </section>
+    }
+  `,
 })
-export class AppWarningComponent {
+export class AppWarning {
   readonly canClose = input.required<boolean>();
   readonly isExpanded = model<boolean>();
   readonly close = output<boolean>();
@@ -189,13 +323,13 @@ import {ThemeDirective} from '../theme.directive';
 @Component({
   template: `<ng-container #container />`,
 })
-export class HostComponent {
+export class Host {
   private vcr = inject(ViewContainerRef);
   readonly canClose = signal(true);
   readonly isExpanded = signal(true);
 
   showWarning() {
-    const compRef = this.vcr.createComponent(AppWarningComponent, {
+    const compRef = this.vcr.createComponent(AppWarning, {
       bindings: [
         inputBinding('canClose', this.canClose),
         twoWayBinding('isExpanded', this.isExpanded),
@@ -212,7 +346,7 @@ export class HostComponent {
 }
 ```
 
-In the example above, the dynamic **AppWarningComponent** is created with its `canClose` input bound to a reactive signal, a two-way binding on its `isExpanded` state, and an output listener for `close`. The `FocusTrap` and `ThemeDirective` are attached to the host element via `directives`.
+In the example above, the dynamic **AppWarning** is created with its `canClose` input bound to a reactive signal, a two-way binding on its `isExpanded` state, and an output listener for `close`. The `FocusTrap` and `ThemeDirective` are attached to the host element via `directives`.
 
 ### Popup attached to `document.body` with `createComponent` + `hostElement`
 
@@ -228,7 +362,7 @@ import {
   inputBinding,
   outputBinding,
 } from '@angular/core';
-import {PopupComponent} from './popup.component';
+import {Popup} from './popup';
 
 @Injectable({providedIn: 'root'})
 export class PopupService {
@@ -240,7 +374,7 @@ export class PopupService {
     const host = document.createElement('popup-host');
 
     // Create the component and bind in one call
-    const ref = createComponent(PopupComponent, {
+    const ref = createComponent(Popup, {
       environmentInjector: this.injector,
       hostElement: host,
       bindings: [

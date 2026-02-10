@@ -14,6 +14,7 @@ import {
   Conditional,
   ParsedEventType,
   PropertyRead,
+  ArrowFunction,
   SafeCall,
   SafePropertyRead,
   TmplAstBoundEvent,
@@ -82,6 +83,12 @@ function assertExpressionInvoked(
 ): NgTemplateDiagnostic<ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING>[] {
   if (expression instanceof Call || expression instanceof SafeCall) {
     return []; // If the method is called, skip it.
+  }
+
+  if (expression instanceof ArrowFunction) {
+    const errorString =
+      'Arrow function will not be invoked in this event listener. Did you intend to call a method?';
+    return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
   }
 
   if (!(expression instanceof PropertyRead) && !(expression instanceof SafePropertyRead)) {

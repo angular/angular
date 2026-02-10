@@ -55,22 +55,6 @@ export function extractAttributes(job: CompilationJob): void {
             );
           }
           break;
-        case ir.OpKind.Control:
-          ir.OpList.insertBefore<ir.CreateOp>(
-            // Deliberately null i18nMessage value
-            ir.createExtractedAttributeOp(
-              op.target,
-              ir.BindingKind.Property,
-              null,
-              'field',
-              /* expression */ null,
-              /* i18nContext */ null,
-              /* i18nMessage */ null,
-              op.securityContext,
-            ),
-            lookupElement(elements, op.target),
-          );
-          break;
         case ir.OpKind.TwoWayProperty:
           ir.OpList.insertBefore<ir.CreateOp>(
             ir.createExtractedAttributeOp(

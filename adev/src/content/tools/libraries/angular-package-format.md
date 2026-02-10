@@ -206,6 +206,7 @@ The Angular compiler can generate index ES module files. Tools like Rollup can u
 
 FESM is a file format created by flattening all ES Modules accessible from an entrypoint into a single ES Module.
 It's formed by following all imports from a package and copying that code into a single file while preserving all public ES exports and removing all private imports.
+However, in some cases, the FESM may depend on shared chunks that are shared between multiple entry points.
 
 The abbreviated name, FESM, pronounced _phe-som_, can be followed by a number such as FESM2020.
 The number refers to the language level of the JavaScript inside the module.
@@ -268,8 +269,8 @@ This is because the tslib version is tied to the TypeScript version used to comp
 ## Examples
 
 <docs-pill-row>
-  <docs-pill href="https://unpkg.com/browse/@angular/core@17.0.0/" title="@angular/core package"/>
-  <docs-pill href="https://unpkg.com/browse/@angular/material@17.0.0/" title="@angular/material package"/>
+  <docs-pill href="https://app.unpkg.com/@angular/core@21.0.6" title="@angular/core package"/>
+  <docs-pill href="https://app.unpkg.com/@angular/material@21.0.3" title="@angular/material package"/>
 </docs-pill-row>
 
 ## Definition of terms
@@ -300,6 +301,7 @@ Short for ECMAScript Modules \(see above\).
 ### FESM
 
 Short for Flattened ES Modules and consists of a file format created by flattening all ES Modules accessible from an entry point into a single ES Module.
+Note that FESM is typically a single file, but it can depend on a shared chunk that is shared with other FESMs.
 
 ### Module ID
 
@@ -363,4 +365,4 @@ The Ahead of Time Compiler for Angular.
 
 ### Flattened type definitions
 
-The bundled TypeScript definitions generated from [API Extractor](https://api-extractor.com).
+The bundled TypeScript definitions generated using tools like [API Extractor](https://api-extractor.com) or [rollup-plugin-dts](https://github.com/Swatinem/rollup-plugin-dts).

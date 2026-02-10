@@ -4013,7 +4013,7 @@ describe('styling', () => {
     expect(div.classList).not.toContain(className);
   });
 
-  it('should class bindings to classes with special characters in a host binding', () => {
+  it('should support class bindings to classes with special characters in a host binding', () => {
     const className = `data-active:text-green-300/80`;
 
     @Component({
@@ -4038,6 +4038,20 @@ describe('styling', () => {
     fixture.componentInstance.value = false;
     fixture.detectChanges();
     expect(fixture.nativeElement.classList).not.toContain(className);
+  });
+
+  it('should support Set in a class binding', () => {
+    @Component({
+      template: '<div [class]="classes" [class.extra]="true"></div>',
+    })
+    class Cmp {
+      classes = new Set(['a', 'b', 'c']);
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+    const div = fixture.nativeElement.querySelector('div');
+    expect(div.getAttribute('class')).toBe('a b c extra');
   });
 
   describe('regression', () => {

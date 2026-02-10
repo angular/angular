@@ -40,7 +40,7 @@ describe('type check blocks diagnostics', () => {
       // statement, which would wrap it into parenthesis that clutter the expected output.
       const TEMPLATE = '{{ m({foo: a, bar: b}) }}';
       expect(tcbWithSpans(TEMPLATE)).toContain(
-        '(this).m /*3,4*/({ "foo": ((this).a /*11,12*/) /*11,12*/, "bar": ((this).b /*19,20*/) /*19,20*/ } /*5,21*/) /*3,22*/',
+        '(this).m /*3,4*/({ "foo" /*6,9*/: ((this).a /*11,12*/) /*11,12*/, "bar" /*14,17*/: ((this).b /*19,20*/) /*19,20*/ } /*5,21*/) /*3,22*/',
       );
     });
 
@@ -49,7 +49,7 @@ describe('type check blocks diagnostics', () => {
       // statement, which would wrap it into parenthesis that clutter the expected output.
       const TEMPLATE = '{{ m({a, b}) }}';
       expect(tcbWithSpans(TEMPLATE)).toContain(
-        '((this).m /*3,4*/({ "a": ((this).a /*6,7*/) /*6,7*/, "b": ((this).b /*9,10*/) /*9,10*/ } /*5,11*/) /*3,12*/)',
+        '((this).m /*3,4*/({ "a" /*6,7*/: ((this).a /*6,7*/) /*6,7*/, "b" /*9,10*/: ((this).b /*9,10*/) /*9,10*/ } /*5,11*/) /*3,12*/)',
       );
     });
 

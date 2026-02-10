@@ -163,7 +163,13 @@ export function styleStringParser(keyValueArray: KeyValueArray<any>, text: strin
  * @codeGenApi
  */
 export function ɵɵclassMap(
-  classes: {[className: string]: boolean | undefined | null} | string | undefined | null,
+  classes:
+    | {[className: string]: boolean | undefined | null}
+    | string
+    | string[]
+    | Set<string>
+    | undefined
+    | null,
 ): void {
   checkStylingMap(classKeyValueArraySet, classStringParser, classes, true);
 }
@@ -673,14 +679,22 @@ function collectStylingFromTAttrs(
 export function toStylingKeyValueArray(
   keyValueArraySet: (keyValueArray: KeyValueArray<any>, key: string, value: any) => void,
   stringParser: (styleKeyValueArray: KeyValueArray<any>, text: string) => void,
-  value: string | string[] | {[key: string]: any} | SafeValue | null | undefined,
+  value: string | string[] | Set<string> | {[key: string]: any} | SafeValue | null | undefined,
 ): KeyValueArray<any> {
   if (value == null /*|| value === undefined */ || value === '') return EMPTY_ARRAY as any;
   const styleKeyValueArray: KeyValueArray<any> = [] as any;
-  const unwrappedValue = unwrapSafeValue(value) as string | string[] | {[key: string]: any};
+  const unwrappedValue = unwrapSafeValue(value) as
+    | string
+    | string[]
+    | Set<string>
+    | {[key: string]: any};
   if (Array.isArray(unwrappedValue)) {
     for (let i = 0; i < unwrappedValue.length; i++) {
       keyValueArraySet(styleKeyValueArray, unwrappedValue[i], true);
+    }
+  } else if (unwrappedValue instanceof Set) {
+    for (const current of unwrappedValue) {
+      keyValueArraySet(styleKeyValueArray, current, true);
     }
   } else if (typeof unwrappedValue === 'object') {
     for (const key in unwrappedValue) {

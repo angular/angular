@@ -105,17 +105,23 @@ export class Search {
       const content = hitItem._snippetResult.content;
       const hierarchy = hitItem._snippetResult.hierarchy;
       const category = hitItem.hierarchy?.lvl0 ?? null;
-      const hasSubLabel = hierarchy?.lvl2 || hierarchy?.lvl3 || hierarchy?.lvl4;
+
+      const lvl1Value = hierarchy?.lvl1?.value || hitItem.hierarchy?.lvl1;
+
+      const sublabelSnippet = this.getBestSnippetForMatch(hitItem);
+
+      // If no lvl1, promote sublabel to label to avoid empty titles
+      const label = lvl1Value || sublabelSnippet || '';
+
+      const hasSubLabel = lvl1Value && (hierarchy?.lvl2 || hierarchy?.lvl3 || hierarchy?.lvl4);
 
       return {
         id: hitItem.objectID,
         type: hitItem.hierarchy.lvl0 === 'Tutorials' ? 'code' : 'doc',
         url: hitItem.url,
 
-        labelHtml: this.parseLabelToHtml(hitItem._snippetResult.hierarchy?.lvl1?.value ?? ''),
-        subLabelHtml: this.parseLabelToHtml(
-          hasSubLabel ? this.getBestSnippetForMatch(hitItem) : null,
-        ),
+        labelHtml: this.parseLabelToHtml(label),
+        subLabelHtml: this.parseLabelToHtml(hasSubLabel ? sublabelSnippet : null),
         contentHtml: content ? this.parseLabelToHtml(content.value) : null,
         package: category === 'Reference' ? extractPackageNameFromUrl(hitItem.url) : null,
 
@@ -222,16 +228,19 @@ function matched(snippet: SnippetResult | undefined): boolean {
  */
 function wait(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    const timeout = setTimeout(() => resolve(), ms);
+    let timeout: ReturnType<typeof setTimeout> | undefined;
 
-    signal.addEventListener(
-      'abort',
-      () => {
-        clearTimeout(timeout);
-        reject(new Error('Operation aborted'));
-      },
-      {once: true},
-    );
+    const onAbort = () => {
+      clearTimeout(timeout);
+      reject(new Error('Operation aborted'));
+    };
+
+    timeout = setTimeout(() => {
+      signal.removeEventListener('abort', onAbort);
+      resolve();
+    }, ms);
+
+    signal.addEventListener('abort', onAbort, {once: true});
   });
 }
 

@@ -6,39 +6,61 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding} from '@angular/material/tree';
-import {MatIcon} from '@angular/material/icon';
-import {Descriptor} from '../../../../../../../../protocol';
+import {MatTreeFlattener} from '@angular/material/tree';
 import {DataSource} from '@angular/cdk/collections';
 
-export interface FlatNode {
-  expandable: boolean;
-  prop: Property;
-  level: number;
-}
-
-export interface Property {
-  name: string;
-  descriptor: Descriptor;
-  parent: Property | null;
-}
+import {MessageBus, PropType} from '../../../../../../../../protocol';
+import {DevtoolsSignalNode, SignalGraphManager} from '../../../signal-graph';
+import {arrayifyProps, SignalDataSource} from './signal-data-source';
+import {ObjectTreeExplorerComponent} from '../../../../../shared/object-tree-explorer/object-tree-explorer.component';
+import {FlatNode, Property} from '../../../../../shared/object-tree-explorer/object-tree-types';
 
 @Component({
   selector: 'ng-signals-value-tree',
   templateUrl: './signals-value-tree.component.html',
-  imports: [MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatIcon],
+  imports: [ObjectTreeExplorerComponent],
   styleUrl: './signals-value-tree.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignalsValueTreeComponent {
-  readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
-  readonly dataSource = input.required<DataSource<FlatNode>>();
+  private readonly signalGraph = inject(SignalGraphManager);
+  private readonly messageBus = inject(MessageBus);
 
-  toggle(node: FlatNode) {
-    this.treeControl().toggle(node);
-  }
+  protected readonly node = input.required<DevtoolsSignalNode>();
 
-  hasChild = (_: number, node: FlatNode) => node.expandable;
+  protected readonly treeControl = computed<FlatTreeControl<FlatNode>>(() => {
+    return new FlatTreeControl(
+      (node) => node.level,
+      (node) => node.expandable,
+    );
+  });
+
+  protected readonly dataSource = computed<DataSource<FlatNode>>(() => {
+    const node = this.node();
+
+    return new SignalDataSource(
+      node.preview,
+      new MatTreeFlattener<Property, FlatNode, FlatNode>(
+        (node, level) => ({
+          expandable: node.descriptor.expandable,
+          prop: node,
+          level,
+        }),
+        (node) => node.level,
+        (node) => node.expandable,
+        (prop) => {
+          const descriptor = prop.descriptor;
+          if (descriptor.type === PropType.Object || descriptor.type === PropType.Array) {
+            return arrayifyProps(descriptor.value || {}, prop);
+          }
+          return;
+        },
+      ),
+      this.treeControl(),
+      {element: this.signalGraph.element()!, signalId: node.id},
+      this.messageBus,
+    );
+  });
 }

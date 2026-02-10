@@ -283,7 +283,6 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
     if (
       ast instanceof PropertyRead &&
       ast.receiver instanceof ImplicitReceiver &&
-      !(ast.receiver instanceof ThisReceiver) &&
       ast.name === EVENT_PARAMETER
     ) {
       const event = ts.factory.createIdentifier(EVENT_PARAMETER);

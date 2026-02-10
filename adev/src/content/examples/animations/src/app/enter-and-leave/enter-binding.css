@@ -6,9 +6,13 @@
 .enter-container {
   border: 1px solid #dddddd;
   margin-top: 1em;
-  padding: 20px 20px 0px 20px;
+  padding: 20px;
   font-weight: bold;
   font-size: 20px;
+}
+
+.enter-container p {
+  margin: 0;
 }
 
 .enter-animation {
@@ -25,4 +29,13 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.toggle-btn {
+  background: transparent;
+  border: 1px solid var(--primary-contrast, black);
+  color: var(--primary-contrast, black);
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
 }

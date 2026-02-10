@@ -74,11 +74,11 @@ The following example displays an image with a `title` attribute.
 
 To mark the title attribute for translation, complete the following action.
 
-1. Add the `i18n-title` attribute
+Add the `i18n-title` attribute
 
-   The following example displays how to mark the `title` attribute on the `img` tag by adding `i18n-title`.
+The following example displays how to mark the `title` attribute on the `img` tag by adding `i18n-title`.
 
-   <docs-code header="app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" region="i18n-title-translate"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/i18n/src/app/app.component.html" region="i18n-title-translate"/>
 
 ## Mark text in component code
 
@@ -216,15 +216,11 @@ Different languages have different pluralization rules that increase the difficu
 Because other locales express cardinality differently, you may need to set pluralization categories that do not align with English.
 Use the `plural` clause to mark expressions that may not be meaningful if translated word-for-word.
 
-<!--todo: replace with docs-code -->
-
 ```html
 { component_property, plural, pluralization_categories }
 ```
 
 After the pluralization category, enter the default text \(English\) surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
-
-<!--todo: replace with docs-code -->
 
 ```html
 pluralization_category { }
@@ -242,8 +238,6 @@ The following pluralization categories are available for English and may change 
 | `other`                | The default quantity       | `other { }`                |
 
 If none of the pluralization categories match, Angular uses `other` to match the standard fallback for a missing category.
-
-<!--todo: replace with docs-code -->
 
 ```html
 other { default_quantity }
@@ -310,8 +304,6 @@ Review the following details in the previous code example.
 
 The `select` clause marks choices for alternate text based on your defined string values.
 
-<!--todo: replace with docs-code -->
-
 ```html
 { component_property, select, selection_categories }
 ```
@@ -320,8 +312,6 @@ Translate all of the alternates to display alternate text based on the value of 
 
 After the selection category, enter the text \(English\) surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
-<!--todo: replace with docs-code -->
-
 ```html
 selection_category { text }
 ```
@@ -329,8 +319,6 @@ selection_category { text }
 Different locales have different grammatical constructions that increase the difficulty of translation.
 Use HTML markup.
 If none of the selection categories match, Angular uses `other` to match the standard fallback for a missing category.
-
-<!--todo: replace with docs-code -->
 
 ```html
 other { default_value }

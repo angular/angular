@@ -1,4 +1,6 @@
 import { Component, NgModule } from '@angular/core';
 …
-MyComponent.ɵfac = …;
-MyComponent.ɵcmp = …;
+export class MyComponent {
+  static ɵfac = …;
+  static ɵcmp = …;
+}

@@ -43,7 +43,7 @@ It also includes troubleshooting information and any recommended manual changes 
 For simple updates, the CLI command [`ng update`](cli/update) is all you need.
 Without additional arguments, [`ng update`](cli/update) lists the updates that are available to you and provides recommended steps to update your application to the most current version.
 
-[Angular Versioning and Releases](reference/releases#versioning 'Angular Release Practices, Versioning') describes the level of change that you can expect based on a release's version number.
+[Angular Versioning and Releases](reference/releases#angular-versioning 'Angular Release Practices, Versioning') describes the level of change that you can expect based on a release's version number.
 It also describes supported update paths.
 
 ## Resource summary

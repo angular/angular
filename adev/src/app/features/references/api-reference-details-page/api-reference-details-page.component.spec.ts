@@ -54,7 +54,6 @@ describe('ApiReferenceDetailsPage', () => {
     const harness = await RouterTestingHarness.create();
     fixture = harness.fixture;
     component = await harness.navigateByUrl('/', ApiReferenceDetailsPage);
-    fixture.detectChanges();
   });
 
   it('should create', () => {

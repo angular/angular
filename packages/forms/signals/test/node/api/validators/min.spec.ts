@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {customError, form, min, minError} from '../../../../public_api';
+import {form, min, minError} from '../../../../public_api';
 
 describe('min validator', () => {
   it('returns min error when the value is smaller', () => {
@@ -58,7 +58,7 @@ describe('min validator', () => {
         (p) => {
           min(p.age, 5, {
             error: ({value}) => {
-              return customError({kind: 'special-min', message: value().toString()});
+              return {kind: 'special-min', message: value().toString()};
             },
           });
         },
@@ -66,11 +66,11 @@ describe('min validator', () => {
       );
 
       expect(f.age().errors()).toEqual([
-        customError({
+        {
           kind: 'special-min',
           message: '3',
           fieldTree: f.age,
-        }),
+        },
       ]);
     });
 
@@ -92,11 +92,11 @@ describe('min validator', () => {
       );
 
       expect(f.age().errors()).toEqual([
-        customError({
+        {
           kind: 'special-min',
           message: '3',
           fieldTree: f.age,
-        }),
+        },
       ]);
     });
 
@@ -129,16 +129,14 @@ describe('min validator', () => {
             error: ({value, valueOf}) => {
               return valueOf(p.name) === 'disabled'
                 ? []
-                : customError({kind: 'special-min', message: value().toString()});
+                : {kind: 'special-min', message: value().toString()};
             },
           });
         },
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([
-        customError({kind: 'special-min', message: '3', fieldTree: f.age}),
-      ]);
+      expect(f.age().errors()).toEqual([{kind: 'special-min', message: '3', fieldTree: f.age}]);
       f.name().value.set('disabled');
       expect(f.age().errors()).toEqual([]);
     });

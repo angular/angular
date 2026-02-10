@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ASTWithSource, EmptyExpr, RecursiveAstVisitor, AST} from '../expression_parser/ast';
+import {AST, ASTWithSource, EmptyExpr, RecursiveAstVisitor} from '../expression_parser/ast';
 import * as html from '../ml_parser/ast';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
@@ -228,9 +228,10 @@ export function createSwitchBlock(
     ast.parameters.length > 0
       ? parseBlockParameterToBinding(ast.parameters[0], bindingParser)
       : bindingParser.parseBinding('', false, ast.sourceSpan, 0);
-  const cases: t.SwitchBlockCase[] = [];
+  const groups: t.SwitchBlockCaseGroup[] = [];
   const unknownBlocks: t.UnknownBlock[] = [];
-  let defaultCase: t.SwitchBlockCase | null = null;
+  let collectedCases: t.SwitchBlockCase[] = [];
+  let firstCaseStart: ParseSourceSpan | null = null;
 
   // Here we assume that all the blocks are valid given that we validated them above.
   for (const node of ast.children) {
@@ -243,42 +244,69 @@ export function createSwitchBlock(
       continue;
     }
 
-    const expression =
-      node.name === 'case' ? parseBlockParameterToBinding(node.parameters[0], bindingParser) : null;
-    const ast = new t.SwitchBlockCase(
+    const isCase = node.name === 'case';
+    let expression: AST | null = null;
+
+    if (isCase) {
+      expression = parseBlockParameterToBinding(node.parameters[0], bindingParser);
+    }
+
+    const switchCase = new t.SwitchBlockCase(
       expression,
-      html.visitAll(visitor, node.children, node.children),
       node.sourceSpan,
       node.startSourceSpan,
       node.endSourceSpan,
       node.nameSpan,
+    );
+    collectedCases.push(switchCase);
+
+    // We need to take into account that some cases might have an empty body. ({})
+    const caseWithoutBody =
+      node.children.length === 0 &&
+      node.endSourceSpan !== null &&
+      node.endSourceSpan.start.offset === node.endSourceSpan.end.offset;
+
+    if (caseWithoutBody) {
+      if (firstCaseStart === null) {
+        firstCaseStart = node.sourceSpan;
+      }
+      // we'll collect the cases until we find a body.
+      continue;
+    }
+
+    let sourceSpan = node.sourceSpan;
+    let startSourceSpan = node.startSourceSpan;
+    if (firstCaseStart !== null) {
+      // We need to create a new sourceSpan that represents all the cases that fallthrough to a single block body
+      sourceSpan = new ParseSourceSpan(firstCaseStart.start, node.sourceSpan.end);
+      startSourceSpan = new ParseSourceSpan(firstCaseStart.start, node.startSourceSpan.end);
+      firstCaseStart = null;
+    }
+
+    const group = new t.SwitchBlockCaseGroup(
+      collectedCases,
+      html.visitAll(visitor, node.children, node.children),
+      sourceSpan,
+      startSourceSpan,
+      node.endSourceSpan,
+      node.nameSpan,
       node.i18n,
     );
-
-    if (expression === null) {
-      defaultCase = ast;
-    } else {
-      cases.push(ast);
-    }
+    groups.push(group);
+    collectedCases = [];
   }
 
-  // Ensure that the default case is last in the array.
-  if (defaultCase !== null) {
-    cases.push(defaultCase);
-  }
+  const node = new t.SwitchBlock(
+    primaryExpression,
+    groups,
+    unknownBlocks,
+    ast.sourceSpan,
+    ast.startSourceSpan,
+    ast.endSourceSpan,
+    ast.nameSpan,
+  );
 
-  return {
-    node: new t.SwitchBlock(
-      primaryExpression,
-      cases,
-      unknownBlocks,
-      ast.sourceSpan,
-      ast.startSourceSpan,
-      ast.endSourceSpan,
-      ast.nameSpan,
-    ),
-    errors,
-  };
+  return {node, errors};
 }
 
 /** Parses the parameters of a `for` loop block. */

@@ -11,7 +11,7 @@ In this activity, you will work with some pipes and pipe parameters.
 To pass parameters to a pipe, use the `:` syntax followed by the parameter value. Here's an example:
 
 ```angular-html
-template: `{{ date | date:'medium' }}`;
+template: `{{ date | date: 'medium' }}`;
 ```
 
 The output is `Jun 15, 2015, 9:43:11 PM`.
@@ -25,9 +25,8 @@ Time to customize some pipe output:
 In `app.ts`, update the template to include parameter for the `decimal` pipe.
 
 ```angular-html {highlight:[3]}
-template: `
-  ...
-  <li>Number with "decimal" {{ num | number:"3.2-2" }}</li>
+template: ` ...
+<li>Number with "decimal" {{ num | number: '3.2-2' }}</li>
 `
 ```
 
@@ -40,9 +39,8 @@ NOTE: What's that format? The parameter for the `DecimalPipe` is called `digitsI
 Now, update the template to use the `date` pipe.
 
 ```angular-html {highlight:[3]}
-template: `
-  ...
-  <li>Date with "date" {{ birthday | date: 'medium' }}</li>
+template: ` ...
+<li>Date with "date" {{ birthday | date: 'medium' }}</li>
 `
 ```
 
@@ -55,9 +53,8 @@ For extra fun, try some different parameters for `date`. More information can be
 For your last task, update the template to use the `currency` pipe.
 
 ```angular-html {highlight:[3]}
-template: `
-  ...
-  <li>Currency with "currency" {{ cost | currency }}</li>
+template: ` ...
+<li>Currency with "currency" {{ cost | currency }}</li>
 `
 ```
 

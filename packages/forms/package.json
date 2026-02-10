@@ -22,6 +22,12 @@
     "url": "https://github.com/angular/angular.git",
     "directory": "packages/forms"
   },
+  "angular": {
+    "examples": {
+      "format": "sqlite",
+      "path": "./resources/code-examples.db"
+    }
+  },
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },

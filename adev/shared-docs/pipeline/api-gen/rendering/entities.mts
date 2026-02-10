@@ -126,11 +126,11 @@ export interface EnumEntry extends DocEntry {
 /** Documentation entity for an Angular decorator. */
 export interface DecoratorEntry extends DocEntry {
   decoratorType: DecoratorType;
+  members: PropertyEntry[] | null;
   signatures?: {
     parameters: ParameterEntry[];
     jsdocTags: JsDocTagEntry[];
   }[];
-  members: MemberEntry[];
 }
 
 /** Documentation entity for an Angular directives and components. */
@@ -160,6 +160,9 @@ export type FunctionEntry = FunctionDefinitionEntry &
   DocEntry & {
     implementation: FunctionSignatureMetadata;
   };
+
+/** Documentation entity for a block. */
+export interface BlockEntry extends DocEntry {}
 
 /** Interface describing a function with overload signatures. */
 export interface FunctionDefinitionEntry {

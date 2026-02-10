@@ -45,7 +45,7 @@ In order for this interceptor to actually intercept requests, you must configure
 You declare the set of interceptors to use when configuring `HttpClient` through dependency injection, by using the `withInterceptors` feature:
 
 ```ts
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [provideHttpClient(withInterceptors([loggingInterceptor, cachingInterceptor]))],
 });
 ```
@@ -275,7 +275,7 @@ export class LoggingInterceptor implements HttpInterceptor {
 DI-based interceptors are configured through a dependency injection multi-provider:
 
 ```ts
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [
     provideHttpClient(
       // DI-based interceptors must be explicitly enabled.

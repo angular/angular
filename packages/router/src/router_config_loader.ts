@@ -98,6 +98,7 @@ export class RouterConfigLoader {
         );
         route._loadedRoutes = result.routes;
         route._loadedInjector = result.injector;
+        route._loadedNgModuleFactory = result.factory;
         return result;
       } finally {
         this.childrenLoaders.delete(route);
@@ -142,11 +143,13 @@ export async function loadChildren(
   let injector: EnvironmentInjector | undefined;
   let rawRoutes: Route[];
   let requireStandaloneComponents = false;
+  let factory: NgModuleFactory<unknown> | undefined = undefined;
   if (Array.isArray(factoryOrRoutes)) {
     rawRoutes = factoryOrRoutes;
     requireStandaloneComponents = true;
   } else {
     injector = factoryOrRoutes.create(parentInjector).injector;
+    factory = factoryOrRoutes;
     // When loading a module that doesn't provide `RouterModule.forChild()` preloader
     // will get stuck in an infinite loop. The child module's Injector will look to
     // its parent `Injector` when it doesn't find any ROUTES so it will return routes
@@ -156,7 +159,7 @@ export async function loadChildren(
   const routes = rawRoutes.map(standardizeConfig);
   (typeof ngDevMode === 'undefined' || ngDevMode) &&
     validateConfig(routes, route.path, requireStandaloneComponents);
-  return {routes, injector};
+  return {routes, injector, factory};
 }
 
 function isWrappedDefaultExport<T>(value: T | DefaultExport<T>): value is DefaultExport<T> {

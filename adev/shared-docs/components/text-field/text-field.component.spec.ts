@@ -9,29 +9,24 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TextField} from './text-field.component';
-import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('TextField', () => {
   let component: TextField;
   let fixture: ComponentFixture<TextField>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [TextField],
-      providers: [provideZonelessChangeDetection()],
-    });
+  beforeEach(async () => {
     fixture = TestBed.createComponent(TextField);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should update DOM when setting the value via the CVA', () => {
+  it('should update DOM when setting the value via the CVA', async () => {
     component.setValue('test');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(fixture.nativeElement.querySelector('input').value).toBe('test');
     // If we were using ngModel instead of the value binding, we would get an empty string

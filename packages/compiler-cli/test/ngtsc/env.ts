@@ -102,7 +102,6 @@ export class NgtscTestEnvironment {
         "strictNullChecks": true,
         "outDir": "built",
         "rootDir": ".",
-        "baseUrl": ".",
         "allowJs": true,
         "declaration": true,
         "target": "es2015",

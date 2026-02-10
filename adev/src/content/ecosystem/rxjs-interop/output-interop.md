@@ -8,7 +8,7 @@ The `@angular/rxjs-interop` package offers two APIs related to component and dir
 
 The `outputFromObservable` lets you create a component or directive output that emits based on an RxJS observable:
 
-```ts {highlight:[9]}
+```ts {highlight:[11]}
 import {Directive} from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
 

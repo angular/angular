@@ -28,6 +28,7 @@ import {
   DECLARATION_COMPONENT_VIEW,
   HEADER_OFFSET,
   HYDRATION,
+  ID,
   INJECTOR,
   LView,
   TVIEW,
@@ -578,7 +579,7 @@ function clearDetachAnimationList(lContainer: LContainer, index: number): void {
   if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
 
   const indexInContainer = CONTAINER_HEADER_OFFSET + index;
-  const viewToDetach = lContainer[indexInContainer];
+  const viewToDetach = lContainer[indexInContainer] as LView;
   const animations = viewToDetach
     ? (viewToDetach[ANIMATIONS] as AnimationLViewData | undefined)
     : undefined;
@@ -590,7 +591,7 @@ function clearDetachAnimationList(lContainer: LContainer, index: number): void {
   ) {
     const injector = viewToDetach[INJECTOR];
     removeFromAnimationQueue(injector, animations);
-    allLeavingAnimations.delete(viewToDetach);
+    allLeavingAnimations.delete(viewToDetach[ID]);
     animations.detachedLeaveAnimationFns = undefined;
   }
 }

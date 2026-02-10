@@ -42,8 +42,19 @@ export function debounce<TValue, TPathKind extends PathKind = PathKind.Root>(
 function debounceForDuration(durationInMilliseconds: number): Debouncer<unknown> {
   return (_context, abortSignal) => {
     return new Promise((resolve) => {
-      const timeoutId = setTimeout(resolve, durationInMilliseconds);
-      abortSignal.addEventListener('abort', () => clearTimeout(timeoutId));
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+      const onAbort = () => {
+        clearTimeout(timeoutId);
+        resolve();
+      };
+
+      timeoutId = setTimeout(() => {
+        abortSignal.removeEventListener('abort', onAbort);
+        resolve();
+      }, durationInMilliseconds);
+
+      abortSignal.addEventListener('abort', onAbort, {once: true});
     });
   };
 }

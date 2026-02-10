@@ -1,13 +1,37 @@
 # Testing services
 
-NOTE: While this guide is being updated for Vitest, some code examples currently use Karma/Jasmine syntax and APIs. We are actively working to provide Vitest equivalents where applicable.
-
 To check that your services are working as you intend, you can write tests specifically for them.
 
 Services are often the smoothest files to unit test.
 Here are some synchronous and asynchronous unit tests of the `ValueService` written without assistance from Angular testing utilities.
 
-<docs-code header="demo.spec.ts" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" region="ValueService"/>
+```ts
+describe('ValueService', () => {
+  let service: ValueService;
+
+  beforeEach(() => {
+    // Only works if the service doesn't rely on Angular inject()
+    service = new ValueService();
+  });
+
+  it('getValue should return real value', () => {
+    expect(service.getValue()).toBe('real value');
+  });
+
+  it('getObservableValue should return value from observable', async () => {
+    const value = await new Promise<string>((resolve) => {
+      service.getObservableValue().subscribe(resolve);
+    });
+
+    expect(value).toBe('observable value');
+  });
+
+  it('getPromiseValue should return value from a promise', async () => {
+    const value = await service.getPromiseValue();
+    expect(value).toBe('promise value');
+  });
+});
+```
 
 ## Testing services with the `TestBed`
 
@@ -23,81 +47,71 @@ As a service _tester_, you must at least think about the first level of service 
 ## Angular `TestBed`
 
 The `TestBed` is the most important of the Angular testing utilities.
-The `TestBed` creates a dynamically-constructed Angular _test_ module that emulates an Angular [@NgModule](guide/ngmodules).
+The `TestBed` creates a dynamically-constructed Angular _test_ module that emulates an Angular [@NgModule](guide/ngmodules/overview).
 
-The `TestBed.configureTestingModule()` method takes a metadata object that can have most of the properties of an [@NgModule](guide/ngmodules).
+The `TestBed.configureTestingModule()` method takes a metadata object that can have most of the properties of an [@NgModule](guide/ngmodules/overview).
 
 To test a service, you set the `providers` metadata property with an array of the services that you'll test or mock.
 
-<docs-code header="demo.testbed.spec.ts (provide ValueService in beforeEach)" path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" region="value-service-before-each"/>
+```ts
+let service: ValueService;
+beforeEach(() => {
+  TestBed.configureTestingModule({providers: [ValueService]});
+});
+```
 
 Then inject it inside a test by calling `TestBed.inject()` with the service class as the argument.
 
-HELPFUL: `TestBed.get()` was deprecated as of Angular version 9.
-To help minimize breaking changes, Angular introduces a new function called `TestBed.inject()`, which you should use instead.
-
-<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" region="value-service-inject-it"/>
+```ts
+it('should use ValueService', () => {
+  service = TestBed.inject(ValueService);
+  expect(service.getValue()).toBe('real value');
+});
+```
 
 Or inside the `beforeEach()` if you prefer to inject the service as part of your setup.
 
-<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" region="value-service-inject-before-each"> </docs-code>
+```ts
+beforeEach(() => {
+  TestBed.configureTestingModule({providers: [ValueService]});
+  service = TestBed.inject(ValueService);
+});
+```
 
 When testing a service with a dependency, provide the mock in the `providers` array.
 
 In the following example, the mock is a spy object.
 
-<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" region="master-service-before-each"/>
+```ts
+let masterService: MainService;
+let valueServiceSpy: Mocked<ValueService>;
+
+beforeEach(() => {
+  const spy: Mocked<ValueService> = {getValue: vi.fn()};
+
+  TestBed.configureTestingModule({
+    providers: [MainService, {provide: ValueService, useValue: spy}],
+  });
+
+  masterService = TestBed.inject(MainService);
+  valueServiceSpy = TestBed.inject(ValueService) as Mocked<ValueService>;
+});
+```
 
 The test consumes that spy in the same way it did earlier.
 
-<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" region="master-service-it"/>
+```ts
+it('getValue should return stubbed value from a spy', () => {
+  const stubValue = 'stub value';
 
-## Testing without `beforeEach()`
+  valueServiceSpy.getValue.mockReturnValue(stubValue);
 
-Most test suites in this guide call `beforeEach()` to set the preconditions for each `it()` test and rely on the `TestBed` to create classes and inject services.
-
-There's another school of testing that never calls `beforeEach()` and prefers to create classes explicitly rather than use the `TestBed`.
-
-Here's how you might rewrite one of the `MasterService` tests in that style.
-
-Begin by putting re-usable, preparatory code in a _setup_ function instead of `beforeEach()`.
-
-<docs-code header="demo.spec.ts (setup)" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" region="no-before-each-setup"/>
-
-The `setup()` function returns an object literal with the variables, such as `masterService`, that a test might reference.
-You don't define _semi-global_ variables \(for example, `let masterService: MasterService`\) in the body of the `describe()`.
-
-Then each test invokes `setup()` in its first line, before continuing with steps that manipulate the test subject and assert expectations.
-
-<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" region="no-before-each-test"/>
-
-Notice how the test uses [_destructuring assignment_](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) to extract the setup variables that it needs.
-
-<docs-code path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" region="no-before-each-setup-call"/>
-
-Many developers feel this approach is cleaner and more explicit than the traditional `beforeEach()` style.
-
-Although this testing guide follows the traditional style and the default [CLI schematics](https://github.com/angular/angular-cli) generate test files with `beforeEach()` and `TestBed`, feel free to adopt _this alternative approach_ in your own projects.
+  expect(masterService.getValue(), 'service returned stub value').toBe(stubValue);
+  expect(valueServiceSpy.getValue, 'spy method was called once').toHaveBeenCalledTimes(1);
+  expect(valueServiceSpy.getValue.mock.results.at(-1)?.value).toBe(stubValue);
+});
+```
 
 ## Testing HTTP services
 
-Data services that make HTTP calls to remote servers typically inject and delegate to the Angular [`HttpClient`](guide/http/testing) service for XHR calls.
-
-You can test a data service with an injected `HttpClient` spy as you would test any service with a dependency.
-
-<docs-code header="hero.service.spec.ts (tests with spies)" path="adev/src/content/examples/testing/src/app/model/hero.service.spec.ts" region="test-with-spies"/>
-
-IMPORTANT: The `HeroService` methods return `Observables`.
-You must _subscribe_ to an observable to \(a\) cause it to execute and \(b\) assert that the method succeeds or fails.
-
-The `subscribe()` method takes a success \(`next`\) and fail \(`error`\) callback.
-Make sure you provide _both_ callbacks so that you capture errors.
-Neglecting to do so produces an asynchronous uncaught observable error that the test runner will likely attribute to a completely different test.
-
-## `HttpClientTestingModule`
-
-Extended interactions between a data service and the `HttpClient` can be complex and difficult to mock with spies.
-
-The `HttpClientTestingModule` can make these testing scenarios more manageable.
-
-While the _code sample_ accompanying this guide demonstrates `HttpClientTestingModule`, this page defers to the [Http guide](guide/http/testing), which covers testing with the `HttpClientTestingModule` in detail.
+For testing services that rely on the `HttpClient`, refer to the [dedicated guide](/guide/http/testing).

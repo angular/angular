@@ -24,11 +24,14 @@ export const ANIMATION_QUEUE = new InjectionToken<AnimationQueue>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'AnimationQueue' : '',
   {
     factory: () => {
+      const injector = inject(EnvironmentInjector);
+      const queue = new Set<VoidFunction>();
+      injector.onDestroy(() => queue.clear());
       return {
-        queue: new Set(),
+        queue,
         isScheduled: false,
         scheduler: null,
-        injector: inject(EnvironmentInjector), // should be the root injector
+        injector,
       };
     },
   },
@@ -98,5 +101,19 @@ export function queueEnterAnimations(
 ) {
   for (const [_, nodeAnimations] of enterAnimations) {
     addToAnimationQueue(injector, nodeAnimations.animateFns);
+  }
+}
+
+export function removeAnimationsFromQueue(
+  injector: Injector,
+  animationFns: VoidFunction | VoidFunction[],
+) {
+  const animationQueue = injector.get(ANIMATION_QUEUE);
+  if (Array.isArray(animationFns)) {
+    for (const animateFn of animationFns) {
+      animationQueue.queue.delete(animateFn);
+    }
+  } else {
+    animationQueue.queue.delete(animationFns);
   }
 }

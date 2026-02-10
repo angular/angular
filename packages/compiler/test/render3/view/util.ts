@@ -123,7 +123,7 @@ export function toStringExpression(expr: e.AST): string {
     expr = expr.ast;
   }
   if (expr instanceof e.PropertyRead) {
-    if (expr.receiver instanceof e.ImplicitReceiver) {
+    if (expr.receiver instanceof e.ImplicitReceiver || expr.receiver instanceof e.ThisReceiver) {
       return expr.name;
     } else {
       return `${toStringExpression(expr.receiver)}.${expr.name}`;

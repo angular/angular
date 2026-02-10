@@ -7,31 +7,27 @@
 import { AbstractControl } from '@angular/forms';
 import * as _angular_forms from '@angular/forms';
 import { ControlValueAccessor } from '@angular/forms';
-import { DestroyableInjector } from '@angular/core';
+import { EventEmitter } from '@angular/core';
+import { FormControlState } from '@angular/forms';
 import { FormControlStatus } from '@angular/forms';
 import * as i0 from '@angular/core';
 import { Injector } from '@angular/core';
-import { NgControl } from '@angular/forms';
 import { Signal } from '@angular/core';
 import { ValidationErrors } from '@angular/forms';
 import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
-import { ɵCONTROL } from '@angular/core';
-import { ɵcontrolUpdate } from '@angular/core';
-import { ɵFieldState } from '@angular/core';
-import { ɵɵcontrolCreate } from '@angular/core';
 
 // @public
 export function compatForm<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 
 // @public
-export function compatForm<TModel>(model: WritableSignal<TModel>, schemaOrOptions: SchemaOrSchemaFn<TModel> | CompatFormOptions): FieldTree<TModel>;
+export function compatForm<TModel>(model: WritableSignal<TModel>, schemaOrOptions: SchemaOrSchemaFn<TModel> | CompatFormOptions<TModel>): FieldTree<TModel>;
 
 // @public
-export function compatForm<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: CompatFormOptions): FieldTree<TModel>;
+export function compatForm<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSchemaFn<TModel>, options: CompatFormOptions<TModel>): FieldTree<TModel>;
 
 // @public
-export type CompatFormOptions = Omit<FormOptions, 'adapter'>;
+export type CompatFormOptions<TModel> = Omit<FormOptions<TModel>, 'adapter'>;
 
 // @public
 export class CompatValidationError<T = unknown> implements ValidationError {
@@ -54,6 +50,106 @@ export class CompatValidationError<T = unknown> implements ValidationError {
 
 // @public
 export const NG_STATUS_CLASSES: SignalFormsConfig['classes'];
+
+// @public
+export class SignalFormControl<T> extends AbstractControl {
+    constructor(value: T, schemaOrOptions?: SchemaFn<T> | FormOptions<T>, options?: FormOptions<T>);
+    // (undocumented)
+    addAsyncValidators(_validators: any): void;
+    // (undocumented)
+    addValidators(_validators: any): void;
+    // (undocumented)
+    clearAsyncValidators(): void;
+    // (undocumented)
+    clearValidators(): void;
+    // (undocumented)
+    get dirty(): boolean;
+    set dirty(_: boolean);
+    // (undocumented)
+    disable(_opts?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    // (undocumented)
+    get disabled(): boolean;
+    // (undocumented)
+    enable(_opts?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    // (undocumented)
+    get enabled(): boolean;
+    readonly fieldTree: FieldTree<T>;
+    // (undocumented)
+    getRawValue(): T;
+    // (undocumented)
+    get invalid(): boolean;
+    // (undocumented)
+    markAsDirty(opts?: {
+        onlySelf?: boolean;
+    }): void;
+    // (undocumented)
+    markAsPending(_opts?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    // (undocumented)
+    markAsPristine(opts?: {
+        onlySelf?: boolean;
+    }): void;
+    // (undocumented)
+    markAsTouched(opts?: {
+        onlySelf?: boolean;
+    }): void;
+    // (undocumented)
+    markAsUntouched(opts?: {
+        onlySelf?: boolean;
+    }): void;
+    // (undocumented)
+    patchValue(value: any, options?: ValueUpdateOptions): void;
+    // (undocumented)
+    get pending(): boolean;
+    // (undocumented)
+    get pristine(): boolean;
+    set pristine(_: boolean);
+    // (undocumented)
+    registerOnChange(fn: (value?: any, emitModelEvent?: boolean) => void): void;
+    // (undocumented)
+    registerOnDisabledChange(fn: (isDisabled: boolean) => void): void;
+    // (undocumented)
+    removeAsyncValidators(_validators: any): void;
+    // (undocumented)
+    removeValidators(_validators: any): void;
+    // (undocumented)
+    reset(value?: T | FormControlState<T>, options?: ValueUpdateOptions): void;
+    // (undocumented)
+    setAsyncValidators(_validators: any): void;
+    // (undocumented)
+    setErrors(_errors: any, _opts?: {
+        emitEvent?: boolean;
+    }): void;
+    // (undocumented)
+    setValidators(_validators: any): void;
+    // (undocumented)
+    setValue(value: any, options?: ValueUpdateOptions): void;
+    readonly sourceValue: WritableSignal<T>;
+    // (undocumented)
+    get status(): FormControlStatus;
+    // (undocumented)
+    readonly statusChanges: EventEmitter<FormControlStatus>;
+    // (undocumented)
+    get touched(): boolean;
+    set touched(_: boolean);
+    // (undocumented)
+    get untouched(): boolean;
+    set untouched(_: boolean);
+    // (undocumented)
+    updateValueAndValidity(_opts?: Object): void;
+    // (undocumented)
+    get valid(): boolean;
+    // (undocumented)
+    readonly valueChanges: EventEmitter<T>;
+}
 
 // (No @packageDocumentation comment for this package)
 

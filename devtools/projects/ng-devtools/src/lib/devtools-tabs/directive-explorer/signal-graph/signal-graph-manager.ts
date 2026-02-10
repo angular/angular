@@ -8,6 +8,8 @@
 
 import {effect, inject, Injectable, Injector, Signal, signal} from '@angular/core';
 import {DebugSignalGraph, ElementPosition, MessageBus} from '../../../../../../protocol';
+import {DevtoolsSignalGraph} from './signal-graph-types';
+import {convertToDevtoolsSignalGraph} from './devtools-signal-graph';
 
 /**
  * Keeps the signal graph of a provided element/component.
@@ -16,7 +18,7 @@ import {DebugSignalGraph, ElementPosition, MessageBus} from '../../../../../../p
 export class SignalGraphManager {
   private readonly injector = inject(Injector);
   private readonly messageBus = inject(MessageBus);
-  private readonly signalGraph = signal<DebugSignalGraph | null>(null);
+  private readonly signalGraph = signal<DevtoolsSignalGraph | null>(null);
   private unlistenFn?: () => void;
   private lastesSignalGraphMessageUnlistenFn?: () => void;
 
@@ -30,8 +32,8 @@ export class SignalGraphManager {
     this.lastesSignalGraphMessageUnlistenFn = this.messageBus.on(
       'latestSignalGraph',
       (graph: DebugSignalGraph | null) => {
-        // TODO(hawkgs): Drop logical or after/in resource viz PR.
-        this.signalGraph.set(graph || {nodes: [], edges: []});
+        const converted = convertToDevtoolsSignalGraph(graph);
+        this.signalGraph.set(converted);
       },
     );
   }

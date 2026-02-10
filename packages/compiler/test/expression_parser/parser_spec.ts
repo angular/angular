@@ -6,27 +6,30 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {expect} from '@angular/private/testing/matchers';
 import {
   AbsoluteSourceSpan,
+  ArrowFunction,
   ASTWithSource,
   BindingPipe,
+  BindingPipeType,
   Call,
   EmptyExpr,
   Interpolation,
   LiteralMap,
+  LiteralMapPropertyKey,
+  ParseSpan,
   PropertyRead,
   TemplateBinding,
   VariableBinding,
-  BindingPipeType,
 } from '../../src/expression_parser/ast';
-import {ParseError} from '../../src/parse_util';
 import {Lexer} from '../../src/expression_parser/lexer';
 import {Parser, SplitInterpolation} from '../../src/expression_parser/parser';
-import {expect} from '@angular/private/testing/matchers';
+import {ParseError} from '../../src/parse_util';
 
+import {getFakeSpan} from './utils/span';
 import {unparse, unparseWithSpan} from './utils/unparser';
 import {validate} from './utils/validator';
-import {getFakeSpan} from './utils/span';
 
 describe('parser', () => {
   describe('parseAction', () => {
@@ -85,6 +88,8 @@ describe('parser', () => {
       checkAction('2 > 3');
       checkAction('2 <= 2');
       checkAction('2 >= 2');
+      checkAction(`"key" in obj`);
+      checkAction(`foo instanceof Foo`);
     });
 
     it('should parse equality expressions', () => {
@@ -125,6 +130,11 @@ describe('parser', () => {
 
     it('should ignore comments in expressions', () => {
       checkAction('a //comment', 'a');
+    });
+
+    it('should parse instanceof expressions', () => {
+      checkAction(`obj instanceof MyClass`, `obj instanceof MyClass`);
+      checkAction(`(obj instanceof MyClass) || false`, `(obj instanceof MyClass) || false`);
     });
 
     it('should retain // in string literals', () => {
@@ -199,6 +209,21 @@ describe('parser', () => {
         expectActionError('{a.b}', 'expected } at column 3');
         expectActionError('{a["b"]}', 'expected } at column 3');
         expectActionError('{1234}', ' expected identifier, keyword, or string at column 2');
+      });
+
+      it('should parse spread assignments in object literals', () => {
+        checkAction('{...foo}');
+        checkAction('{one: 1, ...foo, two: 2}');
+        checkAction('{...foo, middle: true, ...bar}');
+        checkAction('{...{...{...{foo: 1}}}}');
+      });
+
+      it('should spread elements in array literals', () => {
+        checkAction('[...foo]');
+        checkAction('[1, ...foo, 2]');
+        checkAction('[...foo, middle, ...bar]');
+        checkAction('[...[...[...[1]]]]');
+        checkAction('[a, ...b, ...[1, 2, 3]]');
       });
     });
 
@@ -299,6 +324,20 @@ describe('parser', () => {
         checkAction('a?.add?.(1, 2)');
         checkAction('fn?.().add?.(1, 2)');
         checkAction('fn?.()?.(1, 2)');
+      });
+
+      it('should parse rest arguments in calls', () => {
+        checkAction('fn(...foo)');
+        checkAction('fn(1, ...foo, 2)');
+        checkAction('fn(...foo, middle, ...bar)');
+        checkAction('fn(a, ...b, ...[1, 2, 3])');
+      });
+
+      it('should parse rest arguments in safe calls', () => {
+        checkAction('fn?.(...foo)');
+        checkAction('fn?.(1, ...foo, 2)');
+        checkAction('fn?.(...foo, middle, ...bar)');
+        checkAction('fn?.(a, ...b, ...[1, 2, 3])');
       });
     });
 
@@ -718,6 +757,36 @@ describe('parser', () => {
       }
     });
 
+    it('should produce correct span for typeof expression', () => {
+      const ast = parseAction('foo = typeof bar');
+
+      expect(unparseWithSpan(ast)).toEqual([
+        ['foo = typeof bar', 'foo = typeof bar'],
+        ['foo', 'foo'],
+        ['foo', '[nameSpan] foo'],
+        ['', ''],
+        ['typeof bar', 'typeof bar'],
+        ['bar', 'bar'],
+        ['bar', '[nameSpan] bar'],
+        ['', ' '],
+      ]);
+    });
+
+    it('should produce correct span for void expression', () => {
+      const ast = parseAction('foo = void bar');
+
+      expect(unparseWithSpan(ast)).toEqual([
+        ['foo = void bar', 'foo = void bar'],
+        ['foo', 'foo'],
+        ['foo', '[nameSpan] foo'],
+        ['', ''],
+        ['void bar', 'void bar'],
+        ['bar', 'bar'],
+        ['bar', '[nameSpan] bar'],
+        ['', ' '],
+      ]);
+    });
+
     it('should record span for a regex without flags', () => {
       const ast = parseBinding('/^http:\\/\\/foo\\.bar/');
       expect(unparseWithSpan(ast)).toContain([
@@ -731,6 +800,43 @@ describe('parser', () => {
       expect(unparseWithSpan(ast)).toContain([
         '/^http:\\/\\/foo\\.bar/gim',
         '/^http:\\/\\/foo\\.bar/gim',
+      ]);
+    });
+
+    it('should record span for literal map keys', () => {
+      const ast = parseBinding('{one: 1, two: "the number two", three, "four": 4, ...five}');
+      const literal = ast.ast as LiteralMap;
+      const getSource = (span: ParseSpan) => ast.source?.substring(span.start, span.end);
+
+      expect(getSource(literal.keys[0].span)).toBe('one');
+      expect(getSource(literal.keys[1].span)).toBe('two');
+      expect(getSource(literal.keys[2].span)).toBe('three');
+      expect(getSource(literal.keys[3].span)).toBe('"four"');
+      expect(getSource(literal.keys[4].span)).toBe('...');
+    });
+
+    it('should record span for spread elements', () => {
+      expect(unparseWithSpan(parseBinding('[...foo]'))).toEqual([
+        ['[...foo]', '[...foo]'],
+        ['...foo', '...foo'],
+        ['foo', 'foo'],
+        ['foo', '[nameSpan] foo'],
+        ['', ''],
+      ]);
+    });
+
+    it('should record span for rest arguments in functions', () => {
+      expect(unparseWithSpan(parseBinding('fn(1, ...foo)'))).toEqual([
+        ['fn(1, ...foo)', 'fn(1, ...foo)'],
+        ['fn(1, ...foo)', '[argumentSpan] 1, ...foo'],
+        ['fn', 'fn'],
+        ['fn', '[nameSpan] fn'],
+        ['', ''],
+        ['1', '1'],
+        ['...foo', '...foo'],
+        ['foo', 'foo'],
+        ['foo', '[nameSpan] foo'],
+        ['', ''],
       ]);
     });
   });
@@ -902,9 +1008,142 @@ describe('parser', () => {
     it('should expose object shorthand information in AST', () => {
       const parser = new Parser(new Lexer());
       const ast = parser.parseBinding('{bla}', getFakeSpan(), 0);
-      expect(ast.ast instanceof LiteralMap).toBe(true);
-      expect((ast.ast as LiteralMap).keys.length).toBe(1);
-      expect((ast.ast as LiteralMap).keys[0].isShorthandInitialized).toBe(true);
+      const map = ast.ast as LiteralMap;
+      expect(map instanceof LiteralMap).toBe(true);
+      expect(map.keys.length).toBe(1);
+      expect((map.keys[0] as LiteralMapPropertyKey).isShorthandInitialized).toBe(true);
+    });
+
+    describe('arrow functions', () => {
+      it('should parse a single-parameter arrow function', () => {
+        checkBinding('a => a');
+      });
+
+      it('should parse a single-parameter arrow function with parentheses', () => {
+        checkBinding('(a) => a', 'a => a');
+      });
+
+      it('should parse an arrow function with not parameters', () => {
+        checkBinding('() => 1');
+      });
+
+      it('should parse an arrow function with multiple parameters', () => {
+        checkBinding('(a, b, c, d, e) => a / b + c * d');
+      });
+
+      it('should parse an immediately-invoked arrow function', () => {
+        checkBinding('((a, b) => a + b)(1, 2)');
+      });
+
+      it('should parse an arrow function that returns other arrow functions', () => {
+        checkBinding('(a, b) => c => (d, e) => () => a + b + c + d + e');
+      });
+
+      it('should parse an arrow function that returns an object literal', () => {
+        checkBinding('() => ({a: 1, b: 2})');
+      });
+
+      it('should parse an arrow function containing an assignment', () => {
+        checkBinding('(a, b) => c = a + b');
+      });
+
+      it('should be able to pass an arrow function through a pipe', () => {
+        checkBinding('(a, b) => a + b | pipe', '((a, b) => a + b | pipe)');
+      });
+
+      it('should parse an arrow function that returns an array', () => {
+        checkBinding('(a, b) => [a, b, foo]');
+      });
+
+      describe('arrow function spans', () => {
+        it('should produce spans for the entire arrow function', () => {
+          expect(unparseWithSpan(parseBinding('a => a'))).toEqual([
+            ['a => a', 'a => a'],
+            ['a', 'a'],
+            ['a', '[nameSpan] a'],
+            ['', ' '],
+          ]);
+          expect(unparseWithSpan(parseBinding('(a, b, c) => a + b + c'))).toEqual([
+            ['(a, b, c) => a + b + c', '(a, b, c) => a + b + c'],
+            ['a + b + c', 'a + b + c'],
+            ['a + b', 'a + b'],
+            ['a', 'a'],
+            ['a', '[nameSpan] a'],
+            ['', ' '],
+            ['b', 'b'],
+            ['b', '[nameSpan] b'],
+            ['', ' '],
+            ['c', 'c'],
+            ['c', '[nameSpan] c'],
+            ['', ' '],
+          ]);
+        });
+
+        it('should produce spans for the arrow function parameters', () => {
+          const ast = parseBinding('(foo, bar, baz) => foo + bar + baz');
+          const arrowFn = ast.ast as ArrowFunction;
+          const getSource = (span: ParseSpan) => ast.source?.substring(span.start, span.end);
+
+          expect(getSource(arrowFn.parameters[0].span)).toBe('foo');
+          expect(getSource(arrowFn.parameters[1].span)).toBe('bar');
+          expect(getSource(arrowFn.parameters[2].span)).toBe('baz');
+        });
+      });
+
+      describe('arrow function validations', () => {
+        it('should not allow pipe to be used inside an arrow function', () => {
+          expectBindingError(
+            '(a, b) => (a + b | pipe)',
+            'Cannot have a pipe in an action expression',
+          );
+        });
+
+        it('should report an error for an arrow function with a body', () => {
+          expectBindingError('() => {}', 'Multi-line arrow functions are not supported');
+        });
+
+        it('should report missing comma between arrow function parameters', () => {
+          expectBindingError('(a b) => a + b', 'Missing expected ,');
+        });
+
+        it('should report arrow function parameter starting with a comma', () => {
+          expectBindingError('(, a) => a', 'Unexpected token ,');
+        });
+
+        it('should report arrow function parameter with a trailing comma', () => {
+          expectBindingError('(a, ) => a', 'Unexpected token )');
+        });
+
+        it('should report an arrow function without a closing paren', () => {
+          expectBindingError(
+            '(a => a + 1',
+            'Missing closing parentheses at the end of the expression',
+          );
+        });
+
+        it('should report an arrow function without an opening paren', () => {
+          expectBindingError('a) => a + 1', "Unexpected token ')'");
+        });
+
+        it('should report missing comma between arrow function parameters', () => {
+          expectBindingError('(a b) => a + b', 'Missing expected ,');
+        });
+
+        it('should report an error inside the arrow function expression', () => {
+          expectBindingError('(a) => a. + 1', 'Unexpected token +, expected identifier or keyword');
+        });
+
+        it('should report an error for chained expression in arrow function', () => {
+          expectBindingError(
+            '() => foo(); bar()',
+            'Binding expression cannot contain chained expression',
+          );
+          expectBindingError(
+            '() => (foo; bar)',
+            'Binding expression cannot contain chained expression',
+          );
+        });
+      });
     });
   });
 

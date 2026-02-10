@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {OnDestroy} from '../core';
 import {Injector, inject, ɵɵdefineInjectable} from '../di';
 import {NgZone} from '../zone';
 
@@ -39,7 +40,7 @@ const _cancelIdleCallback = () =>
  * to avoid calling `requestIdleCallback` for each defer block (e.g. if
  * defer blocks are defined inside a for loop).
  */
-export class IdleScheduler {
+export class IdleScheduler implements OnDestroy {
   // Indicates whether current callbacks are being invoked.
   executingCallbacks = false;
 

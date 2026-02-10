@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Tokens, Token, RendererThis, TokenizerThis} from 'marked';
-import {loadWorkspaceRelativeFile, anchorTarget} from '../../helpers.mjs';
-import {setInsideLink} from '../../transformations/link.mjs';
+import {RendererThis, Token, TokenizerThis, Tokens} from 'marked';
+import {anchorTarget, loadWorkspaceRelativeFile} from '../../helpers.mjs';
+import {AdevDocsRenderer} from '../../renderer.mjs';
 
 interface DocsCardToken extends Tokens.Generic {
   type: 'docs-card';
@@ -67,11 +67,13 @@ export const docsCardExtension = {
     return undefined;
   },
   renderer(this: RendererThis, token: DocsCardToken) {
-    return token.imgSrc ? getCardWithSvgIllustration(this, token) : getStandardCard(this, token);
+    return token.imgSrc
+      ? getCardWithSvgIllustration(this, token)
+      : getStandardCard(this.parser.renderer as AdevDocsRenderer, token);
   },
 };
 
-function getStandardCard(renderer: RendererThis, token: DocsCardToken) {
+function getStandardCard(renderer: AdevDocsRenderer, token: DocsCardToken) {
   if (token.iconImgSrc && token.href) {
     // We can assume that all icons are svg files since they are custom.
     // We need to read svg content, instead of renering svg with `img`,
@@ -110,13 +112,11 @@ function getStandardCard(renderer: RendererThis, token: DocsCardToken) {
   `;
 }
 
-function parseWithoutCreatingLinks(renderer: RendererThis, token: DocsCardToken) {
-  setInsideLink(true);
-  try {
-    return renderer.parser.parse(token.tokens);
-  } finally {
-    setInsideLink(false);
-  }
+function parseWithoutCreatingLinks(renderer: AdevDocsRenderer, token: DocsCardToken) {
+  renderer.context.disableAutoLinking = true;
+  const parsed = renderer.parser.parse(token.tokens);
+  renderer.context.disableAutoLinking = false;
+  return parsed;
 }
 
 function getCardWithSvgIllustration(renderer: RendererThis, token: DocsCardToken) {

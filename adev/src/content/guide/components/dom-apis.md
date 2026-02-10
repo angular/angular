@@ -7,7 +7,9 @@ directly interact with a component's DOM. Components can inject ElementRef to ge
 component's host element:
 
 ```ts
-@Component({...})
+@Component({
+  /*...*/
+})
 export class ProfilePhoto {
   constructor() {
     const elementRef = inject(ElementRef);
@@ -23,7 +25,9 @@ You can use Angular's `afterEveryRender` and `afterNextRender` functions to regi
 callback** that runs when Angular has finished rendering the page.
 
 ```ts
-@Component({...})
+@Component({
+  /*...*/
+})
 export class ProfilePhoto {
   constructor() {
     const elementRef = inject(ElementRef);

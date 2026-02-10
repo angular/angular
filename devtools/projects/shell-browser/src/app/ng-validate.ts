@@ -10,7 +10,7 @@
 
 if (document.contentType === 'text/html') {
   const script = document.createElement('script');
-  script.src = chrome.runtime.getURL('app/detect_angular_for_extension_icon_bundle.js');
+  script.src = chrome.runtime.getURL('app/detect_angular_bundle.js');
   document.documentElement.appendChild(script);
   document.documentElement.removeChild(script);
 }

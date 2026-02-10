@@ -71,11 +71,11 @@ When using the [App shell pattern](ecosystem/service-workers/app-shell), you mus
 
 ```typescript
 import {provideServerRendering, withRoutes, withAppShell} from '@angular/ssr';
-import {AppShellComponent} from './app-shell/app-shell.component';
+import {AppShell} from './app-shell';
 
 const serverConfig: ApplicationConfig = {
   providers: [
-    provideServerRendering(withRoutes(serverRoutes), withAppShell(AppShellComponent)),
+    provideServerRendering(withRoutes(serverRoutes), withAppShell(AppShell)),
     // ... other providers ...
   ],
 };
@@ -246,7 +246,7 @@ Some common browser APIs and capabilities might not be available on the server. 
 In general, code which relies on browser-specific symbols should only be executed in the browser, not on the server. This can be enforced through the `afterEveryRender` and `afterNextRender` lifecycle hooks. These are only executed on the browser and skipped on the server.
 
 ```angular-ts
-import { Component, viewChild, afterNextRender } from '@angular/core';
+import {Component, viewChild, afterNextRender} from '@angular/core';
 
 @Component({
   selector: 'my-cmp',
@@ -329,7 +329,7 @@ Inject and use the service in your components:
 
 ```ts
 @Component({
-  /* ... */
+  /*...*/
 })
 export class Checkout {
   private analytics = inject(AnalyticsService);
@@ -373,7 +373,7 @@ The `@angular/core` package provides several tokens for interacting with the ser
 - **[`REQUEST_CONTEXT`](api/core/REQUEST_CONTEXT 'API reference'):** Provides access to additional context related to the current request. This context can be passed as the second parameter of the [`handle`](api/ssr/AngularAppEngine#handle 'API reference') function. Typically, this is used to provide additional request-related information that is not part of the standard Web API.
 
 ```angular-ts
-import { inject, REQUEST } from '@angular/core';
+import {inject, REQUEST} from '@angular/core';
 
 @Component({
   selector: 'app-my-component',
@@ -433,7 +433,7 @@ By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contai
 import {bootstrapApplication} from '@angular/platform-browser';
 import {provideClientHydration, withHttpTransferCacheOptions} from '@angular/platform-browser';
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [
     provideClientHydration(
       withHttpTransferCacheOptions({
@@ -516,7 +516,7 @@ import {
   withNoHttpTransferCache,
 } from '@angular/platform-browser';
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [provideClientHydration(withNoHttpTransferCache())],
 });
 ```
@@ -532,7 +532,7 @@ import {
   withHttpTransferCacheOptions,
 } from '@angular/platform-browser';
 
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [
     provideClientHydration(
       withHttpTransferCacheOptions({

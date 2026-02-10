@@ -30,7 +30,7 @@ import {tcbExpression, unwrapWritableSignal} from './expression';
 import {tsCreateTypeQueryForCoercedInput, tsDeclareVariable} from '../ts_util';
 import {
   checkUnsupportedFieldBindings,
-  CustomFieldType,
+  CustomFormControlType,
   customFormControlBannedInputFields,
   expandBoundAttributesForField,
 } from './signal_forms';
@@ -62,7 +62,8 @@ export class TcbDirectiveInputsOp extends TcbOp {
     private scope: Scope,
     private node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
     private dir: TypeCheckableDirectiveMeta,
-    private customControlType: CustomFieldType | null,
+    private isFormControl: boolean = false,
+    private customFormControlType: CustomFormControlType | null,
   ) {
     super();
   }
@@ -78,13 +79,15 @@ export class TcbDirectiveInputsOp extends TcbOp {
     const seenRequiredInputs = new Set<ClassPropertyName>();
     const boundAttrs = getBoundAttributes(this.dir, this.node);
 
-    if (this.customControlType !== null) {
+    if (this.customFormControlType !== null) {
       checkUnsupportedFieldBindings(this.node, customFormControlBannedInputFields, this.tcb);
+    }
 
+    if (this.customFormControlType !== null || this.isFormControl) {
       const additionalBindings = expandBoundAttributesForField(
         this.dir,
         this.node,
-        this.customControlType,
+        this.customFormControlType,
       );
 
       if (additionalBindings !== null) {

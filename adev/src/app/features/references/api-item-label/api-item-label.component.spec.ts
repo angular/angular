@@ -15,24 +15,21 @@ describe('ApiItemLabel', () => {
   let fixture: ComponentFixture<ApiItemLabel>;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [ApiItemLabel],
-    });
     fixture = TestBed.createComponent(ApiItemLabel);
   });
 
-  it('should by default display short label for Class', () => {
+  it('should by default display short label for Class', async () => {
     fixture.componentRef.setInput('type', ApiItemType.CLASS);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const label = fixture.nativeElement.innerText;
 
     expect(label).toBe('C');
   });
 
-  it('should display short label for Class', () => {
+  it('should display short label for Class', async () => {
     fixture.componentRef.setInput('type', ApiItemType.CLASS);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const label = fixture.nativeElement.innerText;
 

@@ -29,18 +29,22 @@
   </div>
 
   @if (node().onPush) {
-    <span class="on-push">OnPush</span>
+    <span class="trait">OnPush</span>
   }
 
   @let defer = node().defer;
 
   @if (!defer && (!hydration || hydration.status !== 'dehydrated')) {
     <!-- Shown/hidden via CSS -->
-    <span class="console-reference"> == $ng0 </span>
+    <span class="console-reference trait"> == $ng0 </span>
   }
 
-  @if (defer && defer.currentBlock) {
-    <span class="on-push">(&#64;{{ defer.currentBlock }})</span>
+  @if (defer) {
+    @if (defer.renderedBlock && defer.renderedBlock !== 'defer') {
+      <span class="trait">(@{{ defer.renderedBlock }})</span>
+    } @else if (!defer.renderedBlock) {
+      <span class="trait">(non-rendered)</span>
+    }
   }
 
   @switch (hydration?.status) {

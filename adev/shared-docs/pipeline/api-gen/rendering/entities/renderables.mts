@@ -21,6 +21,7 @@ import {
   ParameterEntry,
   PipeEntry,
   TypeAliasEntry,
+  EntryType,
 } from '../entities.mjs';
 
 import {CliCommand, CliOption} from '../cli-entities.mjs';
@@ -75,7 +76,11 @@ export type PipeEntryRenderable = PipeEntry &
     members: MemberEntryRenderable[];
   };
 
-export type DecoratorEntryRenderable = DecoratorEntry & DocEntryRenderable & HasRenderableToc;
+export type DecoratorEntryRenderable = Omit<DecoratorEntry, 'members'> &
+  DocEntryRenderable &
+  HasRenderableToc & {
+    members: PropertyEntryRenderable[];
+  };
 
 /** Documentation entity for a TypeScript enum augmented transformed content for rendering. */
 export type EnumEntryRenderable = EnumEntry &
@@ -102,6 +107,9 @@ export type FunctionSignatureMetadataRenderable = FunctionSignatureMetadata &
     params: ParameterEntryRenderable[];
   };
 
+/** Documentation entity for a block augmented with transformed content for rendering. */
+export type BlockEntryRenderable = DocEntry & DocEntryRenderable;
+
 /** Sub-entry for a single class or enum member augmented with transformed content for rendering. */
 export interface MemberEntryRenderable extends MemberEntry {
   htmlDescription: string;
@@ -114,6 +122,10 @@ export interface MemberEntryRenderable extends MemberEntry {
   deprecated: {version: string | undefined} | undefined;
   developerPreview: {version: string | undefined} | undefined;
   experimental: {version: string | undefined} | undefined;
+}
+
+export interface PropertyEntryRenderable extends MemberEntryRenderable {
+  type: string;
 }
 
 /** Sub-entry for a class method augmented transformed content for rendering. */
@@ -155,11 +167,9 @@ export type CliCommandRenderable = CliCommand & {
   htmlDescription: string;
   cards: CliCardRenderable[];
   argumentsLabel: string;
-  hasOptions: boolean;
+  optionsLabel: string;
   subcommands?: CliCommandRenderable[];
 };
 
 export interface InitializerApiFunctionRenderable
-  extends Omit<InitializerApiFunctionEntry, 'jsdocTags'>,
-    DocEntryRenderable,
-    HasRenderableToc {}
+  extends Omit<InitializerApiFunctionEntry, 'jsdocTags'>, DocEntryRenderable, HasRenderableToc {}

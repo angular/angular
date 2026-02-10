@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "esbuild", "ng_project", "ng_web_test_suite", "sass_binary", "ts_project", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "esbuild", "ng_project", "sass_binary", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -130,7 +130,7 @@ ts_project(
     ],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "tab_manager_test",
     deps = [
         ":tab_manager_test_lib",
@@ -176,9 +176,9 @@ ts_project(
 )
 
 ts_project(
-    name = "detect_angular_for_extension_icon",
+    name = "detect_angular",
     srcs = [
-        "detect-angular-for-extension-icon.ts",
+        "detect-angular.ts",
     ],
     deps = [
         ":communication",
@@ -189,21 +189,21 @@ ts_project(
 )
 
 esbuild(
-    name = "detect_angular_for_extension_icon_bundle",
+    name = "detect_angular_bundle",
     srcs = [
         "//:node_modules/tslib",
         "//devtools/tools/esbuild:esbuild_base",
         "//devtools/tools/esbuild:esbuild_config_iife",
     ],
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
-    entry_point = "detect-angular-for-extension-icon.ts",
+    entry_point = "detect-angular.ts",
     format = "iife",
     minify = True,
     platform = "browser",
     splitting = False,
     target = "esnext",
     deps = [
-        ":detect_angular_for_extension_icon",
+        ":detect_angular",
     ],
 )
 

@@ -4,13 +4,13 @@ directives and pipes used inside a component template.
 ## Syntax
 
 ```angular-html
-@defer ( on <trigger>; when <condition>; prefetch on <trigger>; prefetch when <condition> ) {
+@defer (on <trigger>; when <condition>; prefetch on <trigger>; prefetch when <condition>) {
   <!-- deferred template fragment -->
   <calendar-cmp />
-} @placeholder ( minimum? <duration> ) {
+} @placeholder (minimum? <duration>) {
   <!-- placeholder template fragment -->
   <p>Placeholder</p>
-} @loading ( minimum? <duration>; after? <duration> ) {
+} @loading (minimum? <duration>; after? <duration>) {
   <!-- loading template fragment -->
   <img alt="loading image" src="loading.gif" />
 } @error {
@@ -60,4 +60,4 @@ prefetch configurations with a semicolon.
 }
 ```
 
-Learn more in the [defer loading guide](guide/defer).
+Learn more in the [defer loading guide](/guide/templates/defer).

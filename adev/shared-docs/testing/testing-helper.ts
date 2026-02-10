@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectorRef} from '@angular/core';
 import {
   DirEnt,
   FSWatchCallback,
@@ -63,14 +62,6 @@ export class MockLocalStorage implements Pick<Storage, 'getItem' | 'setItem'> {
   setItem(key: string, value: string | null): void {
     this.items.set(key, value);
   }
-}
-
-export class FakeChangeDetectorRef implements ChangeDetectorRef {
-  markForCheck(): void {}
-  detach(): void {}
-  checkNoChanges(): void {}
-  reattach(): void {}
-  detectChanges(): void {}
 }
 
 export class FakeWebContainer extends WebContainer {

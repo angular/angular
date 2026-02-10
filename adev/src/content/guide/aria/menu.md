@@ -190,10 +190,9 @@ The container directive for menu items.
 
 #### Methods
 
-| Method           | Parameters | Description                        |
-| ---------------- | ---------- | ---------------------------------- |
-| `close`          | none       | Closes the menu                    |
-| `focusFirstItem` | none       | Moves focus to the first menu item |
+| Method  | Parameters | Description     |
+| ------- | ---------- | --------------- |
+| `close` | none       | Closes the menu |
 
 ### MenuBar
 

@@ -1,0 +1,28 @@
+{
+  "body": "# PR: feat(language-service): integrate progressive init with pull-based diagnostics\n\n## Description\n\nIntegrates Progressive Project Initialization (#66966) with Pull-Based Diagnostics (#66700) so they work optimally together.\n\nWhen pull-based diagnostics (LSP 3.17) is active, progressive project initialization now sends a single `workspace/diagnostic/refresh` notification instead of computing and pushing diagnostics for each open file. This eliminates wasted computation since the pull-based client would discard pushed diagnostics anyway.\n\nFalls back to the chunked push-based approach when pull diagnostics is not supported by the client.\n\n## Problem\n\nWithout this integration, when both features are active:\n\n1. Progressive init computes diagnostics for each open file (`getSemanticDiagnostics`) and pushes them via `connection.sendDiagnostics()`\n2. The pull-based client ignores these pushed diagnostics (it uses `textDocument/diagnostic` to request them on-demand)\n3. The diagnostic computation in step 1 is entirely wasted\n\n## Solution\n\n```typescript\nprivate async initializeProjectProgressively(project: ts.server.Project): Promise\u003cvoid\u003e {\n    // ...\n    if (this.usePullDiagnostics) {\n        // Just notify the client to re-pull — no computation needed\n        this.connection.languages.diagnostics.refresh();\n        return;\n    }\n    // Fall back to chunked push-based approach\n    // ...\n}\n```\n\nWhen `usePullDiagnostics` is true, the method:\n1. Sends `workspace/diagnostic/refresh` to the client\n2. Returns immediately — no file-by-file diagnostic computation\n\nThe client then pulls diagnostics on its own schedule, using the pull diagnostics handler which has its own caching via `resultId`.\n\n## Changes\n\n| File | Change |\n|------|--------|\n| `vscode-ng-language-service/server/src/session.ts` | Check `usePullDiagnostics` in `initializeProjectProgressively()`, send refresh notification instead of computing diagnostics |\n\n## Dependencies\n\n**This PR must be merged AFTER both base PRs:**\n- #66700 — Pull-Based Diagnostics (provides `usePullDiagnostics` flag and `workspace/diagnostic/refresh`)\n- #66966 — Progressive Project Initialization (provides `initializeProjectProgressively()`)\n\n## Testing\n\n- All language service tests pass (modern + legacy)\n- All LSP integration tests pass (including pull diagnostics tests)\n- All server unit tests pass\n\n## Breaking Changes\n\nNone\n\n---\n\n## AI Disclosure\n\nThis PR was developed using Claude Opus 4 AI assistant under human orchestration and review by @kbrilla.\n",
+  "comments": [],
+  "files": [
+    {
+      "additions": 241,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/integration/lsp/ivy_spec.ts"
+    },
+    {
+      "additions": 38,
+      "deletions": 11,
+      "path": "vscode-ng-language-service/integration/lsp/test_utils.ts"
+    },
+    {
+      "additions": 198,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/server/src/handlers/diagnostics.ts"
+    },
+    {
+      "additions": 22,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/server/src/handlers/initialization.ts"
+    },
+    {"additions": 194, "deletions": 4, "path": "vscode-ng-language-service/server/src/session.ts"}
+  ],
+  "title": "feat(language-service): integrate progressive init with pull-based diagnostics"
+}

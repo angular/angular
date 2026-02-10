@@ -19,6 +19,7 @@ import {
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 
 import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../../../protocol';
 import {
@@ -32,6 +33,7 @@ import {SUPPORTED_APIS} from '../../../../../application-providers/supported_api
 
 import {SignalGraphManager} from '../../../signal-graph/signal-graph-manager';
 import {FlatNode} from '../../../../../shared/object-tree-explorer/object-tree-types';
+import {DevtoolsSignalGraphNode} from '../../../signal-graph';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -41,6 +43,7 @@ import {FlatNode} from '../../../../../shared/object-tree-explorer/object-tree-t
     MatIcon,
     MatTooltip,
     MatExpansionModule,
+    MatSnackBarModule,
     DocsRefButtonComponent,
     DependencyViewerComponent,
     ObjectTreeExplorerComponent,
@@ -48,6 +51,7 @@ import {FlatNode} from '../../../../../shared/object-tree-explorer/object-tree-t
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyViewBodyComponent {
+  private readonly _snackBar = inject(MatSnackBar);
   private readonly signalGraph = inject(SignalGraphManager);
   protected readonly supportedApis = inject(SUPPORTED_APIS);
 
@@ -60,7 +64,7 @@ export class PropertyViewBodyComponent {
   readonly directiveStateControls = input.required<DirectiveTreeData>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
-  readonly showSignalGraph = output<DebugSignalGraphNode>();
+  readonly showSignalGraph = output<DevtoolsSignalGraphNode>();
 
   protected readonly dependencies = computed(() => {
     const metadata = this.controller().directiveMetadata;
@@ -104,6 +108,10 @@ export class PropertyViewBodyComponent {
   logValue(e: Event, node: FlatNode): void {
     e.stopPropagation();
     this.controller().logValue(node);
+    this._snackBar.open(`Logged value of '${node.prop.name}' to the console`, 'Dismiss', {
+      duration: 2000,
+      horizontalPosition: 'left',
+    });
   }
 
   handleInspect(node: FlatNode): void {
@@ -113,7 +121,7 @@ export class PropertyViewBodyComponent {
     });
   }
 
-  getSignalNode(node: FlatNode): DebugSignalGraphNode | null {
+  getSignalNode(node: FlatNode): DevtoolsSignalGraphNode | null {
     if (node.prop.descriptor.containerType?.includes('Signal')) {
       return this.signalGraph.graph()?.nodes.find((sn) => sn.label === node.prop.name) ?? null;
     }

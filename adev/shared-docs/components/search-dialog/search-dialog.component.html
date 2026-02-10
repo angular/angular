@@ -3,7 +3,7 @@
     <docs-text-field
       [autofocus]="true"
       [hideIcon]="true"
-      [formControl]="searchControl"
+      [formField]="searchForm"
       [resetLabel]="'Clear the search'"
       class="docs-search-input"
       placeholder="Search docs"
@@ -59,7 +59,7 @@
           </li>
         }
       </ul>
-    } @else if (history.hasItems() && !this.searchControl.value.length) {
+    } @else if (history.hasItems() && !this.searchForm().value().length) {
       <docs-search-history />
     } @else {
       <div class="docs-search-results docs-mini-scroll-track">

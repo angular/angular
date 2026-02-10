@@ -6,33 +6,32 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {CdkMenuModule} from '@angular/cdk/menu';
+import {KeyValuePipe} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
-  computed,
-  inject,
-  linkedSignal,
-  viewChild,
-  afterNextRender,
   EnvironmentInjector,
+  afterNextRender,
+  computed,
   effect,
+  inject,
   input,
+  linkedSignal,
 } from '@angular/core';
-import ApiItemsSection from '../api-items-section/api-items-section.component';
-import {FormsModule} from '@angular/forms';
-import {TextField} from '@angular/docs';
-import {KeyValuePipe} from '@angular/common';
+import {Select, SelectOption, TextField} from '@angular/docs';
+import {FormField, form} from '@angular/forms/signals';
+import {MatChipListbox, MatChipOption} from '@angular/material/chips';
 import {Params, Router} from '@angular/router';
-import {ApiItemType} from '../interfaces/api-item-type';
-import {ApiReferenceManager} from './api-reference-manager.service';
 import ApiItemLabel from '../api-item-label/api-item-label.component';
-import {ApiLabel} from '../pipes/api-label.pipe';
+import ApiItemsSection from '../api-items-section/api-items-section.component';
+import {ApiItemType} from '../interfaces/api-item-type';
 import {ApiItemsGroup} from '../interfaces/api-items-group';
-import {CdkMenuModule} from '@angular/cdk/menu';
-import {MatChipsModule} from '@angular/material/chips';
+import {ApiLabel} from '../pipes/api-label.pipe';
+import {ApiReferenceManager} from './api-reference-manager.service';
 
 export const ALL_TYPES_KEY = 'All';
+export const ALL_PACKAGES = 'All';
 export const STATUSES = {
   stable: 1,
   developerPreview: 2,
@@ -46,12 +45,14 @@ export const DEFAULT_STATUS = STATUSES.stable | STATUSES.developerPreview | STAT
   imports: [
     ApiItemsSection,
     ApiItemLabel,
-    FormsModule,
     TextField,
     ApiLabel,
     CdkMenuModule,
-    MatChipsModule,
+    MatChipListbox,
+    MatChipOption,
     KeyValuePipe,
+    Select,
+    FormField,
   ],
   templateUrl: './api-reference-list.component.html',
   styleUrls: ['./api-reference-list.component.scss'],
@@ -61,19 +62,32 @@ export default class ApiReferenceList {
   // services
   private readonly apiReferenceManager = inject(ApiReferenceManager);
   private readonly router = inject(Router);
-  private readonly filterInput = viewChild.required(TextField, {read: ElementRef});
   private readonly injector = inject(EnvironmentInjector);
 
   // inputs
   readonly queryInput = input<string | undefined>('', {alias: 'query'});
   readonly typeInput = input<string | undefined>(ALL_TYPES_KEY, {alias: 'type'});
   readonly statusInput = input<number | undefined>(DEFAULT_STATUS, {alias: 'status'});
+  protected selectedPackageInput = input<string | undefined>(ALL_PACKAGES, {alias: 'package'});
 
   // inputs are route binded, they can reset to undefined
   // also we want a writable state, so we use a linked signal
-  protected query = linkedSignal(() => this.queryInput() ?? '');
-  public type = linkedSignal(() => this.typeInput() ?? ALL_TYPES_KEY);
-  private status = linkedSignal(() => this.statusInput() ?? DEFAULT_STATUS);
+  public form = form(
+    linkedSignal(() => ({
+      query: this.queryInput() ?? '',
+      status: this.statusInput() ?? DEFAULT_STATUS,
+      type: this.typeInput() ?? ALL_TYPES_KEY,
+      selectedPackage: this.selectedPackageInput() ?? ALL_PACKAGES,
+    })),
+  );
+
+  protected packageOptions = computed<SelectOption[]>(() => [
+    {label: 'All Packages', value: ALL_PACKAGES},
+    ...this.apiReferenceManager.apiGroups().map((group) => ({
+      label: group.title,
+      value: group.id,
+    })),
+  ]);
 
   // const state
   protected readonly itemTypes = Object.values(ApiItemType);
@@ -87,9 +101,9 @@ export default class ApiReferenceList {
   };
 
   readonly filteredGroups = computed((): ApiItemsGroup[] => {
-    const query = this.query().toLocaleLowerCase();
-    const status = this.status();
-    const type = this.type();
+    const query = this.form.query().value().toLocaleLowerCase();
+    const status = this.form.status().value();
+    const type = this.form.type().value();
     return this.apiReferenceManager
       .apiGroups()
       .map((group) => ({
@@ -112,19 +126,22 @@ export default class ApiReferenceList {
           );
         }),
       }))
-      .filter((group) => group.items.length > 0);
+      .filter(
+        (group) =>
+          group.items.length > 0 &&
+          (this.form.selectedPackage().value() === ALL_PACKAGES ||
+            group.id === this.form.selectedPackage().value()),
+      );
   });
 
   constructor() {
     effect(() => {
-      const filterInput = this.filterInput();
+      const filterInput = this.form.query();
       afterNextRender(
         {
           write: () => {
-            // Lord forgive me for I have sinned
-            // Use the CVA to focus when https://github.com/angular/angular/issues/31133 is implemented
             if (matchMedia('(hover: hover) and (pointer:fine)').matches) {
-              scheduleOnIdle(() => filterInput.nativeElement.querySelector('input').focus());
+              scheduleOnIdle(() => filterInput.focusBoundControl());
             }
           },
         },
@@ -135,9 +152,13 @@ export default class ApiReferenceList {
     effect(() => {
       // We'll only set the params if we deviate from the default values
       const params: Params = {
-        'query': this.query() || null,
-        'type': this.type() === ALL_TYPES_KEY ? null : this.type(),
-        'status': this.status() === DEFAULT_STATUS ? null : this.status(),
+        'query': this.form.query().value() || null,
+        'type': this.form.type().value() === ALL_TYPES_KEY ? null : this.form.type().value(),
+        'status': this.form.status().value() === DEFAULT_STATUS ? null : this.form.status().value(),
+        'package':
+          this.form.selectedPackage().value() === ALL_PACKAGES
+            ? null
+            : this.form.selectedPackage().value(),
       };
 
       this.router.navigate([], {
@@ -152,11 +173,11 @@ export default class ApiReferenceList {
   }
 
   setItemType(itemType: ApiItemType): void {
-    this.type.update((type) => (type === itemType ? ALL_TYPES_KEY : itemType));
+    this.form.type().value.update((type) => (type === itemType ? ALL_TYPES_KEY : itemType));
   }
 
   setStatus(status: number): void {
-    this.status.update((previousStatus) => {
+    this.form.status().value.update((previousStatus) => {
       if (this.isStatusSelected(status)) {
         return previousStatus & ~status; // Clear the bit
       } else {
@@ -166,7 +187,7 @@ export default class ApiReferenceList {
   }
 
   isStatusSelected(status: number): boolean {
-    return (this.status() & status) === status;
+    return (this.form.status().value() & status) === status;
   }
 }
 

@@ -109,7 +109,7 @@ interface BeverageOrderFormModel {
 
 ### Avoid `undefined`
 
-A form model model must not contain `undefined` values or properties. In Signal Forms the structure of the form is derived from the structure of the model, and `undefined` signifies the _absence of a field_, rather than a field with an empty value. This means you must also avoid optional fields (e.g., `{property?: string}`), as they implicitly allow `undefined`.
+A form model must not contain `undefined` values or properties. In Signal Forms the structure of the form is derived from the structure of the model, and `undefined` signifies the _absence of a field_, rather than a field with an empty value. This means you must also avoid optional fields (e.g., `{property?: string}`), as they implicitly allow `undefined`.
 
 To represent a property with an empty value in your form model, use a value that the UI control understands to mean "empty" (e.g. `""` for a `<input type="text">`). If you're designing a custom UI control, `null` often works as a good value to signify "empty".
 
@@ -161,12 +161,12 @@ createAccountForm = form<CreateAccountFormModel>(
 );
 ```
 
-Using this representation, all of the subfields we need now exist, and we can bind them using the `[field]` directive in our template.
+Using this representation, all of the subfields we need now exist, and we can bind them using the `[formField]` directive in our template.
 
 ```html
-First: <input [field]="createAccountForm.name.first" /> Last:
-<input [field]="createAccountForm.name.last" /> Username:
-<input [field]="createAccountForm.username" />
+First: <input [formField]="createAccountForm.name.first" /> Last:
+<input [formField]="createAccountForm.name.last" /> Username:
+<input [formField]="createAccountForm.username" />
 ```
 
 #### Fields that are conditionally hidden or unavailable
@@ -289,8 +289,8 @@ interface UserProfileFormModel {
 In the template, we bind the `location` field directly to our custom control:
 
 ```html
-Username: <input [field]="userForm.username" /> Location:
-<location-picker [field]="userForm.location"></location-picker>
+Username: <input [formField]="userForm.username" /> Location:
+<location-picker [formField]="userForm.location"></location-picker>
 ```
 
 Here, `<location-picker>` consumes and produces the entire `Location` object (or `null`), and doesn't access `userForm.location.lat` or `userForm.location.lng`. Therefore, `location` can safely have a dynamic shape without violating the principles of model-driven forms.
@@ -409,7 +409,7 @@ class MyForm {
 }
 ```
 
-The examples above show a pure conversion from the form model to the domain model. However, it is perfectly acceptable to consider the full form state in addition to just the form model value. For example, to save bytes me might want to only send partial updates to the server based on what the user changed. In this case our conversion function could be designed to take the entire form state and return a sparse domain model based on the form's values and dirtiness.
+The examples above show a pure conversion from the form model to the domain model. However, it is perfectly acceptable to consider the full form state in addition to just the form model value. For example, to save bytes we might want to only send partial updates to the server based on what the user changed. In this case our conversion function could be designed to take the entire form state and return a sparse domain model based on the form's values and dirtiness.
 
 ```ts
 type Sparse<T> = T extends object ? {

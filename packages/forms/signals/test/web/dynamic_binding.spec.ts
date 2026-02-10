@@ -18,10 +18,10 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {
   disabled,
-  Field,
   FieldTree,
   form,
   FormCheckboxControl,
+  FormField,
   FormValueControl,
   required,
 } from '@angular/forms/signals';
@@ -41,14 +41,14 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<string>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<string>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.value()).toBe('initial value');
 
       // Model --> View
@@ -81,14 +81,14 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<string>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<string>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.disabled()).toBe(false);
 
       disabledSignal.set(true);
@@ -111,14 +111,14 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<boolean>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<boolean>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.checked()).toBe(true);
 
       // Model --> View
@@ -151,14 +151,14 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<boolean>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<boolean>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.required()).toBe(false);
 
       requiredSignal.set(true);
@@ -167,10 +167,10 @@ describe('createComponent', () => {
     });
   });
 
-  it(`should not treat component with '[field]' input as a control`, () => {
+  it(`should not treat component with '[formField]' input as a control`, () => {
     @Component({template: ''})
     class TestCmp {
-      readonly field = input.required<FieldTree<string>>();
+      readonly formField = input.required<FieldTree<string>>();
       readonly value = model.required<string>();
     }
 
@@ -183,14 +183,14 @@ describe('createComponent', () => {
       environmentInjector,
       directives: [
         {
-          type: Field<string>,
-          bindings: [inputBinding('field', () => control)],
+          type: FormField<string>,
+          bindings: [inputBinding('formField', () => control)],
         },
       ],
     });
     fixture.changeDetectorRef.detectChanges();
 
-    expect(control().fieldBindings()).toHaveSize(0);
+    expect(control().formFieldBindings()).toHaveSize(0);
   });
 
   it(`should throw for invalid '[field]' binding host`, () => {
@@ -207,11 +207,11 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<string>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<string>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       }),
-    ).toThrowError(/Component InvalidFieldHost (.+) is an invalid \[field\] directive host\./);
+    ).toThrowError(/Component InvalidFieldHost (.+) is an invalid \[formField\] directive host\./);
   });
 });

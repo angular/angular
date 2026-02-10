@@ -384,6 +384,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     outputs: metadata.outputs || EMPTY_ARRAY,
     queries: extractQueriesMetadata(type, propMetadata, isContentQuery),
     lifecycle: {usesOnChanges: reflect.hasLifecycleHook(type, 'ngOnChanges')},
+    controlCreate: null,
     typeSourceSpan: null!,
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: extractExportAs(metadata.exportAs),

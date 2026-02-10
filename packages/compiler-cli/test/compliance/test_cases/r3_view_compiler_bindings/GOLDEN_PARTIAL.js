@@ -4,9 +4,9 @@
 import { Component } from '@angular/core';
 import * as i0 from "@angular/core";
 export class SomeCmp {
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SomeCmp, isStandalone: true, selector: "some-elem", inputs: { attr1: "attr1", prop1: "prop1", attrInterp1: "attrInterp1", propInterp1: "propInterp1" }, ngImport: i0, template: ``, isInline: true });
 }
-SomeCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-SomeCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: SomeCmp, isStandalone: true, selector: "some-elem", inputs: { attr1: "attr1", prop1: "prop1", attrInterp1: "attrInterp1", propInterp1: "propInterp1" }, ngImport: i0, template: ``, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SomeCmp, decorators: [{
             type: Component,
             args: [{
@@ -16,9 +16,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                 }]
         }] });
 export class MyCmp {
-}
-MyCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyCmp, isStandalone: true, selector: "my-cmp", host: { attributes: { "literal1": "foo" }, listeners: { "event1": "foo()" }, properties: { "attr.attr1": "foo", "id": "foo", "class.class1": "false", "style.style1": "true", "class": "foo", "style": "foo" } }, ngImport: i0, template: `
+    foo;
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyCmp, isStandalone: true, selector: "my-cmp", host: { attributes: { "literal1": "foo" }, listeners: { "event1": "foo()" }, properties: { "attr.attr1": "foo", "id": "foo", "class.class1": "false", "style.style1": "true", "class": "foo", "style": "foo" } }, ngImport: i0, template: `
 		<some-elem
 			literal1="foo"
 			(event1)="foo()"
@@ -32,6 +32,7 @@ MyCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-
 			propInterp1="interp {{foo}}"
 			/>
 	`, isInline: true, dependencies: [{ kind: "component", type: SomeCmp, selector: "some-elem", inputs: ["attr1", "prop1", "attrInterp1", "propInterp1"] }] });
+}
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyCmp, decorators: [{
             type: Component,
             args: [{

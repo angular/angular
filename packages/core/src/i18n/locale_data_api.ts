@@ -42,7 +42,7 @@ export function registerLocaleData(data: any, localeId?: string | any, extraData
  *
  * @param locale The locale code.
  * @returns The locale data.
- * @see [Internationalization (i18n) Guide](https://angular.io/guide/i18n)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  */
 export function findLocaleData(locale: string): any {
   const normalizedLocale = normalizeLocale(locale);

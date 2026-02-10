@@ -17,13 +17,11 @@ import {
   viewChild,
   ChangeDetectionStrategy,
   computed,
-  linkedSignal,
   DestroyRef,
 } from '@angular/core';
 import {
   ComponentExplorerView,
   ComponentExplorerViewQuery,
-  DebugSignalGraphNode,
   DevToolsNode,
   DirectivePosition,
   ElementPosition,
@@ -56,6 +54,7 @@ import {SplitAreaDirective} from '../../shared/split/splitArea.directive';
 import {SplitComponent} from '../../shared/split/split.component';
 import {Direction} from '../../shared/split/interface';
 import {SignalGraphManager} from './signal-graph/signal-graph-manager';
+import {DevtoolsSignalGraphNode} from './signal-graph';
 
 const FOREST_VER_SPLIT_SIZE = 30;
 const SIGNAL_GRAPH_VER_SPLIT_SIZE = 70;
@@ -133,10 +132,7 @@ export class DirectiveExplorerComponent {
   private readonly snackBar = inject(MatSnackBar);
   protected readonly signalGraph = inject(SignalGraphManager);
 
-  protected readonly preselectedSignalNodeId = linkedSignal<IndexedNode | null, string | null>({
-    source: this.currentSelectedElement,
-    computation: () => null,
-  });
+  protected readonly externallySelectedSignalNodeId = signal<{id: string} | null>(null);
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
@@ -349,7 +345,7 @@ export class DirectiveExplorerComponent {
     const selectedFrame = this._frameManager.selectedFrame();
 
     if (!this._frameManager.activeFrameHasUniqueUrl()) {
-      const error = `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`;
+      const error = `The currently inspected frame does not have a unique URL on this page. Cannot inspect object.`;
       this.snackBar.open(error, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
       this._messageBus.emit('log', [{level: 'warn', message: error}]);
       return;
@@ -388,9 +384,10 @@ export class DirectiveExplorerComponent {
     }
   }
 
-  showSignalGraph(node: DebugSignalGraphNode | null) {
+  showSignalGraph(node: DevtoolsSignalGraphNode | null) {
     if (node) {
-      this.preselectedSignalNodeId.set(node.id);
+      // We want to trigger an update each time we intercept an update.
+      this.externallySelectedSignalNodeId.set({id: node.id});
     }
     this.signalsOpen.set(true);
   }

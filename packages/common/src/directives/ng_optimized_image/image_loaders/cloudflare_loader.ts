@@ -9,6 +9,7 @@
 import {Provider} from '@angular/core';
 import {PLACEHOLDER_QUALITY} from './constants';
 import {createImageLoader, ImageLoaderConfig} from './image_loader';
+import {normalizeLoaderTransform} from './normalized_options';
 
 /**
  * Function that generates an ImageLoader for [Cloudflare Image
@@ -19,6 +20,7 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @param path Your domain name, e.g. https://mysite.com
  * @returns Provider that provides an ImageLoader function
  *
+ * @see [Image Optimization Guide](guide/image-optimization)
  * @publicApi
  */
 export const provideCloudflareLoader: (path: string) => Provider[] = createImageLoader(
@@ -35,6 +37,12 @@ function createCloudflareUrl(path: string, config: ImageLoaderConfig) {
   // When requesting a placeholder image we ask for a low quality image to reduce the load time.
   if (config.isPlaceholder) {
     params += `,quality=${PLACEHOLDER_QUALITY}`;
+  }
+
+  // Support custom transformation parameters
+  if (config.loaderParams?.['transform']) {
+    const transformStr = normalizeLoaderTransform(config.loaderParams['transform'], '=');
+    params += `,${transformStr}`;
   }
 
   // Cloudflare image URLs format:

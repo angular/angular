@@ -40,23 +40,21 @@ The Angular AOT compiler extracts **metadata** to interpret the parts of the app
 You can specify the metadata explicitly in **decorators** such as `@Component()`, or implicitly in the constructor declarations of the decorated classes.
 The metadata tells Angular how to construct instances of your application classes and interact with them at runtime.
 
-In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
+In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `Typical`.
 
 ```angular-ts
-
 @Component({
   selector: 'app-typical',
-  template: '<div>A typical component for {{data.name}}</div>'
+  template: '<div>A typical component for {{data.name}}</div>',
 })
-export class TypicalComponent {
+export class Typical {
   data = input.required<TypicalData>();
   private someService = inject(SomeService);
 }
-
 ```
 
-The Angular compiler extracts the metadata _once_ and generates a _factory_ for `TypicalComponent`.
-When it needs to create a `TypicalComponent` instance, Angular calls the factory, which produces a new visual element, bound to a new instance of the component class with its injected dependency.
+The Angular compiler extracts the metadata _once_ and generates a _factory_ for `Typical`.
+When it needs to create a `Typical` instance, Angular calls the factory, which produces a new visual element, bound to a new instance of the component class with its injected dependency.
 
 ### Compilation phases
 
@@ -188,17 +186,15 @@ The collector can evaluate references to module-local `const` declarations and i
 Consider the following component definition:
 
 ```angular-ts
-
 const template = '<div>{{hero().name}}</div>';
 
 @Component({
   selector: 'app-hero',
-  template: template
+  template: template,
 })
-export class HeroComponent {
+export class Hero {
   hero = input.required<Hero>();
 }
-
 ```
 
 The compiler could not refer to the `template` constant because it isn't exported.
@@ -206,15 +202,13 @@ The collector, however, can fold the `template` constant into the metadata defin
 The effect is the same as if you had written:
 
 ```angular-ts
-
 @Component({
   selector: 'app-hero',
-  template: '<div>{{hero().name}}</div>'
+  template: '<div>{{hero().name}}</div>',
 })
-export class HeroComponent {
+export class Hero {
   hero = input.required<Hero>();
 }
-
 ```
 
 There is no longer a reference to `template` and, therefore, nothing to trouble the compiler when it later interprets the _collector's_ output in `.metadata.json`.
@@ -222,25 +216,21 @@ There is no longer a reference to `template` and, therefore, nothing to trouble 
 You can take this example a step further by including the `template` constant in another expression:
 
 ```angular-ts
-
 const template = '<div>{{hero().name}}</div>';
 
 @Component({
   selector: 'app-hero',
-  template: template + '<div>{{hero().title}}</div>'
+  template: template + '<div>{{hero().title}}</div>',
 })
-export class HeroComponent {
+export class Hero {
   hero = input.required<Hero>();
 }
-
 ```
 
 The collector reduces this expression to its equivalent _folded_ string:
 
 ```angular-ts
-
-'<div>{{hero().name}}</div><div>{{hero().title}}</div>'
-
+'<div>{{hero().name}}</div><div>{{hero().title}}</div>';
 ```
 
 #### Foldable syntax
@@ -297,7 +287,7 @@ The compiler can only create instances of certain classes, supports only core de
 | Compiler action      | Details                                                                                                                                                |
 | :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | New instances        | The compiler only allows metadata that create instances of the class `InjectionToken` from `@angular/core`.                                            |
-| Supported decorators | The compiler only supports metadata for the [Angular decorators in the `@angular/core` module](api/core#decorators).                                   |
+| Supported decorators | The compiler only supports metadata for the [Angular decorators in the `@angular/core` module](/api?type=decorator).                                   |
 | Function calls       | Factory functions must be exported, named functions. The AOT compiler does not support lambda expressions \("arrow functions"\) for factory functions. |
 
 ### Functions and static method calls
@@ -319,7 +309,7 @@ You might use `wrapInArray()` like this:
 
 ```ts
 @NgModule({
-  declarations: wrapInArray(TypicalComponent),
+  declarations: wrapInArray(Typical),
 })
 export class TypicalModule {}
 ```
@@ -328,14 +318,14 @@ The compiler treats this usage as if you had written:
 
 ```ts
 @NgModule({
-  declarations: [TypicalComponent],
+  declarations: [Typical],
 })
 export class TypicalModule {}
 ```
 
 The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
 Review the [source code](https://github.com/angular/angular/blob/main/packages/router/src/router_module.ts#L139 'RouterModule.forRoot source code')
-for these methods to see how macros can simplify configuration of complex [NgModules](guide/ngmodules).
+for these methods to see how macros can simplify configuration of complex [NgModules](guide/ngmodules/overview).
 
 ### Metadata rewriting
 
@@ -389,15 +379,13 @@ file.
 For example, consider the following component:
 
 ```angular-ts
-
 @Component({
   selector: 'my-component',
-  template: '{{person.addresss.street}}'
+  template: '{{person.addresss.street}}',
 })
 class MyComponent {
   person?: Person;
 }
-
 ```
 
 This produces the following error:
@@ -436,20 +424,18 @@ template compiler, the same way the `if` expression does in TypeScript.
 For example, to avoid `Object is possibly 'undefined'` error in the template above, modify it to only emit the interpolation if the value of `person` is initialized as shown below:
 
 ```angular-ts
-
 @Component({
   selector: 'my-component',
-  template: '<span *ngIf="person"> {{person.address.street}} </span>'
+  template: '<span *ngIf="person"> {{person.address.street}} </span>',
 })
 class MyComponent {
   person?: Person;
 }
-
 ```
 
 Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in the binding expression will never be `undefined`.
 
-For more information about input type narrowing, see [Improving template type checking for custom directives](guide/directives/structural-directives#directive-type-checks).
+For more information about input type narrowing, see [Improving template type checking for custom directives](/guide/directives/structural-directives#improving-template-type-checking-for-custom-directives).
 
 ### Non-null type assertion operator
 
@@ -459,10 +445,9 @@ In the following example, the `person` and `address` properties are always set t
 There is no convenient way to describe this constraint to TypeScript and the template compiler, but the error is suppressed in the example by using `address!.street`.
 
 ```angular-ts
-
 @Component({
   selector: 'my-component',
-  template: '<span *ngIf="person"> {{person.name}} lives on {{address!.street}} </span>'
+  template: '<span *ngIf="person"> {{person.name}} lives on {{address!.street}} </span>',
 })
 class MyComponent {
   person?: Person;
@@ -473,7 +458,6 @@ class MyComponent {
     this.address = address;
   }
 }
-
 ```
 
 The non-null assertion operator should be used sparingly as refactoring of the component might break this constraint.
@@ -481,10 +465,9 @@ The non-null assertion operator should be used sparingly as refactoring of the c
 In this example it is recommended to include the checking of `address` in the `*ngIf` as shown below:
 
 ```angular-ts
-
 @Component({
   selector: 'my-component',
-  template: '<span *ngIf="person && address"> {{person.name}} lives on {{address.street}} </span>'
+  template: '<span *ngIf="person && address"> {{person.name}} lives on {{address.street}} </span>',
 })
 class MyComponent {
   person?: Person;
@@ -495,5 +478,4 @@ class MyComponent {
     this.address = address;
   }
 }
-
 ```

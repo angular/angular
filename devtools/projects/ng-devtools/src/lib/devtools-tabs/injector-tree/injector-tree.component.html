@@ -37,6 +37,7 @@
                   #environmentTree
                   a11yTitle="Environment hierarchy visualization"
                   [root]="environmentInjectorTree()!"
+                  [nodeEqualityFn]="treeNodesEqualityFn"
                   [config]="environmentTreeConfig"
                   (nodeClick)="selectInjectorByNode($event)"
                   (render)="onTreeRender(environmentTree, $event)"
@@ -55,6 +56,7 @@
                   #elementTree
                   a11yTitle="Element hierarchy visualization"
                   [root]="elementInjectorTree()!"
+                  [nodeEqualityFn]="treeNodesEqualityFn"
                   [config]="elementTreeConfig"
                   (nodeClick)="selectInjectorByNode($event)"
                   (render)="onTreeRender(elementTree, $event)"

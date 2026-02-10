@@ -10,7 +10,7 @@
  * The list of error codes used in runtime code of the `forms` package.
  * Reserved error code range: 1900-1999.
  */
-export const enum SignalFormsErrorCode {
+export const enum RuntimeErrorCode {
   // Signal Forms errors (1900-1999)
   PATH_NOT_IN_FIELD_TREE = 1900,
   PATH_RESOLUTION_FAILED = 1901,
@@ -24,4 +24,9 @@ export const enum SignalFormsErrorCode {
   UNKNOWN_BUILDER_TYPE = 1909,
   UNKNOWN_STATUS = 1910,
   COMPAT_NO_CHILDREN = 1911,
+  MANAGED_METADATA_LAZY_CREATION = 1912,
+  BINDING_ALREADY_REGISTERED = 1913,
+  INVALID_FIELD_DIRECTIVE_HOST = 1914,
+  MISSING_SUBMIT_ACTION = 1915,
+  UNSUPPORTED_FEATURE = 1920,
 }

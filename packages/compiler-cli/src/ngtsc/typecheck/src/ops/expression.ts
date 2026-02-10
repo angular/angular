@@ -95,11 +95,7 @@ export class TcbExpressionTranslator {
    * context). This method assists in resolving those.
    */
   protected resolve(ast: AST): ts.Expression | null {
-    if (
-      ast instanceof PropertyRead &&
-      ast.receiver instanceof ImplicitReceiver &&
-      !(ast.receiver instanceof ThisReceiver)
-    ) {
+    if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver) {
       // Try to resolve a bound target for this expression. If no such target is available, then
       // the expression is referencing the top-level component context. In that case, `null` is
       // returned here to let it fall through resolution so it will be caught when the
@@ -126,7 +122,7 @@ export class TcbExpressionTranslator {
       ast instanceof Binary &&
       Binary.isAssignmentOperation(ast.operation) &&
       ast.left instanceof PropertyRead &&
-      ast.left.receiver instanceof ImplicitReceiver
+      (ast.left.receiver instanceof ImplicitReceiver || ast.left.receiver instanceof ThisReceiver)
     ) {
       const read = ast.left;
       const target = this.tcb.boundTarget.getExpressionTarget(read);
@@ -150,7 +146,7 @@ export class TcbExpressionTranslator {
       }
 
       return result;
-    } else if (ast instanceof ImplicitReceiver) {
+    } else if (ast instanceof ImplicitReceiver || ast instanceof ThisReceiver) {
       // AST instances representing variables and references look very similar to property reads
       // or method calls from the component context: both have the shape
       // PropertyRead(ImplicitReceiver, 'propName') or Call(ImplicitReceiver, 'methodName').
@@ -218,7 +214,6 @@ export class TcbExpressionTranslator {
       // `$any(expr)` -> `expr as any`
       if (
         ast.receiver.receiver instanceof ImplicitReceiver &&
-        !(ast.receiver.receiver instanceof ThisReceiver) &&
         ast.receiver.name === '$any' &&
         ast.args.length === 1
       ) {

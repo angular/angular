@@ -18,6 +18,7 @@ import {
   isInitializerApiFunctionEntry,
   isInterfaceEntry,
   isTypeAliasEntry,
+  isBlockEntry,
 } from './entities/categorization.mjs';
 import {CliCommandRenderable, DocEntryRenderable} from './entities/renderables.mjs';
 import {ClassReference} from './templates/class-reference';
@@ -30,6 +31,7 @@ import {InitializerApiFunction} from './templates/initializer-api-function';
 import {TypeAliasReference} from './templates/type-alias-reference';
 import {DecoratorReference} from './templates/decorator-reference';
 import {setCurrentSymbol} from './symbol-context.mjs';
+import {BlockReference} from './templates/block-reference';
 
 /** Given a doc entry, get the transformed version of the entry for rendering. */
 export function renderEntry(renderable: DocEntryRenderable | CliCommandRenderable): string {
@@ -58,6 +60,9 @@ export function renderEntry(renderable: DocEntryRenderable | CliCommandRenderabl
   }
   if (isInitializerApiFunctionEntry(renderable)) {
     return render(InitializerApiFunction(renderable));
+  }
+  if (isBlockEntry(renderable)) {
+    return render(BlockReference(renderable));
   }
 
   // Fall back rendering nothing while in development.

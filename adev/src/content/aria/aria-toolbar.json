@@ -69,6 +69,9 @@
       "exportAs": [
         "ngToolbarWidgetGroup"
       ],
+      "aliases": [
+        "ngToolbarWidgetGroup"
+      ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar-widget-group.ts",
         "startLine": 31,
@@ -190,10 +193,13 @@
       "exportAs": [
         "ngToolbar"
       ],
+      "aliases": [
+        "ngToolbar"
+      ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
         "startLine": 47,
-        "endLine": 151
+        "endLine": 142
       }
     },
     {
@@ -373,10 +379,13 @@
       "exportAs": [
         "ngToolbarWidget"
       ],
+      "aliases": [
+        "ngToolbarWidget"
+      ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar-widget.ts",
-        "startLine": 42,
-        "endLine": 109
+        "startLine": 47,
+        "endLine": 114
       }
     }
   ],

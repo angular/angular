@@ -63,9 +63,8 @@ Next, update the template to include a button with the label "Show all comments"
 <button type="button" #showComments>Show all comments</button>
 
 @defer (on hover) {
-<article-comments />
+  <article-comments />
 } @placeholder (minimum 1s) {
-
   <p>Placeholder for comments</p>
 } @loading (minimum 1s; after 500ms) {
   <p>Loading comments...</p>
@@ -74,7 +73,7 @@ Next, update the template to include a button with the label "Show all comments"
 }
 ```
 
-NOTE: for more information on [template variables check the documentation](/guide/templates/reference-variables).
+NOTE: for more information on [template variables check the documentation](/guide/templates/variables#declaring-a-template-reference-variable).
 
 </docs-step>
 
@@ -85,9 +84,8 @@ Update the `@defer` block in the template to use the `on interaction` trigger. P
 <button type="button" #showComments>Show all comments</button>
 
 @defer (on hover; on interaction(showComments)) {
-<article-comments />
+  <article-comments />
 } @placeholder (minimum 1s) {
-
   <p>Placeholder for comments</p>
 } @loading (minimum 1s; after 500ms) {
   <p>Loading comments...</p>
@@ -105,5 +103,5 @@ You can reload the page to try out different triggers to render the comments sec
 </docs-step>
 </docs-workflow>
 
-If you would like to learn more, check out the documentation for [Deferrable View](/guide/defer).
+If you would like to learn more, check out the documentation for [Deferrable View](/guide/templates/defer).
 Keep learning to unlock more of Angular's great features.

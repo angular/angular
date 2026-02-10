@@ -369,6 +369,40 @@ There is an additional attribute supported by the `NgOptimizedImage` directive, 
 
 A common use for `loaderParams` is controlling advanced image CDN features.
 
+### Using the `transform` property with built-in loaders
+
+The built-in loaders for Cloudinary, Cloudflare, ImageKit, and Imgix support a special `transform` property within `loaderParams`. This property allows you to apply custom image transformations provided by your CDN.
+
+The `transform` property accepts two formats:
+
+#### String format
+
+Provide transformations as a comma-separated string using your CDN's transformation syntax:
+
+```html
+<img
+  ngSrc="my-image.jpg"
+  width="400"
+  height="300"
+  [loaderParams]="{transform: 'e_grayscale,r_10'}"
+/>
+```
+
+#### Object format
+
+Provide transformations as an object with key-value pairs.
+
+```html
+<img
+  ngSrc="my-image.jpg"
+  width="400"
+  height="300"
+  [loaderParams]="{transform: {e: 'grayscale', r: 10}}"
+/>
+```
+
+NOTE: The `transform` property is not supported by the Netlify loader, as Netlify's image CDN does not provide custom transformation parameters.
+
 ### Example custom loader
 
 The following shows an example of a custom loader function. This example function concatenates `src` and `width`, and uses `loaderParams` to control a custom CDN feature for rounded corners:

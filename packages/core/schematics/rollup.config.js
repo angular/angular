@@ -39,7 +39,7 @@ const stripBannerPlugin = {
 const banner = `'use strict';
 /**
  * @license Angular v0.0.0-PLACEHOLDER
- * (c) 2010-2025 Google LLC. https://angular.io/
+ * (c) 2010-2026 Google LLC. https://angular.dev/
  * License: MIT
  */`;
 

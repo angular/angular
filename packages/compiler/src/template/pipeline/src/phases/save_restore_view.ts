@@ -17,6 +17,14 @@ import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation'
  */
 export function saveAndRestoreView(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
+    for (const expr of unit.functions) {
+      if (needsRestoreView(job, unit, expr.ops)) {
+        // We don't need to capture the view in a variable for arrow
+        // functions, it will be passed in to its factory.
+        addSaveRestoreViewOperation(unit, expr.ops, o.variable(expr.currentViewName));
+      }
+    }
+
     unit.create.prepend([
       ir.createVariableOp<ir.CreateOp>(
         unit.job.allocateXrefId(),
@@ -32,40 +40,46 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
 
     for (const op of unit.create) {
       if (
-        op.kind !== ir.OpKind.Listener &&
-        op.kind !== ir.OpKind.TwoWayListener &&
-        op.kind !== ir.OpKind.Animation &&
-        op.kind !== ir.OpKind.AnimationListener
+        op.kind === ir.OpKind.Listener ||
+        op.kind === ir.OpKind.TwoWayListener ||
+        op.kind === ir.OpKind.Animation ||
+        op.kind === ir.OpKind.AnimationListener
       ) {
-        continue;
-      }
-
-      // Embedded views always need the save/restore view operation.
-      let needsRestoreView = unit !== job.root;
-
-      if (!needsRestoreView) {
-        for (const handlerOp of op.handlerOps) {
-          ir.visitExpressionsInOp(handlerOp, (expr) => {
-            if (expr instanceof ir.ReferenceExpr || expr instanceof ir.ContextLetReferenceExpr) {
-              // Listeners that reference() a local ref need the save/restore view operation.
-              needsRestoreView = true;
-            }
-          });
+        if (needsRestoreView(job, unit, op.handlerOps)) {
+          addSaveRestoreViewOperation(unit, op.handlerOps, unit.xref);
         }
-      }
-
-      if (needsRestoreView) {
-        addSaveRestoreViewOperationToListener(unit, op);
       }
     }
   }
 }
 
-function addSaveRestoreViewOperationToListener(
+function needsRestoreView(
+  job: ComponentCompilationJob,
   unit: ViewCompilationUnit,
-  op: ir.ListenerOp | ir.TwoWayListenerOp | ir.AnimationOp | ir.AnimationListenerOp,
+  opList: ir.OpList<ir.CreateOp | ir.UpdateOp>,
+): boolean {
+  // Embedded views always need the save/restore view operation.
+  let result = unit !== job.root;
+
+  if (!result) {
+    for (const innerOp of opList) {
+      ir.visitExpressionsInOp(innerOp, (expr) => {
+        if (expr instanceof ir.ReferenceExpr || expr instanceof ir.ContextLetReferenceExpr) {
+          result = true;
+        }
+      });
+    }
+  }
+
+  return result;
+}
+
+function addSaveRestoreViewOperation(
+  unit: ViewCompilationUnit,
+  opList: ir.OpList<ir.UpdateOp>,
+  restoreViewTarget: ir.XrefId | o.Expression,
 ) {
-  op.handlerOps.prepend([
+  opList.prepend([
     ir.createVariableOp<ir.UpdateOp>(
       unit.job.allocateXrefId(),
       {
@@ -73,15 +87,15 @@ function addSaveRestoreViewOperationToListener(
         name: null,
         view: unit.xref,
       },
-      new ir.RestoreViewExpr(unit.xref),
+      new ir.RestoreViewExpr(restoreViewTarget),
       ir.VariableFlags.None,
     ),
   ]);
 
-  // The "restore view" operation in listeners requires a call to `resetView` to reset the
-  // context prior to returning from the listener operation. Find any `return` statements in
-  // the listener body and wrap them in a call to reset the view.
-  for (const handlerOp of op.handlerOps) {
+  // The "restore view" operation requires a call to `resetView` to reset the
+  // context prior to returning from the operation. Find any `return` statements in
+  // the body and wrap them in a call to reset the view.
+  for (const handlerOp of opList) {
     if (
       handlerOp.kind === ir.OpKind.Statement &&
       handlerOp.statement instanceof o.ReturnStatement

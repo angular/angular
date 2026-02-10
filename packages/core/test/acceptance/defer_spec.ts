@@ -3513,6 +3513,7 @@ describe('@defer', () => {
       root = null;
       rootMargin = null!;
       thresholds = null!;
+      scrollMargin = null!;
 
       observedElements = new Set<Element>();
       private elementsInView = new Set<Element>();

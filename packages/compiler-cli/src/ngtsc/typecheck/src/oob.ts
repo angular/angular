@@ -8,9 +8,11 @@
 
 import {
   AbsoluteSourceSpan,
-  BindingPipe,
-  PropertyRead,
   AST,
+  BindingPipe,
+  BindingType,
+  ParseSourceSpan,
+  PropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstComponent,
@@ -28,8 +30,6 @@ import {
   TmplAstTextAttribute,
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
-  ParseSourceSpan,
-  BindingType,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -39,6 +39,7 @@ import {TemplateDiagnostic, TypeCheckId} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TypeCheckSourceResolver} from './tcb_util';
+import {DOC_PAGE_BASE_URL} from '../../diagnostics/src/error_details_base_url';
 
 /**
  * Collects `ts.Diagnostic`s on problems which occur in the template which aren't directly sourced
@@ -240,7 +241,7 @@ export interface OutOfBandDiagnosticRecorder {
   ): void;
 
   /**
-   * Reports an unsupported binding on a form `Field` node.
+   * Reports an unsupported binding on a form `FormField` node.
    */
   formFieldUnsupportedBinding(
     id: TypeCheckId,
@@ -514,7 +515,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   ): void {
     const mapping = this.resolver.getTemplateSourceMapping(id);
     const errorMsg = `The property and event halves of the two-way binding '${input.name}' are not bound to the same target.
-            Find more at https://angular.dev/guide/templates/two-way-binding#how-two-way-binding-works`;
+            Find more at ${DOC_PAGE_BASE_URL}/guide/templates/two-way-binding`;
 
     const relatedMessages: {text: string; start: number; end: number; sourceFile: ts.SourceFile}[] =
       [];
@@ -879,9 +880,9 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         name = node.name;
       }
 
-      message = `Binding to '${name}' is not allowed on nodes using the '[field]' directive`;
+      message = `Binding to '${name}' is not allowed on nodes using the '[formField]' directive`;
     } else {
-      message = `Setting the '${node.name}' attribute is not allowed on nodes using the '[field]' directive`;
+      message = `Setting the '${node.name}' attribute is not allowed on nodes using the '[formField]' directive`;
     }
 
     this._diagnostics.push(

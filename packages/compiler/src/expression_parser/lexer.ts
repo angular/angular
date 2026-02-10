@@ -41,6 +41,7 @@ const KEYWORDS = [
   'typeof',
   'void',
   'in',
+  'instanceof',
 ];
 
 export class Lexer {
@@ -124,6 +125,10 @@ export class Token {
 
   isKeywordIn(): boolean {
     return this.type === TokenType.Keyword && this.strValue === 'in';
+  }
+
+  isKeywordInstanceOf(): boolean {
+    return this.type === TokenType.Keyword && this.strValue === 'instanceof';
   }
 
   isError(): boolean {
@@ -288,9 +293,21 @@ class _Scanner {
     switch (peek) {
       case chars.$PERIOD:
         this.advance();
-        return chars.isDigit(this.peek)
-          ? this.scanNumber(start)
-          : newCharacterToken(start, this.index, chars.$PERIOD);
+
+        if (chars.isDigit(this.peek)) {
+          return this.scanNumber(start);
+        }
+
+        if (this.peek !== chars.$PERIOD) {
+          return newCharacterToken(start, this.index, chars.$PERIOD);
+        }
+
+        this.advance();
+        if (this.peek === chars.$PERIOD) {
+          this.advance();
+          return newOperatorToken(start, this.index, '...');
+        }
+        return this.error(`Unexpected character [${String.fromCharCode(peek)}]`, 0);
       case chars.$LPAREN:
       case chars.$RPAREN:
       case chars.$LBRACKET:
@@ -331,15 +348,9 @@ class _Scanner {
       case chars.$GT:
         return this.scanComplexOperator(start, String.fromCharCode(peek), chars.$EQ, '=');
       case chars.$BANG:
+        return this.scanComplexOperator(start, '!', chars.$EQ, '=', chars.$EQ, '=');
       case chars.$EQ:
-        return this.scanComplexOperator(
-          start,
-          String.fromCharCode(peek),
-          chars.$EQ,
-          '=',
-          chars.$EQ,
-          '=',
-        );
+        return this.scanEquals(start);
       case chars.$AMPERSAND:
         return this.scanComplexOperator(start, '&', chars.$AMPERSAND, '&', chars.$EQ, '=');
       case chars.$BAR:
@@ -408,6 +419,24 @@ class _Scanner {
     if (threeCode != null && this.peek == threeCode) {
       this.advance();
       str += three;
+    }
+    return newOperatorToken(start, this.index, str);
+  }
+
+  private scanEquals(start: number): Token {
+    this.advance();
+    let str: string = '=';
+    if (this.peek === chars.$EQ) {
+      this.advance();
+      str += '=';
+    } else if (this.peek === chars.$GT) {
+      this.advance();
+      str += '>';
+      return newOperatorToken(start, this.index, str);
+    }
+    if (this.peek === chars.$EQ) {
+      this.advance();
+      str += '=';
     }
     return newOperatorToken(start, this.index, str);
   }

@@ -734,13 +734,14 @@ export class StaticInterpreter {
   }
 
   private visitTypeQuery(node: ts.TypeQueryNode, context: Context): ResolvedValue {
-    if (!ts.isIdentifier(node.exprName)) {
+    const exprName = ts.isQualifiedName(node.exprName) ? node.exprName.right : node.exprName;
+    if (!ts.isIdentifier(exprName)) {
       return DynamicValue.fromUnknown(node);
     }
 
-    const decl = this.host.getDeclarationOfIdentifier(node.exprName);
+    const decl = this.host.getDeclarationOfIdentifier(exprName);
     if (decl === null) {
-      return DynamicValue.fromUnknownIdentifier(node.exprName);
+      return DynamicValue.fromUnknownIdentifier(exprName);
     }
 
     const declContext: Context = {...context, ...joinModuleContext(context, node, decl)};

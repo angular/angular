@@ -8,10 +8,10 @@
   "fesm2015": "./fesm2015/zone.js",
   "typings": "./zone.d.ts",
   "devDependencies": {
-    "@csstools/css-calc": "2.1.4",
-    "@csstools/css-color-parser": "3.1.0",
+    "@csstools/css-calc": "3.0.0",
+    "@csstools/css-color-parser": "4.0.1",
     "@externs/nodejs": "1.5.0",
-    "@types/jasmine": "5.1.13",
+    "@types/jasmine": "5.1.15",
     "@types/node": "^24.3.0",
     "@types/systemjs": "6.15.4",
     "bluebird": "3.7.2",

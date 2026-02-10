@@ -15,6 +15,7 @@ import {
   ɵɵdefineInjector,
   ɵɵinject,
 } from '../../src/core';
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 import {createInjector} from '../../src/di/create_injector';
 import {InternalInjectFlags} from '../../src/di/interface/injector';
 import {R3Injector} from '../../src/di/r3_injector';
@@ -339,7 +340,7 @@ describe('InjectorDef-based createInjector()', () => {
     expect(() => injector.get(ServiceTwo)).toThrowError(
       'NG0201: No provider found for `ServiceTwo`. ' +
         'Source: Module. ' +
-        'Find more at https://angular.dev/errors/NG0201',
+        `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
     );
   });
 
@@ -347,7 +348,7 @@ describe('InjectorDef-based createInjector()', () => {
     const injector = createInjector([ServiceTwo]);
     expect(() => injector.get(ServiceTwo)).toThrowError(
       'NG0201: No provider found for `ServiceTwo`. ' +
-        'Find more at https://angular.dev/errors/NG0201',
+        `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
     );
   });
 
@@ -357,7 +358,7 @@ describe('InjectorDef-based createInjector()', () => {
       'NG0201: No provider found for `Service`. ' +
         'Source: ModuleWithMissingDep. ' +
         'Path: ServiceWithMissingDep -> Service. ' +
-        'Find more at https://angular.dev/errors/NG0201',
+        `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
     );
   });
 

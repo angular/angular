@@ -4,21 +4,21 @@ Signal Forms' field state allows you to react to user interactions by providing 
 
 ## Understanding field state
 
-When you create a form with the `form()` function, it returns a **field tree** - an object structure that mirrors your form model. Each field in the tree is accessible via dot notation (like `form.email`).
+When you create a form with the [`form()`](api/forms/signals/form) function, it returns a **field tree** - an object structure that mirrors your form model. Each field in the tree is accessible via dot notation (like [`form.email`](api/forms/signals/form#email)).
 
 ### Accessing field state
 
-When you call any field in the field tree as a function (like `form.email()`), it returns a `FieldState` object containing reactive signals that track the field's validation, interaction, and availability state. For example, the `invalid()` signal tells you whether the field has validation errors:
+When you call any field in the field tree as a function (like [`form.email()`](api/forms/signals/form#email)), it returns a `FieldState` object containing reactive signals that track the field's validation, interaction, and availability state. For example, the `invalid()` signal tells you whether the field has validation errors:
 
 ```angular-ts
-import { Component, signal } from '@angular/core'
-import { form, Field, required, email } from '@angular/forms/signals'
+import {Component, signal} from '@angular/core';
+import {form, FormField, required, email} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-registration',
-  imports: [Field],
+  imports: [FormField],
   template: `
-    <input type="email" [field]="registrationForm.email" />
+    <input type="email" [formField]="registrationForm.email" />
 
     @if (registrationForm.email().invalid()) {
       <p class="error">Email has validation errors:</p>
@@ -28,18 +28,18 @@ import { form, Field, required, email } from '@angular/forms/signals'
         }
       </ul>
     }
-  `
+  `,
 })
 export class Registration {
   registrationModel = signal({
     email: '',
-    password: ''
-  })
+    password: '',
+  });
 
   registrationForm = form(this.registrationModel, (schemaPath) => {
-    required(schemaPath.email, { message: 'Email is required' })
-    email(schemaPath.email, { message: 'Enter a valid email address' })
-  })
+    required(schemaPath.email, {message: 'Email is required'});
+    email(schemaPath.email, {message: 'Enter a valid email address'});
+  });
 }
 ```
 
@@ -47,7 +47,7 @@ In this example, the template checks `registrationForm.email().invalid()` to det
 
 ### Field state signals
 
-The most commonly used signal is `value()`, a [writable signal](guide/forms/signals/models#updating-models) that provides access to the field's current value:
+The most commonly used signal is `value()`, a `WritableSignal` that provides access to the field's current value:
 
 ```ts
 const emailValue = registrationForm.email().value();
@@ -83,18 +83,19 @@ Use `valid()` and `invalid()` to check validation status:
 ```angular-ts
 @Component({
   template: `
-    <input type="email" [field]="loginForm.email" />
+    <input type="email" [formField]="loginForm.email" />
 
     @if (loginForm.email().invalid()) {
       <p class="error">Email is invalid</p>
-    } @if (loginForm.email().valid()) {
+    }
+    @if (loginForm.email().valid()) {
       <p class="success">Email looks good</p>
     }
-  `
+  `,
 })
 export class Login {
-  loginModel = signal({ email: '', password: '' })
-  loginForm = form(this.loginModel)
+  loginModel = signal({email: '', password: ''});
+  loginForm = form(this.loginModel);
 }
 ```
 
@@ -109,11 +110,11 @@ When checking validity in code, use `invalid()` instead of `!valid()` if you wan
 
 Access the array of validation errors with `errors()`. Each error object contains:
 
-| Property  | Description                                                     |
-| --------- | --------------------------------------------------------------- |
-| `kind`    | The validation rule that failed (such as "required" or "email") |
-| `message` | Optional human-readable error message                           |
-| `field`   | Reference to the `FieldTree` where the error occurred           |
+| Property    | Description                                                     |
+| ----------- | --------------------------------------------------------------- |
+| `kind`      | The validation rule that failed (such as "required" or "email") |
+| `message`   | Optional human-readable error message                           |
+| `fieldTree` | Reference to the `FieldTree` where the error occurred           |
 
 NOTE: The `message` property is optional. Validators can provide custom error messages, but if not specified, you may need to map error `kind` values to your own messages.
 
@@ -122,7 +123,7 @@ Here's an example of how to display errors in your template:
 ```angular-ts
 @Component({
   template: `
-    <input type="email" [field]="loginForm.email" />
+    <input type="email" [formField]="loginForm.email" />
 
     @if (loginForm.email().errors().length > 0) {
       <div class="errors">
@@ -144,7 +145,7 @@ The `pending()` signal indicates async validation is in progress:
 ```angular-ts
 @Component({
   template: `
-    <input type="email" [field]="signupForm.email" />
+    <input type="email" [formField]="signupForm.email" />
 
     @if (signupForm.email().pending()) {
       <p>Checking if email is available...</p>
@@ -176,19 +177,19 @@ The `dirty()` signal becomes `true` when the user modifies an interactive field'
 ```angular-ts
 @Component({
   template: `
-    <form>
-      <input [field]="profileForm.name" />
-      <input [field]="profileForm.bio" />
+    <form novalidate>
+      <input [formField]="profileForm.name" />
+      <input [formField]="profileForm.bio" />
 
       @if (profileForm().dirty()) {
         <p class="warning">You have unsaved changes</p>
       }
     </form>
-  `
+  `,
 })
 export class Profile {
-  profileModel = signal({ name: 'Alice', bio: 'Developer' })
-  profileForm = form(this.profileModel)
+  profileModel = signal({name: 'Alice', bio: 'Developer'});
+  profileForm = form(this.profileModel);
 }
 ```
 
@@ -222,14 +223,14 @@ The `disabled()` signal indicates whether a field accepts user input. Disabled f
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
-import { form, Field, disabled } from '@angular/forms/signals'
+import { form, FormField, disabled } from '@angular/forms/signals'
 
 @Component({
   selector: 'app-order',
-  imports: [Field],
+  imports: [FormField],
   template: `
-    <!-- TIP: The `[field]` directive automatically binds the `disabled` attribute based on the field's `disabled()` state, so you don't need to manually add `[disabled]="field().disabled()"` -->
-    <input [field]="orderForm.couponCode" />
+    <!-- TIP: The `[formField]` directive automatically binds the `disabled` attribute based on the field's `disabled()` state, so you don't need to manually add `[disabled]="field().disabled()"` -->
+    <input [formField]="orderForm.couponCode" />
 
     @if (orderForm.couponCode().disabled()) {
       <p class="info">Coupon code is only available for orders over $50</p>
@@ -264,35 +265,35 @@ Disabled fields don't contribute to the parent form's validation state. Even if 
 The `hidden()` signal indicates whether a field is conditionally hidden. Use `hidden()` with `@if` to show or hide fields based on conditions:
 
 ```angular-ts
-import { Component, signal } from '@angular/core'
-import { form, Field, hidden } from '@angular/forms/signals'
+import {Component, signal} from '@angular/core';
+import {form, FormField, hidden} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-profile',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
-      <input type="checkbox" [field]="profileForm.isPublic" />
+      <input type="checkbox" [formField]="profileForm.isPublic" />
       Make profile public
     </label>
 
     @if (!profileForm.publicUrl().hidden()) {
       <label>
         Public URL
-        <input [field]="profileForm.publicUrl" />
+        <input [formField]="profileForm.publicUrl" />
       </label>
     }
-  `
+  `,
 })
 export class Profile {
   profileModel = signal({
     isPublic: false,
-    publicUrl: ''
-  })
+    publicUrl: '',
+  });
 
-  profileForm = form(this.profileModel, schemaPath => {
-    hidden(schemaPath.publicUrl, ({valueOf}) => !valueOf(schemaPath.isPublic))
-  })
+  profileForm = form(this.profileModel, (schemaPath) => {
+    hidden(schemaPath.publicUrl, ({valueOf}) => !valueOf(schemaPath.isPublic));
+  });
 }
 ```
 
@@ -303,37 +304,37 @@ Hidden fields don't participate in validation. If a required field is hidden, it
 The `readonly()` signal indicates whether a field is readonly. Readonly fields display their value but users cannot edit them:
 
 ```angular-ts
-import { Component, signal } from '@angular/core'
-import { form, Field, readonly } from '@angular/forms/signals'
+import {Component, signal} from '@angular/core';
+import {form, FormField, readonly} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-account',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
       Username (cannot be changed)
-      <input [field]="accountForm.username" />
+      <input [formField]="accountForm.username" />
     </label>
 
     <label>
       Email
-      <input [field]="accountForm.email" />
+      <input [formField]="accountForm.email" />
     </label>
-  `
+  `,
 })
 export class Account {
   accountModel = signal({
     username: 'johndoe',
-    email: 'john@example.com'
-  })
+    email: 'john@example.com',
+  });
 
-  accountForm = form(this.accountModel, schemaPath => {
-    readonly(schemaPath.username)
-  })
+  accountForm = form(this.accountModel, (schemaPath) => {
+    readonly(schemaPath.username);
+  });
 }
 ```
 
-NOTE: The `[field]` directive automatically binds the `readonly` attribute based on the field's `readonly()` state, so you don't need to manually add `[readonly]="field().readonly()"`.
+NOTE: The `[formField]` directive automatically binds the `readonly` attribute based on the field's `readonly()` state, so you don't need to manually add `[readonly]="field().readonly()"`.
 
 Like disabled and hidden fields, readonly fields are non-interactive and don't affect parent form state. The `readonly()` state affects editability and validation, but does not change the field's value.
 
@@ -354,17 +355,17 @@ The root form is also a field in the field tree. When you call it as a function,
 ```angular-ts
 @Component({
   template: `
-    <form>
-      <input [field]="loginForm.email" />
-      <input [field]="loginForm.password" />
+    <form novalidate>
+      <input [formField]="loginForm.email" />
+      <input [formField]="loginForm.password" />
 
       <button [disabled]="!loginForm().valid()">Sign In</button>
     </form>
-  `
+  `,
 })
 export class Login {
-  loginModel = signal({ email: '', password: '' })
-  loginForm = form(this.loginModel)
+  loginModel = signal({email: '', password: ''});
+  loginForm = form(this.loginModel);
 }
 ```
 
@@ -455,29 +456,29 @@ Field state signals integrate seamlessly with Angular templates, enabling reacti
 Show errors only after a user has interacted with a field:
 
 ```angular-ts
-import { Component, signal } from '@angular/core'
-import { form, Field, email } from '@angular/forms/signals'
+import {Component, signal} from '@angular/core';
+import {form, FormField, email} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-signup',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
       Email
-      <input type="email" [field]="signupForm.email" />
+      <input type="email" [formField]="signupForm.email" />
     </label>
 
     @if (signupForm.email().touched() && signupForm.email().invalid()) {
       <p class="error">{{ signupForm.email().errors()[0].message }}</p>
     }
-  `
+  `,
 })
 export class Signup {
-  signupModel = signal({ email: '', password: '' })
+  signupModel = signal({email: '', password: ''});
 
-  signupForm = form(this.signupModel, schemaPath => {
-    email(schemaPath.email)
-  })
+  signupForm = form(this.signupModel, (schemaPath) => {
+    email(schemaPath.email);
+  });
 }
 ```
 
@@ -488,35 +489,35 @@ This pattern prevents showing errors before users have had a chance to interact 
 Use the `hidden()` signal with `@if` to show or hide fields conditionally:
 
 ```angular-ts
-import { Component, signal } from '@angular/core'
-import { form, Field, hidden } from '@angular/forms/signals'
+import {Component, signal} from '@angular/core';
+import {form, FormField, hidden} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-order',
-  imports: [Field],
+  imports: [FormField],
   template: `
     <label>
-      <input type="checkbox" [field]="orderForm.requiresShipping" />
+      <input type="checkbox" [formField]="orderForm.requiresShipping" />
       Requires shipping
     </label>
 
     @if (!orderForm.shippingAddress().hidden()) {
       <label>
         Shipping Address
-        <input [field]="orderForm.shippingAddress" />
+        <input [formField]="orderForm.shippingAddress" />
       </label>
     }
-  `
+  `,
 })
 export class Order {
   orderModel = signal({
     requiresShipping: false,
-    shippingAddress: ''
-  })
+    shippingAddress: '',
+  });
 
-  orderForm = form(this.orderModel, schemaPath => {
-    hidden(schemaPath.shippingAddress, ({valueOf}) => !valueOf(schemaPath.requiresShipping))
-  })
+  orderForm = form(this.orderModel, (schemaPath) => {
+    hidden(schemaPath.shippingAddress, ({valueOf}) => !valueOf(schemaPath.requiresShipping));
+  });
 }
 ```
 
@@ -594,12 +595,22 @@ While field state typically updates through user interactions (typing, focusing,
 
 #### Form submission
 
-When a user submits a form, use the `submit()` function to handle validation and reveal errors:
+When a user submits a form, use the `submit()` function to handle validation and reveal errors.
 
-```ts
-import {Component, signal} from '@angular/core';
-import {form, submit, required, email} from '@angular/forms/signals';
+Signal Forms handles validation through its own system, so you need to prevent the browser's default form behavior. Add `novalidate` to the `<form>` element to disable native HTML validation (such as browser tooltip popups for `required` or `type="email"` fields), and call `$event.preventDefault()` in your submit handler to prevent the browser from reloading the page:
 
+```angular-ts
+@Component({
+  template: `
+    <form novalidate (submit)="onSubmit($event)">
+      <input [formField]="registrationForm.username" />
+      <input type="email" [formField]="registrationForm.email" />
+      <input type="password" [formField]="registrationForm.password" />
+
+      <button type="submit">Register</button>
+    </form>
+  `,
+})
 export class Registration {
   registrationModel = signal({username: '', email: '', password: ''});
 
@@ -609,13 +620,14 @@ export class Registration {
     required(schemaPath.password);
   });
 
-  onSubmit() {
+  onSubmit(event: Event) {
+    event.preventDefault();
     submit(this.registrationForm, async () => {
       this.submitToServer();
     });
   }
 
-  submitToServer() {
+  private submitToServer() {
     // Send data to server
   }
 }
@@ -653,14 +665,14 @@ This two-step reset ensures the form is ready for new input without showing stal
 You can apply custom styles to your form by binding CSS classes based on the validation state:
 
 ```angular-ts
-import { Component, signal } from '@angular/core'
-import { form, Field, email } from '@angular/forms/signals'
+import {Component, signal} from '@angular/core';
+import {form, FormField, email} from '@angular/forms/signals';
 
 @Component({
   template: `
     <input
       type="email"
-      [field]="form.email"
+      [formField]="form.email"
       [class.is-invalid]="form.email().touched() && form.email().invalid()"
       [class.is-valid]="form.email().touched() && form.email().valid()"
     />
@@ -674,14 +686,14 @@ import { form, Field, email } from '@angular/forms/signals'
     input.is-valid {
       border: 2px solid green;
     }
-  `
+  `,
 })
 export class StyleExample {
-  model = signal({ email: '' })
+  model = signal({email: ''});
 
-  form = form(this.model, schemaPath => {
-    email(schemaPath.email)
-  })
+  form = form(this.model, (schemaPath) => {
+    email(schemaPath.email);
+  });
 }
 ```
 

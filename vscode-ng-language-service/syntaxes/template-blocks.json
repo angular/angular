@@ -12,7 +12,7 @@
       "name": "keyword.control.block.transition.ng"
     },
     "block": {
-      "begin": "(@)(if|else if|else|defer|placeholder|loading|error|switch|case|default|for|empty)(?:\\s*)",
+      "begin": "(@)(if|else if|else|defer|placeholder|loading|error|switch|for|empty)(?:\\s*)",
       "beginCaptures": {
         "1": {
           "patterns": [
@@ -35,6 +35,41 @@
       ],
       "name": "control.block.ng",
       "end": "(?<=\\})"
+    },
+    "caseHeader": {
+      "begin": "(@)(case|default)(?:\\s*)",
+      "beginCaptures": {
+        "1": {
+          "patterns": [
+            {
+              "include": "#transition"
+            }
+          ]
+        },
+        "2": {
+          "name": "keyword.control.block.kind.ng"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#blockExpression"
+        }
+      ],
+      "end": "(?=@|{)",
+      "name": "control.block.case.header.ng"
+    },
+    "caseBlock": {
+      "begin": "(?=@(?:case|default))",
+      "patterns": [
+        {
+          "include": "#caseHeader"
+        },
+        {
+          "include": "#blockBody"
+        }
+      ],
+      "end": "(?<=\\})",
+      "name": "control.block.case.ng"
     },
     "blockExpression": {
       "begin": "\\(",
@@ -125,6 +160,9 @@
       },
       "contentName": "control.block.body.ng",
       "patterns": [
+        {
+          "include": "#caseBlock"
+        },
         {
           "include": "text.html.derivative"
         },

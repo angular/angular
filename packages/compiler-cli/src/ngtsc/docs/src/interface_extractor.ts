@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {ClassDeclaration} from '../../reflection';
 
-import {ClassEntry, EntryType, InterfaceEntry} from './entities';
+import {EntryType, InterfaceEntry} from './entities';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {PropertiesExtractor} from './properties_extractor';
 

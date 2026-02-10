@@ -124,9 +124,11 @@ class MyMenuItem {}
 
 @Component({
   selector: 'my-menu',
-  template: `<my-popup>
-    <ng-content />
-  </my-popup> `,
+  template: `
+    <my-popup>
+      <ng-content />
+    </my-popup>
+  `,
 })
 class MyMenu {
   triggerText = input('');

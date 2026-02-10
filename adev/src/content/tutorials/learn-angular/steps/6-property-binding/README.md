@@ -13,7 +13,7 @@ In this activity, you'll learn how to use property binding in templates.
 To bind to an element's attribute, wrap the attribute name in square brackets. Here's an example:
 
 ```angular-html
-<img alt="photo" [src]="imageURL">
+<img alt="photo" [src]="imageURL" />
 ```
 
 In this example, the value of the `src` attribute will be bound to the class property `imageURL`. Whatever value `imageURL` has will be set as the `src` attribute of the `img` tag.
@@ -47,4 +47,4 @@ Next, bind the `contentEditable` attribute of the `div` to the `isEditable` prop
 
 The div is now editable. Nice work 👍
 
-Property binding is one of Angular's many powerful features. If you'd like to learn more checkout [the Angular documentation](guide/templates/property-binding).
+Property binding is one of Angular's many powerful features. If you'd like to learn more checkout [the Angular documentation](guide/templates/binding#css-class-and-style-property-bindings).

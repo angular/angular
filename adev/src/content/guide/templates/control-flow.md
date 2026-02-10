@@ -8,7 +8,7 @@ The `@if` block conditionally displays its content when its condition expression
 
 ```angular-html
 @if (a > b) {
-  <p>{{a}} is greater than {{b}}</p>
+  <p>{{ a }} is greater than {{ b }}</p>
 }
 ```
 
@@ -16,11 +16,11 @@ If you want to display alternative content, you can do so by providing any numbe
 
 ```angular-html
 @if (a > b) {
-  {{a}} is greater than {{b}}
+  {{ a }} is greater than {{ b }}
 } @else if (b > a) {
-  {{a}} is less than {{b}}
+  {{ a }} is less than {{ b }}
 } @else {
-  {{a}} is equal to {{b}}
+  {{ a }} is equal to {{ b }}
 }
 ```
 
@@ -60,7 +60,15 @@ Select a property that uniquely identifies each item in the `track` expression. 
 
 For static collections that never change, you can use `$index` to tell Angular to track each item by its index in the collection.
 
-If no other option is available, you can specify `identity`. This tells Angular to track the item by its reference identity using the triple-equals operator (`===`). Avoid this option whenever possible as it can lead to significantly slower rendering updates, as Angular has no way to map which data item corresponds to which DOM nodes.
+If no other option is available, you can use the item itself as a tracking key. This tells Angular to track the item by its reference identity using the triple-equals operator (`===`). Avoid this option whenever possible as it can lead to significantly slower rendering updates, as Angular has no way to map which data item corresponds to which DOM nodes.
+
+```angular-html
+@for (item of items; track item) {
+  {{ item.name }}
+}
+```
+
+NOTE: Unlike `*ngFor`, the `@for` block prioritizes view reuse. If a tracked property changes but the object reference remains the same, Angular updates the view's bindings (including component inputs) rather than destroying and recreating the entire element.
 
 ### Contextual variables in `@for` blocks
 
@@ -91,9 +99,9 @@ You can optionally include an `@empty` section immediately after the `@for` bloc
 
 ```angular-html
 @for (item of items; track item.name) {
-  <li> {{ item.name }}</li>
+  <li>{{ item.name }}</li>
 } @empty {
-  <li> There are no items. </li>
+  <li>There are no items.</li>
 }
 ```
 
@@ -106,9 +114,7 @@ While the `@if` block is great for most scenarios, the `@switch` block provides 
   @case ('admin') {
     <app-admin-dashboard />
   }
-  @case ('reviewer') {
-    <app-reviewer-dashboard />
-  }
+  @case ('reviewer')
   @case ('editor') {
     <app-editor-dashboard />
   }
@@ -121,6 +127,8 @@ While the `@if` block is great for most scenarios, the `@switch` block provides 
 The value of the conditional expression is compared to the case expression using the triple-equals (`===`) operator.
 
 **`@switch` does not have a fallthrough**, so you do not need an equivalent to a `break` or `return` statement in the block.
+
+You can specify multiple conditions for a single block by have consecutive `@case` statements.
 
 You can optionally include a `@default` block. The content of the `@default` block displays if none of the preceding case expressions match the switch value.
 

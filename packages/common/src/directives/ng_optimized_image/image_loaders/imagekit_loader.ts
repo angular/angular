@@ -9,6 +9,7 @@
 import {Provider} from '@angular/core';
 import {PLACEHOLDER_QUALITY} from './constants';
 import {createImageLoader, ImageLoaderConfig, ImageLoaderInfo} from './image_loader';
+import {normalizeLoaderTransform} from './normalized_options';
 
 /**
  * Name and URL tester for ImageKit.
@@ -35,6 +36,7 @@ function isImageKitUrl(url: string): boolean {
  * https://subdomain.mysite.com
  * @returns Set of providers to configure the ImageKit loader.
  *
+ * @see [Image Optimization Guide](guide/image-optimization)
  * @publicApi
  */
 export const provideImageKitLoader: (path: string) => Provider[] = createImageLoader(
@@ -55,6 +57,12 @@ export function createImagekitUrl(path: string, config: ImageLoaderConfig): stri
   // When requesting a placeholder image we ask for a low quality image to reduce the load time.
   if (config.isPlaceholder) {
     params.push(`q-${PLACEHOLDER_QUALITY}`);
+  }
+
+  // Allows users to add any ImageKit transformation parameters as a string or object
+  if (config.loaderParams?.['transform']) {
+    const transformStr = normalizeLoaderTransform(config.loaderParams['transform'], '-');
+    params.push(transformStr);
   }
 
   const urlSegments = params.length ? [path, `tr:${params.join(',')}`, src] : [path, src];

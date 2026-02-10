@@ -15,7 +15,7 @@ import {RouterLink} from '@angular/router';
       <a routerLink="/user-profile">User profile</a>
       <a routerLink="/settings">Settings</a>
     </nav>
-  `
+  `,
   imports: [RouterLink],
   ...
 })
@@ -36,7 +36,7 @@ export class App {}
 
 In this example, the first example contains the full path with the protocol (i.e., `https://`) and the root domain (i.e., `angular.dev`) explicitly defined for the essentials page. In contrast, the second example assumes the user is already on the correct root domain for `/essentials`.
 
-Generally speaking, relative URLs are preferred because they are more maintainable across applications because they don’t need to know their absolute position within the routing hierarchy.
+Generally speaking, relative URLs are preferred as they are more maintainable across applications since they don’t need to know their absolute position within the routing hierarchy.
 
 ### How relative URLs work
 
@@ -56,7 +56,7 @@ When you need to define dynamic parameters in a relative URL, use the array synt
 <a [routerLink]="['user', currentUserId]">Current User</a>
 ```
 
-In addition, Angular routing allows you specify whether you want the path to be relative to the current URL or to the root domain based on whether the relative path is prefixed with a forward slash (`/`) or not.
+In addition, Angular routing allows you to specify whether you want the path to be relative to the current URL or to the root domain based on whether the relative path is prefixed with a forward slash (`/`) or not.
 
 For example, if the user is on `example.com/settings`, here is how different relative paths can be defined for various scenarios:
 
@@ -67,7 +67,7 @@ For example, if the user is on `example.com/settings`, here is how different rel
 
 <!-- Navigates to /team/:teamId/user/:userId -->
 <a routerLink="/team/123/user/456">User 456</a>
-<a [routerLink]="['/team', teamId, 'user', userId]">Current User</a>”
+<a [routerLink]="['/team', teamId, 'user', userId]">Current User</a>
 ```
 
 ## Programmatic navigation to routes
@@ -79,13 +79,11 @@ While `RouterLink` handles declarative navigation in templates, Angular provides
 You can use the `router.navigate()` method to programmatically navigate between routes by specifying a URL path array.
 
 ```angular-ts
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  template: `
-    <button (click)="navigateToProfile()">View Profile</button>
-  `
+  template: ` <button (click)="navigateToProfile()">View Profile</button> `,
 })
 export class AppDashboard {
   private router = inject(Router);
@@ -99,11 +97,11 @@ export class AppDashboard {
 
     // With query parameters
     this.router.navigate(['/search'], {
-      queryParams: { category: 'books', sort: 'price' }
+      queryParams: {category: 'books', sort: 'price'},
     });
 
     // With matrix parameters
-    this.router.navigate(['/products', { featured: true, onSale: true }]);
+    this.router.navigate(['/products', {featured: true, onSale: true}]);
   }
 }
 ```
@@ -113,33 +111,31 @@ export class AppDashboard {
 You can also build dynamic navigation paths relative to your component’s location in the routing tree using the `relativeTo` option.
 
 ```angular-ts
-import { Router, ActivatedRoute } from '@angular/router';
+import {Router, ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-user-detail',
   template: `
     <button (click)="navigateToEdit()">Edit User</button>
     <button (click)="navigateToParent()">Back to List</button>
-  `
+  `,
 })
-export class UserDetailComponent {
+export class UserDetail {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-
-  constructor() {}
 
   // Navigate to a sibling route
   navigateToEdit() {
     // From: /users/123
     // To:   /users/123/edit
-    this.router.navigate(['edit'], { relativeTo: this.route });
+    this.router.navigate(['edit'], {relativeTo: this.route});
   }
 
   // Navigate to parent
   navigateToParent() {
     // From: /users/123
     // To:   /users
-    this.router.navigate(['..'], { relativeTo: this.route });
+    this.router.navigate(['..'], {relativeTo: this.route});
   }
 }
 ```

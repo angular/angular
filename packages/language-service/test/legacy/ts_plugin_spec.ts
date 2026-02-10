@@ -6,15 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import ts from 'typescript';
+
 import {LanguageService} from '../../src/language_service';
-import {getExternalFiles} from '../../src/ts_plugin';
+import {initialize} from '../../src/ts_plugin';
 
 import {APP_COMPONENT, setup} from './mock_host';
 
 describe('getExternalFiles()', () => {
   it('should return all typecheck files', () => {
     const {project, tsLS} = setup();
-    let externalFiles = getExternalFiles(project);
+    const plugin = initialize({typescript: ts});
+
+    let externalFiles = plugin.getExternalFiles?.(project, ts.ProgramUpdateLevel.Full);
     // Initially there are no external files because Ivy compiler hasn't done
     // a global analysis
     expect(externalFiles).toEqual([]);
@@ -22,9 +26,9 @@ describe('getExternalFiles()', () => {
     const ngLS = new LanguageService(project, tsLS, {});
     ngLS.getSemanticDiagnostics(APP_COMPONENT);
     // Now that global analysis is run, we should have all the typecheck files
-    externalFiles = getExternalFiles(project);
+    externalFiles = plugin.getExternalFiles?.(project, ts.ProgramUpdateLevel.Full);
     // Includes 1 typecheck file, 1 template, and 1 css files
-    expect(externalFiles.length).toBe(3);
-    expect(externalFiles[0].endsWith('app.component.ngtypecheck.ts')).toBeTrue();
+    expect(externalFiles?.length).toBe(3);
+    expect(externalFiles?.[0].endsWith('app.component.ngtypecheck.ts')).toBeTrue();
   });
 });

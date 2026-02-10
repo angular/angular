@@ -56,6 +56,7 @@ import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '../defer/regis
 import {gatherDeferBlocksCommentNodes} from './node_lookup_utils';
 import {processAndInitTriggers} from '../defer/triggering';
 import {DOCUMENT} from '../document';
+import {DOC_PAGE_BASE_URL} from '../error_details_base_url';
 
 /**
  * Indicates whether the hydration-related code was added,
@@ -148,7 +149,7 @@ function printHydrationStats(injector: Injector) {
     (isIncrementalHydrationEnabled(injector)
       ? `${ngDevMode!.deferBlocksWithIncrementalHydration} defer block(s) were configured to use incremental hydration. `
       : '') +
-    `Learn more at https://angular.dev/guide/hydration.`;
+    `Learn more at ${DOC_PAGE_BASE_URL}/guide/hydration.`;
   // tslint:disable-next-line:no-console
   console.log(message);
 }

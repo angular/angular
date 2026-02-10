@@ -301,6 +301,26 @@ describe('@defer debugging utilities', () => {
     await block.render(DeferBlockState.Complete);
   });
 
+  it('should return the host comment node of the currently-rendered block', () => {
+    @Component({
+      template: `
+        @defer (when false) {
+          Loaded
+        }
+      `,
+    })
+    class App {}
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const results = getDeferBlocks(fixture.nativeElement);
+
+    expect(results.length).toBe(1);
+    expect(results[0].hostNode).toBeTruthy();
+    expect(stringifyNodes([results[0].hostNode])).toEqual(['Comment(container)']);
+  });
+
   function stringifyNodes(nodes: Node[]): string[] {
     return nodes.map((node) => {
       switch (node.nodeType) {

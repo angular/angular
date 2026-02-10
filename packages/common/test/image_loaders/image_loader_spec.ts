@@ -83,6 +83,58 @@ describe('Built-in image directive loaders', () => {
       const config = {src: 'img.png', isPlaceholder: true};
       expect(loader(config)).toBe(`${path}/img.png?auto=format&q=20`);
     });
+
+    it('should apply custom transformations when transform is provided as a string', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      expect(loader({src: '/img.png', loaderParams: {transform: 'bri=50,con=20'}})).toBe(
+        `${path}/img.png?auto=format&bri=50&con=20`,
+      );
+    });
+
+    it('should apply custom transformations when transform is provided as an object', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      expect(
+        loader({src: '/img.png', loaderParams: {transform: {bri: '50', con: '20', sat: '-20'}}}),
+      ).toBe(`${path}/img.png?auto=format&bri=50&con=20&sat=-20`);
+    });
+
+    it('should combine width and transform parameters', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      expect(
+        loader({
+          src: 'img.png',
+          width: 400,
+          loaderParams: {transform: {fit: 'crop'}},
+        }),
+      ).toBe(`${path}/img.png?auto=format&w=400&fit=crop`);
+    });
+
+    it('should support additional transformation options via transform object', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      expect(
+        loader({
+          src: 'img.png',
+          loaderParams: {transform: {blur: '50', sharp: '30', usm: '20'}},
+        }),
+      ).toBe(`${path}/img.png?auto=format&blur=50&sharp=30&usm=20`);
+    });
+
+    it('should apply width, placeholder, and transform parameters together', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      expect(
+        loader({
+          src: '/img.png',
+          width: 500,
+          isPlaceholder: true,
+          loaderParams: {transform: {bri: '10', flip: 'hv'}},
+        }),
+      ).toBe(`${path}/img.png?auto=format&w=500&q=20&bri=10&flip=hv`);
+    });
   });
 
   describe('Cloudinary loader', () => {
@@ -151,6 +203,45 @@ describe('Built-in image directive loaders', () => {
           `${path}/image/upload/f_auto,q_auto,r_max/img.png`,
         );
       });
+
+      it('should apply custom transformations when transform is provided as a string', () => {
+        const path = 'https://res.cloudinary.com/mysite';
+        const loader = createCloudinaryLoader(path);
+        expect(loader({src: '/img.png', loaderParams: {transform: 'e_grayscale,r_10'}})).toBe(
+          `${path}/image/upload/f_auto,q_auto,e_grayscale,r_10/img.png`,
+        );
+      });
+
+      it('should apply custom transformations when transform is provided as an object', () => {
+        const path = 'https://res.cloudinary.com/mysite';
+        const loader = createCloudinaryLoader(path);
+        expect(
+          loader({src: '/img.png', loaderParams: {transform: {e: 'grayscale', r: 10, f: 'webp'}}}),
+        ).toBe(`${path}/image/upload/f_auto,q_auto,e_grayscale,r_10,f_webp/img.png`);
+      });
+
+      it('should combine rounded and transform parameters', () => {
+        const path = 'https://res.cloudinary.com/mysite';
+        const loader = createCloudinaryLoader(path);
+        expect(
+          loader({
+            src: '/img.png',
+            loaderParams: {rounded: true, transform: 'e_blur:300'},
+          }),
+        ).toBe(`${path}/image/upload/f_auto,q_auto,r_max,e_blur:300/img.png`);
+      });
+
+      it('should apply width and transform parameters together', () => {
+        const path = 'https://res.cloudinary.com/mysite';
+        const loader = createCloudinaryLoader(path);
+        expect(
+          loader({
+            src: '/img.png',
+            width: 500,
+            loaderParams: {transform: {q: 80, e: 'sharpen'}},
+          }),
+        ).toBe(`${path}/image/upload/f_auto,q_auto,w_500,q_80,e_sharpen/img.png`);
+      });
     });
   });
 
@@ -188,6 +279,38 @@ describe('Built-in image directive loaders', () => {
 
       config = {src: 'img.png', isPlaceholder: true, width: 30};
       expect(loader(config)).toBe(`${path}/tr:w-30,q-20/img.png`);
+    });
+
+    it('should apply custom transformations when transform is provided as a string', () => {
+      const path = 'https://ik.imageengine.io/imagetest';
+      const loader = createImageKitLoader(path);
+      expect(loader({src: '/img.png', loaderParams: {transform: 'r-max,fo-auto'}})).toBe(
+        `${path}/tr:r-max,fo-auto/img.png`,
+      );
+    });
+
+    it('should support additional transformation options via transform object', () => {
+      const path = 'https://ik.imageengine.io/imagetest';
+      const loader = createImageKitLoader(path);
+      expect(
+        loader({
+          src: 'img.png',
+          loaderParams: {transform: {bl: '10', ar: '16-9', q: '80'}},
+        }),
+      ).toBe(`${path}/tr:bl-10,ar-16-9,q-80/img.png`);
+    });
+
+    it('should apply width, placeholder, and transform parameters together', () => {
+      const path = 'https://ik.imageengine.io/imagetest';
+      const loader = createImageKitLoader(path);
+      expect(
+        loader({
+          src: '/img.png',
+          width: 500,
+          isPlaceholder: true,
+          loaderParams: {transform: {e: 'grayscale'}},
+        }),
+      ).toBe(`${path}/tr:w-500,q-20,e-grayscale/img.png`);
     });
 
     describe('input validation', () => {
@@ -254,6 +377,54 @@ describe('Built-in image directive loaders', () => {
       expect(loader(config)).toBe(
         'https://mysite.com/cdn-cgi/image/format=auto,quality=20/img.png',
       );
+    });
+
+    it('should apply custom transformations when transform is provided as a string', () => {
+      const path = 'https://mysite.com';
+      const loader = createCloudflareLoader(path);
+      expect(
+        loader({src: 'img.png', loaderParams: {transform: 'fit=cover,gravity=face,height=300'}}),
+      ).toBe(
+        'https://mysite.com/cdn-cgi/image/format=auto,fit=cover,gravity=face,height=300/img.png',
+      );
+    });
+
+    it('should apply custom transformations when transform is provided as an object', () => {
+      const path = 'https://mysite.com';
+      const loader = createCloudflareLoader(path);
+      expect(
+        loader({
+          src: 'img.png',
+          loaderParams: {transform: {fit: 'cover', gravity: 'auto', height: 300}},
+        }),
+      ).toBe(
+        'https://mysite.com/cdn-cgi/image/format=auto,fit=cover,gravity=auto,height=300/img.png',
+      );
+    });
+
+    it('should combine width and transform parameters', () => {
+      const path = 'https://mysite.com';
+      const loader = createCloudflareLoader(path);
+      expect(
+        loader({
+          src: 'img.png',
+          width: 400,
+          loaderParams: {transform: {fit: 'crop', gravity: 'face'}},
+        }),
+      ).toBe(
+        'https://mysite.com/cdn-cgi/image/format=auto,width=400,fit=crop,gravity=face/img.png',
+      );
+    });
+
+    it('should support additional transformation options via transform object', () => {
+      const path = 'https://mysite.com';
+      const loader = createCloudflareLoader(path);
+      expect(
+        loader({
+          src: 'img.png',
+          loaderParams: {transform: {blur: 50, rotate: 90, quality: 85}},
+        }),
+      ).toBe('https://mysite.com/cdn-cgi/image/format=auto,blur=50,rotate=90,quality=85/img.png');
     });
   });
 

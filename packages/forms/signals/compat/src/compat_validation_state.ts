@@ -8,12 +8,14 @@
 
 import {computed, Signal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
-import {ValidationError} from '../../src/api/rules/validation/validation_errors';
+import {ValidationError} from '../../src/api/rules';
 import {calculateValidationSelfStatus, ValidationState} from '../../src/field/validation';
-import type {CompatValidationError} from './api/compat_validation_error';
+import {
+  extractNestedReactiveErrors,
+  type CompatValidationError,
+} from '../../src/compat/validation_errors';
 import {getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
-import {extractNestedReactiveErrors} from './compat_validation_error';
 
 // Readonly signal containing an empty array, used for optimization.
 const EMPTY_ARRAY_SIGNAL = computed(() => []);
@@ -32,6 +34,8 @@ export class CompatValidationState implements ValidationState {
   readonly invalid: Signal<boolean>;
   readonly valid: Signal<boolean>;
 
+  readonly parseErrors: Signal<ValidationError.WithFormField[]> = computed(() => []);
+
   constructor(options: CompatFieldNodeOptions) {
     this.syncValid = getControlStatusSignal(options, (c: AbstractControl) => c.status === 'VALID');
     this.errors = getControlStatusSignal(options, extractNestedReactiveErrors);
@@ -46,8 +50,8 @@ export class CompatValidationState implements ValidationState {
     });
   }
 
-  asyncErrors: Signal<(ValidationError.WithField | 'pending')[]> = EMPTY_ARRAY_SIGNAL;
-  errorSummary: Signal<ValidationError.WithField[]> = EMPTY_ARRAY_SIGNAL;
+  asyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = EMPTY_ARRAY_SIGNAL;
+  errorSummary: Signal<ValidationError.WithFieldTree[]> = EMPTY_ARRAY_SIGNAL;
 
   // Those are irrelevant for compat mode, as it has no children
   rawSyncTreeErrors = EMPTY_ARRAY_SIGNAL;

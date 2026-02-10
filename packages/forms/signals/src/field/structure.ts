@@ -11,13 +11,13 @@ import {
   DestroyableInjector,
   Injector,
   linkedSignal,
+  ɵRuntimeError as RuntimeError,
   Signal,
   untracked,
   WritableSignal,
-  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 
-import {SignalFormsErrorCode} from '../errors';
+import {RuntimeErrorCode} from '../errors';
 
 import {LogicNode} from '../schema/logic_node';
 import type {FieldPathNode} from '../schema/path_node';
@@ -100,7 +100,7 @@ export abstract class FieldNodeStructure {
   }
 
   /** Gets the child fields of this field. */
-  children(): Iterable<FieldNode> {
+  children(): readonly FieldNode[] {
     const map = this.childrenMap();
     if (map === undefined) {
       return [];
@@ -190,7 +190,7 @@ export abstract class FieldNodeStructure {
       return computed(() => {
         if (this.parent!.structure.getChild(key) !== this.node) {
           throw new RuntimeError(
-            SignalFormsErrorCode.ORPHAN_FIELD_PROPERTY,
+            RuntimeErrorCode.ORPHAN_FIELD_PROPERTY,
             ngDevMode &&
               `Orphan field, looking for property '${key}' of ${getDebugName(this.parent!)}`,
           );
@@ -210,7 +210,7 @@ export abstract class FieldNodeStructure {
           // change from an array field to non-array field. However, in the current implementation
           // a field's parent can never change.
           throw new RuntimeError(
-            SignalFormsErrorCode.ORPHAN_FIELD_ARRAY,
+            RuntimeErrorCode.ORPHAN_FIELD_ARRAY,
             ngDevMode && `Orphan field, expected ${getDebugName(this.parent!)} to be an array`,
           );
         }
@@ -240,7 +240,7 @@ export abstract class FieldNodeStructure {
         }
 
         throw new RuntimeError(
-          SignalFormsErrorCode.ORPHAN_FIELD_NOT_FOUND,
+          RuntimeErrorCode.ORPHAN_FIELD_NOT_FOUND,
           ngDevMode && `Orphan field, can't find element in array ${getDebugName(this.parent!)}`,
         );
       });
@@ -520,7 +520,7 @@ const ROOT_PATH_KEYS = computed<readonly string[]>(() => []);
  */
 const ROOT_KEY_IN_PARENT = computed(() => {
   throw new RuntimeError(
-    SignalFormsErrorCode.ROOT_FIELD_NO_PARENT,
+    RuntimeErrorCode.ROOT_FIELD_NO_PARENT,
     ngDevMode && 'The top-level field in the form has no parent.',
   );
 });

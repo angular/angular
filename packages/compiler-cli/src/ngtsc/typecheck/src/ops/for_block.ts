@@ -10,6 +10,7 @@ import {
   AST,
   ImplicitReceiver,
   PropertyRead,
+  ThisReceiver,
   TmplAstForLoopBlock,
   TmplAstVariable,
 } from '@angular/compiler';
@@ -102,7 +103,10 @@ export class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
   }
 
   protected override resolve(ast: AST): ts.Expression | null {
-    if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver) {
+    if (
+      ast instanceof PropertyRead &&
+      (ast.receiver instanceof ImplicitReceiver || ast.receiver instanceof ThisReceiver)
+    ) {
       const target = this.tcb.boundTarget.getExpressionTarget(ast);
 
       if (

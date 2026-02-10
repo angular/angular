@@ -13,7 +13,7 @@ You can create a binding to show some dynamic text in a template by using double
 ```angular-ts
 @Component({
   selector: 'user-profile',
-  template: `<h1>Profile for {{userName()}}</h1>`,
+  template: `<h1>Profile for {{ userName() }}</h1>`,
 })
 export class UserProfile {
   userName = signal('pro_programmer_123');
@@ -58,7 +58,7 @@ You can also bind to HTML _attributes_ by prefixing the attribute name with `att
 
 ```angular-html
 <!-- Bind the `role` attribute on the `<ul>` element to value of `listRole`. -->
-<ul [attr.role]="listRole()">
+<ul [attr.role]="listRole()"></ul>
 ```
 
 Angular automatically updates DOM properties and attributes when the bound value changes.
@@ -76,7 +76,9 @@ Angular lets you add event listeners to an element in your template with parenth
 export class UserProfile {
   /* ... */
 
-  cancelSubscription() { /* Your event handling code goes here. */  }
+  cancelSubscription() {
+    /* Your event handling code goes here. */
+  }
 }
 ```
 
@@ -91,7 +93,9 @@ If you need to pass the [event](https://developer.mozilla.org/docs/Web/API/Event
 export class UserProfile {
   /* ... */
 
-  cancelSubscription(event: Event) { /* Your event handling code goes here. */  }
+  cancelSubscription(event: Event) {
+    /* Your event handling code goes here. */
+  }
 }
 ```
 
@@ -129,7 +133,7 @@ You can repeat part of a template multiple times with Angular's `@for` block:
 
 <ul class="user-badge-list">
   @for (badge of badges(); track badge.id) {
-    <li class="user-badge">{{badge.name}}</li>
+    <li class="user-badge">{{ badge.name }}</li>
   }
 </ul>
 ```

@@ -1,3 +1,5 @@
+@use './links' as links;
+
 /* Common styles for the API & CLI references */
 @mixin reference-common() {
   .docs-code {
@@ -62,10 +64,10 @@
   }
 
   .docs-reference-section-heading {
-    padding-block-start: 3rem;
+    margin-block-start: 3rem;
 
     &--sub {
-      padding-block-start: 1rem;
+      margin-block-start: 1rem;
     }
 
     & > a {
@@ -73,16 +75,28 @@
     }
   }
 
-  .docs-api {
+  .docs-api,
+  .docs-cli {
     h1,
     h2,
     h3,
     h4,
     h5,
     h6 {
+      .docs-anchor {
+        color: inherit;
+      }
+
       // Show copy link button when hovering the heading
       &:hover docs-copy-link-button {
         opacity: 1;
+      }
+    }
+
+    a:not(.docs-github-links):not(.docs-pill):not(.docs-example-github-link) {
+      &[href^='http:'],
+      &[href^='https:'] {
+        @include links.external-link-with-icon();
       }
     }
   }
@@ -246,7 +260,7 @@
           background-color: var(--septenary-contrast);
         }
 
-        &:focus {
+        &:focus-visible {
           background-color: var(--senary-contrast);
 
           span {

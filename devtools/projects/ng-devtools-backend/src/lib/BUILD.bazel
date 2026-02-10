@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_web_test_suite", "ts_project", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "ts_project", "ts_test_library", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -16,7 +16,7 @@ ts_project(
     ],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "highlighter_test",
     deps = [
         ":highlighter_test_lib",
@@ -70,12 +70,12 @@ ts_test_library(
     ],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "property_mutation_test",
     deps = [":property_mutation_test_lib"],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "router_tree_test",
     deps = [
         ":router_tree_test_lib",
@@ -123,7 +123,7 @@ ts_project(
     ],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "utils_test",
     deps = [
         ":utils_test_lib",
@@ -145,7 +145,7 @@ ts_project(
     srcs = ["version.ts"],
 )
 
-ng_web_test_suite(
+zoneless_web_test_suite(
     name = "client_event_subscribers_test",
     deps = [
         ":client_event_subscribers_test_lib",

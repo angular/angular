@@ -11,7 +11,6 @@ import {
   ImplicitReceiver,
   ParseSourceSpan,
   PropertyRead,
-  ThisReceiver,
   TmplAstBlockNode,
   TmplAstDeferredBlock,
   TmplAstDeferredBlockError,
@@ -22,7 +21,7 @@ import {
   TmplAstForLoopBlockEmpty,
   TmplAstNode,
 } from '@angular/compiler';
-import ts from 'typescript';
+import type ts from 'typescript';
 
 import {DisplayInfoKind, SYMBOL_TEXT} from './utils/display_parts';
 import {createQuickInfo, getTextSpanOfNode, isWithin, toTextSpan} from './utils';
@@ -32,7 +31,6 @@ export function isDollarAny(node: TmplAstNode | AST): node is Call {
     node instanceof Call &&
     node.receiver instanceof PropertyRead &&
     node.receiver.receiver instanceof ImplicitReceiver &&
-    !(node.receiver.receiver instanceof ThisReceiver) &&
     node.receiver.name === '$any' &&
     node.args.length === 1
   );

@@ -206,8 +206,11 @@
       "rawComment": "/**\n * A trigger for a menu.\n *\n * The `ngMenuTrigger` directive is used to open and close menus. It can be applied to\n * any interactive element (e.g., a button) to associate it with a `ngMenu` instance.\n * It also supports linking to sub-menus when applied to a `ngMenuItem`.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Open Menu</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem>Item 1</div>\n *   <div ngMenuItem>Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
       "implements": [],
       "isStandalone": true,
-      "selector": "button[ngMenuTrigger]",
+      "selector": "[ngMenuTrigger]",
       "exportAs": [
+        "ngMenuTrigger"
+      ],
+      "aliases": [
         "ngMenuTrigger"
       ],
       "source": {
@@ -252,7 +255,7 @@
             "readonly",
             "input"
           ],
-          "description": "The value of the menu item.",
+          "description": "The value of the menu item, used as the default aria-label",
           "jsdocTags": [],
           "inputAlias": "value",
           "isRequiredInput": true
@@ -410,7 +413,7 @@
           "name": "V"
         }
       ],
-      "description": "An item in a Menu.\n\n`ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\nor action a user can take. They can also act as triggers for sub-menus.\n\n```html\n<div ngMenuItem (onSelect)=\"doAction()\">Action Item</div>\n\n<div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n```",
+      "description": "An item in a Menu.\n\n`ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\nor action a user can take. They can also act as triggers for sub-menus.\n\n```html\n<div ngMenu (itemSelected)=\"doAction()\">\n  <div ngMenuItem >Action Item</div>\n  <div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
@@ -425,17 +428,20 @@
           "comment": "[MenuBar](guide/aria/menubar)"
         }
       ],
-      "rawComment": "/**\n * An item in a Menu.\n *\n * `ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\n * or action a user can take. They can also act as triggers for sub-menus.\n *\n * ```html\n * <div ngMenuItem (onSelect)=\"doAction()\">Action Item</div>\n *\n * <div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
+      "rawComment": "/**\n * An item in a Menu.\n *\n * `ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\n * or action a user can take. They can also act as triggers for sub-menus.\n *\n * ```html\n * <div ngMenu (itemSelected)=\"doAction()\">\n *   <div ngMenuItem >Action Item</div>\n *   <div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngMenuItem]",
       "exportAs": [
         "ngMenuItem"
       ],
+      "aliases": [
+        "ngMenuItem"
+      ],
       "source": {
         "filePath": "/src/aria/menu/menu-item.ts",
-        "startLine": 33,
-        "endLine": 107
+        "startLine": 34,
+        "endLine": 109
       }
     },
     {
@@ -531,15 +537,16 @@
           "isRequiredInput": false
         },
         {
-          "name": "onSelect",
+          "name": "itemSelected",
           "type": "OutputEmitterRef<V>",
           "memberType": "property",
           "memberTags": [
+            "readonly",
             "output"
           ],
           "description": "A callback function triggered when a menu item is selected.",
           "jsdocTags": [],
-          "outputAlias": "onSelect"
+          "outputAlias": "itemSelected"
         },
         {
           "name": "close",
@@ -600,6 +607,9 @@
       "isStandalone": true,
       "selector": "[ngMenuBar]",
       "exportAs": [
+        "ngMenuBar"
+      ],
+      "aliases": [
         "ngMenuBar"
       ],
       "source": {
@@ -704,10 +714,12 @@
           "jsdocTags": []
         },
         {
-          "name": "onSelect",
+          "name": "itemSelected",
           "type": "OutputEmitterRef<V>",
           "memberType": "property",
-          "memberTags": [],
+          "memberTags": [
+            "readonly"
+          ],
           "description": "A callback function triggered when a menu item is selected.",
           "jsdocTags": []
         },
@@ -760,7 +772,7 @@
           "name": "V"
         }
       ],
-      "description": "A list of menu items.\n\nA `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\nwithin other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\nand `ngMenuItem` directives.\n\n```html\n<button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n\n<div ngMenu #myMenu=\"ngMenu\">\n  <div ngMenuItem>Star</div>\n  <div ngMenuItem>Edit</div>\n  <div ngMenuItem [submenu]=\"subMenu\">More</div>\n</div>\n\n<div ngMenu #subMenu=\"ngMenu\">\n  <div ngMenuItem>Sub Item 1</div>\n  <div ngMenuItem>Sub Item 2</div>\n</div>\n```",
+      "description": "A list of menu items.\n\nA `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\nwithin other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\nand `ngMenuItem` directives.\n\n```html\n<button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n\n<div ngMenu #myMenu=\"ngMenu\">\n  <div ngMenuItem value=\"Star\">Star</div>\n  <div ngMenuItem value=\"Edit\">Edit</div>\n  <div ngMenuItem value=\"More\" [submenu]=\"subMenu\">More</div>\n</div>\n\n<div ngMenu #subMenu=\"ngMenu\">\n  <div ngMenuItem value=\"Sub Item 1\">Sub Item 1</div>\n  <div ngMenuItem value=\"Sub Item 2\">Sub Item 2</div>\n</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
@@ -775,7 +787,7 @@
           "comment": "[MenuBar](guide/aria/menubar)"
         }
       ],
-      "rawComment": "/**\n * A list of menu items.\n *\n * A `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\n * within other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\n * and `ngMenuItem` directives.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem>Star</div>\n *   <div ngMenuItem>Edit</div>\n *   <div ngMenuItem [submenu]=\"subMenu\">More</div>\n * </div>\n *\n * <div ngMenu #subMenu=\"ngMenu\">\n *   <div ngMenuItem>Sub Item 1</div>\n *   <div ngMenuItem>Sub Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
+      "rawComment": "/**\n * A list of menu items.\n *\n * A `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\n * within other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\n * and `ngMenuItem` directives.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem value=\"Star\">Star</div>\n *   <div ngMenuItem value=\"Edit\">Edit</div>\n *   <div ngMenuItem value=\"More\" [submenu]=\"subMenu\">More</div>\n * </div>\n *\n * <div ngMenu #subMenu=\"ngMenu\">\n *   <div ngMenuItem value=\"Sub Item 1\">Sub Item 1</div>\n *   <div ngMenuItem value=\"Sub Item 2\">Sub Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n *\n * @see [Menu](guide/aria/menu)\n * @see [MenuBar](guide/aria/menubar)\n */",
       "implements": [],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
@@ -998,7 +1010,7 @@
       "@angular/aria/menu"
     ],
     [
-      "MenuBar.onSelect",
+      "MenuBar.itemSelected",
       "@angular/aria/menu"
     ],
     [
@@ -1046,7 +1058,7 @@
       "@angular/aria/menu"
     ],
     [
-      "Menu.onSelect",
+      "Menu.itemSelected",
       "@angular/aria/menu"
     ],
     [

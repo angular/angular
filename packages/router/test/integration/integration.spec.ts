@@ -35,7 +35,7 @@ import {
   RoutesRecognized,
 } from '../../index';
 
-import {provideRouter, withPlatformNavigation} from '../../src/provide_router';
+import {provideRouter, withExperimentalPlatformNavigation} from '../../src/provide_router';
 import {
   BlankCmp,
   CollectParamsCmp,
@@ -87,7 +87,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           provideRouter(
             [{path: 'simple', component: SimpleCmp}],
             browserAPI === 'navigation'
-              ? withPlatformNavigation()
+              ? withExperimentalPlatformNavigation()
               : (makeEnvironmentProviders([]) as any),
           ),
         ],
@@ -932,7 +932,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
     navigationErrorsIntegrationSuite(browserAPI);
     eagerUrlUpdateStrategyIntegrationSuite();
-    duplicateInFlightNavigationsIntegrationSuite();
+    duplicateInFlightNavigationsIntegrationSuite(browserAPI);
     navigationIntegrationTestSuite(browserAPI);
     routeDataIntegrationSuite();
     routerLinkIntegrationSpec();

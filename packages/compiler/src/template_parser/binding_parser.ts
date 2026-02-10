@@ -28,7 +28,6 @@ import {
   SafeKeyedRead,
   SafePropertyRead,
   TemplateBinding,
-  ThisReceiver,
   VariableBinding,
 } from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
@@ -837,8 +836,7 @@ export class BindingParser {
       ast.args.length === 1 &&
       ast.receiver instanceof PropertyRead &&
       ast.receiver.name === '$any' &&
-      ast.receiver.receiver instanceof ImplicitReceiver &&
-      !(ast.receiver.receiver instanceof ThisReceiver)
+      ast.receiver.receiver instanceof ImplicitReceiver
     ) {
       return this._isAllowedAssignmentEvent(ast.args[0]);
     }

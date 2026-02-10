@@ -1,12 +1,12 @@
 import {Component} from '@angular/core';
-import {FavoriteColorReactiveComponent} from './reactive/favorite-color/favorite-color.component';
-import {FavoriteColorTemplateComponent} from './template/favorite-color/favorite-color.component';
+import {FavoriteColorReactive} from './reactive/favorite-color/favorite-color.component';
+import {FavoriteColorTemplate} from './template/favorite-color/favorite-color.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  imports: [FavoriteColorTemplateComponent, FavoriteColorReactiveComponent],
+  imports: [FavoriteColorTemplate, FavoriteColorReactive],
 })
 export class AppComponent {
   title = 'forms-intro';

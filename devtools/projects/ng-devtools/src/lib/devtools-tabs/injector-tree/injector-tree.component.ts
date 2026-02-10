@@ -30,6 +30,8 @@ import {TreeD3Node, TreeVisualizerConfig} from '../../shared/tree-visualizer/tre
 import {TreeVisualizerComponent} from '../../shared/tree-visualizer/tree-visualizer.component';
 import {InjectorProvidersComponent} from './injector-providers/injector-providers.component';
 import {
+  areInjectorTreeNodesEqual,
+  areInjectorTreesEqual,
   d3InjectorTreeLinkModifier,
   d3InjectorTreeNodeModifier,
   filterOutAngularInjectors,
@@ -92,6 +94,8 @@ export class InjectorTreeComponent {
   protected readonly componentExplorerView = input.required<ComponentExplorerView | null>();
   protected readonly hidden = input(false);
 
+  protected readonly treeNodesEqualityFn = areInjectorTreeNodesEqual;
+
   protected readonly diDebugAPIsAvailable = computed<boolean>(() => {
     const view = this.componentExplorerView();
     return !!(view && view.forest.length && view.forest[0].resolutionPath);
@@ -103,8 +107,12 @@ export class InjectorTreeComponent {
   private hideInjectorsWithNoProviders = false;
   private hideFrameworkInjectors = false;
 
-  protected readonly elementInjectorTree = signal<InjectorTreeNode | null>(null);
-  protected readonly environmentInjectorTree = signal<InjectorTreeNode | null>(null);
+  protected readonly elementInjectorTree = signal<InjectorTreeNode | null>(null, {
+    equal: areInjectorTreesEqual,
+  });
+  protected readonly environmentInjectorTree = signal<InjectorTreeNode | null>(null, {
+    equal: areInjectorTreesEqual,
+  });
 
   protected readonly responsiveSplitConfig: ResponsiveSplitConfig = {
     defaultDirection: 'vertical',
@@ -155,7 +163,12 @@ export class InjectorTreeComponent {
 
   onTreeRender(tree: InjectorTreeVisualizer, {initial}: {initial: boolean}) {
     if (initial) {
-      this.snapToRoot(tree);
+      // Slightly defer the node snapping since the production app
+      // needs a bit more time for registering the tree container size.
+      // INFO: Container size is not bound/related to tree rendering.
+      setTimeout(() => {
+        this.snapToRoot(tree);
+      }, 100);
     }
   }
 

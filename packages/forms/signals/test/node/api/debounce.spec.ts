@@ -23,7 +23,7 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('1600 Amphitheatre Pkwy');
     });
@@ -39,7 +39,7 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('');
 
@@ -58,7 +58,7 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('');
 
@@ -79,7 +79,7 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('1600 Amphitheatre Pkwy');
     });
@@ -95,7 +95,7 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('');
 
@@ -115,7 +115,7 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('');
 
@@ -142,10 +142,10 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('');
 
-      street.setControlValue('2000 N Shoreline Blvd');
+      street.controlValue.set('2000 N Shoreline Blvd');
       expect(street.value()).toBe('');
 
       first.resolve();
@@ -172,7 +172,7 @@ describe('debounce', () => {
       const street = addressForm.street();
 
       // Set `controlValue` which will trigger a debounce update.
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('');
 
@@ -204,10 +204,10 @@ describe('debounce', () => {
         );
         const street = addressForm.street();
 
-        street.setControlValue('1600 Amphitheatre Pkwy');
+        street.controlValue.set('1600 Amphitheatre Pkwy');
         expect(abortSpy).not.toHaveBeenCalled();
 
-        street.setControlValue('2000 N Shoreline Blvd');
+        street.controlValue.set('2000 N Shoreline Blvd');
         expect(abortSpy).toHaveBeenCalledTimes(1);
 
         resolve();
@@ -230,12 +230,40 @@ describe('debounce', () => {
         );
         const street = addressForm.street();
 
-        street.setControlValue('1600 Amphitheatre Pkwy');
+        street.controlValue.set('1600 Amphitheatre Pkwy');
         expect(abortSpy).not.toHaveBeenCalled();
 
         street.markAsTouched();
         expect(abortSpy).toHaveBeenCalledTimes(1);
         expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+      });
+
+      it('should remove abort listener when debounce completes', async () => {
+        const addListenerSpy = spyOn(AbortSignal.prototype, 'addEventListener').and.callThrough();
+        const removeListenerSpy = spyOn(
+          AbortSignal.prototype,
+          'removeEventListener',
+        ).and.callThrough();
+
+        const address = signal({street: ''});
+        const addressForm = form(
+          address,
+          (address) => {
+            debounce(address.street, 1);
+          },
+          options(),
+        );
+        const street = addressForm.street();
+
+        street.controlValue.set('1600 Amphitheatre Pkwy');
+        expect(addListenerSpy).toHaveBeenCalledOnceWith('abort', jasmine.any(Function), {
+          once: true,
+        });
+        expect(removeListenerSpy).not.toHaveBeenCalled();
+
+        await timeout(10);
+        expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+        expect(removeListenerSpy).toHaveBeenCalledOnceWith('abort', jasmine.any(Function));
       });
     });
   });
@@ -252,7 +280,7 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('');
 
@@ -272,7 +300,7 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('1600 Amphitheatre Pkwy');
     });
@@ -288,7 +316,7 @@ describe('debounce', () => {
         options(),
       );
 
-      addressForm().setControlValue({street: '1600 Amphitheatre Pkwy'});
+      addressForm().controlValue.set({street: '1600 Amphitheatre Pkwy'});
       expect(addressForm().controlValue()).toEqual({street: '1600 Amphitheatre Pkwy'});
       expect(addressForm().value()).toEqual({street: ''});
 
@@ -306,10 +334,10 @@ describe('debounce', () => {
         options(),
       );
 
-      addressForm.street().setControlValue('1600 Amphitheatre Pkwy');
+      addressForm.street().controlValue.set('1600 Amphitheatre Pkwy');
       expect(addressForm().value()).toEqual({street: '', city: ''});
 
-      addressForm.city().setControlValue('Mountain View');
+      addressForm.city().controlValue.set('Mountain View');
       expect(addressForm().value()).toEqual({street: '', city: 'Mountain View'});
 
       await timeout(0);
@@ -333,7 +361,7 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('1600 Amphitheatre Pkwy');
     });
@@ -356,7 +384,7 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('');
 
@@ -389,12 +417,12 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('1600 Amphitheatre Pkwy');
 
       debounced.set(true);
-      street.setControlValue('2000 N Shoreline Blvd');
+      street.controlValue.set('2000 N Shoreline Blvd');
       expect(street.controlValue()).toBe('2000 N Shoreline Blvd');
       expect(street.value()).toBe('1600 Amphitheatre Pkwy');
 
@@ -420,7 +448,7 @@ describe('debounce', () => {
       );
       const street = addressForm.street();
 
-      street.setControlValue('1600 Amphitheatre Pkwy');
+      street.controlValue.set('1600 Amphitheatre Pkwy');
       expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
       expect(street.value()).toBe('');
 
@@ -428,7 +456,7 @@ describe('debounce', () => {
       expect(street.value()).toBe('1600 Amphitheatre Pkwy');
 
       debounced.set(false);
-      street.setControlValue('2000 N Shoreline Blvd');
+      street.controlValue.set('2000 N Shoreline Blvd');
       expect(street.value()).toBe('2000 N Shoreline Blvd');
     });
   });

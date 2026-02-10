@@ -38,7 +38,7 @@ describe('Navigation', () => {
   const fakeSearch = {};
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [Navigation],
       providers: [
         provideRouter([]),
@@ -58,23 +58,23 @@ describe('Navigation', () => {
 
     fixture = TestBed.createComponent(Navigation);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
-  it('should append active class to DOCS_ROUTE when DOCS_ROUTE is active', () => {
+  it('should append active class to DOCS_ROUTE when DOCS_ROUTE is active', async () => {
     component.activeRouteItem.set(PAGE_PREFIX.DOCS);
 
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const docsLink = fixture.debugElement.query(By.css('a[href="/docs"]')).parent?.nativeElement;
 
     expect(docsLink).toHaveClass('adev-nav-item--active');
   });
 
-  it('should not have active class when activeRouteItem is null', () => {
+  it('should not have active class when activeRouteItem is null', async () => {
     component.activeRouteItem.set(null);
 
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const docsLink = fixture.debugElement.query(By.css('a[href="/docs"]')).nativeElement;
     const referenceLink = fixture.debugElement.query(By.css('a[href="/reference"]')).nativeElement;
@@ -83,14 +83,14 @@ describe('Navigation', () => {
     expect(referenceLink).not.toHaveClass('adev-nav-item--active');
   });
 
-  it('should call themeManager.setTheme(dark) when user tries to set dark theme', () => {
+  it('should call themeManager.setTheme(dark) when user tries to set dark theme', async () => {
     const openThemePickerButton = fixture.debugElement.query(
       By.css('button[aria-label^="Change theme. Current theme:"]'),
     ).nativeElement;
     const setThemeSpy = spyOn(fakeThemeManager, 'setTheme');
 
     openThemePickerButton.click();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     const setDarkModeButton = fixture.debugElement.query(
       By.css('button[aria-label="Set dark theme"]'),

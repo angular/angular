@@ -447,6 +447,11 @@ export enum ExpressionKind {
    * Operation that sets the value of a two-way binding.
    */
   TwoWayBindingSet,
+
+  /**
+   * Definition of an arrow function inside of an expression.
+   */
+  ArrowFunction,
 }
 
 export enum VariableFlags {

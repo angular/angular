@@ -78,6 +78,7 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
 import {addLViewToLContainer, createLContainer, detachView} from '../render3/view/container';
 import {addToEndOfViewTree} from '../render3/view/construction';
 import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 
 /**
  * Represents a container where one or more views can be attached to a component.
@@ -123,6 +124,7 @@ import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
  *
  * @see {@link ComponentRef}
  * @see {@link EmbeddedViewRef}
+ * @see [Using ViewContainerRef](guide/components/programmatic-rendering#using-viewcontainerref)
  *
  * @publicApi
  */
@@ -591,7 +593,10 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     const lView = (viewRef as R3ViewRef<any>)._lView!;
 
     if (ngDevMode && viewRef.destroyed) {
-      throw new Error('Cannot insert a destroyed View in a ViewContainer!');
+      throw new RuntimeError(
+        RuntimeErrorCode.VIEW_DESTROYED_INSERT_ERROR,
+        ngDevMode && 'Cannot insert a destroyed View in a ViewContainer!',
+      );
     }
 
     if (viewAttachedToContainer(lView)) {
@@ -640,7 +645,10 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
 
   override move(viewRef: ViewRef, newIndex: number): ViewRef {
     if (ngDevMode && viewRef.destroyed) {
-      throw new Error('Cannot move a destroyed View in a ViewContainer!');
+      throw new RuntimeError(
+        RuntimeErrorCode.VIEW_DESTROYED_MOVE_ERROR,
+        ngDevMode && 'Cannot move a destroyed View in a ViewContainer!',
+      );
     }
     return this.insert(viewRef, newIndex);
   }

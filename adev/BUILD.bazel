@@ -25,6 +25,19 @@ APPLICATION_FILES = [
     "//adev/src/assets:context",
     "//adev/src/content/examples:embeddable",
     "tailwind.config.js",
+
+    # For the routes that are generated at build time
+    "//adev/src/assets:docs_api_manifest",
+    "//adev/scripts/routes:generate_route",
+    "//adev/src/app/routing/navigation-entries",
+    "//adev/src/app/routing/navigation-entries:navigation_types",
+    "//adev/src/content/reference/errors:route-nav-items",
+    "//adev/src/content/reference/extended-diagnostics:route-nav-items",
+    "//adev/src/content/tutorials/deferrable-views",
+    "//adev/src/content/tutorials/first-app",
+    "//adev/src/content/tutorials/learn-angular",
+    "//adev/src/content/tutorials/signal-forms",
+    "//adev/src/content/tutorials/signals",
 ] + glob(
     ["src/**/*"],
     exclude = ["src/**/*.spec.ts"],

@@ -78,7 +78,7 @@ export const routes: Routes = [
 @Component({
   /* ... */
 })
-export class CustomerComponent {
+export class Customer {
   private route = inject(ActivatedRoute);
 
   orgId = this.route.parent?.parent?.snapshot.params['orgId'];
@@ -87,13 +87,17 @@ export class CustomerComponent {
 }
 ```
 
-Using `'always'` ensures matrix parameters, route data, and resolved values are available further down the route tree—handy when you share contextual identifiers across feature areas such as `/org/:orgId/projects/:projectId/customers/:customerId`.
+Using `'always'` ensures matrix parameters, route data, and resolved values are available further down the route tree—handy when you share contextual identifiers across feature areas such as:
+
+```text {hideCopy}
+/org/:orgId/projects/:projectId/customers/:customerId
+```
 
 ```ts
 @Component({
   /* ... */
 })
-export class CustomerComponent {
+export class Customer {
   private route = inject(ActivatedRoute);
 
   // All parent parameters are available directly
@@ -123,6 +127,33 @@ provideRouter(routes, withRouterConfig({defaultQueryParamsHandling: 'merge'}));
 
 This is especially helpful for search and filter pages to automatically retain existing filters when additional parameters are provided.
 
+### Configure trailing slash handling
+
+By default, the `Location` service strips trailing slashes from URLs on read.
+
+You can configure the `Location` service to force a trailing slash on all URLs written to the browser by providing the `TrailingSlashPathLocationStrategy` in your application.
+
+```ts
+import {LocationStrategy, TrailingSlashPathLocationStrategy} from '@angular/common';
+
+bootstrapApplication(App, {
+  providers: [{provide: LocationStrategy, useClass: TrailingSlashPathLocationStrategy}],
+});
+```
+
+You can also force the `Location` service to never have a trailing slash on all URLs written to the browser by providing the `NoTrailingSlashPathLocationStrategy` in your application.
+
+```ts
+import {LocationStrategy, NoTrailingSlashPathLocationStrategy} from '@angular/common';
+
+bootstrapApplication(App, {
+  providers: [{provide: LocationStrategy, useClass: NoTrailingSlashPathLocationStrategy}],
+});
+```
+
+These strategies only affect the URL written to the browser.
+`Location.path()` and `Location.normalize()` will continue to strip trailing slashes when reading the URL.
+
 Angular Router exposes four main areas for customization:
 
   <docs-pill-row>
@@ -151,15 +182,16 @@ Angular's `RouteReuseStrategy` class allows you to customize navigation behavior
 
 "Detached route handles" are Angular's way of storing component instances and their entire view hierarchy. When a route is detached, Angular preserves the component instance, its child components, and all associated state in memory. This preserved state can later be reattached when navigating back to the route.
 
-The `RouteReuseStrategy` class provides five methods that control the lifecycle of route components:
+The `RouteReuseStrategy` class provides the following methods that control the lifecycle of route components:
 
-| Method                                                               | Description                                                                                                 |
-| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| [`shouldDetach`](api/router/RouteReuseStrategy#shouldDetach)         | Determines if a route should be stored for later reuse when navigating away                                 |
-| [`store`](api/router/RouteReuseStrategy#store)                       | Stores the detached route handle when `shouldDetach` returns true                                           |
-| [`shouldAttach`](api/router/RouteReuseStrategy#shouldAttach)         | Determines if a stored route should be reattached when navigating to it                                     |
-| [`retrieve`](api/router/RouteReuseStrategy#retrieve)                 | Returns the previously stored route handle for reattachment                                                 |
-| [`shouldReuseRoute`](api/router/RouteReuseStrategy#shouldReuseRoute) | Determines if the router should reuse the current route instance instead of destroying it during navigation |
+| Method                                                                         | Description                                                                                                         |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| [`shouldDetach`](api/router/RouteReuseStrategy#shouldDetach)                   | Determines if a route should be stored for later reuse when navigating away                                         |
+| [`store`](api/router/RouteReuseStrategy#store)                                 | Stores the detached route handle when `shouldDetach` returns true                                                   |
+| [`shouldAttach`](api/router/RouteReuseStrategy#shouldAttach)                   | Determines if a stored route should be reattached when navigating to it                                             |
+| [`retrieve`](api/router/RouteReuseStrategy#retrieve)                           | Returns the previously stored route handle for reattachment                                                         |
+| [`shouldReuseRoute`](api/router/RouteReuseStrategy#shouldReuseRoute)           | Determines if the router should reuse the current route instance instead of destroying it during navigation         |
+| [`shouldDestroyInjector`](api/router/RouteReuseStrategy#shouldDestroyInjector) | (Experimental) Determines if the router should destroy the injector of a detached route when it is no longer stored |
 
 The following example demonstrates a custom route reuse strategy that selectively preserves component state based on route metadata:
 
@@ -212,7 +244,76 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
 }
 ```
 
+### Manually destroying detached route handles
+
+When implementing a custom `RouteReuseStrategy`, you may need to manually destroy a `DetachedRouteHandle` if you decide to discard it without reattaching it. For example, if your strategy has a cache size limit or expires handles after a certain time, you must ensure the component and its state are properly destroyed to avoid memory leaks.
+
+Since `DetachedRouteHandle` is an opaque type, you cannot call a destroy method directly on it. Instead, use the `destroyDetachedRouteHandle` function provided by the Router.
+
+```ts
+import {destroyDetachedRouteHandle} from '@angular/router';
+
+// ... inside your strategy
+if (this.handles.size > MAX_CACHE_SIZE) {
+  const handle = this.handles.get(oldestKey);
+  if (handle) {
+    destroyDetachedRouteHandle(handle);
+    this.handles.delete(oldestKey);
+  }
+}
+```
+
 NOTE: Avoid using the route path as the key when `canMatch` guards are involved, as it may lead to duplicate entries.
+
+### (Experimental) Automatic cleanup of unused route injectors
+
+By default, Angular does not destroy the injectors of detached routes, even if they are no longer stored by the `RouteReuseStrategy`. This is primarily because this level of memory management is not commonly needed for most applications.
+
+To enable automatic cleanup of unused route injectors, you can use the `withExperimentalAutoCleanupInjectors` feature in your router configuration. This feature checks which routes are currently stored by the strategy after navigations and destroys the injectors of any detached routes that are not currently stored by the reuse strategy.
+
+```ts
+import {provideRouter, withExperimentalAutoCleanupInjectors} from '@angular/router';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideRouter(routes, withExperimentalAutoCleanupInjectors())],
+};
+```
+
+If you do not provide a custom `RouteReuseStrategy` or your custom strategy extends `BaseRouteReuseStrategy`, injectors will now be destroyed when the route is inactive.
+
+#### Cleanup with a custom `RouteReuseStrategy`
+
+If your application uses a custom `RouteReuseStrategy` _and_ the strategy does not extend `BaseRouteReuseStrategy`, you must implement `shouldDestroyInjector` to tell the router which routes should have their injectors destroyed:
+
+```ts
+@Injectable()
+export class CustomRouteReuseStrategy implements RouteReuseStrategy {
+  // ... other methods
+
+  shouldDestroyInjector(route: Route): boolean {
+    return !route.data['retainInjector'];
+  }
+}
+```
+
+If your strategy ever stores a `DetachedRouteHandle`, you will also need to tell the Router about these so it does not destroy any injectors needed by that detached handle:
+
+```ts
+@Injectable()
+export class CustomRouteReuseStrategy implements RouteReuseStrategy {
+  private readonly handles = new Map<Route, DetachedRouteHandle>();
+
+  store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null) {
+    this.handles.set(route.routeConfig!, handle);
+  }
+
+  retrieveStoredRouteHandles(): DetachedRouteHandle {
+    return Array.from(this.handles.values());
+  }
+
+  // ... other methods
+}
+```
 
 ### Configuring a route to use a custom route reuse strategy
 
@@ -222,17 +323,17 @@ Routes can opt into reuse behavior through route configuration metadata. This ap
 export const routes: Routes = [
   {
     path: 'products',
-    component: ProductListComponent,
+    component: ProductList,
     data: {reuse: true}, // Component state persists across navigations
   },
   {
     path: 'products/:id',
-    component: ProductDetailComponent,
+    component: ProductDetail,
     // No reuse flag - component recreates on each navigation
   },
   {
     path: 'search',
-    component: SearchComponent,
+    component: Search,
     data: {reuse: true}, // Preserves search results and filter state
   },
 ];
@@ -440,7 +541,7 @@ export function versionMatcher(segments: UrlSegment[]): UrlMatchResult | null {
 export const routes: Routes = [
   {
     matcher: versionMatcher,
-    component: DocumentationComponent,
+    component: Documentation,
   },
   {
     path: 'latest/docs',
@@ -452,8 +553,8 @@ export const routes: Routes = [
 The component receives the extracted parameters through route inputs:
 
 ```angular-ts
-import { Component, input, inject } from '@angular/core';
-import { resource } from '@angular/core';
+import {Component, input, inject} from '@angular/core';
+import {resource} from '@angular/core';
 
 @Component({
   selector: 'app-documentation',
@@ -465,12 +566,12 @@ import { resource } from '@angular/core';
     } @else if (documentation.value(); as docs) {
       <article>{{ docs.content }}</article>
     }
-  `
+  `,
 })
-export class DocumentationComponent {
+export class Documentation {
   // Route parameters are automatically bound to signal inputs
-  version = input.required<string>();  // Receives the version parameter
-  section = input.required<string>();  // Receives the section parameter
+  version = input.required<string>(); // Receives the version parameter
+  section = input.required<string>(); // Receives the section parameter
 
   private docsService = inject(DocumentationService);
 
@@ -481,13 +582,13 @@ export class DocumentationComponent {
 
       return {
         version: this.version(),
-        section: this.section()
-      }
+        section: this.section(),
+      };
     },
-    loader: ({ params }) => {
+    loader: ({params}) => {
       return this.docsService.loadDocumentation(params.version, params.section);
-    }
-  })
+    },
+  });
 }
 ```
 

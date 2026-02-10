@@ -22,7 +22,7 @@ import {
   viewChild,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
+import {MatTabGroup, MatTab, MatTabLabel} from '@angular/material/tabs';
 import {Title} from '@angular/platform-browser';
 import {debounceTime, from, map, switchMap} from 'rxjs';
 
@@ -53,7 +53,16 @@ const ANGULAR_DEV = 'https://angular.dev';
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTabsModule, MatTooltip, IconComponent, CdkMenu, CdkMenuItem, CdkMenuTrigger],
+  imports: [
+    MatTabGroup,
+    MatTab,
+    MatTabLabel,
+    MatTooltip,
+    IconComponent,
+    CdkMenu,
+    CdkMenuItem,
+    CdkMenuTrigger,
+  ],
 })
 export class CodeEditor {
   readonly restrictedMode = input(false);

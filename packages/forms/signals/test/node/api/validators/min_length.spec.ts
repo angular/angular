@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {customError, form, minLength, minLengthError} from '../../../../public_api';
+import {form, minLength, minLengthError} from '../../../../public_api';
 
 describe('minLength validator', () => {
   it('returns minLength error when the length is smaller for strings', () => {
@@ -70,10 +70,10 @@ describe('minLength validator', () => {
       (p) => {
         minLength(p.text, 5, {
           error: ({value}) => {
-            return customError({
+            return {
               kind: 'special-minLength',
               message: `Length is ${value().length}`,
-            });
+            };
           },
         });
       },
@@ -81,11 +81,11 @@ describe('minLength validator', () => {
     );
 
     expect(f.text().errors()).toEqual([
-      customError({
+      {
         kind: 'special-minLength',
         message: 'Length is 2',
         fieldTree: f.text,
-      }),
+      },
     ]);
   });
 
@@ -145,10 +145,10 @@ describe('minLength validator', () => {
         (p) => {
           minLength(p.text, 5, {
             error: ({value}) => {
-              return customError({
+              return {
                 kind: 'special-minLength',
                 message: `Length is ${value().length}`,
-              });
+              };
             },
           });
         },

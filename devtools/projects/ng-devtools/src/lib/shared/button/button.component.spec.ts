@@ -15,14 +15,10 @@ describe('ButtonComponent', () => {
   let element: Element;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ButtonComponent],
-    }).compileComponents();
-
     fixture = TestBed.createComponent(ButtonComponent);
     component = fixture.componentInstance;
     element = fixture.debugElement.nativeElement;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should be primary type by default', () => {
@@ -35,9 +31,16 @@ describe('ButtonComponent', () => {
     expect(element.classList.contains('size-compact')).toBeFalse();
   });
 
-  it('should be compact size', () => {
+  it('should change the type to secondary', async () => {
+    fixture.componentRef.setInput('btnType', 'secondary');
+    await fixture.whenStable();
+
+    expect(element.classList.contains('type-secondary')).toBeTrue();
+  });
+
+  it('should be compact size', async () => {
     fixture.componentRef.setInput('size', 'compact');
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(element.classList.contains('size-compact')).toBeTrue();
   });

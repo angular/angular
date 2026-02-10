@@ -5,190 +5,80 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {Signal} from '../reactivity/api';
-import {WritableSignal} from '../reactivity/signal';
-
-/** A unique symbol used to identify {@link ɵControl} implementations. */
-export const ɵCONTROL: unique symbol = Symbol('CONTROL');
 
 /**
- * Instructions for dynamically binding a {@link ɵControl} to a form control.
+ * A control directive definition that captures control-related behavior for a directive.
+ *
+ * This is the type of `DirectiveDef.controlDef`.
+ *
+ * @see ɵɵControlFeature
  */
-export interface ɵControlBinding {
-  create(): void;
-  update(): void;
+export interface ControlDirectiveDef {
+  readonly passThroughInput: string | null;
+  readonly create: (instance: unknown, host: ControlDirectiveHost) => void;
+  readonly update: (instance: unknown, host: ControlDirectiveHost) => void;
 }
 
 /**
- * A directive that binds a {@link ɵFieldState} to a form control.
+ * Interface provided by the runtime to directives that act as form controls, as the argument to
+ * `ɵngControlCreate` and `ɵngControlUpdate` lifecycle hooks.
+ *
+ * @param _TPassthroughInput if given, the name of an input which, if found on other directives,
+ *   will cause the control infrastructure to recognize this usage as "pass-through". This sets
+ *   the `hasPassThrough` flag. This generic is only read by the compiler on the type declaration
+ *   of `ɵngControlCreate`, and has no impact on the type of the host.
  */
-export interface ɵControl<T> {
+export interface ControlDirectiveHost<_TPassthroughInput extends string | undefined = undefined> {
   /**
-   * The presence of this property is used to identify {@link ɵControl} implementations, while the
-   * value is used to store the instructions for dynamically binding to a form control. The
-   * instructions are stored on the directive so that they can be tree-shaken when the directive is
-   * not used.
+   * A string that describes this control directive, used for error messages.
    */
-  readonly [ɵCONTROL]: ɵControlBinding;
-
-  /** The state of the field bound to this control. */
-  readonly state: Signal<ɵFieldState<T>>;
-
-  /** Options for the control. */
-  readonly classes: ReadonlyArray<readonly [string, Signal<boolean>]>;
-
-  /** A reference to the interoperable control, if one is present. */
-  readonly ɵinteropControl: ɵInteropControl | undefined;
+  readonly descriptor: string;
 
   /**
-   * Registers this directive as a control of its associated form field.
+   * Whether any other directive on the element has an input that matches this directive's
+   * `_TPassThroughInput` declaration.
+   */
+  readonly hasPassThrough: boolean;
+
+  /**
+   * A `FormUiControl` instance that this directive is declared on.
+   */
+  readonly customControl: unknown | undefined;
+
+  /**
+   * Registers a listener that will be called when the custom control's value changes.
    *
-   * The presence of this directive alone is not sufficient to determine whether it'll control
-   * the bound field. If this directive's host is a component with a `field` input, we assume
-   * the component will forward the bound field to another field directive in its own template,
-   * and do nothing.
+   * This abstracts over the fact that different types of custom controls use different model
+   * names (`value` vs `checked`).
    */
-  ɵregister(): void;
-}
-
-/** Mirrors the `ControlValueAccessor` interface for interoperability.  */
-export interface ɵInteropControl {
-  /** Registers a callback function that is called when the control's value changes. */
-  registerOnChange(fn: Function): void;
-
-  /** Registers a callback function that is called when the control is touched. */
-  registerOnTouched(fn: Function): void;
-
-  /** Writes a new value to the control. */
-  writeValue(value: unknown): void;
-
-  /** Sets the disabled status of the control. */
-  setDisabledState?(value: boolean): void;
-}
-
-/**
- * The state of a form field to be synchronized with its bound control.
- */
-export interface ɵFieldState<T> {
-  /**
-   * A signal containing the current errors for the field.
-   */
-  readonly errors: Signal<unknown>;
+  listenToCustomControlModel(listener: (value: unknown) => void): void;
 
   /**
-   * A signal indicating whether the field is valid.
+   * Registers a listener that will be called when the custom control emits an output.
    */
-  readonly invalid: Signal<boolean>;
+  listenToCustomControlOutput(outputName: string, listener: () => void): void;
 
   /**
-   * A signal indicating whether the field is currently disabled.
-   */
-  readonly disabled: Signal<boolean>;
-
-  /**
-   * A signal containing the reasons why the field is currently disabled.
-   */
-  readonly disabledReasons: Signal<unknown>;
-
-  /**
-   * A signal indicating the field's maximum value, if applicable.
+   * Sets the custom control's value.
    *
-   * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
+   * This abstracts over the fact that different types of custom controls use different model
+   * names (`value` vs `checked`).
    */
-  readonly max?: Signal<number | undefined>;
+  setCustomControlModelInput(value: unknown): void;
 
   /**
-   * A signal indicating the field's maximum string length, if applicable.
-   *
-   * Applies to `<input>`, `<textarea>`, and custom controls.
+   * Checks if the custom control has an input with the given name.
    */
-  readonly maxLength?: Signal<number | undefined>;
+  customControlHasInput(inputName: string): boolean;
 
   /**
-   * A signal indicating the field's minimum value, if applicable.
-   *
-   * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
+   * Updates a property binding on all directives on this node, aside from the control directive
+   * itself.
    */
-  readonly min?: Signal<number | undefined>;
+  setInputOnDirectives(inputName: string, value: unknown): boolean;
 
   /**
-   * A signal indicating the field's minimum string length, if applicable.
-   *
-   * Applies to `<input>`, `<textarea>`, and custom controls.
+   * Listens to a DOM event on the host element.
    */
-  readonly minLength?: Signal<number | undefined>;
-
-  /**
-   * A signal of a unique name for the field, by default based on the name of its parent field.
-   */
-  readonly name: Signal<string>;
-
-  /**
-   * A signal indicating the patterns the field must match.
-   */
-  readonly pattern: Signal<readonly RegExp[]>;
-
-  /**
-   * A signal indicating whether the field is currently readonly.
-   */
-  readonly readonly: Signal<boolean>;
-
-  /**
-   * A signal indicating whether the field is required.
-   */
-  readonly required: Signal<boolean>;
-
-  /**
-   * A signal indicating whether the field has been touched by the user.
-   */
-  readonly touched: Signal<boolean>;
-
-  /**
-   * A signal indicating whether the field value has been changed by user.
-   */
-  readonly dirty: Signal<boolean>;
-
-  /**
-   * A signal indicating whether the field is hidden.
-   */
-  readonly hidden: Signal<boolean>;
-
-  /**
-   * A signal indicating whether there are any validators still pending for this field.
-   */
-  readonly pending: Signal<boolean>;
-
-  /**
-   * A writable signal containing the value for this field.
-   *
-   * Updating this signal will update the data model that the field is bound to.
-   *
-   * While updates from the UI control are eventually reflected here, they may be delayed if
-   * debounced.
-   */
-  readonly value: WritableSignal<T>;
-
-  /**
-   * A signal containing the value of the control to which this field is bound.
-   *
-   * This differs from {@link value} in that it's not subject to debouncing, and thus is used to
-   * buffer debounced updates from the control to the field. This will also not take into account
-   * the {@link controlValue} of children.
-   */
-  readonly controlValue: Signal<T>;
-
-  /**
-   * Sets the dirty status of the field to `true`.
-   */
-  markAsDirty(): void;
-
-  /**
-   * Sets the touched status of the field to `true`.
-   */
-  markAsTouched(): void;
-
-  /**
-   * Sets {@link controlValue} immediately and triggers synchronization to {@link value}.
-   */
-  setControlValue(value: T): void;
+  listenToDom(eventName: string, listener: (event: Event) => void): void;
 }

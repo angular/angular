@@ -40,7 +40,7 @@
   --symbolic-pink: oklch(63.67% 0.254 13.47); // #ff025c
   --symbolic-orange: oklch(64.73% 0.23769984683784018 33.18328352127882); // #fe3700
   --symbolic-yellow: oklch(78.09% 0.163 65.69); // #fd9f28
-  --symbolic-green: oklch(67.83% 0.229 142.73); // #00b80a
+  --symbolic-green: oklch(48% 0.16 145); // #008B38
   --symbolic-cyan: oklch(67.05% 0.1205924489987394 181.34025902203868); // #00ad9a
   --symbolic-magenta: oklch(51.74% 0.25453048882711515 315.26261625862725); // #9c00c8
   --symbolic-teal: oklch(57.59% 0.083 230.58); // #3f82a1
@@ -179,7 +179,8 @@
   --white-to-light-blue-diagonal-gradient: linear-gradient(
     132.83deg,
     hsl(from color-mix(in srgb, var(--bright-blue), white 60%) h s l / 0) 45.38%,
-    hsl(from color-mix(in srgb, var(--bright-blue), white 60%) h s l / 0.3) 159.03%);
+    hsl(from color-mix(in srgb, var(--bright-blue), white 60%) h s l / 0.3) 159.03%
+  );
 
   --white-to-light-pink-diagonal-gradient: linear-gradient(
     135deg,
@@ -230,8 +231,7 @@
   // for the "unfilled" portion of the word that hasn't
   // been highlighted by the gradient
   --gray-unfilled: var(--gray-400);
-  --webgl-page-background: var(var(--page-background))
-  --webgl-gray-unfilled: var(--gray-400);
+  --webgl-page-background: var(var(--page-background)) --webgl-gray-unfilled: var(--gray-400);
 }
 
 @mixin dark-mode-definitions() {
@@ -261,9 +261,16 @@
   --super-green: color-mix(in srgb, oklch(79.12% 0.257 155.13), var(--full-contrast) 70%);
   --light-vivid-pink-to-light-electric-violet-horizontal-gradient:
     linear-gradient(hsl(from var(--gray-1000) h s l / 0.9), hsl(from var(--gray-1000) h s l / 0.9)),
-    linear-gradient(hsl(from var(--full-contrast) h s l / 0.2), hsl(from var(--full-contrast) h s l / 0.2)),
+    linear-gradient(
+      hsl(from var(--full-contrast) h s l / 0.2),
+      hsl(from var(--full-contrast) h s l / 0.2)
+    ),
     var(--pink-to-purple-horizontal-gradient);
-  --white-to-light-pink-diagonal-gradient: color-mix(in srgb, var(--french-violet), var(--full-contrast) 60%);
+  --white-to-light-pink-diagonal-gradient: color-mix(
+    in srgb,
+    var(--french-violet),
+    var(--full-contrast) 60%
+  );
 
   --deprecated-dark: oklch(30% 0.02 304.04); // Base color
   --deprecated-docs-bg: var(--deprecated-dark); // Alias specifically for deprecated docs
@@ -281,7 +288,7 @@
     var(--full-contrast) 65%
   );
   --symbolic-yellow: color-mix(in srgb, oklch(78.09% 0.163 65.69), var(--full-contrast) 65%);
-  --symbolic-green: color-mix(in srgb, oklch(67.83% 0.229 142.73), var(--full-contrast) 65%);
+  --symbolic-green: color-mix(in srgb, oklch(48% 0.16 145), var(--full-contrast) 65%);
   --symbolic-cyan: color-mix(
     in srgb,
     oklch(67.05% 0.1205924489987394 181.34025902203868),
@@ -301,10 +308,7 @@
   );
 
   --page-bg-radial-gradient: radial-gradient(circle, black 0%, black 100%);
-  --soft-pink-radial-gradient:
-    linear-gradient(119.77deg, 
-    hsl(from color-mix(in srgb, var(--french-violet), white 60%) h s l / 0) 24.32%,
-    hsl(from color-mix(in srgb, var(--french-violet), white 60%) h s l / 0.3) 116.25%);
+  --soft-pink-radial-gradient: var(--hot-pink-to-electric-violet-radial-gradient);
 
   // Use light values hot pink and electric violet since this gradient used for
   // the decorative header which looks the same in both modes

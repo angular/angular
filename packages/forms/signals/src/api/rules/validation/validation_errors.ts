@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {StandardSchemaV1} from '@standard-schema/spec';
-import {FieldTree} from '../../types';
+import {ValidationErrors} from '@angular/forms';
+import type {FormField} from '../../../directive/form_field_directive';
+import type {FieldTree} from '../../types';
+import type {StandardSchemaValidationError} from './standard_schema';
 
 /**
  * Options used to create a `ValidationError`.
  */
-interface ValidationErrorOptions {
+export interface ValidationErrorOptions {
   /** Human readable error message. */
   message?: string;
 }
@@ -23,7 +25,9 @@ interface ValidationErrorOptions {
  *
  * @experimental 21.0.0
  */
-export type WithField<T> = T & {fieldTree: FieldTree<unknown>};
+export type WithFieldTree<T> = T & {fieldTree: FieldTree<unknown>};
+/** @deprecated Use `WithFieldTree` instead  */
+export type WithField<T> = WithFieldTree<T>;
 
 /**
  * A type that allows the given type `T` to optionally have a `field` property.
@@ -31,7 +35,9 @@ export type WithField<T> = T & {fieldTree: FieldTree<unknown>};
  *
  * @experimental 21.0.0
  */
-export type WithOptionalField<T> = Omit<T, 'fieldTree'> & {fieldTree?: FieldTree<unknown>};
+export type WithOptionalFieldTree<T> = Omit<T, 'fieldTree'> & {fieldTree?: FieldTree<unknown>};
+/** @deprecated Use `WithOptionalFieldTree` instead  */
+export type WithOptionalField<T> = WithOptionalFieldTree<T>;
 
 /**
  * A type that ensures the given type `T` does not have a `field` property.
@@ -39,7 +45,9 @@ export type WithOptionalField<T> = Omit<T, 'fieldTree'> & {fieldTree?: FieldTree
  *
  * @experimental 21.0.0
  */
-export type WithoutField<T> = T & {fieldTree: never};
+export type WithoutFieldTree<T> = T & {fieldTree: never};
+/** @deprecated Use `WithoutFieldTree` instead  */
+export type WithoutField<T> = WithoutFieldTree<T>;
 
 /**
  * Create a required error associated with the target field
@@ -47,7 +55,9 @@ export type WithoutField<T> = T & {fieldTree: never};
  *
  * @experimental 21.0.0
  */
-export function requiredError(options: WithField<ValidationErrorOptions>): RequiredValidationError;
+export function requiredError(
+  options: WithFieldTree<ValidationErrorOptions>,
+): RequiredValidationError;
 /**
  * Create a required error
  * @param options The optional validation error options
@@ -57,10 +67,10 @@ export function requiredError(options: WithField<ValidationErrorOptions>): Requi
  */
 export function requiredError(
   options?: ValidationErrorOptions,
-): WithoutField<RequiredValidationError>;
+): WithoutFieldTree<RequiredValidationError>;
 export function requiredError(
   options?: ValidationErrorOptions,
-): WithOptionalField<RequiredValidationError> {
+): WithOptionalFieldTree<RequiredValidationError> {
   return new RequiredValidationError(options);
 }
 
@@ -74,7 +84,7 @@ export function requiredError(
  */
 export function minError(
   min: number,
-  options: WithField<ValidationErrorOptions>,
+  options: WithFieldTree<ValidationErrorOptions>,
 ): MinValidationError;
 /**
  * Create a min value error
@@ -87,11 +97,11 @@ export function minError(
 export function minError(
   min: number,
   options?: ValidationErrorOptions,
-): WithoutField<MinValidationError>;
+): WithoutFieldTree<MinValidationError>;
 export function minError(
   min: number,
   options?: ValidationErrorOptions,
-): WithOptionalField<MinValidationError> {
+): WithOptionalFieldTree<MinValidationError> {
   return new MinValidationError(min, options);
 }
 
@@ -105,7 +115,7 @@ export function minError(
  */
 export function maxError(
   max: number,
-  options: WithField<ValidationErrorOptions>,
+  options: WithFieldTree<ValidationErrorOptions>,
 ): MaxValidationError;
 /**
  * Create a max value error
@@ -118,11 +128,11 @@ export function maxError(
 export function maxError(
   max: number,
   options?: ValidationErrorOptions,
-): WithoutField<MaxValidationError>;
+): WithoutFieldTree<MaxValidationError>;
 export function maxError(
   max: number,
   options?: ValidationErrorOptions,
-): WithOptionalField<MaxValidationError> {
+): WithOptionalFieldTree<MaxValidationError> {
   return new MaxValidationError(max, options);
 }
 
@@ -136,7 +146,7 @@ export function maxError(
  */
 export function minLengthError(
   minLength: number,
-  options: WithField<ValidationErrorOptions>,
+  options: WithFieldTree<ValidationErrorOptions>,
 ): MinLengthValidationError;
 /**
  * Create a minLength error
@@ -149,11 +159,11 @@ export function minLengthError(
 export function minLengthError(
   minLength: number,
   options?: ValidationErrorOptions,
-): WithoutField<MinLengthValidationError>;
+): WithoutFieldTree<MinLengthValidationError>;
 export function minLengthError(
   minLength: number,
   options?: ValidationErrorOptions,
-): WithOptionalField<MinLengthValidationError> {
+): WithOptionalFieldTree<MinLengthValidationError> {
   return new MinLengthValidationError(minLength, options);
 }
 
@@ -167,7 +177,7 @@ export function minLengthError(
  */
 export function maxLengthError(
   maxLength: number,
-  options: WithField<ValidationErrorOptions>,
+  options: WithFieldTree<ValidationErrorOptions>,
 ): MaxLengthValidationError;
 /**
  * Create a maxLength error
@@ -180,11 +190,11 @@ export function maxLengthError(
 export function maxLengthError(
   maxLength: number,
   options?: ValidationErrorOptions,
-): WithoutField<MaxLengthValidationError>;
+): WithoutFieldTree<MaxLengthValidationError>;
 export function maxLengthError(
   maxLength: number,
   options?: ValidationErrorOptions,
-): WithOptionalField<MaxLengthValidationError> {
+): WithOptionalFieldTree<MaxLengthValidationError> {
   return new MaxLengthValidationError(maxLength, options);
 }
 
@@ -198,7 +208,7 @@ export function maxLengthError(
  */
 export function patternError(
   pattern: RegExp,
-  options: WithField<ValidationErrorOptions>,
+  options: WithFieldTree<ValidationErrorOptions>,
 ): PatternValidationError;
 /**
  * Create a pattern matching error
@@ -211,11 +221,11 @@ export function patternError(
 export function patternError(
   pattern: RegExp,
   options?: ValidationErrorOptions,
-): WithoutField<PatternValidationError>;
+): WithoutFieldTree<PatternValidationError>;
 export function patternError(
   pattern: RegExp,
   options?: ValidationErrorOptions,
-): WithOptionalField<PatternValidationError> {
+): WithOptionalFieldTree<PatternValidationError> {
   return new PatternValidationError(pattern, options);
 }
 
@@ -226,7 +236,7 @@ export function patternError(
  * @category validation
  * @experimental 21.0.0
  */
-export function emailError(options: WithField<ValidationErrorOptions>): EmailValidationError;
+export function emailError(options: WithFieldTree<ValidationErrorOptions>): EmailValidationError;
 /**
  * Create an email format error
  * @param options The optional validation error options
@@ -234,68 +244,13 @@ export function emailError(options: WithField<ValidationErrorOptions>): EmailVal
  * @category validation
  * @experimental 21.0.0
  */
-export function emailError(options?: ValidationErrorOptions): WithoutField<EmailValidationError>;
 export function emailError(
   options?: ValidationErrorOptions,
-): WithOptionalField<EmailValidationError> {
+): WithoutFieldTree<EmailValidationError>;
+export function emailError(
+  options?: ValidationErrorOptions,
+): WithOptionalFieldTree<EmailValidationError> {
   return new EmailValidationError(options);
-}
-
-/**
- * Create a standard schema issue error associated with the target field
- * @param issue The standard schema issue
- * @param options The validation error options
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function standardSchemaError(
-  issue: StandardSchemaV1.Issue,
-  options: WithField<ValidationErrorOptions>,
-): StandardSchemaValidationError;
-/**
- * Create a standard schema issue error
- * @param issue The standard schema issue
- * @param options The optional validation error options
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function standardSchemaError(
-  issue: StandardSchemaV1.Issue,
-  options?: ValidationErrorOptions,
-): WithoutField<StandardSchemaValidationError>;
-export function standardSchemaError(
-  issue: StandardSchemaV1.Issue,
-  options?: ValidationErrorOptions,
-): WithOptionalField<StandardSchemaValidationError> {
-  return new StandardSchemaValidationError(issue, options);
-}
-
-/**
- * Create a custom error associated with the target field
- * @param obj The object to create an error from
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function customError<E extends Partial<ValidationError.WithField>>(
-  obj: WithField<E>,
-): CustomValidationError;
-/**
- * Create a custom error
- * @param obj The object to create an error from
- *
- * @category validation
- * @experimental 21.0.0
- */
-export function customError<E extends Partial<ValidationError.WithField>>(
-  obj?: E,
-): WithoutField<CustomValidationError>;
-export function customError<E extends Partial<ValidationError.WithField>>(
-  obj?: E,
-): WithOptionalField<CustomValidationError> {
-  return new CustomValidationError(obj);
 }
 
 /**
@@ -306,6 +261,8 @@ export function customError<E extends Partial<ValidationError.WithField>>(
  * It's also used by the creation functions to create an instance
  * (e.g. `requiredError`, `minError`, etc.).
  *
+ * @see [Signal Form Validation](guide/forms/signals/validation)
+ * @see [Signal Form Validation Errors](guide/forms/signals/validation#validation-errors)
  * @category validation
  * @experimental 21.0.0
  */
@@ -318,14 +275,24 @@ export interface ValidationError {
 
 export declare namespace ValidationError {
   /**
-   * Validation error with a field.
+   * Validation error with an associated field tree.
    *
    * This is returned from field state, e.g., catField.errors() would be of a list of errors with
    * `field: catField` bound to state.
    */
-  export interface WithField extends ValidationError {
+  export interface WithFieldTree extends ValidationError {
     /** The field associated with this error. */
     readonly fieldTree: FieldTree<unknown>;
+    readonly formField?: FormField<unknown>;
+  }
+  /** @deprecated Use `ValidationError.WithFieldTree` instead  */
+  export type WithField = WithFieldTree;
+
+  /**
+   * Validation error with an associated field tree and specific form field binding.
+   */
+  export interface WithFormField extends WithFieldTree {
+    readonly formField: FormField<unknown>;
   }
 
   /**
@@ -334,51 +301,25 @@ export declare namespace ValidationError {
    * This is generally used in places where the result might have a field.
    * e.g., as a result of a `validateTree`, or when handling form submission.
    */
-  export interface WithOptionalField extends ValidationError {
+  export interface WithOptionalFieldTree extends ValidationError {
     /** The field associated with this error. */
     readonly fieldTree?: FieldTree<unknown>;
   }
+  /** @deprecated Use `ValidationError.WithOptionalFieldTree` instead  */
+  export type WithOptionalField = WithOptionalFieldTree;
 
   /**
    * Validation error with no field.
    *
    * This is used to strongly enforce that fields are not allowed in validation result.
    */
-  export interface WithoutField extends ValidationError {
+  export interface WithoutFieldTree extends ValidationError {
     /** The field associated with this error. */
-    readonly field?: never;
+    readonly fieldTree?: never;
+    readonly formField?: never;
   }
-}
-
-/**
- * A custom error that may contain additional properties
- *
- * @category validation
- * @experimental 21.0.0
- */
-export class CustomValidationError implements ValidationError {
-  /** Brand the class to avoid Typescript structural matching */
-  private __brand = undefined;
-
-  /**
-   * Allow the user to attach arbitrary other properties.
-   */
-  [key: PropertyKey]: unknown;
-
-  /** Identifies the kind of error. */
-  readonly kind: string = '';
-
-  /** The field associated with this error. */
-  readonly fieldTree!: FieldTree<unknown>;
-
-  /** Human readable error message. */
-  readonly message?: string;
-
-  constructor(options?: ValidationErrorOptions) {
-    if (options) {
-      Object.assign(this, options);
-    }
-  }
+  /** @deprecated Use `ValidationError.WithoutFieldTree` instead  */
+  export type WithoutField = WithoutFieldTree;
 }
 
 /**
@@ -387,7 +328,7 @@ export class CustomValidationError implements ValidationError {
  *
  * @experimental 21.0.0
  */
-abstract class _NgValidationError implements ValidationError {
+export abstract class BaseNgValidationError implements ValidationError {
   /** Brand the class to avoid Typescript structural matching */
   private __brand = undefined;
 
@@ -413,7 +354,7 @@ abstract class _NgValidationError implements ValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class RequiredValidationError extends _NgValidationError {
+export class RequiredValidationError extends BaseNgValidationError {
   override readonly kind = 'required';
 }
 
@@ -423,7 +364,7 @@ export class RequiredValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class MinValidationError extends _NgValidationError {
+export class MinValidationError extends BaseNgValidationError {
   override readonly kind = 'min';
 
   constructor(
@@ -440,7 +381,7 @@ export class MinValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class MaxValidationError extends _NgValidationError {
+export class MaxValidationError extends BaseNgValidationError {
   override readonly kind = 'max';
 
   constructor(
@@ -457,7 +398,7 @@ export class MaxValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class MinLengthValidationError extends _NgValidationError {
+export class MinLengthValidationError extends BaseNgValidationError {
   override readonly kind = 'minLength';
 
   constructor(
@@ -474,7 +415,7 @@ export class MinLengthValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class MaxLengthValidationError extends _NgValidationError {
+export class MaxLengthValidationError extends BaseNgValidationError {
   override readonly kind = 'maxLength';
 
   constructor(
@@ -491,7 +432,7 @@ export class MaxLengthValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class PatternValidationError extends _NgValidationError {
+export class PatternValidationError extends BaseNgValidationError {
   override readonly kind = 'pattern';
 
   constructor(
@@ -508,25 +449,8 @@ export class PatternValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export class EmailValidationError extends _NgValidationError {
+export class EmailValidationError extends BaseNgValidationError {
   override readonly kind = 'email';
-}
-
-/**
- * An error used to indicate an issue validating against a standard schema.
- *
- * @category validation
- * @experimental 21.0.0
- */
-export class StandardSchemaValidationError extends _NgValidationError {
-  override readonly kind = 'standardSchema';
-
-  constructor(
-    readonly issue: StandardSchemaV1.Issue,
-    options?: ValidationErrorOptions,
-  ) {
-    super(options);
-  }
 }
 
 /**
@@ -554,7 +478,7 @@ export class StandardSchemaValidationError extends _NgValidationError {
  * @category validation
  * @experimental 21.0.0
  */
-export const NgValidationError: abstract new () => NgValidationError = _NgValidationError as any;
+export const NgValidationError: abstract new () => NgValidationError = BaseNgValidationError as any;
 export type NgValidationError =
   | RequiredValidationError
   | MinValidationError

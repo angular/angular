@@ -22,23 +22,22 @@ import {printInitializerFunctionSignatureLine} from '../transforms/code-transfor
 import {getFunctionMetadataRenderable} from '../transforms/function-transforms.mjs';
 import {ClassMethodInfo} from './class-method-info';
 import {CodeSymbol} from './code-symbols';
+import {DeprecationWarning} from './deprecation-warning';
 import {HeaderApi} from './header-api';
 import {HighlightTypeScript} from './highlight-ts';
 import {SectionApi} from './section-api';
 import {SectionDescription} from './section-description';
 import {SectionUsageNotes} from './section-usage-notes';
-import {DeprecationWarning} from './deprecation-warning';
 
 export const signatureCard = (
   name: string,
   signature: FunctionSignatureMetadataRenderable,
-  opts: {id: string},
-  printSignaturesAsHeader: boolean,
+  opts: {id: string; printSignaturesAsHeader: boolean; hideUsageNotes?: boolean},
 ) => {
   return (
     <div id={opts.id} class={REFERENCE_MEMBER_CARD}>
       <header class={REFERENCE_MEMBER_CARD_HEADER}>
-        {printSignaturesAsHeader ? (
+        {opts.printSignaturesAsHeader ? (
           <HighlightTypeScript
             code={printInitializerFunctionSignatureLine(
               name,
@@ -57,7 +56,7 @@ export const signatureCard = (
         )}
       </header>
       <div class={REFERENCE_MEMBER_CARD_BODY}>
-        <ClassMethodInfo entry={signature} />
+        <ClassMethodInfo entry={signature} hideUsageNotes={opts.hideUsageNotes} />
       </div>
     </div>
   );
@@ -74,16 +73,14 @@ export function FunctionReference(entry: FunctionEntryRenderable) {
       <DeprecationWarning entry={entry} />
       <SectionApi entry={entry} />
       <div className={REFERENCE_MEMBERS}>
-        {entry.signatures.map((s, i) =>
-          signatureCard(
-            s.name,
-            getFunctionMetadataRenderable(s, entry.moduleName, entry.repo),
-            {
+        {entry.signatures.length > 1 &&
+          entry.signatures.map((s, i) =>
+            signatureCard(s.name, getFunctionMetadataRenderable(s, entry.moduleName, entry.repo), {
               id: `${s.name}_${i}`,
-            },
-            printSignaturesAsHeader,
-          ),
-        )}
+              printSignaturesAsHeader,
+              hideUsageNotes: true,
+            }),
+          )}
       </div>
 
       <SectionDescription entry={entry} />

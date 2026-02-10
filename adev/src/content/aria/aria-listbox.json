@@ -132,6 +132,9 @@
       "exportAs": [
         "ngOption"
       ],
+      "aliases": [
+        "ngOption"
+      ],
       "source": {
         "filePath": "/src/aria/listbox/option.ts",
         "startLine": 34,
@@ -175,7 +178,7 @@
         },
         {
           "name": "items",
-          "type": "Signal<any[]>",
+          "type": "Signal<OptionPattern<V>[]>",
           "memberType": "property",
           "memberTags": [
             "protected"
@@ -379,7 +382,7 @@
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
         "startLine": 53,
-        "endLine": 211
+        "endLine": 213
       }
     }
   ],

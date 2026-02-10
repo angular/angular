@@ -19,14 +19,14 @@ describe('UpdateComponent', () => {
   let component: UpdateComponent;
   let fixture: ComponentFixture<UpdateComponent>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [UpdateComponent],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     });
     fixture = TestBed.createComponent(UpdateComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -60,14 +60,12 @@ describe('UpdateComponent', () => {
 
       expect(showButton).toBeTruthy();
       showButton.click();
-      fixture.detectChanges();
 
       // Wait for all async operations to complete (marked parsing, router navigation, etc.)
       await fixture.whenStable();
 
       // Additional wait for marked parsing
       await new Promise((resolve) => setTimeout(resolve, 300));
-      fixture.detectChanges();
 
       const badges = fixture.nativeElement.querySelectorAll('.adev-complexity-badge');
 

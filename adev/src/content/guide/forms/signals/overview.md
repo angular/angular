@@ -32,15 +32,15 @@ Signal Forms require:
 Signal Forms are already included in the `@angular/forms` package. Import the necessary functions and directives from `@angular/forms/signals`:
 
 ```ts
-import {form, Field, required, email} from '@angular/forms/signals';
+import {form, FormField, required, email} from '@angular/forms/signals';
 ```
 
-The `Field` directive must be imported into any component that binds form fields to HTML inputs:
+The `FormField` directive must be imported into any component that binds form fields to HTML inputs:
 
 ```ts
 @Component({
   // ...
-  imports: [Field],
+  imports: [FormField],
 })
 ```
 
@@ -51,7 +51,7 @@ To learn more about how Signal Forms work, check out the following guides:
 <docs-pill-row>
   <docs-pill href="essentials/signal-forms" title="Signal forms essentials" />
   <docs-pill href="guide/forms/signals/models" title="Form models" />
-  <docs-pill href="guide/forms/signals/designing-your-form-model" title="Designing your form model" />
+  <docs-pill href="guide/forms/signals/model-design" title="Designing your form model" />
   <docs-pill href="guide/forms/signals/field-state-management" title="Field state management" />
   <docs-pill href="guide/forms/signals/validation" title="Validation" />
   <docs-pill href="guide/forms/signals/custom-controls" title="Custom controls" />

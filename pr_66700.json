@@ -1,0 +1,42 @@
+{
+  "body": "# PR: feat(language-service): implement pull-based diagnostics (LSP 3.17)\n\n## Description\n\nImplements Pull-Based Diagnostics (LSP 3.17) for the Angular Language Service, allowing the VS Code client to request diagnostics on-demand rather than having the server push them on every change.\n\nThis feature works **together with #66668 (Client-Side File Watching)** to provide comprehensive performance improvements across the entire development workflow:\n- **#66668** optimizes project initialization (startup phase)\n- **Pull Diagnostics** optimizes ongoing development (editing phase)\n\n## Features\n\n### LSP 3.17 Pull Diagnostics Support\n\n- `textDocument/diagnostic` handler for document-level diagnostics\n- `workspace/diagnostic` handler for workspace-wide diagnostics\n- Result caching via `resultId` to skip unchanged documents\n- `workspace/diagnostic/refresh` for server-initiated refresh\n- Automatic fallback to push-based diagnostics for older clients\n\n### Result Caching\n\nWhen a file hasn't changed and the client provides the `previousResultId`, the server returns an `Unchanged` report in ~0.2ms instead of recomputing diagnostics:\n\n```\nClient                          Server\n  |                                |\n  |-- textDocument/diagnostic ----\u003e|\n  |      (with previousResultId)   |\n  |                                |\n  |\u003c-- Unchanged (resultId match)--|  \u003c- Cache hit: ~0.2ms\n  |         OR                     |\n  |\u003c-- Full (new diagnostics) ----|  \u003c- Cache miss: compute\n```\n\n### How They Work Together\n\n| Phase | Optimization | Benefit |\n|-------|-------------|---------|\n| **Project Open** | #66668 File Watching | Fast initialization, no ENOSPC errors |\n| **File Editing** | Pull Diagnostics | Cached results, client-controlled timing |\n| **Tab Switching** | Pull Diagnostics | Instant cached responses |\n| **Multi-file Changes** | Pull Diagnostics | Batch workspace requests |\n\n## Testing\n\n- 6 new LSP integration tests covering:\n  - Basic pull diagnostics request\n  - Unchanged report caching\n  - Full report on document change\n  - Valid template diagnostics\n  - Related information in diagnostics\n  - Workspace diagnostics\n\n### Measured Performance (Integration Tests)\n\n| Scenario | Result | Notes |\n|----------|--------|-------|\n| **Cached (unchanged) request** | **0.2ms** | Returns `Unchanged` report |\n| **Switch between files (cached)** | **\u003c1ms** | Both files return cached |\n| **Workspace diagnostics** | **~2000ms** | Batched request for all files |\n| **First request (cold)** | ~200-500ms | Initial computation |\n\n## Breaking Changes\n\nNone\n\n## Related Issues\n\nCloses #66699\n\nComplements #66668 (Client-Side File Watching)\n\n## Dependencies\n\n**This PR is built on top of the LSP library upgrade PR and should be merged after it:**\n- Depends on: PR #66681 (build(language-service): upgrade LSP library to v9.0.1)\n- Base: Requires LSP 3.17 types from vscode-languageserver v9.0.1\n\n---\n\n## AI Disclosure\n\nThis PR was developed using Claude Opus 4.5 AI assistant under human orchestration and review by @kbrilla.\n",
+  "comments": [
+    {
+      "author": {"login": "atscott"},
+      "authorAssociation": "CONTRIBUTOR",
+      "body": "/gemini review",
+      "createdAt": "2026-01-23T00:24:06Z",
+      "id": "IC_kwDOAXExC87hwTWx",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/angular/angular/pull/66700#issuecomment-3787535793",
+      "viewerDidAuthor": false
+    }
+  ],
+  "files": [
+    {
+      "additions": 241,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/integration/lsp/ivy_spec.ts"
+    },
+    {
+      "additions": 38,
+      "deletions": 11,
+      "path": "vscode-ng-language-service/integration/lsp/test_utils.ts"
+    },
+    {
+      "additions": 198,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/server/src/handlers/diagnostics.ts"
+    },
+    {
+      "additions": 22,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/server/src/handlers/initialization.ts"
+    },
+    {"additions": 89, "deletions": 1, "path": "vscode-ng-language-service/server/src/session.ts"}
+  ],
+  "title": "feat(language-service): implement pull-based diagnostics (LSP 3.17)"
+}

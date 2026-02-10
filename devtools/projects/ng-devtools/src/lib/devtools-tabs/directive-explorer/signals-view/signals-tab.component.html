@@ -1,13 +1,19 @@
-<svg #component></svg>
+<ng-signals-visualizer
+  #visualizer
+  [graph]="signalGraph.graph()"
+  [selectedNodeId]="selectedNodeId()"
+  [externallySelectedNodeId]="externallySelectedNodeId()?.id ?? null"
+  [element]="signalGraph.element()"
+  (nodeClick)="onNodeClick($event)"
+  (clusterCollapse)="detailsVisible.set(false)"
+/>
 
 @let node = selectedNode();
-@let dataSource = this.dataSource();
-@if (node && dataSource && detailsVisible()) {
+@if (node && detailsVisible()) {
   <ng-signals-details
     [node]="node"
-    [dataSource]="dataSource"
-    [treeControl]="treeControl()"
     (gotoSource)="gotoSource($event)"
+    (expandCluster)="expandCluster($event)"
     (close)="detailsVisible.set(false)"
   />
 }

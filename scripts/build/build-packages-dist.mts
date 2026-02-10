@@ -8,9 +8,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {buildAngularInMemoryWebApiPackage} from './angular-in-memory-web-api.mjs';
-import {performDefaultSnapshotBuild} from './package-builder.mjs';
-import {buildZoneJsPackage} from './zone-js-builder.mjs';
+import {buildAngularInMemoryWebApiPackage} from './angular-in-memory-web-api.mts';
+import {performDefaultSnapshotBuild} from './package-builder.mts';
+import {buildZoneJsPackage} from './zone-js-builder.mts';
 
 // Build the legacy (view engine) npm packages into `dist/packages-dist/`.
 performDefaultSnapshotBuild();

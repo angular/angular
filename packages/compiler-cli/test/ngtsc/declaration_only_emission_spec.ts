@@ -19,7 +19,6 @@ const testFiles = loadStandardTestFiles();
 const tsconfigBase = {
   extends: '../tsconfig-base.json',
   compilerOptions: {
-    baseUrl: '.',
     rootDirs: ['/app'],
     emitDeclarationOnly: true,
     noCheck: true,
@@ -636,11 +635,11 @@ runInEachFileSystem(() => {
         'test.ts',
         `
         import {Component} from '@angular/core';
-        
+
         export function Custom() {
           return function(target: any) {};
         }
-        
+
         @Custom()
         @Component({template: '', selector: 'comp'})
         export class Comp {}

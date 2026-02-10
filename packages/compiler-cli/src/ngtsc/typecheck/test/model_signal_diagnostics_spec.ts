@@ -285,8 +285,8 @@ runInEachFileSystem(() => {
               <div dir [gen]="false" [other]="'text'"
                        #ref="dir" (click)="ref.tester = {t: 1, u: 0}">`,
         expected: [
-          `TestComponent.html(3, 61): Type 'number' is not assignable to type 'boolean'.`,
-          `TestComponent.html(3, 67): Type 'number' is not assignable to type 'string'.`,
+          `TestComponent.html(3, 58): Type 'number' is not assignable to type 'boolean'.`,
+          `TestComponent.html(3, 64): Type 'number' is not assignable to type 'string'.`,
         ],
       },
       {
@@ -308,8 +308,8 @@ runInEachFileSystem(() => {
               <div dir [gen]="false" [other]="'text'"
                        #ref="dir" (click)="ref.tester = {t: 1, u: 0}">`,
         expected: [
-          `TestComponent.html(3, 61): Type 'number' is not assignable to type 'boolean'.`,
-          `TestComponent.html(3, 67): Type 'number' is not assignable to type 'string'.`,
+          `TestComponent.html(3, 58): Type 'number' is not assignable to type 'boolean'.`,
+          `TestComponent.html(3, 64): Type 'number' is not assignable to type 'string'.`,
         ],
       },
       {
@@ -334,8 +334,8 @@ runInEachFileSystem(() => {
               <div dir [gen]="false" [other]="{u: null}"
                    #ref="dir" (click)="ref.tester = {t: 1, u: 0}">`,
         expected: [
-          `TestComponent.html(3, 57): Type 'number' is not assignable to type 'boolean'.`,
-          `TestComponent.html(3, 63): Type 'number' is not assignable to type 'null'.`,
+          `TestComponent.html(3, 54): Type 'number' is not assignable to type 'boolean'.`,
+          `TestComponent.html(3, 60): Type 'number' is not assignable to type 'null'.`,
         ],
       },
       {
@@ -356,7 +356,7 @@ runInEachFileSystem(() => {
         component: `prop: HTMLElement = null!`,
         expected: [
           // This verifies that the `ref.tester.ts` is correctly inferred to be `HTMLElement`.
-          `TestComponent.html(1, 60): Type 'number' is not assignable to type 'HTMLElement'.`,
+          `TestComponent.html(1, 57): Type 'number' is not assignable to type 'HTMLElement'.`,
         ],
       },
       {
@@ -490,8 +490,8 @@ runInEachFileSystem(() => {
           otherVal!: string;
         `,
         expected: [
-          `TestComponent.html(3, 61): Type 'number' is not assignable to type 'boolean'.`,
-          `TestComponent.html(3, 67): Type 'number' is not assignable to type 'string'.`,
+          `TestComponent.html(3, 58): Type 'number' is not assignable to type 'boolean'.`,
+          `TestComponent.html(3, 64): Type 'number' is not assignable to type 'string'.`,
         ],
       },
       {
@@ -520,8 +520,8 @@ runInEachFileSystem(() => {
           otherVal!: string;
         `,
         expected: [
-          `TestComponent.html(3, 61): Type 'number' is not assignable to type 'boolean'.`,
-          `TestComponent.html(3, 67): Type 'number' is not assignable to type 'string'.`,
+          `TestComponent.html(3, 58): Type 'number' is not assignable to type 'boolean'.`,
+          `TestComponent.html(3, 64): Type 'number' is not assignable to type 'string'.`,
         ],
       },
       {
@@ -550,8 +550,8 @@ runInEachFileSystem(() => {
           otherVal!: {u: null};
         `,
         expected: [
-          `TestComponent.html(3, 57): Type 'number' is not assignable to type 'boolean'.`,
-          `TestComponent.html(3, 63): Type 'number' is not assignable to type 'null'.`,
+          `TestComponent.html(3, 54): Type 'number' is not assignable to type 'boolean'.`,
+          `TestComponent.html(3, 60): Type 'number' is not assignable to type 'null'.`,
         ],
       },
       {
@@ -572,7 +572,7 @@ runInEachFileSystem(() => {
         component: `prop: HTMLElement = null!`,
         expected: [
           // This verifies that the `ref.tester.ts` is correctly inferred to be `HTMLElement`.
-          `TestComponent.html(1, 62): Type 'number' is not assignable to type 'HTMLElement'.`,
+          `TestComponent.html(1, 59): Type 'number' is not assignable to type 'HTMLElement'.`,
         ],
       },
       {

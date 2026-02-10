@@ -15,6 +15,7 @@ load(
     _sass_library = "sass_library",
     _ts_config = "ts_config",
     _ts_project = "ts_project",
+    _zoneless_web_test_suite = "zoneless_web_test_suite",
 )
 
 sass_binary = _sass_binary
@@ -36,6 +37,19 @@ def ng_web_test_suite(deps = [], **kwargs):
         "//:node_modules/@angular/platform-browser",
     ]
     _ng_web_test_suite(
+        deps = deps,
+        tsconfig = "//devtools:tsconfig_test",
+        **kwargs
+    )
+
+def zoneless_web_test_suite(deps = [], **kwargs):
+    # Provide required modules for the imports in //tools/testing/browser_tests.init.mts
+    deps = deps + [
+        "//:node_modules/@angular/compiler",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
+    ]
+    _zoneless_web_test_suite(
         deps = deps,
         tsconfig = "//devtools:tsconfig_test",
         **kwargs

@@ -1,0 +1,97 @@
+{
+  "body": "# PR: feat(language-service): add Document Symbols support for Angular templates\n\n## ⚠️ Dependency\n\nThis PR depends on [#66734](https://github.com/angular/angular/pull/66734) (feat(language-server): add shared workspace/configuration utilities) and must be merged after that PR.\n\n## Description\n\nAdds comprehensive Document Symbols support for Angular templates, enabling the Outline panel, breadcrumbs navigation, and \"Go to Symbol\" (Cmd+Shift+O / Ctrl+Shift+O) features to work with Angular template syntax.\n\n## Features\n\n### Block Syntax Support\n- `@if`, `@else`, `@else if` with expression and alias display\n- `@for` with track expression and context variables\n- `@switch`, `@case`, `@default` blocks\n- `@defer`, `@placeholder`, `@loading`, `@error` blocks with triggers\n- `@let` declarations\n\n### Structural Directive Support\n- `*ngIf`, `*ngFor`, `*ngSwitch`, `*ngSwitchCase`, `*ngSwitchDefault`\n- `*ngTemplateOutlet`, `*ngComponentOutlet`, `*ngPlural`, `*ngPluralCase`\n- Custom structural directives (shown with Class icon)\n\n### Template File Support\n- **TypeScript files**: Template symbols nested under `(template)` node in component class\n- **External HTML templates**: Template symbols at root level (works with `templateUrl`)\n\n### Hybrid Approach (Default Behavior)\n\nBy default, for TypeScript files with inline templates, only the component class with template symbols is shown (no methods/properties):\n\n```\nMyComponent (class)\n└── (template)\n    ├── @if (condition)\n    └── \u003cbutton\u003e\n```\n\nUse `angular.documentSymbols.showTypescriptSymbols: true` to see full TypeScript tree:\n\n```\nMyComponent (class)\n├── ngOnInit (method)\n├── onClick (method)\n├── someProperty (property)\n└── (template)\n    ├── @if (condition)\n    └── \u003cbutton\u003e\n```\n\n### Multi-Component Support\n- **Multiple components per file**: Correctly merges template symbols into each component class\n- **Non-standard naming**: Works with components without \"Component\" suffix\n\n### Variables and References\n- Loop item variables (`let item`)\n- Template reference variables (`#ref`)\n- Context variable aliases (`let i = $index`)\n- Expression aliases (`as alias`)\n\n### SymbolKind Mappings\n\n| Template Element | SymbolKind | Icon |\n|-----------------|------------|------|\n| `@if`, `@else`, `@switch`, `@case` | Struct | 🔶 |\n| `@for`, `@empty` | Array | 📦 |\n| `@defer`, `@placeholder`, `@loading`, `@error` | Event | ⚡ |\n| HTML elements | Object | 🟡 |\n| Variables | Variable | |\n| Structural directives | Class | |\n\n## Configuration\n\n### `angular.documentSymbols.enabled` (default: `true`)\nEnables Angular-specific document symbols.\n\n### `angular.documentSymbols.showImplicitForVariables` (default: `false`)\nShows all implicit `@for` loop variables (`$index`, `$count`, `$first`, `$last`, `$even`, `$odd`).\n\n### `angular.documentSymbols.showTypescriptSymbols` (default: `false`)\nShows all TypeScript symbols (methods, properties) alongside Angular template symbols. When disabled (default), only the component class container is shown with template symbols nested inside.\n\n## Example\n\nTemplate:\n```html\n@for (item of items; track item.id; let i = $index) {\n  @if (item.visible; as isVisible) {\n    \u003cdiv #container (click)=\"onClick()\"\u003e\n      {{ item.name }}\n    \u003c/div\u003e\n  }\n}\n```\n\nOutline:\n```\n@for (item of items)  📦\n├── let item\n├── let i\n├── @if (item.visible; as isVisible)  🔶\n│   ├── let isVisible\n│   └── \u003cdiv\u003e  🟡\n│       └── #container\n```\n\n## Technical Implementation\n\n- **Language Service API**: `getTemplateDocumentSymbols()` using `TemplateSymbolVisitor` with `className` tracking\n- **LSP Server**: `onDocumentSymbol` handler with hybrid approach filtering\n- **Client Middleware**: `provideDocumentSymbols` with `isInAngularProject` guard\n\n## Testing\n\n- 53 LSP integration tests (including multi-component, TypeScript symbols, and edge cases)\n- 10 language-service unit tests\n- Tests cover structural directives, nested blocks, alias handling, external templates\n\n## Breaking Changes\n\nNone\n\n## Related Issues\n\nCloses #66691\n\n---\n\n## AI Disclosure\n\nThis PR was developed using Claude Opus 4.5 AI assistant under human orchestration and review by @kbrilla.\n",
+  "comments": [
+    {
+      "author": {"login": "kbrilla"},
+      "authorAssociation": "CONTRIBUTOR",
+      "body": "## Screenshots demonstrating Document Symbols feature\r\n\r\n### TypeScript file with inline template (`NxWelcome` - no \"Component\" suffix)\r\nShows the component class with the `(template)` node containing Angular template symbols:\r\n- `@if (title)` control flow block with proper icon\r\n- Nested `\u003cspan\u003e` and `\u003cdiv\u003e` elements\r\n- Class members (`title` property)\r\n\r\n\u003cimg width=\"894\" height=\"462\" alt=\"image\" src=\"https://github.com/user-attachments/assets/47d1933c-c1d8-495e-a74d-fdacce815390\" /\u003e\r\n\r\n\r\n### External HTML template (`app.html`)\r\nShows Angular symbols at root level for external templates:\r\n- `@if (title)` control flow block\r\n- `\u003capp-nx-welcome\u003e` component element\r\n- Both **Angular Language Service** and **HTML Language Features** sections working together\r\n\r\n\u003cimg width=\"1006\" height=\"259\" alt=\"image\" src=\"https://github.com/user-attachments/assets/17584767-e815-4962-b734-1bff69e535b5\" /\u003e\r\n\r\n---\r\n\r\n**Key features visible in screenshots:**\r\n1. ✅ Component without \"Component\" suffix works correctly\r\n2. ✅ Inline template symbols nested under class\r\n3. ✅ External template symbols at root level\r\n4. ✅ Control flow blocks (`@if`) with proper icons\r\n5. ✅ Breadcrumb navigation shows Angular hierarchy\r\n",
+      "createdAt": "2026-01-21T23:02:31Z",
+      "id": "IC_kwDOAXExC87hZZhm",
+      "includesCreatedEdit": true,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/angular/angular/pull/66690#issuecomment-3781531750",
+      "viewerDidAuthor": true
+    },
+    {
+      "author": {"login": "kbrilla"},
+      "authorAssociation": "CONTRIBUTOR",
+      "body": "## Additional Features/Fixes Added During Testing\r\n\r\nWhile testing and addressing review feedback, I found and fixed two additional edge cases:\r\n\r\n### 1. Components Without \"Component\" Suffix\r\n**Issue:** Classes like `NxWelcome` (without \"Component\" suffix) didn't get template symbols merged correctly.\r\n\r\n**Root cause:** The original merge logic relied on class name ending with \"Component\" as a heuristic.\r\n\r\n**Fix:** Added `className` property to `TemplateDocumentSymbol` API. Template symbols are now explicitly tagged with their owning class name, enabling reliable merging regardless of naming conventions.\r\n\r\n### 2. Multiple Components Per File\r\n**Issue:** Files with multiple components (common in tests, storybooks, demo files) didn't work - all template symbols went into the first class.\r\n\r\n**Fix:** Server now groups template symbols by `className` and merges each group into the correct component class.\r\n\r\n**Tests added:**\r\n- `'provides document symbols for component without \"Component\" suffix'`\r\n- `'provides document symbols for multiple components in one file'`\r\n\r\n\u003cimg width=\"396\" height=\"591\" alt=\"image\" src=\"https://github.com/user-attachments/assets/67f12136-f85f-4203-9577-276700449d6a\" /\u003e\r\n\r\n\r\nBoth scenarios are now documented in the PR description under \"Multi-Component Support\".\r\n",
+      "createdAt": "2026-01-21T23:21:02Z",
+      "id": "IC_kwDOAXExC87hZmn4",
+      "includesCreatedEdit": true,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/angular/angular/pull/66690#issuecomment-3781585400",
+      "viewerDidAuthor": true
+    },
+    {
+      "author": {"login": "kbrilla"},
+      "authorAssociation": "CONTRIBUTOR",
+      "body": "## 🔗 Dependency Update\n\nThis PR now depends on #66734 (feat(language-server): add shared workspace/configuration utilities).\n\n### Changes in this update:\n- **Removed CLI arguments**: `--disableDocumentSymbols` and `--showImplicitForVariables` CLI args have been removed\n- **Now uses workspace/configuration**: Settings are fetched dynamically via LSP `workspace/configuration` request using the new shared utilities from #66734\n- **Benefits**: Users can now change document symbols settings without restarting the language server\n\n### Merge Order:\n1. First merge #66734 (workspace/configuration infrastructure)\n2. Then this PR can be merged\n\nThe PR has been rebased onto the `feat/workspace-configuration` branch.",
+      "createdAt": "2026-01-24T09:08:57Z",
+      "id": "IC_kwDOAXExC87iKAeg",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/angular/angular/pull/66690#issuecomment-3794274208",
+      "viewerDidAuthor": true
+    },
+    {
+      "author": {"login": "kbrilla"},
+      "authorAssociation": "CONTRIBUTOR",
+      "body": "## Update: Hybrid Approach Implemented\n\nFollowing @atscott's feedback, I've implemented the hybrid approach (Option 1 + 2 from the analysis):\n\n### Changes:\n1. **Default behavior (filtering)**: By default, only component classes with templates are shown in the outline - no TypeScript methods/properties\n2. **New configuration**: Added `angular.documentSymbols.showTypescriptSymbols` setting to opt-in to full TypeScript symbols\n\n### Default behavior (new):\n```\nMyComponent (class)\n└── (template)\n    ├── @if (condition)\n    └── \u003cbutton\u003e\n```\n\n### With `showTypescriptSymbols: true`:\n```\nMyComponent (class)\n├── ngOnInit (method)\n├── onClick (method)\n├── someProperty (property)\n└── (template)\n    ├── @if (condition)\n    └── \u003cbutton\u003e\n```\n\n### Testing:\n- Updated existing test to verify default filtering behavior\n- Added test for `showTypescriptSymbols: true` configuration\n- Added test for multiple components in a single file\n- Added test for TypeScript files without Angular templates\n\nAll 53 specs pass.\n\n### Documentation:\n- Updated README with new setting and visual examples\n- Updated package.json with setting description\n",
+      "createdAt": "2026-01-25T23:01:11Z",
+      "id": "IC_kwDOAXExC87iVzQ7",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/angular/angular/pull/66690#issuecomment-3797365819",
+      "viewerDidAuthor": true
+    },
+    {
+      "author": {"login": "atscott"},
+      "authorAssociation": "CONTRIBUTOR",
+      "body": "\u003e New configuration: Added angular.documentSymbols.showTypescriptSymbols setting to opt-in to full TypeScript symbols\r\n\r\nsorry, that’s not really what I asked. Please remove all typescript symbols outside of the ancestors of the template property ",
+      "createdAt": "2026-01-25T23:55:48Z",
+      "id": "IC_kwDOAXExC87iWBM5",
+      "includesCreatedEdit": false,
+      "isMinimized": false,
+      "minimizedReason": "",
+      "reactionGroups": [],
+      "url": "https://github.com/angular/angular/pull/66690#issuecomment-3797422905",
+      "viewerDidAuthor": false
+    }
+  ],
+  "files": [
+    {"additions": 66, "deletions": 0, "path": "packages/language-service/api.ts"},
+    {"additions": 762, "deletions": 0, "path": "packages/language-service/src/document_symbols.ts"},
+    {"additions": 22, "deletions": 0, "path": "packages/language-service/src/language_service.ts"},
+    {"additions": 10, "deletions": 0, "path": "packages/language-service/src/ts_plugin.ts"},
+    {"additions": 30, "deletions": 0, "path": "vscode-ng-language-service/README.md"},
+    {"additions": 14, "deletions": 0, "path": "vscode-ng-language-service/client/src/client.ts"},
+    {
+      "additions": 851,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/integration/lsp/ivy_spec.ts"
+    },
+    {"additions": 10, "deletions": 0, "path": "vscode-ng-language-service/package.json"},
+    {"additions": 76, "deletions": 0, "path": "vscode-ng-language-service/server/src/config.ts"},
+    {
+      "additions": 427,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/server/src/handlers/document_symbols.ts"
+    },
+    {
+      "additions": 1,
+      "deletions": 0,
+      "path": "vscode-ng-language-service/server/src/handlers/initialization.ts"
+    },
+    {"additions": 2, "deletions": 0, "path": "vscode-ng-language-service/server/src/session.ts"}
+  ],
+  "title": "feat(language-service): add Document Symbols support for Angular templates"
+}

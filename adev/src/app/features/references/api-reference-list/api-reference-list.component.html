@@ -4,7 +4,13 @@
 
 <div class="adev-reference-list-filter">
   <div class="adev-reference-list-query-filter">
-    <docs-text-field name="query" placeholder="Filter" [(ngModel)]="query" />
+    <docs-text-field placeholder="Filter" [formField]="form.query" />
+
+    <docs-select
+      selectId="package-entry-filter"
+      [options]="packageOptions()"
+      [formField]="form.selectedPackage"
+    />
   </div>
 
   <div class="adev-reference-list-status">
@@ -23,7 +29,7 @@
     @for (itemType of itemTypes; track itemType) {
       <li
         class="adev-reference-list-type-filter-item"
-        [class.adev-reference-list-type-filter-item-active]="type() === itemType"
+        [class.adev-reference-list-type-filter-item-active]="form.type().value() === itemType"
         (click)="setItemType(itemType)"
       >
         <docs-api-item-label [type]="itemType" mode="short" class="docs-api-item-label" />

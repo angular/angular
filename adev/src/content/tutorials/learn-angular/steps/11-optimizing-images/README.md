@@ -38,7 +38,7 @@ import { NgOptimizedImage } from '@angular/common';
 template: `     ...
     <li>
       Static Image:
-      <img ngSrc="/assets/logo.svg" alt="Angular logo" width="32" height="32" />
+      <img ngSrc="/logo.svg" alt="Angular logo" width="32" height="32" />
     </li>
     <li>
       Dynamic Image:
@@ -59,7 +59,8 @@ Note that in the above code example, each image has both `width` and `height` at
 In situations where you can't or don't want to specify a static `height` and `width` for images, you can use [the `fill` attribute](https://web.dev/articles/cls) to tell the image to act like a "background image", filling its containing element:
 
 ```angular-html
-<div class="image-container"> //Container div has 'position: "relative"'
+// Container div has 'position: "relative"'
+<div class="image-container">
   <img ngSrc="www.example.com/image.png" fill />
 </div>
 ```
@@ -83,7 +84,7 @@ One of the most important optimizations for loading performance is to prioritize
 `NgOptimizedImage` allows you to specify an [image loader](guide/image-optimization#configuring-an-image-loader-for-ngoptimizedimage), which tells the directive how to format URLs for your images. Using a loader allows you to define your images with short, relative URLs:
 
 ```ts
-providers: [provideImgixLoader('https://my.base.url/')];
+providers: [provideImgixLoader('https://my.base.url/')],
 ```
 
 Final URL will be 'https://my.base.url/image.png'

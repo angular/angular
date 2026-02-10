@@ -41,46 +41,46 @@ describe('DevtoolsComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should render ng devtools tabs when Angular Status is EXISTS and is in dev mode and is supported version', () => {
+  it('should render ng devtools tabs when Angular Status is EXISTS and is in dev mode and is supported version', async () => {
     component.angularStatus.set(component.AngularStatus.EXISTS);
     component.angularIsInDevMode.set(true);
     component.angularVersion.set('0.0.0');
     component.ivy.set(true);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('ng-devtools-tabs')).toBeTruthy();
   });
 
-  it('should render Angular Devtools dev mode only support text when Angular Status is EXISTS and is angular is not in dev mode', () => {
+  it('should render Angular Devtools dev mode only support text when Angular Status is EXISTS and is angular is not in dev mode', async () => {
     component.angularStatus.set(component.AngularStatus.EXISTS);
     component.angularIsInDevMode.set(false);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('.devtools-state-screen').textContent).toContain(
       'We detected an application built with a production configuration. Angular DevTools only supports development builds.',
     );
   });
 
-  it('should render version support message when Angular Status is EXISTS and angular version is not supported', () => {
+  it('should render version support message when Angular Status is EXISTS and angular version is not supported', async () => {
     component.angularStatus.set(component.AngularStatus.EXISTS);
     component.angularIsInDevMode.set(true);
     component.angularVersion.set('1.0.0');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('.devtools-state-screen').textContent).toContain(
       `Angular DevTools only supports Angular versions ${LAST_SUPPORTED_VERSION} and above`,
     );
   });
 
-  it('should render Angular application not detected when Angular Status is DOES_NOT_EXIST', () => {
+  it('should render Angular application not detected when Angular Status is DOES_NOT_EXIST', async () => {
     component.angularStatus.set(component.AngularStatus.DOES_NOT_EXIST);
-    fixture.detectChanges();
+    await fixture.whenStable();
     // expect the text to be "Angular application not detected"
     expect(fixture.nativeElement.querySelector('.devtools-state-screen').textContent).toContain(
       'Angular application not detected',
     );
   });
 
-  it('should render loading svg when Angular Status is UNKNOWN', () => {
+  it('should render loading svg when Angular Status is UNKNOWN', async () => {
     component.angularStatus.set(component.AngularStatus.UNKNOWN);
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('.loading svg')).toBeTruthy();
   });
 });

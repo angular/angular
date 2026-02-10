@@ -6,8 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/core';
-
+import {
+  inject,
+  Injector,
+  runInInjectionContext,
+  ɵRuntimeError as RuntimeError,
+  untracked,
+  WritableSignal,
+} from '@angular/core';
+import {RuntimeErrorCode} from '../errors';
 import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
@@ -32,22 +39,45 @@ import type {
 } from './types';
 
 /**
+ * Options that can be specified when submitting a form.
+ *
+ * @experimental 21.2.0
+ */
+export interface FormSubmitOptions<TModel> {
+  /** Function to run when submitting the form data (when form is valid). */
+  action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>;
+  /** Function to run when attempting to submit the form data but validation is failing. */
+  onInvalid?: (form: FieldTree<TModel>) => void;
+  /**
+   * Whether to ignore any of the validators when submitting:
+   * - 'pending': Will submit if there are no invalid validators, pending validators do not block submission (default)
+   * - 'none': Will not submit unless all validators are passing, pending validators block submission
+   * - 'ignore': Will always submit regardless of invalid or pending validators
+   */
+  ignoreValidators?: 'pending' | 'none' | 'all';
+}
+
+/**
  * Options that may be specified when creating a form.
  *
  * @category structure
  * @experimental 21.0.0
  */
-export interface FormOptions {
+export interface FormOptions<TModel> {
   /**
    * The injector to use for dependency injection. If this is not provided, the injector for the
    * current [injection context](guide/di/dependency-injection-context), will be used.
    */
   injector?: Injector;
+  /** The name of the root form, used in generating name attributes for the fields. */
   name?: string;
+  /** Options that define how to handle form submission. */
+  submission?: FormSubmitOptions<TModel>;
 
   /**
    * Adapter allows managing fields in a more flexible way.
    * Currently this is used to support interop with reactive forms.
+   * @internal
    */
   adapter?: FieldAdapter;
 }
@@ -127,7 +157,7 @@ export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
  */
 export function form<TModel>(
   model: WritableSignal<TModel>,
-  schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions,
+  schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions<TModel>,
 ): FieldTree<TModel>;
 
 /**
@@ -155,7 +185,7 @@ export function form<TModel>(
  * ```ts
  * const nameForm = form(signal({first: '', last: ''}), (name) => {
  *   required(name.first);
- *   validate(name.last, ({value}) => !/^[a-z]+$/i.test(value()) ? customError({kind: 'alphabet-only'}) : undefined);
+ *   validate(name.last, ({value}) => !/^[a-z]+$/i.test(value()) ? {kind: 'alphabet-only'} : undefined);
  * });
  * nameForm().valid(); // false
  * nameForm().value.set({first: 'John', last: 'Doe'});
@@ -176,14 +206,18 @@ export function form<TModel>(
 export function form<TModel>(
   model: WritableSignal<TModel>,
   schema: SchemaOrSchemaFn<TModel>,
-  options: FormOptions,
+  options: FormOptions<TModel>,
 ): FieldTree<TModel>;
 
 export function form<TModel>(...args: any[]): FieldTree<TModel> {
   const [model, schema, options] = normalizeFormArgs<TModel>(args);
   const injector = options?.injector ?? inject(Injector);
   const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
-  const fieldManager = new FormFieldManager(injector, options?.name);
+  const fieldManager = new FormFieldManager(
+    injector,
+    options?.name,
+    options?.submission as FormSubmitOptions<unknown> | undefined,
+  );
   const adapter = options?.adapter ?? new BasicFieldAdapter();
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
@@ -332,7 +366,7 @@ export function applyWhenValue(
 /**
  * Submits a given `FieldTree` using the given action function and applies any submission errors
  * resulting from the action to the field. Submission errors returned by the `action` will be integrated
- * into the field as a `ValidationError` on the sub-field indicated by the `field` property of the
+ * into the field as a `ValidationError` on the sub-field indicated by the `fieldTree` property of the
  * submission error.
  *
  * @example
@@ -341,23 +375,26 @@ export function applyWhenValue(
  *   const result = await myClient.registerNewUser(registrationForm().value());
  *   if (result.errorCode === myClient.ErrorCode.USERNAME_TAKEN) {
  *     return [{
- *       field: registrationForm.username,
- *       error: {kind: 'server', message: 'Username already taken'}
+ *       fieldTree: registrationForm.username,
+ *       kind: 'server',
+ *       message: 'Username already taken'
  *     }];
  *   }
  *   return undefined;
  * }
  *
  * const registrationForm = form(signal({username: 'god', password: ''}));
- * submit(registrationForm, async (f) => {
- *   return registerNewUser(registrationForm);
+ * submit(registrationForm, {
+ *   action: async (f) => {
+ *     return registerNewUser(registrationForm);
+ *   }
  * });
  * registrationForm.username().errors(); // [{kind: 'server', message: 'Username already taken'}]
  * ```
  *
  * @param form The field to submit.
- * @param action An asynchronous action used to submit the field. The action may return submission
- * errors.
+ * @param options Options for the submission.
+ * @returns Whether the submission was successful.
  * @template TModel The data type of the field being submitted.
  *
  * @category submission
@@ -365,20 +402,59 @@ export function applyWhenValue(
  */
 export async function submit<TModel>(
   form: FieldTree<TModel>,
-  action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>,
-) {
+  options?: FormSubmitOptions<TModel>,
+): Promise<boolean>;
+export async function submit<TModel>(
+  form: FieldTree<TModel>,
+  action: FormSubmitOptions<TModel>['action'],
+): Promise<boolean>;
+export async function submit<TModel>(
+  form: FieldTree<TModel>,
+  options?: FormSubmitOptions<TModel> | FormSubmitOptions<TModel>['action'],
+): Promise<boolean> {
   const node = form() as unknown as FieldNode;
-  markAllAsTouched(node);
-
-  // Fail fast if the form is already invalid.
-  if (node.invalid()) {
-    return;
+  const opts =
+    typeof options === 'function'
+      ? {action: options}
+      : ({
+          ...(node.structure.fieldManager.submitOptions ?? {}),
+          ...(options ?? {}),
+        } as Partial<FormSubmitOptions<TModel>>);
+  const action = opts?.action;
+  if (!action) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_SUBMIT_ACTION,
+      ngDevMode &&
+        'Cannot submit form with no submit action. Specify the action when creating the form, or as an additional argument to `submit()`.',
+    );
   }
 
-  node.submitState.selfSubmitting.set(true);
+  const onInvalid = opts?.onInvalid;
+  const ignoreValidators = opts?.ignoreValidators ?? 'pending';
+
+  // Determine whether or not to run the action based on the current validity.
+  let shouldRunAction = true;
+  untracked(() => {
+    markAllAsTouched(node);
+
+    if (ignoreValidators === 'none') {
+      shouldRunAction = node.valid();
+    } else if (ignoreValidators === 'pending') {
+      shouldRunAction = !node.invalid();
+    }
+  });
+
+  // Run the action (or alternatively the `onInvalid` callback)
   try {
-    const errors = await action(form);
-    errors && setSubmissionErrors(node, errors);
+    if (shouldRunAction) {
+      node.submitState.selfSubmitting.set(true);
+      const errors = await untracked(() => action?.(form));
+      errors && setSubmissionErrors(node, errors);
+      return !errors || (isArray(errors) && errors.length === 0);
+    } else {
+      untracked(() => onInvalid?.(form));
+    }
+    return false;
   } finally {
     node.submitState.selfSubmitting.set(false);
   }
@@ -392,12 +468,12 @@ export async function submit<TModel>(
  */
 function setSubmissionErrors(
   submittedField: FieldNode,
-  errors: OneOrMany<ValidationError.WithOptionalField>,
+  errors: OneOrMany<ValidationError.WithOptionalFieldTree>,
 ) {
   if (!isArray(errors)) {
     errors = [errors];
   }
-  const errorsByField = new Map<FieldNode, ValidationError.WithField[]>();
+  const errorsByField = new Map<FieldNode, ValidationError.WithFieldTree[]>();
   for (const error of errors) {
     const errorWithField = addDefaultField(error, submittedField.fieldProxy);
     const field = errorWithField.fieldTree() as FieldNode;
@@ -428,6 +504,12 @@ export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
 
 /** Marks a {@link node} and its descendants as touched. */
 function markAllAsTouched(node: FieldNode) {
+  // Don't mark hidden, disabled, or readonly fields as touched since they don't contribute to the
+  // form's validity. This also prevents errors from appearing immediately if they're later made
+  // interactive.
+  if (node.validationState.shouldSkipValidation()) {
+    return;
+  }
   node.markAsTouched();
   for (const child of node.structure.children()) {
     markAllAsTouched(child);

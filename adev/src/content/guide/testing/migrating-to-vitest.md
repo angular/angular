@@ -132,6 +132,8 @@ Add the `browsers` option to your `test` target's options. The browser name depe
 
 Headless mode is enabled automatically if the `CI` environment variable is set or if a browser name includes "Headless" (e.g., `ChromeHeadless`). Otherwise, tests will run in a headed browser.
 
+NOTE: Debugging with `ng test --debug` is not supported by browser mode.
+
 ## Automated test refactoring with schematics
 
 IMPORTANT: The `refactor-jasmine-vitest` schematic is experimental and may not cover all possible test patterns. Always review the changes made by the schematic.
@@ -222,6 +224,11 @@ Provide a direct path to a Vitest configuration file in your `angular.json`:
 
 **2. Automatic search for base configuration:**
 If you set `runnerConfig` to `true`, the builder will automatically search for a shared `vitest-base.config.*` file in your project and workspace roots.
+
+## `zone.js` based helpers are not supported
+
+The zone.js patches are not applied when running tests with Vitest, there for you won't be able use functions like `fakeAsync`, `flush` or `waitForAsync`.
+To migrate to Vitest you will also need to migrate your tests to native async and Vitest fake timers. See [an example here](/guide/testing/components-scenarios#async-test-with-a-vitest-fake-timers) for fake timers usages with Vitest.
 
 ## Bug reports
 

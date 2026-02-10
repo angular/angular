@@ -59,8 +59,8 @@
 }
 
 [ngCombobox]:focus-within [ngComboboxInput] {
-  outline: 1.5px solid var(--vivid-pink);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink) 25%, transparent);
+  outline: none;
+  box-shadow: none;
 }
 
 .icon {
@@ -76,6 +76,7 @@
   padding: 0 0.5rem;
   position: absolute;
   opacity: 0.8;
+  color: #000;
 }
 
 .arrow-icon {
@@ -84,6 +85,7 @@
   right: 0;
   opacity: 0.8;
   transition: transform 0.2s ease;
+  color: #000;
 }
 
 [ngComboboxInput][aria-expanded='true'] + .arrow-icon {
@@ -136,16 +138,17 @@
 }
 
 [ngOption][aria-selected='true'] {
-  color: var(--vivid-pink);
-  background-color: color-mix(in srgb, var(--vivid-pink) 10%, transparent);
+  color: var(--vivid-pink, #f542a4);
+  background-color: color-mix(in srgb, var(--vivid-pink, #f542a4) 10%, transparent);
 }
 
 [ngOption]:hover {
-  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 10%, transparent);
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface, #1a1a1a) 10%, transparent);
 }
 
 [ngCombobox]:focus-within [data-active='true'] {
-  outline: 2px solid color-mix(in srgb, var(--vivid-pink) 80%, transparent);
+  outline: 2px dashed var(--vivid-pink, #f542a4);
+  outline-offset: -2px;
 }
 
 .dialog {
@@ -158,6 +161,8 @@
   padding: 0;
   border: none;
   box-shadow: var(--retro-flat-shadow);
+  background-color: var(--septenary-contrast, #f5f5f5);
+  color: inherit;
 }
 
 .dialog .combobox-input-container {
@@ -170,12 +175,12 @@
 }
 
 .dialog [ngComboboxInput] {
-  border-bottom: 4px solid #000;
+  border-bottom: 4px solid var(--gray-700, #374151);
 }
 
-.dialog [ngCombobox]:focus-within [ngComboboxInput] {
-  outline: none;
-  box-shadow: none;
+[ngCombobox]:focus-within [ngComboboxInput]:not(.combobox-input) {
+  outline: 1.5px solid var(--vivid-pink);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink) 25%, transparent);
 }
 
 .dialog::backdrop {

@@ -27,7 +27,7 @@ import {assertLView} from '../assert';
 import {collectNativeNodes} from '../collect_native_nodes';
 import {getLContext} from '../context_discovery';
 import {CONTAINER_HEADER_OFFSET, NATIVE} from '../interfaces/container';
-import {INJECTOR, LView, TVIEW} from '../interfaces/view';
+import {HOST, INJECTOR, LView, TVIEW} from '../interfaces/view';
 import {getNativeByTNode} from './view_utils';
 
 /** Retrieved information about a `@defer` block. */
@@ -64,6 +64,9 @@ export interface DeferBlockData {
 
   /** Stringified version of the block's triggers. */
   triggers: string[];
+
+  /** The comment host/container node next to which all of the root nodes are rendered. */
+  hostNode: Node;
 
   /** Element root nodes that are currently being shown in the block. */
   rootNodes: Node[];
@@ -156,6 +159,7 @@ function findDeferBlocks(node: Node, lView: LView, results: DeferBlockData[]) {
         minimumTime: tDetails.placeholderBlockConfig?.[MINIMUM_SLOT] ?? null,
       },
       triggers: tDetails.debug?.triggers ? Array.from(tDetails.debug.triggers).sort() : [],
+      hostNode: details.lContainer[HOST] as Node,
       rootNodes,
     };
 
