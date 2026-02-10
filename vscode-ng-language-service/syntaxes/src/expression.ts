@@ -223,8 +223,9 @@ export const Expression: GrammarDefinition = {
     },
 
     functionCall: {
-      begin: /(?=(\??\.\s*)?([_$[:alpha:]][_$[:alnum:]]*)\s*(<([^<>]|\<[^<>]+\>)+>\s*)?\()/,
-      end: /(?<=\))(?!(\??\.\s*)?([_$[:alpha:]][_$[:alnum:]]*)\s*(<([^<>]|\<[^<>]+\>)+>\s*)?\()/,
+      begin:
+        /(?=(\??\.\s*)?([_$[:alpha:]][_$[:alnum:]]*)\s*(<([^<>]|\<[^<>]+\>)+>\s*)?(\?\.\s*)?\()/,
+      end: /(?<=\))(?!(\??\.\s*)?([_$[:alpha:]][_$[:alnum:]]*)\s*(<([^<>]|\<[^<>]+\>)+>\s*)?(\?\.\s*)?\()/,
       patterns: [
         {
           name: 'punctuation.accessor.ts',

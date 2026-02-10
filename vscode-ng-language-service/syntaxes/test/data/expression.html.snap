@@ -373,6 +373,15 @@
 #                      ^ template.ng expression.ng punctuation.terminator.statement.ts
 #                       ^ template.ng expression.ng
 #                        ^^ template.ng punctuation.definition.block.ts
+>{{ call?.()}}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^ template.ng expression.ng entity.name.function.ts
+#       ^ template.ng expression.ng punctuation.accessor.ts
+#        ^ template.ng expression.ng punctuation.accessor.ts
+#         ^ template.ng expression.ng meta.brace.round.ts
+#          ^ template.ng expression.ng meta.brace.round.ts
+#           ^^ template.ng punctuation.definition.block.ts
 >
 ><!-- Property read and method call: received -->
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
@@ -478,6 +487,17 @@
 #                              ^ template.ng expression.ng punctuation.terminator.statement.ts
 #                               ^ template.ng expression.ng
 #                                ^^ template.ng punctuation.definition.block.ts
+>{{ object.call?.()}}
+#^^ template.ng punctuation.definition.block.ts
+#  ^ template.ng expression.ng
+#   ^^^^^^ template.ng expression.ng variable.other.object.ts
+#         ^ template.ng expression.ng punctuation.accessor.ts
+#          ^^^^ template.ng expression.ng entity.name.function.ts
+#              ^ template.ng expression.ng punctuation.accessor.ts
+#               ^ template.ng expression.ng punctuation.accessor.ts
+#                ^ template.ng expression.ng meta.brace.round.ts
+#                 ^ template.ng expression.ng meta.brace.round.ts
+#                  ^^ template.ng punctuation.definition.block.ts
 >
 ><!-- Method call with parameters -->
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
@@ -1532,4 +1552,3 @@
 #                                     ^ template.ng expression.ng meta.brace.round.ts
 #                                      ^ template.ng expression.ng
 #                                       ^^ template.ng punctuation.definition.block.ts
->
