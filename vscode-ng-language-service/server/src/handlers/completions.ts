@@ -5,21 +5,27 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import * as lsp from 'vscode-languageserver';
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {getSCSSLanguageService} from 'vscode-css-languageservice';
+import {getCSSLanguageService, getSCSSLanguageService} from 'vscode-css-languageservice';
+import * as lsp from 'vscode-languageserver';
 import {TextDocument} from 'vscode-languageserver-textdocument';
 
+import {
+  getCSSVirtualContent,
+  getSCSSVirtualContent,
+  isInlineStyleNode,
+  isTemplateStyleNode,
+} from '../embedded_support';
 import {Session} from '../session';
-import {getSCSSVirtualContent, isInlineStyleNode} from '../embedded_support';
+import {documentationToMarkdown} from '../text_render';
 import {
   lspPositionToTsPosition,
   tsFileTextChangesToLspWorkspaceEdit,
   tsTextSpanToLspRange,
 } from '../utils';
-import {documentationToMarkdown} from '../text_render';
 
 const scssLS = getSCSSLanguageService();
+const cssLS = getCSSLanguageService();
 // TODO: Share this or import it if possible, but it's local in session.ts usually.
 // For now, duplicating the simple helper or need to find a way to share `defaultPreferences`.
 
@@ -64,15 +70,27 @@ export function onCompletion(
     options,
   );
 
-  if (!completions) {
-    const sf = session.getDefaultProjectForScriptInfo(scriptInfo)?.getSourceFile(scriptInfo.path);
-    if (!sf) {
-      return null;
+  const sf = session.getDefaultProjectForScriptInfo(scriptInfo)?.getSourceFile(scriptInfo.path);
+  if (!sf) {
+    return null;
+  }
+  const node = getTokenAtPosition(sf, offset);
+
+  // Check if we are in a template style binding (use CSS LS)
+  if (isTemplateStyleNode(node)) {
+    const cssCompletions = getTemplateStyleBindingsCompletions(
+      session,
+      sf,
+      scriptInfo,
+      params.position,
+      completions,
+    );
+    if (cssCompletions) {
+      return cssCompletions;
     }
-    // We need getTokenAtPosition. It is currently in session.ts.
-    // I should move it to utils.ts first or duplicate it (bad).
-    // Let's assume I will move it to utils.ts in the next step.
-    const node = getTokenAtPosition(sf, offset);
+  }
+
+  if (!completions) {
     if (!isInlineStyleNode(node)) {
       return null;
     }
@@ -146,6 +164,118 @@ export function onCompletionResolve(
   item.additionalTextEdits = codeActionsDetail.additionalTextEdits;
   item.command = codeActionsDetail.command;
   return item;
+}
+
+/**
+ * Completions for inline style binding eg: [style]={ backgr...}
+ */
+function getTemplateStyleBindingsCompletions(
+  session: Session,
+  sf: ts.SourceFile,
+  scriptInfo: ts.server.ScriptInfo,
+  position: lsp.Position,
+  completions: ts.WithMetadata<ts.CompletionInfo> | undefined,
+): lsp.CompletionItem[] | null {
+  const virtualCssDocContents = getCSSVirtualContent(sf);
+  // If content is found, we might be in a binding
+  if (!virtualCssDocContents.trim()) {
+    return null;
+  }
+
+  const virtualCssDoc = TextDocument.create(
+    session.getLSAndScriptInfo(sf.fileName)?.scriptInfo.fileName ?? 'temp',
+    'css',
+    0,
+    virtualCssDocContents,
+  );
+  const stylesheet = cssLS.parseStylesheet(virtualCssDoc);
+  const cssCompletions = cssLS.doComplete(virtualCssDoc, position, stylesheet);
+
+  if (cssCompletions.items.length === 0) {
+    return null;
+  }
+
+  const processedCssItems = cssCompletions.items.map((item) => {
+    try {
+      let text: string;
+      if (item.textEdit) {
+        text = item.textEdit.newText;
+      } else {
+        text = item.insertText ?? item.label;
+      }
+
+      if (text.endsWith(';')) {
+        text = text.slice(0, -1);
+      }
+
+      let isQuoted = false;
+      // Determine the start position of the replacement to check for preceding quotes
+      let rangeStart: lsp.Position | undefined;
+
+      if (item.textEdit) {
+        if ('range' in item.textEdit) {
+          rangeStart = item.textEdit.range.start;
+        } else if ('replace' in item.textEdit) {
+          rangeStart = item.textEdit.replace.start;
+        }
+      }
+
+      if (rangeStart) {
+        const start = lspPositionToTsPosition(scriptInfo, rangeStart);
+        if (start > 0 && start <= sf.text.length) {
+          const charBefore = sf.text[start - 1];
+          if (charBefore === "'" || charBefore === '"') {
+            isQuoted = true;
+          }
+        }
+      }
+
+      // Check if text itself is already quoted
+      if (text.startsWith("'") || text.startsWith('"')) {
+        isQuoted = true;
+      }
+
+      if (!isQuoted) {
+        const isProperty = item.kind === lsp.CompletionItemKind.Property;
+        if (isProperty) {
+          // For properties (keys), quote only if they have a dash (e.g. 'background-color')
+          if (text.includes('-')) {
+            text = `'${text}'`;
+          }
+        } else {
+          // For values, always quote them (e.g. 'red', 'block'), unless they are variables or something else special.
+          // The requirement is "if they are not props from the component".
+          // Since these come from CSS LS, they are never component/TS props.
+          text = `'${text}'`;
+        }
+      }
+
+      if (item.textEdit) {
+        item.textEdit.newText = text;
+      } else {
+        item.insertText = text;
+      }
+      return item;
+    } catch (e) {
+      return item;
+    }
+  });
+
+  // Heuristic: If we have CSS Property suggestions, we are likely in a Key position.
+  // In Key position, Angular component properties are usually not valid keys.
+  // If we have proper CSS completions, prioritize them.
+  const isKeyContext = processedCssItems.some((i) => i.kind === lsp.CompletionItemKind.Property);
+
+  if (isKeyContext) {
+    return processedCssItems;
+  }
+
+  // Value context: Mix CSS values with Angular class members
+  const ngItems = completions
+    ? completions.entries.map((e) => tsCompletionEntryToLspCompletionItem(e, position, scriptInfo))
+    : [];
+
+  return [...processedCssItems, ...ngItems];
 }
 
 function getTokenAtPosition(sourceFile: ts.SourceFile, position: number): ts.Node {

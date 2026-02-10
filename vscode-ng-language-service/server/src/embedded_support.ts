@@ -69,6 +69,107 @@ export function getSCSSVirtualContent(sf: ts.SourceFile): string {
   return content;
 }
 
+export function getCSSVirtualContent(sf: ts.SourceFile): string {
+  const inlineStyleNodes: ts.Node[] = findAllMatchingNodes(sf, isTemplateStyleNode);
+  const documentText = sf.text;
+
+  let content = documentText
+    .split('\n')
+    .map((line) => {
+      return ' '.repeat(line.length);
+    })
+    .join('\n');
+
+  for (const region of inlineStyleNodes) {
+    const templateContent = documentText.slice(region.getStart(sf) + 1, region.getEnd() - 1);
+    const cssContent = extractComponentStyleBindings(templateContent);
+    content =
+      content.slice(0, region.getStart(sf) + 1) + cssContent + content.slice(region.getEnd() - 1);
+  }
+  return content;
+}
+
+function extractComponentStyleBindings(templateContent: string): string {
+  const styleRegex = /\[style\]\s*=\s*(['"])\s*\{/g;
+  // Initialize result with spaces but PRESERVE newlines to maintain line mapping
+  let result = templateContent.replace(/[^\n\r]/g, ' ');
+
+  let match;
+  while ((match = styleRegex.exec(templateContent)) !== null) {
+    const startObj = match.index + match[0].length; // index after `{`
+    // find balancing `}`
+    let braceCount = 1;
+    let i = startObj;
+    for (; i < templateContent.length; i++) {
+      if (templateContent[i] === '{') {
+        braceCount++;
+      } else if (templateContent[i] === '}') {
+        braceCount--;
+      }
+      if (braceCount === 0) {
+        break;
+      }
+    }
+
+    if (braceCount === 0) {
+      const endObj = i;
+      // We want to replace `[style]="{` with `       a { `
+      const prefixLen = match[0].length;
+      // Use * (universal selector) to avoid polluting completion list with class names
+      // and to ensure we are in a rule block.
+      const selectorStr = ' * {';
+      const filler = ' '.repeat(prefixLen - selectorStr.length) + selectorStr;
+
+      const prefixStart = match.index;
+
+      // Write filler into result
+      result =
+        result.substring(0, prefixStart) + filler + result.substring(prefixStart + filler.length);
+
+      // Copy object content and blank out quotes on keys
+      let objContent = templateContent.substring(startObj, endObj);
+
+      // Transform content to be more CSS-like:
+      // 1. Replace quotes with spaces (so keys become identifiers)
+      // 2. Replace top-level commas with semicolons (so key-values become declarations)
+      let transformedContent = '';
+      let parenDepth = 0;
+      for (let j = 0; j < objContent.length; j++) {
+        const char = objContent[j];
+        if (char === "'" || char === '"') {
+          transformedContent += ' ';
+        } else if (char === '(') {
+          parenDepth++;
+          transformedContent += char;
+        } else if (char === ')') {
+          if (parenDepth > 0) parenDepth--;
+          transformedContent += char;
+        } else if (char === ',' && parenDepth === 0) {
+          transformedContent += ';';
+        } else {
+          transformedContent += char;
+        }
+      }
+      objContent = transformedContent;
+
+      result =
+        result.substring(0, startObj) + objContent + result.substring(startObj + objContent.length);
+
+      // Add closing brace
+      const closingBrace = '}';
+      result = result.substring(0, endObj) + closingBrace + result.substring(endObj + 1);
+    }
+  }
+  return result;
+}
+
+export function isTemplateStyleNode(node: ts.Node) {
+  if (!ts.isStringLiteralLike(node)) {
+    return false;
+  }
+  return isAssignmentToPropertyWithName(node, 'template');
+}
+
 export function isInlineStyleNode(node: ts.Node) {
   if (!ts.isStringLiteralLike(node)) {
     return false;
