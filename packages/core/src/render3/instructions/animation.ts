@@ -71,8 +71,13 @@ export function ɵɵanimateEnter(value: string | AnimationClassBindingFn): typeo
   const tNode = getCurrentTNode()!;
   cancelLeavingNodes(tNode, lView);
 
+  // Capture NgZone eagerly while the injector is still valid. The animation
+  // function runs later from the queue, at which point the lView injector
+  // may have been destroyed.
+  const ngZone = lView[INJECTOR]!.get(NgZone);
+
   addAnimationToLView(getLViewEnterAnimations(lView), tNode, () =>
-    runEnterAnimation(lView, tNode, value),
+    runEnterAnimation(lView, tNode, value, ngZone),
   );
 
   initializeAnimationQueueScheduler(lView[INJECTOR]);
@@ -91,13 +96,13 @@ export function runEnterAnimation(
   lView: LView,
   tNode: TNode,
   value: string | AnimationClassBindingFn,
+  ngZone: NgZone,
 ): void {
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
 
   const renderer = lView[RENDERER];
-  const ngZone = lView[INJECTOR]!.get(NgZone);
 
   // Retrieve the actual class list from the value. This will resolve any resolver functions from
   // bindings.
@@ -256,8 +261,13 @@ export function ɵɵanimateLeave(value: string | AnimationClassBindingFn): typeo
   const tNode = getCurrentTNode()!;
   cancelLeavingNodes(tNode, lView);
 
+  // Capture NgZone eagerly while the injector is still valid. The animation
+  // function runs later from the queue, at which point the lView injector
+  // may have been destroyed.
+  const ngZone = lView[INJECTOR]!.get(NgZone);
+
   addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
-    runLeaveAnimations(lView, tNode, value),
+    runLeaveAnimations(lView, tNode, value, ngZone),
   );
 
   initializeAnimationQueueScheduler(lView[INJECTOR]);
@@ -269,6 +279,7 @@ function runLeaveAnimations(
   lView: LView,
   tNode: TNode,
   value: string | AnimationClassBindingFn,
+  ngZone: NgZone,
 ): {promise: Promise<void>; resolve: VoidFunction} {
   const {promise, resolve} = promiseWithResolvers<void>();
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
@@ -276,7 +287,6 @@ function runLeaveAnimations(
   ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
 
   const renderer = lView[RENDERER];
-  const ngZone = lView[INJECTOR].get(NgZone);
   allLeavingAnimations.add(lView[ID]);
   (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
 
@@ -391,8 +401,14 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
 
   allLeavingAnimations.add(lView[ID]);
 
+  // Capture NgZone and MAX_ANIMATION_TIMEOUT eagerly while the injector is
+  // still valid. The animation function runs later from the queue, at which
+  // point the lView injector may have been destroyed.
+  const ngZone = lView[INJECTOR]!.get(NgZone);
+  const maxAnimationTimeout = lView[INJECTOR]!.get(MAX_ANIMATION_TIMEOUT);
+
   addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
-    runLeaveAnimationFunction(lView, tNode, value),
+    runLeaveAnimationFunction(lView, tNode, value, ngZone, maxAnimationTimeout),
   );
 
   initializeAnimationQueueScheduler(lView[INJECTOR]);
@@ -407,6 +423,8 @@ function runLeaveAnimationFunction(
   lView: LView,
   tNode: TNode,
   value: AnimationFunction,
+  ngZone: NgZone,
+  maxAnimationTimeout: number,
 ): {promise: Promise<void>; resolve: VoidFunction} {
   const {promise, resolve} = promiseWithResolvers<void>();
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
@@ -416,8 +434,6 @@ function runLeaveAnimationFunction(
   const cleanupFns: VoidFunction[] = [];
   const renderer = lView[RENDERER];
   const animationsDisabled = areAnimationsDisabled(lView);
-  const ngZone = lView[INJECTOR]!.get(NgZone);
-  const maxAnimationTimeout = lView[INJECTOR]!.get(MAX_ANIMATION_TIMEOUT);
 
   (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
   const resolvers = getLViewLeaveAnimations(lView).get(tNode.index)?.resolvers;
