@@ -7,13 +7,13 @@
  */
 
 import {
-  ɵFramework as Framework,
   ɵAcxViewEncapsulation as AcxViewEncapsulation,
+  ViewEncapsulation as AngularViewEncapsulation,
+  ɵFramework as Framework,
   InjectionToken,
   InjectOptions,
   Injector,
   Type,
-  ViewEncapsulation as AngularViewEncapsulation,
 } from '@angular/core';
 
 export interface DebugSignalGraphNode {
@@ -447,7 +447,7 @@ export interface Events {
   enableFrameConnection: (frameId: number, tabId: number) => void;
   frameConnected: (frameId: number) => void;
   detectAngular: (detectionResult: AngularDetection) => void;
-  backendInstalled: () => void;
+  backendInstalled: (detectionResult: AngularDetection) => void;
   backendReady: () => void;
 
   log: (logEvent: {message: string; level: 'log' | 'warn' | 'debug' | 'error'}) => void;

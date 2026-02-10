@@ -92,8 +92,23 @@ ts_project(
 )
 
 ts_project(
-    name = "communication",
-    srcs = ["communication.ts"],
+    name = "comm_utils",
+    srcs = ["comm-utils.ts"],
+)
+
+ts_test_library(
+    name = "comm_utils_test_lib",
+    srcs = ["comm-utils.spec.ts"],
+    deps = [
+        ":comm_utils",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "comm_utils_test",
+    deps = [
+        ":comm_utils_test_lib",
+    ],
 )
 
 ts_project(
@@ -155,7 +170,7 @@ ts_project(
     ],
     deps = [
         ":chrome_window_extensions",
-        ":communication",
+        ":comm_utils",
         ":same_page_message_bus",
         "//devtools/projects/ng-devtools-backend",
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
@@ -169,7 +184,7 @@ ts_project(
     ],
     deps = [
         ":chrome_message_bus",
-        ":communication",
+        ":comm_utils",
         ":same_page_message_bus",
         "//devtools/projects/protocol",
     ],
@@ -181,7 +196,7 @@ ts_project(
         "detect-angular.ts",
     ],
     deps = [
-        ":communication",
+        ":comm_utils",
         ":same_page_message_bus",
         "//devtools/projects/protocol",
         "//devtools/projects/shared-utils",
