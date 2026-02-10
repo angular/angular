@@ -18,6 +18,8 @@ import {
   InjectorPath,
   InjectorTreeD3Node,
   InjectorTreeNode,
+  isElementTreeInjector,
+  isEnvironmentTreeInjector,
   splitInjectorPathsIntoElementAndEnvironmentPaths,
   transformInjectorResolutionPathsIntoTree,
 } from './injector-tree-fns';
@@ -11649,5 +11651,33 @@ describe('areInjectorTreesEqual', () => {
       children: [],
     });
     expect(areInjectorTreesEqual(a, d)).toEqual(false);
+  });
+});
+
+describe('isElementTreeInjector', () => {
+  it('should return true if the injector type is element', () => {
+    expect(isElementTreeInjector({type: 'element'} as SerializedInjector)).toEqual(true);
+  });
+
+  it('should return false if the injector type is NOT element', () => {
+    expect(isElementTreeInjector({type: 'environment'} as SerializedInjector)).toEqual(false);
+    expect(isElementTreeInjector({type: 'hidden'} as SerializedInjector)).toEqual(false);
+    expect(isElementTreeInjector({type: 'imported-module'} as SerializedInjector)).toEqual(false);
+    expect(isElementTreeInjector({type: 'null'} as SerializedInjector)).toEqual(false);
+  });
+});
+
+describe('isEnvironmentTreeInjector', () => {
+  it('should return true if the injector type is environment, null or imported-module', () => {
+    expect(isEnvironmentTreeInjector({type: 'environment'} as SerializedInjector)).toEqual(true);
+    expect(isEnvironmentTreeInjector({type: 'null'} as SerializedInjector)).toEqual(true);
+    expect(isEnvironmentTreeInjector({type: 'imported-module'} as SerializedInjector)).toEqual(
+      true,
+    );
+  });
+
+  it('should return false if the injector type is NOT environment, null or imported-module', () => {
+    expect(isEnvironmentTreeInjector({type: 'element'} as SerializedInjector)).toEqual(false);
+    expect(isEnvironmentTreeInjector({type: 'hidden'} as SerializedInjector)).toEqual(false);
   });
 });

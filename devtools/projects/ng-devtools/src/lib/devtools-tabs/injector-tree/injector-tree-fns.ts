@@ -344,3 +344,15 @@ export function areInjectorTreesEqual(
 
   return true;
 }
+
+/** Checks whether an injector belongs to the element tree. */
+export function isElementTreeInjector(injector: SerializedInjector | undefined): boolean {
+  const type = injector?.type;
+  return type === 'element';
+}
+
+/** Checks whether an injector belongs to the environment tree. */
+export function isEnvironmentTreeInjector(injector: SerializedInjector | undefined): boolean {
+  const type = injector?.type;
+  return type === 'environment' || type === 'null' || type === 'imported-module';
+}
