@@ -9,7 +9,7 @@
 /// <reference types="chrome"/>
 
 import {ChromeMessageBus} from './chrome-message-bus';
-import {BACKEND_URI, CONTENT_SCRIPT_URI, DETECT_ANGULAR_SCRIPT_URI} from './communication';
+import {getBackendUri, getContentScriptUri, getDetectAngularScriptUri} from './comm-utils';
 import {SamePageMessageBus} from './same-page-message-bus';
 
 let backgroundDisconnected = false;
@@ -56,8 +56,8 @@ function attemptBackendHandshake() {
 port.onDisconnect.addListener(handleDisconnect);
 
 const detectAngularMessageBus = new SamePageMessageBus(
-  CONTENT_SCRIPT_URI,
-  DETECT_ANGULAR_SCRIPT_URI,
+  getContentScriptUri(),
+  getDetectAngularScriptUri(),
 );
 
 detectAngularMessageBus.on('detectAngular', (detectionResult) => {
@@ -82,12 +82,12 @@ detectAngularMessageBus.on('detectAngular', (detectionResult) => {
   document.documentElement.appendChild(script);
   document.documentElement.removeChild(script);
 
-  detectAngularMessageBus.emit('backendInstalled');
+  detectAngularMessageBus.emit('backendInstalled', [detectionResult]);
 
   attemptBackendHandshake();
 });
 
-const localMessageBus = new SamePageMessageBus(CONTENT_SCRIPT_URI, BACKEND_URI);
+const localMessageBus = new SamePageMessageBus(getContentScriptUri(), getBackendUri());
 const chromeMessageBus = new ChromeMessageBus(port);
 
 const handshakeWithBackend = (): void => {
