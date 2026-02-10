@@ -327,7 +327,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   @Input({transform: numberAttribute}) height: number | undefined;
 
   /**
-   * The desired decoding behavior for the image. Defaults to `auto`
+   * The desired decoding behavior for the image. Defaults to `async`
    * if not explicitly set, matching native browser behavior.
    *
    * Use `async` to decode the image off the main thread (non-blocking),
@@ -607,10 +607,9 @@ export class NgOptimizedImage implements OnInit, OnChanges {
       // painted as early as possible.
       return 'sync';
     }
-    // Returns the value of the `decoding` attribute, defaulting to `auto`
-    // if not explicitly provided. This mimics native browser behavior and
-    // avoids breaking changes when no decoding strategy is specified.
-    return this.decoding ?? 'auto';
+    // Returns the value of the `decoding` attribute, defaulting to `async`
+    // if not explicitly provided.
+    return this.decoding ?? 'async';
   }
 
   private getRewrittenSrc(): string {

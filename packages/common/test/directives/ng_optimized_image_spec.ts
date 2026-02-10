@@ -822,7 +822,7 @@ describe('Image directive', () => {
       );
     });
 
-    it('should set the decoding to "auto" by default', () => {
+    it('should set the decoding to "async" by default', () => {
       setupTestingModule();
 
       const template = '<img ngSrc="path/img.png" width="150" height="150">';
@@ -831,7 +831,7 @@ describe('Image directive', () => {
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
-      expect(img.getAttribute('decoding')).toEqual('auto');
+      expect(img.getAttribute('decoding')).toEqual('async');
     });
 
     it('should set the decoding to sync for priority images', () => {
@@ -846,16 +846,28 @@ describe('Image directive', () => {
       expect(img.getAttribute('decoding')).toEqual('sync');
     });
 
-    it('should override the default decoding behavior', () => {
+    it('should allow overriding the decoding behavior to "auto"', () => {
       setupTestingModule();
 
-      const template = '<img ngSrc="path/img.png" width="150" height="150" decoding="async">';
+      const template = '<img ngSrc="path/img.png" width="150" height="150" decoding="auto">';
       const fixture = createTestComponent(template);
       fixture.detectChanges();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
-      expect(img.getAttribute('decoding')).toEqual('async');
+      expect(img.getAttribute('decoding')).toEqual('auto');
+    });
+
+    it('should override the default decoding behavior to "sync', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" width="150" height="150" decoding="sync">';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('decoding')).toEqual('sync');
     });
   });
 
