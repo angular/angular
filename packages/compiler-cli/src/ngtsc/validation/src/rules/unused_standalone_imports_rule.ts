@@ -291,6 +291,14 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
       return false;
     }
 
+    const usedDirectiveNames = new Set<string>();
+
+    for (const dir of usedDirectives) {
+      if (dir.name) {
+        usedDirectiveNames.add(dir.name.text);
+      }
+    }
+
     for (const element of arrayLiteral.elements) {
       if (!ts.isIdentifier(element)) {
         return false;
@@ -298,10 +306,8 @@ export class UnusedStandaloneImportsRule implements SourceFileValidatorRule {
 
       const elementName = element.text;
 
-      for (const usedDir of usedDirectives) {
-        if (usedDir.name?.text === elementName) {
-          return false;
-        }
+      if (usedDirectiveNames.has(elementName)) {
+        return false;
       }
 
       if (usedPipes.has(elementName)) {
