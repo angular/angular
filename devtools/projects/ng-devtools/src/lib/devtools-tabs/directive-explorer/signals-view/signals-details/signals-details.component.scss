@@ -87,6 +87,10 @@
           background-color: var(--red-03);
         }
 
+        &.type-child-signal-prop {
+          background-color: var(--orange-02);
+        }
+
         &.type-resource {
           background-color: var(--yellow-02);
           color: black;

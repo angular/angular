@@ -25,6 +25,7 @@ export interface DebugSignalGraphNode {
     | 'template'
     | 'linkedSignal'
     | 'afterRenderEffectPhase'
+    | 'childSignalProp' // Represents a signal passed as a prop to a child component in a CoW app
     | 'unknown';
   epoch: number;
   label?: string;

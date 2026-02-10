@@ -232,6 +232,14 @@ $cluster-expand-anim-duration: 1s;
           background-color: var(--yellow-01);
         }
       }
+
+      .kind-child-signal-prop {
+        background-color: var(--orange-02);
+
+        .header {
+          background-color: var(--orange-01);
+        }
+      }
     }
   }
 
