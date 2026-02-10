@@ -8,7 +8,7 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
+import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../../testing';
 
 describe('get typecheck block', () => {
   beforeEach(() => {

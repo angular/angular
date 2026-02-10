@@ -18,7 +18,7 @@ import {
   LanguageServiceTestEnv,
   OpenBuffer,
   Project,
-} from '../testing';
+} from '../../testing';
 
 describe('definitions', () => {
   it('gets definition for template reference in overridden template', () => {

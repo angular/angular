@@ -15,7 +15,7 @@ import {
   humanizeDocumentSpanLike,
   LanguageServiceTestEnv,
   Project,
-} from '../testing';
+} from '../../testing';
 
 describe('type definitions', () => {
   let env: LanguageServiceTestEnv;

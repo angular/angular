@@ -7,7 +7,7 @@
  */
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {LanguageServiceTestEnv} from '../testing';
+import {LanguageServiceTestEnv} from '../../testing';
 
 describe('Angular version detection', () => {
   let env: LanguageServiceTestEnv;
