@@ -57,6 +57,7 @@ import {
 import {getTypeCheckInfoAtPosition, isTypeScriptFile, TypeCheckInfo} from './utils';
 import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 import {getAngularInlayHints} from './inlay_hints';
+import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
@@ -729,13 +730,15 @@ export class LanguageService {
    * Gets inlay hints for the specified file and span.
    */
   getInlayHints(fileName: string, span: ts.TextSpan): InlayHint[] {
-    return this.withCompilerAndPerfTracing(PerfPhase.LsInlayHints, (compiler) => {
+    return this.withCompilerAndPerfTracing(PerfPhase.OutliningSpans, (compiler) => {
       const hints: InlayHint[] = [];
 
-      // Get TypeScript inlay hints
-      if (isTypeScriptFile(fileName)) {
-        const tsHints = this.tsLS.getInlayHints ? this.tsLS.getInlayHints(fileName, span) : [];
-        hints.push(...tsHints);
+      // Get TypeScript inlay hints (if supported in this TS version)
+      if (isTypeScriptFile(fileName) && (this.tsLS as any).getInlayHints) {
+        const tsHints = (this.tsLS as any).getInlayHints(fileName, span);
+        if (tsHints) {
+          hints.push(...tsHints);
+        }
       }
 
       // Get Angular inlay hints

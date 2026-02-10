@@ -15,7 +15,7 @@ export function getAngularInlayHints(
   compiler: NgCompiler,
   fileName: string,
   span: ts.TextSpan,
-  config: PluginConfig,
+  config: Omit<PluginConfig, 'angularOnly'> | undefined,
 ): InlayHint[] {
   // TODO: Implement Angular-specific inlay hints
   // For now, return empty array

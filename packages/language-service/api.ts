@@ -158,26 +158,6 @@ export interface InlayHintLabelPart {
    * The tooltip text when you hover over this label part. Can be a string or a MarkupContent.
    */
   tooltip?: string | MarkupContent;
-
-  /**
-   * An optional source code location that represents this
-   * label part.
-   *
-   * The editor will use this location for the hover and for code navigation
-   * features: This part will become a clickable link that resolves to the
-   * definition of the symbol at the given location (not necessarily the
-   * location itself), it shows the hover that shows at the location, and it
-   * shows a context menu with further code navigation commands.
-   */
-  location?: ts.Location;
-
-  /**
-   * An optional command for this label part.
-   *
-   * Depending on the kind of label part this is, the command might be used
-   * for code actions or navigation.
-   */
-  command?: ts.Command;
 }
 
 /**
@@ -217,15 +197,6 @@ export interface InlayHint {
    * will fall back to a default.
    */
   kind?: InlayHintKind;
-
-  /**
-   * Optional text edits that are performed when accepting this inlay hint.
-   *
-   * *Note* that edits are expected to change the document so that the inlay
-   * hint (or its nearest variant) is now part of the document and the inlay
-   * hint itself is therefore part of the document.
-   */
-  textEdits?: ts.TextChange[];
 
   /**
    * The tooltip text when you hover over this item.

@@ -14,6 +14,7 @@ import {
   GetComponentLocationsForTemplateResponse,
   GetTcbResponse,
   GetTemplateLocationForComponentResponse,
+  InlayHint,
   isNgLanguageService,
   LinkedEditingRanges,
   NgLanguageService,
@@ -318,6 +319,32 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
 
   function getTypescriptLanguageService() {
     return tsLS;
+  }
+
+  function getLinkedEditingRangeAtPosition(
+    fileName: string,
+    position: number,
+  ): LinkedEditingRanges | undefined {
+    // Only handle inline templates in TypeScript files.
+    // For external HTML template files, VS Code's built-in HTML language support
+    // provides linked editing, so we don't need to handle them here.
+    if (!isTypeScriptFile(fileName)) {
+      return undefined;
+    }
+
+    // Try Angular's implementation first for inline templates
+    const ngResult = ngLS.getLinkedEditingRangeAtPosition(fileName, position);
+    if (ngResult) {
+      return ngResult;
+    }
+
+    // Fall back to TypeScript for JSX/TSX files
+    if (!angularOnly) {
+      const tsResult = tsLS.getLinkedEditingRangeAtPosition(fileName, position);
+      return tsResult ?? undefined;
+    }
+
+    return undefined;
   }
 
   function getInlayHints(fileName: string, span: ts.TextSpan): InlayHint[] {
