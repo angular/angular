@@ -170,7 +170,13 @@ function act<T>(fn: () => T): T {
   }
 }
 
-/** Patch a number input to make its validity work as it would in a normal browser. */
+/**
+ * Patch a number input to make its validity work as it would if the user was actually typing.
+ *
+ * `validity.badInput` is updated when the user types in the `<input>`, but when we simulate it
+ * by setting the value and dispatching an event, that flag is not updated. To work around this
+ * we patch the input.
+ */
 function patchNumberInput(input: HTMLInputElement) {
   let value = input.value;
   Object.defineProperties(input, {
