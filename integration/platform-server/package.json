@@ -8,10 +8,10 @@
     "#comment-2": "The below is used is for integration tests",
     "build:ngmodule": "ng run ngmodule:build:development",
     "serve:ngmodule": "node ./dist/ngmodule/server/server.mjs",
-    "test:ngmodule": "pnpm build:ngmodule && concurrently \"pnpm serve:ngmodule\" \"pnpm ng e2e ngmodule\" --kill-others --success first",
+    "test:ngmodule": "pnpm build:ngmodule && concurrently \"pnpm serve:ngmodule\" \"protractor e2e/protractor.conf.js\" --kill-others --success first",
     "build:standalone": "ng run standalone:build:development",
     "serve:standalone": "node ./dist/standalone/server/server.mjs",
-    "test:standalone": "pnpm build:standalone && concurrently \"pnpm serve:standalone\" \"pnpm ng e2e standalone\" --kill-others --success first",
+    "test:standalone": "pnpm build:standalone && concurrently \"pnpm serve:standalone\" \"protractor e2e/protractor.conf.js\" --kill-others --success first",
     "test": "ng version && pnpm test:standalone && pnpm test:ngmodule"
   },
   "private": true,

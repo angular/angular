@@ -8,7 +8,8 @@
     "pretest": "ng version && node ./copy-event-dispatch-contract.mjs",
     "test": "pnpm run e2e",
     "lint": "ng lint",
-    "e2e": "ng e2e --configuration=production"
+    "serve": "node ./dist/server/main.server.mjs",
+    "e2e": "ng build --configuration production && concurrently \"pnpm serve\" \"protractor e2e/protractor.conf.js --baseUrl=http://localhost:4211\" --kill-others --success first"
   },
   "private": true,
   "dependencies": {
@@ -32,6 +33,7 @@
     "@types/jasmine": "^6.0.0",
     "@types/node": "^20.14.8",
     "@types/selenium-webdriver": "3.0.7",
+    "concurrently": "9.2.1",
     "jasmine-core": "6.0.1",
     "jasmine-spec-reporter": "~7.0.0",
     "protractor": "^7.0.0",
