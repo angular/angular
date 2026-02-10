@@ -14,7 +14,22 @@ import {
   type WritableSignal,
 } from '@angular/core';
 import {FORM_FIELD_PARSE_ERRORS} from '../directive/parse_errors';
+import {createParser} from '../util/parser';
 import type {ValidationError} from './rules';
+
+/**
+ * Result of parsing a raw value into a model value.
+ */
+export interface ParseResult<TValue> {
+  /**
+   * The parsed value, if parsing was successful.
+   */
+  readonly value?: TValue;
+  /**
+   * Errors encountered during parsing, if any.
+   */
+  readonly errors?: readonly ValidationError.WithoutFieldTree[];
+}
 
 /**
  * Options for `transformedValue`.
@@ -29,7 +44,7 @@ export interface TransformedValueOptions<TValue, TRaw> {
    *   - `value`: The parsed model value. If `undefined`, the model will not be updated.
    *   - `errors`: Any parse errors encountered. If `undefined`, no errors are reported.
    */
-  parse: (rawValue: TRaw) => {value?: TValue; errors?: readonly ValidationError.WithoutFieldTree[]};
+  parse: (rawValue: TRaw) => ParseResult<TValue>;
 
   /**
    * Format the model value into the raw value.
@@ -92,38 +107,30 @@ export function transformedValue<TValue, TRaw>(
   options: TransformedValueOptions<TValue, TRaw>,
 ): TransformedValueSignal<TRaw> {
   const {parse, format} = options;
+  const parser = createParser(value, value.set, parse);
 
-  const parseErrors = linkedSignal({
-    source: value,
-    computation: () => [] as readonly ValidationError.WithoutFieldTree[],
-  });
-  const rawValue = linkedSignal(() => format(value()));
-
+  // Wire up the parse errors from the parser to the form field.
   const formFieldParseErrors = inject(FORM_FIELD_PARSE_ERRORS, {self: true, optional: true});
   if (formFieldParseErrors) {
-    formFieldParseErrors.set(parseErrors);
+    formFieldParseErrors.set(parser.errors);
   }
 
   // Create the result signal with overridden set/update and a `parseErrors` property.
+  const rawValue = linkedSignal(() => format(value()));
   const result = rawValue as WritableSignal<TRaw> & {
     parseErrors: Signal<readonly ValidationError.WithoutFieldTree[]>;
   };
+  result.parseErrors = parser.errors;
   const originalSet = result.set.bind(result);
 
+  // Notify the parser when `set` or `update` is called on the raw value
   result.set = (newRawValue: TRaw) => {
-    const result = parse(newRawValue);
-    parseErrors.set(result.errors ?? []);
-    if (result.value !== undefined) {
-      value.set(result.value);
-    }
+    parser.setRawValue(newRawValue);
     originalSet(newRawValue);
   };
-
   result.update = (updateFn: (value: TRaw) => TRaw) => {
     result.set(updateFn(rawValue()));
   };
-
-  result.parseErrors = parseErrors.asReadonly();
 
   return result;
 }

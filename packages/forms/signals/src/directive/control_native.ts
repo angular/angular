@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {
-  linkedSignal,
   type ɵControlDirectiveHost as ControlDirectiveHost,
   type Signal,
   type WritableSignal,
 } from '@angular/core';
 import type {ValidationError} from '../api/rules';
+import {createParser} from '../util/parser';
 import {
   bindingUpdated,
   CONTROL_BINDING_NAMES,
@@ -32,22 +32,21 @@ export function nativeControlCreate(
 ): () => void {
   let updateMode = false;
   const input = parent.nativeFormElement;
+
   // TODO: (perf) ok to always create this?
-  const parseErrors = linkedSignal({
-    source: () => parent.state().value(),
-    computation: () => [] as readonly ValidationError.WithoutFieldTree[],
-  });
-  parseErrorsSource.set(parseErrors);
+  const parser = createParser(
+    // Read from the model value
+    () => parent.state().value(),
+    // Write to the buffered "control value"
+    (rawValue: unknown) => parent.state().controlValue.set(rawValue),
+    // Our parse function doesn't care about the raw value that gets passed in,
+    // It just reads the newly parsed value directly off the input element.
+    () => getNativeControlValue(input, parent.state().value),
+  );
 
-  host.listenToDom('input', () => {
-    const state = parent.state();
-    const {value, errors} = getNativeControlValue(input, state.value);
-    parseErrors.set(errors ?? []);
-    if (value !== undefined) {
-      state.controlValue.set(value);
-    }
-  });
-
+  parseErrorsSource.set(parser.errors);
+  // Pass undefined as the raw value since the parse function doesn't care about it.
+  host.listenToDom('input', () => parser.setRawValue(undefined));
   host.listenToDom('blur', () => parent.state().markAsTouched());
 
   parent.registerAsBinding();
