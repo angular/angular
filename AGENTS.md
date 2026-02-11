@@ -1,9 +1,13 @@
+---
+trigger: always_on
+---
+
 This is the source code for the Angular framework. This guide outlines standard practices for AI agents working in this repository.
 
 ## Environment
 
 - Use `pnpm` for package management.
-- Use `pnpm bazel test //target` to run tests. Do not use `ng test`, or just `bazel`
+- Use `pnpm bazel test //target` to run tests.
 
 ## Key Documentation
 
@@ -14,4 +18,3 @@ This is the source code for the Angular framework. This guide outlines standard 
 ## Pull Requests
 
 - Use the `gh` CLI (GitHub CLI) for creating and managing pull requests.
-- Avoid using browser tools for PR operations when possible to maintain workflow efficiency.

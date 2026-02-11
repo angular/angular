@@ -35,5 +35,8 @@ adev/src/content/aria/**/*.json
 adev/src/content/cli/**/*.json
 adev/src/content/cdk/**/*.json
 
+# Antigravity rules
+.agent/rules/agents.md
+
 CHANGELOG.md
 CHANGELOG_ARCHIVE.md
