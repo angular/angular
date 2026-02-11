@@ -21,7 +21,7 @@ import {
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {concatMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
@@ -267,14 +267,24 @@ export function transferCacheInterceptorFn(
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // Request not found in cache. Make the request and cache it if on the server.
     return event$.pipe(
-      tap((event: HttpEvent<unknown>) => {
+      concatMap(async (event: HttpEvent<unknown>) => {
         // Only cache successful HTTP responses.
         if (event instanceof HttpResponse) {
+          let body = event.body;
+          if (req.responseType === 'blob') {
+            // Note: Blob is converted to ArrayBuffer because Uint8Array constructor
+            // doesn't accept Blob directly, which would result in an empty array.
+            // Type assertion is safe here: when responseType is 'blob', the body is guaranteed to be a Blob
+            const arrayBuffer = await (event.body as Blob).arrayBuffer();
+            body = toBase64(arrayBuffer);
+          } else if (req.responseType === 'arraybuffer') {
+            // For arraybuffer, convert to base64; for other types (json, text), store as-is.
+            // Type assertion is safe here: when responseType is 'arraybuffer', the body is
+            // guaranteed to be an ArrayBuffer
+            body = toBase64(event.body as ArrayBufferLike);
+          }
           transferState.set<TransferHttpResponse>(storeKey, {
-            [BODY]:
-              req.responseType === 'arraybuffer' || req.responseType === 'blob'
-                ? toBase64(event.body as ArrayBufferLike)
-                : event.body,
+            [BODY]: body,
             [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
             [STATUS]: event.status,
             [STATUS_TEXT]: event.statusText,
@@ -282,6 +292,7 @@ export function transferCacheInterceptorFn(
             [RESPONSE_TYPE]: req.responseType,
           });
         }
+        return event;
       }),
     );
   }
