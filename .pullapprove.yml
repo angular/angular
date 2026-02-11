@@ -151,7 +151,6 @@ groups:
         - crisbeto
         - devversion
         - kirjs
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
         - mmalerba
@@ -181,9 +180,9 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - jelbourn
         - josephperrott
         - ~pkozlowski-opensource
+        - alan-agius4
     reviews:
       request: -1 # request reviews from everyone
       required: 2 # require at least 2 approvals
@@ -202,7 +201,6 @@ groups:
     reviewers:
       users:
         - ~JiaLiPassion
-        - ~jelbourn
         - ~alxhub
         - AndrewKushnir
         - atscott
@@ -259,7 +257,6 @@ groups:
         - crisbeto
         - kirjs
         - JeanMeche
-        - jelbourn
         - thePunderWoman
         - devversion
         - josephperrott
@@ -375,7 +372,6 @@ groups:
         - AndrewKushnir
         - ~alxhub
         - atscott
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
         - kirjs
@@ -413,7 +409,6 @@ groups:
         - AndrewKushnir
         - atscott
         - kirjs
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
         - mmalerba
@@ -445,7 +440,6 @@ groups:
         - AndrewKushnir
         - andrewseguin
         - dgp1130
-        - ~jelbourn
         - thePunderWoman
         - josephperrott
 
@@ -515,7 +509,6 @@ groups:
     reviewers:
       users:
         - alxhub
-        - jelbourn
         - josephperrott
     reviews:
       request: 0
