@@ -29,6 +29,7 @@ import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
 import {HttpParams} from './params';
+import {fromBase64, toBase64} from './util';
 
 /**
  * Options to configure how TransferCache should be used to cache requests made via HttpClient.
@@ -228,7 +229,7 @@ export function transferCacheInterceptorFn(
           transferState.set<TransferHttpResponse>(storeKey, {
             [BODY]:
               req.responseType === 'arraybuffer' || req.responseType === 'blob'
-                ? toBase64(event.body)
+                ? toBase64(event.body as ArrayBufferLike)
                 : event.body,
             [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
             [STATUS]: event.status,
@@ -314,28 +315,6 @@ function generateHash(value: string): string {
   hash += 2147483647 + 1;
 
   return hash.toString();
-}
-
-function toBase64(buffer: unknown): string {
-  //TODO: replace with when is Baseline widely available
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/toBase64
-  const bytes = new Uint8Array(buffer as ArrayBufferLike);
-
-  const CHUNK_SIZE = 0x8000; // 32,768 bytes (~32 KB) per chunk, to avoid stack overflow
-
-  let binaryString = '';
-
-  for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
-    const chunk = bytes.subarray(i, i + CHUNK_SIZE);
-    binaryString += String.fromCharCode.apply(null, chunk as unknown as number[]);
-  }
-  return btoa(binaryString);
-}
-
-function fromBase64(base64: string): ArrayBuffer {
-  const binary = atob(base64);
-  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
-  return bytes.buffer;
 }
 
 /**
