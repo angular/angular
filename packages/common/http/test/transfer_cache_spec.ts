@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {useAutoTick, timeout, withBody} from '@angular/private/testing';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, firstValueFrom} from 'rxjs';
 
 import {HttpClient, HttpResponse, provideHttpClient} from '../public_api';
 import {
@@ -158,16 +158,58 @@ describe('TransferCache', () => {
       expect(new Uint8Array(cachedResponse)).toEqual(new Uint8Array([1, 2, 3, 4, 5]));
     });
 
-    it('should cache blob responses correctly', () => {
+    it('should cache blob responses correctly (with ArrayBuffer)', async () => {
       const testData = new Uint8Array([10, 20, 30, 40, 50]).buffer;
-      let response!: Blob;
-      TestBed.inject(HttpClient)
-        .get('/test-blob', {responseType: 'blob'})
-        .subscribe((r) => (response = r));
+
+      const responsePromise = firstValueFrom(
+        TestBed.inject(HttpClient).get('/test-blob', {responseType: 'blob'}),
+      );
+
       TestBed.inject(HttpTestingController).expectOne('/test-blob').flush(testData);
+      const response = await responsePromise;
 
       expect(response instanceof Blob).toBeTrue();
       expect(response.size).toBe(5);
+
+      let cachedResponse!: Blob;
+      TestBed.inject(HttpClient)
+        .get('/test-blob', {responseType: 'blob'})
+        .subscribe((r) => (cachedResponse = r));
+      TestBed.inject(HttpTestingController).expectNone('/test-blob');
+
+      expect(cachedResponse instanceof Blob).toBeTrue();
+      expect(cachedResponse.size).toBe(5);
+
+      const cachedArrayBuffer = await cachedResponse.arrayBuffer();
+      expect(new Uint8Array(cachedArrayBuffer)).toEqual(new Uint8Array([10, 20, 30, 40, 50]));
+    });
+
+    it('should cache blob responses correctly (with Blob)', async () => {
+      const blobData = new Blob([new Uint8Array([65, 66, 67, 68, 69, 70])], {
+        type: 'application/octet-stream',
+      });
+
+      const responsePromise = firstValueFrom(
+        TestBed.inject(HttpClient).get('/test-blob-direct', {responseType: 'blob'}),
+      );
+      TestBed.inject(HttpTestingController).expectOne('/test-blob-direct').flush(blobData);
+      const response = await responsePromise;
+
+      expect(response instanceof Blob).toBeTrue();
+      expect(response.size).toBe(6);
+      expect(response.type).toBe('application/octet-stream');
+
+      let cachedResponse!: Blob;
+      TestBed.inject(HttpClient)
+        .get('/test-blob-direct', {responseType: 'blob'})
+        .subscribe((r) => (cachedResponse = r));
+      TestBed.inject(HttpTestingController).expectNone('/test-blob-direct');
+
+      expect(cachedResponse instanceof Blob).toBeTrue();
+      expect(cachedResponse.size).toBe(6);
+
+      const cachedArrayBuffer = await cachedResponse.arrayBuffer();
+      expect(new Uint8Array(cachedArrayBuffer)).toEqual(new Uint8Array([65, 66, 67, 68, 69, 70]));
     });
 
     it('should stop storing HTTP calls in `TransferState` after application becomes stable', async () => {

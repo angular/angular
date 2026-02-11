@@ -20,8 +20,8 @@ import {
   ɵtruncateMiddle as truncateMiddle,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {Observable, of, from} from 'rxjs';
+import {tap, concatMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
@@ -223,21 +223,41 @@ export function transferCacheInterceptorFn(
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // Request not found in cache. Make the request and cache it if on the server.
     return event$.pipe(
-      tap((event: HttpEvent<unknown>) => {
+      concatMap((event: HttpEvent<unknown>) => {
         // Only cache successful HTTP responses.
         if (event instanceof HttpResponse) {
-          transferState.set<TransferHttpResponse>(storeKey, {
-            [BODY]:
-              req.responseType === 'arraybuffer' || req.responseType === 'blob'
-                ? toBase64(event.body as ArrayBufferLike)
-                : event.body,
-            [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
-            [STATUS]: event.status,
-            [STATUS_TEXT]: event.statusText,
-            [REQ_URL]: requestUrl,
-            [RESPONSE_TYPE]: req.responseType,
-          });
+          const storeInCache = (body: unknown) => {
+            transferState.set<TransferHttpResponse>(storeKey, {
+              [BODY]: body,
+              [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
+              [STATUS]: event.status,
+              [STATUS_TEXT]: event.statusText,
+              [REQ_URL]: requestUrl,
+              [RESPONSE_TYPE]: req.responseType,
+            });
+          };
+
+          if (req.responseType === 'blob') {
+            // Convert Blob to ArrayBuffer asynchronously before caching.
+            // Note: Blob is converted to ArrayBuffer because Uint8Array constructor
+            // doesn't accept Blob directly, which would result in an empty array.
+            // Type assertion is safe here: when responseType is 'blob', the body is guaranteed to be a Blob
+            return from((event.body as Blob).arrayBuffer()).pipe(
+              tap((arrayBuffer) => storeInCache(toBase64(arrayBuffer))),
+              concatMap(() => of(event)),
+            );
+          }
+
+          // For arraybuffer, convert to base64; for other types (json, text), store as-is.
+          // Type assertion is safe here: when responseType is 'arraybuffer', the body is
+          // guaranteed to be an ArrayBuffer
+          const body =
+            req.responseType === 'arraybuffer'
+              ? toBase64(event.body as ArrayBufferLike)
+              : event.body;
+          storeInCache(body);
         }
+        return of(event);
       }),
     );
   }
