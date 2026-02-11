@@ -304,6 +304,7 @@ groups:
       - >
         contains_any_globs(files.exclude('.pullapprove.yml'), [
           '{*,.*}',
+          '.agent/**/{*,.*}',
           '.devcontainer/**/{*,.*}',
           '.github/**/{*,.*}',
           '.husky/**/{*,.*}',
