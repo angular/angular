@@ -392,7 +392,7 @@ describe('discovery utils', () => {
       const metadata = getDirectiveMetadata(myApp)! as AngularComponentDebugMetadata;
       expect(metadata.inputs).toEqual({a: 'b'});
       expect(metadata.outputs).toEqual({c: 'd'});
-      expect(metadata.changeDetection).toBe(ChangeDetectionStrategy.Default);
+      expect(metadata.changeDetection).toBe(ChangeDetectionStrategy.Eager);
       expect(metadata.encapsulation).toBe(ViewEncapsulation.None);
     });
 

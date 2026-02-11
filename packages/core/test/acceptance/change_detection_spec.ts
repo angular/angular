@@ -7,6 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 import {BehaviorSubject} from 'rxjs';
 import {
@@ -44,7 +45,6 @@ import {
   TestBed,
   tick,
 } from '../../testing';
-import {By} from '@angular/platform-browser';
 
 describe('change detection', () => {
   beforeEach(() => {
@@ -268,7 +268,7 @@ describe('change detection', () => {
 
       @Component({
         template: '<child/>',
-        changeDetection: ChangeDetectionStrategy.Default,
+        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [ChildComponent],
       })
       class ParentComponent {}
