@@ -67,11 +67,28 @@ export function nativeControlCreate(
 
     for (const name of CONTROL_BINDING_NAMES) {
       const value = readFieldStateBindingValue(state, name);
-      if (bindingUpdated(bindings, name, value)) {
+      const acceptsNative = parent.elementAcceptsNativeProperty(name);
+      const changed = bindingUpdated(bindings, name, value);
+
+      if (changed) {
         host.setInputOnDirectives(name, value);
-        if (parent.elementAcceptsNativeProperty(name)) {
+
+        if (acceptsNative) {
           setNativeDomProperty(parent.renderer, input, name, value as string | number | undefined);
         }
+        continue;
+      }
+
+      // unchanged
+      if (!acceptsNative) {
+        if (input.hasAttribute(name)) {
+          parent.renderer.removeAttribute(input, name);
+        }
+        continue;
+      }
+
+      if (value !== undefined && !input.hasAttribute(name)) {
+        setNativeDomProperty(parent.renderer, input, name, value as string | number | undefined);
       }
     }
 

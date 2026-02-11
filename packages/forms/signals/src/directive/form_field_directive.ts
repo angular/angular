@@ -122,8 +122,22 @@ export class FormField<T> {
 
   // Compute some helper booleans about the type of element we're sitting on.
   private readonly elementIsNativeFormElement = isNativeFormElement(this.element);
-  private readonly elementAcceptsNumericValues = isNumericFormElement(this.element);
-  private readonly elementAcceptsTextualValues = isTextualFormElement(this.element);
+
+  /**
+   * Dynamically checks if the native element accepts numeric values based on its current type.
+   * This is a getter to support dynamic type bindings (e.g., `<input [type]="myType()">`).
+   */
+  private get elementAcceptsNumericValues(): boolean {
+    return isNumericFormElement(this.element);
+  }
+
+  /**
+   * Dynamically checks if the native element accepts textual values based on its current type.
+   * This is a getter to support dynamic type bindings (e.g., `<input [type]="myType()">`).
+   */
+  private get elementAcceptsTextualValues(): boolean {
+    return isTextualFormElement(this.element);
+  }
 
   /**
    * Utility that casts `this.element` to `NativeFormControl` to avoid repeated type guards. Only

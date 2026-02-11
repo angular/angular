@@ -1587,6 +1587,41 @@ describe('field directive', () => {
         expect(element.max).toBe('5');
       });
 
+      it('should bind to native control with dynamic type', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input [type]="inputType()" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly inputType = signal<string>('text');
+          readonly max = signal(100);
+          readonly f = form(signal(50), (p) => {
+            max(p, this.max);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        // When type is 'text', max attribute should not be applied
+        expect(element.max).toBe('');
+        expect(element.type).toBe('text');
+
+        // Change type to 'number' - max should now be applied
+        act(() => fixture.componentInstance.inputType.set('number'));
+        expect(element.type).toBe('number');
+        expect(element.max).toBe('100');
+
+        // Update max value
+        act(() => fixture.componentInstance.max.set(200));
+        expect(element.max).toBe('200');
+
+        // Change type back to 'text' - max should be removed
+        act(() => fixture.componentInstance.inputType.set('text'));
+        expect(element.type).toBe('text');
+        expect(element.max).toBe('');
+      });
+
       it('should bind to custom control', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<number> {
@@ -1770,6 +1805,37 @@ describe('field directive', () => {
 
         act(() => fixture.componentInstance.min.set(5));
         expect(element.min).toBe('5');
+      });
+
+      it('should bind to native control with dynamic type', () => {
+        @Component({
+          imports: [FormField],
+          template: `<input [type]="inputType()" [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly inputType = signal<string>('text');
+          readonly min = signal(10);
+          readonly f = form(signal(15), (p) => {
+            min(p, this.min);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+
+        expect(element.min).toBe('');
+        expect(element.type).toBe('text');
+
+        act(() => fixture.componentInstance.inputType.set('number'));
+        expect(element.type).toBe('number');
+        expect(element.min).toBe('10');
+
+        act(() => fixture.componentInstance.min.set(5));
+        expect(element.min).toBe('5');
+
+        act(() => fixture.componentInstance.inputType.set('text'));
+        expect(element.type).toBe('text');
+        expect(element.min).toBe('');
       });
 
       it('should bind to custom control', () => {
