@@ -3,24 +3,52 @@
 @let isClusterNode = this.isClusterNode(node);
 
 <div class="header">
-  @if (isSignalNode) {
+  <div class="controls">
+    @if (isSignalNode) {
+      <button
+        ng-button
+        size="compact"
+        class="action-btn"
+        btnType="secondary"
+        (click)="gotoSource.emit(node)"
+        [disabled]="!node.debuggable"
+        matTooltip="View source"
+      >
+        <mat-icon> code </mat-icon>
+      </button>
+    } @else if (isClusterNode) {
+      <button
+        ng-button
+        size="compact"
+        class="action-btn"
+        btnType="secondary"
+        (click)="expandCluster.emit(node.id)"
+        matTooltip="Expand"
+      >
+        <mat-icon> expand_content </mat-icon>
+      </button>
+    }
     <button
       ng-button
       size="compact"
       class="action-btn"
-      (click)="gotoSource.emit(node)"
-      [disabled]="!node.debuggable"
+      btnType="secondary"
+      (click)="highlightDeps.emit({node, direction: 'down'})"
+      matTooltip="Highlight downstream dependents path"
     >
-      <mat-icon> arrow_outward </mat-icon>
-      View Source
+      <mat-icon> swipe_down_alt </mat-icon>
     </button>
-  }
-  @if (isClusterNode) {
-    <button ng-button size="compact" class="action-btn" (click)="expandCluster.emit(node.id)">
-      <mat-icon> expand_content </mat-icon>
-      Expand
+    <button
+      ng-button
+      size="compact"
+      class="action-btn"
+      btnType="secondary"
+      (click)="highlightDeps.emit({node, direction: 'up'})"
+      matTooltip="Highlight upstream dependencies path"
+    >
+      <mat-icon> swipe_up_alt </mat-icon>
     </button>
-  }
+  </div>
   <button
     ng-button
     btnType="icon"

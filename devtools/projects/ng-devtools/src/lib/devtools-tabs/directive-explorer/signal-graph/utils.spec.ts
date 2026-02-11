@@ -8,7 +8,7 @@
 
 import {PropType} from '../../../../../../protocol';
 import {DevtoolsSignalGraphNode} from './signal-graph-types';
-import {checkClusterMatch, getNodeNames, isClusterNode, isSignalNode} from './utils';
+import {checkClusterMatch, getNodeLabel, getNodeNames, isClusterNode, isSignalNode} from './utils';
 
 const syntheticClusterNode: DevtoolsSignalGraphNode = {
   nodeType: 'cluster',
@@ -154,5 +154,34 @@ describe('checkClusterMatch', () => {
       clusterName: 'baz',
       signalName: 'qux',
     });
+  });
+});
+
+describe('getNodeLabel', () => {
+  it('should handle regular signal nodes', () => {
+    expect(getNodeLabel(regularSignalNode)).toEqual('bar');
+  });
+
+  it('should handle synthetic cluster nodes', () => {
+    expect(getNodeLabel(syntheticClusterNode)).toEqual('foo');
+  });
+
+  it('should handle compound nodes', () => {
+    expect(getNodeLabel(compoundNode)).toEqual('qux');
+  });
+
+  it('should handle unnamed signal nodes', () => {
+    const node = structuredClone(regularSignalNode);
+    node.label = '';
+
+    expect(getNodeLabel(node)).toEqual('Unnamed');
+  });
+
+  it('should handle effect nodes', () => {
+    const node = structuredClone(regularSignalNode);
+    node.label = '';
+    node.kind = 'effect';
+
+    expect(getNodeLabel(node)).toEqual('Effect');
   });
 });

@@ -61,6 +61,17 @@ $cluster-expand-anim-duration: 1s;
       }
 
       .edge {
+        &.highlighted {
+          .path {
+            stroke: var(--purple-03);
+            stroke-width: 1.75px;
+          }
+
+          marker > path {
+            fill: var(--purple-03);
+          }
+        }
+
         .path {
           stroke: var(--gray-500);
           fill: none;
@@ -79,7 +90,7 @@ $cluster-expand-anim-duration: 1s;
         }
       }
 
-      .node-label {
+      .node-cont {
         position: relative;
         box-sizing: border-box;
         contain: paint;
@@ -142,11 +153,33 @@ $cluster-expand-anim-duration: 1s;
         }
       }
 
-      .selected rect {
-        stroke: var(--dynamic-blue-02);
-        stroke-width: 3px;
+      .selected rect,
+      .highlighted-origin rect,
+      .highlighted rect {
         ry: 8px;
         rx: 8px;
+      }
+
+      .selected rect {
+        stroke-width: 3px;
+      }
+
+      .highlighted-origin rect,
+      .highlighted rect {
+        stroke-width: 6px;
+      }
+
+      .highlighted rect {
+        stroke: var(--purple-03);
+      }
+
+      .highlighted-origin rect {
+        stroke: var(--purple-02);
+      }
+
+      /* Note: It's important to keep the following `<class> rect` order to achieve the intended coloring. */
+      .selected rect {
+        stroke: var(--blue-03);
       }
 
       .kind-signal {
@@ -202,7 +235,7 @@ $cluster-expand-anim-duration: 1s;
     }
   }
 
-  .visible-clusters {
+  .menu {
     position: absolute;
     top: 0.2rem;
     left: 0.2rem;
@@ -216,6 +249,10 @@ $cluster-expand-anim-duration: 1s;
       margin: 0;
       padding: 0;
       margin-bottom: 0.5rem;
+
+      &:not(:first-child) {
+        margin-top: 0.5rem;
+      }
     }
 
     button {
@@ -223,8 +260,16 @@ $cluster-expand-anim-duration: 1s;
       align-items: center;
       gap: 0.1rem;
       margin-bottom: 0.375rem;
-      background-color: var(--yellow-02);
       max-width: 100px;
+      color: var(--gray-800);
+
+      &.collapse {
+        background-color: var(--yellow-02);
+      }
+
+      &.unhighlight {
+        background-color: var(--purple-03);
+      }
 
       mat-icon {
         width: 16px;
