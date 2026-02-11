@@ -667,8 +667,8 @@
       ],
       "source": {
         "filePath": "/src/aria/grid/grid-cell.ts",
-        "startLine": 41,
-        "endLine": 156
+        "startLine": 43,
+        "endLine": 175
       }
     }
   ],
@@ -727,6 +727,10 @@
     ],
     [
       "model",
+      "@angular/core"
+    ],
+    [
+      "Renderer2",
       "@angular/core"
     ],
     [
