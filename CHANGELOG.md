@@ -1,3 +1,25 @@
+<a name="21.1.4"></a>
+# 21.1.4 (2026-02-11)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [caab23dfe6](https://github.com/angular/angular/commit/caab23dfe6acf06c3b859af091f5e078b08f1c4c) | fix | add geolocation element to schema |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b99eaa019](https://github.com/angular/angular/commit/2b99eaa019b5551a2e2fcf9ff8cd0a796e1e857b) | fix | capture animation dependencies eagerly to avoid destroyed injector |
+| [d6aeac504c](https://github.com/angular/angular/commit/d6aeac504c6181f15e5d8afdca3d9c3e3b32652c) | fix | Fix flakey test due to document injection |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0d1acd0165](https://github.com/angular/angular/commit/0d1acd0165511b57ce853f29486d9b92d0215959) | feat | support signal-based schemas in validateStandardSchema |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3905015ccc](https://github.com/angular/angular/commit/3905015ccc53399a606dd8e4f3c4d0cce628a08e) | fix | correctly parse ArrayBuffer and Blob in transfer cache |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.0-next.2"></a>
 # 21.2.0-next.2 (2026-02-04)
 ### core
