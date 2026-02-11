@@ -432,6 +432,12 @@ export type NgValidationError = RequiredValidationError | MinValidationError | M
 export type OneOrMany<T> = T | readonly T[];
 
 // @public
+export interface ParseResult<TValue> {
+    readonly errors?: readonly ValidationError.WithoutFieldTree[];
+    readonly value?: TValue;
+}
+
+// @public
 export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
 
 // @public (undocumented)

@@ -8,6 +8,7 @@
 
 import {type Renderer2, untracked} from '@angular/core';
 import {NativeInputParseError, WithoutFieldTree} from '../api/rules';
+import type {ParseResult} from '../api/transformed_value';
 
 /**
  * Supported native control element types.
@@ -49,11 +50,6 @@ export function isTextualFormElement(element: HTMLElement): boolean {
   return element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
 }
 
-export interface NativeControlValue {
-  value?: unknown;
-  errors?: readonly WithoutFieldTree<NativeInputParseError>[];
-}
-
 /**
  * Returns the value from a native control element.
  *
@@ -69,7 +65,7 @@ export interface NativeControlValue {
 export function getNativeControlValue(
   element: NativeFormControl,
   currentValue: () => unknown,
-): NativeControlValue {
+): ParseResult<unknown> {
   let modelValue: unknown;
 
   if (element.validity.badInput) {

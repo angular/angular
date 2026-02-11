@@ -14,8 +14,22 @@ import {
   type WritableSignal,
 } from '@angular/core';
 import {FORM_FIELD_PARSE_ERRORS} from '../directive/parse_errors';
-import {createParser, type ParseResult} from '../util/parser';
+import {createParser} from '../util/parser';
 import type {ValidationError} from './rules';
+
+/**
+ * Result of parsing a raw value into a model value.
+ */
+export interface ParseResult<TValue> {
+  /**
+   * The parsed value, if parsing was successful.
+   */
+  readonly value?: TValue;
+  /**
+   * Errors encountered during parsing, if any.
+   */
+  readonly errors?: readonly ValidationError.WithoutFieldTree[];
+}
 
 /**
  * Options for `transformedValue`.

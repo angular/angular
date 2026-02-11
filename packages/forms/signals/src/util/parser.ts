@@ -8,20 +8,7 @@
 
 import {type Signal, linkedSignal} from '@angular/core';
 import type {ValidationError} from '../api/rules';
-
-/**
- * Result of parsing a raw value into a model value.
- */
-export interface ParseResult<TValue> {
-  /**
-   * The parsed value, if parsing was successful.
-   */
-  value?: TValue;
-  /**
-   * Errors encountered during parsing, if any.
-   */
-  errors?: readonly ValidationError.WithoutFieldTree[];
-}
+import type {ParseResult} from '../api/transformed_value';
 
 /**
  * An object that handles parsing raw UI values into model values.
