@@ -32,6 +32,7 @@ generate_api_docs(
         ":ssr_docs_lib",
         ":ssr_docs_lib_types",
         "//:node_modules/@angular/ssr",
+        "//:node_modules/@types/node",
         "//packages:common_files_and_deps_for_docs",
     ],
     entry_point = ":_node.d.ts",
