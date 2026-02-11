@@ -97,6 +97,36 @@ If you want to learn about a specific topic out of order (e.g., jump from the ba
 
 ## **Troubleshooting**
 
+### Setup Issues
+
+**"launch the Angular AI tutor" doesn't do anything?**
+
+Make sure you have a project open first. The tutor needs an actual Angular project to work with:
+
+```bash
+ng new my-app
+cd my-app
+code .
+```
+
+Then ensure your MCP server is running. In VS Code, open the `.vscode/mcp.json` file and click the **"Start"** button at the top of the file.
+
+When you type "launch the Angular AI tutor", you should see a checkmark saying
+"Reviewed .vscode/mcp.json and ran start task" and a prompt asking to
+"Allow task run?" — go ahead and click Allow.
+
+**Still not working?**
+
+Try typing `#angular-cli` first to load the Angular context, then paste the tutorial URL: `https://angular.dev/ai/ai-tutor`
+
+**How to verify the server is running**
+
+Open the Command Palette (`Ctrl+Shift+P`), type "MCP: List Running Servers", and look for "angular-cli" in the list.
+
+---
+
+### General Issues
+
 If the tutor doesn't respond correctly or you suspect an issue with your application, here are a few things to try:
 
 1. **Type "proceed":** This can often nudge the tutor to continue to the next step in the event it gets stuck.
