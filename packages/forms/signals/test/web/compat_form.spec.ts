@@ -12,14 +12,14 @@ import {FormControl} from '@angular/forms';
 import {compatForm} from '../../compat';
 import {FormField} from '../../public_api';
 
-describe('compatForm with [field] directive', () => {
+describe('compatForm with [formField] directive', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
     });
   });
 
-  it('should bind compat form to input with [field] directive', () => {
+  it('should bind compat form to input with [formField] directive', () => {
     @Component({
       imports: [FormField],
       template: `
@@ -44,7 +44,7 @@ describe('compatForm with [field] directive', () => {
     expect(ageInput.value).toBe('5');
   });
 
-  it('should bind root-level FormControl to input with [field] directive', () => {
+  it('should bind root-level FormControl to input with [formField] directive', () => {
     @Component({
       imports: [FormField],
       template: `<input [formField]="f" />`,

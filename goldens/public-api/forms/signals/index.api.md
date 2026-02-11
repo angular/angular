@@ -5,7 +5,6 @@
 ```ts
 
 import { AbstractControl } from '@angular/forms';
-import * as _angular_forms from '@angular/forms';
 import { ControlValueAccessor } from '@angular/forms';
 import { FormControlStatus } from '@angular/forms';
 import { HttpResourceOptions } from '@angular/common/http';
@@ -122,6 +121,9 @@ export class EmailValidationError extends BaseNgValidationError {
 }
 
 // @public
+export type Field<TValue, TKey extends string | number = string | number> = () => FieldState<TValue, TKey>;
+
+// @public
 export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = TPathKind extends PathKind.Item ? ItemFieldContext<TValue> : TPathKind extends PathKind.Child ? ChildFieldContext<TValue> : RootFieldContext<TValue>;
 
 // @public
@@ -189,14 +191,14 @@ export class FormField<T> {
     readonly element: HTMLElement;
     readonly errors: Signal<ValidationError.WithFieldTree[]>;
     // (undocumented)
-    readonly fieldTree: i0.InputSignal<FieldTree<T>>;
+    readonly field: i0.InputSignal<Field<T>>;
     focus(options?: FocusOptions): void;
     readonly injector: Injector;
     protected get interopNgControl(): InteropNgControl;
     registerAsBinding(bindingOptions?: FormFieldBindingOptions): void;
-    readonly state: Signal<[T] extends [_angular_forms.AbstractControl<any, any, any>] ? CompatFieldState<T, string | number> : FieldState<T, string | number>>;
+    readonly state: Signal<FieldState<T, string | number>>;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormField<any>, "[formField]", ["formField"], { "fieldTree": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormField<any>, "[formField]", ["formField"], { "field": { "alias": "formField"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormField<any>, never>;
 }

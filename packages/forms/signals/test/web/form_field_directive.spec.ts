@@ -47,7 +47,7 @@ import {
   requiredError,
   validateAsync,
   type DisabledReason,
-  type FieldTree,
+  type Field,
   type FormCheckboxControl,
   type FormValueControl,
   type ValidationError,
@@ -60,7 +60,7 @@ import {
   imports: [FormField],
 })
 class TestStringControl {
-  readonly formField = input.required<FieldTree<string>>();
+  readonly formField = input.required<Field<string>>();
   readonly fieldDirective = viewChild.required(FormField);
 }
 
@@ -3226,7 +3226,7 @@ describe('field directive', () => {
       template: `{{ formField()().value() }}`,
     })
     class WrapperCmp {
-      readonly formField = input.required<FieldTree<string>>();
+      readonly formField = input.required<Field<string>>();
     }
 
     @Component({
@@ -3300,7 +3300,7 @@ describe('field directive', () => {
         template: ``,
       })
       class ComplexControl {
-        readonly formField = input.required<FieldTree<string>>();
+        readonly formField = input.required<Field<string>>();
       }
 
       @Component({
@@ -3321,7 +3321,7 @@ describe('field directive', () => {
         template: ``,
       })
       class ComplexControl {
-        readonly formField = input.required<FieldTree<string>>();
+        readonly formField = input.required<Field<string>>();
 
         constructor() {
           inject(FormField, {optional: true, self: true})?.registerAsBinding();
@@ -4252,7 +4252,7 @@ describe('field directive', () => {
         template: '',
       })
       class CustomSubform {
-        readonly formField = input.required<FieldTree<string>>();
+        readonly formField = input.required<Field<string>>();
       }
 
       @Component({

@@ -26,7 +26,7 @@ import {
 } from '@angular/core';
 import {type ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {type ValidationError} from '../api/rules';
-import type {FieldTree} from '../api/types';
+import type {Field} from '../api/types';
 import {InteropNgControl} from '../controls/interop_ng_control';
 import {RuntimeErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
@@ -97,7 +97,7 @@ export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
   ],
 })
 export class FormField<T> {
-  readonly fieldTree = input.required<FieldTree<T>>({alias: 'formField'});
+  readonly field = input.required<Field<T>>({alias: 'formField'});
 
   /** @internal */
   readonly renderer = inject(Renderer2);
@@ -108,7 +108,7 @@ export class FormField<T> {
   /**
    * `FieldState` for the currently bound field.
    */
-  readonly state = computed(() => this.fieldTree()());
+  readonly state = computed(() => this.field()());
 
   /**
    * The node injector for the element this field binding.
@@ -162,7 +162,7 @@ export class FormField<T> {
     () =>
       this.parseErrorsSource()?.().map((err) => ({
         ...err,
-        fieldTree: untracked(this.fieldTree),
+        fieldTree: untracked(this.state).fieldTree,
         formField: this as FormField<unknown>,
       })) ?? [],
   );
