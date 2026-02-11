@@ -2415,6 +2415,7 @@ describe('Animation', () => {
         @ViewChild('menu') menuTpl!: TemplateRef<unknown>;
         vcr = inject(ViewContainerRef);
         opened = false;
+        private currentPane: HTMLElement | null = null;
 
         toggle() {
           if (this.opened) {
@@ -2426,12 +2427,23 @@ describe('Animation', () => {
 
         open() {
           this.opened = true;
-          this.vcr.createEmbeddedView(this.menuTpl);
+          const viewRef = this.vcr.createEmbeddedView(this.menuTpl);
+          // Simulate CDK DomPortalOutlet: after creating the view, move
+          // the root nodes to a new "overlay pane" div, just like CDK
+          // Overlay does with outletElement.appendChild(rootNode).
+          const pane = document.createElement('div');
+          pane.className = 'overlay-pane';
+          document.body.appendChild(pane);
+          for (const node of viewRef.rootNodes) {
+            pane.appendChild(node);
+          }
+          this.currentPane = pane;
         }
 
         close() {
           this.opened = false;
           this.vcr.clear();
+          // CDK Overlay may or may not remove the pane immediately
         }
       }
 
@@ -2451,20 +2463,25 @@ describe('Animation', () => {
 
       const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-      // Toggle the menu quickly multiple times
+      // Query from document since overlay panes are appended to body
+      const countMenus = () => document.querySelectorAll('.example-menu').length;
+
+      // Simulate rapid clicking with CD between each toggle
       for (let i = 0; i < 20; i++) {
         cmp.toggle();
-        // Wait 1ms to allow some logic to run but less than animation duration
-        await delay(1);
         fixture.detectChanges();
+        await delay(1);
+        // At no point should there be more than one menu element
+        expect(countMenus()).toBeLessThanOrEqual(1);
       }
 
-      // Finish remaining animations (wait 100ms real time which is > 10ms animation)
+      // After all animations complete, 20 toggles (even) = closed = 0
       await delay(200);
       fixture.detectChanges();
+      expect(countMenus()).toBe(0);
 
-      const menus = fixture.debugElement.nativeElement.querySelectorAll('.example-menu');
-      expect(menus.length).toBe(0);
+      // Clean up overlay panes
+      document.querySelectorAll('.overlay-pane').forEach((p) => p.remove());
     });
   });
 });

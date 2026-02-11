@@ -29,7 +29,6 @@ import {
   assertAnimationTypes,
   assertElementNodes,
   cancelAnimationsIfRunning,
-  cancelLeavingNodes,
   cleanupAfterLeaveAnimations,
   cleanupEnterClassData,
   clearLeavingNodes,
@@ -69,7 +68,6 @@ export function ɵɵanimateEnter(value: string | AnimationClassBindingFn): typeo
   }
 
   const tNode = getCurrentTNode()!;
-  cancelLeavingNodes(tNode, lView);
 
   // Capture NgZone eagerly while the injector is still valid. The animation
   // function runs later from the queue, at which point the lView injector
@@ -205,7 +203,6 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
     return ɵɵanimateEnterListener;
   }
   const tNode = getCurrentTNode()!;
-  cancelLeavingNodes(tNode, lView);
 
   addAnimationToLView(getLViewEnterAnimations(lView), tNode, () =>
     runEnterAnimationFunction(lView, tNode, value),
@@ -259,7 +256,6 @@ export function ɵɵanimateLeave(value: string | AnimationClassBindingFn): typeo
   }
 
   const tNode = getCurrentTNode()!;
-  cancelLeavingNodes(tNode, lView);
 
   // Capture NgZone eagerly while the injector is still valid. The animation
   // function runs later from the queue, at which point the lView injector
@@ -397,7 +393,6 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
 
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  cancelLeavingNodes(tNode, lView);
 
   allLeavingAnimations.add(lView[ID]);
 

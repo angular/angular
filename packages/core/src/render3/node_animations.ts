@@ -12,11 +12,7 @@ import {
   AnimationLViewData,
 } from '../animation/interfaces';
 import {allLeavingAnimations} from '../animation/longest_animation';
-import {
-  queueEnterAnimations,
-  addToAnimationQueue,
-  removeAnimationsFromQueue,
-} from '../animation/queue';
+import {queueEnterAnimations, addToAnimationQueue} from '../animation/queue';
 import {Injector, INJECTOR} from '../di';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {TNode, TNodeType} from './interfaces/node';
@@ -54,11 +50,6 @@ export function runLeaveAnimationsWithCallback(
   }
 
   const animations = lView?.[ANIMATIONS];
-
-  // regarding the TNode index to see if it is the same element.
-  if (animations?.enter?.has(tNode.index)) {
-    removeAnimationsFromQueue(injector, animations.enter.get(tNode.index)!.animateFns);
-  }
 
   // get all nodes in the current view that are descendants of tNode and have leave animations
   const nodesWithExitAnimations = aggregateDescendantAnimations(lView, tNode, animations);
