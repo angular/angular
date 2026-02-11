@@ -227,7 +227,11 @@ export class SignalsGraphVisualizer {
   }
 
   highlightDependencies(node: DevtoolsSignalGraphNode, direction: 'down' | 'up') {
-    const nodeIdx = this.inputGraph?.nodes.findIndex((n) => node === n);
+    if (!this.inputGraph) {
+      return;
+    }
+
+    const nodeIdx = this.inputGraph.nodes.findIndex((n) => node === n);
     if (nodeIdx === -1) {
       return;
     }
@@ -237,12 +241,12 @@ export class SignalsGraphVisualizer {
     const pathNodesIds = new Set<string>();
     const edges = new Set<string>();
     const stack = [nodeIdx];
-    const nodes = this.inputGraph!.nodes;
+    const nodes = this.inputGraph.nodes;
 
     while (stack.length) {
       const currentIdx = stack.pop()!;
 
-      for (const edge of this.inputGraph!.edges) {
+      for (const edge of this.inputGraph.edges) {
         const currNodeIdx = direction === 'down' ? edge.producer : edge.consumer;
 
         if (currNodeIdx === currentIdx) {
