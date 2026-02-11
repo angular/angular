@@ -1,3 +1,39 @@
+<a name="21.2.0-next.3"></a>
+# 21.2.0-next.3 (2026-02-11)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [18003a33bb](https://github.com/angular/angular/commit/18003a33bb0d6bb09def8a0e5939fa24069696eb) | feat | add an 'outlet' injector option for ngTemplateOutlet |
+| [51cc914807](https://github.com/angular/angular/commit/51cc91480761b7275c15b5600381207f8ca00ee5) | feat | support height in ImageLoaderConfig and built-in loaders |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [11834a4274](https://github.com/angular/angular/commit/11834a42745e62830a83a4c14eea9d203baec680) | fix | add geolocation element to schema |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2ea6dfc6c9](https://github.com/angular/angular/commit/2ea6dfc6c9ca11e96a2654510c980419899f8d04) | fix | update diagnostic to flag no-op arrow functions in listeners |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ea2016a6dc](https://github.com/angular/angular/commit/ea2016a6dce58f95ecab7c773d5dcde274354e1a) | feat | add support for nested animations |
+| [bd2868e915](https://github.com/angular/angular/commit/bd2868e915e78fb60583c00a11c778e3abf3ed8d) | fix | capture animation dependencies eagerly to avoid destroyed injector |
+| [a7e8abbb7e](https://github.com/angular/angular/commit/a7e8abbb7e738ba338c3f50c76934c99925954e5) | fix | correctly handle SkipSelf when resolving from embedded view injector |
+| [e53c8abaf9](https://github.com/angular/angular/commit/e53c8abaf9f09ca66b55f8169b9d723d1ffb640a) | fix | Fix flakey test due to document injection |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f56bb07d83](https://github.com/angular/angular/commit/f56bb07d83a015b0ac12e74fdb0cf1550ff36b97) | feat | add field param to submit action and onInvalid |
+| [ba009b6031](https://github.com/angular/angular/commit/ba009b603119299a03f9d844f93882d42d47d150) | feat | add form directive |
+| [24c0c5a180](https://github.com/angular/angular/commit/24c0c5a180fab31438b1939e501f01b75e2d2760) | feat | support signal-based schemas in validateStandardSchema |
+| [adfb83146b](https://github.com/angular/angular/commit/adfb83146b0c149734f43961563b389e00cc1d85) | fix | simplify design of parse errors |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cb1163e5e5](https://github.com/angular/angular/commit/cb1163e5e5434d5d96897180f6f0eb86d3992964) | fix | correctly parse ArrayBuffer and Blob in transfer cache |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.1.4"></a>
 # 21.1.4 (2026-02-11)
 ### compiler
