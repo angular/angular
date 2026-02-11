@@ -665,7 +665,7 @@ export interface Component extends Directive {
  */
 export const Component: ComponentDecorator = makeDecorator(
   'Component',
-  (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
+  (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Eager, ...c}),
   Directive,
   undefined,
   (type: Type<any>, meta: Component) => compileComponent(type, meta),
