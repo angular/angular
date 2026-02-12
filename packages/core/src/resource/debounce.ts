@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject} from '../di';
+import type {ValueEqualityFn} from '../core_reactivity_export_internal';
+import {inject, type Injector} from '../di';
 import {DestroyRef} from '../linker';
 import {effect} from '../render3/reactivity/effect';
 import {signal} from '../render3/reactivity/signal';
@@ -98,4 +99,39 @@ export function debounceResource<T>(options: DebounceResourceOptions<T>): Resour
   );
 
   return resourceFromSnapshots(state);
+}
+
+// Alternate API:
+
+export interface DebounceOptions<T> {
+  // TODO: this options only makes sense if we remove the error state stuff,
+  // otherwise we'd use the initial value when recovering from an error.
+  debounceInitialValue?: boolean;
+  injector?: Injector;
+  equal?: ValueEqualityFn<T>;
+}
+
+export function debounce<T>(
+  source: () => T,
+  wait: number | (() => Promise<void> | void),
+  options: DebounceOptions<T>,
+): Resource<T>;
+export function debounce<T>(
+  source: () => T,
+  wait: number | (() => Promise<void> | void),
+  options: DebounceOptions<T> & {debounceInitialValue: true},
+): Resource<T | undefined>;
+export function debounce<T>(
+  source: () => T,
+  wait: number | (() => Promise<void> | void),
+  options: DebounceOptions<T>,
+): Resource<T | undefined> {
+  const resOpts: DebounceResourceOptions<T> = {
+    params: source,
+    wait,
+    injector: options.injector,
+    equal: options.equal,
+    defaultValue: options.debounceInitialValue ? undefined : untracked(source),
+  };
+  return debounceResource(resOpts);
 }
