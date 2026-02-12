@@ -61,7 +61,10 @@ export function attemptToReuseExistingSourceFileImports(
 
     // Side-effect imports are ignored, or type-only imports.
     // TODO: Consider re-using type-only imports efficiently.
-    if (!statement.importClause || statement.importClause.isTypeOnly) {
+    if (
+      !statement.importClause ||
+      statement.importClause.phaseModifier === ts.SyntaxKind.TypeKeyword
+    ) {
       continue;
     }
 
