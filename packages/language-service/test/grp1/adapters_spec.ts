@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {LSParseConfigHost} from '../src/adapters';
+import {LSParseConfigHost} from '../../src/adapters';
 
 describe('LSParseConfigHost.resolve()', () => {
   it('should collapse absolute paths', () => {

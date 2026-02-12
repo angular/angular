@@ -17,7 +17,7 @@ import {
   LanguageServiceTestEnv,
   OpenBuffer,
   Project,
-} from '../testing';
+} from '../../testing';
 
 describe('find references and rename locations', () => {
   let env: LanguageServiceTestEnv;

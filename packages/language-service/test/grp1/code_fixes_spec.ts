@@ -9,8 +9,8 @@
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
-import {FixIdForCodeFixesAll} from '../src/codefixes/utils';
-import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
+import {FixIdForCodeFixesAll} from '../../src/codefixes/utils';
+import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../../testing';
 
 describe('code fixes', () => {
   let env: LanguageServiceTestEnv;
