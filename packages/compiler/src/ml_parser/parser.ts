@@ -753,30 +753,13 @@ class _TreeBuilder {
   }
 
   private _consumeBlockClose(token: BlockCloseToken) {
-    const initialStackLength = this._containerStack.length;
-    const topNode = this._containerStack[initialStackLength - 1];
     if (!this._popContainer(null, html.Block, token.sourceSpan)) {
-      if (this._containerStack.length < initialStackLength) {
-        const nodeName = topNode instanceof html.Component ? topNode.fullName : topNode.name;
-        this.errors.push(
-          TreeError.create(
-            null,
-            token.sourceSpan,
-            `Unexpected closing block. The block may have been closed earlier. ` +
-              `Did you forget to close the <${nodeName}> element? ` +
-              `If you meant to write the \`}\` character, you should use the "&#125;" ` +
-              `HTML entity instead.`,
-          ),
-        );
-        return;
-      }
-
       this.errors.push(
         TreeError.create(
           null,
           token.sourceSpan,
           `Unexpected closing block. The block may have been closed earlier. ` +
-            `If you meant to write the \`}\` character, you should use the "&#125;" ` +
+            `If you meant to write the } character, you should use the "&#125;" ` +
             `HTML entity instead.`,
         ),
       );
