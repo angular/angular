@@ -13,7 +13,7 @@ import {
   createModuleAndProjectWithDeclarations,
   humanizeDocumentSpanLike,
   LanguageServiceTestEnv,
-} from '../testing';
+} from '../../testing';
 
 describe('get template location for component', () => {
   beforeEach(() => {

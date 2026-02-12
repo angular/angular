@@ -12,8 +12,8 @@ import ts from 'typescript';
 import {
   DisplayInfoKind,
   unsafeCastDisplayInfoKindToScriptElementKind,
-} from '../src/utils/display_parts';
-import {LanguageServiceTestEnv, OpenBuffer, ProjectFiles, TestableOptions} from '../testing';
+} from '../../src/utils/display_parts';
+import {LanguageServiceTestEnv, OpenBuffer, ProjectFiles, TestableOptions} from '../../testing';
 
 const DIR_WITH_INPUT = {
   'Dir': `

@@ -8,7 +8,7 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {isNgSpecificDiagnostic, LanguageServiceTestEnv} from '../testing';
+import {isNgSpecificDiagnostic, LanguageServiceTestEnv} from '../../testing';
 
 describe('language-service/compiler integration', () => {
   beforeEach(() => {
