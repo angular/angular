@@ -17,19 +17,13 @@ This is the source code for the Angular framework. This guide outlines standard 
 
 ## Testing
 
-- Instead of `fixture.detectChanges()` or `TestBed.flushEffects()` use the following APIs to flush/wait as appropriate:
-  - `TestBed.tick()` (flush rendering & effects)
-  - `await fixture.whenStable()` (wait for framework stability)
-  - Implement `await delay(ms)` if needed to wait for time increments:
-    ```
-    function delay(ms: number) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-    ```
-
-- If you need to test async behavior:
-  - Use real async tests `it('...', async () => { ... })`
-  - Keep tests fast, if artificial delays are needed use the **absolute minimum delay necessary** to verify the behavior (e.g. 1ms)
+- When writing tests, write them in the style of act, wait, assert.
+- To keep tests fast, minimize the need for waiting:
+  - Use `useAutoTick()` (from `packages/private/testing/src/utils.ts`) to fast-forward time via the mock clock.
+  - Use `TestBed.tick()` to flush rendering & effects.
+- When waiting is necessary, use real async tests (Use real async tests `it('...', async () => { ... })`) along with:
+  - Use `await timeout(ms)` (from `packages/private/testing/src/utils.ts`) to wait a specific number of milliseconds.
+  - Use `await fixture.whenStable()` to wait for framework stability.
 
 ## Pull Requests
 
