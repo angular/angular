@@ -63,6 +63,7 @@ runInEachFileSystem(() => {
         null,
         fakeSfTypeIdentifier,
         /* emitDeclarationOnly */ false,
+        /* emitIntermediateTs */ false,
       );
       const sourceFile = program.getSourceFile(filename)!;
 

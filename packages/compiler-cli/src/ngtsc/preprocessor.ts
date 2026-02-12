@@ -119,20 +119,24 @@ export class NgtscIsolatedPreprocessor {
         continue;
       }
 
-      if (this.compiler.ignoreForEmit.has(sf)) {
-        continue;
-      }
-
       // Manually transform the source file
       const transformationResult = ts.transform(sf, beforeTransformers, this.options);
 
-      if (transformationResult.transformed.length > 0) {
-        const transformedSf = transformationResult.transformed[0];
-        const content = printer.printFile(transformedSf);
-        result.push({fileName: sf.fileName, content});
+      if (transformationResult.transformed.length !== 1) {
+        transformationResult.dispose();
+        throw new Error(
+          `Expected exactly one transformed file, got ${transformationResult.transformed.length}`,
+        );
       }
 
+      const transformedSf = transformationResult.transformed[0];
+
+      const content = printer.printFile(transformedSf);
+      result.push({fileName: sf.fileName, content});
+
       transformationResult.dispose();
+
+      this.compiler.incrementalCompilation.recordSuccessfulEmit(sf);
     }
 
     return result;

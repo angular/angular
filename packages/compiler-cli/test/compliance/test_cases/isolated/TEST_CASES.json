@@ -1,10 +1,10 @@
 {
-  "$schema": "../../compliance/test_cases/test_cases.schema.json",
+  "$schema": "../test_case_schema.json",
   "cases": [
     {
       "description": "basic component transformation",
       "inputFiles": ["basic/test.ts"],
-      "compilationModeFilter": ["local compile"],
+      "compilationModeFilter": [],
       "expectations": [
         {
           "files": [
