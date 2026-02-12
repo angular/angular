@@ -157,7 +157,10 @@ export function cancelLeavingNodes(tNode: TNode, newElement: HTMLElement): void 
     //   renders in its own container, e.g. CDK Overlay).
     // Leaving elements in the same parent that are NOT the previousSibling
     // are left alone (e.g. @for items animating out at different positions).
-    if (leavingEl === prevSibling || (leavingParent && leavingParent !== newParent)) {
+    if (
+      (prevSibling && leavingEl === prevSibling) ||
+      (leavingParent && newParent && leavingParent !== newParent)
+    ) {
       nodes.splice(i, 1);
       leavingEl.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
       leavingEl.parentNode?.removeChild(leavingEl);

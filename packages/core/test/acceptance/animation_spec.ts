@@ -2373,7 +2373,7 @@ describe('Animation', () => {
   });
 
   describe('animation element duplication', () => {
-    it('should not duplicate elements when using dynamic components', async () => {
+    it('should not duplicate elements when using dynamic components in overlay-like containers', fakeAsync(() => {
       const animateStyles = `
         .example-menu {
           display: inline-flex;
@@ -2461,27 +2461,36 @@ describe('Animation', () => {
 
       const cmp = fixture.debugElement.query(By.css('dynamic-menu')).componentInstance;
 
-      const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
       // Query from document since overlay panes are appended to body
       const countMenus = () => document.querySelectorAll('.example-menu').length;
+
+      // Helper to complete the leave animation for all leaving menu elements
+      const finishLeaveAnimations = () => {
+        tickAnimationFrames(1);
+        document.querySelectorAll('.example-menu.close').forEach((el) => {
+          el.dispatchEvent(new AnimationEvent('animationend', {animationName: 'open'}));
+        });
+        tick();
+      };
 
       // Simulate rapid clicking with CD between each toggle
       for (let i = 0; i < 20; i++) {
         cmp.toggle();
         fixture.detectChanges();
-        await delay(1);
+        tickAnimationFrames(1);
         // At no point should there be more than one menu element
         expect(countMenus()).toBeLessThanOrEqual(1);
       }
 
-      // After all animations complete, 20 toggles (even) = closed = 0
-      await delay(200);
+      // Complete any remaining leave animations
+      finishLeaveAnimations();
       fixture.detectChanges();
+
+      // 20 toggles (even) = closed = 0 elements
       expect(countMenus()).toBe(0);
 
       // Clean up overlay panes
       document.querySelectorAll('.overlay-pane').forEach((p) => p.remove());
-    });
+    }));
   });
 });
