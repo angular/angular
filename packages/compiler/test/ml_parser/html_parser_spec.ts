@@ -1108,7 +1108,7 @@ describe('HtmlParser', () => {
         expect(humanizeErrors(errors)).toEqual([
           [
             null,
-            'Unexpected closing block. The block may have been closed earlier. If you meant to write the `}` character, you should use the "&#125;" HTML entity instead.',
+            'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
             '0:5',
           ],
         ]);
@@ -1120,7 +1120,7 @@ describe('HtmlParser', () => {
         expect(humanizeErrors(errors)).toEqual([
           [
             null,
-            'Unexpected closing block. The block may have been closed earlier. Did you forget to close the <strong> element? If you meant to write the `}` character, you should use the "&#125;" HTML entity instead.',
+            'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
             '0:21',
           ],
         ]);
@@ -1137,7 +1137,7 @@ describe('HtmlParser', () => {
           ],
           [
             null,
-            'Unexpected closing block. The block may have been closed earlier. If you meant to write the `}` character, you should use the "&#125;" HTML entity instead.',
+            'Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead.',
             '0:28',
           ],
         ]);
