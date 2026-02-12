@@ -20,7 +20,6 @@ This is the source code for the Angular framework. This guide outlines standard 
 - When writing tests, write them in the style of act, wait, assert.
 - To keep tests fast, minimize the need for waiting:
   - Use `useAutoTick()` (from `packages/private/testing/src/utils.ts`) to fast-forward time via the mock clock.
-  - Use `TestBed.tick()` to flush rendering & effects.
 - When waiting is necessary, use real async tests (Use real async tests `it('...', async () => { ... })`) along with:
   - Use `await timeout(ms)` (from `packages/private/testing/src/utils.ts`) to wait a specific number of milliseconds.
   - Use `await fixture.whenStable()` to wait for framework stability.
