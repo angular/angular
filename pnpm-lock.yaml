@@ -7,6 +7,7 @@ settings:
 overrides:
   https-proxy-agent: 7.0.6
   saucelabs: 9.0.2
+  '@modelcontextprotocol/sdk': 1.26.0
 
 packageExtensionsChecksum: sha256-3L73Fw32UVtE6x5BJxJPBtQtH/mgsr31grNpdhHP1IY=
 
@@ -337,7 +338,7 @@ importers:
         version: 9.0.0
       '@angular/ng-dev':
         specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#73f978f5efbaaec123125e2f39d1bac6453927aa
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/73f978f5efbaaec123125e2f39d1bac6453927aa(@modelcontextprotocol/sdk@1.25.3(zod@4.3.6))
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/73f978f5efbaaec123125e2f39d1bac6453927aa(@modelcontextprotocol/sdk@1.26.0)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.29.0)
@@ -3079,7 +3080,7 @@ packages:
     resolution: {integrity: sha512-V/4CQVQGovvGHuS73lwJwHKR9x33kCij3zz/ReEQ4A7RJaV0U7m4k1mvYhFk55cGZdF5JLKu2S9BTaFuEs5xTA==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      '@modelcontextprotocol/sdk': ^1.25.2
+      '@modelcontextprotocol/sdk': 1.26.0
     peerDependenciesMeta:
       '@modelcontextprotocol/sdk':
         optional: true
@@ -3750,21 +3751,11 @@ packages:
   '@microsoft/tsdoc@0.16.0':
     resolution: {integrity: sha512-xgAyonlVVS+q7Vc7qLW0UrJU7rSFcETRWsqdXZtjzRU8dF+6CkozTK4V4y1LwOX7j8r/vHphjDeMeGI4tNGeGA==}
 
-  '@modelcontextprotocol/sdk@1.25.2':
-    resolution: {integrity: sha512-LZFeo4F9M5qOhC/Uc1aQSrBHxMrvxett+9KLHt7OhcExtoiRN9DKgbZffMP/nxjutWDQpfMDfP3nkHI4X9ijww==}
+  '@modelcontextprotocol/sdk@1.26.0':
+    resolution: {integrity: sha512-Y5RmPncpiDtTXDbLKswIJzTqu2hyBKxTNsgKqKclDbhIgg1wgtf1fRuvxgTnRfcnxtvvgbIEcqUOzZrJ6iSReg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
-    peerDependenciesMeta:
-      '@cfworker/json-schema':
-        optional: true
-
-  '@modelcontextprotocol/sdk@1.25.3':
-    resolution: {integrity: sha512-vsAMBMERybvYgKbg/l4L1rhS7VXV1c0CtyJg72vwxONVX0l4ZfKVAnZEWTQixJGTzKnELjQ59e4NbdFDALRiAQ==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@cfworker/json-schema': ^4.1.1
-      zod: ^3.25 || ^4.0
     peerDependenciesMeta:
       '@cfworker/json-schema':
         optional: true
@@ -7656,8 +7647,8 @@ packages:
   exponential-backoff@3.1.3:
     resolution: {integrity: sha512-ZgEeZXj30q+I0EN+CbSSpIyPaJ5HVQD18Z1m+u1FXbAeT94mr1zw50q4q6jiiC447Nl/YTcIYSAftiGqetwXCA==}
 
-  express-rate-limit@7.5.1:
-    resolution: {integrity: sha512-7iN8iPMDzOMHPUYllBEsQdWVB6fPDMPqwjBaFrgr4Jgr/+okjvzAy+UHlYYL/Vs0OsOrMkwS6PJDkFlJwoxUnw==}
+  express-rate-limit@8.2.1:
+    resolution: {integrity: sha512-PCZEIEIxqwhzw4KF0n7QF4QqruVTcF73O5kFKUnGOyjbCCgizBBiFaYpd/fnBLUMPw/BWw9OsiN7GgrNYr7j6g==}
     engines: {node: '>= 16'}
     peerDependencies:
       express: '>= 4.11'
@@ -8293,6 +8284,10 @@ packages:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
     engines: {node: '>=0.10.0'}
 
+  hono@4.11.9:
+    resolution: {integrity: sha512-Eaw2YTGM6WOxA6CXbckaEvslr2Ne4NFsKrvc0v97JD5awbmeBLO5w9Ho9L9kmKonrwF9RJlW6BxT1PVv/agBHQ==}
+    engines: {node: '>=16.9.0'}
+
   hosted-git-info@4.1.0:
     resolution: {integrity: sha512-kyCuEOWjJqZuDbRHzL8V93NzQhwIB71oFWSyzVo+KPZI+pnQPPxucdkrOZvkLRnrf5URsQM+IJ09Dw29cRALIA==}
     engines: {node: '>=10'}
@@ -8534,6 +8529,10 @@ packages:
   interpret@3.1.1:
     resolution: {integrity: sha512-6xwYfHbajpoF0xLW+iwLkhwgvLoZDfjYfoFNu8ftMoXINzwuymNLd9u/KmwtdT2GbR+/Cz66otEGEVVUHX9QLQ==}
     engines: {node: '>=10.13.0'}
+
+  ip-address@10.0.1:
+    resolution: {integrity: sha512-NWv9YLW4PoW2B7xtzaS3NCot75m6nK7Icdv0o3lfMceJVRfSoQwqD4wEH5rLwoKJwUiZ/rfpiVBhnaF0FK4HoA==}
+    engines: {node: '>= 12'}
 
   ip-address@10.1.0:
     resolution: {integrity: sha512-XXADHxXmvT9+CRxhXg56LJovE+bmWnEWB78LB83VZTprKTmaC5QfruXocxzTZ2Kl0DNwKuBdlIhjL8LeY8Sf8Q==}
@@ -13622,7 +13621,7 @@ snapshots:
       '@angular-devkit/schematics': 21.1.0-rc.0(chokidar@5.0.0)
       '@inquirer/prompts': 7.10.1(@types/node@20.19.31)
       '@listr2/prompt-adapter-inquirer': 3.0.5(@inquirer/prompts@7.10.1(@types/node@20.19.31))(@types/node@20.19.31)(listr2@9.0.5)
-      '@modelcontextprotocol/sdk': 1.25.2
+      '@modelcontextprotocol/sdk': 1.26.0
       '@schematics/angular': 21.1.0-rc.0(chokidar@5.0.0)
       '@yarnpkg/lockfile': 1.1.0
       algoliasearch: 5.46.2
@@ -13640,7 +13639,6 @@ snapshots:
       - '@cfworker/json-schema'
       - '@types/node'
       - chokidar
-      - hono
       - supports-color
 
   '@angular/cli@21.1.0-rc.0(@types/node@24.10.11)(chokidar@5.0.0)':
@@ -13650,7 +13648,7 @@ snapshots:
       '@angular-devkit/schematics': 21.1.0-rc.0(chokidar@5.0.0)
       '@inquirer/prompts': 7.10.1(@types/node@24.10.11)
       '@listr2/prompt-adapter-inquirer': 3.0.5(@inquirer/prompts@7.10.1(@types/node@24.10.11))(@types/node@24.10.11)(listr2@9.0.5)
-      '@modelcontextprotocol/sdk': 1.25.2
+      '@modelcontextprotocol/sdk': 1.26.0
       '@schematics/angular': 21.1.0-rc.0(chokidar@5.0.0)
       '@yarnpkg/lockfile': 1.1.0
       algoliasearch: 5.46.2
@@ -13668,7 +13666,6 @@ snapshots:
       - '@cfworker/json-schema'
       - '@types/node'
       - chokidar
-      - hono
       - supports-color
 
   '@angular/core@21.2.0-next.2(@angular/compiler@packages+compiler)':
@@ -13691,11 +13688,11 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/73f978f5efbaaec123125e2f39d1bac6453927aa(@modelcontextprotocol/sdk@1.25.3(zod@4.3.6))':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/73f978f5efbaaec123125e2f39d1bac6453927aa(@modelcontextprotocol/sdk@1.26.0)':
     dependencies:
       '@actions/core': 2.0.2
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
-      '@google/genai': 1.38.0(@modelcontextprotocol/sdk@1.25.3(zod@4.3.6))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
+      '@google/genai': 1.38.0(@modelcontextprotocol/sdk@1.26.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)
       '@inquirer/prompts': 8.2.0(@types/node@24.10.9)
       '@inquirer/type': 4.0.3(@types/node@24.10.9)
       '@octokit/auth-app': 8.1.2
@@ -15521,13 +15518,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@google/genai@1.38.0(@modelcontextprotocol/sdk@1.25.3(zod@4.3.6))(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)':
+  '@google/genai@1.38.0(@modelcontextprotocol/sdk@1.26.0)(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@6.0.6)':
     dependencies:
       google-auth-library: 10.5.0(supports-color@10.2.2)
       protobufjs: 7.5.4
       ws: 8.19.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     optionalDependencies:
-      '@modelcontextprotocol/sdk': 1.25.3(zod@4.3.6)
+      '@modelcontextprotocol/sdk': 1.26.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -15569,7 +15566,9 @@ snapshots:
     dependencies:
       is-negated-glob: 1.0.0
 
-  '@hono/node-server@1.19.9': {}
+  '@hono/node-server@1.19.9(hono@4.11.9)':
+    dependencies:
+      hono: 4.11.9
 
   '@hutson/parse-repository-url@5.0.0': {}
 
@@ -16594,9 +16593,9 @@ snapshots:
 
   '@microsoft/tsdoc@0.16.0': {}
 
-  '@modelcontextprotocol/sdk@1.25.2':
+  '@modelcontextprotocol/sdk@1.26.0':
     dependencies:
-      '@hono/node-server': 1.19.9
+      '@hono/node-server': 1.19.9(hono@4.11.9)
       ajv: 8.17.1
       ajv-formats: 3.0.1
       content-type: 1.0.5
@@ -16605,51 +16604,8 @@ snapshots:
       eventsource: 3.0.7
       eventsource-parser: 3.0.6
       express: 5.2.1
-      express-rate-limit: 7.5.1(express@5.2.1)
-      jose: 6.1.3
-      json-schema-typed: 8.0.2
-      pkce-challenge: 5.0.1
-      raw-body: 3.0.2
-      zod: 4.3.5
-      zod-to-json-schema: 3.25.1(zod@4.3.5)
-    transitivePeerDependencies:
-      - hono
-      - supports-color
-
-  '@modelcontextprotocol/sdk@1.25.3(zod@3.25.76)':
-    dependencies:
-      '@hono/node-server': 1.19.9
-      ajv: 8.17.1
-      ajv-formats: 3.0.1
-      content-type: 1.0.5
-      cors: 2.8.6
-      cross-spawn: 7.0.6
-      eventsource: 3.0.7
-      eventsource-parser: 3.0.6
-      express: 5.2.1
-      express-rate-limit: 7.5.1(express@5.2.1)
-      jose: 6.1.3
-      json-schema-typed: 8.0.2
-      pkce-challenge: 5.0.1
-      raw-body: 3.0.2
-      zod: 3.25.76
-      zod-to-json-schema: 3.25.1(zod@3.25.76)
-    transitivePeerDependencies:
-      - hono
-      - supports-color
-
-  '@modelcontextprotocol/sdk@1.25.3(zod@4.3.6)':
-    dependencies:
-      '@hono/node-server': 1.19.9
-      ajv: 8.17.1
-      ajv-formats: 3.0.1
-      content-type: 1.0.5
-      cors: 2.8.6
-      cross-spawn: 7.0.6
-      eventsource: 3.0.7
-      eventsource-parser: 3.0.6
-      express: 5.2.1
-      express-rate-limit: 7.5.1(express@5.2.1)
+      express-rate-limit: 8.2.1(express@5.2.1)
+      hono: 4.11.9
       jose: 6.1.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -16657,9 +16613,7 @@ snapshots:
       zod: 4.3.6
       zod-to-json-schema: 3.25.1(zod@4.3.6)
     transitivePeerDependencies:
-      - hono
       - supports-color
-    optional: true
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3':
     optional: true
@@ -20860,9 +20814,10 @@ snapshots:
 
   exponential-backoff@3.1.3: {}
 
-  express-rate-limit@7.5.1(express@5.2.1):
+  express-rate-limit@8.2.1(express@5.2.1):
     dependencies:
       express: 5.2.1
+      ip-address: 10.0.1
 
   express@4.22.1:
     dependencies:
@@ -21116,7 +21071,7 @@ snapshots:
       '@google-cloud/cloud-sql-connector': 1.9.0
       '@google-cloud/pubsub': 5.2.2
       '@inquirer/prompts': 7.10.1(@types/node@20.19.31)
-      '@modelcontextprotocol/sdk': 1.25.3(zod@3.25.76)
+      '@modelcontextprotocol/sdk': 1.26.0
       abort-controller: 3.0.0
       ajv: 8.17.1
       ajv-formats: 3.0.1
@@ -21192,7 +21147,6 @@ snapshots:
       - bare-abort-controller
       - bufferutil
       - encoding
-      - hono
       - pg-native
       - react-native-b4a
       - supports-color
@@ -21843,6 +21797,8 @@ snapshots:
     dependencies:
       parse-passwd: 1.0.0
 
+  hono@4.11.9: {}
+
   hosted-git-info@4.1.0:
     dependencies:
       lru-cache: 6.0.0
@@ -22102,6 +22058,8 @@ snapshots:
   internmap@2.0.3: {}
 
   interpret@3.1.1: {}
+
+  ip-address@10.0.1: {}
 
   ip-address@10.1.0: {}
 
@@ -27839,14 +27797,9 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
-  zod-to-json-schema@3.25.1(zod@4.3.5):
-    dependencies:
-      zod: 4.3.5
-
   zod-to-json-schema@3.25.1(zod@4.3.6):
     dependencies:
       zod: 4.3.6
-    optional: true
 
   zod@3.25.76: {}
 

@@ -215,6 +215,9 @@
         }
       }
     },
+    "overrides": {
+      "@modelcontextprotocol/sdk": "1.26.0"
+    },
     "onlyBuiltDependencies": [
       "cypress"
     ]
