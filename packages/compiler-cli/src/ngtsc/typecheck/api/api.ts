@@ -8,10 +8,22 @@
 
 import {
   AbsoluteSourceSpan,
+  AST,
   BoundTarget,
   DirectiveMeta,
+  DirectiveOwner,
+  LegacyAnimationTriggerNames,
   ParseSourceSpan,
   SchemaMetadata,
+  TemplateEntity,
+  TmplAstBoundAttribute,
+  TmplAstBoundEvent,
+  TmplAstComponent,
+  TmplAstDirective,
+  TmplAstElement,
+  TmplAstReference,
+  TmplAstTemplate,
+  TmplAstTextAttribute,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -19,12 +31,91 @@ import {ErrorCode} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {
   ClassPropertyMapping,
+  ClassPropertyName,
   DirectiveTypeCheckMeta,
   HostDirectiveMeta,
   InputMapping,
+  InputOrOutput,
   PipeMeta,
+  TemplateGuardMeta,
 } from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
+
+export interface TcbReferenceMetadata {
+  /** The name of the class */
+  name: string;
+  /** The module path where the symbol is located, or null if local/ambient */
+  moduleName: string | null;
+  /** Whether the reference is local to the current file */
+  isLocal: boolean;
+  /**
+   * Defines the `AbsoluteSourceSpan` of the target's node name, if available.
+   */
+  nodeNameSpan?: AbsoluteSourceSpan;
+
+  /**
+   * The absolute path to the file containing the reference node, if available.
+   */
+  nodeFilePath?: string;
+}
+
+export type TcbInputMapping = InputOrOutput & {
+  required: boolean;
+
+  /**
+   * AST of the transform type of the input, if available.
+   */
+  transformType?: ts.TypeNode;
+};
+
+export interface TcbPipeMetadata {
+  name: string;
+  ref: TcbReferenceMetadata;
+  isExplicitlyDeferred: boolean;
+}
+
+export interface TcbDirectiveMetadata extends DirectiveMeta {
+  ref: TcbReferenceMetadata;
+  name: string;
+  selector: string | null;
+  isComponent: boolean;
+  isGeneric: boolean;
+  isStructural: boolean;
+  isStandalone: boolean;
+  isExplicitlyDeferred: boolean;
+  preserveWhitespaces: boolean;
+  exportAs: string[] | null;
+
+  /** Type parameters of the directive, if available. */
+  typeParameters?: ts.TypeParameterDeclaration[];
+  inputs: ClassPropertyMapping<TcbInputMapping>;
+  outputs: ClassPropertyMapping;
+  hasRequiresInlineTypeCtor: boolean;
+  ngTemplateGuards: TemplateGuardMeta[];
+  hasNgTemplateContextGuard: boolean;
+  hasNgFieldDirective: boolean;
+  coercedInputFields: Set<ClassPropertyName>;
+  restrictedInputFields: Set<ClassPropertyName>;
+  stringLiteralInputFields: Set<ClassPropertyName>;
+  undeclaredInputFields: Set<ClassPropertyName>;
+  publicMethods: Set<string>;
+  ngContentSelectors: string[] | null;
+  animationTriggerNames: LegacyAnimationTriggerNames | null;
+}
+
+export interface TcbComponentMetadata {
+  ref: TcbReferenceMetadata;
+  typeParameters?: ts.TypeParameterDeclaration[];
+}
+
+export interface TcbTypeCheckBlockMetadata {
+  id: TypeCheckId;
+  boundTarget: BoundTarget<TcbDirectiveMetadata>;
+  pipes: Map<string, TcbPipeMetadata> | null;
+  schemas: SchemaMetadata[];
+  isStandalone: boolean;
+  preserveWhitespaces: boolean;
+}
 
 /**
  * Extension of `DirectiveMeta` that includes additional information required to type-check the
@@ -119,7 +210,7 @@ export interface TypeCtorMetadata {
   /**
    * Input, output, and query field names in the type which should be included as constructor input.
    */
-  fields: {inputs: ClassPropertyMapping<InputMapping>; queries: string[]};
+  fields: {inputs: ClassPropertyMapping<TcbInputMapping>};
 
   /**
    * `Set` of field names which have type coercion enabled.

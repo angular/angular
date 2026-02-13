@@ -11,9 +11,7 @@ import ts from 'typescript';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TcbOp} from './base';
-import {TypeCheckableDirectiveMeta} from '../../api';
-import {Reference} from '../../../imports';
-import {ClassDeclaration} from '../../../reflection';
+import {TcbDirectiveMetadata} from '../../api';
 import {addExpressionIdentifier, ExpressionIdentifier} from '../comments';
 import {addParseSpanInfo} from '../diagnostics';
 import {tsDeclareVariable} from '../ts_util';
@@ -27,7 +25,7 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
     protected tcb: Context,
     protected scope: Scope,
     protected node: DirectiveOwner,
-    protected dir: TypeCheckableDirectiveMeta,
+    protected dir: TcbDirectiveMetadata,
   ) {
     super();
   }
@@ -40,23 +38,21 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
   }
 
   override execute(): ts.Identifier {
-    const dirRef = this.dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
-
-    const rawType = this.tcb.env.referenceType(this.dir.ref);
+    const rawType = this.tcb.env.referenceTcbType(this.dir.ref);
 
     let type: ts.TypeNode;
     let span: ParseSourceSpan;
-    if (this.dir.isGeneric === false || dirRef.node.typeParameters === undefined) {
+    if (this.dir.isGeneric === false || this.dir.typeParameters?.length === 0) {
       type = rawType;
     } else {
       if (!ts.isTypeReferenceNode(rawType)) {
         throw new Error(
-          `Expected TypeReferenceNode when referencing the type for ${this.dir.ref.debugName}`,
+          `Expected TypeReferenceNode when referencing the type for ${this.dir.ref.name}`,
         );
       }
-      const typeArguments = dirRef.node.typeParameters.map(() =>
-        ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
-      );
+      const typeArguments = Array(this.dir.typeParameters?.length ?? 0)
+        .fill(0)
+        .map(() => ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
       type = ts.factory.createTypeReferenceNode(rawType.typeName, typeArguments);
     }
 
@@ -89,9 +85,8 @@ export class TcbNonGenericDirectiveTypeOp extends TcbDirectiveTypeOpBase {
    * the newly created variable.
    */
   override execute(): ts.Identifier {
-    const dirRef = this.dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
     if (this.dir.isGeneric) {
-      throw new Error(`Assertion Error: expected ${dirRef.debugName} not to be generic.`);
+      throw new Error(`Assertion Error: expected ${this.dir.ref.name} not to be generic.`);
     }
     return super.execute();
   }
@@ -107,10 +102,9 @@ export class TcbNonGenericDirectiveTypeOp extends TcbDirectiveTypeOpBase {
  */
 export class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
   override execute(): ts.Identifier {
-    const dirRef = this.dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
-    if (dirRef.node.typeParameters === undefined) {
+    if (this.dir.typeParameters === undefined) {
       throw new Error(
-        `Assertion Error: expected typeParameters when creating a declaration for ${dirRef.debugName}`,
+        `Assertion Error: expected typeParameters when creating a declaration for ${this.dir.ref.name}`,
       );
     }
 

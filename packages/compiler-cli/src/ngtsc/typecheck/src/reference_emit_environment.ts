@@ -24,6 +24,7 @@ import {
 } from '../../imports';
 import {ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateType} from '../../translator';
+import {TcbReferenceMetadata} from '../api';
 
 /**
  * An environment for a given source file that can be used to emit references.
@@ -34,7 +35,7 @@ import {ImportManager, translateExpression, translateType} from '../../translato
 export class ReferenceEmitEnvironment {
   constructor(
     readonly importManager: ImportManager,
-    protected refEmitter: ReferenceEmitter,
+    public refEmitter: ReferenceEmitter,
     readonly reflector: ReflectionHost,
     public contextFile: ts.SourceFile,
   ) {}
@@ -75,6 +76,27 @@ export class ReferenceEmitEnvironment {
   }
 
   /**
+   * Generates a `ts.TypeNode` from a `TcbReferenceMetadata` object.
+   * This is used by the TCB operations which do not hold on to the original `ts.Declaration`.
+   */
+  referenceTcbType(ref: TcbReferenceMetadata): ts.TypeNode {
+    if (ref.isLocal || ref.moduleName === null) {
+      return ts.factory.createTypeReferenceNode(ref.name);
+    }
+    return this.referenceExternalType(ref.moduleName, ref.name);
+  }
+
+  /**
+   * Generates a `ts.Expression` from a `TcbReferenceMetadata` object.
+   */
+  referenceTcbValue(ref: TcbReferenceMetadata): ts.Expression {
+    if (ref.isLocal || ref.moduleName === null) {
+      return ts.factory.createIdentifier(ref.name);
+    }
+    return this.referenceExternalSymbol(ref.moduleName, ref.name);
+  }
+
+  /**
    * Generate a `ts.Expression` that refers to the external symbol. This
    * may result in new imports being generated.
    */
@@ -89,7 +111,7 @@ export class ReferenceEmitEnvironment {
    * This will involve importing the type into the file, and will also add type parameters if
    * provided.
    */
-  referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
+  referenceExternalType(moduleName: string | null, name: string, typeParams?: Type[]): ts.TypeNode {
     const external = new ExternalExpr({moduleName, name});
     return translateType(
       new ExpressionType(external, TypeModifier.None, typeParams),

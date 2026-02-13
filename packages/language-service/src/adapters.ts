@@ -43,6 +43,15 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
     this.rootDirs = getRootDirs(this, project.getCompilationSettings());
   }
 
+  getSourceFile(
+    fileName: string,
+    languageVersion: ts.ScriptTarget,
+    onError?: (message: string) => void,
+    shouldCreateNewSourceFile?: boolean,
+  ): ts.SourceFile | undefined {
+    return this.project.getSourceFile(this.project.projectService.toPath(fileName));
+  }
+
   resourceNameToFileName(
     url: string,
     fromFile: string,
