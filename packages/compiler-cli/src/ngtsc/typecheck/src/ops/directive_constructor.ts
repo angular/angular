@@ -11,7 +11,7 @@ import {TcbOp} from './base';
 import {quoteAndEscape, TcbExpr} from './codegen';
 import {Context} from './context';
 import type {Scope} from './scope';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 import {ExpressionIdentifier} from '../comments';
 import {unwrapWritableSignal} from './expression';
 import {CustomFormControlType, expandBoundAttributesForField} from './signal_forms';
@@ -35,7 +35,7 @@ export class TcbDirectiveCtorOp extends TcbOp {
     private tcb: Context,
     private scope: Scope,
     private node: DirectiveOwner,
-    private dir: TypeCheckableDirectiveMeta,
+    private dir: TcbDirectiveMetadata,
     private customFormControlType: CustomFormControlType | null,
   ) {
     super();
@@ -139,7 +139,7 @@ export class TcbDirectiveCtorCircularFallbackOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private dir: TypeCheckableDirectiveMeta,
+    private dir: TcbDirectiveMetadata,
   ) {
     super();
   }
@@ -161,7 +161,7 @@ export class TcbDirectiveCtorCircularFallbackOp extends TcbOp {
  * the directive instance from any bound inputs.
  */
 function tcbCallTypeCtor(
-  dir: TypeCheckableDirectiveMeta,
+  dir: TcbDirectiveMetadata,
   tcb: Context,
   inputs: TcbDirectiveInput[],
 ): TcbExpr {
