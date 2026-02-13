@@ -3504,7 +3504,7 @@ describe('runtime i18n', () => {
         <div i18n>{
           parameters.length,
           plural,
-          =1 {Affects parameter <span class="parameter-name" attr="should_be_present">{{parameters[0].name}}</span>}
+          =1 {Affects parameter <span class="parameter-name" label="should_be_present">{{parameters[0].name}}</span>}
           other {Affects {{parameters.length}} parameters, including <span
               class="parameter-name">{{parameters[0].name}}</span>}
           }</div>
@@ -3519,7 +3519,7 @@ describe('runtime i18n', () => {
     const fixture = TestBed.createComponent(MyApp);
     fixture.detectChanges();
     const span = (fixture.nativeElement as HTMLElement).querySelector('span')!;
-    expect(span.getAttribute('attr')).toEqual('should_be_present');
+    expect(span.getAttribute('label')).toEqual('should_be_present');
     expect(span.getAttribute('class')).toEqual('parameter-name');
   });
 
