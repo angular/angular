@@ -20,6 +20,7 @@ export type ExtendedCompilerHostMethods =
   // Used to normalize filenames for the host system. Important for proper case-sensitive file
   // handling.
   | 'getCanonicalFileName'
+  | 'getSourceFile'
   // An optional method of `ts.CompilerHost` where an implementer can override module resolution.
   | 'resolveModuleNames'
   // Retrieve the current working directory. Unlike in `ts.ModuleResolutionHost`, this is a
@@ -44,7 +45,8 @@ export interface NgCompilerAdapter
   // getCurrentDirectory is removed from `ts.ModuleResolutionHost` because it's optional, and
   // incompatible with the `ts.CompilerHost` version which isn't. The combination of these two
   // still satisfies `ts.ModuleResolutionHost`.
-  extends Omit<ts.ModuleResolutionHost, 'getCurrentDirectory'>,
+  extends
+    Omit<ts.ModuleResolutionHost, 'getCurrentDirectory'>,
     Pick<ExtendedTsCompilerHost, 'getCurrentDirectory' | ExtendedCompilerHostMethods>,
     SourceFileTypeIdentifier {
   /**

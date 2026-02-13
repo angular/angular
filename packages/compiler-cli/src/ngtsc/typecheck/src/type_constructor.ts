@@ -10,30 +10,24 @@ import {R3Identifiers} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {TypeCtorMetadata} from '../api';
+import {TypeCtorMetadata, TcbTypeParameter} from '../api';
 
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
-import {checkIfGenericTypeBoundsCanBeEmitted} from './tcb_util';
+import {checkIfGenericTypeBoundsCanBeEmitted, generateTcbTypeParameters} from './tcb_util';
 import {quoteAndEscape, TcbExpr, tempPrint} from './ops/codegen';
 
 export function generateTypeCtorDeclarationFn(
   env: ReferenceEmitEnvironment,
   meta: TypeCtorMetadata,
   nodeTypeRef: ts.EntityName,
-  typeParams: ts.TypeParameterDeclaration[] | undefined,
+  typeParams: TcbTypeParameter[] | undefined,
 ): TcbExpr {
   const typeArgs = generateGenericArgs(typeParams);
   const typeRef = ts.isIdentifier(nodeTypeRef)
     ? nodeTypeRef.text
     : tempPrint(nodeTypeRef, nodeTypeRef.getSourceFile());
   const typeRefWithGenerics = `${typeRef}${typeArgs}`;
-  const initParam = constructTypeCtorParameter(
-    env,
-    meta,
-    nodeTypeRef.getSourceFile(),
-    typeRef,
-    typeRefWithGenerics,
-  );
+  const initParam = constructTypeCtorParameter(env, meta, typeRef, typeRefWithGenerics);
   const typeParameters = typeParametersWithDefaultTypes(typeParams);
   let source: string;
 
@@ -91,20 +85,20 @@ export function generateInlineTypeCtor(
   // the definition without any type bounds. For example, if the class is
   // `FooDirective<T extends Bar>`, its rawType would be `FooDirective<T>`.
   const typeRef = node.name.text;
-  const typeRefWithGenerics = `${typeRef}${generateGenericArgs(node.typeParameters)}`;
-  const initParam = constructTypeCtorParameter(
-    env,
-    meta,
-    node.getSourceFile(),
-    typeRef,
-    typeRefWithGenerics,
-  );
+  const sourceFile = node.getSourceFile();
+  const tcbTypeParams =
+    node.typeParameters && node.typeParameters.length > 0
+      ? generateTcbTypeParameters(node.typeParameters, sourceFile)
+      : undefined;
+
+  const typeRefWithGenerics = `${typeRef}${generateGenericArgs(tcbTypeParams)}`;
+  const initParam = constructTypeCtorParameter(env, meta, typeRef, typeRefWithGenerics);
 
   // If this constructor is being generated into a .ts file, then it needs a fake body. The body
   // is set to a return of `null!`. If the type constructor is being generated into a .d.ts file,
   // it needs no body.
   const body = `{ return null!; }`;
-  const typeParams = typeParametersWithDefaultTypes(node.typeParameters);
+  const typeParams = typeParametersWithDefaultTypes(tcbTypeParams);
 
   // Create the type constructor method declaration.
   return `static ${meta.fnName}${typeParams}(${initParam}): ${typeRefWithGenerics} ${body}`;
@@ -113,7 +107,6 @@ export function generateInlineTypeCtor(
 function constructTypeCtorParameter(
   env: ReferenceEmitEnvironment,
   meta: TypeCtorMetadata,
-  sourceFile: ts.SourceFile,
   typeRef: string,
   typeRefWithGenerics: string,
 ): string {
@@ -132,15 +125,15 @@ function constructTypeCtorParameter(
   const coercedKeys: string[] = [];
   const signalInputKeys: string[] = [];
 
-  for (const {classPropertyName, transform, isSignal} of meta.fields.inputs) {
+  for (const {classPropertyName, transformType, isSignal} of meta.fields.inputs) {
     if (isSignal) {
       signalInputKeys.push(quoteAndEscape(classPropertyName));
     } else if (!meta.coercedInputFields.has(classPropertyName)) {
       plainKeys.push(quoteAndEscape(classPropertyName));
     } else {
       const coercionType =
-        transform != null
-          ? tempPrint(transform.type.node, sourceFile)
+        transformType !== undefined
+          ? transformType
           : `typeof ${typeRef}.ngAcceptInputType_${classPropertyName}`;
 
       coercedKeys.push(`${classPropertyName}: ${coercionType}`);
@@ -180,14 +173,12 @@ function constructTypeCtorParameter(
   return `init: ${initType}`;
 }
 
-function generateGenericArgs(
-  typeParameters: ReadonlyArray<ts.TypeParameterDeclaration> | undefined,
-): string {
+function generateGenericArgs(typeParameters: ReadonlyArray<TcbTypeParameter> | undefined): string {
   if (typeParameters === undefined || typeParameters.length === 0) {
     return '';
   }
 
-  return `<${typeParameters.map((param) => param.name.text).join(', ')}>`;
+  return `<${typeParameters.map((param) => param.name).join(', ')}>`;
 }
 
 export function requiresInlineTypeCtor(
@@ -245,22 +236,11 @@ export function requiresInlineTypeCtor(
  * This correctly infers `T` as `any`, and therefore `_t3` as `NgFor<any>`.
  */
 function typeParametersWithDefaultTypes(
-  params: ReadonlyArray<ts.TypeParameterDeclaration> | undefined,
+  params: ReadonlyArray<TcbTypeParameter> | undefined,
 ): string {
   if (params === undefined || params.length === 0) {
     return '';
   }
 
-  const paramStrings = params.map((param) => {
-    const constraint = param.constraint
-      ? ` extends ${tempPrint(param.constraint, param.getSourceFile())}`
-      : '';
-    const defaultValue = ` = ${
-      param.default ? tempPrint(param.default, param.getSourceFile()) : 'any'
-    }`;
-
-    return `${param.name.text}${constraint}${defaultValue}`;
-  });
-
-  return `<${paramStrings.join(', ')}>`;
+  return `<${params.map((param) => param.representationWithDefault).join(', ')}>`;
 }

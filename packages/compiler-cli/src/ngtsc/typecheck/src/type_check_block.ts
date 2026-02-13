@@ -8,14 +8,16 @@
 
 import ts from 'typescript';
 
-import {Reference} from '../../imports';
-import {ClassDeclaration} from '../../reflection';
-import {TypeCheckBlockMetadata} from '../api';
+import {
+  TcbComponentMetadata,
+  TcbTypeCheckBlockMetadata,
+  TcbTypeParameter,
+  TypeCheckId,
+} from '../api';
 
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
-import {TypeParameterEmitter} from './type_parameter_emitter';
 import {createHostBindingsBlockGuard} from './host_bindings';
 import {Context, TcbGenericContextBehavior} from './ops/context';
 import {Scope} from './ops/scope';
@@ -47,9 +49,9 @@ import {getStatementsBlock, tempPrint} from './ops/codegen';
  */
 export function generateTypeCheckBlock(
   env: Environment,
-  ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+  component: TcbComponentMetadata,
   name: ts.Identifier,
-  meta: TypeCheckBlockMetadata,
+  meta: TcbTypeCheckBlockMetadata,
   domSchemaChecker: DomSchemaChecker,
   oobRecorder: OutOfBandDiagnosticRecorder,
   genericContextBehavior: TcbGenericContextBehavior,
@@ -65,17 +67,17 @@ export function generateTypeCheckBlock(
     meta.isStandalone,
     meta.preserveWhitespaces,
   );
-  const ctxRawType = env.referenceType(ref);
+  const ctxRawType = env.referenceTcbType(component.ref);
   if (!ts.isTypeReferenceNode(ctxRawType)) {
     throw new Error(
-      `Expected TypeReferenceNode when referencing the ctx param for ${ref.debugName}`,
+      `Expected TypeReferenceNode when referencing the ctx param for ${component.ref.name}`,
     );
   }
 
-  let typeParameters: ts.TypeParameterDeclaration[] | undefined = undefined;
-  let typeArguments: ts.TypeNode[] | undefined = undefined;
+  let typeParameters: TcbTypeParameter[] | undefined = undefined;
+  let typeArguments: string[] | undefined = undefined;
 
-  if (ref.node.typeParameters !== undefined) {
+  if (component.typeParameters !== undefined) {
     if (!env.config.useContextGenericType) {
       genericContextBehavior = TcbGenericContextBehavior.FallbackToAny;
     }
@@ -83,22 +85,18 @@ export function generateTypeCheckBlock(
     switch (genericContextBehavior) {
       case TcbGenericContextBehavior.UseEmitter:
         // Guaranteed to emit type parameters since we checked that the class has them above.
-        typeParameters = new TypeParameterEmitter(ref.node.typeParameters, env.reflector).emit(
-          (typeRef) => env.referenceType(typeRef),
-        )!;
-        typeArguments = typeParameters.map((param) =>
-          ts.factory.createTypeReferenceNode(param.name),
-        );
+        const emittedParams = component.typeParameters || [];
+        typeParameters = emittedParams;
+        typeArguments = typeParameters!.map((param) => param.name);
         break;
       case TcbGenericContextBehavior.CopyClassNodes:
-        typeParameters = [...ref.node.typeParameters];
-        typeArguments = typeParameters.map((param) =>
-          ts.factory.createTypeReferenceNode(param.name),
-        );
+        const copiedParams = component.typeParameters ? [...component.typeParameters] : [];
+        typeParameters = copiedParams;
+        typeArguments = typeParameters!.map((param) => param.name);
         break;
       case TcbGenericContextBehavior.FallbackToAny:
-        typeArguments = ref.node.typeParameters.map(() =>
-          ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+        typeArguments = Array.from({length: component.typeParameters?.length ?? 0}).map(
+          () => 'any',
         );
         break;
     }
@@ -108,11 +106,11 @@ export function generateTypeCheckBlock(
   const typeParamsStr =
     typeParameters === undefined || typeParameters.length === 0
       ? ''
-      : `<${typeParameters.map((p) => tempPrint(p, sourceFile)).join(', ')}>`;
+      : `<${typeParameters.map((p) => p.representation).join(', ')}>`;
   const typeArgsStr =
     typeArguments === undefined || typeArguments.length === 0
       ? ''
-      : `<${typeArguments.map((p) => tempPrint(p, sourceFile)).join(', ')}>`;
+      : `<${typeArguments.join(', ')}>`;
   const typeRef = ts.isIdentifier(ctxRawType.typeName)
     ? ctxRawType.typeName.text
     : tempPrint(ctxRawType.typeName, sourceFile);
