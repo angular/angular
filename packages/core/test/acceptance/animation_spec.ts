@@ -2373,7 +2373,7 @@ describe('Animation', () => {
   });
 
   describe('animation element duplication', () => {
-    it('should not duplicate elements when using dynamic components', async () => {
+    it('should not duplicate elements when using dynamic components in overlay-like containers', fakeAsync(() => {
       const animateStyles = `
         .example-menu {
           display: inline-flex;
@@ -2415,6 +2415,7 @@ describe('Animation', () => {
         @ViewChild('menu') menuTpl!: TemplateRef<unknown>;
         vcr = inject(ViewContainerRef);
         opened = false;
+        private currentPane: HTMLElement | null = null;
 
         toggle() {
           if (this.opened) {
@@ -2426,12 +2427,23 @@ describe('Animation', () => {
 
         open() {
           this.opened = true;
-          this.vcr.createEmbeddedView(this.menuTpl);
+          const viewRef = this.vcr.createEmbeddedView(this.menuTpl);
+          // Simulate CDK DomPortalOutlet: after creating the view, move
+          // the root nodes to a new "overlay pane" div, just like CDK
+          // Overlay does with outletElement.appendChild(rootNode).
+          const pane = document.createElement('div');
+          pane.className = 'overlay-pane';
+          document.body.appendChild(pane);
+          for (const node of viewRef.rootNodes) {
+            pane.appendChild(node);
+          }
+          this.currentPane = pane;
         }
 
         close() {
           this.opened = false;
           this.vcr.clear();
+          // CDK Overlay may or may not remove the pane immediately
         }
       }
 
@@ -2449,22 +2461,36 @@ describe('Animation', () => {
 
       const cmp = fixture.debugElement.query(By.css('dynamic-menu')).componentInstance;
 
-      const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+      // Query from document since overlay panes are appended to body
+      const countMenus = () => document.querySelectorAll('.example-menu').length;
 
-      // Toggle the menu quickly multiple times
+      // Helper to complete the leave animation for all leaving menu elements
+      const finishLeaveAnimations = () => {
+        tickAnimationFrames(1);
+        document.querySelectorAll('.example-menu.close').forEach((el) => {
+          el.dispatchEvent(new AnimationEvent('animationend', {animationName: 'open'}));
+        });
+        tick();
+      };
+
+      // Simulate rapid clicking with CD between each toggle
       for (let i = 0; i < 20; i++) {
         cmp.toggle();
-        // Wait 1ms to allow some logic to run but less than animation duration
-        await delay(1);
         fixture.detectChanges();
+        tickAnimationFrames(1);
+        // At no point should there be more than one menu element
+        expect(countMenus()).toBeLessThanOrEqual(1);
       }
 
-      // Finish remaining animations (wait 100ms real time which is > 10ms animation)
-      await delay(200);
+      // Complete any remaining leave animations
+      finishLeaveAnimations();
       fixture.detectChanges();
 
-      const menus = fixture.debugElement.nativeElement.querySelectorAll('.example-menu');
-      expect(menus.length).toBe(0);
-    });
+      // 20 toggles (even) = closed = 0 elements
+      expect(countMenus()).toBe(0);
+
+      // Clean up overlay panes
+      document.querySelectorAll('.overlay-pane').forEach((p) => p.remove());
+    }));
   });
 });

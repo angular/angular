@@ -82,6 +82,7 @@ import {assertTNodeType} from './node_assert';
 import {profiler} from './profiler';
 import {ProfilerEvent} from '../../primitives/devtools';
 import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
+import {cancelLeavingNodes, trackLeavingNodes} from '../animation/utils';
 import {Injector} from '../di';
 import {maybeQueueEnterAnimation, runLeaveAnimationsWithCallback} from './node_animations';
 
@@ -144,7 +145,11 @@ function applyToElementOrContainer(
     } else if (action === WalkTNodeTreeAction.Insert && parent !== null) {
       maybeQueueEnterAnimation(parentLView, parent, tNode, injector);
       nativeInsertBefore(renderer, parent, rNode, beforeNode || null, true);
+      cancelLeavingNodes(tNode, rNode as HTMLElement);
     } else if (action === WalkTNodeTreeAction.Detach) {
+      if (parentLView?.[ANIMATIONS]?.leave?.has(tNode.index)) {
+        trackLeavingNodes(tNode, rNode as HTMLElement);
+      }
       runLeaveAnimationsWithCallback(
         parentLView,
         tNode,
