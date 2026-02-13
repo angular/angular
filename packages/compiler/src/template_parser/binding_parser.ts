@@ -7,6 +7,7 @@
  */
 
 import {SecurityContext} from '../core';
+import {CssSelector} from '../directive_matching';
 import {
   AbsoluteSourceSpan,
   AST,
@@ -35,7 +36,6 @@ import {mergeNsAndName} from '../ml_parser/tags';
 import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
-import {CssSelector} from '../directive_matching';
 import {splitAtColon, splitAtPeriod} from '../util';
 
 const PROPERTY_PARTS_SEPARATOR = '.';
@@ -45,6 +45,7 @@ const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
 const TEMPLATE_ATTR_PREFIX = '*';
 const LEGACY_ANIMATE_PROP_PREFIX = 'animate-';
+const MODIFIERS = new Set(['prevent', 'debounce', 'stop']);
 
 export interface HostProperties {
   [key: string]: string;
@@ -746,7 +747,7 @@ export class BindingParser {
     keySpan: ParseSourceSpan,
   ): void {
     // long format: 'target: eventName'
-    const {eventName, target} = this.parseEventListenerName(name);
+    let {eventName, target} = this.parseEventListenerName(name);
     const prevErrorCount = this.errors.length;
     const ast = this._parseAction(expression, handlerSpan);
     const isValid = this.errors.length === prevErrorCount;
@@ -766,8 +767,29 @@ export class BindingParser {
       eventType = ParsedEventType.Animation;
     }
 
+    let modifiers: string[] = [];
+    if (eventType !== ParsedEventType.Animation) {
+      const parts = eventName.split('.');
+      const hasModifier = parts
+        .slice(1)
+        .some((modifier) => MODIFIERS.has(modifier) || !isNaN(Number(modifier)));
+      if (hasModifier) {
+        eventName = parts[0];
+        modifiers = parts.filter((modifier) => MODIFIERS.has(modifier) || !isNaN(Number(modifier)));
+      }
+    }
+
     targetEvents.push(
-      new ParsedEvent(eventName, target, eventType, ast, sourceSpan, handlerSpan, keySpan),
+      new ParsedEvent(
+        eventName,
+        target,
+        eventType,
+        ast,
+        sourceSpan,
+        handlerSpan,
+        keySpan,
+        modifiers,
+      ),
     );
     // Don't detect directives for event names for now,
     // so don't add the event name to the matchableAttrs

@@ -9,8 +9,8 @@
 import {
   CommonModule,
   DOCUMENT,
-  XhrFactory,
   ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
+  XhrFactory,
 } from '@angular/common';
 import {
   ApplicationConfig,
@@ -18,7 +18,10 @@ import {
   ApplicationRef,
   createPlatformFactory,
   ErrorHandler,
+  inject,
   InjectionToken,
+  ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
+  ɵinternalCreateApplication as internalCreateApplication,
   NgModule,
   PLATFORM_ID,
   PLATFORM_INITIALIZER,
@@ -26,17 +29,14 @@ import {
   PlatformRef,
   Provider,
   RendererFactory2,
+  ɵresolveComponentResources as resolveComponentResources,
+  ɵRuntimeError as RuntimeError,
   StaticProvider,
   Testability,
-  Type,
-  ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
-  ɵinternalCreateApplication as internalCreateApplication,
-  ɵRuntimeError as RuntimeError,
-  ɵsetDocument,
   ɵTESTABILITY as TESTABILITY,
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
-  inject,
-  ɵresolveComponentResources as resolveComponentResources,
+  Type,
+  ɵsetDocument,
 } from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -45,7 +45,6 @@ import {BrowserXhr} from './browser/xhr';
 import {DomRendererFactory2} from './dom/dom_renderer';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
-import {KeyEventsPlugin} from './dom/events/key_events';
 import {SharedStylesHost} from './dom/shared_styles_host';
 import {RuntimeErrorCode} from './errors';
 
@@ -264,7 +263,6 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
     useClass: DomEventsPlugin,
     multi: true,
   },
-  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
   DomRendererFactory2,
   SharedStylesHost,
   EventManager,

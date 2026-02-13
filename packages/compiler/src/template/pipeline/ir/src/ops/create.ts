@@ -897,6 +897,8 @@ export interface ListenerOp extends Op<CreateOp> {
    */
   eventTarget: string | null;
 
+  modifiers: string[] | null;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -913,6 +915,7 @@ export function createListenerOp(
   eventTarget: string | null,
   hostListener: boolean,
   sourceSpan: ParseSourceSpan,
+  modifiers: string[] | null = null,
 ): ListenerOp {
   const handlerList = new OpList<UpdateOp>();
   handlerList.push(handlerOps);
@@ -930,6 +933,7 @@ export function createListenerOp(
     legacyAnimationPhase: legacyAnimationPhase,
     eventTarget,
     sourceSpan,
+    modifiers,
     ...NEW_OP,
   };
 }
@@ -1047,6 +1051,8 @@ export interface TwoWayListenerOp extends Op<CreateOp> {
    */
   handlerFnName: string | null;
 
+  modifiers: string[] | null;
+
   sourceSpan: ParseSourceSpan;
 }
 
@@ -1060,6 +1066,7 @@ export function createTwoWayListenerOp(
   tag: string | null,
   handlerOps: Array<UpdateOp>,
   sourceSpan: ParseSourceSpan,
+  modifiers: string[] | null = null,
 ): TwoWayListenerOp {
   const handlerList = new OpList<UpdateOp>();
   handlerList.push(handlerOps);
@@ -1072,6 +1079,7 @@ export function createTwoWayListenerOp(
     handlerOps: handlerList,
     handlerFnName: null,
     sourceSpan,
+    modifiers,
     ...NEW_OP,
   };
 }

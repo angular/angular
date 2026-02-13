@@ -769,8 +769,10 @@ class HtmlAstToIvyAst implements html.Visitor {
       } else if (bindParts[KW_BINDON_IDX]) {
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_BINDON_IDX], identifier);
+        const parts = identifier.split('.');
+        const propName = parts[0];
         this.bindingParser.parsePropertyBinding(
-          identifier,
+          propName,
           value,
           false,
           true,
@@ -829,8 +831,10 @@ class HtmlAstToIvyAst implements html.Visitor {
       const identifier = name.substring(delims.start.length, name.length - delims.end.length);
       const keySpan = createKeySpan(srcSpan, delims.start, identifier);
       if (delims.start === BINDING_DELIMS.BANANA_BOX.start) {
+        const parts = identifier.split('.');
+        const propName = parts[0];
         this.bindingParser.parsePropertyBinding(
-          identifier,
+          propName,
           value,
           false,
           true,
@@ -1105,8 +1109,14 @@ class HtmlAstToIvyAst implements html.Visitor {
     absoluteOffset: number,
   ) {
     const events: ParsedEvent[] = [];
+    let eventName = `${name}Change`;
+    const parts = name.split('.');
+    if (parts.length > 1) {
+      eventName = `${parts[0]}Change.${parts.slice(1).join('.')}`;
+    }
+
     this.bindingParser.parseEvent(
-      `${name}Change`,
+      eventName,
       expression,
       /* isAssignmentEvent */ true,
       sourceSpan,

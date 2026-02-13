@@ -77,10 +77,20 @@ export function ɵɵtwoWayBindingSet<T>(target: unknown, value: T): boolean {
 export function ɵɵtwoWayListener(
   eventName: string,
   listenerFn: EventCallback,
+  modifiers?: ((fn: any) => any)[],
 ): typeof ɵɵtwoWayListener {
   const lView = getLView<{} | null>();
   const tView = getTView();
   const tNode = getCurrentTNode()!;
-  listenerInternal(tView, lView, lView[RENDERER], tNode, eventName, listenerFn);
+  listenerInternal(
+    tView,
+    lView,
+    lView[RENDERER],
+    tNode,
+    eventName,
+    listenerFn,
+    undefined,
+    modifiers,
+  );
   return ɵɵtwoWayListener;
 }

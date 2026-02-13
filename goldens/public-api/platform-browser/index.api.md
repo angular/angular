@@ -162,6 +162,23 @@ export enum HydrationFeatureKind {
 }
 
 // @public
+export class KeyEventsPlugin extends EventManagerPlugin {
+    constructor(doc: any);
+    addEventListener(element: HTMLElement, eventName: string, handler: Function, options?: ListenerOptions): Function;
+    static eventCallback(fullKey: string, handler: Function, zone: NgZone): Function;
+    static matchEventFullKeyCode(event: KeyboardEvent, fullKeyCode: string): boolean;
+    static parseEventName(eventName: string): {
+        fullKey: string;
+        domEventName: string;
+    } | null;
+    supports(eventName: string): boolean;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<KeyEventsPlugin, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<KeyEventsPlugin>;
+}
+
+// @public
 export class Meta {
     constructor(_doc: any);
     addTag(tag: MetaDefinition, forceCreation?: boolean): HTMLMetaElement | null;

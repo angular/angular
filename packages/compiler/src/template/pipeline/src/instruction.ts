@@ -200,11 +200,41 @@ export function listener(
   eventTargetResolver: o.ExternalReference | null,
   syntheticHost: boolean,
   sourceSpan: ParseSourceSpan,
+  modifiers: string[] | null = null,
 ): ir.CreateOp {
   const args = [o.literal(name), handlerFn];
-  if (eventTargetResolver !== null) {
+  if (eventTargetResolver) {
     args.push(o.importExpr(eventTargetResolver));
+  } else if (modifiers && modifiers.length > 0) {
+    args.push(o.literal(undefined));
   }
+
+  if (modifiers && modifiers.length > 0) {
+    const modifierExprs: o.Expression[] = [];
+    for (let i = 0; i < modifiers.length; i++) {
+      const m = modifiers[i];
+      if (m === 'stop') {
+        modifierExprs.push(o.importExpr(Identifiers.stop));
+      } else if (m === 'prevent') {
+        modifierExprs.push(o.importExpr(Identifiers.prevent));
+      } else if (m.startsWith('key:')) {
+        modifierExprs.push(o.importExpr(Identifiers.key).callFn([o.literal(m.slice(4))]));
+      } else if (m === 'debounce') {
+        // Look ahead for delay
+        let delay = 0;
+        if (i + 1 < modifiers.length) {
+          const d = parseInt(modifiers[i + 1]);
+          if (!isNaN(d)) {
+            delay = d;
+            i++; // consume argument
+          }
+        }
+        modifierExprs.push(o.importExpr(Identifiers.debounce).callFn([o.literal(delay)]));
+      }
+    }
+    args.push(o.literalArr(modifierExprs));
+  }
+
   return call(
     syntheticHost ? Identifiers.syntheticHostListener : Identifiers.listener,
     args,
@@ -220,8 +250,35 @@ export function twoWayListener(
   name: string,
   handlerFn: o.Expression,
   sourceSpan: ParseSourceSpan,
+  modifiers: string[] | null = null,
 ): ir.CreateOp {
-  return call(Identifiers.twoWayListener, [o.literal(name), handlerFn], sourceSpan);
+  const args = [o.literal(name), handlerFn];
+  if (modifiers && modifiers.length > 0) {
+    const modifierExprs: o.Expression[] = [];
+    for (let i = 0; i < modifiers.length; i++) {
+      const m = modifiers[i];
+      if (m === 'stop') {
+        modifierExprs.push(o.importExpr(Identifiers.stop));
+      } else if (m === 'prevent') {
+        modifierExprs.push(o.importExpr(Identifiers.prevent));
+      } else if (m.startsWith('key:')) {
+        modifierExprs.push(o.importExpr(Identifiers.key).callFn([o.literal(m.slice(4))]));
+      } else if (m === 'debounce') {
+        // Look ahead for delay
+        let delay = 0;
+        if (i + 1 < modifiers.length) {
+          const d = parseInt(modifiers[i + 1]);
+          if (!isNaN(d)) {
+            delay = d;
+            i++; // consume argument
+          }
+        }
+        modifierExprs.push(o.importExpr(Identifiers.debounce).callFn([o.literal(delay)]));
+      }
+    }
+    args.push(o.literalArr(modifierExprs));
+  }
+  return call(Identifiers.twoWayListener, args, sourceSpan);
 }
 
 export function pipe(slot: number, name: string): ir.CreateOp {
@@ -768,10 +825,40 @@ export function domListener(
   handlerFn: o.Expression,
   eventTargetResolver: o.ExternalReference | null,
   sourceSpan: ParseSourceSpan,
+  modifiers: string[] | null = null,
 ): ir.CreateOp {
   const args = [o.literal(name), handlerFn];
-  if (eventTargetResolver !== null) {
+  if (eventTargetResolver) {
     args.push(o.importExpr(eventTargetResolver));
+  } else if (modifiers && modifiers.length > 0) {
+    args.push(o.literal(undefined));
+  }
+
+  if (modifiers && modifiers.length > 0) {
+    const modifierExprs: o.Expression[] = [];
+    for (let i = 0; i < modifiers.length; i++) {
+      const m = modifiers[i];
+      if (m === 'stop') {
+        modifierExprs.push(o.importExpr(Identifiers.stop));
+      } else if (m === 'prevent') {
+        modifierExprs.push(o.importExpr(Identifiers.prevent));
+      } else if (m.startsWith('key:')) {
+        const key = m.substring(4);
+        modifierExprs.push(o.importExpr(Identifiers.key).callFn([o.literal(key)]));
+      } else if (m === 'debounce') {
+        // Look ahead for delay
+        let delay = 0;
+        if (i + 1 < modifiers.length) {
+          const d = parseInt(modifiers[i + 1]);
+          if (!isNaN(d)) {
+            delay = d;
+            i++; // consume argument
+          }
+        }
+        modifierExprs.push(o.importExpr(Identifiers.debounce).callFn([o.literal(delay)]));
+      }
+    }
+    args.push(o.literalArr(modifierExprs));
   }
   return call(Identifiers.domListener, args, sourceSpan);
 }

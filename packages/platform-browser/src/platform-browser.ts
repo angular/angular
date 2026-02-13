@@ -21,6 +21,7 @@ export {By} from './dom/debug/by';
 export {REMOVE_STYLES_ON_COMPONENT_DESTROY} from './dom/dom_renderer';
 export {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 export {EventManagerPlugin} from './dom/events/event_manager_plugin';
+export {KeyEventsPlugin} from './dom/events/key_events';
 export {
   HAMMER_GESTURE_CONFIG,
   HAMMER_LOADER,

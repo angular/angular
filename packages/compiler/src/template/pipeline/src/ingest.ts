@@ -199,6 +199,66 @@ export function ingestHostAttribute(
   job.root.update.push(attrBinding);
 }
 
+const MODIFIER_KEYS = new Set(['alt', 'control', 'meta', 'shift']);
+const EVENT_MODIFIERS = new Set(['stop', 'prevent', 'debounce']);
+
+function parseListenerName(name: string): {eventName: string; modifiers: string[]} {
+  const parts = name.split('.');
+  if (parts.length === 1) {
+    return {eventName: name, modifiers: []};
+  }
+
+  const domEventName = parts[0];
+  if (domEventName === 'keydown' || domEventName === 'keyup') {
+    parts.shift(); // remove domEventName
+    const key = parts.pop()!;
+    let isCode = false;
+    const keyModifiers: string[] = [];
+
+    parts.forEach((p) => {
+      if (p === 'code') {
+        isCode = true;
+      } else if (MODIFIER_KEYS.has(p)) {
+        keyModifiers.push(p);
+      }
+    });
+
+    keyModifiers.sort();
+
+    let fullKey = '';
+    if (isCode) {
+      fullKey = 'code.';
+    }
+    if (keyModifiers.length > 0) {
+      fullKey += keyModifiers.join('.') + '.';
+    }
+    fullKey += key === 'esc' ? 'escape' : key;
+
+    return {eventName: domEventName, modifiers: [`key:${fullKey.toLowerCase()}`]};
+  }
+
+  const eventNameParts = [domEventName];
+  const modifiers: string[] = [];
+
+  for (let i = 1; i < parts.length; i++) {
+    const part = parts[i];
+    if (EVENT_MODIFIERS.has(part)) {
+      modifiers.push(part);
+      if (part === 'debounce' && i + 1 < parts.length) {
+        const nextPart = parts[i + 1];
+        if (!isNaN(parseInt(nextPart))) {
+          modifiers.push(nextPart);
+          i++;
+        }
+      }
+    } else {
+      eventNameParts.push(part);
+    }
+  }
+
+  return {eventName: eventNameParts.join('.'), modifiers};
+}
+
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
   let eventBinding: ir.CreateOp;
   if (event.type === e.ParsedEventType.Animation) {
@@ -219,16 +279,20 @@ export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedE
         ? [null, event.targetOrPhase]
         : [event.targetOrPhase, null];
 
+    const {eventName, modifiers} = parseListenerName(event.name);
+    // TODO: support modifiers in host bindings if they are parsed into event.modifiers
+
     eventBinding = ir.createListenerOp(
       job.root.xref,
       new ir.SlotHandle(),
-      event.name,
+      eventName,
       null,
       makeListenerHandlerOps(job.root, event.handler, event.handlerSpan),
       phase,
       target,
       true,
       event.sourceSpan,
+      modifiers,
     );
   }
   job.root.create.push(eventBinding);
@@ -1380,6 +1444,7 @@ function ingestElementBindings(
           op.tag,
           makeTwoWayListenerHandlerOps(unit, output.handler, output.handlerSpan),
           output.sourceSpan,
+          output.modifiers,
         ),
       );
     } else if (output.type === e.ParsedEventType.Animation) {
@@ -1397,17 +1462,22 @@ function ingestElementBindings(
         ),
       );
     } else {
+      const {eventName, modifiers} = parseListenerName(
+        output.name +
+          (output.modifiers && output.modifiers.length > 0 ? '.' + output.modifiers.join('.') : ''),
+      );
       unit.create.push(
         ir.createListenerOp(
           op.xref,
           op.handle,
-          output.name,
+          eventName,
           op.tag,
           makeListenerHandlerOps(unit, output.handler, output.handlerSpan),
           output.phase,
           output.target,
           false,
           output.sourceSpan,
+          modifiers,
         ),
       );
     }
@@ -1532,17 +1602,33 @@ function ingestTemplateBindings(
           ),
         );
       } else {
+        let inputName = output.name;
+        let outputModifiers = output.modifiers;
+        // If it's a key event, merge modifiers into name string so parsing logic works
+        if (
+          (output.name === 'keydown' || output.name === 'keyup') &&
+          output.modifiers &&
+          output.modifiers.length > 0
+        ) {
+          inputName += '.' + output.modifiers.join('.');
+          // Clear modifiers because they are now part of the name and will be parsed out
+          outputModifiers = [];
+        }
+
+        const {eventName, modifiers} = parseListenerName(inputName);
+        const allModifiers = Array.from(new Set((modifiers || []).concat(outputModifiers || [])));
         unit.create.push(
           ir.createListenerOp(
             op.xref,
             op.handle,
-            output.name,
+            eventName,
             op.tag,
             makeListenerHandlerOps(unit, output.handler, output.handlerSpan),
             output.phase,
             output.target,
             false,
             output.sourceSpan,
+            allModifiers,
           ),
         );
       }

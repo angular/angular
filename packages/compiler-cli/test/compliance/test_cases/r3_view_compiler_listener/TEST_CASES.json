@@ -356,6 +356,21 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should create keydown.enter listener",
+      "inputFiles": ["key_events.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "key_events_template.js",
+              "generated": "key_events.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

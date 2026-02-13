@@ -10,7 +10,6 @@ import {forwardRef, resolveForwardRef} from '../../di/forward_ref';
 import {ɵɵinject, ɵɵinvalidFactoryDep} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
 import {registerNgModuleType} from '../../linker/ng_module_registration';
-import * as iframe_attrs_validation from '../../sanitization/iframe_attrs_validation';
 import * as sanitization from '../../sanitization/sanitization';
 import * as r3 from '../index';
 
@@ -197,6 +196,11 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵtwoWayProperty': r3.ɵɵtwoWayProperty,
   'ɵɵtwoWayBindingSet': r3.ɵɵtwoWayBindingSet,
   'ɵɵtwoWayListener': r3.ɵɵtwoWayListener,
+
+  'ɵɵprevent': r3.ɵɵprevent,
+  'ɵɵstop': r3.ɵɵstop,
+  'ɵɵdebounce': r3.ɵɵdebounce,
+  'ɵɵkey': r3.ɵɵkey,
 
   'ɵɵreplaceMetadata': r3.ɵɵreplaceMetadata,
   'ɵɵgetReplaceMetadataURL': r3.ɵɵgetReplaceMetadataURL,

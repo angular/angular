@@ -46,6 +46,8 @@ const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} =
 
 /**
  * A browser plug-in that provides support for handling of key events in Angular.
+ *
+ * @publicApi
  */
 @Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {

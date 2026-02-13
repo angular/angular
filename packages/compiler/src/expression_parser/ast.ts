@@ -885,6 +885,7 @@ export class ParsedEvent {
     sourceSpan: ParseSourceSpan,
     handlerSpan: ParseSourceSpan,
     keySpan: ParseSourceSpan,
+    modifiers?: string[],
   );
 
   constructor(
@@ -895,6 +896,7 @@ export class ParsedEvent {
     sourceSpan: ParseSourceSpan,
     handlerSpan: ParseSourceSpan,
     keySpan: ParseSourceSpan,
+    modifiers?: string[],
   );
 
   constructor(
@@ -905,6 +907,7 @@ export class ParsedEvent {
     public sourceSpan: ParseSourceSpan,
     public handlerSpan: ParseSourceSpan,
     readonly keySpan: ParseSourceSpan,
+    public modifiers: string[] = [],
   ) {}
 }
 

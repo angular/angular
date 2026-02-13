@@ -14,7 +14,7 @@ import {parseR3 as parse} from './view/util';
 
 // Transform an IVY AST to a flat list of nodes to ease testing
 class R3AstHumanizer implements t.Visitor<void> {
-  result: (string | number | null)[][] = [];
+  result: (string | number | null | string[])[][] = [];
 
   visitElement(element: t.Element) {
     const res = ['Element', element.name];
@@ -76,7 +76,17 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitBoundEvent(event: t.BoundEvent) {
-    this.result.push(['BoundEvent', event.type, event.name, event.target, unparse(event.handler)]);
+    const result: any[] = [
+      'BoundEvent',
+      event.type,
+      event.name,
+      event.target,
+      unparse(event.handler),
+    ];
+    if (event.modifiers.length > 0) {
+      result.push(event.modifiers);
+    }
+    this.result.push(result);
   }
 
   visitText(text: t.Text) {
@@ -571,6 +581,36 @@ describe('R3 template transform', () => {
       expectFromHtml('<div (window:event)="v"></div>').toEqual([
         ['Element', 'div'],
         ['BoundEvent', ParsedEventType.Regular, 'event', 'window', 'v'],
+      ]);
+    });
+
+    it('should parse bound events with known modifiers', () => {
+      expectFromHtml('<div (click.prevent)="v"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', ParsedEventType.Regular, 'click', null, 'v', ['prevent']],
+      ]);
+      expectFromHtml('<div (keypress.debounce)="v"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', ParsedEventType.Regular, 'keypress', null, 'v', ['debounce']],
+      ]);
+      expectFromHtml('<div (click.debounce.300)="v"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', ParsedEventType.Regular, 'click', null, 'v', ['debounce', '300']],
+      ]);
+      expectFromHtml('<div (click.stop)="v"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', ParsedEventType.Regular, 'click', null, 'v', ['stop']],
+      ]);
+      expectFromHtml('<div (stop)="v"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', ParsedEventType.Regular, 'stop', null, 'v'],
+      ]);
+    });
+
+    it('should not treat unknown modifiers as modifiers', () => {
+      expectFromHtml('<div (click.foo)="v"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', ParsedEventType.Regular, 'click.foo', null, 'v'],
       ]);
     });
 
