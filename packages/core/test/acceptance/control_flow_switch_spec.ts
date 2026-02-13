@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {expectScreenText} from '@angular/private/testing';
+import {waitFor} from '@testing-library/dom';
+
 import {ChangeDetectorRef, Component, inject, Pipe, PipeTransform, signal} from '../../src/core';
 import {TestBed} from '../../testing';
-import {waitFor} from '@testing-library/dom';
 
 // Basic shared pipe used during testing.
 @Pipe({name: 'multiply', pure: true})
@@ -40,13 +42,13 @@ describe('control flow - switch', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 0 '));
+    await expectScreenText(' case 0 ');
 
     fixture.componentInstance.case.set(1);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 1 '));
+    await expectScreenText(' case 1 ');
 
     fixture.componentInstance.case.set(5);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' default '));
+    await expectScreenText(' default ');
   });
 
   it('should be able to use a pipe in the switch expression', async () => {
@@ -71,13 +73,13 @@ describe('control flow - switch', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 0 '));
+    await expectScreenText(' case 0 ');
 
     fixture.componentInstance.case.set(1);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 2 '));
+    await expectScreenText(' case 2 ');
 
     fixture.componentInstance.case.set(5);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' default '));
+    await expectScreenText(' default ');
   });
 
   it('should be able to use a pipe in the case expression', async () => {
@@ -102,13 +104,13 @@ describe('control flow - switch', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' default '));
+    await expectScreenText(' default ');
 
     fixture.componentInstance.case.set(4);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 4 '));
+    await expectScreenText(' case 4 ');
 
     fixture.componentInstance.case.set(2);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 2 '));
+    await expectScreenText(' case 2 ');
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in switch blocks', async () => {
@@ -138,8 +140,8 @@ describe('control flow - switch', () => {
       case = signal(1);
     }
 
-    const fixture = TestBed.createComponent(TestComponent);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' One '));
+    TestBed.createComponent(TestComponent);
+    await expectScreenText(' One ');
   });
 
   it('should project @switch cases into appropriate slots when selectors are used for all cases', async () => {
@@ -173,25 +175,13 @@ describe('control flow - switch', () => {
     }
 
     const fixture = TestBed.createComponent(App);
-    await waitFor(() =>
-      throwUnless(fixture.nativeElement.textContent).toBe(
-        'case 1: (value 1), case 2: (), case 3: ()',
-      ),
-    );
+    await expectScreenText('case 1: (value 1), case 2: (), case 3: ()');
 
     fixture.componentInstance.value.set(2);
-    await waitFor(() =>
-      throwUnless(fixture.nativeElement.textContent).toBe(
-        'case 1: (), case 2: (value 2), case 3: ()',
-      ),
-    );
+    await expectScreenText('case 1: (), case 2: (value 2), case 3: ()');
 
     fixture.componentInstance.value.set(3);
-    await waitFor(() =>
-      throwUnless(fixture.nativeElement.textContent).toBe(
-        'case 1: (), case 2: (), case 3: (value 3)',
-      ),
-    );
+    await expectScreenText('case 1: (), case 2: (), case 3: (value 3)');
   });
 
   it('should project @switch cases into appropriate slots when selectors are used for some cases', async () => {
@@ -225,25 +215,13 @@ describe('control flow - switch', () => {
     }
 
     const fixture = TestBed.createComponent(App);
-    await waitFor(() =>
-      throwUnless(fixture.nativeElement.textContent).toBe(
-        'case 1: (value 1), case 2: (), case 3: ()',
-      ),
-    );
+    await expectScreenText('case 1: (value 1), case 2: (), case 3: ()');
 
     fixture.componentInstance.value.set(2);
-    await waitFor(() =>
-      throwUnless(fixture.nativeElement.textContent).toBe(
-        'case 1: (), case 2: (value 2), case 3: ()',
-      ),
-    );
+    await expectScreenText('case 1: (), case 2: (value 2), case 3: ()');
 
     fixture.componentInstance.value.set(3);
-    await waitFor(() =>
-      throwUnless(fixture.nativeElement.textContent).toBe(
-        'case 1: (), case 2: (), case 3: (value 3)',
-      ),
-    );
+    await expectScreenText('case 1: (), case 2: (), case 3: (value 3)');
   });
 
   it('should support consecutive cases for the same block', async () => {
@@ -268,16 +246,16 @@ describe('control flow - switch', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 0 or 1 '));
+    await expectScreenText(' case 0 or 1 ');
 
     fixture.componentInstance.case.set(1);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 0 or 1 '));
+    await expectScreenText(' case 0 or 1 ');
 
     fixture.componentInstance.case.set(2);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 2 '));
+    await expectScreenText(' case 2 ');
 
     fixture.componentInstance.case.set(3);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' default '));
+    await expectScreenText(' default ');
   });
 
   it('should support a case following a default case in the same group', async () => {
@@ -299,13 +277,13 @@ describe('control flow - switch', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 0 '));
+    await expectScreenText(' case 0 ');
 
     fixture.componentInstance.case.set(1);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' default or case 1 '));
+    await expectScreenText(' default or case 1 ');
 
     fixture.componentInstance.case.set(5);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' default or case 1 '));
+    await expectScreenText(' default or case 1 ');
   });
 
   it('should support an empty case block', async () => {
@@ -333,6 +311,7 @@ describe('control flow - switch', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
+    // For empty content, we still need to check textContent directly as screen.getByText('') won't find it effectively.
     await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(''));
 
     fixture.componentInstance.case.set(1);
@@ -342,12 +321,12 @@ describe('control flow - switch', () => {
     await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(''));
 
     fixture.componentInstance.case.set(3);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 3-4 '));
+    await expectScreenText(' case 3-4 ');
 
     fixture.componentInstance.case.set(4);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' case 3-4 '));
+    await expectScreenText(' case 3-4 ');
 
     fixture.componentInstance.case.set(5);
-    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(' default '));
+    await expectScreenText(' default ');
   });
 });

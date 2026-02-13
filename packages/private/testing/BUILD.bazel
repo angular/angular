@@ -14,6 +14,7 @@ ng_project(
         ["**/*.ts"],
     ),
     deps = [
+        "//:node_modules/@testing-library/dom",
         "//packages/common",
         "//packages/core",
         "//packages/core/testing",

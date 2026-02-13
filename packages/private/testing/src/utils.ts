@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {ɵresetJitOptions as resetJitOptions} from '@angular/core';
+import {waitFor} from '@testing-library/dom';
 
 /**
  * Wraps a function in a new function which sets up document and HTML for running a test.
@@ -206,5 +207,38 @@ export function useAutoTick() {
   });
   afterEach(() => {
     jasmine.clock().uninstall();
+  });
+}
+
+/**
+ * Returns a promise that resolves when the provided element's text content matches the expected text.
+ *
+ * @param element - The element or fixture to check.
+ * @param text - The expected text content.
+ *
+ * @example
+ * ```ts
+ * await expectText(fixture, 'Hello');
+ * ```
+ */
+/**
+ * Returns a promise that resolves when the text content is found on the screen.
+ *
+ * @param text - The expected text content, regex, or matcher function.
+ *
+ * @example
+ * ```ts
+ * await expectScreenText('Hello');
+ * await expectScreenText(/Hello/);
+ * ```
+ */
+export async function expectScreenText(text: string | RegExp): Promise<void> {
+  await waitFor(() => {
+    const content = document.body.textContent || '';
+    if (typeof text === 'string') {
+      throwUnless(content).toContain(text);
+    } else {
+      throwUnless(text.test(content)).toBeTrue();
+    }
   });
 }
