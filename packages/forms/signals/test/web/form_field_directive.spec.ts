@@ -2881,6 +2881,60 @@ describe('field directive', () => {
     expect(cmp.f().value()).toBe('typing');
   });
 
+  it('synchronizes with a custom value control host directive', () => {
+    @Directive()
+    class CustomInputDirective implements FormValueControl<string> {
+      readonly value = model('');
+    }
+
+    @Component({
+      selector: 'my-input',
+      hostDirectives: [
+        {
+          directive: CustomInputDirective,
+          inputs: ['value'],
+          outputs: ['valueChange'],
+        },
+      ],
+      template: `
+        <input
+          type="text"
+          [value]="control.value()"
+          (input)="control.value.set($event.target.value)"
+        />
+      `,
+    })
+    class CustomInput {
+      readonly control = inject(CustomInputDirective);
+    }
+
+    @Component({
+      imports: [CustomInput, FormField],
+      template: `<my-input [formField]="f" />`,
+    })
+    class TestCmp {
+      f = form<string>(signal('test'));
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const input = fix.nativeElement.querySelector('input') as HTMLInputElement;
+    const cmp = fix.componentInstance as TestCmp;
+
+    // Initial state
+    expect(input.value).toBe('test');
+
+    // Model -> View
+    act(() => cmp.f().value.set('testing'));
+    expect(input.value).toBe('testing');
+
+    // View -> Model
+    act(() => {
+      input.value = 'typing';
+      input.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toBe('typing');
+  });
+
   it('synchronizes with a custom value control with separate input and output properties', () => {
     @Component({
       selector: 'my-input',
