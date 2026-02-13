@@ -251,7 +251,7 @@ export class FormField<T> {
     this.installClassBindingEffect();
 
     if (bindingOptions?.focus) {
-      this.focuser = bindingOptions.focus;
+      this.focuser = (focusOptions?: FocusOptions) => bindingOptions.focus!(focusOptions);
     }
 
     // Register this control on the field state it is currently bound to. We do this at the end of
