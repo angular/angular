@@ -17,8 +17,6 @@ This is the source code for the Angular framework. This guide outlines standard 
 
 ## Testing
 
-## Testing
-
 - **Zoneless & Async-First:** Assume a zoneless environment where state changes schedule updates asynchronously.
   - **Do NOT** use `fixture.detectChanges()` to manually trigger updates.
   - **ALWAYS** use the "Act, Wait, Assert" pattern:
