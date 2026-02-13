@@ -138,7 +138,7 @@ export async function ensureDocument(): Promise<void> {
 
   savedRequestAnimationFrame = (global as any).requestAnimationFrame;
   (global as any).requestAnimationFrame = function (cb: () => void): number {
-    setImmediate(cb);
+    setTimeout(cb, 0);
     return requestAnimationFrameCount++;
   };
 }
@@ -207,4 +207,92 @@ export function useAutoTick() {
   afterEach(() => {
     jasmine.clock().uninstall();
   });
+}
+
+export interface WaitForOptions {
+  timeout?: number;
+  interval?: number;
+}
+
+export interface ExpectScreenTextOptions extends WaitForOptions {
+  container?: HTMLElement;
+}
+
+/**
+ * Returns a promise that resolves when the provided element's text content matches the expected text.
+ *
+ * @param element - The element or fixture to check.
+ * @param text - The expected text content.
+ *
+ * @example
+ * ```ts
+ * await expectText(fixture, 'Hello');
+ * ```
+ */
+/**
+ * Returns a promise that resolves when the text content is found on the screen.
+ *
+ * @param text - The expected text content, regex, or matcher function.
+ *
+ * @example
+ * ```ts
+ * await expectScreenText('Hello');
+ * await expectScreenText(/Hello/);
+ * ```
+ */
+export async function expectScreenText(
+  text: string | RegExp,
+  options: ExpectScreenTextOptions = {},
+): Promise<void> {
+  const container = options.container || document.body;
+  await waitFor(() => {
+    const content = container.textContent || '';
+    if (typeof text === 'string') {
+      throwUnless(content).toContain(text);
+    } else {
+      throwUnless(text.test(content)).toBeTrue();
+    }
+  }, options);
+}
+
+// Intentionally does not participate in fake clocks.
+const realNow = performance.now.bind(performance);
+const realSetTimeout = setTimeout;
+
+export async function waitFor<T>(
+  callback: () => Promise<T> | T,
+  options: WaitForOptions = {},
+): Promise<T> {
+  const waitTime = options.timeout ?? 100;
+  const interval = options.interval ?? 0;
+  const stack = new Error().stack;
+
+  const deadline = realNow() + waitTime;
+  let i = 0;
+  let lastError: any | undefined;
+
+  while (true) {
+    try {
+      return await callback();
+    } catch (cause) {
+      lastError = cause;
+    }
+
+    i++;
+
+    if (deadline < realNow()) {
+      throw Object.assign(
+        new Error(
+          `Timed out after ${waitTime}ms and ${i} attempts. ` +
+            `Last error: ${lastError?.message ?? 'condition returned false'}`,
+        ),
+        {
+          stack: stack + `Last error: ${lastError?.stack ?? 'condition returned false'}`,
+        },
+      );
+    }
+
+    // Guarantee a macro-task between retries.
+    await new Promise((resolve) => void realSetTimeout(resolve, interval));
+  }
 }
