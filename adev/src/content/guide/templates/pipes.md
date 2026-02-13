@@ -147,8 +147,9 @@ The pipe operator has higher precedence than the conditional (ternary) operator.
 
 If the same expression were written without parentheses:
 
+<!-- prettier-ignore -->
 ```angular-html
-{{ isAdmin ? 'Access granted' : ('Access denied' | uppercase) }}
+{{ isAdmin ? 'Access granted' : 'Access denied' | uppercase }}
 ```
 
 It will be parsed instead as:
