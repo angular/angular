@@ -35,7 +35,7 @@ import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
 import {ClassDeclaration} from '../../reflection';
-import {TemplateDiagnostic, TypeCheckId} from '../api';
+import {TcbDirectiveMetadata, TemplateDiagnostic, TypeCheckId} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {TypeCheckSourceResolver} from './tcb_util';
@@ -125,8 +125,8 @@ export interface OutOfBandDiagnosticRecorder {
     id: TypeCheckId,
     input: TmplAstBoundAttribute,
     output: TmplAstBoundEvent,
-    inputConsumer: ClassDeclaration,
-    outputConsumer: ClassDeclaration | TmplAstElement,
+    inputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'>,
+    outputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'> | TmplAstElement,
   ): void;
 
   /** Reports required inputs that haven't been bound. */
@@ -275,7 +275,10 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     ['keyvalue', 'KeyValuePipe'],
   ]);
 
-  constructor(private resolver: TypeCheckSourceResolver) {}
+  constructor(
+    private resolver: TypeCheckSourceResolver,
+    private getSourceFile: (fileName: string) => ts.SourceFile | undefined = (name) => undefined,
+  ) {}
 
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return this._diagnostics;
@@ -510,8 +513,8 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     id: TypeCheckId,
     input: TmplAstBoundAttribute,
     output: TmplAstBoundEvent,
-    inputConsumer: ClassDeclaration,
-    outputConsumer: ClassDeclaration | TmplAstElement,
+    inputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'>,
+    outputConsumer: Pick<TcbDirectiveMetadata, 'name' | 'isComponent' | 'ref'> | TmplAstElement,
   ): void {
     const mapping = this.resolver.getTemplateSourceMapping(id);
     const errorMsg = `The property and event halves of the two-way binding '${input.name}' are not bound to the same target.
@@ -520,12 +523,17 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     const relatedMessages: {text: string; start: number; end: number; sourceFile: ts.SourceFile}[] =
       [];
 
-    relatedMessages.push({
-      text: `The property half of the binding is to the '${inputConsumer.name.text}' component.`,
-      start: inputConsumer.name.getStart(),
-      end: inputConsumer.name.getEnd(),
-      sourceFile: inputConsumer.name.getSourceFile(),
-    });
+    if (inputConsumer.ref.nodeNameSpan && inputConsumer.ref.nodeFilePath) {
+      const sf = this.getSourceFile(inputConsumer.ref.nodeFilePath);
+      if (sf) {
+        relatedMessages.push({
+          text: `The property half of the binding is to the '${inputConsumer.name}' ${inputConsumer.isComponent ? 'component' : 'directive'}.`,
+          start: inputConsumer.ref.nodeNameSpan.start,
+          end: inputConsumer.ref.nodeNameSpan.end,
+          sourceFile: sf,
+        });
+      }
+    }
 
     if (outputConsumer instanceof TmplAstElement) {
       let message = `The event half of the binding is to a native event called '${input.name}' on the <${outputConsumer.name}> DOM element.`;
@@ -539,12 +547,17 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         sourceFile: mapping.node.getSourceFile(),
       });
     } else {
-      relatedMessages.push({
-        text: `The event half of the binding is to the '${outputConsumer.name.text}' component.`,
-        start: outputConsumer.name.getStart(),
-        end: outputConsumer.name.getEnd(),
-        sourceFile: outputConsumer.name.getSourceFile(),
-      });
+      if (outputConsumer.ref.nodeNameSpan && outputConsumer.ref.nodeFilePath) {
+        const sf = this.getSourceFile(outputConsumer.ref.nodeFilePath);
+        if (sf) {
+          relatedMessages.push({
+            text: `The event half of the binding is to the '${outputConsumer.name}' ${outputConsumer.isComponent ? 'component' : 'directive'}.`,
+            start: outputConsumer.ref.nodeNameSpan.start,
+            end: outputConsumer.ref.nodeNameSpan.end,
+            sourceFile: sf,
+          });
+        }
+      }
     }
 
     this._diagnostics.push(

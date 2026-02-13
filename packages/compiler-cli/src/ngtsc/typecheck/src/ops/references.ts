@@ -20,7 +20,7 @@ import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 
 /** Types that can referenced locally in a template. */
 export type LocalSymbol =
@@ -59,7 +59,7 @@ export class TcbReferenceOp extends TcbOp {
     private readonly scope: Scope,
     private readonly node: TmplAstReference,
     private readonly host: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
-    private readonly target: TypeCheckableDirectiveMeta | TmplAstTemplate | TmplAstElement,
+    private readonly target: TcbDirectiveMetadata | TmplAstTemplate | TmplAstElement,
   ) {
     super();
   }
