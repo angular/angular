@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "e2e": "ng build --configuration production && concurrently \"serve dist/browser -l 4210 --no-clipboard --single\" \"protractor e2e/protractor.conf.js --baseUrl=http://localhost:4210\" --kill-others --success first"
   },
-  "packageManager": "pnpm@10.29.2",
+  "packageManager": "pnpm@10.29.3",
   "private": true,
   "dependencies": {
     "@angular/animations": "link:./in-existing-linked-by-bazel",
