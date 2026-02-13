@@ -102,6 +102,10 @@ bundle_entrypoints = [
         "packages/core/schematics/migrations/common-to-standalone-migration/index.js",
     ],
     [
+        "change-detection-eager",
+        "packages/core/schematics/migrations/change-detection-eager/index.js",
+    ],
+    [
         "control-flow-migration",
         "packages/core/schematics/migrations/control-flow-migration/index.js",
     ],
@@ -151,6 +155,7 @@ rollup.rollup(
         "//packages/core/schematics/migrations/add-bootstrap-context-to-server-main",
         "//packages/core/schematics/migrations/application-config-core",
         "//packages/core/schematics/migrations/bootstrap-options-migration",
+        "//packages/core/schematics/migrations/change-detection-eager",
         "//packages/core/schematics/migrations/common-to-standalone-migration",
         "//packages/core/schematics/migrations/control-flow-migration",
         "//packages/core/schematics/migrations/ngclass-to-class-migration",

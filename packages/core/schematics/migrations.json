@@ -30,6 +30,11 @@
       "version": "21.0.0",
       "description": "Migrates deprecated bootstrap options to providers.",
       "factory": "./bundles/bootstrap-options-migration.cjs#migrate"
+    },
+    "change-detection-eager": {
+      "version": "22.0.0",
+      "description": "Adds `ChangeDetectionStrategy.Eager` to all components.",
+      "factory": "./bundles/change-detection-eager.cjs#migrate"
     }
   }
 }
