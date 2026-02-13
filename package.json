@@ -86,6 +86,7 @@
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@schematics/angular": "21.1.0-rc.0",
     "@standard-schema/spec": "^1.0.0",
+    "@testing-library/dom": "^10.4.1",
     "@types/angular": "^1.6.47",
     "@types/babel__core": "7.20.5",
     "@types/babel__generator": "7.27.0",

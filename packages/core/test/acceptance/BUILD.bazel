@@ -16,6 +16,7 @@ ts_project(
     # Visible to //:saucelabs_unit_tests
     visibility = ["//:__pkg__"],
     deps = [
+        "//:node_modules/@testing-library/dom",
         "//:node_modules/rxjs",
         "//packages/animations",
         "//packages/animations/browser",

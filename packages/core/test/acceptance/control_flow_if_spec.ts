@@ -16,11 +16,12 @@ import {
   OnInit,
   Pipe,
   PipeTransform,
-  provideZoneChangeDetection,
+  signal,
   TemplateRef,
   ViewContainerRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
+import {waitFor} from '@testing-library/dom';
 
 // Basic shared pipe used during testing.
 @Pipe({name: 'multiply', pure: true})
@@ -31,130 +32,129 @@ class MultiplyPipe implements PipeTransform {
 }
 
 describe('control flow - if', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-  });
-  it('should add and remove views based on conditions change', () => {
-    @Component({template: '@if (show) {Something} @else {Nothing}'})
+  it('should add and remove views based on conditions change', async () => {
+    @Component({template: '@if (show()) {Something} @else {Nothing}'})
     class TestComponent {
-      show = true;
+      show = signal(true);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe('Something'));
 
-    expect(fixture.nativeElement.textContent).toBe('Something');
-
-    fixture.componentInstance.show = false;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('Nothing');
+    fixture.componentInstance.show.set(false);
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe('Nothing'));
   });
 
-  it('should expose expression value in context', () => {
+  it('should expose expression value in context', async () => {
     @Component({
-      template: '@if (show; as alias) {{{show}} aliased to {{alias}}}',
+      template: '@if (show(); as alias) {{{show()}} aliased to {{alias}}}',
     })
     class TestComponent {
-      show: any = true;
+      show = signal<any>(true);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('true aliased to true');
+    await waitFor(() =>
+      throwUnless(fixture.nativeElement.textContent).toBe('true aliased to true'),
+    );
 
-    fixture.componentInstance.show = 1;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('1 aliased to 1');
+    fixture.componentInstance.show.set(1);
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe('1 aliased to 1'));
   });
 
-  it('should not expose the aliased expression to `if` and `else if` blocks', () => {
+  it('should not expose the aliased expression to `if` and `else if` blocks', async () => {
     @Component({
       template: `
-        @if (value === 1; as alias) {
-          If: {{ value }} as {{ alias || 'unavailable' }}
-        } @else if (value === 2) {
-          ElseIf: {{ value }} as {{ alias || 'unavailable' }}
+        @if (value() === 1; as alias) {
+          If: {{ value() }} as {{ alias || 'unavailable' }}
+        } @else if (value() === 2) {
+          ElseIf: {{ value() }} as {{ alias || 'unavailable' }}
         } @else {
-          Else: {{ value }} as {{ alias || 'unavailable' }}
+          Else: {{ value() }} as {{ alias || 'unavailable' }}
         }
       `,
     })
     class TestComponent {
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('If: 1 as true');
+    await waitFor(() =>
+      throwUnless(fixture.nativeElement.textContent.trim()).toBe('If: 1 as true'),
+    );
 
-    fixture.componentInstance.value = 2;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('ElseIf: 2 as unavailable');
+    fixture.componentInstance.value.set(2);
+    await waitFor(() =>
+      throwUnless(fixture.nativeElement.textContent.trim()).toBe('ElseIf: 2 as unavailable'),
+    );
 
-    fixture.componentInstance.value = 3;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('Else: 3 as unavailable');
+    fixture.componentInstance.value.set(3);
+    await waitFor(() =>
+      throwUnless(fixture.nativeElement.textContent.trim()).toBe('Else: 3 as unavailable'),
+    );
   });
 
-  it('should expose the context to nested conditional blocks', () => {
+  it('should expose the context to nested conditional blocks', async () => {
     @Component({
       imports: [MultiplyPipe],
       template: `
-        @if (value | multiply: 2; as root) {
-          Root: {{ value }}/{{ root }}
+        @if (value() | multiply: 2; as root) {
+          Root: {{ value() }}/{{ root }}
 
-          @if (value | multiply: 3; as inner) {
-            Inner: {{ value }}/{{ root }}/{{ inner }}
+          @if (value() | multiply: 3; as inner) {
+            Inner: {{ value() }}/{{ root }}/{{ inner }}
 
-            @if (value | multiply: 4; as innermost) {
-              Innermost: {{ value }}/{{ root }}/{{ inner }}/{{ innermost }}
+            @if (value() | multiply: 4; as innermost) {
+              Innermost: {{ value() }}/{{ root }}/{{ inner }}/{{ innermost }}
             }
           }
         }
       `,
     })
     class TestComponent {
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    let content = fixture.nativeElement.textContent;
-    expect(content).toContain('Root: 1/2');
-    expect(content).toContain('Inner: 1/2/3');
-    expect(content).toContain('Innermost: 1/2/3/4');
+    await waitFor(() => {
+      const content = fixture.nativeElement.textContent;
+      throwUnless(content).toContain('Root: 1/2');
+      throwUnless(content).toContain('Inner: 1/2/3');
+      throwUnless(content).toContain('Innermost: 1/2/3/4');
+    });
 
-    fixture.componentInstance.value = 2;
-    fixture.detectChanges();
-    content = fixture.nativeElement.textContent;
-    expect(content).toContain('Root: 2/4');
-    expect(content).toContain('Inner: 2/4/6');
-    expect(content).toContain('Innermost: 2/4/6/8');
+    fixture.componentInstance.value.set(2);
+    await waitFor(() => {
+      const content = fixture.nativeElement.textContent;
+      throwUnless(content).toContain('Root: 2/4');
+      throwUnless(content).toContain('Inner: 2/4/6');
+      throwUnless(content).toContain('Innermost: 2/4/6/8');
+    });
   });
 
-  it('should expose the context to listeners inside nested conditional blocks', () => {
+  it('should expose the context to listeners inside nested conditional blocks', async () => {
     let logs: any[] = [];
 
     @Component({
       imports: [MultiplyPipe],
       template: `
-        @if (value | multiply: 2; as root) {
-          <button (click)="log(['Root', value, root])"></button>
+        @if (value() | multiply: 2; as root) {
+          <button (click)="log(['Root', value(), root])">Root {{ value() }}</button>
 
-          @if (value | multiply: 3; as inner) {
-            <button (click)="log(['Inner', value, root, inner])"></button>
+          @if (value() | multiply: 3; as inner) {
+            <button (click)="log(['Inner', value(), root, inner])">Inner {{ value() }}</button>
 
-            @if (value | multiply: 4; as innermost) {
-              <button (click)="log(['Innermost', value, root, inner, innermost])"></button>
+            @if (value() | multiply: 4; as innermost) {
+              <button (click)="log(['Innermost', value(), root, inner, innermost])">
+                Innermost {{ value() }}
+              </button>
             }
           }
         }
       `,
     })
     class TestComponent {
-      value = 1;
+      value = signal(1);
 
       log(value: any) {
         logs.push(value);
@@ -162,72 +162,73 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    const buttons = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'));
-    buttons.forEach((button) => button.click());
-    fixture.detectChanges();
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toContain('Root 1'));
 
-    expect(logs).toEqual([
-      ['Root', 1, 2],
-      ['Inner', 1, 2, 3],
-      ['Innermost', 1, 2, 3, 4],
-    ]);
+    let buttons = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'));
+    buttons.forEach((button) => button.click());
+
+    await waitFor(() =>
+      throwUnless(logs).toEqual([
+        ['Root', 1, 2],
+        ['Inner', 1, 2, 3],
+        ['Innermost', 1, 2, 3, 4],
+      ]),
+    );
 
     logs = [];
-    fixture.componentInstance.value = 2;
-    fixture.detectChanges();
+    fixture.componentInstance.value.set(2);
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toContain('Root 2'));
 
+    buttons = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'));
     buttons.forEach((button) => button.click());
-    fixture.detectChanges();
-    expect(logs).toEqual([
-      ['Root', 2, 4],
-      ['Inner', 2, 4, 6],
-      ['Innermost', 2, 4, 6, 8],
-    ]);
+
+    await waitFor(() =>
+      throwUnless(logs).toEqual([
+        ['Root', 2, 4],
+        ['Inner', 2, 4, 6],
+        ['Innermost', 2, 4, 6, 8],
+      ]),
+    );
   });
 
-  it('should expose expression value passed through a pipe in context', () => {
+  it('should expose expression value passed through a pipe in context', async () => {
     @Component({
-      template: '@if (value | multiply:2; as alias) {{{value}} aliased to {{alias}}}',
+      template: '@if (value() | multiply:2; as alias) {{{value()}} aliased to {{alias}}}',
       imports: [MultiplyPipe],
     })
     class TestComponent {
-      value = 1;
+      value = signal(1);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('1 aliased to 2');
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe('1 aliased to 2'));
 
-    fixture.componentInstance.value = 4;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('4 aliased to 8');
+    fixture.componentInstance.value.set(4);
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe('4 aliased to 8'));
   });
 
-  it('should destroy all views if there is nothing to display', () => {
+  it('should destroy all views if there is nothing to display', async () => {
     @Component({
-      template: '@if (show) {Something}',
+      template: '@if (show()) {Something}',
     })
     class TestComponent {
-      show = true;
+      show = signal(true);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('Something');
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe('Something'));
 
-    fixture.componentInstance.show = false;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('');
+    fixture.componentInstance.show.set(false);
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(''));
   });
 
-  it('should be able to use pipes in conditional expressions', () => {
+  it('should be able to use pipes in conditional expressions', async () => {
     @Component({
       imports: [MultiplyPipe],
       template: `
-        @if ((value | multiply: 2) === 2) {
+        @if ((value() | multiply: 2) === 2) {
           one
-        } @else if ((value | multiply: 2) === 4) {
+        } @else if ((value() | multiply: 2) === 4) {
           two
         } @else {
           nothing
@@ -235,24 +236,20 @@ describe('control flow - if', () => {
       `,
     })
     class TestComponent {
-      value = 0;
+      value = signal(0);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent.trim()).toBe('nothing'));
 
-    expect(fixture.nativeElement.textContent.trim()).toBe('nothing');
+    fixture.componentInstance.value.set(2);
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent.trim()).toBe('two'));
 
-    fixture.componentInstance.value = 2;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('two');
-
-    fixture.componentInstance.value = 1;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('one');
+    fixture.componentInstance.value.set(1);
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent.trim()).toBe('one'));
   });
 
-  it('should be able to use pipes injecting ChangeDetectorRef in if blocks', () => {
+  it('should be able to use pipes injecting ChangeDetectorRef in if blocks', async () => {
     @Pipe({name: 'test'})
     class TestPipe implements PipeTransform {
       changeDetectorRef = inject(ChangeDetectorRef);
@@ -263,71 +260,66 @@ describe('control flow - if', () => {
     }
 
     @Component({
-      template: '@if (show | test) {Something}',
+      template: '@if (show() | test) {Something}',
       imports: [TestPipe],
     })
     class TestComponent {
-      show = true;
+      show = signal(true);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toBe('Something');
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe('Something'));
   });
 
-  it('should support a condition with the a typeof expression', () => {
+  it('should support a condition with the a typeof expression', async () => {
     @Component({
       template: `
-        @if (typeof value === 'string') {
-          {{ value.length }}
+        @if (typeof value() === 'string') {
+          {{ value().length }}
         } @else {
-          {{ value }}
+          {{ value() }}
         }
       `,
     })
     class TestComponent {
-      value: string | number = 'string';
+      value = signal<string | number>('string');
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('6');
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent.trim()).toBe('6'));
 
-    fixture.componentInstance.value = 42;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('42');
+    fixture.componentInstance.value.set(42);
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent.trim()).toBe('42'));
   });
 
-  it('should support a condition with the a binary expression with the in keyword', () => {
+  it('should support a condition with the a binary expression with the in keyword', async () => {
     @Component({
       template: `
-        @if (key in {foo: 'bar'}) {
-          has {{ key }}
+        @if (key() in {foo: 'bar'}) {
+          has {{ key() }}
         } @else {
-          no {{ key }}
+          no {{ key() }}
         }
       `,
     })
     class TestComponent {
-      key: string | number = 'foo';
+      key = signal<string | number>('foo');
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('has foo');
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent.trim()).toBe('has foo'));
 
-    fixture.componentInstance.key = 42;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('no 42');
+    fixture.componentInstance.key.set(42);
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent.trim()).toBe('no 42'));
   });
 
-  it('should support a condition with the instanceof keyword', () => {
+  it('should support a condition with the instanceof keyword', async () => {
     class Foo {}
 
     // prettier-ignore
     @Component({
       template: `
-        @if (value instanceof Foo) {
+        @if (value() instanceof Foo) {
           is Foo
         } @else {
           is not Foo
@@ -336,43 +328,44 @@ describe('control flow - if', () => {
     })
     class TestComponent {
       Foo = Foo;
-      value: string | Foo = new Foo();
+      value = signal<string | Foo>(new Foo());
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('is Foo');
-    fixture.componentInstance.value = 'not a Foo';
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('is not Foo');
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent.trim()).toBe('is Foo'));
+
+    fixture.componentInstance.value.set('not a Foo');
+    await waitFor(() => throwUnless(fixture.nativeElement.textContent.trim()).toBe('is not Foo'));
   });
 
-  it('should expose expression value through alias on @else if', () => {
+  it('should expose expression value through alias on @else if', async () => {
     @Component({
       template: `
-        @if (value === 0; as alias) {
+        @if (value() === 0; as alias) {
           Zero evaluates to {{ alias }}
-        } @else if (value | multiply: 2; as alias) {
-          {{ value }} aliased to {{ alias }}
+        } @else if (value() | multiply: 2; as alias) {
+          {{ value() }} aliased to {{ alias }}
         }
       `,
       imports: [MultiplyPipe],
     })
     class TestComponent {
-      value = 0;
+      value = signal(0);
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('Zero evaluates to true');
+    await waitFor(() =>
+      throwUnless(fixture.nativeElement.textContent.trim()).toBe('Zero evaluates to true'),
+    );
 
-    fixture.componentInstance.value = 4;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent.trim()).toBe('4 aliased to 8');
+    fixture.componentInstance.value.set(4);
+    await waitFor(() =>
+      throwUnless(fixture.nativeElement.textContent.trim()).toBe('4 aliased to 8'),
+    );
   });
 
   describe('content projection', () => {
-    it('should project an @if with a single root node into the root node slot', () => {
+    it('should project an @if with a single root node into the root node slot', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -394,12 +387,12 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo'),
+      );
     });
 
-    it('should project an @if with a single root node with a data binding', () => {
+    it('should project an @if with a single root node with a data binding', async () => {
       let directiveCount = 0;
 
       @Directive({selector: '[foo]'})
@@ -423,24 +416,24 @@ describe('control flow - if', () => {
           <test
             >Before
             @if (true) {
-              <span [foo]="value">foo</span>
+              <span [foo]="value()">foo</span>
             }
             After</test
           >
         `,
       })
       class App {
-        value = 1;
+        value = signal(1);
       }
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
-      expect(directiveCount).toBe(1);
+      await waitFor(() => {
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+        throwUnless(directiveCount).toBe(1);
+      });
     });
 
-    it('should project an @if with multiple root nodes into the catch-all slot', () => {
+    it('should project an @if with multiple root nodes into the catch-all slot', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -463,12 +456,12 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe('Main: Before onetwo After Slot: ');
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before onetwo After Slot: '),
+      );
     });
 
-    it('should project an @if with an ng-container root node', () => {
+    it('should project an @if with an ng-container root node', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -493,14 +486,12 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foobar');
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foobar'),
+      );
     });
 
-    // Right now the template compiler doesn't collect comment nodes.
-    // This test is to ensure that we don't regress if it happens in the future.
-    it('should project an @if with a single root node and comments into the root node slot', () => {
+    it('should project an @if with a single root node and comments into the root node slot', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -524,12 +515,12 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo'),
+      );
     });
 
-    it('should project @if an @else content into separate slots', () => {
+    it('should project @if an @else content into separate slots', async () => {
       @Component({
         selector: 'test',
         template:
@@ -541,7 +532,7 @@ describe('control flow - if', () => {
         imports: [TestComponent],
         template: `
           <test>
-            @if (value) {
+            @if (value()) {
               <span if_case>if content</span>
             } @else {
               <span else_case>else content</span>
@@ -550,23 +541,26 @@ describe('control flow - if', () => {
         `,
       })
       class App {
-        value = true;
+        value = signal(true);
       }
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('if: (if content), else: ()'),
+      );
 
-      fixture.componentInstance.value = false;
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
+      fixture.componentInstance.value.set(false);
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('if: (), else: (else content)'),
+      );
 
-      fixture.componentInstance.value = true;
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+      fixture.componentInstance.value.set(true);
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('if: (if content), else: ()'),
+      );
     });
 
-    it('should project @if an @else content into separate slots when if has default content', () => {
+    it('should project @if an @else content into separate slots when if has default content', async () => {
       @Component({
         selector: 'test',
         template: 'if: (<ng-content />),  else: (<ng-content select="[else_case]"/>)',
@@ -577,7 +571,7 @@ describe('control flow - if', () => {
         imports: [TestComponent],
         template: `
           <test>
-            @if (value) {
+            @if (value()) {
               <span>if content</span>
             } @else {
               <span else_case>else content</span>
@@ -586,23 +580,26 @@ describe('control flow - if', () => {
         `,
       })
       class App {
-        value = true;
+        value = signal(true);
       }
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('if: (if content), else: ()'),
+      );
 
-      fixture.componentInstance.value = false;
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
+      fixture.componentInstance.value.set(false);
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('if: (), else: (else content)'),
+      );
 
-      fixture.componentInstance.value = true;
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+      fixture.componentInstance.value.set(true);
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('if: (if content), else: ()'),
+      );
     });
 
-    it('should project @if an @else content into separate slots when else has default content', () => {
+    it('should project @if an @else content into separate slots when else has default content', async () => {
       @Component({
         selector: 'test',
         template: 'if: (<ng-content select="[if_case]"/>),  else: (<ng-content/>)',
@@ -613,7 +610,7 @@ describe('control flow - if', () => {
         imports: [TestComponent],
         template: `
           <test>
-            @if (value) {
+            @if (value()) {
               <span if_case>if content</span>
             } @else {
               <span>else content</span>
@@ -622,23 +619,26 @@ describe('control flow - if', () => {
         `,
       })
       class App {
-        value = true;
+        value = signal(true);
       }
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('if: (if content), else: ()'),
+      );
 
-      fixture.componentInstance.value = false;
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
+      fixture.componentInstance.value.set(false);
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('if: (), else: (else content)'),
+      );
 
-      fixture.componentInstance.value = true;
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+      fixture.componentInstance.value.set(true);
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('if: (if content), else: ()'),
+      );
     });
 
-    it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes', () => {
+    it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -653,11 +653,12 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: one');
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: one'),
+      );
     });
 
-    it('should not project the root node when preserveWhitespaces is enabled and there are whitespace nodes', () => {
+    it('should not project the root node when preserveWhitespaces is enabled and there are whitespace nodes', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -681,11 +682,12 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toMatch(/Main: Before\s+one\s+After Slot:/);
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toMatch(/Main: Before\s+one\s+After Slot:/),
+      );
     });
 
-    it('should not project the root node across multiple layers of @if', () => {
+    it('should not project the root node across multiple layers of @if', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -709,11 +711,12 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toMatch(/Main: Before\s+one\s+After Slot:/);
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toMatch(/Main: Before\s+one\s+After Slot:/),
+      );
     });
 
-    it('should project an @if with a single root template node into the root node slot', () => {
+    it('should project an @if with a single root template node into the root node slot', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -725,25 +728,27 @@ describe('control flow - if', () => {
         template: `<test
           >Before
           @if (true) {
-            <span *ngFor="let item of items" foo>{{ item }}</span>
+            <span *ngFor="let item of items()" foo>{{ item }}</span>
           }
           After</test
         >`,
       })
       class App {
-        items = [1, 2];
+        items = signal([1, 2]);
       }
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 12');
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 12'),
+      );
 
-      fixture.componentInstance.items.push(3);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
+      fixture.componentInstance.items.update((items) => [...items, 3]);
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123'),
+      );
     });
 
-    it('should invoke a projected attribute directive at the root of an @if once', () => {
+    it('should invoke a projected attribute directive at the root of an @if once', async () => {
       let directiveCount = 0;
 
       @Component({
@@ -774,13 +779,13 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(directiveCount).toBe(1);
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+      await waitFor(() => {
+        throwUnless(directiveCount).toBe(1);
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+      });
     });
 
-    it('should invoke a projected template directive at the root of an @if once', () => {
+    it('should invoke a projected template directive at the root of an @if once', async () => {
       let directiveCount = 0;
 
       @Component({
@@ -819,13 +824,13 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(directiveCount).toBe(1);
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+      await waitFor(() => {
+        throwUnless(directiveCount).toBe(1);
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+      });
     });
 
-    it('should invoke a directive on a projected ng-template at the root of an @if once', () => {
+    it('should invoke a directive on a projected ng-template at the root of an @if once', async () => {
       let directiveCount = 0;
 
       @Component({
@@ -864,13 +869,13 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(directiveCount).toBe(1);
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+      await waitFor(() => {
+        throwUnless(directiveCount).toBe(1);
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+      });
     });
 
-    it('should not match a directive with a class-based selector only meant for content projection', () => {
+    it('should not match a directive with a class-based selector only meant for content projection', async () => {
       let directiveCount = 0;
 
       @Component({
@@ -892,30 +897,30 @@ describe('control flow - if', () => {
         imports: [TestComponent, TemplateDirective],
         template: `<test
           >Before
-          @if (condition) {
+          @if (condition()) {
             <div class="foo">foo</div>
           }
           After</test
         > `,
       })
       class App {
-        condition = false;
+        condition = signal(false);
       }
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
+      await waitFor(() => {
+        throwUnless(directiveCount).toBe(0);
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: ');
+      });
 
-      expect(directiveCount).toBe(0);
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: ');
-
-      fixture.componentInstance.condition = true;
-      fixture.detectChanges();
-
-      expect(directiveCount).toBe(1);
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+      fixture.componentInstance.condition.set(true);
+      await waitFor(() => {
+        throwUnless(directiveCount).toBe(1);
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+      });
     });
 
-    it('should not project an @if that has text followed by one element node at the root', () => {
+    it('should not project an @if that has text followed by one element node at the root', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -935,11 +940,12 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('Main:  Hello world Slot: ');
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('Main:  Hello world Slot: '),
+      );
     });
 
-    it('should project an @if with a single root node and @let declarations into the root node slot', () => {
+    it('should project an @if with a single root node and @let declarations into the root node slot', async () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
@@ -963,9 +969,9 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 2');
+      await waitFor(() =>
+        throwUnless(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 2'),
+      );
     });
   });
 });
