@@ -63,7 +63,7 @@ One regular Angular component and a second one using the custom element.
 ### Mapping
 
 A custom element _hosts_ an Angular component, providing a bridge between the data and logic defined in the component and standard DOM APIs.
-Component properties and logic maps directly into HTML attributes and the browser's event system.
+Component properties and logic map directly into HTML attributes and the browser's event system.
 
 - The creation API parses the component looking for input properties, and defines corresponding attributes for the custom element.
   It transforms the property names to make them compatible with custom elements, which do not recognize case distinctions.
@@ -71,10 +71,10 @@ Component properties and logic maps directly into HTML attributes and the browse
   For example, for a component with `inputProp = input({alias: 'myInputProp'})`, the corresponding custom element defines an attribute `my-input-prop`.
 
 - Component outputs are dispatched as HTML [Custom Events](https://developer.mozilla.org/docs/Web/API/CustomEvent), with the name of the custom event matching the output name.
-  For example, for a component `with valueChanged = output()`, the corresponding custom element dispatches events with the name "valueChanged", and the emitted data is stored on the event's `detail` property.
+  For example, for a component with `valueChanged = output()`, the corresponding custom element dispatches events with the name "valueChanged", and the emitted data is stored on the event's `detail` property.
   If you provide an alias, that value is used; for example, `clicks = output<string>({alias: 'myClick'});` results in dispatch events with the name "myClick".
 
-For more information, see Web Component documentation for [Creating custom events](https://developer.mozilla.org/docs/Web/Guide/Events/Creating_and_triggering_events#Creating_custom_events).
+For more information, see Web Component documentation for [Creating custom events](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Events#creating_custom_events).
 
 ## Example: A Popup Service
 
@@ -119,7 +119,7 @@ Assume you create a `my-dialog` custom element based on the following component:
 ```ts
 @Component(/* ... */)
 class MyDialog {
-  content = input(string);
+  content = input('');
 }
 ```
 
@@ -164,5 +164,5 @@ document.querySelector('my-other-element'); //--> NgElement & WithProperties<{fo
 
 Care should be taken when destroying and then re-attaching custom elements created with `@angular/elements` due to issues with the [disconnect()](https://github.com/angular/angular/issues/38778) callback. Cases where you may run into this issue are:
 
-- Rendering a component in an `ng-if` or `ng-repeat` in `AngularJs`
+- Rendering a component in an `ng-if` or `ng-repeat` in `AngularJS`
 - Manually detaching and re-attaching an element to the DOM
