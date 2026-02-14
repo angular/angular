@@ -34,7 +34,6 @@ export abstract class CompilationJob {
   constructor(
     readonly componentName: string,
     readonly pool: ConstantPool,
-    readonly compatibility: ir.CompatibilityMode,
     readonly mode: TemplateCompilationMode,
   ) {}
 
@@ -78,7 +77,6 @@ export class ComponentCompilationJob extends CompilationJob {
   constructor(
     componentName: string,
     pool: ConstantPool,
-    compatibility: ir.CompatibilityMode,
     mode: TemplateCompilationMode,
     readonly relativeContextFilePath: string,
     readonly i18nUseExternalIds: boolean,
@@ -87,7 +85,7 @@ export class ComponentCompilationJob extends CompilationJob {
     readonly relativeTemplatePath: string | null,
     readonly enableDebugLocations: boolean,
   ) {
-    super(componentName, pool, compatibility, mode);
+    super(componentName, pool, mode);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(this.root.xref, this.root);
   }
@@ -265,13 +263,8 @@ export class ViewCompilationUnit extends CompilationUnit {
  * Compilation-in-progress of a host binding, which contains a single unit for that host binding.
  */
 export class HostBindingCompilationJob extends CompilationJob {
-  constructor(
-    componentName: string,
-    pool: ConstantPool,
-    compatibility: ir.CompatibilityMode,
-    mode: TemplateCompilationMode,
-  ) {
-    super(componentName, pool, compatibility, mode);
+  constructor(componentName: string, pool: ConstantPool, mode: TemplateCompilationMode) {
+    super(componentName, pool, mode);
     this.root = new HostBindingCompilationUnit(this);
   }
 

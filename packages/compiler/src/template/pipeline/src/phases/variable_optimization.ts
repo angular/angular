@@ -51,7 +51,7 @@ export function optimizeVariables(job: CompilationJob): void {
     }
 
     for (const expr of unit.functions) {
-      optimizeVariablesInOpList(expr.ops, job.compatibility, null);
+      optimizeVariablesInOpList(expr.ops, null);
       optimizeSaveRestoreView(expr.ops);
     }
 
@@ -62,10 +62,10 @@ export function optimizeVariables(job: CompilationJob): void {
         op.kind === ir.OpKind.AnimationListener ||
         op.kind === ir.OpKind.TwoWayListener
       ) {
-        optimizeVariablesInOpList(op.handlerOps, job.compatibility, skipArrowFunctionOps);
+        optimizeVariablesInOpList(op.handlerOps, skipArrowFunctionOps);
         optimizeSaveRestoreView(op.handlerOps);
       } else if (op.kind === ir.OpKind.RepeaterCreate && op.trackByOps !== null) {
-        optimizeVariablesInOpList(op.trackByOps, job.compatibility, skipArrowFunctionOps);
+        optimizeVariablesInOpList(op.trackByOps, skipArrowFunctionOps);
       }
     }
 
@@ -74,8 +74,8 @@ export function optimizeVariables(job: CompilationJob): void {
     // operations. This is a side-effect of not being able to control which nested
     // ops `visitExpressionsInOp` will visit. Without this logic, variable references
     // inside the arrow function can throw off usage counting for things like view references.
-    optimizeVariablesInOpList(unit.create, job.compatibility, skipArrowFunctionOps);
-    optimizeVariablesInOpList(unit.update, job.compatibility, skipArrowFunctionOps);
+    optimizeVariablesInOpList(unit.create, skipArrowFunctionOps);
+    optimizeVariablesInOpList(unit.update, skipArrowFunctionOps);
   }
 }
 
@@ -177,7 +177,6 @@ function inlineAlwaysInlineVariables(ops: ir.OpList<ir.CreateOp | ir.UpdateOp>):
  */
 function optimizeVariablesInOpList(
   ops: ir.OpList<ir.CreateOp | ir.UpdateOp>,
-  compatibility: ir.CompatibilityMode,
   predicate: ExpressionPredicate | null,
 ): void {
   const varDecls = new Map<ir.XrefId, ir.VariableOp<ir.CreateOp | ir.UpdateOp>>();
@@ -301,10 +300,7 @@ function optimizeVariablesInOpList(
 
       // Is the variable used in this operation?
       if (opInfo.variablesUsed.has(candidate)) {
-        if (
-          compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-          !allowConservativeInlining(decl, targetOp)
-        ) {
+        if (!allowConservativeInlining(decl, targetOp)) {
           // We're in conservative mode, and this variable is not eligible for inlining into the
           // target operation in this mode.
           break;

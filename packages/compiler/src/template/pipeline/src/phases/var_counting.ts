@@ -37,10 +37,7 @@ export function countVariables(job: CompilationJob): void {
       // TemplateDefinitionBuilder assigns variable offsets for everything but pure functions
       // first, and then assigns offsets to pure functions lazily. We emulate that behavior by
       // assigning offsets in two passes instead of one, only in compatibility mode.
-      if (
-        job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-        expr instanceof ir.PureFunctionExpr
-      ) {
+      if (expr instanceof ir.PureFunctionExpr) {
         return;
       }
 
@@ -81,13 +78,11 @@ export function countVariables(job: CompilationJob): void {
       ir.visitExpressionsInOp(updateOp, firstPassCountExpressionVars);
     }
 
-    if (job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
-      for (const createOp of unit.create) {
-        ir.visitExpressionsInOp(createOp, secondPassCountExpressionVars);
-      }
-      for (const updateOp of unit.update) {
-        ir.visitExpressionsInOp(updateOp, secondPassCountExpressionVars);
-      }
+    for (const createOp of unit.create) {
+      ir.visitExpressionsInOp(createOp, secondPassCountExpressionVars);
+    }
+    for (const updateOp of unit.update) {
+      ir.visitExpressionsInOp(updateOp, secondPassCountExpressionVars);
     }
 
     unit.vars = varCount;
