@@ -160,14 +160,29 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
 
   setInputOnDirectives(inputName: string, value: unknown): boolean {
     const directiveIndices = this.tNode.inputs?.[inputName];
-    if (!directiveIndices) {
+    const hostDirectiveInputs = this.tNode.hostDirectiveInputs?.[inputName];
+    if (!directiveIndices && !hostDirectiveInputs) {
       return false;
     }
-    for (const index of directiveIndices) {
-      const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
-      const directive = this.lView[index];
-      writeToDirectiveInput(directiveDef, directive, inputName, value);
+
+    if (directiveIndices) {
+      for (const index of directiveIndices) {
+        const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
+        const directive = this.lView[index];
+        writeToDirectiveInput(directiveDef, directive, inputName, value);
+      }
     }
+
+    if (hostDirectiveInputs) {
+      for (let i = 0; i < hostDirectiveInputs.length; i += 2) {
+        const index = hostDirectiveInputs[i] as number;
+        const internalName = hostDirectiveInputs[i + 1] as string;
+        const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
+        const directive = this.lView[index];
+        writeToDirectiveInput(directiveDef, directive, internalName, value);
+      }
+    }
+
     return true;
   }
 
