@@ -77,7 +77,7 @@ export function createTsTransformForImportManager(
 
       const newClause = ctx.factory.updateImportClause(
         clause,
-        clause.phaseModifier === ts.SyntaxKind.TypeKeyword,
+        clause.phaseModifier,
         clause.name,
         updatedImports.get(clause.namedBindings),
       );
