@@ -154,9 +154,6 @@ export interface BindingOp extends Op<UpdateOp> {
 
   /**
    * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`).
-   *
-   * This needs to be tracked for compatibility with `TemplateDefinitionBuilder` which treats
-   * `style` and `class` TextAttributes differently from `[attr.style]` and `[attr.class]`.
    */
   isTextAttribute: boolean;
 
@@ -576,9 +573,6 @@ export interface AttributeOp extends Op<UpdateOp> {
 
   /**
    * Whether the binding is a TextAttribute (e.g. `some-attr="some-value"`).
-   *
-   * This needs to be tracked for compatibility with `TemplateDefinitionBuilder` which treats
-   * `style` and `class` TextAttributes differently from `[attr.style]` and `[attr.class]`.
    */
   isTextAttribute: boolean;
 

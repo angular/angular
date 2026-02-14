@@ -490,16 +490,6 @@ export enum SemanticVariableKind {
 }
 
 /**
- * Whether to compile in compatibilty mode. In compatibility mode, the template pipeline will
- * attempt to match the output of `TemplateDefinitionBuilder` as exactly as possible, at the cost
- * of producing quirky or larger code in some cases.
- */
-export enum CompatibilityMode {
-  Normal,
-  TemplateDefinitionBuilder,
-}
-
-/**
  * Enumeration of the types of attributes which can be applied to an element.
  */
 export enum BindingKind {

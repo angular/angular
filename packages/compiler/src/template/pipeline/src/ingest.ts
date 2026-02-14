@@ -30,8 +30,6 @@ import {
 } from './compilation';
 import {BINARY_OPERATORS, namespaceForKey, prefixWithNamespace} from './conversion';
 
-const compatibilityMode = ir.CompatibilityMode.TemplateDefinitionBuilder;
-
 // Schema containing DOM elements and their properties.
 const domSchema = new DomElementSchemaRegistry();
 
@@ -69,7 +67,6 @@ export function ingestComponent(
   const job = new ComponentCompilationJob(
     componentName,
     constantPool,
-    compatibilityMode,
     compilationMode,
     relativeContextFilePath,
     i18nUseExternalIds,
@@ -102,7 +99,6 @@ export function ingestHostBinding(
   const job = new HostBindingCompilationJob(
     input.componentName,
     constantPool,
-    compatibilityMode,
     TemplateCompilationMode.DomOnly,
   );
   for (const property of input.properties ?? []) {
@@ -486,16 +482,12 @@ function ingestBoundText(
 
   const textXref = unit.job.allocateXrefId();
   unit.create.push(ir.createTextOp(textXref, '', icuPlaceholder, text.sourceSpan));
-  // TemplateDefinitionBuilder does not generate source maps for sub-expressions inside an
-  // interpolation. We copy that behavior in compatibility mode.
-  // TODO: is it actually correct to generate these extra maps in modern mode?
-  const baseSourceSpan = unit.job.compatibility ? null : text.sourceSpan;
   unit.update.push(
     ir.createInterpolateTextOp(
       textXref,
       new ir.Interpolation(
         value.strings,
-        value.expressions.map((expr) => convertAst(expr, unit.job, baseSourceSpan)),
+        value.expressions.map((expr) => convertAst(expr, unit.job, null)),
         i18nPlaceholders,
       ),
       text.sourceSpan,
