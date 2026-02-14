@@ -239,7 +239,6 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    */
   @Input()
   set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>) {
-    // TODO(TS2.1): make TemplateRef<Partial<NgForRowOf<T>>> once we move to TS v2.1
     // The current type is too restrictive; a template that just uses index, for example,
     // should be acceptable.
     if (value) {
