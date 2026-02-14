@@ -14,6 +14,7 @@ import {
   ConstantPool,
   FactoryTarget,
   makeBindingParser,
+  OptionalChainingSemantics,
   R3ClassMetadata,
   R3DirectiveMetadata,
   R3TargetBinder,
@@ -63,6 +64,7 @@ import {
   compileInputTransformFields,
   compileNgFactoryDefField,
   compileResults,
+  createValueHasWrongTypeError,
   extractClassMetadata,
   findAngularDecorator,
   getDirectiveDiagnostics,
@@ -132,9 +134,12 @@ export interface DirectiveHandlerData {
   resources: DirectiveResources;
 }
 
-export class DirectiveDecoratorHandler
-  implements DecoratorHandler<Decorator | null, DirectiveHandlerData, DirectiveSymbol, unknown>
-{
+export class DirectiveDecoratorHandler implements DecoratorHandler<
+  Decorator | null,
+  DirectiveHandlerData,
+  DirectiveSymbol,
+  unknown
+> {
   constructor(
     private reflector: ReflectionHost,
     private evaluator: PartialEvaluator,
@@ -160,6 +165,7 @@ export class DirectiveDecoratorHandler
     private readonly usePoisonedData: boolean,
     private readonly typeCheckHostBindings: boolean,
     private readonly emitDeclarationOnly: boolean,
+    private readonly nativeOptionalChainingSemantics: boolean = false,
   ) {
     this.undecoratedMetadataExtractor = getDirectiveUndecoratedMetadataExtractor(
       reflector,
@@ -233,6 +239,28 @@ export class DirectiveDecoratorHandler
     }
 
     const analysis = directiveResult.metadata;
+    let directiveOptionalChainingSemantics: OptionalChainingSemantics | undefined;
+    if (directiveResult.decorator.has('optionalChainingSemantics')) {
+      const expr = directiveResult.decorator.get('optionalChainingSemantics')!;
+      const value = this.evaluator.evaluate(expr);
+      if (value === 'legacy') {
+        directiveOptionalChainingSemantics = OptionalChainingSemantics.Legacy;
+      } else if (value === 'native') {
+        directiveOptionalChainingSemantics = OptionalChainingSemantics.Native;
+      } else {
+        throw createValueHasWrongTypeError(
+          expr,
+          value,
+          `optionalChainingSemantics must be 'legacy' or 'native'`,
+        );
+      }
+    }
+
+    analysis.hostOptionalChainingSemantics =
+      directiveOptionalChainingSemantics ??
+      (this.nativeOptionalChainingSemantics
+        ? OptionalChainingSemantics.Native
+        : OptionalChainingSemantics.Legacy);
 
     let providersRequiringFactory: Set<Reference<ClassDeclaration>> | null = null;
     if (directiveResult !== undefined && directiveResult.decorator.has('providers')) {

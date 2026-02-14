@@ -17,6 +17,7 @@ import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry
 import {BindingParser} from '../../template_parser/binding_parser';
 import * as t from '../r3_ast';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
+import {OptionalChainingSemantics} from './api';
 
 import {I18nMetaVisitor} from './i18n/meta';
 
@@ -295,6 +296,13 @@ export interface ParsedTemplate {
    * Include whitespace nodes in the parsed output.
    */
   preserveWhitespaces?: boolean;
+
+  /**
+   * The semantics used for safe navigation (`?.`) expressions in this template.
+   * When `'native'`, safe navigation returns `undefined` on short-circuit.
+   * When `'legacy'` or not set, safe navigation returns `null`.
+   */
+  optionalChainingSemantics?: OptionalChainingSemantics;
 
   /**
    * Any errors from parsing the template the first time.

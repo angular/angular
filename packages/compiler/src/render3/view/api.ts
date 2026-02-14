@@ -121,6 +121,27 @@ export interface R3DirectiveMetadata {
    * Additional directives applied to the directive host.
    */
   hostDirectives: R3HostDirectiveMetadata[] | null;
+
+  /**
+   * Optional chaining semantics for host binding expressions.
+   * When `Native`, safe navigation (`?.`) in host bindings evaluates to `undefined`.
+   * When `Legacy` (default), safe navigation evaluates to `null`.
+   */
+  hostOptionalChainingSemantics?: OptionalChainingSemantics;
+}
+
+/**
+ * Specifies the semantics used for safe navigation (`?.`) expressions in a template.
+ *
+ * - `Legacy`: Safe navigation returns `null` on short-circuit (Angular's historical behavior).
+ * - `Native`: Safe navigation returns `undefined` on short-circuit, matching native ECMAScript
+ *   optional chaining semantics (TC39 spec).
+ */
+export enum OptionalChainingSemantics {
+  /** Legacy Angular semantics: `a?.b` evaluates to `null` when `a` is nullish. */
+  Legacy = 'legacy',
+  /** Native ECMAScript semantics: `a?.b` evaluates to `undefined` when `a` is nullish. */
+  Native = 'native',
 }
 
 /**
@@ -219,6 +240,13 @@ export interface R3ComponentMetadata<
      * Whether the template preserves whitespaces from the user's code.
      */
     preserveWhitespaces?: boolean;
+
+    /**
+     * The semantics used for safe navigation (`?.`) expressions in this template.
+     * When set to `OptionalChainingSemantics.Native`, safe navigation returns `undefined`
+     * on short-circuit (matching native ECMAScript optional chaining). Defaults to `Legacy` (`null`).
+     */
+    optionalChainingSemantics?: OptionalChainingSemantics;
   };
 
   declarations: DeclarationT[];

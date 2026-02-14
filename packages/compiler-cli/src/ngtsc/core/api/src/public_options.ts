@@ -466,4 +466,22 @@ export interface MiscOptions {
    * another library without option set will not issue error if rendered in orphan way.
    */
   forbidOrphanComponents?: boolean;
+
+  /**
+   * When enabled, safe navigation (`?.`) expressions in templates of components compiled in
+   * this compilation unit return `undefined` on short-circuit, matching JavaScript/TypeScript
+   * optional chaining semantics (TC39 spec).
+   *
+   * When disabled (default), safe navigation returns `null` on short-circuit, which is
+   * Angular's historical behavior.
+   *
+   * This flag only affects components compiled directly in this project. Libraries consumed
+   * from npm (partially or fully compiled) retain the semantics they were compiled with.
+   * The linker reads each library's `optionalChainingSemantics` metadata and defaults to
+   * `'legacy'` when the metadata is absent, ensuring backward compatibility regardless of
+   * this flag's value in the consuming application.
+   *
+   * Defaults to `false`.
+   */
+  nativeOptionalChainingSemantics?: boolean;
 }

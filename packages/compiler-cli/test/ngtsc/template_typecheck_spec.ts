@@ -1026,13 +1026,16 @@ runInEachFileSystem(() => {
         env.tsconfig({strictTemplates: true});
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(2);
+        // The legacy safe navigation usage diagnostic (NG8119) fires since
+        // nativeOptionalChainingSemantics is not explicitly enabled.
+        expect(diags.length).toBe(3);
         expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toEqual(
           `Type 'boolean | undefined' is not assignable to type 'boolean'.`,
         );
         expect(diags[1].messageText).toEqual(
           `Property 'invalid' does not exist on type 'TestCmp'.`,
         );
+        expect(diags[2].messageText).toContain('legacy Angular semantics');
       });
 
       it('should not infer result type for safe navigation expressions when not enabled', () => {

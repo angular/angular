@@ -203,13 +203,15 @@ export interface R3DirectiveMetadataFacade {
   providers: Provider[] | null;
   viewQueries: R3QueryMetadataFacade[];
   isStandalone: boolean;
-  isSignal: boolean;
   hostDirectives: R3HostDirectiveMetadataFacade[] | null;
+  isSignal: boolean;
+  optionalChainingSemantics?: 'legacy' | 'native';
 }
 
 export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   template: string;
   preserveWhitespaces: boolean;
+  optionalChainingSemantics?: 'legacy' | 'native';
   animations: OpaqueValue[] | undefined;
   declarations: R3TemplateDependencyFacade[];
   styles: string[];
@@ -254,12 +256,11 @@ export interface R3DeclareDirectiveFacade {
   exportAs?: string[];
   usesInheritance?: boolean;
   usesOnChanges?: boolean;
-  controlCreate?: {
-    passThroughInput: string | null;
-  };
+  controlCreate?: {passThroughInput: string | null};
   isStandalone?: boolean;
-  hostDirectives?: R3HostDirectiveMetadataFacade[] | null;
   isSignal?: boolean;
+  hostDirectives?: R3HostDirectiveMetadataFacade[] | null;
+  hostOptionalChainingSemantics?: 'legacy' | 'native';
 }
 
 export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
@@ -281,6 +282,7 @@ export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
   changeDetection?: ChangeDetectionStrategy;
   encapsulation?: ViewEncapsulation;
   preserveWhitespaces?: boolean;
+  optionalChainingSemantics?: 'legacy' | 'native';
 }
 
 export type R3DeclareTemplateDependencyFacade = {
@@ -395,8 +397,8 @@ export interface R3DeclareNgModuleFacade {
 
 export interface R3DeclarePipeFacade {
   type: Type;
-  name: string;
   version: string;
+  name: string;
   pure?: boolean;
   isStandalone?: boolean;
 }

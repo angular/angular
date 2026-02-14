@@ -120,6 +120,29 @@ Unless otherwise commented, each following option is set to the value for `stric
 | `strictContextGenerics`      | Whether the type parameters of generic components will be inferred correctly \(including any generic bounds\). If disabled, any type parameters will be `any`.                                                                                                                                                                                                                |
 | `strictLiteralTypes`         | Whether object and array literals declared in the template will have their type inferred. If disabled, the type of such literals will be `any`. This flag is `true` when _either_ `fullTemplateTypeCheck` or `strictTemplates` is set to `true`.                                                                                                                              |
 
+### Optional chaining semantics
+
+By default, Angular templates use legacy semantics for the safe navigation operator (`?.`), where `a?.b` evaluates to `null` when `a` is `null` or `undefined`. This differs from native ECMAScript optional chaining, which evaluates to `undefined`.
+
+To opt into native ECMAScript semantics, set `nativeOptionalChainingSemantics` to `true` in `angularCompilerOptions`:
+
+<docs-code language="json">
+{
+  "angularCompilerOptions": {
+    "nativeOptionalChainingSemantics": true
+  }
+}
+</docs-code>
+
+When enabled:
+
+- `a?.b` evaluates to `undefined` (instead of `null`) at runtime when `a` is nullish
+- This aligns runtime behavior with TypeScript's type inference (which already uses `| undefined`)
+- The flag only affects components compiled in the current project — libraries from npm retain the semantics they were compiled with
+- The per-template `optionalChainingSemantics` metadata is written into partial declarations so that the linker always respects the intended behavior
+
+**Migration note:** Use `ng generate @angular/core:optional-chaining-semantics-migration` to identify components with `?.` usage in their templates. Review each component to ensure it does not depend on the `null` return value before enabling the flag. Note that `a?.b ?? null` is **not** a safe blanket migration — it would incorrectly change genuinely `undefined` property values (e.g., when the property exists but is `undefined`) to `null`.
+
 If you still have issues after troubleshooting with these flags, fall back to full mode by disabling `strictTemplates`.
 
 If that doesn't work, an option of last resort is to turn off full mode entirely with `fullTemplateTypeCheck: false`.

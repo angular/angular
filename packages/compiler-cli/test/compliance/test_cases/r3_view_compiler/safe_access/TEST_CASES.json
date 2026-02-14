@@ -98,6 +98,24 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should use undefined for safe navigation with native optional chaining semantics",
+      "inputFiles": ["safe_access_native_semantics.ts"],
+      "angularCompilerOptions": {
+        "nativeOptionalChainingSemantics": true
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "safe_access_native_semantics_template.js",
+              "generated": "safe_access_native_semantics.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

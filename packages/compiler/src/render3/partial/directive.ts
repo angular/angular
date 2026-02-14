@@ -12,7 +12,12 @@ import {
   generateForwardRef,
   R3CompiledExpression,
 } from '../util';
-import {R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
+import {
+  OptionalChainingSemantics,
+  R3DirectiveMetadata,
+  R3HostMetadata,
+  R3QueryMetadata,
+} from '../view/api';
 import {createDirectiveType, createHostDirectivesMappingArray} from '../view/compiler';
 import {
   asLiteral,
@@ -60,6 +65,10 @@ export function createDirectiveDefinitionMap(
   if (meta.isSignal) {
     definitionMap.set('isSignal', o.literal(meta.isSignal));
   }
+
+  const hostOptionalChainingSemantics =
+    meta.hostOptionalChainingSemantics ?? OptionalChainingSemantics.Legacy;
+  definitionMap.set('hostOptionalChainingSemantics', o.literal(hostOptionalChainingSemantics));
 
   // e.g. `selector: 'some-dir'`
   if (meta.selector !== null) {

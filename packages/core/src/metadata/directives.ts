@@ -344,6 +344,14 @@ export interface Directive {
   signals?: boolean;
 
   /**
+   * Controls optional chaining semantics for host binding expressions on this directive.
+   *
+   * - `'legacy'` (default): safe navigation returns `null` on short-circuit.
+   * - `'native'`: safe navigation returns `undefined`, matching JavaScript optional chaining.
+   */
+  optionalChainingSemantics?: 'legacy' | 'native';
+
+  /**
    * Standalone directives that should be applied to the host whenever the directive is matched.
    * By default, none of the inputs or outputs of the host directives will be available on the host,
    * unless they are specified in the `inputs` or `outputs` properties.
@@ -620,6 +628,32 @@ export interface Component extends Directive {
    * overridden in compiler options.
    */
   preserveWhitespaces?: boolean;
+
+  /**
+   * Controls the semantics of the safe navigation operator (`?.`) in this component's template.
+   *
+   * - `'legacy'` (default): `?.` returns `null` on short-circuit. This is Angular's historical
+   *   behavior.
+   * - `'native'`: `?.` returns `undefined` on short-circuit, matching JavaScript/TypeScript
+   *   optional chaining semantics (TC39 spec).
+   *
+   * This per-component setting overrides the project-wide `nativeOptionalChainingSemantics`
+   * compiler option. Use it to opt individual components into native semantics while keeping
+   * the rest of the project on legacy, or vice versa.
+   *
+   * @usageNotes
+   *
+   * ```typescript
+   * @Component({
+   *   template: '{{ user?.name }}',
+   *   optionalChainingSemantics: 'native',
+   * })
+   * class MyComponent {
+   *   user: {name: string} | null = null;
+   * }
+   * ```
+   */
+  optionalChainingSemantics?: 'legacy' | 'native';
 
   /**
    * Set `standalone` to `false` if you want to import the directive into an NgModule.

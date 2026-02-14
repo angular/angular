@@ -14,6 +14,7 @@ import {generateForwardRef, R3CompiledExpression} from '../util';
 import {
   DeclarationListEmitMode,
   DeferBlockDepsEmitMode,
+  OptionalChainingSemantics,
   R3ComponentMetadata,
   R3TemplateDependencyKind,
   R3TemplateDependencyMetadata,
@@ -128,6 +129,11 @@ export function createComponentDefinitionMap(
   if (template.preserveWhitespaces === true) {
     definitionMap.set('preserveWhitespaces', o.literal(true));
   }
+
+  // Always write optionalChainingSemantics so the linker knows the intended behavior.
+  // Default is 'legacy' for backward compatibility with libraries compiled before this feature.
+  const semantics = meta.template.optionalChainingSemantics ?? OptionalChainingSemantics.Legacy;
+  definitionMap.set('optionalChainingSemantics', o.literal(semantics));
 
   if (meta.defer.mode === DeferBlockDepsEmitMode.PerBlock) {
     const resolvers: o.Expression[] = [];

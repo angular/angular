@@ -22,6 +22,7 @@ import {R3CompiledExpression, typeWithParameters} from '../util';
 import {
   DeclarationListEmitMode,
   DeferBlockDepsEmitMode,
+  OptionalChainingSemantics,
   R3ComponentMetadata,
   R3DeferResolverFunctionMetadata,
   R3DirectiveMetadata,
@@ -80,6 +81,7 @@ function baseDirectiveFields(
       meta.selector || '',
       meta.name,
       definitionMap,
+      meta.hostOptionalChainingSemantics,
     ),
   );
 
@@ -248,6 +250,7 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn,
     meta.relativeTemplatePath,
     getTemplateSourceLocationsEnabled(),
+    meta.template.optionalChainingSemantics ?? OptionalChainingSemantics.Legacy,
   );
 
   // Then the IR is transformed to prepare it for code generation.
@@ -487,6 +490,7 @@ function createHostBindingsFunction(
   selector: string,
   name: string,
   definitionMap: DefinitionMap,
+  optionalChainingSemantics?: OptionalChainingSemantics,
 ): o.Expression | null {
   const bindings = bindingParser.createBoundHostProperties(
     hostBindingsMetadata.properties,
@@ -521,6 +525,7 @@ function createHostBindingsFunction(
       properties: bindings,
       events: eventBindings,
       attributes: hostBindingsMetadata.attributes,
+      optionalChainingSemantics,
     },
     bindingParser,
     constantPool,

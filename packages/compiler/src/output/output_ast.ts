@@ -1483,6 +1483,7 @@ export interface ExpressionVisitor {
 
 export const NULL_EXPR = new LiteralExpr(null, null, null);
 export const TYPED_NULL_EXPR = new LiteralExpr(null, INFERRED_TYPE, null);
+export const UNDEFINED_EXPR = new LiteralExpr(undefined, null, null);
 
 //// Statements
 export enum StmtModifier {

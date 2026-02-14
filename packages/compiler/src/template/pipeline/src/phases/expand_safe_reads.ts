@@ -7,8 +7,9 @@
  */
 
 import * as o from '../../../../output/output_ast';
+import {OptionalChainingSemantics} from '../../../../render3/view/api';
 import * as ir from '../../ir';
-import {CompilationJob} from '../compilation';
+import {CompilationJob, ComponentCompilationJob, HostBindingCompilationJob} from '../compilation';
 
 interface SafeTransformContext {
   job: CompilationJob;
@@ -16,16 +17,19 @@ interface SafeTransformContext {
 
 /**
  * Safe read expressions such as `a?.b` have different semantics in Angular templates as
- * compared to JavaScript. In particular, they default to `null` instead of `undefined`. This phase
- * finds all unresolved safe read expressions, and converts them into the appropriate output AST
- * reads, guarded by null checks. We generate temporaries as needed, to avoid re-evaluating the same
- * sub-expression multiple times.
+ * compared to JavaScript. By default (legacy semantics), they evaluate to `null` instead of
+ * `undefined`. When `optionalChainingSemantics` is set to `'native'` on the compilation job,
+ * safe reads evaluate to `undefined`, matching JavaScript/TypeScript optional chaining behavior.
+ *
+ * This phase finds all unresolved safe read expressions, and converts them into the appropriate
+ * output AST reads, guarded by null checks. We generate temporaries as needed, to avoid
+ * re-evaluating the same sub-expression multiple times.
  */
 export function expandSafeReads(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
       ir.transformExpressionsInOp(op, (e) => safeTransform(e, {job}), ir.VisitorContextFlag.None);
-      ir.transformExpressionsInOp(op, ternaryTransform, ir.VisitorContextFlag.None);
+      ir.transformExpressionsInOp(op, (e) => ternaryTransform(e, job), ir.VisitorContextFlag.None);
     }
   }
 }
@@ -232,14 +236,20 @@ function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression
   return e;
 }
 
-function ternaryTransform(e: o.Expression): o.Expression {
+function ternaryTransform(e: o.Expression, job: CompilationJob): o.Expression {
   if (!(e instanceof ir.SafeTernaryExpr)) {
     return e;
   }
+  // Use `undefined` as the short-circuit value when JS optional chaining semantics are enabled,
+  // otherwise use `null` for legacy Angular behavior.
+  const useJsSemantics =
+    (job instanceof ComponentCompilationJob || job instanceof HostBindingCompilationJob) &&
+    job.optionalChainingSemantics === OptionalChainingSemantics.Native;
+  const shortCircuitValue = useJsSemantics ? o.UNDEFINED_EXPR : o.NULL_EXPR;
   return new o.ParenthesizedExpr(
     new o.ConditionalExpr(
       new o.BinaryOperatorExpr(o.BinaryOperator.Equals, e.guard, o.NULL_EXPR),
-      o.NULL_EXPR,
+      shortCircuitValue,
       e.expr,
     ),
   );

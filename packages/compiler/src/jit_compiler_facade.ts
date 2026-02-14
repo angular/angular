@@ -78,6 +78,7 @@ import {
 import {
   DeclarationListEmitMode,
   DeferBlockDepsEmitMode,
+  OptionalChainingSemantics,
   R3ComponentDeferMetadata,
   R3ComponentMetadata,
   R3DirectiveDependencyMetadata,
@@ -300,11 +301,18 @@ export class CompilerFacadeImpl implements CompilerFacade {
     );
 
     // Compile the component metadata, including template, into an expression.
+    const optionalChainingSemantics =
+      facade.optionalChainingSemantics === 'native'
+        ? OptionalChainingSemantics.Native
+        : OptionalChainingSemantics.Legacy;
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...facade,
       ...convertDirectiveFacadeToMetadata(facade),
       selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
-      template,
+      template: {
+        ...template,
+        optionalChainingSemantics,
+      },
       declarations: facade.declarations.map(convertDeclarationFacadeToMetadata),
       declarationListEmitMode: DeclarationListEmitMode.Direct,
       defer,
@@ -529,6 +537,10 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     queries: facade.queries.map(convertToR3QueryMetadata),
     providers: facade.providers != null ? new WrappedNodeExpr(facade.providers) : null,
     viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
+    hostOptionalChainingSemantics:
+      facade.optionalChainingSemantics === 'native'
+        ? OptionalChainingSemantics.Native
+        : OptionalChainingSemantics.Legacy,
     hostDirectives,
   };
 }
@@ -567,6 +579,10 @@ function convertDeclareDirectiveFacadeToMetadata(
     isStandalone:
       declaration.isStandalone ?? getJitStandaloneDefaultForVersion(declaration.version),
     isSignal: declaration.isSignal ?? false,
+    hostOptionalChainingSemantics:
+      declaration.hostOptionalChainingSemantics === 'native'
+        ? OptionalChainingSemantics.Native
+        : OptionalChainingSemantics.Legacy,
     hostDirectives,
   };
 }
@@ -657,9 +673,17 @@ function convertDeclareComponentFacadeToMetadata(
       kind === R3TemplateDependencyKind.Directive || kind === R3TemplateDependencyKind.NgModule,
   );
 
+  const declOptionalChainingSemantics =
+    decl.optionalChainingSemantics === 'native'
+      ? OptionalChainingSemantics.Native
+      : OptionalChainingSemantics.Legacy;
+
   return {
     ...convertDeclareDirectiveFacadeToMetadata(decl, typeSourceSpan),
-    template,
+    template: {
+      ...template,
+      optionalChainingSemantics: declOptionalChainingSemantics,
+    },
     styles: decl.styles ?? [],
     declarations,
     viewProviders:

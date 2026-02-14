@@ -146,6 +146,11 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
   isSignal?: boolean;
 
   /**
+   * Optional chaining semantics for host binding expressions.
+   */
+  hostOptionalChainingSemantics?: 'legacy' | 'native';
+
+  /**
    * Additional directives applied to the directive host.
    */
   hostDirectives?: R3DeclareHostDirectiveMetadata[];
@@ -236,6 +241,14 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
    * Whether whitespace in the template should be preserved. Defaults to false.
    */
   preserveWhitespaces?: boolean;
+
+  /**
+   * The semantics used for safe navigation (`?.`) expressions in this template.
+   * `'legacy'` means safe navigation returns `null` on short-circuit (default).
+   * `'native'` means safe navigation returns `undefined`, matching native ECMAScript optional chaining.
+   * If not present, defaults to `'legacy'`.
+   */
+  optionalChainingSemantics?: 'legacy' | 'native';
 }
 
 export type R3DeclareTemplateDependencyMetadata =

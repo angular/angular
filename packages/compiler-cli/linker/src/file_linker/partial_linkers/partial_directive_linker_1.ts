@@ -11,6 +11,7 @@ import {
   ForwardRefHandling,
   LegacyInputPartialMapping,
   makeBindingParser,
+  OptionalChainingSemantics,
   outputAst as o,
   ParseLocation,
   ParseSourceFile,
@@ -104,6 +105,11 @@ export function toR3DirectiveMeta<TExpression>(
       ? metaObj.getBoolean('isStandalone')
       : getDefaultStandaloneValue(version),
     isSignal: metaObj.has('isSignal') ? metaObj.getBoolean('isSignal') : false,
+    hostOptionalChainingSemantics:
+      metaObj.has('hostOptionalChainingSemantics') &&
+      metaObj.getString('hostOptionalChainingSemantics') === 'native'
+        ? OptionalChainingSemantics.Native
+        : OptionalChainingSemantics.Legacy,
     hostDirectives: metaObj.has('hostDirectives')
       ? toHostDirectivesMetadata(metaObj.getValue('hostDirectives'))
       : null,

@@ -644,6 +644,20 @@ export enum ErrorCode {
   FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION = 8118,
 
   /**
+   * Safe navigation (`?.`) is used in a template that still uses legacy semantics
+   * (returning `null` on short-circuit instead of `undefined`).
+   *
+   * This diagnostic helps identify `?.` usage that may behave differently after
+   * enabling `nativeOptionalChainingSemantics`. It is only active when the
+   * `legacySafeNavigationUsage` extended diagnostic is enabled.
+   *
+   * ```html
+   * {{ user?.name }}
+   * ```
+   */
+  LEGACY_SAFE_NAVIGATION_USAGE = 8119,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

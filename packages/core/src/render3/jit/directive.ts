@@ -119,6 +119,10 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
             preserveWhitespaces = false;
           }
         }
+        // Resolve optional chaining semantics: component metadata → JIT options → default 'legacy'
+        let optionalChainingSemantics: 'legacy' | 'native' =
+          metadata.optionalChainingSemantics ??
+          (options !== null && options.nativeOptionalChainingSemantics ? 'native' : 'legacy');
         let encapsulation = metadata.encapsulation;
         if (encapsulation === undefined) {
           if (options !== null && options.defaultEncapsulation !== undefined) {
@@ -135,6 +139,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           typeSourceSpan: compiler.createParseSourceSpan('Component', type.name, templateUrl),
           template: metadata.template || '',
           preserveWhitespaces,
+          optionalChainingSemantics,
           styles:
             typeof metadata.styles === 'string'
               ? [metadata.styles]
@@ -326,7 +331,14 @@ function getDirectiveMetadata(type: Type<any>, metadata: Directive) {
   const name = type && type.name;
   const sourceMapUrl = `ng:///${name}/ɵdir.js`;
   const compiler = getCompilerFacade({usage: JitCompilerUsage.Decorator, kind: 'directive', type});
-  const facade = directiveMetadata(type as ComponentType<any>, metadata);
+  const options = getJitOptions();
+  const directiveMetadataWithSemantics: Directive = {
+    ...metadata,
+    optionalChainingSemantics:
+      metadata.optionalChainingSemantics ??
+      (options !== null && options.nativeOptionalChainingSemantics ? 'native' : 'legacy'),
+  };
+  const facade = directiveMetadata(type as ComponentType<any>, directiveMetadataWithSemantics);
   facade.typeSourceSpan = compiler.createParseSourceSpan('Directive', name, sourceMapUrl);
   if (facade.usesInheritance) {
     addDirectiveDefToUndecoratedParents(type);
@@ -392,6 +404,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
     isStandalone: metadata.standalone === undefined ? true : !!metadata.standalone,
     isSignal: !!metadata.signals,
+    optionalChainingSemantics: metadata.optionalChainingSemantics,
     hostDirectives:
       metadata.hostDirectives?.map((directive) =>
         typeof directive === 'function' ? {directive} : directive,
