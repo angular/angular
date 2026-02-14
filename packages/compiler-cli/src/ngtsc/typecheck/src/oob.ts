@@ -247,6 +247,85 @@ export interface OutOfBandDiagnosticRecorder {
     id: TypeCheckId,
     node: TmplAstBoundAttribute | TmplAstTextAttribute,
   ): void;
+
+  /**
+   * Reports that a view query predicate does not match any target in the component's template.
+   *
+   * @param id the type-checking ID of the template.
+   * @param componentNode the component class declaration.
+   * @param queryPropertyName the name of the class property with the query.
+   * @param predicateName the string predicate or type name that could not be matched.
+   * @param isRequired whether the query was declared as required.
+   */
+  missingViewQueryTarget(
+    id: TypeCheckId,
+    componentNode: ClassDeclaration,
+    queryPropertyName: string,
+    predicateName: string,
+    isRequired: boolean,
+    configuredSeverity?: 'error' | 'warning' | 'suppress',
+  ): void;
+
+  /**
+   * Reports that a view query uses `read: TemplateRef` but targets a reference on a
+   * non-`<ng-template>` element. Reading TemplateRef from a regular element always
+   * returns undefined.
+   */
+  queryReadTemplateRefMismatch(
+    id: TypeCheckId,
+    componentNode: ClassDeclaration,
+    queryPropertyName: string,
+    predicateName: string,
+    configuredSeverity?: 'error' | 'warning' | 'suppress',
+  ): void;
+
+  /**
+   * Reports that a required view query's target only exists inside a conditional block
+   * (`@if`, `@switch`, `@for`, `@defer`) and may not be present when the query resolves.
+   */
+  queryTargetOnlyConditional(
+    id: TypeCheckId,
+    componentNode: ClassDeclaration,
+    queryPropertyName: string,
+    predicateName: string,
+    isStatic: boolean,
+  ): void;
+
+  /**
+   * Reports that a non-static view query is accessed in a lifecycle hook where the
+   * query has not been resolved yet.
+   */
+  queryAccessedBeforeAvailable(
+    id: TypeCheckId,
+    accessNode: ts.Node,
+    queryPropertyName: string,
+    hook: 'constructor' | 'ngOnInit',
+  ): void;
+
+  /**
+   * Reports that a view query uses `read: SomeDirective` but the target element does
+   * not have that directive applied.
+   */
+  queryReadDirectiveMismatch(
+    id: TypeCheckId,
+    componentNode: ClassDeclaration,
+    queryPropertyName: string,
+    predicateName: string,
+    directiveName: string,
+    configuredSeverity?: 'error' | 'warning' | 'suppress',
+  ): void;
+
+  /**
+   * Reports that a viewChild query targets a template reference that appears on multiple elements.
+   */
+  queryMultipleTargets(
+    id: TypeCheckId,
+    componentNode: ClassDeclaration,
+    queryPropertyName: string,
+    predicateName: string,
+    count: number,
+    configuredSeverity?: 'error' | 'warning' | 'suppress',
+  ): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -895,6 +974,149 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         message,
       ),
     );
+  }
+
+  missingViewQueryTarget(
+    id: TypeCheckId,
+    componentNode: ClassDeclaration,
+    queryPropertyName: string,
+    predicateName: string,
+    isRequired: boolean,
+    configuredSeverity?: 'error' | 'warning' | 'suppress',
+  ): void {
+    const errorCode = isRequired
+      ? ErrorCode.MISSING_REQUIRED_VIEW_QUERY_TARGET
+      : ErrorCode.MISSING_VIEW_QUERY_TARGET;
+    const category = isRequired
+      ? ts.DiagnosticCategory.Error
+      : configuredSeverity === 'error'
+        ? ts.DiagnosticCategory.Error
+        : ts.DiagnosticCategory.Warning;
+    const requiredOrOptional = isRequired ? 'Required' : 'Optional';
+    const message =
+      `${requiredOrOptional} view query '${queryPropertyName}' expects a target matching ` +
+      `'${predicateName}', but no such target exists in the component's template. ` +
+      (isRequired
+        ? `This will cause a runtime error (NG0951).`
+        : `This query will always return 'undefined'.`);
+
+    this._diagnostics.push({
+      ...makeDiagnostic(errorCode, componentNode, message),
+      category,
+      sourceFile: componentNode.getSourceFile(),
+      typeCheckId: id,
+    });
+  }
+
+  queryReadTemplateRefMismatch(
+    id: TypeCheckId,
+    componentNode: ClassDeclaration,
+    queryPropertyName: string,
+    predicateName: string,
+    configuredSeverity?: 'error' | 'warning' | 'suppress',
+  ): void {
+    const category =
+      configuredSeverity === 'warning'
+        ? ts.DiagnosticCategory.Warning
+        : ts.DiagnosticCategory.Error;
+    const message =
+      `View query '${queryPropertyName}' uses 'read: TemplateRef' but the target ` +
+      `'#${predicateName}' is on a regular element, not an <ng-template>. ` +
+      `Reading TemplateRef from a non-template element will always return undefined.`;
+
+    this._diagnostics.push({
+      ...makeDiagnostic(ErrorCode.QUERY_READ_TEMPLATEREF_MISMATCH, componentNode, message),
+      category,
+      sourceFile: componentNode.getSourceFile(),
+      typeCheckId: id,
+    });
+  }
+
+  queryTargetOnlyConditional(
+    id: TypeCheckId,
+    componentNode: ClassDeclaration,
+    queryPropertyName: string,
+    predicateName: string,
+    isStatic: boolean,
+  ): void {
+    const queryKind = isStatic ? 'Static' : 'Required';
+    const consequence = isStatic
+      ? `Static queries resolve before control-flow blocks render, so this target can never be resolved at runtime.`
+      : `When the condition is not met, this query may throw a runtime error (NG0951).`;
+    const message =
+      `${queryKind} view query '${queryPropertyName}' targets '#${predicateName}' which only ` +
+      `exists inside a conditional block (@if, @switch, @for, @defer, <ng-template>, or ` +
+      `structural directive like *ngIf). ${consequence} Consider moving the target outside ` +
+      `the conditional block or adjusting query options.`;
+
+    this._diagnostics.push({
+      ...makeDiagnostic(ErrorCode.QUERY_TARGET_ONLY_CONDITIONAL, componentNode, message),
+      category: ts.DiagnosticCategory.Error,
+      sourceFile: componentNode.getSourceFile(),
+      typeCheckId: id,
+    });
+  }
+
+  queryAccessedBeforeAvailable(
+    id: TypeCheckId,
+    accessNode: ts.Node,
+    queryPropertyName: string,
+    hook: 'constructor' | 'ngOnInit',
+  ): void {
+    const message =
+      `View query '${queryPropertyName}' is accessed in '${hook}' before non-static view ` +
+      `queries are resolved. Access this query in 'ngAfterViewInit' (or use static: true if ` +
+      `appropriate).`;
+
+    this._diagnostics.push({
+      ...makeDiagnostic(ErrorCode.QUERY_ACCESS_BEFORE_AVAILABLE, accessNode, message),
+      category: ts.DiagnosticCategory.Warning,
+      sourceFile: accessNode.getSourceFile(),
+      typeCheckId: id,
+    });
+  }
+
+  queryReadDirectiveMismatch(
+    id: TypeCheckId,
+    componentNode: ClassDeclaration,
+    queryPropertyName: string,
+    predicateName: string,
+    directiveName: string,
+  ): void {
+    const message =
+      `View query '${queryPropertyName}' uses 'read: ${directiveName}' but the target ` +
+      `'#${predicateName}' does not have '${directiveName}' applied. ` +
+      `The query will always return undefined at runtime.`;
+
+    this._diagnostics.push({
+      ...makeDiagnostic(ErrorCode.QUERY_READ_DIRECTIVE_MISMATCH, componentNode, message),
+      category: ts.DiagnosticCategory.Warning,
+      sourceFile: componentNode.getSourceFile(),
+      typeCheckId: id,
+    });
+  }
+
+  queryMultipleTargets(
+    id: TypeCheckId,
+    componentNode: ClassDeclaration,
+    queryPropertyName: string,
+    predicateName: string,
+    count: number,
+    configuredSeverity?: 'error' | 'warning' | 'suppress',
+  ): void {
+    const category =
+      configuredSeverity === 'error' ? ts.DiagnosticCategory.Error : ts.DiagnosticCategory.Warning;
+    const message =
+      `viewChild query '${queryPropertyName}' targets '#${predicateName}' which appears on ` +
+      `${count} elements. viewChild returns the first match in document order, which may not ` +
+      `be the intended target. Consider using unique reference names or viewChildren.`;
+
+    this._diagnostics.push({
+      ...makeDiagnostic(ErrorCode.QUERY_MULTIPLE_TARGETS, componentNode, message),
+      category,
+      sourceFile: componentNode.getSourceFile(),
+      typeCheckId: id,
+    });
   }
 }
 

@@ -297,24 +297,23 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
-export interface TestDirective
-  extends Partial<
-    Pick<
-      TypeCheckableDirectiveMeta,
-      Exclude<
-        keyof TypeCheckableDirectiveMeta,
-        | 'ref'
-        | 'coercedInputFields'
-        | 'restrictedInputFields'
-        | 'stringLiteralInputFields'
-        | 'undeclaredInputFields'
-        | 'publicMethods'
-        | 'inputs'
-        | 'outputs'
-        | 'hostDirectives'
-      >
+export interface TestDirective extends Partial<
+  Pick<
+    TypeCheckableDirectiveMeta,
+    Exclude<
+      keyof TypeCheckableDirectiveMeta,
+      | 'ref'
+      | 'coercedInputFields'
+      | 'restrictedInputFields'
+      | 'stringLiteralInputFields'
+      | 'undeclaredInputFields'
+      | 'publicMethods'
+      | 'inputs'
+      | 'outputs'
+      | 'hostDirectives'
     >
-  > {
+  >
+> {
   selector: string | null;
   name: string;
   file?: AbsoluteFsPath;
@@ -1072,6 +1071,9 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
       | TmplAstInteractionDeferredTrigger
       | TmplAstViewportDeferredTrigger,
   ): void {}
+  missingViewQueryTarget(): void {}
+  queryReadTemplateRefMismatch(): void {}
+  queryTargetOnlyConditional(): void {}
 }
 
 export function createNgCompilerForFile(fileContent: string) {

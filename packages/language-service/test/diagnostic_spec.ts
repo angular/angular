@@ -807,6 +807,48 @@ describe('getSuggestedDiagnostics', () => {
     const diags = project.getSuggestionDiagnosticsForFile('app.ts');
     expect(diags.length).toBe(0);
   });
+
+  it('should report error for required viewChild with missing template ref', () => {
+    const files = {
+      'app.ts': `
+      import {Component, viewChild} from '@angular/core';
+
+      @Component({
+        template: '<div>no refs here</div>',
+        standalone: false,
+      })
+      export class AppComponent {
+        el = viewChild.required('missing');
+      }
+    `,
+    };
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+    const diags = project.getDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(1);
+    expect(diags[0].messageText).toContain('missing');
+    expect(diags[0].category).toBe(ts.DiagnosticCategory.Error);
+  });
+
+  it('should not report for required viewChild with matching template ref', () => {
+    const files = {
+      'app.ts': `
+      import {Component, viewChild} from '@angular/core';
+
+      @Component({
+        template: '<div #myRef></div>',
+        standalone: false,
+      })
+      export class AppComponent {
+        el = viewChild.required('myRef');
+      }
+    `,
+    };
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+    const diags = project.getDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(0);
+  });
 });
 
 function getTextOfDiagnostic(diag: ts.Diagnostic): string {

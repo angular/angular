@@ -338,17 +338,19 @@ function parseExtractedTemplate(
   // In order to guarantee the correctness of diagnostics, templates are parsed a second time
   // with the above options set to preserve source mappings.
 
-  const {nodes: diagNodes} = parseTemplate(sourceStr, sourceMapUrl ?? '', {
+  const {nodes: diagNodes, commentNodes} = parseTemplate(sourceStr, sourceMapUrl ?? '', {
     ...commonParseOptions,
     preserveWhitespaces: true,
     preserveLineEndings: true,
     preserveSignificantWhitespace: true,
     leadingTriviaChars: [],
+    collectCommentNodes: true,
   });
 
   return {
     ...parsedTemplate,
     diagNodes,
+    commentNodes,
     file: new ParseSourceFile(sourceStr, sourceMapUrl ?? ''),
   };
 }

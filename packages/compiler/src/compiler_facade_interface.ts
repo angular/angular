@@ -362,6 +362,7 @@ export interface R3QueryMetadataFacade {
   read: OpaqueValue | null;
   static: boolean;
   isSignal: boolean;
+  isRequired: boolean;
 }
 
 export interface R3DeclareQueryMetadataFacade {
@@ -373,6 +374,7 @@ export interface R3DeclareQueryMetadataFacade {
   static?: boolean;
   emitDistinctChangesOnly?: boolean;
   isSignal?: boolean;
+  isRequired?: boolean;
 }
 
 export interface R3DeclareInjectorFacade {

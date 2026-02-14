@@ -515,6 +515,7 @@ export function extractDecoratorQueryMetadata(
   // The default value for descendants is true for every decorator except @ContentChildren.
   let descendants: boolean = name !== 'ContentChildren';
   let emitDistinctChangesOnly: boolean = emitDistinctChangesOnlyDefaultValue;
+  let isRequired = false;
   if (args.length === 2) {
     const optionsExpr = unwrapExpression(args[1]);
     if (!ts.isObjectLiteralExpression(optionsExpr)) {
@@ -566,6 +567,21 @@ export function extractDecoratorQueryMetadata(
       }
       isStatic = staticValue;
     }
+
+    if (options.has('required')) {
+      const requiredExpr = options.get('required')!;
+      const requiredValue = evaluator.evaluate(requiredExpr);
+      if (typeof requiredValue !== 'boolean') {
+        throw createValueHasWrongTypeError(
+          requiredExpr,
+          requiredValue,
+          `@${name} options.required must be a boolean`,
+        );
+      }
+      if (first) {
+        isRequired = requiredValue;
+      }
+    }
   } else if (args.length > 2) {
     // Too many arguments.
     throw new FatalDiagnosticError(
@@ -584,6 +600,7 @@ export function extractDecoratorQueryMetadata(
     read,
     static: isStatic,
     emitDistinctChangesOnly,
+    isRequired,
   };
 }
 

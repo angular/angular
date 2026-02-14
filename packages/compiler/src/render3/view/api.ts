@@ -464,6 +464,13 @@ export interface R3QueryMetadata {
 
   /** Whether the query is signal-based. */
   isSignal: boolean;
+
+  /**
+   * Whether the query is required.
+   * Signal queries created via `viewChild.required()` or `contentChild.required()`
+   * are marked as required and must resolve at least one result.
+   */
+  isRequired: boolean;
 }
 
 /**

@@ -53,5 +53,8 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
 export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([
   ExtendedTemplateDiagnosticName.CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION,
   ExtendedTemplateDiagnosticName.UNUSED_STANDALONE_IMPORTS,
+  ExtendedTemplateDiagnosticName.MISSING_OPTIONAL_VIEW_QUERY_TARGET,
+  ExtendedTemplateDiagnosticName.QUERY_READ_TEMPLATEREF_MISMATCH,
+  ExtendedTemplateDiagnosticName.QUERY_READ_DIRECTIVE_MISMATCH,
   ...ALL_DIAGNOSTIC_FACTORIES.map((factory) => factory.name),
 ]);

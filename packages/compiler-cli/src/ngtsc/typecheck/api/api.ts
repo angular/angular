@@ -302,6 +302,31 @@ export interface TypeCheckingConfig {
   unusedStandaloneImports: 'error' | 'warning' | 'suppress';
 
   /**
+   * Whether to check for optional view queries whose string predicate doesn't match
+   * any template reference. When not 'suppress', produces NG8024.
+   */
+  missingOptionalViewQueryTarget: 'error' | 'warning' | 'suppress';
+
+  /**
+   * Whether to check for view queries that use `read: TemplateRef` but target a
+   * non-`<ng-template>` element. When not 'suppress', produces NG8025.
+   */
+  queryReadTemplateRefMismatch: 'error' | 'warning' | 'suppress';
+
+  /**
+   * Whether to check for view queries that use `read: SomeDirective` but the target
+   * element doesn't have that directive applied. When not 'suppress', produces NG8029.
+   */
+  queryReadDirectiveMismatch: 'error' | 'warning' | 'suppress';
+
+  /**
+   * Whether to produce diagnostics when a `viewChild` query targets a template ref that appears
+   * on multiple elements. `viewChild` returns the first match, which may not be intended.
+   * When not 'suppress', produces NG8030.
+   */
+  queryMultipleTargets: 'error' | 'warning' | 'suppress';
+
+  /**
    * Whether to use any generic types of the context component.
    *
    * If this is `true`, then if the context component has generic types, those will be mirrored in

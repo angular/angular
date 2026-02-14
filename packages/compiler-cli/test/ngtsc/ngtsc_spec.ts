@@ -5294,7 +5294,7 @@ runInEachFileSystem((os: string) => {
 
         @Component({
           selector: 'test',
-          template: '<div #foo></div>',
+          template: '<div #foo></div><div #test1></div><div #accessor></div>',
           queries: {
             'mview': new ViewChild('test1'),
             'mcontent': new ContentChild('test2'),

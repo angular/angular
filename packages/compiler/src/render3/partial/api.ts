@@ -341,6 +341,9 @@ export interface R3DeclareQueryMetadata {
 
   /** Whether the query is signal-based. */
   isSignal: boolean;
+
+  /** Whether the query is required. */
+  isRequired?: boolean;
 }
 
 /**

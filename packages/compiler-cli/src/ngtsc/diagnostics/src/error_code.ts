@@ -440,6 +440,50 @@ export enum ErrorCode {
   FORM_FIELD_UNSUPPORTED_BINDING = 8022,
 
   /**
+   * Raised when a required view query (e.g. `viewChild.required('foo')`) references a template
+   * variable or component that does not exist in the component's template.
+   */
+  MISSING_REQUIRED_VIEW_QUERY_TARGET = 8023,
+
+  /**
+   * Raised as a warning when an optional view query (e.g. `viewChild('foo')`) references a
+   * template variable or component that does not exist in the component's template.
+   */
+  MISSING_VIEW_QUERY_TARGET = 8024,
+
+  /**
+   * Raised when a view query uses `read: TemplateRef` but the target template reference
+   * is on a non-`<ng-template>` element. Reading `TemplateRef` from a regular element always
+   * results in `undefined` at runtime.
+   */
+  QUERY_READ_TEMPLATEREF_MISMATCH = 8025,
+
+  /**
+   * Raised when a required view query's target only exists inside a conditional block
+   * (`@if`, `@switch`, `@for`, `@defer`). The required query may throw NG0951 at runtime
+   * when the condition is not met and the target element is not in the DOM.
+   */
+  QUERY_TARGET_ONLY_CONDITIONAL = 8028,
+
+  /**
+   * Raised when a view query uses `read: SomeDirective` but the target element does not have
+   * that directive applied. The query will always return `undefined` at runtime.
+   */
+  QUERY_READ_DIRECTIVE_MISMATCH = 8029,
+
+  /**
+   * Raised when a `viewChild` query targets a template reference that appears on multiple elements.
+   * `viewChild` returns the first match in document order, which may not be the intended target.
+   */
+  QUERY_MULTIPLE_TARGETS = 8030,
+
+  /**
+   * Raised as a warning when a non-static view query is accessed in `constructor` or `ngOnInit`,
+   * before Angular resolves view queries.
+   */
+  QUERY_ACCESS_BEFORE_AVAILABLE = 8031,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *

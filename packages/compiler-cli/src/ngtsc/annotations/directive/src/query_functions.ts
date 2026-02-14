@@ -125,6 +125,7 @@ export function tryParseSignalQueryFromInitializer(
       first: isSingleQuery,
       read,
       descendants,
+      isRequired: query.isRequired,
     },
   };
 }

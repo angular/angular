@@ -245,6 +245,7 @@ function toQueryMetadata<TExpression>(
     read: obj.has('read') ? obj.getOpaque('read') : null,
     static: obj.has('static') ? obj.getBoolean('static') : false,
     isSignal: obj.has('isSignal') ? obj.getBoolean('isSignal') : false,
+    isRequired: obj.has('isRequired') ? obj.getBoolean('isRequired') : false,
   };
 }
 

@@ -1178,7 +1178,7 @@ runInEachFileSystem(() => {
             class ChildComponent {}
 
             @Component({
-              template: '<child-component/>',
+              template: '<child-component #foo/>',
               imports: [ChildComponent]
             })
             class MyComponent {
@@ -1210,7 +1210,7 @@ runInEachFileSystem(() => {
             }) class ChildComponent {}
 
             @Component({
-              template: '<child-component/>',
+              template: '<child-component #foo/>',
               imports: [ChildComponent]
             })
             class MyComponent {
@@ -1240,7 +1240,7 @@ runInEachFileSystem(() => {
             }) class ChildComponent {}
 
             @Component({
-              template: '<child-component/>',
+              template: '<child-component #foo/>',
               imports: [ChildComponent]
             })
             class MyComponent {

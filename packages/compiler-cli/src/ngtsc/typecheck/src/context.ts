@@ -12,8 +12,15 @@ import {
   ParseSourceFile,
   R3TargetBinder,
   SchemaMetadata,
+  TmplAstDeferredBlock,
+  TmplAstElement,
+  TmplAstForLoopBlock,
   TmplAstHostElement,
+  TmplAstIfBlock,
   TmplAstNode,
+  TmplAstRecursiveVisitor,
+  TmplAstSwitchBlock,
+  TmplAstTemplate,
 } from '@angular/compiler';
 import MagicString from 'magic-string';
 import ts from 'typescript';
@@ -36,6 +43,7 @@ import {
   TypeCheckingConfig,
   TypeCtorMetadata,
   TemplateContext,
+  ViewQueryCheckMeta,
 } from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
@@ -241,6 +249,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     templateContext: TemplateContext | null,
     hostBindingContext: HostBindingsContext | null,
     isStandalone: boolean,
+    viewQueries?: ViewQueryCheckMeta[],
   ): void {
     if (!this.host.shouldCheckClass(ref.node)) {
       return;
@@ -268,6 +277,126 @@ export class TypeCheckContextImpl implements TypeCheckContext {
               directives: hostBindingContext.directives,
             },
     });
+
+    // Validate view query targets against the bound template.
+    // Required queries produce errors (NG8023) — they will throw NG0951 at runtime.
+    // Optional queries with string predicates produce warnings (NG8024) — they will always be undefined.
+    // Skip validation for empty templates (no nodes) since they may be placeholders.
+    if (
+      viewQueries !== undefined &&
+      viewQueries.length > 0 &&
+      templateContext?.nodes != null &&
+      templateContext.nodes.length > 0
+    ) {
+      const nonStaticViewQueryNames = new Set(
+        viewQueries.filter((query) => !query.isStatic).map((query) => query.propertyName),
+      );
+      const earlyAccesses = collectEarlyQueryAccesses(ref.node, nonStaticViewQueryNames);
+      for (const earlyAccess of earlyAccesses) {
+        shimData.oobRecorder.queryAccessedBeforeAvailable(
+          id,
+          earlyAccess.node,
+          earlyAccess.propertyName,
+          earlyAccess.hook,
+        );
+      }
+
+      const templateRefs = collectTemplateReferenceNames(templateContext.nodes);
+
+      for (const query of viewQueries) {
+        if (query.stringPredicates === null) continue;
+
+        for (const predicate of query.stringPredicates) {
+          const refInfo = templateRefs.get(predicate);
+
+          if (refInfo === undefined) {
+            if (query.isRequired) {
+              // Required target doesn't exist — always an error (NG8023).
+              shimData.oobRecorder.missingViewQueryTarget(
+                id,
+                ref.node,
+                query.propertyName,
+                predicate,
+                true,
+              );
+            } else if (this.config.missingOptionalViewQueryTarget !== 'suppress') {
+              // Optional target doesn't exist — configurable warning (NG8024).
+              shimData.oobRecorder.missingViewQueryTarget(
+                id,
+                ref.node,
+                query.propertyName,
+                predicate,
+                false,
+                this.config.missingOptionalViewQueryTarget,
+              );
+            }
+          } else if (query.readIsTemplateRef && !refInfo.isTemplate) {
+            if (this.config.queryReadTemplateRefMismatch !== 'suppress') {
+              // Query uses read:TemplateRef but target is not on an <ng-template>.
+              shimData.oobRecorder.queryReadTemplateRefMismatch(
+                id,
+                ref.node,
+                query.propertyName,
+                predicate,
+                this.config.queryReadTemplateRefMismatch,
+              );
+            }
+          } else if (query.readType.kind === 'directive' && refInfo !== undefined) {
+            // Query uses read:SomeDirective — check if that directive is actually on the element,
+            // including host directives.
+            const readName = query.readType.name;
+            const directivesOnNode = boundTarget.getDirectivesOfNode(refInfo.node);
+            const hasDirective =
+              directivesOnNode !== null &&
+              directivesOnNode.some(
+                (dir) =>
+                  dir.ref.node.name?.text === readName ||
+                  dir.hostDirectives?.some(
+                    (hd) =>
+                      hd.directive instanceof Reference &&
+                      hd.directive.node.name?.text === readName,
+                  ),
+              );
+            if (!hasDirective && this.config.queryReadDirectiveMismatch !== 'suppress') {
+              shimData.oobRecorder.queryReadDirectiveMismatch(
+                id,
+                ref.node,
+                query.propertyName,
+                predicate,
+                readName,
+                this.config.queryReadDirectiveMismatch,
+              );
+            }
+          } else if ((query.isRequired || query.isStatic) && refInfo.isOnlyConditional) {
+            // Required or static query targets a ref that only exists inside a conditional block.
+            shimData.oobRecorder.queryTargetOnlyConditional(
+              id,
+              ref.node,
+              query.propertyName,
+              predicate,
+              query.isStatic,
+            );
+          }
+
+          // Check if viewChild (first=true) targets a ref that exists on multiple elements.
+          if (
+            refInfo !== undefined &&
+            query.first &&
+            refInfo.unconditionalCount > 1 &&
+            this.config.queryMultipleTargets !== 'suppress'
+          ) {
+            shimData.oobRecorder.queryMultipleTargets(
+              id,
+              ref.node,
+              query.propertyName,
+              predicate,
+              refInfo.unconditionalCount,
+              this.config.queryMultipleTargets,
+            );
+          }
+        }
+      }
+    }
 
     if (this.inlining === InliningMode.InlineOps) {
       // Get all of the directives used in the template and record inline type constructors when
@@ -744,4 +873,148 @@ function splitStringAtPoints(str: string, points: number[]): string[] {
   }
   splits.push(str.substring(start));
   return splits;
+}
+
+/**
+ * Recursively collects all template reference variable names (`#ref`) from a template AST.
+ * This walks into all child scopes including control flow blocks (`@if`, `@for`, etc.)
+ * because view queries can match references in any part of the template.
+ */
+interface TemplateRefInfo {
+  isTemplate: boolean;
+  /** Whether the ref is only found inside a conditional block and never at unconditional scope. */
+  isOnlyConditional: boolean;
+  /** The AST node (element or template) that this ref is on. */
+  node: TmplAstElement | TmplAstTemplate;
+  /** How many elements/templates have this ref name at the SAME unconditional scope level. */
+  unconditionalCount: number;
+}
+
+type EarlyLifecycleHook = 'constructor' | 'ngOnInit';
+
+interface EarlyQueryAccessInfo {
+  propertyName: string;
+  hook: EarlyLifecycleHook;
+  node: ts.Node;
+}
+
+function collectEarlyQueryAccesses(
+  classNode: ts.ClassDeclaration,
+  queryPropertyNames: Set<string>,
+): EarlyQueryAccessInfo[] {
+  if (queryPropertyNames.size === 0) {
+    return [];
+  }
+
+  const accesses: EarlyQueryAccessInfo[] = [];
+  const seen = new Set<string>();
+
+  const recordAccess = (hook: EarlyLifecycleHook, node: ts.Node, propertyName: string): void => {
+    const key = `${hook}:${propertyName}`;
+    if (seen.has(key)) {
+      return;
+    }
+    seen.add(key);
+    accesses.push({hook, node, propertyName});
+  };
+
+  const scanBody = (hook: EarlyLifecycleHook, body: ts.Block): void => {
+    const visitor = (node: ts.Node): void => {
+      if (
+        ts.isPropertyAccessExpression(node) &&
+        node.expression.kind === ts.SyntaxKind.ThisKeyword &&
+        queryPropertyNames.has(node.name.text)
+      ) {
+        recordAccess(hook, node.name, node.name.text);
+      }
+      ts.forEachChild(node, visitor);
+    };
+    ts.forEachChild(body, visitor);
+  };
+
+  for (const member of classNode.members) {
+    if (ts.isConstructorDeclaration(member) && member.body !== undefined) {
+      scanBody('constructor', member.body);
+    } else if (
+      ts.isMethodDeclaration(member) &&
+      ts.isIdentifier(member.name) &&
+      member.name.text === 'ngOnInit' &&
+      member.body !== undefined
+    ) {
+      scanBody('ngOnInit', member.body);
+    }
+  }
+
+  return accesses;
+}
+
+function collectTemplateReferenceNames(nodes: TmplAstNode[]): Map<string, TemplateRefInfo> {
+  const refs = new Map<string, TemplateRefInfo>();
+  let conditionalDepth = 0;
+
+  const addRef = (
+    name: string,
+    isTemplate: boolean,
+    node: TmplAstElement | TmplAstTemplate,
+  ): void => {
+    const existing = refs.get(name);
+    const isConditional = conditionalDepth > 0;
+    if (existing) {
+      if (!isConditional) {
+        existing.unconditionalCount++;
+        existing.isOnlyConditional = false;
+      }
+    } else {
+      refs.set(name, {
+        isTemplate,
+        isOnlyConditional: isConditional,
+        node,
+        unconditionalCount: isConditional ? 0 : 1,
+      });
+    }
+  };
+
+  const visitor = new (class extends TmplAstRecursiveVisitor {
+    override visitElement(element: TmplAstElement): void {
+      for (const ref of element.references) {
+        addRef(ref.name, false, element);
+      }
+      super.visitElement(element);
+    }
+    override visitTemplate(template: TmplAstTemplate): void {
+      // Refs ON the <ng-template> itself are in the parent scope (unconditional).
+      for (const ref of template.references) {
+        addRef(ref.name, true, template);
+      }
+      // Children INSIDE the <ng-template> (or structural directive wrapper) are in an
+      // embedded view that may not be instantiated — treat as conditional scope.
+      conditionalDepth++;
+      super.visitTemplate(template);
+      conditionalDepth--;
+    }
+    override visitIfBlock(block: TmplAstIfBlock): void {
+      conditionalDepth++;
+      super.visitIfBlock(block);
+      conditionalDepth--;
+    }
+    override visitSwitchBlock(block: TmplAstSwitchBlock): void {
+      conditionalDepth++;
+      super.visitSwitchBlock(block);
+      conditionalDepth--;
+    }
+    override visitForLoopBlock(block: TmplAstForLoopBlock): void {
+      conditionalDepth++;
+      super.visitForLoopBlock(block);
+      conditionalDepth--;
+    }
+    override visitDeferredBlock(block: TmplAstDeferredBlock): void {
+      conditionalDepth++;
+      super.visitDeferredBlock(block);
+      conditionalDepth--;
+    }
+  })();
+  for (const node of nodes) {
+    node.visit(visitor);
+  }
+  return refs;
 }

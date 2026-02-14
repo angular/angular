@@ -126,6 +126,7 @@ import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../
 
 import {coreVersionSupportsFeature} from './feature_detection';
 import {angularJitApplicationTransform} from '../../transform/jit';
+import {filterSuppressedDiagnostics} from './suppression';
 import {untagAllTsFiles} from '../../shims';
 import {DOC_PAGE_BASE_URL} from '../../diagnostics/src/error_details_base_url';
 
@@ -605,7 +606,9 @@ export class NgCompiler {
       diagnostics.push(err.toDiagnostic());
     }
 
-    return this.addMessageTextDetails(diagnostics);
+    return this.addMessageTextDetails(
+      filterSuppressedDiagnostics(diagnostics, this.inputProgram.getSourceFiles().slice()),
+    );
   }
 
   /**
@@ -635,7 +638,7 @@ export class NgCompiler {
       diagnostics.push(err.toDiagnostic());
     }
 
-    return this.addMessageTextDetails(diagnostics);
+    return this.addMessageTextDetails(filterSuppressedDiagnostics(diagnostics, [file]));
   }
 
   /**
@@ -668,7 +671,9 @@ export class NgCompiler {
       }
       diagnostics.push(err.toDiagnostic());
     }
-    return this.addMessageTextDetails(diagnostics);
+    return this.addMessageTextDetails(
+      filterSuppressedDiagnostics(diagnostics, [component.getSourceFile()]),
+    );
   }
 
   /**
@@ -1107,6 +1112,14 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         unusedStandaloneImports:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        missingOptionalViewQueryTarget:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        queryReadTemplateRefMismatch:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        queryReadDirectiveMismatch:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        queryMultipleTargets:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         checkTwoWayBoundEvents,
         allowDomEventAssertion,
@@ -1142,6 +1155,14 @@ export class NgCompiler {
         controlFlowPreventingContentProjection:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         unusedStandaloneImports:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        missingOptionalViewQueryTarget:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        queryReadTemplateRefMismatch:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        queryReadDirectiveMismatch:
+          this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        queryMultipleTargets:
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         checkTwoWayBoundEvents,
@@ -1193,6 +1214,22 @@ export class NgCompiler {
     if (this.options.extendedDiagnostics?.checks?.unusedStandaloneImports !== undefined) {
       typeCheckingConfig.unusedStandaloneImports =
         this.options.extendedDiagnostics.checks.unusedStandaloneImports;
+    }
+    if (this.options.extendedDiagnostics?.checks?.missingOptionalViewQueryTarget !== undefined) {
+      typeCheckingConfig.missingOptionalViewQueryTarget =
+        this.options.extendedDiagnostics.checks.missingOptionalViewQueryTarget;
+    }
+    if (this.options.extendedDiagnostics?.checks?.queryReadTemplateRefMismatch !== undefined) {
+      typeCheckingConfig.queryReadTemplateRefMismatch =
+        this.options.extendedDiagnostics.checks.queryReadTemplateRefMismatch;
+    }
+    if (this.options.extendedDiagnostics?.checks?.queryReadDirectiveMismatch !== undefined) {
+      typeCheckingConfig.queryReadDirectiveMismatch =
+        this.options.extendedDiagnostics.checks.queryReadDirectiveMismatch;
+    }
+    if (this.options.extendedDiagnostics?.checks?.queryMultipleTargets !== undefined) {
+      typeCheckingConfig.queryMultipleTargets =
+        this.options.extendedDiagnostics.checks.queryMultipleTargets;
     }
 
     return typeCheckingConfig;

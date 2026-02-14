@@ -204,6 +204,9 @@ function compileQuery(query: R3QueryMetadata): o.LiteralMapExpr {
   if (query.isSignal) {
     meta.set('isSignal', o.literal(true));
   }
+  if (query.isRequired) {
+    meta.set('isRequired', o.literal(true));
+  }
   return meta.toLiteralMap();
 }
 

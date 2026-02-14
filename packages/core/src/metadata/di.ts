@@ -63,6 +63,7 @@ export interface Query {
   isViewQuery: boolean;
   selector: any;
   static?: boolean;
+  required?: boolean;
 
   /**
    * @internal
@@ -275,11 +276,11 @@ export interface ContentChildDecorator {
    */
   (
     selector: ProviderToken<unknown> | Function | string,
-    opts?: {descendants?: boolean; read?: any; static?: boolean},
+    opts?: {descendants?: boolean; read?: any; static?: boolean; required?: boolean},
   ): any;
   new (
     selector: ProviderToken<unknown> | Function | string,
-    opts?: {descendants?: boolean; read?: any; static?: boolean},
+    opts?: {descendants?: boolean; read?: any; static?: boolean; required?: boolean},
   ): ContentChild;
 }
 
@@ -470,11 +471,11 @@ export interface ViewChildDecorator {
    */
   (
     selector: ProviderToken<unknown> | Function | string,
-    opts?: {read?: any; static?: boolean},
+    opts?: {read?: any; static?: boolean; required?: boolean},
   ): any;
   new (
     selector: ProviderToken<unknown> | Function | string,
-    opts?: {read?: any; static?: boolean},
+    opts?: {read?: any; static?: boolean; required?: boolean},
   ): ViewChild;
 }
 

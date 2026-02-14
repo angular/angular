@@ -120,6 +120,37 @@ Unless otherwise commented, each following option is set to the value for `stric
 | `strictContextGenerics`      | Whether the type parameters of generic components will be inferred correctly \(including any generic bounds\). If disabled, any type parameters will be `any`.                                                                                                                                                                                                                |
 | `strictLiteralTypes`         | Whether object and array literals declared in the template will have their type inferred. If disabled, the type of such literals will be `any`. This flag is `true` when _either_ `fullTemplateTypeCheck` or `strictTemplates` is set to `true`.                                                                                                                              |
 
+### View query target validation
+
+When `strictTemplates` is enabled, the compiler validates `viewChild` and `viewChildren` query targets against the component's template. The following diagnostics are emitted:
+
+| Diagnostic | Severity | Description                                                                                                                               |
+| :--------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
+| NG8023     | Error    | A `viewChild.required()` references a template variable or component that does not exist in the template.                                 |
+| NG8024     | Warning  | An optional `viewChild()` or `viewChildren()` references a target that does not exist in the template.                                    |
+| NG8025     | Error    | A query uses `read: TemplateRef` but the target is on a regular element, not an `<ng-template>`.                                          |
+| NG8028     | Warning  | A required query's target only exists inside a conditional block (`@if`, `@switch`, `@for`, `@defer`), which may cause NG0951 at runtime. |
+| NG8029     | Error    | A query uses `read: SomeDirective` but the target element does not have that directive applied.                                           |
+| NG8030     | Warning  | A `viewChild` query targets a template reference that appears on multiple elements.                                                       |
+
+#### Suppressing diagnostics with `ng-expect-error` / `ng-expect-warning`
+
+You can suppress a specific diagnostic on the next line using a comment directive, similar to TypeScript's `@ts-expect-error`:
+
+<docs-code language="html">
+<!-- ng-expect-error NG8024 -->
+<div #myRef>intentionally unused query target</div>
+</docs-code>
+
+Or in TypeScript:
+
+<docs-code language="typescript">
+// ng-expect-warning NG8028
+el = viewChild.required('conditionalRef');
+</docs-code>
+
+Unused `ng-expect-error` / `ng-expect-warning` directives produce a diagnostic, ensuring suppressions stay in sync with actual warnings.
+
 If you still have issues after troubleshooting with these flags, fall back to full mode by disabling `strictTemplates`.
 
 If that doesn't work, an option of last resort is to turn off full mode entirely with `fullTemplateTypeCheck: false`.

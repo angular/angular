@@ -34,4 +34,8 @@ export enum ExtendedTemplateDiagnosticName {
   UNPARENTHESIZED_NULLISH_COALESCING = 'unparenthesizedNullishCoalescing',
   UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION = 'uninvokedFunctionInTextInterpolation',
   DEFER_TRIGGER_MISCONFIGURATION = 'deferTriggerMisconfiguration',
+  MISSING_OPTIONAL_VIEW_QUERY_TARGET = 'missingOptionalViewQueryTarget',
+  QUERY_READ_TEMPLATEREF_MISMATCH = 'queryReadTemplateRefMismatch',
+  QUERY_READ_DIRECTIVE_MISMATCH = 'queryReadDirectiveMismatch',
+  QUERY_MULTIPLE_TARGETS = 'queryMultipleTargets',
 }
