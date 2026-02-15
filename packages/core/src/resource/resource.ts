@@ -6,30 +6,32 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {untracked} from '../render3/reactivity/untracked';
-import {computed} from '../render3/reactivity/computed';
-import {signal, signalAsReadonlyFn, WritableSignal} from '../render3/reactivity/signal';
-import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
-import {effect, EffectRef} from '../render3/reactivity/effect';
+import { Signal, ValueEqualityFn } from '../render3/reactivity/api';
+import { computed } from '../render3/reactivity/computed';
+import { effect, EffectRef } from '../render3/reactivity/effect';
+import { signal, signalAsReadonlyFn, WritableSignal } from '../render3/reactivity/signal';
+import { untracked } from '../render3/reactivity/untracked';
 import {
-  ResourceOptions,
-  ResourceStatus,
-  WritableResource,
   Resource,
-  ResourceRef,
-  ResourceStreamingLoader,
-  StreamingResourceOptions,
-  ResourceStreamItem,
   ResourceLoaderParams,
+  ResourceOptions,
+  ResourceRef,
   ResourceSnapshot,
+  ResourceStatus,
+  ResourceStreamingLoader,
+  ResourceStreamItem,
+  StreamingResourceOptions,
+  WritableResource,
+  type ResourceParamsStatus,
 } from './api';
 
-import {Injector} from '../di/injector';
-import {assertInInjectionContext} from '../di/contextual';
-import {inject} from '../di/injector_compatibility';
-import {PendingTasks} from '../pending_tasks';
-import {linkedSignal} from '../render3/reactivity/linked_signal';
-import {DestroyRef} from '../linker/destroy_ref';
+import { assertInInjectionContext } from '../di/contextual';
+import { Injector } from '../di/injector';
+import { inject } from '../di/injector_compatibility';
+import { DestroyRef } from '../linker/destroy_ref';
+import { PendingTasks } from '../pending_tasks';
+import { linkedSignal } from '../render3/reactivity/linked_signal';
+import { PARAMS_STATUS } from './params_status';
 
 /**
  * Constructs a `Resource` that projects a reactive request to an asynchronous operation defined by
@@ -67,8 +69,7 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
   const oldNameForParams = (
     options as ResourceOptions<T, R> & {request: ResourceOptions<T, R>['params']}
   ).request;
-  const params = (options.params ?? oldNameForParams ?? (() => null)) as () => R;
-
+  const params = options.params ?? oldNameForParams ?? (() => null!);
   return new ResourceImpl<T | undefined, R>(
     params,
     getLoader(options),
@@ -95,6 +96,10 @@ interface ResourceProtoState<T> {
 interface ResourceState<T> extends ResourceProtoState<T> {
   previousStatus: ResourceStatus;
   stream: Signal<ResourceStreamItem<T>> | undefined;
+}
+
+function isResourceParamsStatus(value: unknown): value is ResourceParamsStatus {
+  return typeof value === 'object' && value !== null && PARAMS_STATUS in value;
 }
 
 type WrappedRequest = {request: unknown; reload: number};
@@ -190,7 +195,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   override readonly error: Signal<Error | undefined>;
 
   constructor(
-    request: () => R,
+    request: () => R | ResourceParamsStatus,
     private readonly loaderFn: ResourceStreamingLoader<T, R>,
     defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
@@ -238,24 +243,42 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       source: this.extRequest,
       // Compute the state of the resource given a change in status.
       computation: (extRequest, previous) => {
-        const status = extRequest.request === undefined ? 'idle' : 'loading';
+        const req = extRequest.request;
+        let status: ResourceInternalStatus;
+        let stream: Signal<ResourceStreamItem<T>> | undefined;
+
+        if (isResourceParamsStatus(req)) {
+          if (req[PARAMS_STATUS] === 'idle') {
+            status = 'idle';
+          } else if (req[PARAMS_STATUS] === 'error') {
+            status = 'resolved';
+            stream = signal(
+              {error: encapsulateResourceError(req.error)},
+              ngDevMode ? createDebugNameObject(this.debugName, 'stream') : undefined,
+            );
+          } else {
+            status = 'loading';
+          }
+        } else {
+          status = req === undefined ? 'idle' : 'loading';
+          if (previous && previous.value.extRequest.request === req) {
+            stream = previous.value.stream;
+          }
+        }
+
         if (!previous) {
           return {
             extRequest,
             status,
             previousStatus: 'idle',
-            stream: undefined,
+            stream,
           };
         } else {
           return {
             extRequest,
             status,
             previousStatus: projectStatusOfState(previous.value),
-            // If the request hasn't changed, keep the previous stream.
-            stream:
-              previous.value.extRequest.request === extRequest.request
-                ? previous.value.stream
-                : undefined,
+            stream,
           };
         }
       },
@@ -358,8 +381,8 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     // we do not want the effect to depend on the state of the resource, only on the request.
     const {status: currentStatus, previousStatus} = untracked(this.state);
 
-    if (extRequest.request === undefined) {
-      // Nothing to load (and we should already be in a non-loading state).
+    if (extRequest.request === undefined || isResourceParamsStatus(extRequest.request)) {
+      // Request represents a special status (idle, error, etc.), therefore nothing to load.
       return;
     } else if (currentStatus !== 'loading') {
       // We're not in a loading or reloading state, so this loading request is stale.

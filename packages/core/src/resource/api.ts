@@ -9,6 +9,18 @@
 import {Injector} from '../di/injector';
 import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
 import {WritableSignal} from '../render3/reactivity/signal';
+import type {PARAMS_STATUS} from './params_status';
+
+/**
+ * A return value from a resource's `params` function which indicates that the resource should
+ * transition to a specific state.
+ *
+ * @experimental
+ */
+export type ResourceParamsStatus =
+  | {[PARAMS_STATUS]: 'idle'}
+  | {[PARAMS_STATUS]: 'loading'}
+  | {[PARAMS_STATUS]: 'error'; error: Error};
 
 /**
  * String value capturing the status of a `Resource`.
@@ -175,7 +187,7 @@ export interface BaseResourceOptions<T, R> {
    *
    * If a params function isn't provided, the loader won't rerun unless the resource is reloaded.
    */
-  params?: () => R;
+  params?: () => R | ResourceParamsStatus;
 
   /**
    * The value which will be returned from the resource when a server value is unavailable, such as
