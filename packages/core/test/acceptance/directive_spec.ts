@@ -7,6 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
 import {
   Component,
   Directive,
@@ -24,7 +25,6 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
 
 describe('directives', () => {
   beforeEach(() => {
@@ -1006,6 +1006,60 @@ describe('directives', () => {
 
       ref.setInput('value', 'hello');
       expect(ref.instance.value).toBe(1);
+    });
+
+    it('should map attribute to input when specific in the selecotr', () => {
+      @Component({
+        selector: 'app-test[value]',
+        template: ``,
+      })
+      class TestComponent {
+        @Input() value = 'unset';
+      }
+
+      @Component({
+        selector: 'app-root',
+        template: ``,
+      })
+      class App {
+        constructor(vcr: ViewContainerRef) {
+          vcr.createComponent(TestComponent);
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      const testComponent = fixture.debugElement.query(
+        By.directive(TestComponent),
+      ).componentInstance;
+      fixture.detectChanges();
+
+      expect(testComponent.value).toBe('');
+    });
+
+    it('should not map attribute to input when not specified in the selector', () => {
+      @Component({
+        selector: 'app-test',
+        template: ``,
+      })
+      class TestComponent {
+        @Input() value = 'unset';
+      }
+
+      @Component({
+        selector: 'app-root',
+        template: ``,
+      })
+      class App {
+        constructor(vcr: ViewContainerRef) {
+          vcr.createComponent(TestComponent);
+        }
+      }
+
+      const fixture = TestBed.createComponent(App);
+      const testComponent = fixture.debugElement.query(
+        By.directive(TestComponent),
+      ).componentInstance;
+      expect(testComponent.value).toBe('unset');
     });
   });
 

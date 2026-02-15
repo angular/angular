@@ -19,8 +19,8 @@ ng generate @angular/core:common-to-standalone
 Before:
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-example',
@@ -29,19 +29,19 @@ import { CommonModule } from '@angular/common';
     <div *ngIf="show">
       {{ data | async | json }}
     </div>
-  `
+  `,
 })
-export class ExampleComponent {
+export class Example {
   show = true;
-  data = Promise.resolve({ message: 'Hello' });
+  data = Promise.resolve({message: 'Hello'});
 }
 ```
 
 After running the migration (component imports added, CommonModule removed):
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
+import {Component} from '@angular/core';
+import {AsyncPipe, JsonPipe, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-example',
@@ -50,10 +50,10 @@ import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
     <div *ngIf="show">
       {{ data | async | json }}
     </div>
-  `
+  `,
 })
-export class ExampleComponent {
+export class Example {
   show = true;
-  data = Promise.resolve({ message: 'Hello' });
+  data = Promise.resolve({message: 'Hello'});
 }
 ```

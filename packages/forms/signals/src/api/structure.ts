@@ -6,8 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/core';
-
+import {
+  inject,
+  Injector,
+  runInInjectionContext,
+  ɵRuntimeError as RuntimeError,
+  untracked,
+  WritableSignal,
+} from '@angular/core';
+import {RuntimeErrorCode} from '../errors';
 import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
@@ -17,9 +24,11 @@ import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent, SchemaImpl} from '../schema/schema';
 import {normalizeFormArgs} from '../util/normalize_form_args';
 import {isArray} from '../util/type_guards';
-import type {ValidationError} from './rules/validation/validation_errors';
+import type {ValidationError} from './rules';
 import type {
+  FieldState,
   FieldTree,
+  FormSubmitOptions,
   ItemType,
   LogicFn,
   OneOrMany,
@@ -28,7 +37,6 @@ import type {
   SchemaFn,
   SchemaOrSchemaFn,
   SchemaPath,
-  TreeValidationResult,
 } from './types';
 
 /**
@@ -37,17 +45,21 @@ import type {
  * @category structure
  * @experimental 21.0.0
  */
-export interface FormOptions {
+export interface FormOptions<TModel> {
   /**
    * The injector to use for dependency injection. If this is not provided, the injector for the
    * current [injection context](guide/di/dependency-injection-context), will be used.
    */
   injector?: Injector;
+  /** The name of the root form, used in generating name attributes for the fields. */
   name?: string;
+  /** Options that define how to handle form submission. */
+  submission?: FormSubmitOptions<TModel, unknown>;
 
   /**
    * Adapter allows managing fields in a more flexible way.
    * Currently this is used to support interop with reactive forms.
+   * @internal
    */
   adapter?: FieldAdapter;
 }
@@ -127,7 +139,7 @@ export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
  */
 export function form<TModel>(
   model: WritableSignal<TModel>,
-  schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions,
+  schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions<TModel>,
 ): FieldTree<TModel>;
 
 /**
@@ -176,19 +188,23 @@ export function form<TModel>(
 export function form<TModel>(
   model: WritableSignal<TModel>,
   schema: SchemaOrSchemaFn<TModel>,
-  options: FormOptions,
+  options: FormOptions<TModel>,
 ): FieldTree<TModel>;
 
 export function form<TModel>(...args: any[]): FieldTree<TModel> {
   const [model, schema, options] = normalizeFormArgs<TModel>(args);
   const injector = options?.injector ?? inject(Injector);
   const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
-  const fieldManager = new FormFieldManager(injector, options?.name);
+  const fieldManager = new FormFieldManager(
+    injector,
+    options?.name,
+    options?.submission as FormSubmitOptions<unknown, unknown> | undefined,
+  );
   const adapter = options?.adapter ?? new BasicFieldAdapter();
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
 
-  return fieldRoot.fieldProxy as FieldTree<TModel>;
+  return fieldRoot.fieldTree as FieldTree<TModel>;
 }
 
 /**
@@ -350,15 +366,17 @@ export function applyWhenValue(
  * }
  *
  * const registrationForm = form(signal({username: 'god', password: ''}));
- * submit(registrationForm, async (f) => {
- *   return registerNewUser(registrationForm);
+ * submit(registrationForm, {
+ *   action: async (f) => {
+ *     return registerNewUser(registrationForm);
+ *   }
  * });
  * registrationForm.username().errors(); // [{kind: 'server', message: 'Username already taken'}]
  * ```
  *
  * @param form The field to submit.
- * @param action An asynchronous action used to submit the field. The action may return submission
- * errors.
+ * @param options Options for the submission.
+ * @returns Whether the submission was successful.
  * @template TModel The data type of the field being submitted.
  *
  * @category submission
@@ -366,51 +384,65 @@ export function applyWhenValue(
  */
 export async function submit<TModel>(
   form: FieldTree<TModel>,
-  action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>,
-) {
-  const node = form() as unknown as FieldNode;
-  markAllAsTouched(node);
+  options?: NoInfer<FormSubmitOptions<unknown, TModel>>,
+): Promise<boolean>;
+export async function submit<TModel>(
+  form: FieldTree<TModel>,
+  action: NoInfer<FormSubmitOptions<unknown, TModel>['action']>,
+): Promise<boolean>;
+export async function submit<TModel>(
+  form: FieldTree<TModel>,
+  options?: FormSubmitOptions<unknown, TModel> | FormSubmitOptions<unknown, TModel>['action'],
+): Promise<boolean> {
+  const node = untracked(form) as FieldState<unknown> as FieldNode;
 
-  // Fail fast if the form is already invalid.
-  if (node.invalid()) {
-    return;
+  const field = options === undefined ? node.structure.root.fieldProxy : form;
+  const detail = {root: node.structure.root.fieldProxy, submitted: form};
+
+  // Normalize options.
+  options =
+    typeof options === 'function'
+      ? {action: options}
+      : (options ?? node.structure.fieldManager.submitOptions);
+
+  // Verify that an action was provided.
+  const action = options?.action as FormSubmitOptions<unknown, unknown>['action'];
+  if (!action) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_SUBMIT_ACTION,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        'Cannot submit form with no submit action. Specify the action when creating the form, or as an additional argument to `submit()`.',
+    );
   }
 
-  node.submitState.selfSubmitting.set(true);
+  const onInvalid = options?.onInvalid as FormSubmitOptions<unknown, unknown>['onInvalid'];
+  const ignoreValidators = options?.ignoreValidators ?? 'pending';
+
+  // Determine whether or not to run the action based on the current validity.
+  let shouldRunAction = true;
+  untracked(() => {
+    markAllAsTouched(node);
+
+    if (ignoreValidators === 'none') {
+      shouldRunAction = node.valid();
+    } else if (ignoreValidators === 'pending') {
+      shouldRunAction = !node.invalid();
+    }
+  });
+
+  // Run the action (or alternatively the `onInvalid` callback)
   try {
-    const errors = await action(form);
-    errors && setSubmissionErrors(node, errors);
+    if (shouldRunAction) {
+      node.submitState.selfSubmitting.set(true);
+      const errors = await untracked(() => action?.(field, detail));
+      errors && setSubmissionErrors(node, errors);
+      return !errors || (isArray(errors) && errors.length === 0);
+    } else {
+      untracked(() => onInvalid?.(field, detail));
+    }
+    return false;
   } finally {
     node.submitState.selfSubmitting.set(false);
-  }
-}
-
-/**
- * Sets a list of submission errors to their individual fields.
- *
- * @param submittedField The field that was submitted, resulting in the errors.
- * @param errors The errors to set.
- */
-function setSubmissionErrors(
-  submittedField: FieldNode,
-  errors: OneOrMany<ValidationError.WithOptionalField>,
-) {
-  if (!isArray(errors)) {
-    errors = [errors];
-  }
-  const errorsByField = new Map<FieldNode, ValidationError.WithField[]>();
-  for (const error of errors) {
-    const errorWithField = addDefaultField(error, submittedField.fieldProxy);
-    const field = errorWithField.fieldTree() as FieldNode;
-    let fieldErrors = errorsByField.get(field);
-    if (!fieldErrors) {
-      fieldErrors = [];
-      errorsByField.set(field, fieldErrors);
-    }
-    fieldErrors.push(errorWithField);
-  }
-  for (const [field, fieldErrors] of errorsByField) {
-    field.submitState.submissionErrors.set(fieldErrors);
   }
 }
 
@@ -429,8 +461,43 @@ export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
 
 /** Marks a {@link node} and its descendants as touched. */
 function markAllAsTouched(node: FieldNode) {
+  // Don't mark hidden, disabled, or readonly fields as touched since they don't contribute to the
+  // form's validity. This also prevents errors from appearing immediately if they're later made
+  // interactive.
+  if (node.validationState.shouldSkipValidation()) {
+    return;
+  }
   node.markAsTouched();
   for (const child of node.structure.children()) {
     markAllAsTouched(child);
+  }
+}
+
+/**
+ * Sets a list of submission errors to their individual fields.
+ *
+ * @param submittedField The field that was submitted, resulting in the errors.
+ * @param errors The errors to set.
+ */
+function setSubmissionErrors(
+  submittedField: FieldNode,
+  errors: OneOrMany<ValidationError.WithOptionalFieldTree>,
+) {
+  if (!isArray(errors)) {
+    errors = [errors];
+  }
+  const errorsByField = new Map<FieldNode, ValidationError.WithFieldTree[]>();
+  for (const error of errors) {
+    const errorWithField = addDefaultField(error, submittedField.fieldTree);
+    const field = errorWithField.fieldTree() as FieldNode;
+    let fieldErrors = errorsByField.get(field);
+    if (!fieldErrors) {
+      fieldErrors = [];
+      errorsByField.set(field, fieldErrors);
+    }
+    fieldErrors.push(errorWithField);
+  }
+  for (const [field, fieldErrors] of errorsByField) {
+    field.submitState.submissionErrors.set(fieldErrors);
   }
 }

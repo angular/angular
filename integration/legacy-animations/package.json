@@ -26,10 +26,10 @@
     "@angular-devkit/build-angular": "21.1.0-rc.0",
     "@angular/cli": "21.1.0-rc.0",
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
-    "@types/jasmine": "^5.0.0",
+    "@types/jasmine": "^6.0.0",
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^20.14.8",
-    "jasmine-core": "5.13.0",
+    "jasmine-core": "6.0.1",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "^3.1.0",
@@ -39,5 +39,5 @@
     "ts-node": "^10.9.1",
     "typescript": "5.9.3"
   },
-  "packageManager": "pnpm@10.28.0"
+  "packageManager": "pnpm@10.29.3"
 }

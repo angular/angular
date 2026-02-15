@@ -11,14 +11,8 @@ import * as o from '../output/output_ast';
 const CORE = '@angular/core';
 
 export class Identifiers {
-  /* Methods */
-  static NEW_METHOD = 'factory';
-  static TRANSFORM_METHOD = 'transform';
-  static PATCH_DEPS = 'patchedDeps';
-
   static core: o.ExternalReference = {name: null, moduleName: CORE};
 
-  /* Instructions */
   static namespaceHTML: o.ExternalReference = {name: 'ɵɵnamespaceHTML', moduleName: CORE};
 
   static namespaceMathML: o.ExternalReference = {name: 'ɵɵnamespaceMathML', moduleName: CORE};
@@ -429,6 +423,11 @@ export class Identifiers {
   };
 
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵɵNgOnChangesFeature', moduleName: CORE};
+
+  static ControlFeature: o.ExternalReference = {
+    name: 'ɵɵControlFeature',
+    moduleName: CORE,
+  };
 
   static InheritDefinitionFeature: o.ExternalReference = {
     name: 'ɵɵInheritDefinitionFeature',

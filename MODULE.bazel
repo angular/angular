@@ -6,26 +6,26 @@ module(
 
 bazel_dep(name = "rules_pkg", version = "1.2.0")
 bazel_dep(name = "rules_nodejs", version = "6.7.3")
-bazel_dep(name = "aspect_rules_ts", version = "3.8.3")
-bazel_dep(name = "aspect_rules_js", version = "2.9.1")
+bazel_dep(name = "aspect_rules_ts", version = "3.8.4")
+bazel_dep(name = "aspect_rules_js", version = "2.9.2")
 bazel_dep(name = "aspect_rules_esbuild", version = "0.25.0")
 bazel_dep(name = "aspect_rules_jasmine", version = "2.0.2")
 bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
 bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
-bazel_dep(name = "tar.bzl", version = "0.7.0")
+bazel_dep(name = "tar.bzl", version = "0.8.1")
 bazel_dep(name = "yq.bzl", version = "0.3.4")
 bazel_dep(name = "rules_angular")
 git_override(
     module_name = "rules_angular",
-    commit = "7133b97252508f8528e5c5818a9a73cacc2e2a0e",
+    commit = "d746c4f75e42cffe389d1ab077f4639be2bc78d1",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 
 bazel_dep(name = "devinfra")
 git_override(
     module_name = "devinfra",
-    commit = "8d7bdf76c5a620e365ca7d4c6bb5393e362f9f62",
+    commit = "8757d815eb39854621b7a42ed742fd34e1c448d9",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
@@ -39,7 +39,7 @@ git_override(
 bazel_dep(name = "rules_browsers")
 git_override(
     module_name = "rules_browsers",
-    commit = "5f0e50d17d15c70e6ab5546f1659338ae94c4072",
+    commit = "e08ae33c679d07b3b2fcc136658b787a81995bc5",
     remote = "https://github.com/devversion/rules_browsers.git",
 )
 
@@ -71,8 +71,8 @@ use_repo(node, "nodejs_windows_amd64")
 pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
 pnpm.pnpm(
     name = "pnpm",
-    pnpm_version = "10.28.0",
-    pnpm_version_integrity = "sha512-Bd9x0UIfITmeBT/eVnzqNNRG+gLHZXFEG/wceVbpjjYwiJgtlARl/TRIDU2QoGaLwSNi+KqIAApk6D0LDke+SA==",
+    pnpm_version = "10.29.3",
+    pnpm_version_integrity = "sha512-SY4ftMylqgbB3PJhHm+vxQly/+cYmZjECekN50VmREKY/+Q+bNKs3Hdboap8xeCSqLcFTIEbqMV3D4RpPTPS3A==",
 )
 use_repo(pnpm, "pnpm")
 
@@ -83,7 +83,6 @@ npm.npm_translate_lock(
         "//:.pnpmfile.cjs",
         "//:package.json",
         "//:pnpm-workspace.yaml",
-        "//:tools/pnpm-patches/dagre-d3-es+7.0.11.patch",
         "//adev:package.json",
         "//adev/shared-docs:package.json",
         "//adev/shared-docs/pipeline/api-gen:package.json",

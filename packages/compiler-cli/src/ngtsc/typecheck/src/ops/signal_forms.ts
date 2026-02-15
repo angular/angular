@@ -1,4 +1,4 @@
-/*!
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -147,6 +147,7 @@ export class TcbNativeFieldOp extends TcbOp {
         return ts.factory.createUnionTypeNode([
           ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
           ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+          ts.factory.createLiteralTypeNode(ts.factory.createNull()),
         ]);
 
       case 'date':
@@ -299,7 +300,7 @@ export function isFieldDirective(meta: TypeCheckableDirectiveMeta): boolean {
         ts.isPropertyDeclaration(member) &&
         ts.isComputedPropertyName(member.name) &&
         ts.isIdentifier(member.name.expression) &&
-        member.name.expression.text === 'ɵCONTROL',
+        member.name.expression.text === 'ɵNgFieldDirective',
     )
   );
 }

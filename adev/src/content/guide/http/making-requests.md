@@ -648,7 +648,7 @@ export class UserService {
 Within a component, you can combine `@if` with the `async` pipe to render the UI for the data only after it's finished loading:
 
 ```angular-ts
-import { AsyncPipe } from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   imports: [AsyncPipe],

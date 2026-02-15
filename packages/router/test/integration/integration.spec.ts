@@ -72,7 +72,7 @@ import {navigationIntegrationTestSuite} from './navigation.spec';
 import {eagerUrlUpdateStrategyIntegrationSuite} from './eager_url_update_strategy.spec';
 import {duplicateInFlightNavigationsIntegrationSuite} from './duplicate_in_flight_navigations.spec';
 import {navigationErrorsIntegrationSuite} from './navigation_errors.spec';
-import {useAutoTick} from '../helpers';
+import {useAutoTick} from '@angular/private/testing';
 
 for (const browserAPI of ['navigation', 'history'] as const) {
   describe(`${browserAPI}-based routing`, () => {

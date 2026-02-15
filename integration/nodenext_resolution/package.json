@@ -19,7 +19,7 @@
     "@angular/router": "link:./in-existing-linked-by-bazel",
     "@angular/service-worker": "link:./in-existing-linked-by-bazel",
     "@angular/upgrade": "link:./in-existing-linked-by-bazel",
-    "@types/jasmine": "^5.0.0",
+    "@types/jasmine": "^6.0.0",
     "rxjs": "^7.0.0",
     "typescript": "5.9.3",
     "zone.js": "0.16.0"
@@ -27,5 +27,5 @@
   "scripts": {
     "test": "tsc"
   },
-  "packageManager": "pnpm@10.28.0"
+  "packageManager": "pnpm@10.29.3"
 }

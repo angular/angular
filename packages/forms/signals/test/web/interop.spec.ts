@@ -35,7 +35,7 @@ import {
   requiredError,
   validateAsync,
   ValidationError,
-  WithOptionalField,
+  WithOptionalFieldTree,
 } from '@angular/forms/signals';
 
 describe('ControlValueAccessor', () => {
@@ -451,7 +451,8 @@ describe('ControlValueAccessor', () => {
       it('should bind to directive input', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly disabledReasons = input.required<readonly WithOptionalField<DisabledReason>[]>();
+          readonly disabledReasons =
+            input.required<readonly WithOptionalFieldTree<DisabledReason>[]>();
         }
 
         @Component({
@@ -484,7 +485,7 @@ describe('ControlValueAccessor', () => {
       it('should bind to directive input', () => {
         @Directive({selector: '[testDir]'})
         class TestDir {
-          readonly errors = input.required<readonly WithOptionalField<ValidationError>[]>();
+          readonly errors = input.required<readonly WithOptionalFieldTree<ValidationError>[]>();
         }
 
         @Component({

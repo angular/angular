@@ -9,6 +9,7 @@
 import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import * as t from '../../../../render3/r3_ast';
 import {ExpressionKind, OpKind} from './enums';
 import {SlotHandle} from './handle';
@@ -1044,7 +1045,7 @@ export class ArrowFunctionExpr
   override readonly kind = ExpressionKind.ArrowFunction;
   readonly [ConsumesVarsTrait] = true;
   readonly [UsesVarOffset] = true;
-  readonly contextName = 'ctx';
+  readonly contextName = CONTEXT_NAME;
   readonly currentViewName = 'view';
 
   varOffset: number | null = null;
@@ -1167,7 +1168,6 @@ export function transformExpressionsInOp(
     case OpKind.Property:
     case OpKind.DomProperty:
     case OpKind.Attribute:
-    case OpKind.Control:
       if (op.expression instanceof Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);
       } else {
@@ -1298,6 +1298,7 @@ export function transformExpressionsInOp(
     case OpKind.SourceLocation:
     case OpKind.ConditionalCreate:
     case OpKind.ConditionalBranchCreate:
+    case OpKind.Control:
     case OpKind.ControlCreate:
       // These operations contain no expressions.
       break;

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "angular_jasmine_test", "ts_project")
+load("//tools:defaults.bzl", "angular_jasmine_test", "ts_project", "zoneless_jasmine_test")
 
 ts_project(
     name = "dom_utils",
@@ -65,6 +65,7 @@ ts_project(
     ],
 )
 
+# This target is meant to run with Zone.js as some test cases are shared between Zone & Zoneless.
 angular_jasmine_test(
     name = "test",
     data = [
@@ -73,7 +74,7 @@ angular_jasmine_test(
     ],
 )
 
-angular_jasmine_test(
+zoneless_jasmine_test(
     name = "event_replay_test",
     data = [
         ":event_replay_test_lib",

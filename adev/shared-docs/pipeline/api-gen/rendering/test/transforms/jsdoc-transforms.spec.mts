@@ -17,204 +17,207 @@ import {
 
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
 describe('jsdoc transforms', () => {
-  it('should transform links', () => {
-    setCurrentSymbol('Router');
-    setSymbols(
-      Object.fromEntries([
-        ['Route', 'test'],
-        ['Router', 'test'],
-        ['Router.someMethod', 'test'],
-        ['Router.someMethodWithParenthesis', 'test'],
-        ['FormGroup', 'test'],
-        ['FormGroup.someMethod', 'test'],
-      ]),
-    );
+  describe('addHtmlAdditionalLinks', () => {
+    it('should transform links', () => {
+      setCurrentSymbol('Router');
+      setSymbols(
+        Object.fromEntries([
+          ['Route', 'test'],
+          ['Router', 'test'],
+          ['Router.someMethod', 'test'],
+          ['Router.someMethodWithParenthesis', 'test'],
+          ['FormGroup', 'test'],
+          ['FormGroup.someMethod', 'test'],
+        ]),
+      );
 
-    const entry = addHtmlAdditionalLinks({
-      jsdocTags: [
-        {
-          name: 'see',
-          comment: '[Angular](https://angular.io)',
-        },
-        {
-          name: 'see',
-          comment: '[Angular](https://angular.io "Angular")',
-        },
-        {
-          name: 'see',
-          comment: '{@link Route}',
-        },
-        {
-          name: 'see',
-          comment: '{@link Route Something else}',
-        },
-        {
-          name: 'see',
-          comment: '{@link #someMethod}',
-        },
-        {
-          name: 'see',
-          comment: '{@link #someMethodWithParenthesis()}',
-        },
-        {
-          name: 'see',
-          comment: '{@link someMethod()}',
-        },
-        {
-          name: 'see',
-          comment: '{@link FormGroup.someMethod()}',
-        },
-        {
-          name: 'see',
-          comment: '{@link https://angular.dev/api/core/ApplicationRef}',
-        },
-        {
-          name: 'see',
-          comment: '{@link https://angular.dev}',
-        },
-        {
-          name: 'see',
-          comment: '{@link /cli/build ng build}',
-        },
-        {
-          name: 'see',
-          comment: '{@link /ecosystem/rxjs-interop/output-interop Output Interop}',
-        },
-      ],
-      moduleName: 'test',
-    });
-
-    expect(entry.additionalLinks[0]).toEqual({
-      label: 'Angular',
-      url: 'https://angular.io',
-      title: undefined,
-    });
-
-    expect(entry.additionalLinks[1]).toEqual({
-      label: 'Angular',
-      url: 'https://angular.io',
-      title: 'Angular',
-    });
-
-    expect(entry.additionalLinks[2]).toEqual({
-      label: 'Route',
-      url: '/api/test/Route',
-    });
-
-    expect(entry.additionalLinks[3]).toEqual({
-      label: 'Something else',
-      url: '/api/test/Route',
-    });
-
-    expect(entry.additionalLinks[4]).toEqual({
-      label: 'someMethod',
-      url: '/api/test/Router#someMethod',
-    });
-    expect(entry.additionalLinks[5]).toEqual({
-      label: 'someMethodWithParenthesis()',
-      url: '/api/test/Router#someMethodWithParenthesis',
-    });
-    expect(entry.additionalLinks[6]).toEqual({
-      label: 'someMethod()',
-      url: '/api/test/Router#someMethod',
-    });
-    expect(entry.additionalLinks[7]).toEqual({
-      label: 'FormGroup.someMethod()',
-      url: '/api/test/FormGroup#someMethod',
-    });
-
-    expect(entry.additionalLinks[8]).toEqual({
-      label: 'ApplicationRef',
-      url: 'https://angular.dev/api/core/ApplicationRef',
-    });
-    expect(entry.additionalLinks[9]).toEqual({
-      label: 'angular.dev',
-      url: 'https://angular.dev',
-    });
-
-    expect(entry.additionalLinks[10]).toEqual({
-      label: 'ng build',
-      url: '/cli/build',
-    });
-
-    expect(entry.additionalLinks[11]).toEqual({
-      label: 'Output Interop',
-      url: '/ecosystem/rxjs-interop/output-interop',
-    });
-  });
-
-  it('should convert backticks to code tags in markdown links', () => {
-    const entry = addHtmlAdditionalLinks({
-      jsdocTags: [
-        {
-          name: 'see',
-          comment:
-            '[Host view using `ViewContainerRef.createComponent`](guide/components/programmatic-rendering#host-view-using-viewcontainerrefcreatecomponent)',
-        },
-        {
-          name: 'see',
-          comment:
-            '[Popup attached to `document.body` with `createComponent` + `hostElement`](guide/components/programmatic-rendering#popup-attached-to-documentbody-with-createcomponent--hostelement)',
-        },
-        {
-          name: 'see',
-          comment: '[Method with `backticks` in title](https://example.com "Title with `code`")',
-        },
-      ],
-      moduleName: 'test',
-    });
-
-    expect(entry.additionalLinks[0]).toEqual({
-      label: 'Host view using <code>ViewContainerRef.createComponent</code>',
-      url: 'guide/components/programmatic-rendering#host-view-using-viewcontainerrefcreatecomponent',
-      title: undefined,
-    });
-
-    expect(entry.additionalLinks[1]).toEqual({
-      label:
-        'Popup attached to <code>document.body</code> with <code>createComponent</code> + <code>hostElement</code>',
-      url: 'guide/components/programmatic-rendering#popup-attached-to-documentbody-with-createcomponent--hostelement',
-      title: undefined,
-    });
-
-    expect(entry.additionalLinks[2]).toEqual({
-      label: 'Method with <code>backticks</code> in title',
-      url: 'https://example.com',
-      title: 'Title with `code`',
-    });
-  });
-
-  it('should throw on invalid relatie @link', () => {
-    const entryFn = () =>
-      addHtmlAdditionalLinks({
+      const entry = addHtmlAdditionalLinks({
         jsdocTags: [
           {
             name: 'see',
-            comment: '{@link cli/build ng build}',
+            comment: '[Angular](https://angular.io)',
+          },
+          {
+            name: 'see',
+            comment: '[Angular](https://angular.io "Angular")',
+          },
+          {
+            name: 'see',
+            comment: '{@link Route}',
+          },
+          {
+            name: 'see',
+            comment: '{@link Route Something else}',
+          },
+          {
+            name: 'see',
+            comment: '{@link #someMethod}',
+          },
+          {
+            name: 'see',
+            comment: '{@link #someMethodWithParenthesis()}',
+          },
+          {
+            name: 'see',
+            comment: '{@link someMethod()}',
+          },
+          {
+            name: 'see',
+            comment: '{@link FormGroup.someMethod()}',
+          },
+          {
+            name: 'see',
+            comment: '{@link https://angular.dev/api/core/ApplicationRef}',
+          },
+          {
+            name: 'see',
+            comment: '{@link https://angular.dev}',
+          },
+          {
+            name: 'see',
+            comment: '{@link /cli/build ng build}',
+          },
+          {
+            name: 'see',
+            comment: '{@link /ecosystem/rxjs-interop/output-interop Output Interop}',
           },
         ],
         moduleName: 'test',
       });
 
-    expect(entryFn).toThrowError(/Forbidden relative link: cli\/build ng build/);
+      expect(entry.additionalLinks[0]).toEqual({
+        label: 'Angular',
+        url: 'https://angular.io',
+        title: undefined,
+      });
+
+      expect(entry.additionalLinks[1]).toEqual({
+        label: 'Angular',
+        url: 'https://angular.io',
+        title: 'Angular',
+      });
+
+      expect(entry.additionalLinks[2]).toEqual({
+        label: 'Route',
+        url: '/api/test/Route',
+      });
+
+      expect(entry.additionalLinks[3]).toEqual({
+        label: 'Something else',
+        url: '/api/test/Route',
+      });
+
+      expect(entry.additionalLinks[4]).toEqual({
+        label: 'someMethod',
+        url: '/api/test/Router#someMethod',
+      });
+      expect(entry.additionalLinks[5]).toEqual({
+        label: 'someMethodWithParenthesis()',
+        url: '/api/test/Router#someMethodWithParenthesis',
+      });
+      expect(entry.additionalLinks[6]).toEqual({
+        label: 'someMethod()',
+        url: '/api/test/Router#someMethod',
+      });
+      expect(entry.additionalLinks[7]).toEqual({
+        label: 'FormGroup.someMethod()',
+        url: '/api/test/FormGroup#someMethod',
+      });
+
+      expect(entry.additionalLinks[8]).toEqual({
+        label: 'ApplicationRef',
+        url: 'https://angular.dev/api/core/ApplicationRef',
+      });
+      expect(entry.additionalLinks[9]).toEqual({
+        label: 'angular.dev',
+        url: 'https://angular.dev',
+      });
+
+      expect(entry.additionalLinks[10]).toEqual({
+        label: 'ng build',
+        url: '/cli/build',
+      });
+
+      expect(entry.additionalLinks[11]).toEqual({
+        label: 'Output Interop',
+        url: '/ecosystem/rxjs-interop/output-interop',
+      });
+    });
+
+    it('should convert backticks to code tags in markdown links', () => {
+      const entry = addHtmlAdditionalLinks({
+        jsdocTags: [
+          {
+            name: 'see',
+            comment:
+              '[Host view using `ViewContainerRef.createComponent`](guide/components/programmatic-rendering#host-view-using-viewcontainerrefcreatecomponent)',
+          },
+          {
+            name: 'see',
+            comment:
+              '[Popup attached to `document.body` with `createComponent` + `hostElement`](guide/components/programmatic-rendering#popup-attached-to-documentbody-with-createcomponent--hostelement)',
+          },
+          {
+            name: 'see',
+            comment: '[Method with `backticks` in title](https://example.com "Title with `code`")',
+          },
+        ],
+        moduleName: 'test',
+      });
+
+      expect(entry.additionalLinks[0]).toEqual({
+        label: 'Host view using <code>ViewContainerRef.createComponent</code>',
+        url: 'guide/components/programmatic-rendering#host-view-using-viewcontainerrefcreatecomponent',
+        title: undefined,
+      });
+
+      expect(entry.additionalLinks[1]).toEqual({
+        label:
+          'Popup attached to <code>document.body</code> with <code>createComponent</code> + <code>hostElement</code>',
+        url: 'guide/components/programmatic-rendering#popup-attached-to-documentbody-with-createcomponent--hostelement',
+        title: undefined,
+      });
+
+      expect(entry.additionalLinks[2]).toEqual({
+        label: 'Method with <code>backticks</code> in title',
+        url: 'https://example.com',
+        title: 'Title with `code`',
+      });
+    });
+
+    it('should throw on invalid relatie @link', () => {
+      const entryFn = () =>
+        addHtmlAdditionalLinks({
+          jsdocTags: [
+            {
+              name: 'see',
+              comment: '{@link cli/build ng build}',
+            },
+          ],
+          moduleName: 'test',
+        });
+
+      expect(entryFn).toThrowError(/Forbidden relative link: cli\/build ng build/);
+    });
   });
 
-  it('should parse markdown in descriptions', async () => {
-    setHighlighterInstance(await initHighlighter());
+  describe('addHtmlDescription', () => {
+    it('should parse markdown in descriptions', async () => {
+      setHighlighterInstance(await initHighlighter());
 
-    setSymbols(
-      Object.fromEntries([
-        ['Route', 'test'],
-        ['Router', 'angular/router'],
-        ['Router.someMethod', 'test'],
-        ['Router.someMethodWithParenthesis', 'test'],
-        ['FormGroup', 'test'],
-        ['FormGroup.someMethod', 'test'],
-      ]),
-    );
+      setSymbols(
+        Object.fromEntries([
+          ['Route', 'test'],
+          ['Router', 'angular/router'],
+          ['Router.someMethod', 'test'],
+          ['Router.someMethodWithParenthesis', 'test'],
+          ['FormGroup', 'test'],
+          ['FormGroup.someMethod', 'test'],
+        ]),
+      );
 
-    const entry = addHtmlDescription({
-      description: `
+      const entry = addHtmlDescription({
+        description: `
 \`\`\`angular-ts
 import { Router } from '@angular/router';
 
@@ -223,16 +226,36 @@ function setupRouter() {
 }
 \`\`\`
       `,
-      moduleName: 'test',
+        moduleName: 'test',
+      });
+
+      // Should have some shiki variables (meaning the description was highlighted).
+      expect(entry.htmlDescription).toContain('--shiki');
+
+      // Having docs-code means that the description was parsed and formatted correctly (by the shared marked renderer)
+      expect(entry.htmlDescription).toContain('class="docs-code"');
+
+      expect(entry.htmlDescription).toContain('/api/angular/router/Router');
     });
 
-    // Should have some shiki variables (meaning the description was highlighted).
-    expect(entry.htmlDescription).toContain('--shiki');
+    it('should transform entry with different description & description tag', () => {
+      const entry = addHtmlDescription({
+        'description':
+          "Enables interop with the browser's `Navigation` API for router navigations.",
+        'jsdocTags': [
+          {
+            'name': 'description',
+            'comment': 'This feature is _highly_ experimental ...',
+          },
+        ],
+        'moduleName': 'platform-browser',
+      });
 
-    // Having docs-code means that the description was parsed and formatted correctly (by the shared marked renderer)
-    expect(entry.htmlDescription).toContain('class="docs-code"');
-
-    expect(entry.htmlDescription).toContain('/api/angular/router/Router');
+      expect(entry.htmlDescription).toBe(`<p>This feature is <em>highly</em> experimental ...</p>`);
+      expect(entry.shortHtmlDescription).toBe(
+        `<p>Enables interop with the browser's <code>Navigation</code> API for router navigations.</p>`,
+      );
+    });
   });
 
   it('should only mark as deprecated if all overloads are deprecated', () => {

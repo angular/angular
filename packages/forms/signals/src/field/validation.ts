@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal, ɵWritable} from '@angular/core';
+import {computed, Signal, untracked, ɵWritable} from '@angular/core';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
 import type {FieldTree, TreeValidationResult, ValidationResult} from '../api/types';
 import {isArray} from '../util/type_guards';
@@ -35,7 +35,7 @@ export interface ValidationState {
    * The full set of synchronous tree errors visible to this field. This includes ones that are
    * targeted at a descendant field rather than at this field.
    */
-  rawSyncTreeErrors: Signal<ValidationError.WithField[]>;
+  rawSyncTreeErrors: Signal<ValidationError.WithFieldTree[]>;
 
   /**
    * The full set of synchronous errors for this field, including synchronous tree errors and submission
@@ -43,7 +43,7 @@ export interface ValidationState {
    * the perspective of the field state they are either there or not, they are never in a pending
    * state.
    */
-  syncErrors: Signal<ValidationError.WithField[]>;
+  syncErrors: Signal<ValidationError.WithFieldTree[]>;
 
   /**
    * Whether the field is considered valid according solely to its synchronous validators.
@@ -56,24 +56,26 @@ export interface ValidationState {
    * targeted at a descendant field rather than at this field, as well as sentinel 'pending' values
    * indicating that the validator is still running and an error could still occur.
    */
-  rawAsyncErrors: Signal<(ValidationError.WithField | 'pending')[]>;
+  rawAsyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]>;
 
   /**
    * The asynchronous tree errors visible to this field that are specifically targeted at this field
    * rather than a descendant. This also includes all 'pending' sentinel values, since those could
    * theoretically result in errors for this field.
    */
-  asyncErrors: Signal<(ValidationError.WithField | 'pending')[]>;
+  asyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]>;
 
   /**
    * The combined set of all errors that currently apply to this field.
    */
-  errors: Signal<ValidationError.WithField[]>;
+  errors: Signal<ValidationError.WithFieldTree[]>;
+
+  parseErrors: Signal<ValidationError.WithFormField[]>;
 
   /**
    * The combined set of all errors that currently apply to this field and its descendants.
    */
-  errorSummary: Signal<ValidationError.WithField[]>;
+  errorSummary: Signal<ValidationError.WithFieldTree[]>;
 
   /**
    * Whether this field has any asynchronous validators still pending.
@@ -151,7 +153,7 @@ export class FieldValidationState implements ValidationState {
    * The full set of synchronous tree errors visible to this field. This includes ones that are
    * targeted at a descendant field rather than at this field.
    */
-  readonly rawSyncTreeErrors: Signal<ValidationError.WithField[]> = computed(() => {
+  readonly rawSyncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(() => {
     if (this.shouldSkipValidation()) {
       return [];
     }
@@ -168,7 +170,7 @@ export class FieldValidationState implements ValidationState {
    * added. From the perspective of the field state they are either there or not, they are never in a
    * pending state.
    */
-  readonly syncErrors: Signal<ValidationError.WithField[]> = computed(() => {
+  readonly syncErrors: Signal<ValidationError.WithFieldTree[]> = computed(() => {
     // Short-circuit running validators if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return [];
@@ -202,8 +204,8 @@ export class FieldValidationState implements ValidationState {
    * The synchronous tree errors visible to this field that are specifically targeted at this field
    * rather than a descendant.
    */
-  readonly syncTreeErrors: Signal<ValidationError.WithField[]> = computed(() =>
-    this.rawSyncTreeErrors().filter((err) => err.fieldTree === this.node.fieldProxy),
+  readonly syncTreeErrors: Signal<ValidationError.WithFieldTree[]> = computed(() =>
+    this.rawSyncTreeErrors().filter((err) => err.fieldTree === this.node.fieldTree),
   );
 
   /**
@@ -211,7 +213,7 @@ export class FieldValidationState implements ValidationState {
    * targeted at a descendant field rather than at this field, as well as sentinel 'pending' values
    * indicating that the validator is still running and an error could still occur.
    */
-  readonly rawAsyncErrors: Signal<(ValidationError.WithField | 'pending')[]> = computed(() => {
+  readonly rawAsyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = computed(() => {
     // Short-circuit running validators if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return [];
@@ -230,29 +232,39 @@ export class FieldValidationState implements ValidationState {
    * rather than a descendant. This also includes all 'pending' sentinel values, since those could
    * theoretically result in errors for this field.
    */
-  readonly asyncErrors: Signal<(ValidationError.WithField | 'pending')[]> = computed(() => {
+  readonly asyncErrors: Signal<(ValidationError.WithFieldTree | 'pending')[]> = computed(() => {
     if (this.shouldSkipValidation()) {
       return [];
     }
     return this.rawAsyncErrors().filter(
-      (err) => err === 'pending' || err.fieldTree === this.node.fieldProxy,
+      (err) => err === 'pending' || err.fieldTree === this.node.fieldTree,
     );
   });
+
+  readonly parseErrors: Signal<ValidationError.WithFormField[]> = computed(() =>
+    this.node.formFieldBindings().flatMap((field) => field.parseErrors()),
+  );
 
   /**
    * The combined set of all errors that currently apply to this field.
    */
   readonly errors = computed(() => [
+    ...this.parseErrors(),
     ...this.syncErrors(),
     ...this.asyncErrors().filter((err) => err !== 'pending'),
   ]);
 
-  readonly errorSummary = computed(() =>
-    this.node.structure.reduceChildren(this.errors(), (child, result) => [
+  readonly errorSummary = computed(() => {
+    const errors = this.node.structure.reduceChildren(this.errors(), (child, result) => [
       ...result,
       ...child.errorSummary(),
-    ]),
-  );
+    ]);
+    // Sort by DOM order on client-side only.
+    if (typeof ngServerMode === 'undefined' || !ngServerMode) {
+      untracked(() => errors.sort(compareErrorPosition));
+    }
+    return errors;
+  });
 
   /**
    * Whether this field has any asynchronous validators still pending.
@@ -354,7 +366,7 @@ function normalizeErrors<T extends ValidationResult>(error: T | readonly T[]): r
  * @param fieldTree The default field to add
  * @returns The passed in error(s), with its field set.
  */
-export function addDefaultField<E extends ValidationError.WithOptionalField>(
+export function addDefaultField<E extends ValidationError.WithOptionalFieldTree>(
   error: E,
   fieldTree: FieldTree<unknown>,
 ): E & {fieldTree: FieldTree<unknown>};
@@ -368,10 +380,40 @@ export function addDefaultField<E extends ValidationError>(
 ): ValidationResult<E & {fieldTree: FieldTree<unknown>}> {
   if (isArray(errors)) {
     for (const error of errors) {
-      (error as ɵWritable<ValidationError.WithOptionalField>).fieldTree ??= fieldTree;
+      (error as ɵWritable<ValidationError.WithOptionalFieldTree>).fieldTree ??= fieldTree;
     }
   } else if (errors) {
-    (errors as ɵWritable<ValidationError.WithOptionalField>).fieldTree ??= fieldTree;
+    (errors as ɵWritable<ValidationError.WithOptionalFieldTree>).fieldTree ??= fieldTree;
   }
   return errors as ValidationResult<E & {fieldTree: FieldTree<unknown>}>;
+}
+
+function getFirstBoundElement(error: ValidationError.WithFieldTree) {
+  if (error.formField) return error.formField.element;
+  return error
+    .fieldTree()
+    .formFieldBindings()
+    .reduce<HTMLElement | undefined>((el: HTMLElement | undefined, binding) => {
+      if (!el || !binding.element) return el ?? binding.element;
+      return el.compareDocumentPosition(binding.element) & Node.DOCUMENT_POSITION_PRECEDING
+        ? binding.element
+        : el;
+    }, undefined);
+}
+
+/**
+ * Compares the position of two validation errors by the position of their corresponding field
+ * binding directive in the DOM.
+ * - For errors with multiple field bindings, the earliest one in the DOM will be used for comparison.
+ * - For errors that have no field bindings, they will be considered to come after all other errors.
+ */
+function compareErrorPosition(
+  a: ValidationError.WithFieldTree,
+  b: ValidationError.WithFieldTree,
+): number {
+  const aEl = getFirstBoundElement(a);
+  const bEl = getFirstBoundElement(b);
+  if (aEl === bEl) return 0;
+  if (aEl === undefined || bEl === undefined) return aEl === undefined ? 1 : -1;
+  return aEl.compareDocumentPosition(bEl) & Node.DOCUMENT_POSITION_PRECEDING ? 1 : -1;
 }

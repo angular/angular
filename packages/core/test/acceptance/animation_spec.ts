@@ -11,17 +11,23 @@ import {ViewEncapsulation} from '@angular/compiler';
 import {
   AfterViewInit,
   AnimationCallbackEvent,
+  ApplicationRef,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   computed,
+  createComponent as createComponentFn,
+  createEnvironmentInjector,
   Directive,
   ElementRef,
+  EnvironmentInjector,
+  ErrorHandler,
   inject,
   NgModule,
   OnDestroy,
   provideZonelessChangeDetection,
   signal,
+  TemplateRef,
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
@@ -2297,6 +2303,194 @@ describe('Animation', () => {
       // show is true. Only one element should be present.
       expect(fixture.debugElement.query(By.css('p.all-there-is'))).not.toBeNull();
       expect(fixture.debugElement.query(By.css('p.not-here'))).toBeNull();
+    }));
+
+    it('should not throw INJECTOR_ALREADY_DESTROYED when lView injector is destroyed before animation queue runs', fakeAsync(() => {
+      const animateStyles = `
+        .fade-out {
+          animation: fade-out 100ms;
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'animated-child',
+        template: `
+          @if (show()) {
+            <div class="item" animate.leave="fade-out">Item</div>
+          }
+        `,
+        styles: [animateStyles],
+        encapsulation: ViewEncapsulation.None,
+      })
+      class AnimatedChild {
+        show = signal(true);
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const rootEnvInjector = TestBed.inject(EnvironmentInjector);
+      const childEnvInjector = createEnvironmentInjector([], rootEnvInjector);
+      const appRef = TestBed.inject(ApplicationRef);
+      const errorHandler = TestBed.inject(ErrorHandler);
+      spyOn(errorHandler, 'handleError');
+
+      const hostEl = document.createElement('animated-child');
+      const compRef = createComponentFn(AnimatedChild, {
+        environmentInjector: childEnvInjector,
+        hostElement: hostEl,
+      });
+      appRef.attachView(compRef.hostView);
+      appRef.tick();
+      tickAnimationFrames(1);
+
+      expect(hostEl.querySelector('.item')).not.toBeNull();
+
+      // Trigger leave animation via local detectChanges (queues animation
+      // without flushing the queue - afterNextRender only runs during tick)
+      compRef.instance.show.set(false);
+      compRef.changeDetectorRef.detectChanges();
+
+      // Destroy the child injector before the animation queue flushes.
+      // This simulates what happens when a component's lView injector is
+      // destroyed while leave animations are pending.
+      childEnvInjector.destroy();
+
+      // Tick to flush the animation queue. Without the fix, the animation
+      // function would call lView[INJECTOR].get(NgZone) which delegates to
+      // the destroyed childEnvInjector, throwing NG0205.
+      appRef.tick();
+      tickAnimationFrames(1);
+
+      expect(errorHandler.handleError).not.toHaveBeenCalled();
+    }));
+  });
+
+  describe('animation element duplication', () => {
+    it('should not duplicate elements when using dynamic components in overlay-like containers', fakeAsync(() => {
+      const animateStyles = `
+        .example-menu {
+          display: inline-flex;
+          flex-direction: column;
+          min-width: 180px;
+          max-width: 280px;
+          padding: 6px 0;
+        }
+        .open {
+          animation: open 10ms;
+        }
+        .close {
+          animation: open 10ms reverse;
+        }
+        @keyframes open {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'dynamic-menu',
+        styles: [animateStyles],
+        template: `
+          <ng-template #menu>
+            <div class="example-menu" animate.enter="open" animate.leave="close">
+              <div>Menu</div>
+            </div>
+          </ng-template>
+        `,
+        changeDetection: ChangeDetectionStrategy.OnPush,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class MenuComponent {
+        @ViewChild('menu') menuTpl!: TemplateRef<unknown>;
+        vcr = inject(ViewContainerRef);
+        opened = false;
+        private currentPane: HTMLElement | null = null;
+
+        toggle() {
+          if (this.opened) {
+            this.close();
+          } else {
+            this.open();
+          }
+        }
+
+        open() {
+          this.opened = true;
+          const viewRef = this.vcr.createEmbeddedView(this.menuTpl);
+          // Simulate CDK DomPortalOutlet: after creating the view, move
+          // the root nodes to a new "overlay pane" div, just like CDK
+          // Overlay does with outletElement.appendChild(rootNode).
+          const pane = document.createElement('div');
+          pane.className = 'overlay-pane';
+          document.body.appendChild(pane);
+          for (const node of viewRef.rootNodes) {
+            pane.appendChild(node);
+          }
+          this.currentPane = pane;
+        }
+
+        close() {
+          this.opened = false;
+          this.vcr.clear();
+          // CDK Overlay may or may not remove the pane immediately
+        }
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        imports: [MenuComponent],
+        template: ` <dynamic-menu /> `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {}
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const cmp = fixture.debugElement.query(By.css('dynamic-menu')).componentInstance;
+
+      // Query from document since overlay panes are appended to body
+      const countMenus = () => document.querySelectorAll('.example-menu').length;
+
+      // Helper to complete the leave animation for all leaving menu elements
+      const finishLeaveAnimations = () => {
+        tickAnimationFrames(1);
+        document.querySelectorAll('.example-menu.close').forEach((el) => {
+          el.dispatchEvent(new AnimationEvent('animationend', {animationName: 'open'}));
+        });
+        tick();
+      };
+
+      // Simulate rapid clicking with CD between each toggle
+      for (let i = 0; i < 20; i++) {
+        cmp.toggle();
+        fixture.detectChanges();
+        tickAnimationFrames(1);
+        // At no point should there be more than one menu element
+        expect(countMenus()).toBeLessThanOrEqual(1);
+      }
+
+      // Complete any remaining leave animations
+      finishLeaveAnimations();
+      fixture.detectChanges();
+
+      // 20 toggles (even) = closed = 0 elements
+      expect(countMenus()).toBe(0);
+
+      // Clean up overlay panes
+      document.querySelectorAll('.overlay-pane').forEach((p) => p.remove());
     }));
   });
 });

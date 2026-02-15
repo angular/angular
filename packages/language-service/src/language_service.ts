@@ -27,6 +27,7 @@ import {
   GetComponentLocationsForTemplateResponse,
   GetTcbResponse,
   GetTemplateLocationForComponentResponse,
+  LinkedEditingRanges,
   PluginConfig,
 } from '../api';
 
@@ -35,6 +36,7 @@ import {ALL_CODE_FIXES_METAS, CodeFixes} from './codefixes';
 import {CompilerFactory} from './compiler_factory';
 import {CompletionBuilder} from './completions';
 import {DefinitionBuilder} from './definitions';
+import {getLinkedEditingRangeAtPosition} from './linked_editing_range';
 import {getOutliningSpans} from './outlining_spans';
 import {QuickInfoBuilder} from './quick_info';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
@@ -275,6 +277,26 @@ export class LanguageService {
         position,
       );
       return results === null ? undefined : getUniqueLocations(results);
+    });
+  }
+
+  /**
+   * Gets linked editing ranges for synchronized editing of HTML tag pairs.
+   *
+   * When the cursor is on an element tag name, returns both the opening and closing
+   * tag name spans so they can be edited simultaneously.
+   *
+   * @param fileName The file to check
+   * @param position The cursor position in the file
+   * @returns LinkedEditingRanges if on a tag name, undefined otherwise
+   */
+  getLinkedEditingRangeAtPosition(
+    fileName: string,
+    position: number,
+  ): LinkedEditingRanges | undefined {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
+      const result = getLinkedEditingRangeAtPosition(compiler, fileName, position);
+      return result ?? undefined;
     });
   }
 
@@ -830,7 +852,60 @@ function parseNgCompilerOptions(
 
   options['_angularCoreVersion'] = config['angularCoreVersion'];
 
+  if (project.getCurrentDirectory()) {
+    // Attempt to resolve the version of @angular/core that is installed in the project.
+    // This is useful for monorepos where different projects may use different versions of Angular.
+    const detectedVersion = detectAngularCoreVersion(project, host);
+    if (detectedVersion !== null) {
+      options['_angularCoreVersion'] = detectedVersion;
+    }
+  }
+
   return options;
+}
+
+function detectAngularCoreVersion(
+  project: ts.server.ConfiguredProject,
+  host: ConfigurationHost,
+): string | null {
+  const configPath = project.getConfigFilePath();
+  const projectDir = host.dirname(host.resolve(configPath));
+
+  // Try to find @angular/core relative to the project directory
+  let angularCorePackageJsonPath: string | undefined;
+  try {
+    angularCorePackageJsonPath = require.resolve('@angular/core/package.json', {
+      paths: [projectDir],
+    });
+  } catch {}
+
+  if (angularCorePackageJsonPath === undefined) {
+    // Fallback: manually look for node_modules/@angular/core/package.json
+    // This is helpful in environments where require.resolve doesn't work on the target fs (e.g. tests with mock fs)
+    const candidate = host.resolve(projectDir, 'node_modules/@angular/core/package.json');
+    if (host.exists(candidate)) {
+      angularCorePackageJsonPath = candidate;
+    }
+  }
+
+  if (!angularCorePackageJsonPath) {
+    return null;
+  }
+
+  try {
+    const content = host.readFile(host.resolve(angularCorePackageJsonPath));
+    if (!content) {
+      return null;
+    }
+
+    const packageJson = JSON.parse(content) as unknown as {version?: unknown};
+    if (packageJson && typeof packageJson.version === 'string') {
+      // 0.0.0 is used for the version when building locally, so replace it with a very high version
+      return packageJson.version === '0.0.0' ? '999.999.999' : packageJson.version;
+    }
+  } catch {}
+
+  return null;
 }
 
 function createProgramDriver(project: ts.server.Project): ProgramDriver {

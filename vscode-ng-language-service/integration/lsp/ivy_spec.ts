@@ -612,36 +612,6 @@ export class AppComponent {
     expect(response).toBeNull();
   });
 
-  it('should handle apps where standalone is not enabled by default (pre v19)', async () => {
-    await initServer({angularCoreVersion: '18.0.0'});
-    const moduleFile = join(PROJECT_PATH, 'app/app.module.ts');
-
-    // Update component to not specify standalone explicitly. This should be interpreted as
-    // false in pre-v19 projects. The component is already declared in AppModule, and there should
-    // be no diagnostics.
-    openTextDocument(
-      client,
-      APP_COMPONENT,
-      `
-      import {Component, EventEmitter, Input, Output} from '@angular/core';
-
-      @Component({
-        selector: 'my-app',
-        template: '<h1>Hello {{name}}</h1>',
-        // standalone: false, // standalone is implicitly false
-      })
-      export class AppComponent {
-        name = 'Angular';
-        @Input() appInput = '';
-        @Output() appOutput = new EventEmitter<string>();
-      }
-      `,
-    );
-    openTextDocument(client, APP_COMPONENT_MODULE);
-    const diagnostics = await getDiagnosticsForFile(client, moduleFile);
-    expect(diagnostics.length).toBe(0);
-  });
-
   it('should provide a "go to component" codelens', async () => {
     openTextDocument(client, FOO_TEMPLATE);
     const codeLensResponse = await client.sendRequest(lsp.CodeLensRequest.type, {

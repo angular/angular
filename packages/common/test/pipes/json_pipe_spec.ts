@@ -8,7 +8,7 @@
 
 import {CommonModule, JsonPipe} from '../../index';
 import {Component} from '@angular/core';
-import {TestBed, waitForAsync} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
 
 describe('JsonPipe', () => {
@@ -67,7 +67,7 @@ describe('JsonPipe', () => {
       TestBed.configureTestingModule({declarations: [TestComp], imports: [CommonModule]});
     });
 
-    it('should work with mutable objects', waitForAsync(() => {
+    it('should work with mutable objects', () => {
       const fixture = TestBed.createComponent(TestComp);
       const mutable: number[] = [1];
       fixture.componentInstance.data = mutable;
@@ -79,7 +79,7 @@ describe('JsonPipe', () => {
       fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText('[\n  1,\n  2\n]');
-    }));
+    });
   });
 
   it('should be available as a standalone pipe', () => {

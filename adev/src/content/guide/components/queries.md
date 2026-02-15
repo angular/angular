@@ -58,7 +58,7 @@ export class CustomCardAction {
 })
 export class CustomCard {
   actions = viewChildren(CustomCardAction);
-  actionsTexts = computed(() => this.actions().map(action => action.text));
+  actionsTexts = computed(() => this.actions().map((action) => action.text));
 }
 ```
 
@@ -89,16 +89,15 @@ export class CustomExpando {
 }
 
 @Component({
-/* ... */
-// CustomToggle is used inside CustomExpando as content.
-template: `
+  /* ... */
+  // CustomToggle is used inside CustomExpando as content.
+  template: `
     <custom-expando>
       <custom-toggle>Show</custom-toggle>
     </custom-expando>
-  `
+  `,
 })
-
-export class UserProfile { }
+export class UserProfile {}
 ```
 
 If the query does not find a result, its value is `undefined`. This may occur if the target element is absent or hidden by `@if`. Angular keeps the result of `contentChild` up to date as your application state changes.
@@ -107,7 +106,7 @@ By default, content queries find only _direct_ children of the component and do 
 
 You can also query for multiple results with the `contentChildren` function.
 
-```angular-ts {highlight: [15, 16]}
+```angular-ts {highlight: [14, 15]}
 @Component({
   selector: 'custom-menu-item',
   /*...*/
@@ -120,10 +119,9 @@ export class CustomMenuItem {
   selector: 'custom-menu',
   /*...*/
 })
-
 export class CustomMenu {
   items = contentChildren(CustomMenuItem);
-  itemTexts = computed(() => this.items().map(item => item.text));
+  itemTexts = computed(() => this.items().map((item) => item.text));
 }
 
 @Component({
@@ -133,9 +131,9 @@ export class CustomMenu {
       <custom-menu-item>Cheese</custom-menu-item>
       <custom-menu-item>Tomato</custom-menu-item>
     </custom-menu>
-  `
+  `,
 })
-export class UserProfile { }
+export class UserProfile {}
 ```
 
 `contentChildren` creates a signal with an `Array` of the query results.
@@ -175,7 +173,7 @@ a [template reference variable](guide/templates/variables#template-reference-var
   template: `
     <button #save>Save</button>
     <button #cancel>Cancel</button>
-  `
+  `,
 })
 export class ActionBar {
   saveButton = viewChild<ElementRef<HTMLButtonElement>>('save');
@@ -199,9 +197,11 @@ const SUB_ITEM = new InjectionToken<string>('sub-item');
   /*...*/
   providers: [{provide: SUB_ITEM, useValue: 'special-item'}],
 })
-export class SpecialItem { }
+export class SpecialItem {}
 
-@Component({/*...*/})
+@Component({
+  /*...*/
+})
 export class CustomList {
   subItemType = contentChild(SUB_ITEM);
 }
@@ -236,7 +236,7 @@ Developers most commonly use `read` to retrieve `ElementRef` and `TemplateRef`.
 By default, `contentChildren` queries find only _direct_ children of the component and do not traverse into descendants.
 `contentChild` queries do traverse into descendants by default.
 
-```angular-ts {highlight: [13, 14, 15, 16]}
+```angular-ts {highlight: [13, 14, 15, 16, 17]}
 @Component({
   selector: 'custom-expando',
   /*...*/
@@ -254,9 +254,9 @@ export class CustomExpando {
         <custom-toggle>Show</custom-toggle>
       </some-other-component>
     </custom-expando>
-  `
+  `,
 })
-export class UserProfile { }
+export class UserProfile {}
 ```
 
 In the example above, `CustomExpando` cannot find `<custom-toggle>` with `contentChildren` because it is not a direct child of `<custom-expando>`. By setting `descendants: true`, you configure the query to traverse all descendants in the same template. Queries, however, _never_ pierce into components to traverse elements in other templates.
@@ -287,7 +287,7 @@ export class CustomCardHeader {
   selector: 'custom-card',
   template: '<custom-card-header>Visit sunny California!</custom-card-header>',
 })
-export class CustomCard {
+export class CustomCard implements AfterViewInit {
   @ViewChild(CustomCardHeader) header: CustomCardHeader;
 
   ngAfterViewInit() {
@@ -320,11 +320,11 @@ export class CustomCardAction {
     <custom-card-action>Cancel</custom-card-action>
   `,
 })
-export class CustomCard {
+export class CustomCard implements AfterViewInit {
   @ViewChildren(CustomCardAction) actions: QueryList<CustomCardAction>;
 
   ngAfterViewInit() {
-    this.actions.forEach(action => {
+    this.actions.forEach((action) => {
       console.log(action.text);
     });
   }
@@ -337,7 +337,7 @@ export class CustomCard {
 
 You can query for a single result with the `@ContentChild` decorator.
 
-```angular-ts {highlight: [15, 16, 17, 18, 19, 26]}
+```angular-ts {highlight: [14, 16, 17, 18]}
 @Component({
   selector: 'custom-toggle',
   /*...*/
@@ -350,8 +350,7 @@ export class CustomToggle {
   selector: 'custom-expando',
   /*...*/
 })
-
-export class CustomExpando {
+export class CustomExpando implements AfterContentInit {
   @ContentChild(CustomToggle) toggle: CustomToggle;
 
   ngAfterContentInit() {
@@ -365,9 +364,9 @@ export class CustomExpando {
     <custom-expando>
       <custom-toggle>Show</custom-toggle>
     </custom-expando>
-  `
+  `,
 })
-export class UserProfile { }
+export class UserProfile {}
 ```
 
 In this example, the `CustomExpando` component queries for a child `CustomToggle` and accesses the result in `ngAfterContentInit`.
@@ -378,7 +377,7 @@ Angular keeps the result of `@ContentChild` up to date as your application state
 
 You can also query for multiple results with the `@ContentChildren` decorator.
 
-```angular-ts {highlight: [15, 17, 18, 19, 20, 21]}
+```angular-ts {highlight: [14, 16, 17, 18, 19, 20]}
 @Component({
   selector: 'custom-menu-item',
   /*...*/
@@ -391,12 +390,11 @@ export class CustomMenuItem {
   selector: 'custom-menu',
   /*...*/
 })
-
-export class CustomMenu {
+export class CustomMenu implements AfterContentInit {
   @ContentChildren(CustomMenuItem) items: QueryList<CustomMenuItem>;
 
   ngAfterContentInit() {
-    this.items.forEach(item => {
+    this.items.forEach((item) => {
       console.log(item.text);
     });
   }
@@ -409,9 +407,9 @@ export class CustomMenu {
       <custom-menu-item>Cheese</custom-menu-item>
       <custom-menu-item>Tomato</custom-menu-item>
     </custom-menu>
-  `
+  `,
 })
-export class UserProfile { }
+export class UserProfile {}
 ```
 
 `@ContentChildren` creates a `QueryList` object that contains the query results. You can subscribe to changes to the query results over time via the `changes` property.
@@ -429,7 +427,7 @@ All query decorators accept an options object as a second parameter. These optio
   selector: 'custom-card',
   template: '<custom-card-header>Visit sunny California!</custom-card-header>',
 })
-export class CustomCard {
+export class CustomCard implements OnInit {
   @ViewChild(CustomCardHeader, {static: true}) header: CustomCardHeader;
 
   ngOnInit() {

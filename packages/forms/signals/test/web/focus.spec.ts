@@ -19,7 +19,7 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {FormControl} from '@angular/forms';
 import {compatForm} from '../../compat';
-import {FormField, form, type FieldTree} from '../../public_api';
+import {FormField, form, type Field, type FieldTree} from '../../public_api';
 
 describe('FieldState focus behavior', () => {
   it('should focus a native control', async () => {
@@ -45,12 +45,14 @@ describe('FieldState focus behavior', () => {
     @Component({
       selector: 'custom-control',
       host: {'tabindex': '-1'},
-      template: '',
+      template: '<input #input />',
     })
     class CustomControl {
       readonly value = model<string>();
+      readonly input = viewChild.required<ElementRef<HTMLInputElement>>('input');
       focus() {
         focusCalled = true;
+        this.input().nativeElement.focus();
       }
     }
 
@@ -68,6 +70,7 @@ describe('FieldState focus behavior', () => {
     await act(() => fixture.componentInstance.f().focusBoundControl());
     expect(focusCalled).toBeTrue();
     expect(document.activeElement).not.toBe(customControl);
+    expect(document.activeElement).toBe(customControl.querySelector('input'));
   });
 
   it('should directly focus a custom control that has no custom focus logic', async () => {
@@ -174,7 +177,7 @@ describe('FieldState focus behavior', () => {
       template: ``,
     })
     class CustomControl {
-      formField = input.required<FieldTree<string>>();
+      formField = input.required<Field<string>>();
     }
 
     @Component({
@@ -198,7 +201,7 @@ describe('FieldState focus behavior', () => {
       template: `<input #input />`,
     })
     class CustomControl {
-      formField = input.required<FieldTree<string>>();
+      formField = input.required<Field<string>>();
       input = viewChild.required<ElementRef<HTMLInputElement>>('input');
 
       constructor() {

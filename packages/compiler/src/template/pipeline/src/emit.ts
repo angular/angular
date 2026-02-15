@@ -10,6 +10,7 @@
 import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
 import * as ir from '../ir';
+import {CONTEXT_NAME, RENDER_FLAGS} from '../../../render3/view/util';
 
 import {
   CompilationJob,
@@ -86,6 +87,7 @@ import {countVariables} from './phases/var_counting';
 import {optimizeVariables} from './phases/variable_optimization';
 import {wrapI18nIcus} from './phases/wrap_icus';
 import {generateArrowFunctions} from './phases/generate_arrow_functions';
+import {specializeControlProperties} from './phases/control_directives';
 
 type Phase =
   | {
@@ -111,6 +113,7 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: deduplicateTextBindings},
   {kind: Kind.Both, fn: specializeStyleBindings},
   {kind: Kind.Both, fn: specializeBindings},
+  {kind: Kind.Tmpl, fn: specializeControlProperties},
   {kind: Kind.Both, fn: convertAnimations},
   {kind: Kind.Both, fn: extractAttributes},
   {kind: Kind.Tmpl, fn: createI18nContexts},
@@ -244,7 +247,7 @@ function emitView(view: ViewCompilationUnit): o.FunctionExpr {
   const createCond = maybeGenerateRfBlock(1, createStatements);
   const updateCond = maybeGenerateRfBlock(2, updateStatements);
   return o.fn(
-    [new o.FnParam('rf'), new o.FnParam('ctx')],
+    [new o.FnParam(RENDER_FLAGS), new o.FnParam(CONTEXT_NAME)],
     [...createCond, ...updateCond],
     /* type */ undefined,
     /* sourceSpan */ undefined,
@@ -259,7 +262,11 @@ function maybeGenerateRfBlock(flag: number, statements: o.Statement[]): o.Statem
 
   return [
     o.ifStmt(
-      new o.BinaryOperatorExpr(o.BinaryOperator.BitwiseAnd, o.variable('rf'), o.literal(flag)),
+      new o.BinaryOperatorExpr(
+        o.BinaryOperator.BitwiseAnd,
+        o.variable(RENDER_FLAGS),
+        o.literal(flag),
+      ),
       statements,
     ),
   ];
@@ -300,7 +307,7 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
   const createCond = maybeGenerateRfBlock(1, createStatements);
   const updateCond = maybeGenerateRfBlock(2, updateStatements);
   return o.fn(
-    [new o.FnParam('rf'), new o.FnParam('ctx')],
+    [new o.FnParam(RENDER_FLAGS), new o.FnParam(CONTEXT_NAME)],
     [...createCond, ...updateCond],
     /* type */ undefined,
     /* sourceSpan */ undefined,

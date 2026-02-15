@@ -75,23 +75,6 @@
             }
           },
           "defaultConfiguration": "development"
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:private-protractor",
-          "options": {
-            "port": 0,
-            "protractorConfig": "e2e/protractor.conf.js",
-            "webdriverUpdate": false
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "hydration:serve:production"
-            },
-            "development": {
-              "devServerTarget": "hydration:serve:development"
-            }
-          },
-          "defaultConfiguration": "development"
         }
       }
     }

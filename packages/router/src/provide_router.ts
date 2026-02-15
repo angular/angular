@@ -8,10 +8,10 @@
 
 import {
   HashLocationStrategy,
+  Location,
   LOCATION_INITIALIZED,
   LocationStrategy,
   ViewportScroller,
-  Location,
   ɵNavigationAdapterForLocation,
 } from '@angular/common';
 import {
@@ -23,15 +23,15 @@ import {
   inject,
   InjectionToken,
   Injector,
+  ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
   makeEnvironmentProviders,
+  ɵperformanceMarkFeature as performanceMarkFeature,
   provideAppInitializer,
+  provideEnvironmentInitializer,
   Provider,
   runInInjectionContext,
-  ɵperformanceMarkFeature as performanceMarkFeature,
-  ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
-  ɵpublishExternalGlobalUtil,
-  provideEnvironmentInitializer,
   Type,
+  ɵpublishExternalGlobalUtil,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -39,15 +39,18 @@ import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outl
 import {Event, NavigationError, stringifyEvent} from './events';
 import {RedirectCommand, Routes} from './models';
 import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
+import {ROUTE_INJECTOR_CLEANUP, routeInjectorCleanup} from './route_injector_cleanup';
 import {Router} from './router';
 import {InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';
 import {ROUTES} from './router_config_loader';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
-import {routeInjectorCleanup, ROUTE_INJECTOR_CLEANUP} from './route_injector_cleanup';
 
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 
+import {getLoadedRoutes, getRouterInstance, navigateByUrl} from './router_devtools';
 import {ActivatedRoute} from './router_state';
+import {NavigationStateManager} from './statemanager/navigation_state_manager';
+import {StateManager} from './statemanager/state_manager';
 import {afterNextNavigation} from './utils/navigations';
 import {
   CREATE_VIEW_TRANSITION,
@@ -55,9 +58,6 @@ import {
   VIEW_TRANSITION_OPTIONS,
   ViewTransitionsFeatureOptions,
 } from './utils/view_transition';
-import {getLoadedRoutes, getRouterInstance, navigateByUrl} from './router_devtools';
-import {StateManager} from './statemanager/state_manager';
-import {NavigationStateManager} from './statemanager/navigation_state_manager';
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -282,9 +282,9 @@ export type ExperimentalPlatformNavigationFeature =
  * });
  * ```
  * 
- * @see https://github.com/WICG/navigation-api?tab=readme-ov-file#problem-statement
- * @see https://developer.chrome.com/docs/web-platform/navigation-api/
- * @see https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API
+ * @see [Navigation API on WICG](https://github.com/WICG/navigation-api?tab=readme-ov-file#problem-statement)
+ * @see [Navigation API on Chrome from developers](https://developer.chrome.com/docs/web-platform/navigation-api/)
+ * @see [Navigation API on MDN](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API)
  *
  * @experimental 21.1 
  * @returns A `RouterFeature` that enables the platform navigation.
@@ -899,8 +899,8 @@ export function withComponentInputBinding(): ComponentInputBindingFeature {
  * ```
  *
  * @returns A set of providers for use with `provideRouter`.
- * @see https://developer.chrome.com/docs/web-platform/view-transitions/
- * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
+ * @see [View Transitions on MDN](https://developer.chrome.com/docs/web-platform/view-transitions/)
+ * @see [View Transitions API on MDN](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
  * @see [Route transition animations](guide/routing/route-transition-animations)
  * @developerPreview 19.0
  */

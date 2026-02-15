@@ -219,12 +219,19 @@ describe('convertToDevtoolsSignalGraph', () => {
           debuggable: false,
           preview: dummyPreview,
         },
+        {
+          id: 'f',
+          kind: 'childSignalProp',
+          epoch: 1,
+          debuggable: false,
+          preview: dummyPreview,
+        },
       ],
       edges: [
         {producer: 0, consumer: 1},
         {producer: 2, consumer: 3},
         {producer: 1, consumer: 4},
-        {producer: 3, consumer: 4},
+        {producer: 3, consumer: 5},
       ],
     };
     const graph = convertToDevtoolsSignalGraph(debugGraph);
@@ -281,6 +288,15 @@ describe('convertToDevtoolsSignalGraph', () => {
           clusterId: undefined,
         },
         {
+          id: 'f',
+          kind: 'childSignalProp',
+          epoch: 1,
+          debuggable: false,
+          preview: dummyPreview,
+          nodeType: 'signal',
+          clusterId: undefined,
+        },
+        {
           id: 'cl_rsrc1',
           nodeType: 'cluster',
           clusterType: 'resource',
@@ -299,9 +315,9 @@ describe('convertToDevtoolsSignalGraph', () => {
         {producer: 0, consumer: 1},
         {producer: 2, consumer: 3},
         {producer: 1, consumer: 4},
-        {producer: 3, consumer: 4},
-        {producer: 5, consumer: 4},
+        {producer: 3, consumer: 5},
         {producer: 6, consumer: 4},
+        {producer: 7, consumer: 5},
       ],
       clusters: {
         'cl_rsrc1': {

@@ -111,7 +111,7 @@ A directive can inject a `TemplateRef` if that directive is applied directly to 
 
 ```angular-ts
 @Directive({
-  selector: '[myDirective]'
+  selector: '[myDirective]',
 })
 export class MyDirective {
   private fragment = inject(TemplateRef);
@@ -218,30 +218,27 @@ Each parameter is written as an attribute prefixed with `let-` with a value matc
 
 ```angular-html
 <ng-template let-pizzaTopping="topping">
-  <p>You selected: {{pizzaTopping}}</p>
+  <p>You selected: {{ pizzaTopping }}</p>
 </ng-template>
 ```
 
-### Using `NgTemplateOutlet`
+### Using `NgTemplateOutlet` {#using-ngtemplateoutlet-with-parameters}
 
 You can bind a context object to the `ngTemplateOutletContext` input:
 
 ```angular-html
 <ng-template #myFragment let-pizzaTopping="topping">
-  <p>You selected: {{pizzaTopping}}</p>
+  <p>You selected: {{ pizzaTopping }}</p>
 </ng-template>
 
-<ng-container
-  [ngTemplateOutlet]="myFragment"
-  [ngTemplateOutletContext]="{topping: 'onion'}"
-/>
+<ng-container [ngTemplateOutlet]="myFragment" [ngTemplateOutletContext]="{topping: 'onion'}" />
 ```
 
-### Using `ViewContainerRef`
+### Using `ViewContainerRef` {#using-viewcontainerref-with-parameters}
 
 You can pass a context object as the second argument to `createEmbeddedView`:
 
-```angular-ts
+```ts
 this.viewContainer.createEmbeddedView(this.myFragment, {topping: 'onion'});
 ```
 

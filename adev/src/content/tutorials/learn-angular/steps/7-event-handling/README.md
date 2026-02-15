@@ -42,6 +42,7 @@ showSecretMessage() {
 <docs-step title="Bind to the template event">
 Update the template code in `app.ts` to bind to the `mouseover` event of the `section` element.
 
+<!-- prettier-ignore -->
 ```angular-html
 <section (mouseover)="showSecretMessage()">
 ```

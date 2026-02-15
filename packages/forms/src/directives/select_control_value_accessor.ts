@@ -286,7 +286,7 @@ export class NgSelectOption implements OnDestroy {
   @Input('value')
   set value(value: any) {
     this._setElementValue(value);
-    if (this._select) this._select._writeValueAfterRender();
+    this._select?._writeValueAfterRender();
   }
 
   /** @internal */
@@ -296,9 +296,7 @@ export class NgSelectOption implements OnDestroy {
 
   /** @docs-private */
   ngOnDestroy(): void {
-    if (this._select) {
-      this._select._optionMap.delete(this.id);
-      this._select._writeValueAfterRender();
-    }
+    this._select?._optionMap.delete(this.id);
+    this._select?._writeValueAfterRender();
   }
 }

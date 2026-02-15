@@ -16,6 +16,7 @@
     "packages/docs/**",
     "packages/elements/schematics/**",
     "packages/examples/**",
+    "packages/forms/signals/src/api/rules/validation/standard_schema.ts",
     "packages/localize/**",
     "packages/private/**",
     "packages/service-worker/**",

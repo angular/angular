@@ -7,6 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 import {BehaviorSubject} from 'rxjs';
 import {
@@ -44,7 +45,6 @@ import {
   TestBed,
   tick,
 } from '../../testing';
-import {By} from '@angular/platform-browser';
 
 describe('change detection', () => {
   beforeEach(() => {
@@ -145,6 +145,33 @@ describe('change detection', () => {
       expect(ref.instance.checks).toBe(2);
     });
 
+    it('should detect changes for Eager embedded views (alias for Default)', () => {
+      @Component({
+        selector: 'eager',
+        template: '',
+        changeDetection: ChangeDetectionStrategy.Eager,
+      })
+      class EagerComponent {
+        checks = 0;
+        ngDoCheck() {
+          this.checks++;
+        }
+      }
+
+      @Component({template: '<ng-template #template></ng-template>'})
+      class Container {
+        @ViewChild('template', {read: ViewContainerRef, static: true}) vcr!: ViewContainerRef;
+      }
+      const fixture = TestBed.createComponent(Container);
+      const ref = fixture.componentInstance.vcr!.createComponent(EagerComponent);
+
+      fixture.detectChanges(false);
+      expect(ref.instance.checks).toBe(1);
+
+      fixture.detectChanges(false);
+      expect(ref.instance.checks).toBe(2);
+    });
+
     it('should not detect changes in child embedded views while they are detached', () => {
       const counters = {componentView: 0, embeddedView: 0};
 
@@ -241,7 +268,7 @@ describe('change detection', () => {
 
       @Component({
         template: '<child/>',
-        changeDetection: ChangeDetectionStrategy.Default,
+        changeDetection: ChangeDetectionStrategy.Eager,
         imports: [ChildComponent],
       })
       class ParentComponent {}

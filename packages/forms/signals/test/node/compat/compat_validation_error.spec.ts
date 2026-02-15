@@ -7,21 +7,24 @@
  */
 
 import {FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
-import {CompatValidationError} from '../../../compat/src/api/compat_validation_error';
 import {
+  CompatValidationError,
   extractNestedReactiveErrors,
   reactiveErrorsToSignalErrors,
-} from '../../../compat/src/compat_validation_error';
+  signalErrorsToValidationErrors,
+} from '../../../src/compat/validation_errors';
+import {ValidationError} from '../../../src/api/rules';
 
 describe('destroy$', () => {
-  const control = new FormControl();
   it('converts an error to a custom error', () => {
+    const control = new FormControl();
     expect(reactiveErrorsToSignalErrors({min: true}, control)).toEqual([
       new CompatValidationError({kind: 'min', context: true, control}),
     ]);
   });
 
   it('converts multiple errors', () => {
+    const control = new FormControl();
     expect(reactiveErrorsToSignalErrors({min: true, max: {max: 1, actual: 0}}, control)).toEqual([
       new CompatValidationError({kind: 'min', context: true, control}),
       new CompatValidationError({kind: 'max', context: {max: 1, actual: 0}, control}),
@@ -61,5 +64,58 @@ describe('extracts validation errors', () => {
     const control = new FormGroup([], failingValidator);
     const errors = extractNestedReactiveErrors(control);
     expect(errors).toEqual([new CompatValidationError({kind: 'fail', context: true, control})]);
+  });
+});
+
+describe('signalErrorsToValidationErrors', () => {
+  it('should return null for empty errors array', () => {
+    expect(signalErrorsToValidationErrors([])).toBeNull();
+  });
+
+  it('should convert standard ValidationError to an object matching its kind', () => {
+    const error: ValidationError = {kind: 'required', message: 'Field is required'};
+    expect(signalErrorsToValidationErrors([error])).toEqual({
+      required: error,
+    });
+  });
+
+  it('should unwrap CompatValidationError context', () => {
+    const control = new FormControl();
+    const errorDetails = {min: 10, actual: 5};
+    const compatError = new CompatValidationError({
+      kind: 'min',
+      context: errorDetails,
+      control,
+    });
+
+    expect(signalErrorsToValidationErrors([compatError])).toEqual({
+      min: errorDetails,
+    });
+  });
+
+  it('should handle mixed standard and compat errors', () => {
+    const control = new FormControl();
+    const requiredError: ValidationError = {kind: 'required'};
+    const minDetails = {min: 10, actual: 5};
+    const minCompatError = new CompatValidationError({
+      kind: 'min',
+      context: minDetails,
+      control,
+    });
+
+    const result = signalErrorsToValidationErrors([requiredError, minCompatError]);
+    expect(result).toEqual({
+      required: requiredError,
+      min: minDetails,
+    });
+  });
+
+  it('should let the last error of the same kind win', () => {
+    const error1: ValidationError = {kind: 'custom', message: 'error 1'};
+    const error2: ValidationError = {kind: 'custom', message: 'error 2'};
+
+    expect(signalErrorsToValidationErrors([error1, error2])).toEqual({
+      custom: error2,
+    });
   });
 });

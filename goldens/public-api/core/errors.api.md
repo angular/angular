@@ -86,8 +86,6 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_FACTORY_DEPENDENCY = 202,
     // (undocumented)
-    INVALID_FIELD_DIRECTIVE_HOST = 318,
-    // (undocumented)
     INVALID_I18N_STRUCTURE = 700,
     // (undocumented)
     INVALID_INHERITANCE = 903,

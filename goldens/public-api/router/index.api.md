@@ -151,11 +151,11 @@ export type CanLoadFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gua
 // @public
 export interface CanMatch {
     // (undocumented)
-    canMatch(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
+    canMatch(route: Route, segments: UrlSegment[], currentSnapshot?: PartialMatchRouteSnapshot): MaybeAsync<GuardResult>;
 }
 
 // @public
-export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
+export type CanMatchFn = (route: Route, segments: UrlSegment[], currentSnapshot?: PartialMatchRouteSnapshot) => MaybeAsync<GuardResult>;
 
 // @public
 export class ChildActivationEnd {
@@ -370,7 +370,7 @@ export interface InMemoryScrollingOptions {
 }
 
 // @public
-export function isActive(url: string | UrlTree, router: Router, matchOptions: IsActiveMatchOptions): Signal<boolean>;
+export function isActive(url: string | UrlTree, router: Router, matchOptions?: Partial<IsActiveMatchOptions>): Signal<boolean>;
 
 // @public
 export interface IsActiveMatchOptions {
@@ -572,6 +572,9 @@ export type Params = {
 };
 
 // @public
+export type PartialMatchRouteSnapshot = Pick<ActivatedRouteSnapshot, 'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title' | 'paramMap' | 'queryParamMap'>;
+
+// @public
 export class PreloadAllModules implements PreloadingStrategy {
     // (undocumented)
     preload(route: Route, fn: () => Observable<any>): Observable<any>;
@@ -612,7 +615,7 @@ export class RedirectCommand {
 }
 
 // @public
-export type RedirectFunction = (redirectData: Pick<ActivatedRouteSnapshot, 'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title' | 'paramMap' | 'queryParamMap'>) => MaybeAsync<string | UrlTree>;
+export type RedirectFunction = (redirectData: PartialMatchRouteSnapshot) => MaybeAsync<string | UrlTree>;
 
 // @public
 export interface Resolve<T> {
@@ -725,8 +728,8 @@ export class Router {
     initialNavigation(): void;
     // @deprecated
     isActive(url: string | UrlTree, exact: boolean): boolean;
-    // @deprecated
-    isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;
+    // @deprecated (undocumented)
+    isActive(url: string | UrlTree, matchOptions: Partial<IsActiveMatchOptions>): boolean;
     get lastSuccessfulNavigation(): Signal<Navigation | null>;
     navigate(commands: readonly any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
@@ -882,7 +885,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     set routerLinkActive(data: string[] | string);
     routerLinkActiveOptions: {
         exact: boolean;
-    } | IsActiveMatchOptions;
+    } | Partial<IsActiveMatchOptions>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<RouterLinkActive, "[routerLinkActive]", ["routerLinkActive"], { "routerLinkActiveOptions": { "alias": "routerLinkActiveOptions"; "required": false; }; "ariaCurrentWhenActive": { "alias": "ariaCurrentWhenActive"; "required": false; }; "routerLinkActive": { "alias": "routerLinkActive"; "required": false; }; }, { "isActiveChange": "isActiveChange"; }, ["links"], never, true, never>;
     // (undocumented)

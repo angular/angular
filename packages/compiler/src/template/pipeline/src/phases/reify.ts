@@ -7,6 +7,7 @@
  */
 
 import * as o from '../../../../output/output_ast';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 import {
@@ -751,7 +752,7 @@ function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
 }
 
 function reifyControl(op: ir.ControlOp): ir.UpdateOp {
-  return ng.control(op.name, op.expression, op.sanitizer, op.sourceSpan);
+  return ng.control(op.sourceSpan);
 }
 
 function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Expression {
@@ -818,7 +819,7 @@ function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Express
       return ng.arrowFunction(
         expr.varOffset,
         unit.job.pool.getSharedFunctionReference(getArrowFunctionFactory(unit, expr), 'arrowFn'),
-        o.variable('ctx'),
+        o.variable(CONTEXT_NAME),
       );
     default:
       throw new Error(

@@ -18,8 +18,7 @@ In this example, there are two components `User` and `App`.
 Update the `App` template to include a reference to the `User` which uses the selector `app-user`. Be sure to add `User` to the imports array of `App`, this makes it available for use in the `App` template.
 
 ```angular-html
-template: `<app-user />`,
-imports: [User]
+template: `<app-user />`, imports: [User]
 ```
 
 The component now displays the message `Username: youngTech`. You can update the template code to include more markup.
@@ -29,7 +28,9 @@ The component now displays the message `Username: youngTech`. You can update the
 Because you can use any HTML markup that you want in a template, try updating the template for `App` to also include more HTML elements. This example will add a `<section>` element as the parent of the `<app-user>` element.
 
 ```angular-html
-template: `<section><app-user /></section>`,
+template: `
+<section><app-user /></section>
+`,
 ```
 
 </docs-step>

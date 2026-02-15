@@ -8,7 +8,7 @@
 
 import {TmplAstBoundEvent} from '@angular/compiler';
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import tss from 'typescript';
+import type ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';
 import {getTypeCheckInfoAtPosition, TypeCheckInfo} from '../utils';
@@ -44,7 +44,7 @@ export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
   },
   fixIds: [FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX],
   getAllCodeActions({diagnostics, compiler}) {
-    const fileNameToTextChangesMap = new Map<string, tss.TextChange[]>();
+    const fileNameToTextChangesMap = new Map<string, ts.TextChange[]>();
     for (const diag of diagnostics) {
       const fileName = diag.file?.fileName;
       if (fileName === undefined) {
@@ -77,7 +77,7 @@ export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
       fileTextChanges.push(...textChanges);
     }
 
-    const fileTextChanges: tss.FileTextChanges[] = [];
+    const fileTextChanges: ts.FileTextChanges[] = [];
     for (const [fileName, textChanges] of fileNameToTextChangesMap) {
       fileTextChanges.push({
         fileName,
@@ -117,7 +117,7 @@ function getTheBoundEventAtPosition(
 /**
  * Flip the invalid "box in a banana" `([thing])` to the correct "banana in a box" `[(thing)]`.
  */
-function convertBoundEventToTsTextChange(node: TmplAstBoundEvent): readonly tss.TextChange[] {
+function convertBoundEventToTsTextChange(node: TmplAstBoundEvent): readonly ts.TextChange[] {
   const name = node.name;
   const boundSyntax = node.sourceSpan.toString();
   const expectedBoundSyntax = boundSyntax.replace(`(${name})`, `[(${name.slice(1, -1)})]`);

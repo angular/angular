@@ -151,7 +151,6 @@ groups:
         - crisbeto
         - devversion
         - kirjs
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
         - mmalerba
@@ -181,9 +180,9 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - jelbourn
         - josephperrott
         - ~pkozlowski-opensource
+        - alan-agius4
     reviews:
       request: -1 # request reviews from everyone
       required: 2 # require at least 2 approvals
@@ -202,7 +201,6 @@ groups:
     reviewers:
       users:
         - ~JiaLiPassion
-        - ~jelbourn
         - ~alxhub
         - AndrewKushnir
         - atscott
@@ -259,7 +257,6 @@ groups:
         - crisbeto
         - kirjs
         - JeanMeche
-        - jelbourn
         - thePunderWoman
         - devversion
         - josephperrott
@@ -304,6 +301,7 @@ groups:
       - >
         contains_any_globs(files.exclude('.pullapprove.yml'), [
           '{*,.*}',
+          '.agent/**/{*,.*}',
           '.devcontainer/**/{*,.*}',
           '.github/**/{*,.*}',
           '.husky/**/{*,.*}',
@@ -340,6 +338,7 @@ groups:
       - author not in ["angular-robot"]
     reviewers:
       users:
+        - alan-agius4
         - devversion
         - josephperrott
 
@@ -374,7 +373,6 @@ groups:
         - AndrewKushnir
         - ~alxhub
         - atscott
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
         - kirjs
@@ -412,7 +410,6 @@ groups:
         - AndrewKushnir
         - atscott
         - kirjs
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
         - mmalerba
@@ -423,6 +420,24 @@ groups:
       request: 2 # Request reviews from 2 people
       required: 1 # Require that 1 person approve
       reviewed_for: required
+
+  # =========================================================
+  #  Agent Skills
+  # =========================================================
+  agent-skills:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'skills/{*,.*}',
+          'skills/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - marktechson
+        - kirjs
+        - ~JeanMeche
+        - ~dgp1130
 
   ####################################################################################
   #  Special Cases
@@ -444,7 +459,6 @@ groups:
         - AndrewKushnir
         - andrewseguin
         - dgp1130
-        - ~jelbourn
         - thePunderWoman
         - josephperrott
 
@@ -514,7 +528,6 @@ groups:
     reviewers:
       users:
         - alxhub
-        - jelbourn
         - josephperrott
     reviews:
       request: 0

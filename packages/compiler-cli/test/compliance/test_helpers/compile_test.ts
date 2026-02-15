@@ -103,7 +103,7 @@ export function getBuildOutputDirectory(fs: PathManipulation): AbsoluteFsPath {
  * @param compilerOptions Additional options for the TypeScript compiler.
  * @param angularCompilerOptions Additional options for the Angular compiler.
  */
-function getOptions(
+export function getOptions(
   rootDir: AbsoluteFsPath,
   outDir: AbsoluteFsPath,
   compilerOptions: ConfigOptions | undefined,

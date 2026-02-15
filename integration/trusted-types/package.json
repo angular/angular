@@ -6,9 +6,10 @@
     "start": "ng serve",
     "build": "ng build --configuration production",
     "pretest": "ng version",
-    "test": "ng test && pnpm e2e --configuration=ci && pnpm e2e --configuration=ci-production",
+    "test": "ng test && pnpm e2e:dev && pnpm e2e:prod",
     "lint": "ng lint",
-    "e2e": "ng e2e --port 0"
+    "e2e:dev": "ng build && concurrently \"serve dist/trusted-types/browser -l 4213 --no-clipboard --single\" \"protractor e2e/protractor.conf.js --baseUrl=http://localhost:4213\" --kill-others --success first",
+    "e2e:prod": "ng build --configuration production && concurrently \"serve dist/trusted-types/browser -l 4214 --no-clipboard --single\" \"protractor e2e/protractor.conf.js --baseUrl=http://localhost:4214\" --kill-others --success first"
   },
   "private": true,
   "dependencies": {
@@ -29,18 +30,20 @@
     "@angular/build": "21.1.0-rc.0",
     "@angular/cli": "21.1.0-rc.0",
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
-    "@types/jasmine": "^5.0.0",
+    "@types/jasmine": "^6.0.0",
     "@types/node": "^20.14.8",
-    "jasmine-core": "5.13.0",
+    "concurrently": "9.2.1",
+    "jasmine-core": "6.0.1",
+    "serve": "^14.2.5",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.2.1",
     "karma-jasmine": "^5.0.0",
-    "karma-jasmine-html-reporter": "^2.1.0",
+    "karma-jasmine-html-reporter": "^2.2.0",
     "protractor": "^7.0.0",
     "ts-node": "^10.9.1",
     "typescript": "5.9.3"
   },
-  "packageManager": "pnpm@10.28.0"
+  "packageManager": "pnpm@10.29.3"
 }

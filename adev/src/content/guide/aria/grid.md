@@ -135,11 +135,13 @@ Instead of tabbing through each button, users navigate with arrow keys and only 
 Enable selection with `[enableSelection]="true"` and configure how focus and selection interact.
 
 ```angular-html
-<table ngGrid
-       [enableSelection]="true"
-       [selectionMode]="'explicit'"
-       [multi]="true"
-       [focusMode]="'roving'">
+<table
+  ngGrid
+  [enableSelection]="true"
+  [selectionMode]="'explicit'"
+  [multi]="true"
+  [focusMode]="'roving'"
+>
   <tr ngGridRow>
     <td ngGridCell>Cell 1</td>
     <td ngGridCell>Cell 2</td>

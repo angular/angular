@@ -11,12 +11,17 @@ The main advantages to removing ZoneJS as a dependency are:
 
 ## Enabling Zoneless in an application
 
-```typescript
-// standalone bootstrap
-bootstrapApplication(MyApp, {providers: [provideZonelessChangeDetection()]});
+Zoneless is the default in Angular v21+ so you do not need to do anything to enable it. You should verify that `provideZoneChangeDetection` is not used anywhere to override the default configuration.
 
-// NgModule bootstrap
+If you are using Angular v20, enable zoneless change detection by adding `provideZonelessChangeDetection()` at bootstrap:
+
+```ts {header: 'standalone bootstrap'}
+bootstrapApplication(MyApp, {providers: [provideZonelessChangeDetection()]});
+```
+
+```ts {header: 'NgModule bootstrap'}
 platformBrowser().bootstrapModule(AppModule);
+
 @NgModule({
   providers: [provideZonelessChangeDetection()],
 })
@@ -54,7 +59,7 @@ One way to ensure that a component is using the correct notification mechanisms 
 use [ChangeDetectionStrategy.OnPush](/best-practices/skipping-subtrees#using-onpush).
 
 The `OnPush` change detection strategy is not required, but it is a recommended step towards zoneless compatibility for application components. It is not always possible for library components to use `ChangeDetectionStrategy.OnPush`.
-When a library component is a host for user-components which might use `ChangeDetectionStrategy.Default`, it cannot use `OnPush` because that would prevent the child component from being refreshed if it is not `OnPush` compatible and relies on ZoneJS to trigger change detection. Components can use the `Default` strategy as long as they notify Angular when change detection needs to run (calling `markForCheck`, using signals, `AsyncPipe`, etc.).
+When a library component is a host for user-components which might use `ChangeDetectionStrategy.Eager`/`Default`, it cannot use `OnPush` because that would prevent the child component from being refreshed if it is not `OnPush` compatible and relies on ZoneJS to trigger change detection. Components can use the `Default` strategy as long as they notify Angular when change detection needs to run (calling `markForCheck`, using signals, `AsyncPipe`, etc.).
 Being a host for a user component means using an API such as `ViewContainerRef.createComponent` and not just hosting a portion of a template from a user component (i.e. content projection or a using a template ref input).
 
 ### Remove `NgZone.onMicrotaskEmpty`, `NgZone.onUnstable`, `NgZone.isStable`, or `NgZone.onStable`
@@ -122,12 +127,14 @@ an ongoing Router navigation and an incomplete `HttpClient` request.
 
 ### Using Zoneless in `TestBed`
 
-The zoneless provider function can also be used with `TestBed` to help
-ensure the components under test are compatible with a Zoneless
-Angular application.
+`TestBed` uses Zone-based change detection by default when `zone.js` is loaded via the `polyfills`.
+
+If `zone.js` is not present, `TestBed` runs zoneless by default. To force zoneless mode when `zone.js` is loaded, add `provideZonelessChangeDetection()`:
 
 ```typescript
 TestBed.configureTestingModule({
+  // Optional: include the provider to force the testing environment
+  // uses the same zoneless behavior as a zoneless application.
   providers: [provideZonelessChangeDetection()],
 });
 

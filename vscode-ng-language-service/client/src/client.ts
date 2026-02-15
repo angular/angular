@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
@@ -51,6 +51,20 @@ export class AngularLanguageClient implements vscode.Disposable {
       },
     });
 
+    const config = vscode.workspace.getConfiguration();
+    const useClientSideWatching = config.get('angular.server.useClientSideFileWatcher');
+    const fileEvents = [
+      // Notify the server about file changes to tsconfig.json contained in the workspace
+      vscode.workspace.createFileSystemWatcher('**/tsconfig.json'),
+    ];
+    if (useClientSideWatching) {
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/*.ts'));
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/*.html'));
+      // While we don't need general JSON watching, TypeScript relies on package.json for module resolution, type acquisition, and auto-imports.
+      // If we don't watch it, npm install changes or dependency updates might be missed by the Language Service
+      fileEvents.push(vscode.workspace.createFileSystemWatcher('**/package.json'));
+    }
+
     this.outputChannel = vscode.window.createOutputChannel(this.name);
     // Options to control the language client
     this.clientOptions = {
@@ -62,10 +76,7 @@ export class AngularLanguageClient implements vscode.Disposable {
         {scheme: 'file', language: 'typescript'},
       ],
       synchronize: {
-        fileEvents: [
-          // Notify the server about file changes to tsconfig.json contained in the workspace
-          vscode.workspace.createFileSystemWatcher('**/tsconfig.json'),
-        ],
+        fileEvents,
       },
       // Don't let our output console pop open
       revealOutputChannelOn: lsp.RevealOutputChannelOn.Never,
@@ -230,13 +241,26 @@ export class AngularLanguageClient implements vscode.Disposable {
           }
           return next(document, context, token);
         },
+        provideLinkedEditingRange: async (
+          document: vscode.TextDocument,
+          position: vscode.Position,
+          token: vscode.CancellationToken,
+          next: lsp.ProvideLinkedEditingRangeSignature,
+        ) => {
+          if (
+            (await this.isInAngularProject(document)) &&
+            isNotTypescriptOrSupportedDecoratorField(document, position)
+          ) {
+            return next(document, position, token);
+          }
+        },
       },
     };
   }
 
   async applyWorkspaceEdits(workspaceEdits: lsp.WorkspaceEdit[]) {
     for (const edit of workspaceEdits) {
-      const workspaceEdit = this.client?.protocol2CodeConverter.asWorkspaceEdit(edit);
+      const workspaceEdit = await this.client?.protocol2CodeConverter.asWorkspaceEdit(edit);
       if (workspaceEdit === undefined) {
         continue;
       }
@@ -341,8 +365,7 @@ export class AngularLanguageClient implements vscode.Disposable {
       this.clientOptions,
       forceDebug,
     );
-    this.disposables.push(this.client.start());
-    await this.client.onReady();
+    await this.client.start();
     // Must wait for the client to be ready before registering notification
     // handlers.
     this.disposables.push(registerNotificationHandlers(this.client));
@@ -440,6 +463,12 @@ export class AngularLanguageClient implements vscode.Disposable {
     const tsProbeLocations = [...getProbeLocations(this.context.extensionPath)];
     args.push('--tsProbeLocations', tsProbeLocations.join(','));
 
+    const supportClientSide = config.get('angular.server.useClientSideFileWatcher');
+
+    if (supportClientSide) {
+      args.push('--useClientSideFileWatcher');
+    }
+
     return args;
   }
 
@@ -481,7 +510,7 @@ export class AngularLanguageClient implements vscode.Disposable {
     return {
       uri: p2cConverter.asUri(response.uri),
       content: response.content,
-      selections: p2cConverter.asRanges(response.selections),
+      selections: await p2cConverter.asRanges(response.selections),
     };
   }
 
@@ -669,6 +698,7 @@ async function getAngularVersionsInWorkspace(
   return Array.from(angularCoreModules);
 }
 
+// TODO(atscott): Now that language service resolves the version of Angular local to the project, do we need this?
 function setAngularVersionAndShowMultipleVersionsWarning(
   angularVersions: NodeModule[],
   args: string[],
@@ -685,7 +715,10 @@ function setAngularVersionAndShowMultipleVersionsWarning(
   // For example, if we tell the v21 compiler that we're using v21 but there's a v13 project,
   // the compiler may attempt to import and use APIs from angular core that don't exist in v13.
   args.push('--angularCoreVersion', angularVersions[0].version.toString());
-  outputChannel.appendLine(`Using Angular version ${angularVersions[0].version.toString()}.`);
+  outputChannel.appendLine(
+    `Using Angular version ${angularVersions[0].version.toString()} by default. If ` +
+      `the project-specific version cannot be resolved, this version will be used.`,
+  );
 
   let minorVersions = new Map<string, NodeModule>();
   for (const v of angularVersions) {

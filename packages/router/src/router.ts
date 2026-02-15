@@ -59,8 +59,10 @@ import {StateManager} from './statemanager/state_manager';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {
   containsTree,
+  exactMatchOptions,
   IsActiveMatchOptions,
   isUrlTree,
+  subsetMatchOptions,
   UrlSegmentGroup,
   UrlSerializer,
   UrlTree,
@@ -68,28 +70,6 @@ import {
 import {validateConfig} from './utils/config';
 import {afterNextNavigation} from './utils/navigations';
 import {RouterState} from './router_state';
-
-/**
- * The equivalent `IsActiveMatchOptions` options for `isActive` is called with `true`
- * (exact = true).
- */
-export const exactMatchOptions: IsActiveMatchOptions = {
-  paths: 'exact',
-  fragment: 'ignored',
-  matrixParams: 'ignored',
-  queryParams: 'exact',
-};
-
-/**
- * The equivalent `IsActiveMatchOptions` options for `isActive` is called with `false`
- * (exact = false).
- */
-export const subsetMatchOptions: IsActiveMatchOptions = {
-  paths: 'subset',
-  fragment: 'ignored',
-  matrixParams: 'ignored',
-  queryParams: 'subset',
-};
 
 /**
  * @description
@@ -628,25 +608,24 @@ export class Router {
    */
   isActive(url: string | UrlTree, exact: boolean): boolean;
   /**
-   * Returns whether the url is activated.
-   * @deprecated 21.1 - Use the `isActive` function instead.
    * @see {@link isActive}
+   * @deprecated 21.1 - Use the `isActive` function instead.
    */
-  isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;
+  isActive(url: string | UrlTree, matchOptions: Partial<IsActiveMatchOptions>): boolean;
   /** @internal */
   isActive(url: string | UrlTree, matchOptions: boolean | IsActiveMatchOptions): boolean;
   /**
    * @deprecated 21.1 - Use the `isActive` function instead.
    * @see {@link isActive}
    */
-  isActive(url: string | UrlTree, matchOptions: boolean | IsActiveMatchOptions): boolean {
+  isActive(url: string | UrlTree, matchOptions: boolean | Partial<IsActiveMatchOptions>): boolean {
     let options: IsActiveMatchOptions;
     if (matchOptions === true) {
       options = {...exactMatchOptions};
     } else if (matchOptions === false) {
       options = {...subsetMatchOptions};
     } else {
-      options = matchOptions;
+      options = {...subsetMatchOptions, ...matchOptions};
     }
     if (isUrlTree(url)) {
       return containsTree(this.currentUrlTree, url, options);
@@ -718,9 +697,8 @@ export class Router {
 
     // Make sure that the error is propagated even though `processNavigations` catch
     // handler does not rethrow
-    return promise.catch((e: any) => {
-      return Promise.reject(e);
-    });
+    // perf: Use `.bind` to avoid holding the other closures in this scope while this promise is unsettled.
+    return promise.catch(Promise.reject.bind(Promise));
   }
 }
 

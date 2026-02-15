@@ -15,9 +15,20 @@ import {
   DevtoolsSignalGraphNode,
   DevtoolsClusterNodeType,
   DevtoolsSignalNode,
+  getNodeLabel,
 } from '../../signal-graph';
 import {DebugSignalGraphNode} from '../../../../../../../protocol';
 import type {DagreCluster, DagreEdge, DagreNode, DagreRegularNode} from './visualizer-types';
+
+export type DependenciesHighlightEvent =
+  | {
+      node: DevtoolsSignalGraphNode;
+      direction: 'up' | 'down';
+      state: 'highlighted';
+    }
+  | {state: 'unhighlighted'};
+
+type D3Selection = d3.Selection<d3.BaseType, unknown, null, undefined>;
 
 const KIND_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
   'signal': 'kind-signal',
@@ -26,6 +37,7 @@ const KIND_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
   'afterRenderEffectPhase': 'kind-effect',
   'template': 'kind-template',
   'linkedSignal': 'kind-linked-signal',
+  'childSignalProp': 'kind-child-signal-prop',
   'unknown': 'kind-unknown',
 };
 
@@ -37,7 +49,8 @@ const CLUSTER_CHILD_TYPE_CLASS_MAP: {[key in DevtoolsClusterNodeType]: string} =
   'resource': 'resource-child',
 };
 
-const NODE_CLASS = 'node-label';
+const NODE_CLASS = 'node';
+const NODE_CONT_CLASS = 'node-cont';
 const SPECIAL_NODE_CLASS = 'special';
 const NODE_HEADER_CLASS = 'header';
 const NODE_BODY_CLASS = 'body';
@@ -47,6 +60,8 @@ const CLUSTER_EDGE_CLASS = 'cluster-edge';
 const CLUSTER_CHILD_CLASS = 'cluster-child';
 const CLOSE_BTN_CLASS = 'cluster-close-btn';
 const NODE_EPOCH_UPDATE_ANIM_CLASS = 'node-epoch-anim';
+const HIGHLIGHTED_CLASS = 'highlighted';
+const HIGHLIGHTED_ORIGIN_CLASS = 'highlighted-origin';
 
 // Keep in sync with signals-visualizer.component.scss
 const NODE_WIDTH = 100;
@@ -74,8 +89,18 @@ export class SignalsGraphVisualizer {
   private timeouts: Set<ReturnType<typeof setTimeout>> = new Set();
   private nodeClickListeners: ((node: DevtoolsSignalGraphNode) => void)[] = [];
   private clustersStateChangeListeners: ((expandedClustersIds: Set<string>) => void)[] = [];
+  private dependenciesHighlightListeners: ((e: DependenciesHighlightEvent) => void)[] = [];
   private expandedClustersIds = new Set<string>();
   private inputGraph: DevtoolsSignalGraph | null = null;
+  private highlightedPath: {
+    originNode: D3Selection | null;
+    pathNodes: D3Selection[];
+    edges: D3Selection[];
+  } = {
+    originNode: null,
+    pathNodes: [],
+    edges: [],
+  };
 
   constructor(private svg: SVGSVGElement) {
     this.graph = new graphlib.Graph({directed: true, compound: true});
@@ -101,26 +126,19 @@ export class SignalsGraphVisualizer {
     d3svg.call(this.zoomController);
   }
 
-  /** Snaps to the root node – either the template or the first node depending which exists. */
-  snapToRootNode() {
-    let node =
-      this.inputGraph?.nodes.find((n) => isSignalNode(n) && n.kind === 'template') ??
-      this.inputGraph?.nodes[0];
-
-    if (!node) {
-      return;
-    }
-
-    // TODO(Georgi): Drop `any` when Dagre is updated.
-    const dagreNode = this.graph.node(node.id) as any;
+  snapToNode(nodeId: string): void;
+  snapToNode(node: DevtoolsSignalGraphNode): void;
+  snapToNode(node: string | DevtoolsSignalGraphNode) {
+    const nodeId = typeof node === 'string' ? node : node.id;
+    const dagreNode = this.graph.node(nodeId);
     if (!dagreNode) {
       return;
     }
 
     const contWidth = this.svg.clientWidth;
     const contHeight = this.svg.clientHeight;
-    const x = contWidth / 2 - dagreNode.x * TEMPL_NODE_ZOOM_SCALE;
-    const y = contHeight / 2 - dagreNode.y * TEMPL_NODE_ZOOM_SCALE;
+    const x = contWidth / 2 - dagreNode.x! * TEMPL_NODE_ZOOM_SCALE;
+    const y = contHeight / 2 - dagreNode.y! * TEMPL_NODE_ZOOM_SCALE;
 
     d3.select(this.svg)
       .transition()
@@ -131,11 +149,22 @@ export class SignalsGraphVisualizer {
       );
   }
 
-  setSelected(selected: string | null) {
+  /** Snaps to the root node – either the template or the first node depending which exists. */
+  snapToRootNode() {
+    const node =
+      this.inputGraph?.nodes.find((n) => isSignalNode(n) && n.kind === 'template') ??
+      this.inputGraph?.nodes[0];
+
+    if (node) {
+      this.snapToNode(node);
+    }
+  }
+
+  setSelected(selectedId: string | null) {
     d3.select(this.svg)
       .select('.output .nodes')
-      .selectAll<SVGGElement, string>('g.node')
-      .classed('selected', (d) => d === selected);
+      .selectAll<SVGGElement, string>(`.${NODE_CLASS}`)
+      .classed('selected', (d) => d === selectedId);
   }
 
   zoomScale(scale: number) {
@@ -161,6 +190,7 @@ export class SignalsGraphVisualizer {
     }
     this.animatedNodesMap.clear();
     this.expandedClustersIds.clear();
+    this.unhighlightDependencies();
     this.notifyForClusterVisibilityUpdate();
     this.cleanup();
     this.timeouts.clear();
@@ -193,7 +223,66 @@ export class SignalsGraphVisualizer {
     }
 
     this.notifyForClusterVisibilityUpdate();
+    this.unhighlightDependencies();
     this.render(this.inputGraph);
+  }
+
+  highlightDependencies(node: DevtoolsSignalGraphNode, direction: 'down' | 'up') {
+    if (!this.inputGraph) {
+      return;
+    }
+
+    const nodeIdx = this.inputGraph.nodes.findIndex((n) => node === n);
+    if (nodeIdx === -1) {
+      return;
+    }
+
+    this.unhighlightNodesAndEdges();
+
+    const pathNodesIds = new Set<string>();
+    const edges = new Set<string>();
+    const stack = [nodeIdx];
+    const nodes = this.inputGraph.nodes;
+
+    while (stack.length) {
+      const currentIdx = stack.pop()!;
+
+      for (const edge of this.inputGraph.edges) {
+        const currNodeIdx = direction === 'down' ? edge.producer : edge.consumer;
+
+        if (currNodeIdx === currentIdx) {
+          const nextNodeIdx = direction === 'down' ? edge.consumer : edge.producer;
+
+          pathNodesIds.add(nodes[nextNodeIdx].id);
+          edges.add(`${nodes[edge.producer].id}-${nodes[edge.consumer].id}`);
+          stack.push(nextNodeIdx);
+        }
+      }
+    }
+
+    this.highlightEdges(edges);
+    this.highlightNodesPath(node.id, pathNodesIds);
+
+    for (const cb of this.dependenciesHighlightListeners) {
+      cb({
+        node,
+        direction,
+        state: 'highlighted',
+      });
+    }
+  }
+
+  /** Unhighlight the currently highlighted dependencies. */
+  unhighlightDependencies() {
+    const originNode = this.unhighlightNodesAndEdges();
+
+    if (originNode) {
+      for (const cb of this.dependenciesHighlightListeners) {
+        cb({
+          state: 'unhighlighted',
+        });
+      }
+    }
   }
 
   /**
@@ -226,6 +315,23 @@ export class SignalsGraphVisualizer {
       const idx = this.clustersStateChangeListeners.indexOf(cb);
       if (idx > -1) {
         this.clustersStateChangeListeners.splice(idx, 1);
+      }
+    };
+  }
+
+  /**
+   * Listen for dependencies highlighting.
+   *
+   * @param cb Callback/listener
+   * @returns An unlisten function
+   */
+  onDependenciesHighlight(cb: (e: DependenciesHighlightEvent) => void): () => void {
+    this.dependenciesHighlightListeners.push(cb);
+
+    return () => {
+      const idx = this.dependenciesHighlightListeners.indexOf(cb);
+      if (idx > -1) {
+        this.dependenciesHighlightListeners.splice(idx, 1);
       }
     };
   }
@@ -309,9 +415,11 @@ export class SignalsGraphVisualizer {
           this.updateDagreNode(n, existingNode, signalGraph);
           updatedNodes.push(n.id);
         } else if (isClusterNode(n) && !this.expandedClustersIds.has(n.id)) {
-          const previewNode = signalGraph.nodes[n.previewNode ?? -1] as DevtoolsSignalNode;
+          const previewNode = signalGraph.nodes[n.previewNode ?? -1] as
+            | DevtoolsSignalNode
+            | undefined;
 
-          if (previewNode.epoch !== existingNode.epoch) {
+          if (previewNode && previewNode.epoch !== existingNode.epoch) {
             this.updateDagreNode(previewNode, existingNode, signalGraph);
             updatedNodes.push(n.id);
           }
@@ -453,22 +561,14 @@ export class SignalsGraphVisualizer {
     const typeClass = isSignalNode(node)
       ? KIND_CLASS_MAP[node.kind]
       : CLUSTER_TYPE_CLASS_MAP[node.clusterType];
-    outer.className = `${NODE_CLASS} ${typeClass}`;
+    outer.className = `${NODE_CONT_CLASS} ${typeClass}`;
 
     const header = document.createElement('div');
 
-    let label = node.label ?? null;
     if (isSignalNode(node)) {
-      if (!label) {
-        label = node.kind === 'effect' ? 'Effect' : 'Unnamed';
+      if (!node.label) {
         header.classList.add(SPECIAL_NODE_CLASS);
-      } else {
-        const hashIdx = label.indexOf('.');
-        if (hashIdx > -1) {
-          label = label.substring(hashIdx + 1, label.length);
-        }
       }
-
       if (node.clusterId) {
         outer.classList.add(CLUSTER_CHILD_CLASS);
         const clusterType = graph.clusters[node.clusterId].type;
@@ -477,7 +577,7 @@ export class SignalsGraphVisualizer {
     }
 
     header.classList.add(NODE_HEADER_CLASS);
-    header.textContent = label;
+    header.textContent = getNodeLabel(node);
 
     const body = document.createElement('div');
     body.className = NODE_BODY_CLASS;
@@ -544,7 +644,7 @@ export class SignalsGraphVisualizer {
   // this always happens, which prevents misaligned nodes after a cluster collapse.
   private reinforceNodeDimensions() {
     d3.select(this.svg)
-      .selectAll('.node .label')
+      .selectAll(`.${NODE_CLASS} .label`)
       .each((nodeId, idx, group) => {
         const node = group[idx];
         const d3Node = d3.select(node);
@@ -563,8 +663,76 @@ export class SignalsGraphVisualizer {
     return d3
       .select(this.svg)
       .select('.output .nodes')
-      .selectAll<SVGGElement, string>('g.node')
-      .select('.label foreignObject .node-label');
+      .selectAll<SVGGElement, string>(`.${NODE_CLASS}`)
+      .select(`.label foreignObject .${NODE_CONT_CLASS}`);
+  }
+
+  /** Highlight a set of edges represented by `v-w` strings. */
+  private highlightEdges(edges: Set<string>) {
+    d3.select(this.svg)
+      .selectAll(`.${EDGE_CLASS}`)
+      .each((edge, idx, group) => {
+        const {v, w} = edge as {v: number; w: number};
+        const edgeId = v + '-' + w;
+
+        if (edges.has(edgeId)) {
+          const edgeSelector = group[idx];
+          const edgeSelection = d3.select(edgeSelector);
+          this.highlightedPath.edges.push(edgeSelection);
+          appendClasses(edgeSelection, HIGHLIGHTED_CLASS);
+        }
+      });
+  }
+
+  /**
+   * Highlights a path of nodes (usually a dependency tree)
+   * by a provided origin node and path nodes ID.
+   */
+  private highlightNodesPath(originNodeId: string, pathNodesIds: Set<string>) {
+    d3.select(this.svg)
+      .selectAll(`.${NODE_CLASS}`)
+      .each((nodeId, idx, group) => {
+        const isOriginNode = nodeId === originNodeId;
+
+        if (isOriginNode || pathNodesIds.has(nodeId as string)) {
+          const nodeSelector = group[idx];
+          const nodeSelection = d3.select(nodeSelector);
+          let className: string;
+
+          if (isOriginNode) {
+            className = HIGHLIGHTED_ORIGIN_CLASS;
+            this.highlightedPath.originNode = nodeSelection;
+          } else {
+            className = HIGHLIGHTED_CLASS;
+            this.highlightedPath.pathNodes.push(nodeSelection);
+          }
+
+          appendClasses(nodeSelection, className);
+        }
+      });
+  }
+
+  /** Unhighlight the currently highlighted nodes and edges. Returns the origin node. */
+  private unhighlightNodesAndEdges() {
+    const {originNode, pathNodes, edges} = this.highlightedPath;
+
+    if (originNode) {
+      removeClasses(originNode, HIGHLIGHTED_ORIGIN_CLASS);
+    }
+    for (const node of pathNodes) {
+      removeClasses(node, HIGHLIGHTED_CLASS);
+    }
+    for (const edge of edges) {
+      removeClasses(edge, HIGHLIGHTED_CLASS);
+    }
+
+    this.highlightedPath = {
+      originNode: null,
+      pathNodes: [],
+      edges: [],
+    };
+
+    return originNode;
   }
 }
 
@@ -585,7 +753,7 @@ function getBodyText(node: DevtoolsSignalGraphNode, graph: DevtoolsSignalGraph):
     return '</>';
   }
 
-  if (node.kind === 'effect') {
+  if (node.kind === 'effect' || node.kind === 'afterRenderEffectPhase') {
     return '() => {}';
   }
 
@@ -602,4 +770,23 @@ function convertNodesToMap(nodes: DevtoolsSignalGraphNode[]): Map<string, Devtoo
 
 function isDagreClusterNode(node: DagreNode | undefined): node is DagreCluster {
   return !!(node as DagreCluster)?.clusterLabelPos;
+}
+
+/** Appends space-separated classes to a D3 selection. */
+function appendClasses(selection: D3Selection, classNames: string) {
+  const currentClasses = selection.attr('class');
+  selection.attr('class', `${currentClasses} ${classNames}`);
+}
+
+/** Removes space-separated classes to a D3 selection. */
+function removeClasses(selection: D3Selection, classNames: string) {
+  const classesSet = new Set(classNames.split(' ').map((cl) => cl.trim()));
+  const updatedClasses = selection
+    .attr('class')
+    .split(' ')
+    .map((cl) => cl.trim())
+    .filter((cl) => !classesSet.has(cl))
+    .join(' ');
+
+  selection.attr('class', updatedClasses);
 }

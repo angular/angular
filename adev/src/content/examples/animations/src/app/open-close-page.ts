@@ -9,7 +9,7 @@ import {OpenClose} from './open-close';
       <input type="checkbox" id="log-checkbox" [checked]="logging" (click)="toggleLogging()" />
       <label for="log-checkbox">Console Log Animation Events</label>
 
-      <app-open-close [logging]="logging"></app-open-close>
+      <app-open-close [logging]="logging" />
     </section>
   `,
   imports: [OpenClose],

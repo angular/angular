@@ -1,65 +1,14 @@
-@use '../../../../../../styles/typography';
-
 :host {
   width: 200px;
   display: block;
-  overflow-x: auto;
-  padding-inline: 0.5rem;
+  overflow: auto;
   border-radius: 0.25rem;
   margin-top: 0.75rem;
   background: var(--nonary-contrast);
-  padding-block: 0.25rem;
   scrollbar-width: thin;
   scrollbar-color: var(--quaternary-contrast) transparent;
 
-  mat-tree {
-    margin-left: 0.625rem;
-
-    mat-tree-node {
-      min-height: 20px !important;
-    }
-  }
-
-  .expandable-node,
-  .name,
-  .value {
-    @extend %monospaced;
-    white-space: nowrap;
-  }
-
-  .expandable-node,
-  .non-expandable-node {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .expandable-node {
-    background-color: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-
-    mat-icon {
-      position: absolute;
-      left: -0.75rem;
-      width: 12px;
-      height: 12px;
-      font-size: 12px;
-    }
-  }
-
-  .non-expandable-node {
-    margin: 0;
-  }
-
-  .name {
-    color: var(--color-tree-node-element-name);
-    margin-right: 0.25rem;
-
-    &::after {
-      content: ':';
-      color: var(--color-text);
-    }
+  ng-object-tree-explorer {
+    --ote-padding: 0.25rem;
   }
 }

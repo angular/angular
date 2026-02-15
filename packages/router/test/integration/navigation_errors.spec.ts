@@ -5,32 +5,32 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {inject, Injectable} from '@angular/core';
-import {expect} from '@angular/private/testing/matchers';
 import {Location} from '@angular/common';
+import {inject, Injectable} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {expect} from '@angular/private/testing/matchers';
 import {
-  Router,
-  NavigationStart,
-  NavigationError,
-  RoutesRecognized,
-  GuardsCheckStart,
-  Event,
-  ChildActivationStart,
-  ActivationStart,
-  GuardsCheckEnd,
-  ResolveStart,
-  ResolveEnd,
   ActivationEnd,
+  ActivationStart,
   ChildActivationEnd,
-  NavigationEnd,
-  provideRouter,
-  withRouterConfig,
-  withNavigationErrorHandler,
-  RouterModule,
-  RedirectCommand,
+  ChildActivationStart,
+  Event,
+  GuardsCheckEnd,
+  GuardsCheckStart,
   NavigationCancel,
   NavigationCancellationCode,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  provideRouter,
+  RedirectCommand,
+  ResolveEnd,
+  ResolveStart,
+  Router,
+  RouterModule,
+  RoutesRecognized,
+  withNavigationErrorHandler,
+  withRouterConfig,
 } from '../../src';
 import {RouterTestingHarness} from '../../testing';
 import {
@@ -46,7 +46,7 @@ import {
   advance,
   simulateLocationChange,
 } from './integration_helpers';
-import {timeout} from '../helpers';
+import {timeout} from '@angular/private/testing';
 
 export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'navigation') {
   it('should handle failed navigations gracefully', async () => {
@@ -221,7 +221,7 @@ export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'naviga
 
   // Errors should behave the same for both deferred and eager URL update strategies
   (['deferred', 'eager'] as const).forEach((urlUpdateStrategy) => {
-    it('should dispatch NavigationError after the url has been reset back', async () => {
+    it(`should dispatch NavigationError after the url has been reset back (${urlUpdateStrategy})`, async () => {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({urlUpdateStrategy}))],
       });
@@ -252,7 +252,7 @@ export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'naviga
       expect(locationUrlBeforeEmittingError).toEqual('/simple');
     });
 
-    it('can renavigate to throwing component', async () => {
+    it(`can renavigate to throwing component (${urlUpdateStrategy})`, async () => {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({urlUpdateStrategy: 'eager'}))],
       });
@@ -278,7 +278,7 @@ export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'naviga
       expect(fixture.nativeElement.innerHTML).toContain('throwing');
     });
 
-    it('should reset the url with the right state when navigation errors', async () => {
+    it(`should reset the url with the right state when navigation errors  (${urlUpdateStrategy})`, async () => {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({urlUpdateStrategy}))],
       });
@@ -315,7 +315,7 @@ export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'naviga
       expect(event!.restoredState!.navigationId).toEqual(simple1NavStart.id);
     });
 
-    it('should not trigger another navigation when resetting the url back due to a NavigationError', async () => {
+    it(`should not trigger another navigation when resetting the url back due to a NavigationError (${urlUpdateStrategy})`, async () => {
       TestBed.configureTestingModule({
         providers: [provideRouter([], withRouterConfig({urlUpdateStrategy}))],
       });

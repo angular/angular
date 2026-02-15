@@ -7,7 +7,6 @@
  */
 
 import {computed, linkedSignal, type Signal, untracked, type WritableSignal} from '@angular/core';
-import type {FormField} from '../api/form_field_directive';
 import {
   MAX,
   MAX_LENGTH,
@@ -19,6 +18,7 @@ import {
 } from '../api/rules/metadata';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
 import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
+import type {FormField} from '../directive/form_field_directive';
 import {DYNAMIC} from '../schema/logic';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
@@ -58,6 +58,7 @@ export class FieldNode implements FieldState<unknown> {
   readonly nodeState: FieldNodeState;
   readonly submitState: FieldSubmitState;
   readonly fieldAdapter: FieldAdapter;
+  readonly controlValue: WritableSignal<unknown>;
 
   private _context: FieldContext<unknown> | undefined = undefined;
   get context(): FieldContext<unknown> {
@@ -78,6 +79,7 @@ export class FieldNode implements FieldState<unknown> {
     this.nodeState = this.fieldAdapter.createNodeState(this, options);
     this.metadataState = new FieldMetadataState(this);
     this.submitState = new FieldSubmitState(this);
+    this.controlValue = this.controlValueSignal();
   }
 
   focusBoundControl(options?: FocusOptions): void {
@@ -128,6 +130,10 @@ export class FieldNode implements FieldState<unknown> {
     },
   });
 
+  get fieldTree(): FieldTree<unknown> {
+    return this.fieldProxy;
+  }
+
   get logicNode(): LogicNode {
     return this.structure.logic;
   }
@@ -136,20 +142,19 @@ export class FieldNode implements FieldState<unknown> {
     return this.structure.value;
   }
 
-  private _controlValue = linkedSignal(() => this.value());
-  get controlValue(): Signal<unknown> {
-    return this._controlValue.asReadonly();
-  }
-
   get keyInParent(): Signal<string | number> {
     return this.structure.keyInParent;
   }
 
-  get errors(): Signal<ValidationError.WithField[]> {
+  get errors(): Signal<ValidationError.WithFieldTree[]> {
     return this.validationState.errors;
   }
 
-  get errorSummary(): Signal<ValidationError.WithField[]> {
+  get parseErrors(): Signal<ValidationError.WithFormField[]> {
+    return this.validationState.parseErrors;
+  }
+
+  get errorSummary(): Signal<ValidationError.WithFieldTree[]> {
     return this.validationState.errorSummary;
   }
 
@@ -251,6 +256,20 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   /**
+   * Marks this specific field as pristine.
+   */
+  markAsPristine(): void {
+    this.nodeState.markAsPristine();
+  }
+
+  /**
+   * Marks this specific field as untouched.
+   */
+  markAsUntouched(): void {
+    this.nodeState.markAsUntouched();
+  }
+
+  /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
    *
    * Note this does not change the data model, which can be reset directly if desired.
@@ -275,15 +294,24 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   /**
-   * Sets the control value of the field. This value may be debounced before it is synchronized with
-   * the field's {@link value} signal, depending on the debounce configuration.
+   * Creates a linked signal that initiates a {@link debounceSync} when set.
    */
-  setControlValue(newValue: unknown): void {
-    untracked(() => {
-      this._controlValue.set(newValue);
+  private controlValueSignal(): WritableSignal<unknown> {
+    const controlValue = linkedSignal(this.value);
+    const {set, update} = controlValue;
+
+    controlValue.set = (newValue) => {
+      set(newValue);
       this.markAsDirty();
       this.debounceSync();
-    });
+    };
+    controlValue.update = (updateFn) => {
+      update(updateFn);
+      this.markAsDirty();
+      this.debounceSync();
+    };
+
+    return controlValue;
   }
 
   /**
@@ -308,14 +336,16 @@ export class FieldNode implements FieldState<unknown> {
    * Initiates a debounced {@link sync}.
    *
    * If a debouncer is configured, the synchronization will occur after the debouncer resolves. If
-   * no debouncer is configured, the synchronization happens immediately. If {@link setControlValue}
-   * is called again while a debounce is pending, the previous debounce operation is aborted in
-   * favor of the new one.
+   * no debouncer is configured, the synchronization happens immediately. If {@link controlValue} is
+   * updated again while a debounce is pending, the previous debounce operation is aborted in favor
+   * of the new one.
    */
   private async debounceSync() {
-    this.pendingSync()?.abort();
+    const debouncer = untracked(() => {
+      this.pendingSync()?.abort();
+      return this.nodeState.debouncer();
+    });
 
-    const debouncer = this.nodeState.debouncer();
     if (debouncer) {
       const controller = new AbortController();
       const promise = debouncer(controller.signal);

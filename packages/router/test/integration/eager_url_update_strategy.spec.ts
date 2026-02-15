@@ -6,21 +6,23 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, inject} from '@angular/core';
 import {Location} from '@angular/common';
+import {Injectable, inject} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {expect} from '@angular/private/testing/matchers';
+import {of} from 'rxjs';
+import {mapTo, switchMap} from 'rxjs/operators';
 import {
   DefaultUrlSerializer,
+  GuardsCheckStart,
+  Navigation,
+  NavigationStart,
+  Router,
+  RoutesRecognized,
   provideRouter,
   withRouterConfig,
-  Router,
-  GuardsCheckStart,
-  NavigationStart,
-  RoutesRecognized,
-  Navigation,
 } from '../../src';
-import {of} from 'rxjs';
-import {switchMap, mapTo} from 'rxjs/operators';
+
 import {
   TeamCmp,
   RootCmp,
@@ -30,8 +32,7 @@ import {
   createRoot,
   advance,
 } from './integration_helpers';
-import {expect} from '@angular/private/testing/matchers';
-import {timeout} from '../helpers';
+import {timeout} from '@angular/private/testing';
 
 export function eagerUrlUpdateStrategyIntegrationSuite() {
   describe('"eager" urlUpdateStrategy', () => {
@@ -92,7 +93,7 @@ export function eagerUrlUpdateStrategyIntegrationSuite() {
       expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
     });
 
-    it('should eagerly update the URL', async () => {
+    it('should eagerly update the URL (location.path)', async () => {
       const router = TestBed.inject(Router);
       const location = TestBed.inject(Location);
       const fixture = await createRoot(router, RootCmp);

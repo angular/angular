@@ -15,8 +15,8 @@ Form models solve this by centralizing form data in a single writable signal. Wh
 A form model is a writable signal created with Angular's `signal()` function. The signal holds an object that represents your form's data structure.
 
 ```angular-ts
-import { Component, signal } from '@angular/core'
-import { form, FormField } from '@angular/forms/signals'
+import {Component, signal} from '@angular/core';
+import {form, FormField} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-login',
@@ -24,19 +24,19 @@ import { form, FormField } from '@angular/forms/signals'
   template: `
     <input type="email" [formField]="loginForm.email" />
     <input type="password" [formField]="loginForm.password" />
-  `
+  `,
 })
 export class LoginComponent {
   loginModel = signal({
     email: '',
-    password: ''
-  })
+    password: '',
+  });
 
-  loginForm = form(this.loginModel)
+  loginForm = form(this.loginModel);
 }
 ```
 
-The `form()` function accepts the model signal and creates a **field tree** - a special object structure that mirrors your model's shape. The field tree is both navigable (access child fields with dot notation like `loginForm.email`) and callable (call a field as a function to access its state).
+The [`form()`](api/forms/signals/form) function accepts the model signal and creates a **field tree** - a special object structure that mirrors your model's shape. The field tree is both navigable (access child fields with dot notation like `loginForm.email`) and callable (call a field as a function to access its state).
 
 The `[formField]` directive binds each input element to its corresponding field in the field tree, enabling automatic two-way synchronization between the UI and model.
 
@@ -74,14 +74,16 @@ const usernameField = loginForm.username;
 
 Form models should provide initial values for all fields you want to include in the field tree.
 
-```ts
+```ts {prefer}
 // Good: All fields initialized
 const userModel = signal({
   name: '',
   email: '',
   age: 0,
 });
+```
 
+```ts {avoid}
 // Avoid: Missing initial value
 const userModel = signal({
   name: '',
@@ -90,7 +92,7 @@ const userModel = signal({
 });
 ```
 
-For optional fields, explicitly set them to `null` or an empty value:
+For optional fields, explicitly set them to an empty value or `null`:
 
 ```ts
 interface UserData {
@@ -105,6 +107,8 @@ const userModel = signal<UserData>({
   phoneNumber: null,
 });
 ```
+
+HELPFUL: Native text controls like `<input type=text>` and `<textarea>` don't support `null`, use `''` to represent an empty value.
 
 Fields set to `undefined` are excluded from the field tree. A model with `{value: undefined}` behaves identically to `{}` - accessing the field returns `undefined` rather than a `FieldTree`.
 
@@ -139,15 +143,15 @@ Access field state when working with individual fields in templates or reactive 
   template: `
     <p>Current email: {{ loginForm.email().value() }}</p>
     <p>Password length: {{ passwordLength() }}</p>
-  `
+  `,
 })
 export class LoginComponent {
-  loginModel = signal({ email: '', password: '' })
-  loginForm = form(this.loginModel)
+  loginModel = signal({email: '', password: ''});
+  loginForm = form(this.loginModel);
 
   passwordLength = computed(() => {
-    return this.loginForm.password().value().length
-  })
+    return this.loginForm.password().value().length;
+  });
 }
 ```
 
@@ -260,11 +264,11 @@ This synchronization happens automatically. You don't write subscriptions or eve
     <input type="text" [formField]="userForm.name" />
     <button (click)="setName('Bob')">Set Name to Bob</button>
     <p>Current name: {{ userModel().name }}</p>
-  `
+  `,
 })
 export class UserComponent {
-  userModel = signal({ name: '' })
-  userForm = form(this.userModel)
+  userModel = signal({name: ''});
+  userForm = form(this.userModel);
 
   setName(name: string) {
     this.userForm.name().value.set(name);

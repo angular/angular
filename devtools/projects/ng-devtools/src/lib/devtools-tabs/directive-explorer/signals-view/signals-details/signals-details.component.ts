@@ -21,6 +21,7 @@ import {
   DevtoolsSignalNode,
   DevtoolsClusterNode,
 } from '../../signal-graph';
+import {MatTooltip} from '@angular/material/tooltip';
 
 const TYPE_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
   'signal': 'type-signal',
@@ -29,6 +30,7 @@ const TYPE_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
   'afterRenderEffectPhase': 'type-effect',
   'template': 'type-template',
   'linkedSignal': 'type-linked-signal',
+  'childSignalProp': 'type-child-signal-prop',
   'unknown': 'type-unknown',
 };
 
@@ -47,7 +49,7 @@ interface ResourceCluster {
   templateUrl: './signals-details.component.html',
   styleUrl: './signals-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SignalsValueTreeComponent, MatIcon, ButtonComponent],
+  imports: [SignalsValueTreeComponent, MatIcon, ButtonComponent, MatTooltip],
 })
 export class SignalsDetailsComponent {
   private readonly signalGraph = inject(SignalGraphManager);
@@ -56,6 +58,10 @@ export class SignalsDetailsComponent {
 
   protected readonly gotoSource = output<DevtoolsSignalGraphNode>();
   protected readonly expandCluster = output<string>();
+  protected readonly highlightDeps = output<{
+    node: DevtoolsSignalGraphNode;
+    direction: 'up' | 'down';
+  }>();
   protected readonly close = output<void>();
 
   protected readonly TYPE_CLASS_MAP = TYPE_CLASS_MAP;

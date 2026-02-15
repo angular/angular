@@ -7,6 +7,8 @@
  */
 
 import {NgForOf, PercentPipe} from '@angular/common';
+import {BrowserModule} from '@angular/platform-browser';
+import {Router, RouterModule, RouterOutlet} from '@angular/router';
 import {
   afterEveryRender,
   ClassProvider,
@@ -37,14 +39,14 @@ import {setupFrameworkInjectorProfiler} from '../../src/render3/debug/framework_
 import {
   getInjectorProfilerContext,
   InjectedServiceEvent,
-  InjectorToCreateInstanceEvent,
   InjectorCreatedInstanceEvent,
-  InjectorProfilerEvent,
-  InjectorProfilerEventType,
-  ProviderConfiguredEvent,
-  setInjectorProfiler,
   injectorProfiler,
   InjectorProfilerContext,
+  InjectorProfilerEvent,
+  InjectorProfilerEventType,
+  InjectorToCreateInstanceEvent,
+  ProviderConfiguredEvent,
+  setInjectorProfiler,
 } from '../../src/render3/debug/injector_profiler';
 import {getNodeInjectorLView, NodeInjector} from '../../src/render3/di';
 import {
@@ -53,10 +55,8 @@ import {
   getInjectorProviders,
   getInjectorResolutionPath,
 } from '../../src/render3/util/injector_discovery_utils';
-import {fakeAsync, tick} from '../../testing';
+import {fakeAsync} from '../../testing';
 import {TestBed} from '../../testing/src/test_bed';
-import {BrowserModule} from '@angular/platform-browser';
-import {Router, RouterModule, RouterOutlet} from '@angular/router';
 
 describe('setProfiler', () => {
   let injectEvents: InjectedServiceEvent[] = [];
@@ -385,7 +385,7 @@ describe('setProfiler', () => {
   });
 });
 
-describe('profiler activation and removal', () => {
+describe('Injector profiler activation and removal', () => {
   class SomeClass {}
 
   const fakeContext: InjectorProfilerContext = {

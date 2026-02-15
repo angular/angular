@@ -78,21 +78,15 @@ Update the app template to demonstrate the reactive directive:
 
 ```angular-html
 template: `
-  <div>
-    <h1>Directive with Signals</h1>
+<div>
+  <h1>Directive with Signals</h1>
 
-    <div highlight color="yellow" [intensity]="0.2">
-      Hover me - Yellow highlight
-    </div>
+  <div highlight color="yellow" [intensity]="0.2">Hover me - Yellow highlight</div>
 
-    <div highlight color="blue" [intensity]="0.4">
-      Hover me - Blue highlight
-    </div>
+  <div highlight color="blue" [intensity]="0.4">Hover me - Blue highlight</div>
 
-    <div highlight color="green" [intensity]="0.6">
-      Hover me - Green highlight
-    </div>
-  </div>
+  <div highlight color="green" [intensity]="0.6">Hover me - Green highlight</div>
+</div>
 `,
 ```
 

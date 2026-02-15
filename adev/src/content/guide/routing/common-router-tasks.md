@@ -66,14 +66,14 @@ To display a 404 page, set up a [wildcard route](guide/routing/define-routes#wil
 
 ```ts
 const routes: Routes = [
-  {path: 'first-component', component: FirstComponent},
-  {path: 'second-component', component: SecondComponent},
-  {path: '**', component: PageNotFoundComponent}, // Wildcard route for a 404 page
+  {path: 'first-component', component: First},
+  {path: 'second-component', component: Second},
+  {path: '**', component: PageNotFound}, // Wildcard route for a 404 page
 ];
 ```
 
 The last route with the `path` of `**` is a wildcard route.
-The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
+The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFound`.
 
 ## Link parameters array
 
@@ -92,14 +92,15 @@ The following is a two-element array when specifying a route parameter:
 
 ```angular-html
 <a [routerLink]="['/hero', hero.id]">
-  <span class="badge">{{ hero.id }}</span>{{ hero.name }}
+  <span class="badge">{{ hero.id }}</span
+  >{{ hero.name }}
 </a>
 ```
 
 Provide optional route parameters in an object, as in `{ foo: 'foo' }`:
 
 ```angular-html
-<a [routerLink]="['/crisis-center', { foo: 'foo' }]">Crisis Center</a>
+<a [routerLink]="['/crisis-center', {foo: 'foo'}]">Crisis Center</a>
 ```
 
 This syntax passes matrix parameters, which are optional parameters associated with a specific URL segment. Learn more about [matrix parameters](/guide/routing/read-route-state#matrix-parameters).
@@ -118,7 +119,7 @@ Review the following:
 - The first item in the array identifies the parent route \(`/crisis-center`\)
 - There are no parameters for this parent route
 - There is no default for the child route so you need to pick one
-- You're navigating to the `CrisisListComponent`, whose route path is `/`, but you don't need to explicitly add the slash
+- You're navigating to the `CrisisList`, whose route path is `/`, but you don't need to explicitly add the slash
 
 Consider the following router link that navigates from the root of the application down to the Dragon Crisis:
 
@@ -133,7 +134,7 @@ Consider the following router link that navigates from the root of the applicati
 - You added the `id` of the Dragon Crisis as the second item in the array \(`1`\)
 - The resulting path is `/crisis-center/1`
 
-You could also redefine the `AppComponent` template with Crisis Center routes exclusively:
+You could also redefine the `App` template with Crisis Center routes exclusively:
 
 ```angular-ts
 @Component({
@@ -141,13 +142,13 @@ You could also redefine the `AppComponent` template with Crisis Center routes ex
     <h1 class="title">Angular Router</h1>
     <nav>
       <a [routerLink]="['/crisis-center']">Crisis Center</a>
-      <a [routerLink]="['/crisis-center/1', { foo: 'foo' }]">Dragon Crisis</a>
+      <a [routerLink]="['/crisis-center/1', {foo: 'foo'}]">Dragon Crisis</a>
       <a [routerLink]="['/crisis-center/2']">Shark Crisis</a>
     </nav>
     <router-outlet />
-  `
+  `,
 })
-export class AppComponent {}
+export class App {}
 ```
 
 In summary, you can write applications with one, two or more levels of routing.

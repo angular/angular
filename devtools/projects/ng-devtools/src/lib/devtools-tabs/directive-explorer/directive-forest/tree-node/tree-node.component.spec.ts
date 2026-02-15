@@ -97,9 +97,9 @@ describe('TreeNodeComponent', () => {
     });
     await fixture.whenStable();
 
-    onPush = fixture.debugElement.query(By.css('.on-push'));
+    onPush = fixture.debugElement.query(By.css('.trait'));
 
-    expect(onPush).toBeTruthy();
+    expect(onPush.nativeElement.textContent).toEqual('OnPush');
   });
 
   it('should handle selection', async () => {

@@ -41,7 +41,7 @@
       @if (signalsOpen() && signalGraph.element()) {
         <as-split-area [size]="signalGraphSplitSize()">
           <ng-signals-tab
-            [preselectedNodeId]="preselectedSignalNodeId()"
+            [externallySelectedNodeId]="externallySelectedSignalNodeId()"
             (close)="signalsOpen.set(false)"
           />
         </as-split-area>

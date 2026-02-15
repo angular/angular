@@ -82,10 +82,9 @@ import {assertTNodeType} from './node_assert';
 import {profiler} from './profiler';
 import {ProfilerEvent} from '../../primitives/devtools';
 import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
-import {allLeavingAnimations} from '../animation/longest_animation';
+import {cancelLeavingNodes, trackLeavingNodes} from '../animation/utils';
 import {Injector} from '../di';
-import {addToAnimationQueue, queueEnterAnimations} from '../animation/queue';
-import {RunLeaveAnimationFn} from '../animation/interfaces';
+import {maybeQueueEnterAnimation, runLeaveAnimationsWithCallback} from './node_animations';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -102,18 +101,6 @@ const enum WalkTNodeTreeAction {
 
   /** node destruction using the renderer's API */
   Destroy = 3,
-}
-
-function maybeQueueEnterAnimation(
-  parentLView: LView | undefined,
-  parent: RElement | null,
-  tNode: TNode,
-  injector: Injector,
-): void {
-  const enterAnimations = parentLView?.[ANIMATIONS]?.enter;
-  if (parent !== null && enterAnimations && enterAnimations.has(tNode.index)) {
-    queueEnterAnimations(injector, enterAnimations);
-  }
 }
 
 /**
@@ -158,7 +145,11 @@ function applyToElementOrContainer(
     } else if (action === WalkTNodeTreeAction.Insert && parent !== null) {
       maybeQueueEnterAnimation(parentLView, parent, tNode, injector);
       nativeInsertBefore(renderer, parent, rNode, beforeNode || null, true);
+      cancelLeavingNodes(tNode, rNode as HTMLElement);
     } else if (action === WalkTNodeTreeAction.Detach) {
+      if (parentLView?.[ANIMATIONS]?.leave?.has(tNode.index)) {
+        trackLeavingNodes(tNode, rNode as HTMLElement);
+      }
       runLeaveAnimationsWithCallback(
         parentLView,
         tNode,
@@ -376,60 +367,6 @@ function cleanUpView(tView: TView, lView: LView): void {
   } finally {
     setActiveConsumer(prevConsumer);
   }
-}
-
-function runLeaveAnimationsWithCallback(
-  lView: LView | undefined,
-  tNode: TNode,
-  injector: Injector,
-  callback: Function,
-) {
-  const animations = lView?.[ANIMATIONS];
-  if (animations == null || animations.leave == undefined || !animations.leave.has(tNode.index))
-    return callback(false);
-
-  if (lView) allLeavingAnimations.add(lView[ID]);
-
-  addToAnimationQueue(
-    injector,
-    () => {
-      // it's possible that in the time between when the leave animation was
-      // and the time it was executed, the data structure changed. So we need
-      // to be safe here.
-      if (animations.leave && animations.leave.has(tNode.index)) {
-        const leaveAnimationMap = animations.leave;
-        const leaveAnimations = leaveAnimationMap.get(tNode.index);
-        const runningAnimations = [];
-        if (leaveAnimations) {
-          for (let index = 0; index < leaveAnimations.animateFns.length; index++) {
-            const animationFn = leaveAnimations.animateFns[index];
-            const {promise} = animationFn() as ReturnType<RunLeaveAnimationFn>;
-            runningAnimations.push(promise);
-          }
-          animations.detachedLeaveAnimationFns = undefined;
-        }
-        animations.running = Promise.allSettled(runningAnimations);
-        runAfterLeaveAnimations(lView!, callback);
-      } else {
-        if (lView) allLeavingAnimations.delete(lView[ID]);
-        callback(false);
-      }
-    },
-    animations,
-  );
-}
-
-function runAfterLeaveAnimations(lView: LView, callback: Function) {
-  const runningAnimations = lView[ANIMATIONS]?.running;
-  if (runningAnimations) {
-    runningAnimations.then(() => {
-      lView[ANIMATIONS]!.running = undefined;
-      allLeavingAnimations.delete(lView[ID]);
-      callback(true);
-    });
-    return;
-  }
-  callback(false);
 }
 
 /** Removes listeners and unsubscribes from output subscriptions */

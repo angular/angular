@@ -4,12 +4,14 @@
   "license": "MIT",
   "scripts": {
     "build": "ng build --configuration production",
-    "e2e": "ng e2e --port 0",
+    "e2e:production": "ng build --configuration production && concurrently \"serve dist -l 4203 --no-clipboard --single\" \"protractor e2e/protractor.conf.js --baseUrl=http://localhost:4203 --specs='e2e/en/*.e2e-spec.ts'\" --kill-others --success first",
+    "e2e:fr": "ng build --configuration fr && concurrently \"serve dist/fr -l 4204 --no-clipboard --single\" \"protractor e2e/protractor.conf.js --baseUrl=http://localhost:4204 --specs='e2e/fr/*.e2e-spec.ts'\" --kill-others --success first",
+    "e2e:de": "ng build --configuration de && concurrently \"serve dist/de -l 4207 --no-clipboard --single\" \"protractor e2e/protractor.conf.js --baseUrl=http://localhost:4207 --specs='e2e/de/*.e2e-spec.ts'\" --kill-others --success first",
     "lint": "ng lint",
     "ng": "ng",
     "start": "ng serve",
     "pretest": "ng version",
-    "test": "ng e2e --port 0 --configuration production && ng extract-i18n && pnpm translate && ng e2e --port 0 --configuration fr && ng e2e --port 0 --configuration de",
+    "test": "pnpm e2e:production && ng extract-i18n && pnpm translate && pnpm e2e:fr && pnpm e2e:de",
     "translate": "cp src/locale/messages.xlf src/locale/messages.fr.xlf && cp src/locale/messages.xlf src/locale/messages.de.xlf && sed -i.bak -e 's/source>/target>/g' -e 's/Hello/Bonjour/' src/locale/messages.fr.xlf && sed -i.bak -e 's/source>/target>/g' -e 's/Hello/Hallo/' src/locale/messages.de.xlf",
     "serve": "serve --no-clipboard --listen 4200"
   },
@@ -31,10 +33,11 @@
     "@angular/build": "21.1.0-rc.0",
     "@angular/cli": "21.1.0-rc.0",
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
-    "@types/jasmine": "^5.0.0",
+    "@types/jasmine": "^6.0.0",
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^20.14.8",
-    "jasmine-core": "5.13.0",
+    "concurrently": "9.2.1",
+    "jasmine-core": "6.0.1",
     "jasmine-spec-reporter": "~7.0.0",
     "npm-run-all": "4.1.5",
     "protractor": "^7.0.0",
@@ -42,5 +45,5 @@
     "ts-node": "^10.9.1",
     "typescript": "5.9.3"
   },
-  "packageManager": "pnpm@10.28.0"
+  "packageManager": "pnpm@10.29.3"
 }

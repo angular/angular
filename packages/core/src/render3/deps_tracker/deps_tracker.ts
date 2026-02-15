@@ -31,10 +31,13 @@ import {
  * An implementation of DepsTrackerApi which will be used for JIT and local compilation.
  */
 class DepsTracker implements DepsTrackerApi {
-  private ownerNgModule = new Map<ComponentType<any>, NgModuleType<any>>();
+  private ownerNgModule = new WeakMap<ComponentType<any>, NgModuleType<any>>();
   private ngModulesWithSomeUnresolvedDecls = new Set<NgModuleType<any>>();
-  private ngModulesScopeCache = new Map<NgModuleType<any>, NgModuleScope>();
-  private standaloneComponentsScopeCache = new Map<ComponentType<any>, StandaloneComponentScope>();
+  private ngModulesScopeCache = new WeakMap<NgModuleType<any>, NgModuleScope>();
+  private standaloneComponentsScopeCache = new WeakMap<
+    ComponentType<any>,
+    StandaloneComponentScope
+  >();
 
   /**
    * Attempts to resolve ng module's forward ref declarations as much as possible and add them to

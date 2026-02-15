@@ -21,7 +21,7 @@ Below the email input, add conditional error display. This will only show errors
 ```angular-html
 <label>
   Email
-  <input type="email" [field]="loginForm.email" />
+  <input type="email" [formField]="loginForm.email" />
 </label>
 @if (loginForm.email().invalid() && loginForm.email().touched()) {
   <div class="error">
@@ -41,7 +41,7 @@ Below the password input, add the same pattern for password errors:
 ```angular-html
 <label>
   Password
-  <input type="password" [field]="loginForm.password" />
+  <input type="password" [formField]="loginForm.password" />
 </label>
 @if (loginForm.password().invalid() && loginForm.password().touched()) {
   <div class="error">

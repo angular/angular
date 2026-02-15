@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import {
   IMAGE_LOADER,
   ImageLoader,
@@ -18,8 +20,6 @@ import {provideImageKitLoader} from '../../src/directives/ng_optimized_image/ima
 import {provideImgixLoader} from '../../src/directives/ng_optimized_image/image_loaders/imgix_loader';
 import {isValidPath} from '../../src/directives/ng_optimized_image/url';
 import {RuntimeErrorCode} from '../../src/errors';
-import {createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
 
 const absoluteUrlError = (src: string, path: string) =>
   `NG02959: Image loader has detected a \`<img>\` tag with an invalid ` +
@@ -49,21 +49,21 @@ describe('Built-in image directive loaders', () => {
       expect(loader(config)).toBe(`${path}/img.png?auto=format`);
     });
 
-    it('should handle a trailing forward slash on the path', () => {
+    it('should handle a trailing forward slash on the path (slash when creating loader)', () => {
       const path = 'https://somesite.imgix.net';
       const loader = createImgixLoader(`${path}/`);
       const config = {src: 'img.png'};
       expect(loader(config)).toBe(`${path}/img.png?auto=format`);
     });
 
-    it('should handle a leading forward slash on the image src', () => {
+    it('should handle a leading forward slash on the image src (slash in config)', () => {
       const path = 'https://somesite.imgix.net';
       const loader = createImgixLoader(path);
       const config = {src: '/img.png'};
       expect(loader(config)).toBe(`${path}/img.png?auto=format`);
     });
 
-    it('should construct an image loader with the given path', () => {
+    it('should construct an image loader with the given path (with width)', () => {
       const path = 'https://somesite.imgix.net';
       const loader = createImgixLoader(path);
       const config = {src: 'img.png', width: 100};
@@ -261,7 +261,7 @@ describe('Built-in image directive loaders', () => {
       expect(loader({src: 'marketing/img-2.png'})).toBe(`${path}/marketing/img-2.png`);
     });
 
-    it('should construct an image loader with the given path', () => {
+    it('should construct an image loader with the given path (with width)', () => {
       const path = 'https://ik.imageengine.io/imagetest';
       const loader = createImageKitLoader(path);
       expect(loader({src: 'img.png', width: 100})).toBe(`${path}/tr:w-100/img.png`);
@@ -357,7 +357,7 @@ describe('Built-in image directive loaders', () => {
       let config = {src: 'img.png'};
       expect(loader(config)).toBe('https://mysite.com/cdn-cgi/image/format=auto/img.png');
     });
-    it('should construct an image loader with the given path', () => {
+    it('should construct an image loader with the given path (with width)', () => {
       const loader = createCloudflareLoader('https://mysite.com');
       const config = {src: 'img.png', width: 100};
       expect(loader(config)).toBe('https://mysite.com/cdn-cgi/image/format=auto,width=100/img.png');
@@ -446,7 +446,7 @@ describe('Built-in image directive loaders', () => {
       let config = {src: 'img.png'};
       expect(loader(config)).toBe('https://mysite.com/.netlify/images?url=%2Fimg.png');
     });
-    it('should construct an image loader with the given path', () => {
+    it('should construct an image loader with the given path (with width)', () => {
       const loader = createNetlifyLoader('https://mysite.com');
       const config = {src: 'img.png', width: 100};
       expect(loader(config)).toBe('https://mysite.com/.netlify/images?url=%2Fimg.png&w=100');

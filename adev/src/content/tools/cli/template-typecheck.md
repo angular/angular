@@ -134,7 +134,6 @@ The template type checker checks whether a binding expression's type is compatib
 As an example, consider the following component:
 
 ```angular-ts
-
 export interface User {
   name: string;
 }
@@ -146,13 +145,11 @@ export interface User {
 export class UserDetailComponent {
   user = input.required<User>();
 }
-
 ```
 
 The `AppComponent` template uses this component as follows:
 
 ```angular-ts
-
 @Component({
   selector: 'app-root',
   template: '<user-detail [user]="selectedUser"></user-detail>',
@@ -160,7 +157,6 @@ The `AppComponent` template uses this component as follows:
 export class AppComponent {
   selectedUser: User | null = null;
 }
-
 ```
 
 Here, during type checking of the template for `AppComponent`, the `[user]="selectedUser"` binding corresponds with the `UserDetailComponent.user` input.
@@ -224,7 +220,6 @@ As an example, consider this custom button component:
 Consider the following directive:
 
 ```angular-ts
-
 @Component({
   selector: 'submit-button',
   template: `
@@ -234,9 +229,8 @@ Consider the following directive:
   `,
 })
 class SubmitButton {
-  disabled = input.required({transform: booleanAttribute });
+  disabled = input.required({transform: booleanAttribute});
 }
-
 ```
 
 Here, the `disabled` input of the component is being passed on to the `<button>` in the template.
@@ -306,13 +300,11 @@ The compiler treats it as a cast to the `any` type just like in TypeScript when 
 In the following example, casting `person` to the `any` type suppresses the error `Property address does not exist`.
 
 ```angular-ts
-
 @Component({
   selector: 'my-component',
-  template: '{{$any(person).address.street}}'
+  template: '{{$any(person).address.street}}',
 })
 class MyComponent {
   person?: Person;
 }
-
 ```

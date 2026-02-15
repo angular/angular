@@ -6,7 +6,7 @@
 .leave-container {
   border: 1px solid #dddddd;
   margin-top: 1em;
-  padding: 20px 20px 0px 20px;
+  padding: 20px;
   font-weight: bold;
   font-size: 20px;
   opacity: 1;
@@ -15,6 +15,10 @@
   @starting-style {
     opacity: 0;
   }
+}
+
+.leave-container p {
+  margin: 0;
 }
 
 .leaving {

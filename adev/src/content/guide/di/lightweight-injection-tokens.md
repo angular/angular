@@ -22,11 +22,10 @@ To prevent the retention of unused components, your library should use the light
 To better explain the condition under which token retention occurs, consider a library that provides a library-card component.
 This component contains a body and can contain an optional header:
 
-```angular-html
-
-<lib-card>;
-<lib-header>…</lib-header>;
-</lib-card>;
+```html
+<lib-card>
+  <lib-header>…</lib-header>
+</lib-card>
 ```
 
 In a likely implementation, the `<lib-card>` component uses `contentChild` or `contentChildren` to get `<lib-header>` and `<lib-body>`, as in the following:
@@ -144,7 +143,7 @@ This lets the parent communicate with the child, if it is present, in a type-saf
 For example, the `LibCard` now queries `LibHeaderToken` rather than `LibHeader`.
 The following example shows how the pattern lets `LibCard` communicate with the `LibHeader` without actually referring to `LibHeader`:
 
-```ts {highlight: [[2],[9],[11],[19]]}
+```ts {highlight: [[2],[7],[11],[19]]}
 abstract class LibHeaderToken {
   abstract doSomething(): void;
 }

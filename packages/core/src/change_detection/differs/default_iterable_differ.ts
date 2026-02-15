@@ -21,7 +21,6 @@ import type {
 } from './iterable_differs';
 
 export class DefaultIterableDifferFactory implements IterableDifferFactory {
-  constructor() {}
   supports(obj: Object | null | undefined): boolean {
     return isListLikeIterable(obj);
   }

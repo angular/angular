@@ -167,11 +167,9 @@ export type CliCommandRenderable = CliCommand & {
   htmlDescription: string;
   cards: CliCardRenderable[];
   argumentsLabel: string;
-  hasOptions: boolean;
+  optionsLabel: string;
   subcommands?: CliCommandRenderable[];
 };
 
 export interface InitializerApiFunctionRenderable
-  extends Omit<InitializerApiFunctionEntry, 'jsdocTags'>,
-    DocEntryRenderable,
-    HasRenderableToc {}
+  extends Omit<InitializerApiFunctionEntry, 'jsdocTags'>, DocEntryRenderable, HasRenderableToc {}

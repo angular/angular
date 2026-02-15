@@ -1,8 +1,4 @@
-const arrowFn0 = (ctx, view) => (a, b) => {
-  // NOTE: the restoreView and resetView calls here are the result of variable optimization not picking up some cases. We can remove them once #66286 is resolved.
-  $r3$.ɵɵrestoreView(view);
-  return $r3$.ɵɵresetView(ctx.componentValue + a + b);
-};
+const arrowFn0 = (ctx, view) => (a, b) => ctx.componentValue + a + b;
 …
 function TestComp_Conditional_2_Template(rf, ctx) {
   if (rf & 1) {

@@ -7,8 +7,14 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {exactMatchOptions, Router, subsetMatchOptions} from '../src/router';
-import {containsTree, DefaultUrlSerializer} from '../src/url_tree';
+import {Router} from '../src/router';
+import {
+  containsTree,
+  DefaultUrlSerializer,
+  exactMatchOptions,
+  isActive,
+  subsetMatchOptions,
+} from '../src/url_tree';
 
 describe('UrlTree', () => {
   const serializer = new DefaultUrlSerializer();
@@ -99,7 +105,7 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
       });
 
-      it('should return false when queryParams are not the same', () => {
+      it('should return false when queryParams are not the same (multiple params)', () => {
         const t1 = serializer.parse('/one/two?test=4&test=4&test=2');
         const t2 = serializer.parse('/one/two?test=4&test=3&test=2');
         expect(containsTree(t1, t2, subsetMatchOptions)).toBe(false);
@@ -111,7 +117,7 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
       });
 
-      it('should return true when queryParams are the same in different order', () => {
+      it('should return true when queryParams are the same in different order (with duplicates)', () => {
         const t1 = serializer.parse('/one/two?test=4&test=4&test=1');
         const t2 = serializer.parse('/one/two?test=1&test=4&test=4');
         expect(containsTree(t1, t2, subsetMatchOptions)).toBe(true);
@@ -139,6 +145,38 @@ describe('UrlTree', () => {
         const t1 = serializer.parse('/one/two');
         const t2 = serializer.parse('/one/two(right:three)');
         expect(containsTree(t1, t2, exactMatchOptions)).toBe(false);
+      });
+    });
+
+    describe('isActive', () => {
+      it('should allow partial match options and use subset match options as default', () => {
+        const router = {
+          parseUrl: (url: string) => serializer.parse(url),
+          lastSuccessfulNavigation: () => ({finalUrl: serializer.parse('/one/two?a=1&b=2')}),
+        } as unknown as Router;
+
+        const t2 = serializer.parse('/one/two?a=1');
+
+        // With partial options: paths: 'exact'.
+        // derived options should be:
+        // paths: 'exact'
+        // queryParams: 'subset' (default)
+        // matrixParams: 'ignored' (default)
+        // fragment: 'ignored' (default)
+
+        // This should return true because paths match exactly, and queryParams is subset (t2 is subset of t1)
+        expect(isActive(t2, router, {paths: 'exact'})()).toBe(true);
+      });
+
+      it('should use subset match options as base for other properties', () => {
+        const router = {
+          parseUrl: (url: string) => serializer.parse(url),
+          lastSuccessfulNavigation: () => ({finalUrl: serializer.parse('/one/two#frag')}),
+        } as unknown as Router;
+        const t2 = serializer.parse('/one/two#diff');
+
+        // fragment is ignored by default in subsetMatchOptions
+        expect(isActive(t2, router, {paths: 'exact'})()).toBe(true);
       });
     });
 

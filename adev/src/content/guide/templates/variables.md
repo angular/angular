@@ -16,9 +16,10 @@ Use `@let` to declare a variable whose value is based on the result of a templat
 @let data = data$ | async;
 @let pi = 3.14159;
 @let coordinates = {x: 50, y: 100};
-@let longExpression = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit ' +
-                      'sed do eiusmod tempor incididunt ut labore et dolore magna ' +
-                      'Ut enim ad minim veniam...';
+@let longExpression =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit ' +
+  'sed do eiusmod tempor incididunt ut labore et dolore magna ' +
+  'Ut enim ad minim veniam...';
 ```
 
 Each `@let` block can declare exactly one variable. You cannot declare multiple variables in the same block with a comma.
@@ -31,12 +32,12 @@ Once you've declared a variable with `@let`, you can reuse it in the same templa
 @let user = user$ | async;
 
 @if (user) {
-  <h1>Hello, {{user.name}}</h1>
-  <user-avatar [photo]="user.photo"/>
+  <h1>Hello, {{ user.name }}</h1>
+  <user-avatar [photo]="user.photo" />
 
   <ul>
     @for (snack of user.favoriteSnacks; track snack.id) {
-      <li>{{snack.name}}</li>
+      <li>{{ snack.name }}</li>
     }
   </ul>
 
@@ -68,20 +69,25 @@ Since `@let` declarations are not hoisted, they **cannot** be accessed by parent
   @let insideDiv = value;
 </div>
 
-{{topLevel}} <!-- Valid -->
-{{insideDiv}} <!-- Valid -->
+<!-- Valid -->
+{{ topLevel }}
+<!-- Valid -->
+{{ insideDiv }}
 
 @if (condition) {
-  {{topLevel + insideDiv}} <!-- Valid -->
+  <!-- Valid -->
+  {{ topLevel + insideDiv }}
 
   @let nested = value;
 
   @if (condition) {
-    {{topLevel + insideDiv + nested}} <!-- Valid -->
+    <!-- Valid -->
+    {{ topLevel + insideDiv + nested }}
   }
 }
 
-{{nested}} <!-- Error, not hoisted from @if -->
+<!-- Error, not hoisted from @if -->
+{{ nested }}
 ```
 
 ### Full syntax
@@ -113,7 +119,7 @@ You can declare a variable on an element in a template by adding an attribute th
 
 ```angular-html
 <!-- Create a template reference variable named "taskInput", referring to the HTMLInputElement. -->
-<input #taskInput placeholder="Enter task name">
+<input #taskInput placeholder="Enter task name" />
 ```
 
 ### Assigning values to template reference variables
@@ -140,7 +146,7 @@ If you declare the variable on any other displayed element, the variable refers 
 
 ```angular-html
 <!-- The "taskInput" variable refers to the HTMLInputElement instance. -->
-<input #taskInput placeholder="Enter task name">
+<input #taskInput placeholder="Enter task name" />
 ```
 
 #### Assigning a reference to an Angular directive
@@ -152,14 +158,16 @@ Angular directives may have an `exportAs` property that defines a name by which 
   selector: '[dropZone]',
   exportAs: 'dropZone',
 })
-export class DropZone { /* ... */ }
+export class DropZone {
+  /* ... */
+}
 ```
 
 When you declare a template variable on an element, you can assign that variable a directive instance by specifying this `exportAs` name:
 
 ```angular-html
 <!-- The `firstZone` variable refers to the `DropZone` directive instance. -->
-<section dropZone #firstZone="dropZone"> ... </section>
+<section dropZone #firstZone="dropZone">...</section>
 ```
 
 You cannot refer to a directive that does not specify an `exportAs` name.
@@ -171,7 +179,7 @@ In addition to using template variables to read values from another part of the 
 When you want to query for a specific element in a template, you can declare a template variable on that element and then query for the element based on the variable name.
 
 ```angular-html
- <input #description value="Original description">
+<input #description value="Original description" />
 ```
 
 ```angular-ts

@@ -71,7 +71,7 @@
   font-size: 0.875rem;
   transform: translateY(-150%);
   transition: transform 0.3s ease-out;
-  &:focus {
+  &:focus-visible {
     transform: translateY(0);
   }
 }

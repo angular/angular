@@ -24,10 +24,9 @@ import {
   inject,
   Injectable,
   NgModule,
-  provideZonelessChangeDetection,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {isNode} from '@angular/private/testing';
+import {isNode, useAutoTick} from '@angular/private/testing';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {
   NavigationEnd,
@@ -37,7 +36,6 @@ import {
   RouterOutlet,
   withEnabledBlockingInitialNavigation,
 } from '../index';
-import {useAutoTick} from './helpers';
 
 // This is needed, because all files under `packages/` are compiled together as part of the
 // [legacy-unit-tests-saucelabs][1] CI job, including the `lib.webworker.d.ts` typings brought in by
@@ -106,7 +104,6 @@ describe('bootstrap', () => {
     navigationEndPromise = promise;
     log = [];
     testProviders = [
-      provideZonelessChangeDetection(),
       {provide: DOCUMENT, useValue: doc},
       {provide: ViewportScroller, useClass: isNode ? NullViewportScroller : ViewportScroller},
       {provide: PlatformLocation, useClass: MockPlatformLocation},

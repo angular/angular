@@ -22,7 +22,7 @@
     "@angular/build": "21.1.0-rc.0",
     "@angular/cli": "21.1.0-rc.0",
     "@angular/compiler-cli": "workspace:*",
-    "jsdom": "^27.0.0",
+    "jsdom": "^28.0.0",
     "typescript": "~5.9.2",
     "vitest": "^4.0.0"
   }

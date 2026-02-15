@@ -7,6 +7,7 @@
  */
 
 import {NgIf} from '@angular/common';
+import {DomSanitizer} from '@angular/platform-browser';
 import {
   Component,
   Directive,
@@ -20,7 +21,6 @@ import {
 import {RuntimeErrorCode} from '../../src/errors';
 import {global} from '../../src/util/global';
 import {ComponentFixture, TestBed} from '../../testing';
-import {DomSanitizer} from '@angular/platform-browser';
 
 describe('comment node text escaping', () => {
   // see: https://html.spec.whatwg.org/multipage/syntax.html#comments
@@ -146,7 +146,7 @@ describe('iframe processing', () => {
         ['src', 'srcdoc'].forEach((srcAttr: string) => {
           it(
             `should work when a security-sensitive attribute is set ` +
-              `as a static attribute (checking \`${securityAttr}\`)`,
+              `as a static attribute (checking \`${securityAttr}\` with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
@@ -161,7 +161,7 @@ describe('iframe processing', () => {
           it(
             `should work when a security-sensitive attribute is set ` +
               `as a static attribute (checking \`${securityAttr}\` and ` +
-              `making sure it's case-insensitive)`,
+              `making sure it's case-insensitive, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
@@ -179,7 +179,7 @@ describe('iframe processing', () => {
 
           it(
             `should error when a security-sensitive attribute is applied ` +
-              `using a property binding (checking \`${securityAttr}\`)`,
+              `using a property binding (checking \`${securityAttr}\`, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
@@ -196,7 +196,7 @@ describe('iframe processing', () => {
 
           it(
             `should error when a security-sensitive attribute is applied ` +
-              `using a property interpolation (checking \`${securityAttr}\`)`,
+              `using a property interpolation (checking \`${securityAttr}\`, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
@@ -214,7 +214,7 @@ describe('iframe processing', () => {
           it(
             `should error when a security-sensitive attribute is applied ` +
               `using a property binding (checking \`${securityAttr}\`, making ` +
-              `sure it's case-insensitive)`,
+              `sure it's case-insensitive, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
@@ -233,7 +233,7 @@ describe('iframe processing', () => {
 
           it(
             `should error when a security-sensitive attribute is applied ` +
-              `using a property binding (checking \`${securityAttr}\`)`,
+              `using a property binding (checking \`${securityAttr}\` (attr.), with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
@@ -249,8 +249,8 @@ describe('iframe processing', () => {
 
           it(
             `should error when a security-sensitive attribute is applied ` +
-              `using a property binding (checking \`${securityAttr}\`, making ` +
-              `sure it's case-insensitive)`,
+              `using a property binding (checking \`${securityAttr}\` with [attr.], making ` +
+              `sure it's case-insensitive, with \`${srcAttr}\`)`,
             () => {
               @Component({
                 selector: 'my-comp',
@@ -267,7 +267,7 @@ describe('iframe processing', () => {
             },
           );
 
-          it(`should allow changing \`${srcAttr}\` after initial render`, () => {
+          it(`should allow changing \`${srcAttr}\` after initial render with \`${securityAttr}\``, () => {
             @Component({
               selector: 'my-comp',
               template: ` <iframe ${securityAttr}="allow-forms" [${srcAttr}]="src"> </iframe> `,

@@ -479,6 +479,13 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             status: 'new',
           },
           {
+            label: 'Form logic',
+            path: 'guide/forms/signals/form-logic',
+            contentPath: 'guide/forms/signals/form-logic',
+            category: 'Signal Forms',
+            status: 'new',
+          },
+          {
             label: 'Custom controls',
             path: 'guide/forms/signals/custom-controls',
             contentPath: 'guide/forms/signals/custom-controls',
@@ -493,7 +500,7 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             status: 'new',
           },
           {
-            label: 'Migrating from Legacy Forms',
+            label: 'Migrating from Reactive Forms',
             path: 'guide/forms/signals/migration',
             contentPath: 'guide/forms/signals/migration',
             category: 'Signal Forms',

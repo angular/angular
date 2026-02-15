@@ -2,6 +2,7 @@
   #visualizer
   [graph]="signalGraph.graph()"
   [selectedNodeId]="selectedNodeId()"
+  [externallySelectedNodeId]="externallySelectedNodeId()?.id ?? null"
   [element]="signalGraph.element()"
   (nodeClick)="onNodeClick($event)"
   (clusterCollapse)="detailsVisible.set(false)"
@@ -13,6 +14,7 @@
     [node]="node"
     (gotoSource)="gotoSource($event)"
     (expandCluster)="expandCluster($event)"
+    (highlightDeps)="highlightDeps($event)"
     (close)="detailsVisible.set(false)"
   />
 }

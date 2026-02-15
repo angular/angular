@@ -27,7 +27,7 @@ function validateValue(value: string): ValidationError[] {
 function validateValueForChild(
   value: string,
   fieldTree: FieldTree<unknown> | undefined,
-): ValidationError.WithOptionalField[] {
+): ValidationError.WithOptionalFieldTree[] {
   return value === 'INVALID' ? [{kind: 'custom', fieldTree: fieldTree}] : [];
 }
 

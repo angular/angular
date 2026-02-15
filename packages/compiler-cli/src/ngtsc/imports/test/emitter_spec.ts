@@ -404,6 +404,32 @@ runInEachFileSystem(() => {
       expect(emitted.expression.value.name).toEqual('Foo');
       expect(emitted.expression.value.moduleName).toEqual('./index');
     });
+
+    it('should drop .tsx extension', () => {
+      const {program} = makeProgram([
+        {
+          name: _('/index.tsx'),
+          contents: `export class Foo {}`,
+        },
+        {
+          name: _('/context.ts'),
+          contents: `export class Context {}`,
+        },
+      ]);
+      const checker = program.getTypeChecker();
+      const strategy = new RelativePathStrategy(new TypeScriptReflectionHost(checker));
+      const decl = getDeclaration(program, _('/index.tsx'), 'Foo', ts.isClassDeclaration);
+      const context = program.getSourceFile(_('/context.ts'))!;
+      const emitted = strategy.emit(new Reference(decl), context);
+      if (emitted === null || emitted.kind !== ReferenceEmitKind.Success) {
+        return fail('Reference should be emitted');
+      }
+      if (!(emitted.expression instanceof ExternalExpr)) {
+        return fail('Reference should be emitted as ExternalExpr');
+      }
+      expect(emitted.expression.value.name).toEqual('Foo');
+      expect(emitted.expression.value.moduleName).toEqual('./index');
+    });
   });
 
   describe('UnifiedModulesStrategy', () => {

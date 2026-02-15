@@ -92,7 +92,7 @@ export class LCPImageObserver implements OnDestroy {
     return observer;
   }
 
-  registerImage(rewrittenSrc: string, originalNgSrc: string, isPriority: boolean) {
+  registerImage(rewrittenSrc: string, isPriority: boolean) {
     if (!this.observer) return;
     const newObservedImageState: ObservedImageState = {
       priority: isPriority,

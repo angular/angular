@@ -1,0 +1,24 @@
+{
+  "$schema": "../test_case_schema.json",
+  "cases": [
+    {
+      "description": "basic component transformation",
+      "inputFiles": ["basic/test.ts"],
+      "compilationModeFilter": [],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "basic/test_transformed.ts",
+              "generated": "basic/test.ts"
+            },
+            {
+              "expected": "basic/test.ngtypecheck.ts",
+              "generated": "basic/test.ngtypecheck.ts"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

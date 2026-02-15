@@ -13,8 +13,8 @@ Developers commonly use two-way binding to keep component data in sync with a fo
 The following example dynamically updates the `firstName` attribute on the page:
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   imports: [FormsModule],
@@ -23,9 +23,9 @@ import { FormsModule } from '@angular/forms';
       <h2>Hello {{ firstName }}!</h2>
       <input type="text" [(ngModel)]="firstName" />
     </main>
-  `
+  `,
 })
-export class AppComponent {
+export class App {
   firstName = 'Ada';
 }
 ```
@@ -44,16 +44,16 @@ Learn more about [`NgModel`](/api/forms/NgModel) in the official docs.
 
 Leveraging two-way binding between a parent and child component requires more configuration compared to form elements.
 
-Here is an example where the `AppComponent` is responsible for setting the initial count state, but the logic for updating and rendering the UI for the counter primarily resides inside its child `CounterComponent`.
+Here is an example where the `App` is responsible for setting the initial count state, but the logic for updating and rendering the UI for the counter primarily resides inside its child `Counter`.
 
 ```angular-ts
-// ./app.component.ts
-import { Component } from '@angular/core';
-import { CounterComponent } from './counter/counter.component';
+// ./app.ts
+import {Component} from '@angular/core';
+import {Counter} from './counter';
 
 @Component({
   selector: 'app-root',
-  imports: [CounterComponent],
+  imports: [Counter],
   template: `
     <main>
       <h1>Counter: {{ initialCount }}</h1>
@@ -61,14 +61,14 @@ import { CounterComponent } from './counter/counter.component';
     </main>
   `,
 })
-export class AppComponent {
+export class App {
   initialCount = 18;
 }
 ```
 
 ```angular-ts
-// './counter/counter.component.ts';
-import { Component, model } from '@angular/core';
+// './counter.ts';
+import {Component, model} from '@angular/core';
 
 @Component({
   selector: 'app-counter',
@@ -78,11 +78,11 @@ import { Component, model } from '@angular/core';
     <button (click)="updateCount(+1)">+</button>
   `,
 })
-export class CounterComponent {
+export class Counter {
   count = model<number>(0);
 
   updateCount(amount: number): void {
-    this.count.update(currentCount => currentCount + amount);
+    this.count.update((currentCount) => currentCount + amount);
   }
 }
 ```
@@ -96,15 +96,17 @@ The child component must contain a `model` property.
 Here is a simplified example:
 
 ```angular-ts
-// './counter/counter.component.ts';
-import { Component, model } from '@angular/core';
+// './counter.ts';
+import {Component, model} from '@angular/core';
 
-@Component({ /* Omitted for brevity */ })
-export class CounterComponent {
+@Component({
+  /* Omitted for brevity */
+})
+export class Counter {
   count = model<number>(0);
 
   updateCount(amount: number): void {
-    this.count.update(currentCount => currentCount + amount);
+    this.count.update((currentCount) => currentCount + amount);
   }
 }
 ```
@@ -117,20 +119,20 @@ The parent component must:
 Here is a simplified example:
 
 ```angular-ts
-// ./app.component.ts
-import { Component } from '@angular/core';
-import { CounterComponent } from './counter/counter.component';
+// ./app.ts
+import {Component} from '@angular/core';
+import {Counter} from './counter';
 
 @Component({
   selector: 'app-root',
-  imports: [CounterComponent],
+  imports: [Counter],
   template: `
     <main>
       <app-counter [(count)]="initialCount"></app-counter>
     </main>
   `,
 })
-export class AppComponent {
+export class App {
   initialCount = 18;
 }
 ```

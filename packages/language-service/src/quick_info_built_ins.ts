@@ -21,7 +21,7 @@ import {
   TmplAstForLoopBlockEmpty,
   TmplAstNode,
 } from '@angular/compiler';
-import ts from 'typescript';
+import type ts from 'typescript';
 
 import {DisplayInfoKind, SYMBOL_TEXT} from './utils/display_parts';
 import {createQuickInfo, getTextSpanOfNode, isWithin, toTextSpan} from './utils';

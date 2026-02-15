@@ -51,8 +51,8 @@ importers:
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
       '@types/jasmine':
-        specifier: ^5.0.0
-        version: 5.1.14
+        specifier: ^6.0.0
+        version: 6.0.0
       rxjs:
         specifier: ^7.0.0
         version: 7.8.2
@@ -65,8 +65,8 @@ importers:
 
 packages:
 
-  '@types/jasmine@5.1.14':
-    resolution: {integrity: sha512-16bJdpgUPNKXuaelVxuLZUeDd02+PnF0aQd5HY4xLWoUOMoRE+CyNkRpjRMIcPBCR1dscSb52pmFNILAN1uzkw==}
+  '@types/jasmine@6.0.0':
+    resolution: {integrity: sha512-18lgGsLmEh3VJk9eZ5wAjTISxdqzl6YOwu8UdMpolajN57QOCNbl+AbHUd+Yu9ItrsFdB+c8LSZSGNg8nHaguw==}
 
   rxjs@7.8.2:
     resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
@@ -84,7 +84,7 @@ packages:
 
 snapshots:
 
-  '@types/jasmine@5.1.14': {}
+  '@types/jasmine@6.0.0': {}
 
   rxjs@7.8.2:
     dependencies:

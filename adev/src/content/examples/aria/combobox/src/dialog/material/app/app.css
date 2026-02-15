@@ -38,8 +38,8 @@
 }
 
 [ngCombobox]:focus-within [ngComboboxInput] {
-  outline: 1.5px solid var(--vivid-pink, #f542a4);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink, #f542a4) 25%, transparent);
+  outline: none;
+  box-shadow: none;
 }
 
 .icon {
@@ -151,9 +151,9 @@
   border-bottom-right-radius: 0;
 }
 
-.dialog [ngCombobox]:focus-within [ngComboboxInput] {
-  outline: none;
-  box-shadow: none;
+[ngCombobox]:focus-within [ngComboboxInput]:not(.combobox-input) {
+  outline: 1.5px solid var(--vivid-pink);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vivid-pink) 25%, transparent);
 }
 
 .dialog::backdrop {

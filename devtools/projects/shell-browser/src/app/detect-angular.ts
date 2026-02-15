@@ -13,17 +13,16 @@ import {
   appIsAngularIvy,
   appIsSupportedAngularVersion,
 } from '../../../shared-utils';
-import {CONTENT_SCRIPT_URI, DETECT_ANGULAR_SCRIPT_URI} from './communication';
+import {getDetectAngularScriptUri} from './comm-utils';
 
 import {SamePageMessageBus} from './same-page-message-bus';
 
 const detectAngularMessageBus = new SamePageMessageBus(
-  DETECT_ANGULAR_SCRIPT_URI,
-  CONTENT_SCRIPT_URI,
+  getDetectAngularScriptUri(),
+  getDetectAngularScriptUri(),
 );
 
 let detectAngularTimeout: ReturnType<typeof setTimeout>;
-
 function detectAngular(win: Window): void {
   const isAngular = appIsAngular();
   const isSupportedAngularVersion = appIsSupportedAngularVersion();
@@ -52,10 +51,12 @@ function detectAngular(win: Window): void {
     },
   ]);
 
-  detectAngularTimeout = setTimeout(() => detectAngular(win), 1000);
+  detectAngularTimeout = setTimeout(() => {
+    detectAngular(win);
+  }, 1000);
 }
 
-detectAngularMessageBus.on('backendInstalled', () => {
+detectAngularMessageBus.on('backendInstalled', (detection) => {
   clearTimeout(detectAngularTimeout);
 });
 

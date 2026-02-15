@@ -7,10 +7,14 @@ Components can optionally include CSS styles that apply to that component's DOM:
 ```angular-ts {highlight:[4]}
 @Component({
   selector: 'profile-photo',
-  template: `<img src="profile-photo.jpg" alt="Your profile photo">`,
-  styles: ` img { border-radius: 50%; } `,
+  template: `<img src="profile-photo.jpg" alt="Your profile photo" />`,
+  styles: `
+    img {
+      border-radius: 50%;
+    }
+  `,
 })
-export class ProfilePhoto { }
+export class ProfilePhoto {}
 ```
 
 You can also choose to write your styles in separate files:
@@ -21,7 +25,7 @@ You can also choose to write your styles in separate files:
   templateUrl: 'profile-photo.html',
   styleUrl: 'profile-photo.css',
 })
-export class ProfilePhoto { }
+export class ProfilePhoto {}
 ```
 
 When Angular compiles your component, these styles are emitted with your component's JavaScript

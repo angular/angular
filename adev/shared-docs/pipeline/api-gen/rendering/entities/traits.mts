@@ -22,6 +22,10 @@ export interface HasJsDocTags {
   jsdocTags: JsDocTagEntry[];
 }
 
+export interface MaybeJsDocTags {
+  jsdocTags?: JsDocTagEntry[];
+}
+
 export interface HasAdditionalLinks {
   additionalLinks: LinkEntryRenderable[];
 }

@@ -57,7 +57,7 @@ describe('Viewing component metadata', () => {
 
     it('should display correct set of properties', () => {
       cy.contains('.mat-accordion-content#Properties', 'Properties');
-      cy.contains('.mat-accordion-content#Properties mat-tree-node:first span:first', 'elementRef');
+      cy.contains('.mat-accordion-content#Properties mat-tree-node:first span:first', 'demoRsrc');
       cy.contains('.mat-accordion-content#Properties mat-tree-node:last span:first', 'zippy');
     });
   });

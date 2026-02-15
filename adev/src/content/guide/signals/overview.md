@@ -188,7 +188,7 @@ effect(() => {
 
 ## Advanced derivations
 
-While `computed` handles simple readonly derivations, you might find yourself needing a writable state that is dependant on other signals.
+While `computed` handles simple readonly derivations, you might find yourself needing a writable state that is dependent on other signals.
 For more information see the [Dependent state with linkedSignal](/guide/signals/linked-signal) guide.
 
 All signal APIs are synchronous— `signal`, `computed`, `input`, etc. However, applications often need to deal with data that is available asynchronously. A `Resource` gives you a way to incorporate async data into your application's signal-based code and still allow you to access its data synchronously. For more information see the [Async reactivity with resources](/guide/signals/resource) guide.

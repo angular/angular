@@ -250,9 +250,9 @@ A common UI pattern is to show a spinner while the async validation is being per
 The following example shows how to achieve this in a template-driven form.
 
 ```angular-html
-<input [(ngModel)]="name" #model="ngModel" appSomeAsyncValidator>
+<input [(ngModel)]="name" #model="ngModel" appSomeAsyncValidator />
 
-@if(model.pending) {
+@if (model.pending) {
   <app-spinner />
 }
 ```
@@ -330,7 +330,7 @@ You can delay updating the form validity by changing the `updateOn` property fro
 With template-driven forms, set the property in the template.
 
 ```angular-html
-<input [(ngModel)]="name" [ngModelOptions]="{updateOn: 'blur'}">
+<input [(ngModel)]="name" [ngModelOptions]="{updateOn: 'blur'}" />
 ```
 
 With reactive forms, set the property in the `FormControl` instance.

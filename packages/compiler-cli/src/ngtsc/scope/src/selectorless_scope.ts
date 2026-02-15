@@ -98,7 +98,7 @@ export class SelectorlessComponentScopeReader implements ComponentScopeReader {
         if (
           ts.isImportDeclaration(stmt) &&
           stmt.importClause !== undefined &&
-          !stmt.importClause.isTypeOnly
+          !(stmt.importClause.phaseModifier === ts.SyntaxKind.TypeKeyword)
         ) {
           const clause = stmt.importClause;
           if (clause.namedBindings !== undefined && ts.isNamedImports(clause.namedBindings)) {

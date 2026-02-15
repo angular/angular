@@ -22,9 +22,9 @@ import {filter, switchMap, take} from 'rxjs/operators';
 import {PrivateRouterEvents, Scroll} from '../src/events';
 import {ROUTER_SCROLLER, RouterScroller} from '../src/router_scroller';
 import {ɵWritable as Writable} from '@angular/core';
-import {timeout} from './helpers';
 import {ViewportScroller} from '@angular/common';
 import {NavigationTransitions} from '../src/navigation_transition';
+import {timeout} from '@angular/private/testing';
 
 describe('RouterScroller', () => {
   it('defaults to disabled', () => {

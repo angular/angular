@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, effect, Injector, signal, WritableSignal} from '@angular/core';
+import {Component, computed, effect, Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   apply,
@@ -14,6 +14,7 @@ import {
   debounce,
   disabled,
   form,
+  FormField,
   hidden,
   readonly,
   required,
@@ -55,7 +56,7 @@ describe('FieldNode', () => {
       expect(f.a).toBe(child);
     });
 
-    it('should get the same instance when asking for a child multiple times', () => {
+    it('should get the same instance when asking for a child multiple times (after update)', () => {
       const value = signal<{a: number; b?: number}>({a: 1, b: 2});
       const f = form(value, {injector: TestBed.inject(Injector)});
       const child = f.a;
@@ -75,18 +76,6 @@ describe('FieldNode', () => {
       },
     );
     expect(f.c).toBeUndefined();
-  });
-
-  it('can get a child inside of a computed', () => {
-    const f = form(
-      signal({
-        a: 1,
-        b: 2,
-      }),
-      {injector: TestBed.inject(Injector)},
-    );
-    const childA = computed(() => f.a);
-    expect(childA()).toBeDefined();
   });
 
   it('can get a child inside of a computed', () => {
@@ -155,6 +144,26 @@ describe('FieldNode', () => {
       const f = form(model, {injector: TestBed.inject(Injector)});
       f().reset(NaN);
       expect(f().value()).toBeNaN();
+    });
+  });
+
+  describe('fieldTree', () => {
+    it('should return the associated field tree from state produced by the root field tree', () => {
+      const f = form(signal(''), {injector: TestBed.inject(Injector)});
+
+      expect(f().fieldTree).toBe(f);
+    });
+
+    it('should return the associated field tree from state produced by a child field tree', () => {
+      const f = form(signal({a: 1, b: 2}), {injector: TestBed.inject(Injector)});
+
+      expect(f.a().fieldTree).toBe(f.a);
+    });
+
+    it('should return the associated field tree from state produced by an array item field tree', () => {
+      const f = form(signal([1, 2, 3]), {injector: TestBed.inject(Injector)});
+
+      expect(f[0]().fieldTree).toBe(f[0]);
     });
   });
 
@@ -615,7 +624,7 @@ describe('FieldNode', () => {
       // Same object identity because there was no change to flush to the name.
       expect(myForm().value()).toBe(product);
 
-      myForm.name().setControlValue('b');
+      myForm.name().controlValue.set('b');
       // Same object identity because the name change is still pending.
       expect(myForm().value()).toBe(product);
 
@@ -1120,7 +1129,7 @@ describe('FieldNode', () => {
           cat,
           (p) => {
             validateTree(p, ({value, fieldTreeOf}) => {
-              const errors: ValidationError.WithOptionalField[] = [];
+              const errors: ValidationError.WithOptionalFieldTree[] = [];
               if (value().name.length > 8) {
                 errors.push({kind: 'long_name', fieldTree: fieldTreeOf(p.name)});
               }
@@ -1152,7 +1161,7 @@ describe('FieldNode', () => {
           cat,
           (p) => {
             validateTree(p, ({value, fieldTreeOf}) => {
-              const errors: ValidationError.WithOptionalField[] = [];
+              const errors: ValidationError.WithOptionalFieldTree[] = [];
               if (value().name.length > 8) {
                 errors.push({kind: 'long_name', fieldTree: fieldTreeOf(p.name)});
               }
@@ -1245,6 +1254,78 @@ describe('FieldNode', () => {
         {kind: 'root', fieldTree: f},
         {kind: 'child', fieldTree: f.child},
         {kind: 'grandchild', fieldTree: f.child.child},
+      ]);
+    });
+
+    it('should sort errors by DOM position', async () => {
+      @Component({
+        template: `
+          <input [formField]="f.b" />
+          <input [formField]="f.a" />
+        `,
+        imports: [FormField],
+      })
+      class TestCmp {
+        f = form(signal({a: '', b: ''}), (p) => {
+          validate(p.a, () => ({kind: 'error-a'}));
+          validate(p.b, () => ({kind: 'error-b'}));
+        });
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(cmp.f().errorSummary()).toEqual([
+        jasmine.objectContaining({kind: 'error-b'}),
+        jasmine.objectContaining({kind: 'error-a'}),
+      ]);
+    });
+
+    it('should sort bound errors before unbound errors', () => {
+      @Component({
+        template: ` <input [formField]="f.a" /> `,
+        imports: [FormField],
+      })
+      class TestCmp {
+        f = form(signal({a: '', b: ''}), (p) => {
+          validate(p.a, () => ({kind: 'error-a'}));
+          validate(p.b, () => ({kind: 'error-b'}));
+        });
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(cmp.f().errorSummary()).toEqual([
+        jasmine.objectContaining({kind: 'error-a'}),
+        jasmine.objectContaining({kind: 'error-b'}),
+      ]);
+    });
+
+    it('should sort errors from nested fields by DOM position', () => {
+      @Component({
+        template: `
+          <input [formField]="f.group.child" />
+          <input [formField]="f.other" />
+        `,
+        imports: [FormField],
+      })
+      class TestCmp {
+        f = form(signal({group: {child: ''}, other: ''}), (p) => {
+          validate(p.group.child, () => ({kind: 'child'}));
+          validate(p.other, () => ({kind: 'other'}));
+        });
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(cmp.f().errorSummary()).toEqual([
+        jasmine.objectContaining({kind: 'child'}),
+        jasmine.objectContaining({kind: 'other'}),
       ]);
     });
   });

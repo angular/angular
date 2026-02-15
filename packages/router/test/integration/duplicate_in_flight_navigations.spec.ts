@@ -24,7 +24,7 @@ import {
   BlankCmp,
   simulateLocationChange,
 } from './integration_helpers';
-import {timeout} from '../helpers';
+import {timeout} from '@angular/private/testing';
 
 export function duplicateInFlightNavigationsIntegrationSuite(browserAPI: 'history' | 'navigation') {
   describe('duplicate in-flight navigations', () => {
