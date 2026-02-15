@@ -17,7 +17,7 @@
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "prepare": "husky",
+    "prepare": "husky1",
     "ng-dev": "ng-dev",
     "build": "node scripts/build/build-packages-dist.mts",
     "test": "bazelisk test",
