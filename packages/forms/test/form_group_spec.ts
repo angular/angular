@@ -6,18 +6,23 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Component, Directive, effect, forwardRef, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {timeout, useAutoTick} from '@angular/private/testing';
 import {filter, map, of} from 'rxjs';
 import {
   AbstractControl,
   ControlEvent,
+  ControlValueAccessor,
   FormArray,
   FormControl,
   FormGroup,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
   ValidationErrors,
   Validators,
   ValueChangeEvent,
 } from '../index';
-import {useAutoTick, timeout} from '@angular/private/testing';
 
 import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model';
 import {
@@ -2717,6 +2722,133 @@ import {
         'baz.not.ok': new FormControl('baz'),
       });
       expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    describe('FormGroup.setValue is untracked', () => {
+      @Directive({
+        selector: '[testCva]',
+        providers: [
+          {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TestCvaDirective),
+            multi: true,
+          },
+        ],
+      })
+      class TestCvaDirective implements ControlValueAccessor {
+        // This is the “dangerous” signal read that must NOT get tracked by the caller of setValue().
+        static cvaSignal = signal(0);
+
+        writeValue(value: unknown): void {
+          // If setValue() is not untracked, the *caller* effect/computed may accidentally track this read.
+          TestCvaDirective.cvaSignal();
+        }
+
+        registerOnChange(_: (value: unknown) => void): void {}
+        registerOnTouched(_: () => void): void {}
+        setDisabledState(_: boolean): void {}
+      }
+
+      @Component({
+        imports: [ReactiveFormsModule, TestCvaDirective],
+        template: `<input testCva [formControl]="control.get('one')" />`,
+      })
+      class HostComponent {
+        control = new FormGroup({one: new FormControl('')});
+      }
+
+      it('should NOT track signals read inside CVA.writeValue when setValue is called inside an effect', async () => {
+        const fixture = TestBed.createComponent(HostComponent);
+        fixture.detectChanges(); // wires up FormControlDirective + CVA
+
+        const driver = signal('A');
+        let runs = 0;
+
+        // Create the effect inside the Angular injection context.
+        TestBed.runInInjectionContext(() => {
+          effect(() => {
+            runs++;
+
+            // Only dependency we *want* is `driver()`.
+            fixture.componentInstance.control.setValue({one: driver()});
+          });
+        });
+
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the CVA signal should NOT re-run the effect.
+        TestCvaDirective.cvaSignal.set(1);
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the driver signal SHOULD re-run the effect.
+        driver.set('B');
+        await fixture.whenStable();
+        expect(runs).toBe(2);
+      });
+
+      it('should NOT track signals read inside CVA.writeValue when patchValue is called inside an effect', async () => {
+        const fixture = TestBed.createComponent(HostComponent);
+        fixture.detectChanges(); // wires up FormControlDirective + CVA
+
+        const driver = signal('A');
+        let runs = 0;
+
+        // Create the effect inside the Angular injection context.
+        TestBed.runInInjectionContext(() => {
+          effect(() => {
+            runs++;
+
+            // Only dependency we *want* is `driver()`.
+            fixture.componentInstance.control.patchValue({one: driver()});
+          });
+        });
+
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the CVA signal should NOT re-run the effect.
+        TestCvaDirective.cvaSignal.set(1);
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the driver signal SHOULD re-run the effect.
+        driver.set('B');
+        await fixture.whenStable();
+        expect(runs).toBe(2);
+      });
+
+      it('should NOT track signals read inside CVA.writeValue when reset is called inside an effect', async () => {
+        const fixture = TestBed.createComponent(HostComponent);
+        fixture.detectChanges(); // wires up FormControlDirective + CVA
+
+        const driver = signal('A');
+        let runs = 0;
+
+        // Create the effect inside the Angular injection context.
+        TestBed.runInInjectionContext(() => {
+          effect(() => {
+            runs++;
+
+            // Only dependency we *want* is `driver()`.
+            fixture.componentInstance.control.reset({one: driver()});
+          });
+        });
+
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the CVA signal should NOT re-run the effect.
+        TestCvaDirective.cvaSignal.set(1);
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the driver signal SHOULD re-run the effect.
+        driver.set('B');
+        await fixture.whenStable();
+        expect(runs).toBe(2);
+      });
     });
   });
 })();
