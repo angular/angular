@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵWritable as Writable} from '@angular/core';
+import {untracked, ɵWritable as Writable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 
@@ -321,12 +321,14 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
       emitEvent?: boolean;
     } = {},
   ): void {
-    assertAllValuesPresent(this, false, value);
-    value.forEach((newValue: any, index: number) => {
-      assertControlPresent(this, false, index);
-      this.at(index).setValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
+    untracked(() => {
+      assertAllValuesPresent(this, false, value);
+      value.forEach((newValue: any, index: number) => {
+        assertControlPresent(this, false, index);
+        this.at(index).setValue(newValue, {onlySelf: true, emitEvent: options.emitEvent});
+      });
+      this.updateValueAndValidity(options);
     });
-    this.updateValueAndValidity(options);
   }
 
   /**
