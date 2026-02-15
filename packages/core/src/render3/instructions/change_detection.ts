@@ -30,6 +30,7 @@ import {
   InitPhaseState,
   LView,
   LViewFlags,
+  QUERIES,
   REACTIVE_TEMPLATE_CONSUMER,
   TVIEW,
   TView,
@@ -350,6 +351,14 @@ export function refreshView<T>(
     if (!isInCheckNoChangesPass) {
       addAfterRenderSequencesForView(lView);
 
+      if (lView[FLAGS] & LViewFlags.FirstLViewPass) {
+        const prevConsumer = setActiveConsumer(null);
+        try {
+          lView[QUERIES]?.notifySignalQueriesOfViewRefresh(tView);
+        } finally {
+          setActiveConsumer(prevConsumer);
+        }
+      }
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
   } catch (e) {

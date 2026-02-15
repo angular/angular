@@ -128,7 +128,7 @@ function refreshSignalQuery<V>(node: QuerySignalNode<V>, firstOnly: boolean): V 
   }
 
   const queryList = loadQueryInternal<V>(lView, queryIndex);
-  const results = getQueryResults<V>(lView, queryIndex);
+  const results = getQueryResults<V>(lView, queryIndex, /* skipFirstPassViews */ true);
 
   queryList.reset(results, unwrapElementRef);
 

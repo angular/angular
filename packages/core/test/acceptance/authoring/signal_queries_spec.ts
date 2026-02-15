@@ -15,11 +15,14 @@ import {
   Directive,
   ElementRef,
   EnvironmentInjector,
+  inject,
+  input,
   QueryList,
   viewChild,
   ViewChildren,
   viewChildren,
 } from '@angular/core';
+import {toObservable} from '@angular/core/rxjs-interop';
 import {SIGNAL} from '../../../primitives/signals';
 import {TestBed} from '../../../testing';
 import {By} from '@angular/platform-browser';
@@ -577,6 +580,219 @@ describe('queries as signals', () => {
 
       expect(cmpRef.instance.elements()).toEqual([]);
       expect(cmpRef.instance.element()).toBeUndefined();
+    });
+
+    it('should not expose query results from embedded views during first update pass', () => {
+      @Directive({selector: '[value]'})
+      class ChildDirective {
+        value = input.required<string>();
+      }
+
+      @Component({
+        imports: [ChildDirective],
+        template: `
+          @if (show) {
+            <div [value]="'value'"></div>
+          }
+        `,
+      })
+      class TestComponent {
+        show = true;
+        child = viewChild(ChildDirective);
+        childValue$ = toObservable(computed(() => this.child()?.value()));
+        value: string | undefined;
+
+        constructor() {
+          this.childValue$.subscribe((value) => (this.value = value));
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      expect(() => fixture.detectChanges()).not.toThrow();
+      expect(fixture.componentInstance.value).toBe('value');
+    });
+  });
+
+  describe('query timing matrix', () => {
+    it('should support the original minimal viewChild + computed template repro from the issue', () => {
+      @Directive({selector: '[value]'})
+      class ChildDirective {
+        value = input.required<string>();
+      }
+
+      @Component({
+        imports: [ChildDirective],
+        template: `
+          @if (true) {
+            <div [value]="'minimal-repro'"></div>
+          }
+          {{ childValue() }}
+        `,
+      })
+      class TestComponent {
+        child = viewChild(ChildDirective);
+        childValue = computed(() => this.child()?.value());
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      expect(() => fixture.detectChanges()).not.toThrow();
+      expect(fixture.nativeElement.textContent).toContain('minimal-repro');
+    });
+
+    it('should not expose viewChildren results before required inputs are set in embedded views', () => {
+      @Directive({selector: '[value]'})
+      class DirectiveWithRequiredInput {
+        value = input.required<string>();
+      }
+
+      @Component({
+        imports: [DirectiveWithRequiredInput],
+        template: `
+          @if (show) {
+            <div [value]="'viewChildren-value'"></div>
+          }
+        `,
+      })
+      class TestComponent {
+        show = true;
+        children = viewChildren(DirectiveWithRequiredInput);
+        value$ = toObservable(computed(() => this.children()[0]?.value()));
+        value: string | undefined;
+
+        constructor() {
+          this.value$.subscribe((value) => (this.value = value));
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      expect(() => fixture.detectChanges()).not.toThrow();
+      expect(fixture.componentInstance.value).toBe('viewChildren-value');
+    });
+
+    it('should not expose contentChild results before required inputs are set in embedded views', () => {
+      @Directive({selector: '[value]'})
+      class DirectiveWithRequiredInput {
+        value = input.required<string>();
+      }
+
+      @Component({
+        selector: 'query-cmp',
+        template: `<ng-content />`,
+      })
+      class QueryComponent {
+        result = contentChild(DirectiveWithRequiredInput);
+        value$ = toObservable(computed(() => this.result()?.value()));
+        value: string | undefined;
+
+        constructor() {
+          this.value$.subscribe((value) => (this.value = value));
+        }
+      }
+
+      @Component({
+        imports: [QueryComponent, DirectiveWithRequiredInput],
+        template: `
+          <query-cmp>
+            @if (show) {
+              <div [value]="'contentChild-direct'"></div>
+            }
+          </query-cmp>
+        `,
+      })
+      class TestComponent {
+        show = true;
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      expect(() => fixture.detectChanges()).not.toThrow();
+      const queryComponent = fixture.debugElement.query(By.directive(QueryComponent))
+        .componentInstance as QueryComponent;
+      expect(queryComponent.value).toBe('contentChild-direct');
+    });
+
+    it('should not expose contentChildren results before required inputs are set in embedded views', () => {
+      @Directive({selector: '[value]'})
+      class DirectiveWithRequiredInput {
+        value = input.required<string>();
+      }
+
+      @Component({
+        selector: 'query-cmp',
+        template: `<ng-content />`,
+      })
+      class QueryComponent {
+        result = contentChildren(DirectiveWithRequiredInput);
+        value$ = toObservable(computed(() => this.result()[0]?.value()));
+        value: string | undefined;
+
+        constructor() {
+          this.value$.subscribe((value) => (this.value = value));
+        }
+      }
+
+      @Component({
+        imports: [QueryComponent, DirectiveWithRequiredInput],
+        template: `
+          <query-cmp>
+            @if (show) {
+              <div [value]="'contentChildren-direct'"></div>
+            }
+          </query-cmp>
+        `,
+      })
+      class TestComponent {
+        show = true;
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      expect(() => fixture.detectChanges()).not.toThrow();
+      const queryComponent = fixture.debugElement.query(By.directive(QueryComponent))
+        .componentInstance as QueryComponent;
+      expect(queryComponent.value).toBe('contentChildren-direct');
+    });
+
+    it('should not expose @for-created contentChildren results before required inputs are set', () => {
+      @Component({
+        selector: 'child-cmp',
+        template: ``,
+      })
+      class ChildComponent {
+        value = input.required<string>();
+      }
+
+      @Component({
+        selector: 'parent-cmp',
+        template: `<ng-content />`,
+      })
+      class ParentComponent {
+        children = contentChildren(ChildComponent);
+        firstValue$ = toObservable(computed(() => this.children()[0]?.value()));
+        firstValue: string | undefined;
+
+        constructor() {
+          this.firstValue$.subscribe((value) => (this.firstValue = value));
+        }
+      }
+
+      @Component({
+        imports: [ParentComponent, ChildComponent],
+        template: `
+          <parent-cmp>
+            @for (value of values; track value) {
+              <child-cmp [value]="value" />
+            }
+          </parent-cmp>
+        `,
+      })
+      class TestComponent {
+        values = ['a', 'b', 'c'];
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      expect(() => fixture.detectChanges()).not.toThrow();
+      const parent = fixture.debugElement.query(By.directive(ParentComponent))
+        .componentInstance as ParentComponent;
+      expect(parent.firstValue).toBe('a');
     });
   });
 

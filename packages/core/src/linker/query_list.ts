@@ -178,6 +178,11 @@ export class QueryList<T> implements Iterable<T> {
     this._onDirty?.();
   }
 
+  /** @internal - Fires onDirty callback (for signal queries) without setting dirty flag. */
+  notifyOnDirty() {
+    this._onDirty?.();
+  }
+
   /** internal */
   destroy(): void {
     if (this._changes !== undefined) {

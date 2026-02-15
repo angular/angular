@@ -28,7 +28,16 @@ import {
   TNodeType,
 } from '../interfaces/node';
 import {LQueries, LQuery, QueryFlags, TQueries, TQuery, TQueryMetadata} from '../interfaces/query';
-import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from '../interfaces/view';
+import {
+  DECLARATION_LCONTAINER,
+  FLAGS,
+  LView,
+  LViewFlags,
+  PARENT,
+  QUERIES,
+  TVIEW,
+  TView,
+} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {getCurrentTNode, getLView, getTView} from '../state';
 import {storeCleanupWithContext} from '../util/view_utils';
@@ -80,6 +89,14 @@ class LQueries_ implements LQueries {
 
   finishViewCreation(tView: TView): void {
     this.dirtyQueriesWithMatches(tView);
+  }
+
+  notifySignalQueriesOfViewRefresh(tView: TView): void {
+    for (let i = 0; i < this.queries.length; i++) {
+      if (getTQuery(tView, i).matches !== null) {
+        this.queries[i].queryList.notifyOnDirty();
+      }
+    }
   }
 
   private dirtyQueriesWithMatches(tView: TView) {
@@ -419,7 +436,13 @@ function materializeViewResults<T>(
  * A helper function that collects (already materialized) query results from a tree of views,
  * starting with a provided LView.
  */
-function collectQueryResults<T>(tView: TView, lView: LView, queryIndex: number, result: T[]): T[] {
+function collectQueryResults<T>(
+  tView: TView,
+  lView: LView,
+  queryIndex: number,
+  result: T[],
+  skipFirstPassViews: boolean,
+): T[] {
   const tQuery = tView.queries!.getByIndex(queryIndex);
   const tQueryMatches = tQuery.matches;
   if (tQueryMatches !== null) {
@@ -438,8 +461,17 @@ function collectQueryResults<T>(tView: TView, lView: LView, queryIndex: number, 
         // collect matches for views inserted in this container
         for (let i = CONTAINER_HEADER_OFFSET; i < declarationLContainer.length; i++) {
           const embeddedLView = declarationLContainer[i];
-          if (embeddedLView[DECLARATION_LCONTAINER] === embeddedLView[PARENT]) {
-            collectQueryResults(embeddedLView[TVIEW], embeddedLView, childQueryIndex, result);
+          if (
+            embeddedLView[DECLARATION_LCONTAINER] === embeddedLView[PARENT] &&
+            !(skipFirstPassViews && embeddedLView[FLAGS] & LViewFlags.FirstLViewPass)
+          ) {
+            collectQueryResults(
+              embeddedLView[TVIEW],
+              embeddedLView,
+              childQueryIndex,
+              result,
+              skipFirstPassViews,
+            );
           }
         }
 
@@ -449,7 +481,15 @@ function collectQueryResults<T>(tView: TView, lView: LView, queryIndex: number, 
           const embeddedLViews = declarationLContainer[MOVED_VIEWS]!;
           for (let i = 0; i < embeddedLViews.length; i++) {
             const embeddedLView = embeddedLViews[i];
-            collectQueryResults(embeddedLView[TVIEW], embeddedLView, childQueryIndex, result);
+            if (!(skipFirstPassViews && embeddedLView[FLAGS] & LViewFlags.FirstLViewPass)) {
+              collectQueryResults(
+                embeddedLView[TVIEW],
+                embeddedLView,
+                childQueryIndex,
+                result,
+                skipFirstPassViews,
+              );
+            }
           }
         }
       }
@@ -548,10 +588,14 @@ export function getTQuery(tView: TView, index: number): TQuery {
  * @param lView
  * @param queryIndex
  */
-export function getQueryResults<V>(lView: LView, queryIndex: number): V[] {
+export function getQueryResults<V>(
+  lView: LView,
+  queryIndex: number,
+  skipFirstPassViews = false,
+): V[] {
   const tView = lView[TVIEW];
   const tQuery = getTQuery(tView, queryIndex);
   return tQuery.crossesNgTemplate
-    ? collectQueryResults<V>(tView, lView, queryIndex, [])
+    ? collectQueryResults<V>(tView, lView, queryIndex, [], skipFirstPassViews)
     : materializeViewResults<V>(tView, lView, tQuery, queryIndex);
 }

@@ -250,4 +250,12 @@ export interface LQueries {
    * @param tView
    */
   finishViewCreation(tView: TView): void;
+
+  /**
+   * Notifies signal-based queries that results may have changed after embedded views
+   * have been refreshed. Unlike `finishViewCreation`, this does NOT set the QueryList
+   * dirty flag, so decorator-based queries won't be re-resolved.
+   * @param tView
+   */
+  notifySignalQueriesOfViewRefresh(tView: TView): void;
 }

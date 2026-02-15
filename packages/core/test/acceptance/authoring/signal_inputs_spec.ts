@@ -100,6 +100,40 @@ describe('signal inputs', () => {
     expect(fixture.nativeElement.textContent).toBe('changed:computed-2');
   });
 
+  it('should support the issue repro where a template reference reads a computed based on a required input', () => {
+    @Component({
+      selector: 'my-component',
+      template: ``,
+    })
+    class MyComponent {
+      readonly name = input.required<string>();
+      readonly formattedName = computed(() => `${this.name()} are sometimes crazy!`);
+    }
+
+    @Component({
+      selector: 'ui-label',
+      template: `{{ text() }}`,
+    })
+    class UiLabelComponent {
+      readonly text = input.required<string>();
+    }
+
+    @Component({
+      imports: [MyComponent, UiLabelComponent],
+      template: `
+        <div>
+          <my-component #myComponent [name]="'Angular Signals'"></my-component>
+          <ui-label [text]="myComponent.formattedName()"></ui-label>
+        </div>
+      `,
+    })
+    class TestCmp {}
+
+    const fixture = TestBed.createComponent(TestCmp);
+    expect(() => fixture.detectChanges()).not.toThrow();
+    expect(fixture.nativeElement.textContent).toContain('Angular Signals are sometimes crazy!');
+  });
+
   it('should be possible to use an input in an effect', () => {
     let effectLog: unknown[] = [];
 
