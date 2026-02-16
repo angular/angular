@@ -155,7 +155,7 @@ export class FormField<T> {
 
   /** Lazily instantiates a fake `NgControl` for this form field. */
   protected get interopNgControl(): InteropNgControl {
-    return (this._interopNgControl ??= new InteropNgControl(this.state));
+    return (this._interopNgControl ??= new InteropNgControl(this.state, this.injector));
   }
 
   /** @internal */
