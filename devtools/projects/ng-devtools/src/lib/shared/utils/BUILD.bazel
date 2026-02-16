@@ -5,8 +5,12 @@ package(default_visibility = ["//devtools:__subpackages__"])
 ts_project(
     name = "utils",
     srcs = [
+        "control-flow.ts",
         "debouncer.ts",
         "formatting.ts",
+    ],
+    deps = [
+        "//devtools/projects/protocol",
     ],
 )
 

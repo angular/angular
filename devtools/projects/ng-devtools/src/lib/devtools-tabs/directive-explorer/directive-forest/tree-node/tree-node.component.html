@@ -32,27 +32,29 @@
     <span class="trait">OnPush</span>
   }
 
-  @let defer = node().defer;
+  @let block = node().controlFlowBlock;
 
-  @if (!defer && (!hydration || hydration.status !== 'dehydrated')) {
+  @if (BlockType.isDeferBlock(block)) {
+    @let defer = block;
+
+    @if (defer) {
+      @if (defer.renderedBlock && defer.renderedBlock !== 'defer') {
+        <span class="trait">(@{{ defer.renderedBlock }})</span>
+      } @else if (!defer.renderedBlock) {
+        <span class="trait">(non-rendered)</span>
+      }
+    }
+  } @else if (BlockType.isForLoopBlock(block)) {
+    @let forLoop = block;
+
+    @if (forLoop) {
+      <span class="trait">
+        ({{ forLoop.items.length }} {{ forLoop.items.length === 1 ? 'item' : 'items' }})
+      </span>
+    }
+  } @else if (!hydration || hydration.status !== 'dehydrated') {
     <!-- Shown/hidden via CSS -->
     <span class="console-reference trait"> == $ng0 </span>
-  }
-
-  @if (defer) {
-    @if (defer.renderedBlock && defer.renderedBlock !== 'defer') {
-      <span class="trait">(@{{ defer.renderedBlock }})</span>
-    } @else if (!defer.renderedBlock) {
-      <span class="trait">(non-rendered)</span>
-    }
-  }
-
-  @let forLoop = node().forLoop;
-
-  @if (forLoop) {
-    <span class="trait">
-      ({{ forLoop.itemCount }} {{ forLoop.itemCount === 1 ? 'item' : 'items' }})
-    </span>
   }
 
   @switch (hydration?.status) {

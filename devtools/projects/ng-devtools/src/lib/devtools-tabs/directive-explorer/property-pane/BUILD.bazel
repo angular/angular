@@ -20,11 +20,12 @@ ng_project(
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/defer-view",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/for-view",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/for-loop-view",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/property-pane-header",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/property-view",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
         "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
+        "//devtools/projects/ng-devtools/src/lib/shared/utils",
         "//devtools/projects/protocol",
     ],
 )

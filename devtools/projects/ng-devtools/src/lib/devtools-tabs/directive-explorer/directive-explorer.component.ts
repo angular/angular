@@ -202,16 +202,6 @@ export class DirectiveExplorerComponent {
     this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest.set(view.forest);
 
-      // Update _clickedElement with fresh data from the new forest
-      // This ensures forLoop, defer, and other dynamic properties are updated
-      if (this._clickedElement) {
-        const indexedForest = indexForest(view.forest);
-        const updatedNode = findNodeByPosition(indexedForest, this._clickedElement.position);
-        if (updatedNode) {
-          this._clickedElement = updatedNode;
-        }
-      }
-
       this.currentSelectedElement.set(this._clickedElement);
       if (view.properties && this._clickedElement) {
         this._propResolver.setProperties(this._clickedElement, view.properties);

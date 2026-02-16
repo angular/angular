@@ -96,8 +96,8 @@ export class IdentityTracker {
       this.isComponent.set(dir.instance, false);
       this._indexNode(dir.instance, node.position, newNodes);
     });
-    if (node.defer) {
-      this._indexNode(node.defer, node.position, newNodes);
+    if (node.controlFlowBlock) {
+      this._indexNode(node.controlFlowBlock, node.position, newNodes);
     }
     node.children.forEach((child) => this._index(child, parent, newNodes, allNodes));
   }
@@ -135,8 +135,7 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
     children: node.children.map((n, i) => indexTree(n, i, position)),
     nativeElement: node.nativeElement,
     hydration: node.hydration,
-    defer: node.defer,
-    forLoop: node.forLoop,
+    controlFlowBlock: node.controlFlowBlock,
   } as IndexedNode;
 };
 

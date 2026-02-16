@@ -3,20 +3,20 @@ load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
-    name = "for_view.component.scss_styles",
-    src = "for-view.component.scss",
-    deps = ["//devtools/projects/ng-devtools/src/styles:typography"],
+    name = "for_loop_view_component_styles",
+    src = "for-loop-view.component.scss",
 )
 
 ng_project(
-    name = "for-view",
+    name = "for-loop-view",
     srcs = [
-        "for-data-serializer.ts",
-        "for-view.component.ts",
+        "for-loop-data-serializer.ts",
+        "for-loop-view.component.ts",
     ],
     angular_assets = [
-        "for-view.component.html",
-        "for_view.component.scss_styles",
+        "for-loop-view.component.html",
+        ":for_loop_view_component_styles",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/styles:view_tab_styles",
     ],
     deps = [
         "//:node_modules/@angular/core",
