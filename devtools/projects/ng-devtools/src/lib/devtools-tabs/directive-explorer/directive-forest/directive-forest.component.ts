@@ -305,17 +305,11 @@ export class DirectiveForestComponent {
   }
 
   private reselectNodeOnUpdate(): void {
-    const selectedElement = this.currentSelectedElement();
-    // Use position-based lookup since the IndexedNode object reference changes
-    // when the forest is re-indexed
-    const nodeThatStillExists = selectedElement
-      ? this.dataSource.getFlatNodeByPosition(selectedElement.position)
-      : undefined;
+    const nodeThatStillExists = this.dataSource.getFlatNodeFromIndexedNode(
+      this.currentSelectedElement(),
+    );
     if (nodeThatStillExists) {
-      // Just update the visual selection without emitting selectNode event
-      // to avoid triggering handleNodeSelection which calls refresh()
-      this.populateParents(nodeThatStillExists.position);
-      this.selectedNode.set(nodeThatStillExists);
+      this.select(nodeThatStillExists);
     } else if (this.forestRoot) {
       this.select(this.forestRoot);
     } else {
