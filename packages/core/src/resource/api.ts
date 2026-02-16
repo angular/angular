@@ -23,6 +23,38 @@ export type ResourceParamsStatus =
   | {[PARAMS_STATUS]: 'error'; error: Error};
 
 /**
+ * Options for the `chain` function.
+ */
+export interface ChainOptions {
+  /**
+   * Whether to allow stale values from reloading resources.
+   *
+   * If `true`, a resource in the `reloading` state will be considered to have a value.
+   * If `false` (default), a resource in the `reloading` state will be considered loading.
+   */
+  allowStale?: boolean;
+}
+
+/**
+ * Extracts the value type from a `Resource`.
+ */
+export type ResourceValue<T> = T extends Resource<infer V> ? V : never;
+
+/**
+ * Extracts the value types from an array of `Resource`s.
+ */
+export type ResourceValues<T extends Resource<any>[]> = {
+  [K in keyof T]: ResourceValue<T[K]>;
+};
+
+/**
+ * Result of the `chain` function.
+ */
+export type ChainResult<T extends Resource<any>[]> =
+  | {values: () => ResourceValues<T>; exitStatus?: never}
+  | {values?: never; exitStatus: ResourceParamsStatus};
+
+/**
  * String value capturing the status of a `Resource`.
  *
  * Possible statuses are:
