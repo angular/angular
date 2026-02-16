@@ -258,7 +258,6 @@ class RepeaterMetadata {
     public hasEmptyBlock: boolean,
     public trackByFn: TrackByFunction<unknown>,
     public liveCollection?: LiveCollectionLContainerImpl,
-    public originalTrackByFn?: TrackByFunction<unknown>,
   ) {}
 }
 
@@ -320,8 +319,7 @@ export function ɵɵrepeaterCreate(
       // new function. For pure functions it's not necessary.
       trackByFn.bind(hostLView[DECLARATION_COMPONENT_VIEW][CONTEXT])
     : trackByFn;
-  const originalTrackBy = trackByUsesComponentInstance ? trackByFn : undefined;
-  const metadata = new RepeaterMetadata(hasEmptyBlock, boundTrackBy, undefined, originalTrackBy);
+  const metadata = new RepeaterMetadata(hasEmptyBlock, boundTrackBy);
   hostLView[HEADER_OFFSET + index] = metadata;
 
   declareNoDirectiveHostTemplate(
