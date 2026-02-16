@@ -8,9 +8,53 @@
 import {Component} from '../../src/core';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '../../testing';
 
-import {getDeferBlocks} from '../../src/render3/util/defer';
+import {getControlFlowBlocks} from '../../src/render3/util/control_flow';
+import {
+  ControlFlowBlockType,
+  DeferBlockData,
+  ForLoopBlockData,
+} from '../../src/render3/util/control_flow_types';
 
-describe('@defer debugging utilities', () => {
+describe('getControlFlowBlocks', () => {
+  TestBed.configureTestingModule({
+    deferBlockBehavior: DeferBlockBehavior.Manual,
+  });
+
+  it('should get all control flow blocks', () => {
+    @Component({
+      template: `
+        <section>
+          @defer (when false) {
+            Loaded
+          }
+          @for (item of list; track $index) {
+            <p>{{ item }}</p>
+          }
+        </section>
+      `,
+    })
+    class App {
+      list = [1, 2, 3];
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const results = getControlFlowBlocks(fixture.nativeElement);
+    expect(results.length).toBe(2);
+    expect(results.map((block) => block.type)).toEqual([
+      ControlFlowBlockType.Defer,
+      ControlFlowBlockType.For,
+    ]);
+  });
+});
+
+describe('getControlFlowBlocks > @defer blocks', () => {
+  // Use to narrow down type to `DeferBlockData` for `@defer`-specific tests.
+  function getDeferBlocks(node: Node): DeferBlockData[] {
+    return getControlFlowBlocks(node) as DeferBlockData[];
+  }
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       deferBlockBehavior: DeferBlockBehavior.Manual,
@@ -36,6 +80,8 @@ describe('@defer debugging utilities', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const [block] = await fixture.getDeferBlocks();
+
+    expect(getDeferBlocks(fixture.nativeElement)[0].type).toBe(ControlFlowBlockType.Defer);
 
     await block.render(DeferBlockState.Placeholder);
     expect(getDeferBlocks(fixture.nativeElement)[0].state).toBe('placeholder');
@@ -77,6 +123,7 @@ describe('@defer debugging utilities', () => {
     fixture.detectChanges();
     const blocks = getDeferBlocks(fixture.nativeElement);
     expect(blocks.length).toBe(3);
+    expect(blocks[0].type).toEqual(ControlFlowBlockType.Defer);
     expect(blocks[0]).toEqual(
       jasmine.objectContaining({
         loadingBlock: {exists: false, minimumTime: null, afterTime: null},
@@ -84,6 +131,7 @@ describe('@defer debugging utilities', () => {
         hasErrorBlock: false,
       }),
     );
+    expect(blocks[1].type).toEqual(ControlFlowBlockType.Defer);
     expect(blocks[1]).toEqual(
       jasmine.objectContaining({
         loadingBlock: {exists: true, minimumTime: 2000, afterTime: 1000},
@@ -91,6 +139,7 @@ describe('@defer debugging utilities', () => {
         hasErrorBlock: false,
       }),
     );
+    expect(blocks[2].type).toEqual(ControlFlowBlockType.Defer);
     expect(blocks[2]).toEqual(
       jasmine.objectContaining({
         loadingBlock: {exists: true, minimumTime: null, afterTime: null},
@@ -118,6 +167,7 @@ describe('@defer debugging utilities', () => {
     fixture.detectChanges();
     const blocks = getDeferBlocks(fixture.nativeElement);
     expect(blocks.length).toBe(1);
+    expect(blocks[0].type).toBe(ControlFlowBlockType.Defer);
     expect(blocks[0].triggers).toEqual(['on interaction', 'on timer(500ms)', 'when <expression>']);
   });
 
@@ -159,10 +209,12 @@ describe('@defer debugging utilities', () => {
     const button = fixture.nativeElement.querySelector('button');
 
     expect(getDeferBlocks(section)).toEqual([
-      jasmine.objectContaining({state: 'placeholder'}),
-      jasmine.objectContaining({state: 'complete'}),
+      jasmine.objectContaining({type: ControlFlowBlockType.Defer, state: 'placeholder'}),
+      jasmine.objectContaining({type: ControlFlowBlockType.Defer, state: 'complete'}),
     ]);
-    expect(getDeferBlocks(header)).toEqual([jasmine.objectContaining({state: 'placeholder'})]);
+    expect(getDeferBlocks(header)).toEqual([
+      jasmine.objectContaining({type: ControlFlowBlockType.Defer, state: 'placeholder'}),
+    ]);
     expect(getDeferBlocks(button)).toEqual([]);
   });
 
@@ -194,7 +246,7 @@ describe('@defer debugging utilities', () => {
     fixture.detectChanges();
 
     expect(getDeferBlocks(fixture.nativeElement)).toEqual([
-      jasmine.objectContaining({state: 'placeholder'}),
+      jasmine.objectContaining({type: ControlFlowBlockType.Defer, state: 'placeholder'}),
     ]);
   });
 
@@ -223,15 +275,15 @@ describe('@defer debugging utilities', () => {
     const [root] = await fixture.getDeferBlocks();
 
     expect(getDeferBlocks(fixture.nativeElement)).toEqual([
-      jasmine.objectContaining({state: 'placeholder'}),
+      jasmine.objectContaining({type: ControlFlowBlockType.Defer, state: 'placeholder'}),
     ]);
 
     await root.render(DeferBlockState.Complete);
     fixture.detectChanges();
 
     expect(getDeferBlocks(fixture.nativeElement)).toEqual([
-      jasmine.objectContaining({state: 'complete'}),
-      jasmine.objectContaining({state: 'placeholder'}),
+      jasmine.objectContaining({type: ControlFlowBlockType.Defer, state: 'complete'}),
+      jasmine.objectContaining({type: ControlFlowBlockType.Defer, state: 'placeholder'}),
     ]);
   });
 
@@ -257,6 +309,7 @@ describe('@defer debugging utilities', () => {
     let results = getDeferBlocks(fixture.nativeElement);
     expect(results.length).toBe(1);
     expect(results[0].state).toBe('placeholder');
+    expect(results[0].type).toBe(ControlFlowBlockType.Defer);
     expect(stringifyNodes(results[0].rootNodes)).toEqual(['Text(Placeholder text)']);
 
     const [block] = await fixture.getDeferBlocks();
@@ -265,6 +318,7 @@ describe('@defer debugging utilities', () => {
     results = getDeferBlocks(fixture.nativeElement);
     expect(results.length).toBe(1);
     expect(results[0].state).toBe('complete');
+    expect(results[0].type).toBe(ControlFlowBlockType.Defer);
     expect(stringifyNodes(results[0].rootNodes)).toEqual([
       'Element(button, One)',
       'Text(Loaded)',
@@ -295,6 +349,7 @@ describe('@defer debugging utilities', () => {
     let results = getDeferBlocks(fixture.nativeElement);
     expect(results.length).toBe(1);
     expect(results[0].state).toBe('placeholder');
+    expect(results[0].type).toBe(ControlFlowBlockType.Defer);
     expect(stringifyNodes(results[0].rootNodes)).toEqual(['Text(One is 1)', 'Text(Two is 2)']);
 
     const [block] = await fixture.getDeferBlocks();
@@ -317,6 +372,7 @@ describe('@defer debugging utilities', () => {
     const results = getDeferBlocks(fixture.nativeElement);
 
     expect(results.length).toBe(1);
+    expect(results[0].type).toBe(ControlFlowBlockType.Defer);
     expect(results[0].hostNode).toBeTruthy();
     expect(stringifyNodes([results[0].hostNode])).toEqual(['Comment(container)']);
   });
@@ -335,4 +391,201 @@ describe('@defer debugging utilities', () => {
       }
     });
   }
+});
+
+describe('getControlFlowBlocks > @for blocks', () => {
+  // Use to narrow down type to `ForLoopBlockData` for `@for`-specific tests.
+  function getForLoopBlocks(node: Node): ForLoopBlockData[] {
+    return getControlFlowBlocks(node) as ForLoopBlockData[];
+  }
+
+  it('should get a @for block', async () => {
+    @Component({
+      template: `
+        <section>
+          @for (item of list; track $index) {
+            <p>{{ item }}</p>
+          }
+        </section>
+      `,
+    })
+    class App {
+      list = [1, 2, 3];
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const results = getForLoopBlocks(fixture.nativeElement);
+
+    expect(results.length).toEqual(1);
+    const forLoop = results[0];
+    expect(forLoop).toEqual(
+      jasmine.objectContaining({
+        type: ControlFlowBlockType.For,
+        trackExpression: '$index',
+        hasEmptyBlock: false,
+      } satisfies Partial<ForLoopBlockData>),
+    );
+    expect(forLoop.items.length).toBe(3);
+    expect(forLoop.hostNode).toBeTruthy();
+  });
+
+  it('should get a @for block with an item track expression', async () => {
+    @Component({
+      template: `
+        <section>
+          @for (item of list; track item) {
+            <p>{{ item }}</p>
+          }
+        </section>
+      `,
+    })
+    class App {
+      list = [1, 2, 3];
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const results = getForLoopBlocks(fixture.nativeElement);
+
+    expect(results.length).toBe(1);
+    const forLoop = results[0];
+
+    expect(forLoop.type).toBe(ControlFlowBlockType.For);
+    expect(forLoop.trackExpression).toBe('item');
+  });
+
+  it('should get a @for block with a track by function', () => {
+    @Component({
+      template: `
+        <section>
+          @for (item of list; track trackFn()) {
+            <p>{{ item }}</p>
+          }
+        </section>
+      `,
+    })
+    class App {
+      list = [1, 2, 3];
+      trackFn = () => Math.random();
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const results = getForLoopBlocks(fixture.nativeElement);
+
+    expect(results.length).toBe(1);
+    const forLoop = results[0];
+
+    expect(forLoop.type).toBe(ControlFlowBlockType.For);
+    expect(forLoop.trackExpression).toBe('function');
+  });
+
+  it('should get a @for block an @empty block', () => {
+    @Component({
+      template: `
+        <section>
+          @for (item of list; track $index) {
+            <p>{{ item }}</p>
+          } @empty {
+            <p>No items</p>
+          }
+        </section>
+      `,
+    })
+    class App {
+      list = [1, 2, 3];
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const results = getForLoopBlocks(fixture.nativeElement);
+
+    expect(results.length).toBe(1);
+    const forLoop = results[0];
+
+    expect(forLoop.type).toBe(ControlFlowBlockType.For);
+    expect(forLoop.hasEmptyBlock).toBe(true);
+  });
+
+  it('should get all @for blocks', () => {
+    @Component({
+      template: `
+        <section>
+          @for (item of listOne; track $index) {
+            <p>{{ item }}</p>
+          }
+          <div>
+            @for (item of listTwo; track $index) {
+              <p>{{ item }}</p>
+            }
+            <div>
+              @for (item of listThree; track $index) {
+                <p>{{ item }}</p>
+              }
+            </div>
+          </div>
+        </section>
+      `,
+    })
+    class App {
+      listOne = [1, 2, 3];
+      listTwo = [1, 2];
+      listThree = [1];
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const results = getForLoopBlocks(fixture.nativeElement);
+
+    expect(results.length).toBe(3);
+    expect(results.map((b) => [b.type, b.items.length])).toEqual([
+      [ControlFlowBlockType.For, 3],
+      [ControlFlowBlockType.For, 2],
+      [ControlFlowBlockType.For, 1],
+    ]);
+  });
+
+  it('should get all @for blocks, including nested ones', () => {
+    @Component({
+      template: `
+        <section>
+          @for (item of listOne; track $index) {
+            <p>{{ item }}</p>
+            @for (item of listTwo; track $index) {
+              <p>{{ item }}</p>
+            }
+          }
+          <div>
+            @for (item of listThree; track $index) {
+              <p>{{ item }}</p>
+            }
+          </div>
+        </section>
+      `,
+    })
+    class App {
+      listOne = [1, 2];
+      listTwo = [1, 2, 3];
+      listThree = [1];
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const results = getForLoopBlocks(fixture.nativeElement);
+
+    expect(results.length).toBe(4);
+    expect(results.map((b) => [b.type, b.items.length])).toEqual([
+      [ControlFlowBlockType.For, 2],
+      [ControlFlowBlockType.For, 3],
+      [ControlFlowBlockType.For, 3],
+      [ControlFlowBlockType.For, 1],
+    ]);
+  });
 });
