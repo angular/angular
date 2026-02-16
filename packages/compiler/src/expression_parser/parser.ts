@@ -372,6 +372,9 @@ export class Parser {
     const inputToTemplateIndexMap = interpolatedTokens
       ? getIndexMapForOriginalTemplate(interpolatedTokens)
       : null;
+    const entityPositions = interpolatedTokens
+      ? getEntityCharPositions(interpolatedTokens)
+      : new Set<number>();
     let i = 0;
     let atInterpolation = false;
     let extendLastString = false;
@@ -382,6 +385,10 @@ export class Parser {
         // parse until starting {{
         const start = i;
         i = input.indexOf(interpStart, i);
+        // Skip interpolation delimiters that came from HTML entities
+        while (i !== -1 && isDelimiterFromEntities(interpStart, i, entityPositions)) {
+          i = input.indexOf(interpStart, i + 1);
+        }
         if (i === -1) {
           i = input.length;
         }
@@ -393,7 +400,12 @@ export class Parser {
         // parse from starting {{ to ending }} while ignoring content inside quotes.
         const fullStart = i;
         const exprStart = fullStart + interpStart.length;
-        const exprEnd = this._getInterpolationEndIndex(input, interpEnd, exprStart);
+        const exprEnd = this._getInterpolationEndIndex(
+          input,
+          interpEnd,
+          exprStart,
+          entityPositions,
+        );
         if (exprEnd === -1) {
           // Could not find the end of the interpolation; do not parse an expression.
           // Instead we should extend the content on the last raw string.
@@ -514,16 +526,32 @@ export class Parser {
    * Finds the index of the end of an interpolation expression
    * while ignoring comments and quoted content.
    */
-  private _getInterpolationEndIndex(input: string, expressionEnd: string, start: number): number {
+  private _getInterpolationEndIndex(
+    input: string,
+    expressionEnd: string,
+    start: number,
+    entityPositions = new Set<number>(),
+  ): number {
     for (const charIndex of this._forEachUnquotedChar(input, start)) {
       if (input.startsWith(expressionEnd, charIndex)) {
-        return charIndex;
+        // Skip if this delimiter came from HTML entities
+        if (!isDelimiterFromEntities(expressionEnd, charIndex, entityPositions)) {
+          return charIndex;
+        }
       }
 
       // Nothing else in the expression matters after we've
       // hit a comment so look directly for the end token.
       if (input.startsWith('//', charIndex)) {
-        return input.indexOf(expressionEnd, charIndex);
+        let endIndex = input.indexOf(expressionEnd, charIndex);
+        // Skip entity-derived delimiters in comments too
+        while (
+          endIndex !== -1 &&
+          isDelimiterFromEntities(expressionEnd, endIndex, entityPositions)
+        ) {
+          endIndex = input.indexOf(expressionEnd, endIndex + 1);
+        }
+        return endIndex;
       }
     }
 
@@ -1950,4 +1978,58 @@ function getIndexMapForOriginalTemplate(
     tokenIndex++;
   }
   return offsetMap;
+}
+
+/**
+ * Builds a set of positions in the decoded input that came from HTML entity tokens.
+ * This is used to prevent treating entity-encoded characters (e.g., &lbrace;&lbrace;)
+ * as actual interpolation delimiters (e.g., {{).
+ *
+ * @param interpolatedTokens The tokens for the interpolated value.
+ * @returns A set of character positions that came from ENCODED_ENTITY tokens.
+ */
+function getEntityCharPositions(
+  interpolatedTokens: InterpolatedAttributeToken[] | InterpolatedTextToken[],
+): Set<number> {
+  const entityPositions = new Set<number>();
+  let consumedInInput = 0;
+
+  for (const token of interpolatedTokens) {
+    if (token.type === MlParserTokenType.ENCODED_ENTITY) {
+      const [decoded] = token.parts;
+      // Mark all positions in the decoded string that came from this entity
+      for (let i = 0; i < decoded.length; i++) {
+        entityPositions.add(consumedInInput + i);
+      }
+      consumedInInput += decoded.length;
+    } else {
+      const lengthOfParts = token.parts.reduce((sum, current) => sum + current.length, 0);
+      consumedInInput += lengthOfParts;
+    }
+  }
+
+  return entityPositions;
+}
+
+/**
+ * Checks if a string delimiter (like `{{` or `}}`) at the given position in the decoded input
+ * was formed from HTML entity tokens. If so, it should not be treated as an interpolation delimiter.
+ *
+ * @param delimiter The delimiter to check (e.g., '{{' or '}}')
+ * @param position The position in the decoded input where the delimiter was found
+ * @param entityPositions Set of positions that came from entity tokens
+ * @returns true if all characters of the delimiter came from entity tokens
+ */
+function isDelimiterFromEntities(
+  delimiter: string,
+  position: number,
+  entityPositions: Set<number>,
+): boolean {
+  // Check if all characters in the delimiter came from entity tokens
+  for (let i = 0; i < delimiter.length; i++) {
+    if (entityPositions.has(position + i)) {
+      return true;
+    }
+  }
+  return false;
 }
