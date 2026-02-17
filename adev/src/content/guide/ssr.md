@@ -387,12 +387,15 @@ export class MyComponent {
 }
 ```
 
+<!-- UL is used below as otherwise the list will not be include as part of the note. -->
 <!-- prettier-ignore-start -->
-IMPORTANT: The above tokens will be `null` in the following scenarios:
-- During the build processes.
-- When the application is rendered in the browser (CSR).
-- When performing static site generation (SSG).
-- During route extraction in development (at the time of the request).
+
+IMPORTANT: The above tokens will be `null` in the following scenarios:<ul class="docs-list">
+  <li>During the build processes.</li>
+  <li>When the application is rendered in the browser (CSR).</li>
+  <li>When performing static site generation (SSG).</li>
+  <li>During route extraction in development (at the time of the request).</li>
+</ul>
 
 <!-- prettier-ignore-end -->
 
