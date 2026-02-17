@@ -9,18 +9,18 @@
 import {Injector} from '../di/injector';
 import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
 import {WritableSignal} from '../render3/reactivity/signal';
-import type {PARAMS_STATUS} from './params_status';
 
 /**
  * A return value from a resource's `params` function which indicates that the resource should
  * transition to a specific state.
- *
- * @experimental
  */
-export type ResourceParamsStatus =
-  | {[PARAMS_STATUS]: 'idle'}
-  | {[PARAMS_STATUS]: 'loading'}
-  | {[PARAMS_STATUS]: 'error'; error: Error};
+export class ResourceParamsStatus {
+  private readonly _brand: undefined;
+  private constructor() {}
+
+  static readonly IDLE = new ResourceParamsStatus();
+  static readonly LOADING = new ResourceParamsStatus();
+}
 
 /**
  * Options for the `chain` function.
@@ -36,23 +36,11 @@ export interface ChainOptions {
 }
 
 /**
- * Extracts the value type from a `Resource`.
- */
-export type ResourceValue<T> = T extends Resource<infer V> ? V : never;
-
-/**
- * Extracts the value types from an array of `Resource`s.
- */
-export type ResourceValues<T extends Resource<any>[]> = {
-  [K in keyof T]: ResourceValue<T[K]>;
-};
-
-/**
  * Result of the `chain` function.
  */
-export type ChainResult<T extends Resource<any>[]> =
-  | {values: () => ResourceValues<T>; exitStatus?: never}
-  | {values?: never; exitStatus: ResourceParamsStatus};
+export type ChainResult<T extends Resource<any>[]> = () => {
+  [K in keyof T]: ReturnType<T[K]['value']>;
+};
 
 /**
  * String value capturing the status of a `Resource`.
@@ -219,7 +207,7 @@ export interface BaseResourceOptions<T, R> {
    *
    * If a params function isn't provided, the loader won't rerun unless the resource is reloaded.
    */
-  params?: () => R | ResourceParamsStatus;
+  params?: () => R;
 
   /**
    * The value which will be returned from the resource when a server value is unavailable, such as

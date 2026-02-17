@@ -8,5 +8,5 @@
 
 export * from './api';
 export {resourceFromSnapshots} from './from_snapshots';
-export {ResourceParams} from './params_status';
 export {resource} from './resource';
+

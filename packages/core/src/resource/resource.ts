@@ -15,6 +15,7 @@ import {
   Resource,
   ResourceLoaderParams,
   ResourceOptions,
+  ResourceParamsStatus,
   ResourceRef,
   ResourceSnapshot,
   ResourceStatus,
@@ -22,7 +23,6 @@ import {
   ResourceStreamItem,
   StreamingResourceOptions,
   WritableResource,
-  type ResourceParamsStatus,
 } from './api';
 
 import { assertInInjectionContext } from '../di/contextual';
@@ -30,8 +30,7 @@ import { Injector } from '../di/injector';
 import { inject } from '../di/injector_compatibility';
 import { DestroyRef } from '../linker/destroy_ref';
 import { PendingTasks } from '../pending_tasks';
-import { linkedSignal } from '../render3/reactivity/linked_signal';
-import { PARAMS_STATUS } from './params_status';
+import {linkedSignal} from '../render3/reactivity/linked_signal';
 
 /**
  * Constructs a `Resource` that projects a reactive request to an asynchronous operation defined by
@@ -98,11 +97,12 @@ interface ResourceState<T> extends ResourceProtoState<T> {
   stream: Signal<ResourceStreamItem<T>> | undefined;
 }
 
-function isResourceParamsStatus(value: unknown): value is ResourceParamsStatus {
-  return typeof value === 'object' && value !== null && PARAMS_STATUS in value;
-}
-
-type WrappedRequest = {request: unknown; reload: number};
+type WrappedRequest = {
+  request?: unknown;
+  reload: number;
+  status?: ResourceInternalStatus;
+  error?: Error;
+};
 
 /**
  * Base class which implements `.value` as a `WritableSignal` by delegating `.set` and `.update`.
@@ -195,7 +195,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   override readonly error: Signal<Error | undefined>;
 
   constructor(
-    request: () => R | ResourceParamsStatus,
+    request: () => R,
     private readonly loaderFn: ResourceStreamingLoader<T, R>,
     defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
@@ -229,12 +229,21 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       debugName,
     );
 
-    // Extend `request()` to include a writable reload signal.
-    this.extRequest = linkedSignal({
-      source: request,
-      computation: (request) => ({request, reload: 0}),
-      ...(ngDevMode ? createDebugNameObject(debugName, 'extRequest') : undefined),
-    });
+    this.extRequest = linkedSignal<WrappedRequest>(
+      () => {
+        try {
+          return {request: request(), reload: 0};
+        } catch (error) {
+          if (error === ResourceParamsStatus.IDLE) {
+            return {status: 'idle', reload: 0};
+          } else if (error === ResourceParamsStatus.LOADING) {
+            return {status: 'loading', reload: 0};
+          }
+          return {error: error as Error, reload: 0};
+        }
+      },
+      ngDevMode ? createDebugNameObject(debugName, 'extRequest') : undefined,
+    );
 
     // The main resource state is managed in a `linkedSignal`, which allows the resource to change
     // state instantaneously when the request signal changes.
@@ -243,44 +252,28 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       source: this.extRequest,
       // Compute the state of the resource given a change in status.
       computation: (extRequest, previous) => {
-        const req = extRequest.request;
-        let status: ResourceInternalStatus;
+        let {request, status, error} = extRequest;
         let stream: Signal<ResourceStreamItem<T>> | undefined;
 
-        if (isResourceParamsStatus(req)) {
-          if (req[PARAMS_STATUS] === 'idle') {
-            status = 'idle';
-          } else if (req[PARAMS_STATUS] === 'error') {
-            status = 'resolved';
-            stream = signal(
-              {error: encapsulateResourceError(req.error)},
-              ngDevMode ? createDebugNameObject(this.debugName, 'stream') : undefined,
-            );
-          } else {
-            status = 'loading';
-          }
-        } else {
-          status = req === undefined ? 'idle' : 'loading';
-          if (previous && previous.value.extRequest.request === req) {
+        if (error) {
+          status = 'resolved';
+          stream = signal(
+            {error: encapsulateResourceError(error)},
+            ngDevMode ? createDebugNameObject(this.debugName, 'stream') : undefined,
+          );
+        } else if (!status) {
+          status = request === undefined ? 'idle' : 'loading';
+          if (previous && previous.value.extRequest.request === request) {
             stream = previous.value.stream;
           }
         }
 
-        if (!previous) {
-          return {
-            extRequest,
-            status,
-            previousStatus: 'idle',
-            stream,
-          };
-        } else {
-          return {
-            extRequest,
-            status,
-            previousStatus: projectStatusOfState(previous.value),
-            stream,
-          };
-        }
+        return {
+          extRequest,
+          status,
+          previousStatus: previous ? projectStatusOfState(previous.value) : 'idle',
+          stream,
+        };
       },
       ...(ngDevMode ? createDebugNameObject(debugName, 'state') : undefined),
     });
@@ -381,7 +374,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     // we do not want the effect to depend on the state of the resource, only on the request.
     const {status: currentStatus, previousStatus} = untracked(this.state);
 
-    if (extRequest.request === undefined || isResourceParamsStatus(extRequest.request)) {
+    if (extRequest.request === undefined) {
       // Request represents a special status (idle, error, etc.), therefore nothing to load.
       return;
     } else if (currentStatus !== 'loading') {

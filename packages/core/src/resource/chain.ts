@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Resource, type ChainOptions, type ChainResult, type ResourceValues} from './api';
-import {ResourceParams} from './params_status';
+import {Resource, ResourceParamsStatus, type ChainOptions, type ChainResult} from './api';
 
 export class ResourceDependencyError extends Error {
   readonly dependency: Resource<unknown>;
@@ -41,30 +40,27 @@ export function chain<T extends Resource<any>[]>(
 
   for (const resource of resources) {
     if (resource.status() === 'idle') {
-      return {exitStatus: ResourceParams.idle()};
+      throw ResourceParamsStatus.IDLE;
     }
   }
 
   for (const resource of resources) {
     if (resource.status() === 'error') {
-      const e = new ResourceDependencyError(resource);
-      return {exitStatus: ResourceParams.error(e)};
+      throw new ResourceDependencyError(resource);
     }
   }
 
   for (const resource of resources) {
     const status = resource.status();
     if (status === 'loading') {
-      return {exitStatus: ResourceParams.loading()};
+      throw ResourceParamsStatus.LOADING;
     }
     if (status === 'reloading' && !options?.allowStale) {
-      return {exitStatus: ResourceParams.loading()};
+      throw ResourceParamsStatus.LOADING;
     }
   }
 
-  return {
-    values: () => resources.map((r) => r.value()) as ResourceValues<T>,
-  };
+  return (() => resources.map((r) => r.value())) as ChainResult<T>;
 }
 
 function isResource(value: unknown): value is Resource<any> {
