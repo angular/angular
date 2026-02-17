@@ -54,8 +54,8 @@
             ngGridCellWidget
             aria-label="edit assignee"
             widgetType="editable"
-            (onActivate)="startEdit($event, task, assigneeInput)"
-            (onDeactivate)="completeEdit($event, task)"
+            (activated)="startEdit($event, task, assigneeInput)"
+            (deactivated)="completeEdit($event, task)"
             #widget="ngGridCellWidget"
           >
             <span [class.hidden]="widget.isActivated()">{{ task.assignee }}</span>
