@@ -25,11 +25,10 @@ You can use the Angular track to better understand how your code runs in the bro
 
 You can enable Angular profiling in one of two ways:
 
-1. Run `ng.enableProfiling()` in Chrome's console panel, or
-1. Include a call to `enableProfiling()` in your application startup code (imported from `@angular/core`).
+1. Run [`ng.enableProfiling()`](api/core/enableProfiling) in Chrome's console panel, or
+1. Include a call to [`enableProfiling()`](api/core/enableProfiling) in your application startup code (imported from `@angular/core`).
 
-NOTE:
-Angular profiling works exclusively in development mode.
+NOTE: Angular profiling works exclusively in development mode.
 
 Here is an example of how you can enable the integration in the application bootstrap to capture all possible events:
 
