@@ -108,7 +108,7 @@ export class SignalFormControl<T> extends AbstractControl {
     this.fieldTree = wrapFieldTreeForSyncUpdates(rawTree, () =>
       this.parent?.updateValueAndValidity({sourceControl: this} as any),
     );
-    this.fieldState = this.fieldTree() as FieldState<T>;
+    this.fieldState = this.fieldTree();
 
     this.defineCompatProperties();
 

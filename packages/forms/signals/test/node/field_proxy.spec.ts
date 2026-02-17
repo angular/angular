@@ -6,20 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  Component,
-  Input,
-  Injector,
-  input,
-  signal,
-  ApplicationRef,
-  effect,
-  untracked,
-  computed,
-} from '@angular/core';
+import {Injector, signal, ApplicationRef, effect, untracked} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, FieldTree} from '../../public_api';
-import {ChangeDetectionStrategy} from '@angular/compiler';
+import {form} from '../../public_api';
 
 describe('FieldTree proxy', () => {
   it('should not forward methods through the proxy', () => {
