@@ -249,8 +249,7 @@ Here's a comprehensive example that implements common state properties:
 
 ```angular-ts
 import {Component, model, input, ChangeDetectionStrategy} from '@angular/core';
-import {FormValueControl} from '@angular/forms/signals';
-import type {ValidationError, DisabledReason} from '@angular/forms/signals';
+import {FormValueControl, WithOptionalFieldTree, ValidationError, DisabledReason} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-stateful-input',
@@ -301,7 +300,7 @@ export class StatefulInput implements FormValueControl<string> {
   readonly = input<boolean>(false);
   hidden = input<boolean>(false);
   invalid = input<boolean>(false);
-  errors = input<readonly ValidationError.WithField[]>([]);
+  errors = input<readonly WithOptionalFieldTree<ValidationError>[]>([]);
 }
 ```
 
