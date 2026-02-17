@@ -30,6 +30,8 @@ const LINK_EXEMPT = new Set([
   'Event',
   'form',
   'type',
+  'Host',
+  'filter',
 ]);
 
 export function shouldLinkSymbol(symbol: string): boolean {

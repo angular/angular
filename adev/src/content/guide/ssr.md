@@ -387,12 +387,14 @@ export class MyComponent {
 }
 ```
 
+<!-- prettier-ignore-start -->
 IMPORTANT: The above tokens will be `null` in the following scenarios:
-
 - During the build processes.
 - When the application is rendered in the browser (CSR).
 - When performing static site generation (SSG).
 - During route extraction in development (at the time of the request).
+
+<!-- prettier-ignore-end -->
 
 ## Generate a fully static application
 
@@ -521,7 +523,7 @@ bootstrapApplication(App, {
 });
 ```
 
-#### `filter`
+#### Filtering
 
 You can also selectively disable caching for certain requests using the [`filter`](api/common/http/HttpTransferCacheOptions) option in `withHttpTransferCacheOptions`. For example, you can disable caching for a specific API endpoint:
 
@@ -545,7 +547,7 @@ bootstrapApplication(App, {
 
 Use this option to exclude endpoints with user‑specific or dynamic data (for example `/api/profile`).
 
-#### Individually
+#### Per-request
 
 To disable caching for an individual request, you can specify the [`transferCache`](api/common/http/HttpRequest#transferCache) option in an `HttpRequest`.
 
@@ -610,4 +612,69 @@ export const reqHandler = createRequestHandler(async (req: Request) => {
 
   // ...
 });
+```
+
+## Security and host validation
+
+Angular includes strict validation for `Host`, `X-Forwarded-Host`, `X-Forwarded-Proto`, and `X-Forwarded-Port` headers in the request handling pipeline to prevent header-based [Server-Side Request Forgery (SSRF)](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/SSRF).
+
+The validation rules are:
+
+- `Host` and `X-Forwarded-Host` headers are validated against a strict allowlist.
+- `Host` and `X-Forwarded-Host` headers cannot contain path separators.
+- `X-Forwarded-Port` header must be numeric.
+- `X-Forwarded-Proto` header must be `http` or `https`.
+
+Requests with invalid or disallowed headers will now log an error and fallback to Client-Side Rendering (CSR). In a future major version, these requests will be rejected with a `400 Bad Request`.
+
+NOTE: Most cloud providers and CDNs already validate these headers before the request reaches the application, but this change adds an essential layer of defense-in-depth.
+
+### Configuring allowed hosts
+
+To allow a specific hostname, you must configure the `allowedHosts` list in your `angular.json` to include all hostnames where your application is deployed. This is critical for ensuring your application works correctly and securely when deployed. The patterns support wildcards for flexible hostname matching.
+
+```json
+{
+  // ...
+  "projects": {
+    "your-project-name": {
+      // ...
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "security": {
+              "allowedHosts": [
+                "example.com",
+                "*.example.com" // allows all subdomains of example.com
+              ]
+            }
+            // ... other options
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+You can also configure `allowedHosts` when initializing the application engine:
+
+```typescript
+const appEngine = new AngularAppEngine({
+  allowedHosts: ['example.com', '*.trusted-example.com'],
+});
+
+const nodeAppEngine = new AngularNodeAppEngine({
+  allowedHosts: ['example.com', '*.trusted-example.com'],
+});
+```
+
+For the Node.js variant `AngularNodeAppEngine`, you can also provide `NG_ALLOWED_HOSTS` (comma-separated list) and `HOSTNAME` environment variables for authorizing hosts.
+
+Example:
+
+```bash
+export NG_ALLOWED_HOSTS="example.com,*.trusted-example.com"
+export HOSTNAME="example.com"
 ```
