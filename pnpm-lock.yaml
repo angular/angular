@@ -337,8 +337,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#371c6ad14109c6e2976935e3dcce87fcf1c8ed06
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/371c6ad14109c6e2976935e3dcce87fcf1c8ed06(@modelcontextprotocol/sdk@1.25.3)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#869bfda5998a1298e4eb55dbc97edc059625af5a
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/869bfda5998a1298e4eb55dbc97edc059625af5a(@modelcontextprotocol/sdk@1.25.3)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.29.0)
@@ -1735,9 +1735,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/371c6ad14109c6e2976935e3dcce87fcf1c8ed06':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/371c6ad14109c6e2976935e3dcce87fcf1c8ed06}
-    version: 0.0.0-d688d95ef7122aeed5a02a6e6dea8670bb782978
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/869bfda5998a1298e4eb55dbc97edc059625af5a':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/869bfda5998a1298e4eb55dbc97edc059625af5a}
+    version: 0.0.0-0edcf22f9ce677699274f2d399325f99d3d56e81
     hasBin: true
 
   '@angular/ssr@21.2.0-next.2':
@@ -10845,6 +10845,7 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
+
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
@@ -11837,6 +11838,7 @@ packages:
   tar@7.5.7:
     resolution: {integrity: sha512-fov56fJiRuThVFXD6o6/Q354S7pnWMJIVlDBYijsTNx6jKSE4pvrDTs6lUnmGvNyfJwFQQwWy3owKz1ucIhveQ==}
     engines: {node: '>=18'}
+    deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   tcp-port-used@1.0.2:
     resolution: {integrity: sha512-l7ar8lLUD3XS1V2lfoJlCBaeoaWo/2xfYt81hM7VlvR4RrMVFqfmzfhLVk40hAb368uitje5gPtBRL1m/DGvLA==}
@@ -13648,7 +13650,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/371c6ad14109c6e2976935e3dcce87fcf1c8ed06(@modelcontextprotocol/sdk@1.25.3)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/869bfda5998a1298e4eb55dbc97edc059625af5a(@modelcontextprotocol/sdk@1.25.3)':
     dependencies:
       '@actions/core': 3.0.0
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
