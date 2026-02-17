@@ -33,8 +33,8 @@ export function setCurrentInjector(
   return former;
 }
 
-export function inject<T>(token: InjectionToken<T> | Constructor<T>): T;
-export function inject<T>(
+export function injectFromCurrentInjector<T>(token: InjectionToken<T> | Constructor<T>): T;
+export function injectFromCurrentInjector<T>(
   token: InjectionToken<T> | Constructor<T>,
   options?: unknown,
 ): T | NotFound {
