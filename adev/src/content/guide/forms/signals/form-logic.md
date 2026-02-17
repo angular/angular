@@ -685,27 +685,34 @@ The `max()` validation rule sets the `MAX` metadata reactively based on the sele
 Custom controls can read metadata to configure their HTML attributes and behavior:
 
 ```angular-ts
-import {Component, input, computed} from '@angular/core';
-import {FormValueControl, FieldState, PLACEHOLDER} from '@angular/forms/signals';
+import {Component, input, computed, model} from '@angular/core';
+import {FormValueControl, Field, PLACEHOLDER} from '@angular/forms/signals';
 
 @Component({
   selector: 'custom-input',
   template: `
     <input
       type="number"
-      [value]="field().value()"
-      (input)="field().value.set(($event.target as HTMLInputElement).valueAsNumber)"
-      [min]="field().min()"
-      [max]="field().max()"
-      [required]="field().required()"
+      [value]="state().value()"
+      (input)="state().value.set(($event.target as HTMLInputElement).valueAsNumber)"
+      [min]="state().min()"
+      [max]="state().max()"
+      [required]="state().required()"
       [placeholder]="placeholderText()"
     />
   `,
 })
 export class CustomInput implements FormValueControl<number> {
-  field = input.required<FieldState<number>>();
+  // Bind to the form field.
+  formField = input.required<Field<number>>();
 
-  placeholderText = computed(() => this.field().metadata(PLACEHOLDER)() ?? '');
+  // Compute the current field state.
+  state = computed(() => this.formField()());
+
+  // Required property of the FormValueControl interface.
+  value = model(0);
+
+  placeholderText = computed(() => this.state().metadata(PLACEHOLDER)() ?? '');
 }
 ```
 
