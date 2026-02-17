@@ -48,6 +48,15 @@ export class CompatValidationError<T = unknown> implements ValidationError {
 }
 
 // @public
+export function extractValue<T>(field: FieldTree<T>): RawValue<T>;
+
+// @public (undocumented)
+export function extractValue<T>(field: FieldTree<T>, filter: ExtractFilter): DeepPartial<RawValue<T>> | undefined;
+
+// @public (undocumented)
+export function extractValue<T>(field: FieldTree<T>, filter?: ExtractFilter): RawValue<T> | DeepPartial<RawValue<T>> | undefined;
+
+// @public
 export const NG_STATUS_CLASSES: SignalFormsConfig['classes'];
 
 // @public
