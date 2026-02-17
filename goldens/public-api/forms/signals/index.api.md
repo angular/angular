@@ -180,7 +180,7 @@ export function form<TModel>(model: WritableSignal<TModel>, schema: SchemaOrSche
 export const FORM_FIELD: InjectionToken<FormField<unknown>>;
 
 // @public
-export interface FormCheckboxControl extends FormUiControl<boolean> {
+export interface FormCheckboxControl extends FormUiControl {
     readonly checked: ModelSignal<boolean>;
     readonly value?: undefined;
 }
@@ -241,7 +241,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
 }
 
 // @public
-export interface FormUiControl<TValue> {
+export interface FormUiControl {
     readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly disabledReasons?: InputSignal<readonly WithOptionalFieldTree<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalFieldTree<DisabledReason>[], unknown>;
@@ -262,7 +262,7 @@ export interface FormUiControl<TValue> {
 }
 
 // @public
-export interface FormValueControl<TValue> extends FormUiControl<TValue> {
+export interface FormValueControl<TValue> extends FormUiControl {
     readonly checked?: undefined;
     readonly value: ModelSignal<TValue>;
 }

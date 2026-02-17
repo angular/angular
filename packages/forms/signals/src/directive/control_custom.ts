@@ -25,7 +25,7 @@ export function customControlCreate(
   host.listenToCustomControlModel((value) => parent.state().controlValue.set(value));
   host.listenToCustomControlOutput('touchedChange', () => parent.state().markAsTouched());
 
-  parent.registerAsBinding(host.customControl as FormUiControl<unknown>);
+  parent.registerAsBinding(host.customControl as FormUiControl);
 
   const bindings = createBindings<ControlBindingKey | 'controlValue'>();
   return () => {
