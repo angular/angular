@@ -33,7 +33,7 @@ Bindings that change over time should read values from [signals](/guide/signals)
     <!-- Does not necessarily update when `welcomeMessage` changes. -->
     <p>{{ welcomeMessage }}</p>
 
-    <p>Your color preference is {{ theme() }}.</p> <!-- Always updates when the value of the `name` signal changes. -->
+    <p>Your color preference is {{ theme() }}.</p> <!-- Always updates when the value of the `theme` signal changes. -->
   `
   ...
 })
