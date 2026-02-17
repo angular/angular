@@ -61,12 +61,7 @@ export interface FormUiControl<TValue> {
    * An input to receive the touched status for the field. If implemented, the `Field` directive
    * will automatically bind the touched status from the bound field to this input.
    */
-  readonly touched?:
-    | ModelSignal<boolean>
-    | InputSignal<boolean>
-    | InputSignalWithTransform<boolean, unknown>
-    | OutputRef<boolean>;
-
+  readonly touched?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
   /**
    * An input to receive the dirty status for the field. If implemented, the `Field` directive
    * will automatically bind the dirty status from the bound field to this input.
@@ -117,6 +112,10 @@ export interface FormUiControl<TValue> {
   readonly pattern?:
     | InputSignal<readonly RegExp[]>
     | InputSignalWithTransform<readonly RegExp[], unknown>;
+  /**
+   * An output to emit when the control is touched.
+   */
+  readonly touch?: OutputRef<void>;
   /**
    * Focuses the UI control.
    *
