@@ -10,11 +10,11 @@ import {SecurityContext} from '../core';
 
 // =================================================================================================
 // =================================================================================================
-// =========== S T O P   -  S T O P   -  S T O P   -  S T O P   -  S T O P   -  S T O P  ===========
+// =========== S T O P   -   S T O P   -   S T O P   -   S T O P   -   S T O P   -   S T O P ===========
 // =================================================================================================
 // =================================================================================================
 //
-//        DO NOT EDIT THIS LIST OF SECURITY SENSITIVE PROPERTIES WITHOUT A SECURITY REVIEW!
+//         DO NOT EDIT THIS LIST OF SECURITY SENSITIVE PROPERTIES WITHOUT A SECURITY REVIEW!
 //
 // =================================================================================================
 
@@ -58,6 +58,7 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'mfrac|xlink:href',
       'mglyph|href',
       'mglyph|xlink:href',
+      'mglyph|src', // <--- التعديل الأمني هنا: إضافة السمة الناقصة لمنع XSS
       'msub|href',
       'msub|xlink:href',
       'msup|href',
