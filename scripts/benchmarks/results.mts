@@ -9,8 +9,14 @@
 import path from 'path';
 import Zip from 'adm-zip';
 
-import type {JsonReport} from '../../packages/benchpress/src/reporter/json_file_reporter_types.js';
 import {bold} from '@angular/ng-dev';
+
+interface JsonReport {
+  description: Record<string, string>;
+  metricsText: string;
+  statsText: string;
+  validSampleTexts: string[];
+}
 
 /** Results of an individual benchmark scenario. */
 export interface ScenarioResult {

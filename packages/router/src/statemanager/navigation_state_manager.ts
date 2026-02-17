@@ -561,7 +561,7 @@ export class NavigationStateManager extends StateManager {
  * overall success/failure.
  */
 function handleResultRejections(result: NavigationResult): NavigationResult {
-  result.finished.catch(() => {});
-  result.committed.catch(() => {});
+  result.finished?.catch(() => {});
+  result.committed?.catch(() => {});
   return result;
 }

@@ -27,5 +27,5 @@ jasmine_test(
         "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
         "//packages/core:npm_package",
     ],
-    shard_count = 8,
+    shard_count = 16,
 )

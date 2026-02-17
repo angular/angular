@@ -1,0 +1,30 @@
+{
+  "name": "angular-integration",
+  "description": "Assert that users with TypeScript 6.0 can type-check an Angular application",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/animations": "link:./in-existing-linked-by-bazel",
+    "@angular/common": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "@angular/elements": "link:./in-existing-linked-by-bazel",
+    "@angular/forms": "link:./in-existing-linked-by-bazel",
+    "@angular/localize": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-browser": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-browser-dynamic": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-server": "link:./in-existing-linked-by-bazel",
+    "@angular/router": "link:./in-existing-linked-by-bazel",
+    "@angular/service-worker": "link:./in-existing-linked-by-bazel",
+    "@angular/upgrade": "link:./in-existing-linked-by-bazel",
+    "@types/jasmine": "^6.0.0",
+    "rxjs": "^7.0.0",
+    "typescript": "6.0.0-beta",
+    "zone.js": "0.16.0"
+  },
+  "scripts": {
+    "test": "tsc"
+  },
+  "packageManager": "pnpm@10.29.2"
+}

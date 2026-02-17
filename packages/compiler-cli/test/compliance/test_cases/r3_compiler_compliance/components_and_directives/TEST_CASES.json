@@ -95,7 +95,8 @@
       "description": "should emit a valid setClassMetadata call in ES5 if a class with a custom decorator is referencing itself inside its own metadata",
       "inputFiles": ["custom_decorator_es5.ts"],
       "compilerOptions": {
-        "target": "ES5"
+        "target": "ES5",
+        "ignoreDeprecations": "6.0"
       },
       "compilationModeFilter": ["full compile"],
       "expectations": [

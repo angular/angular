@@ -176,7 +176,7 @@ ng1AppModule.component('exampleApp', {
   // compilation)
   controller: [
     'heroesService',
-    function (heroesService: HeroesService) {
+    function (this: any, heroesService: HeroesService) {
       this.heroesService = heroesService;
     },
   ],

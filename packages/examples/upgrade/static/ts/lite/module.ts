@@ -206,7 +206,7 @@ myMainAngularJsModule.component('exampleApp', {
       <p class="extra">Status: {{ $ctrl.statusMessage }}</p>
     </ng2-heroes>
   `,
-  controller: function () {
+  controller: function (this: any) {
     this.showHeroes = false;
     this.statusMessage = 'Ready';
 

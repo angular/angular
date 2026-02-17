@@ -386,7 +386,7 @@ describe('downlevel decorator transform', () => {
      `);
 
     expect(diagnostics.length).toBe(0);
-    expect(output).toContain('const externalFile = require("./other-file");');
+    expect(output).toContain('const externalFile = tslib_1.__importStar(require("./other-file"));');
     expect(output).toContain(dedent`
        MyDir.ctorParameters = () => [
          { type: externalFile.MyOtherClass }

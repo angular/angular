@@ -272,7 +272,7 @@
   },
   "dependencies": {
     "@angular/language-service": "workspace:*",
-    "typescript": "5.9.3"
+    "typescript": "6.0.0-beta"
   },
   "devDependencies": {
     "@types/jasmine": "~6.0.0",
