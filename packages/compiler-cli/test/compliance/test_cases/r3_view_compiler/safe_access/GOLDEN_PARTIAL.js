@@ -186,6 +186,9 @@ export declare class MyModule {
 import { Component } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyApp {
+    constructor() {
+        this.config = { get: () => undefined };
+    }
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: false, selector: "ng-component", ngImport: i0, template: `

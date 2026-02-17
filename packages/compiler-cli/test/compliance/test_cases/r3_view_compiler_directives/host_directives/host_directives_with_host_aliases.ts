@@ -2,8 +2,8 @@ import {Component, Directive, EventEmitter, Input, Output} from '@angular/core';
 
 @Directive({})
 export class HostDir {
-  @Input('valueAlias') value: number;
-  @Input('colorAlias') color: string;
+  @Input('valueAlias') value = 1;
+  @Input('colorAlias') color = '';
   @Output('openedAlias') opened = new EventEmitter();
   @Output('closedAlias') closed = new EventEmitter();
 }

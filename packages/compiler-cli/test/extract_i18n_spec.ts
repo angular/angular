@@ -225,8 +225,8 @@ describe('extract_i18n command line', () => {
         "rootDir": ".",
         "declaration": true,
         "target": "es2015",
-        "module": "es2015",
-        "moduleResolution": "node",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
         "lib": ["es2015", "dom"],
         "typeRoots": ["node_modules/@types"]
       }

@@ -357,7 +357,7 @@ describe('quick info', () => {
         expect(toText(documentation)).toContain(
           'The **`HTMLDivElement`** interface provides special properties ' +
             '(beyond the regular HTMLElement interface it also has available to it by inheritance) ' +
-            'for manipulating div elements.',
+            'for manipulating <div> elements.',
         );
       });
 

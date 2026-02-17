@@ -355,7 +355,7 @@ export class Driver implements Debuggable, UpdateSource {
     event.waitUntil(this.handlePushSubscriptionChange(event));
   }
 
-  private onMessageError(event: MessageEvent): void {
+  private onMessageError(event: ExtendableMessageEvent): void {
     // Handle message deserialization errors that occur when receiving messages
     // that cannot be deserialized, typically due to corrupted data or unsupported formats.
     this.debugger.log(

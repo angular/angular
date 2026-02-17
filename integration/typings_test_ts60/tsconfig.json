@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "experimentalDecorators": true,
+    "module": "es2022",
+    "moduleResolution": "bundler",
+    "outDir": "./dist/out-tsc",
+    "rootDir": ".",
+    "target": "ES2020",
+    "lib": ["ES2020", "dom"],
+    "types": []
+  },
+  "files": ["include-all.ts", "node_modules/@types/jasmine/index.d.ts"]
+}

@@ -95,6 +95,7 @@ export class NgtscTestEnvironment {
       `{
       "compilerOptions": {
         "emitDecoratorMetadata": false,
+        "strictPropertyInitialization": false,
         "experimentalDecorators": true,
         "skipLibCheck": true,
         "noImplicitAny": true,

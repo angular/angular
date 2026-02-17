@@ -53,9 +53,9 @@ export declare class MyModule {
 import { Component, NgModule, Pipe } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
-    valueA;
-    valueB;
-    valueC;
+    valueA = 0;
+    valueB = 0;
+    valueC = 0;
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: false, selector: "my-component", ngImport: i0, template: `
   <div i18n>{{ valueA | pipeA }} and {{ valueB | pipeB }}</div>
@@ -131,9 +131,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import { PipeTransform } from '@angular/core';
 import * as i0 from "@angular/core";
 export declare class MyComponent {
-    valueA: 0;
-    valueB: 0;
-    valueC: 0;
+    valueA: number;
+    valueB: number;
+    valueC: number;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, false, never>;
 }

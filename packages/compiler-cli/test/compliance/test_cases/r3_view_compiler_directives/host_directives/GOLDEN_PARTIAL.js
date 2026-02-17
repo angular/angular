@@ -182,8 +182,8 @@ export declare class DirectiveA {
 import { Component, Directive, EventEmitter, Input, Output } from '@angular/core';
 import * as i0 from "@angular/core";
 export class HostDir {
-    value;
-    color;
+    value = 0;
+    color = '';
     opened = new EventEmitter();
     closed = new EventEmitter();
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
@@ -243,8 +243,8 @@ export declare class MyComponent {
 import { Component, Directive, EventEmitter, Input, Output } from '@angular/core';
 import * as i0 from "@angular/core";
 export class HostDir {
-    value;
-    color;
+    value = 1;
+    color = '';
     opened = new EventEmitter();
     closed = new EventEmitter();
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
