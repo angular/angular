@@ -4099,11 +4099,12 @@ describe('field directive', () => {
       template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
     })
     class CustomInput implements FormValueControl<string> {
-      value = model('');
-      touched = model(false);
+      readonly value = model('');
+      readonly touched = input(false);
+      readonly touch = output<void>();
 
       touchIt() {
-        this.touched.set(true);
+        this.touch.emit();
       }
     }
 

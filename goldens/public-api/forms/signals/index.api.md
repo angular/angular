@@ -258,7 +258,8 @@ export interface FormUiControl {
     readonly pending?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly readonly?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
     readonly required?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly touched?: ModelSignal<boolean> | InputSignal<boolean> | InputSignalWithTransform<boolean, unknown> | OutputRef<boolean>;
+    readonly touch?: OutputRef<void>;
+    readonly touched?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
 }
 
 // @public
