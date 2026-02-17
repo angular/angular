@@ -407,7 +407,7 @@ const getDependenciesForDirective = (
 
 const valueToLabel = (value: any): string => {
   if (isInjectionToken(value)) {
-    return `InjectionToken(${value['_desc']})`;
+    return value.toString();
   }
 
   if (typeof value === 'object') {
