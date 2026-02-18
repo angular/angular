@@ -4,40 +4,40 @@ _Note_: some of these tests no longer run. Be sure to check that CI is green.
 
 Make sure your environment is set up with:
 
-`yarn`
+`pnpm`
 
 In a separate process, run the WebSockets server:
 
-`yarn ws-server`
+`pnpm ws-server`
 
 Run the browser tests using Karma:
 
-`yarn test`
+`pnpm test`
 
 Run the node.js tests:
 
-`yarn test-node`
+`pnpm test-node`
 
 Run tslint:
 
-`yarn lint`
+`pnpm lint`
 
 Run format with prettier:
 
-`yarn format`
+`pnpm format`
 
 Run all checks (lint/format/browser test/test-node):
 
-`yarn ci`
+`pnpm ci`
 
 ## Before Commit
 
 Please make sure you pass all following checks before commit
 
-- yarn gulp lint (tslint)
-- yarn gulp format (prettier)
-- yarn promisetest (promise a+ test)
-- yarn bazel test //packages/zone.js/... (all tests)
+- pnpm gulp lint (tslint)
+- pnpm gulp format (prettier)
+- pnpm promisetest (promise a+ test)
+- pnpm bazel test //packages/zone.js/... (all tests)
 
 ## Webdriver Test
 
@@ -46,9 +46,9 @@ Please make sure you pass all following checks before commit
 1. run locally
 
 ```
-yarn webdriver-start
-yarn webdriver-http
-yarn webdriver-test
+pnpm webdriver-start
+pnpm webdriver-http
+pnpm webdriver-test
 ```
 
 2. run locally with sauce connect
@@ -59,8 +59,8 @@ export SAUCE_USERNAME=XXXX
 export SAUCE_ACCESS_KEY=XXX
 
 sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY
-yarn webdriver-http
-yarn webdriver-sauce-test
+pnpm webdriver-http
+pnpm webdriver-sauce-test
 ```
 
 ## Releasing
@@ -73,13 +73,13 @@ Releasing `zone.js` is a two step process.
 #### 1. Creating a PR for release
 
 ```
-rm -rf node_modules && yarn install
+rm -rf node_modules && pnpm install
 export PREVIOUS_ZONE_TAG=`git tag -l 'zone.js-0.15.*' | tail -n1`
 export VERSION=`(cd packages/zone.js; npm version patch --no-git-tag-version)`
 export VERSION=${VERSION#v}
 export TAG="zone.js-${VERSION}"
 echo "Releasing zone.js version ${TAG}. Last release was ${PREVIOUS_ZONE_TAG}."
-yarn gulp changelog:zonejs
+pnpm gulp changelog:zonejs
 ```
 
 Inspect the `packages/zone.js/CHANGELOG.md` for any issues and than commit it with this command.
@@ -87,7 +87,7 @@ Inspect the `packages/zone.js/CHANGELOG.md` for any issues and than commit it wi
 Create a dry run build to make sure everything is ready.
 
 ```
-yarn bazel --output_base=$(mktemp -d) run //packages/zone.js:npm_package.pack --workspace_status_command="echo STABLE_PROJECT_VERSION $VERSION"
+pnpm bazel --output_base=$(mktemp -d) run //packages/zone.js:npm_package.pack --workspace_status_command="echo STABLE_PROJECT_VERSION $VERSION"
 ```
 
 If everything looks good, commit the changes and push them to your origin to create a PR.
@@ -106,14 +106,14 @@ Check out the SHA on main which has the changelog commit of the zone.js
 ```
 git fetch upstream
 git checkout upstream/main
-rm -rf node_modules && yarn install
+rm -rf node_modules && pnpm install
 export VERSION=`(node -e "console.log(require('./packages/zone.js/package.json').version)")`
 export TAG="zone.js-${VERSION}"
 export SHA=`git log upstream/main --oneline -n 1000 | grep "release: cut the ${TAG} release" | cut -f 1 -d " "`
 echo "Releasing '$VERSION' which will be tagged as '$TAG' from SHA '$SHA'."
 git checkout ${SHA}
 npm login --registry https://wombat-dressing-room.appspot.com
-yarn bazel -- run --config=release -- //packages/zone.js:npm_package.publish --access public --tag latest
+pnpm bazel -- run --config=release -- //packages/zone.js:npm_package.publish --access public --tag latest
 git tag ${TAG} ${SHA}
 git push upstream ${TAG}
 ```
