@@ -88,8 +88,7 @@ NOTE: By default, route injectors and their services persist even after navigati
 
 **Solution:** Use `providedIn: 'root'` for services that need to be shared across lazy boundaries.
 
-```ts {prefer}
-// Provide at root for shared services
+```ts {prefer, header: 'Provide at root for shared services'}
 import {Injectable} from '@angular/core';
 
 @Injectable({providedIn: 'root'})
@@ -108,8 +107,7 @@ You expect one shared instance (singleton) but get separate instances in differe
 
 When you add a service to a component's `providers` array, Angular creates a new instance of that service for each instance of the component. Each component gets its own separate service instance, which means changes in one component don't affect the service instance in other components. This is often unexpected when you want shared state across your application.
 
-```angular-ts {avoid}
-// Component-level provider creates multiple instances
+```angular-ts {avoid, header: 'Component-level provider creates multiple instances'}
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -136,8 +134,7 @@ Each component gets its own `UserClient` instance. Changes in one component don'
 
 **Solution:** Use `providedIn: 'root'` for singletons.
 
-```ts {prefer}
-// Root-level singleton
+```ts {prefer, header: 'Root-level singleton'}
 import {Injectable} from '@angular/core';
 
 @Injectable({providedIn: 'root'})
@@ -150,8 +147,7 @@ export class UserClient {
 
 Sometimes you want separate instances per component for component-specific state.
 
-```angular-ts
-// Intentional: Component-scoped state
+```angular-ts {header: 'Intentional: Component-scoped state'}
 import {Injectable, signal} from '@angular/core';
 
 @Injectable() // No providedIn - must be provided explicitly
@@ -191,8 +187,7 @@ The `inject()` function only works in specific contexts during class constructio
 
 When you call the `inject()` function inside lifecycle hooks like `ngOnInit()`, `ngAfterViewInit()`, or `ngOnDestroy()`, Angular throws an error because these methods run outside the injection context. The injection context is only available during the synchronous execution of class construction, which happens before lifecycle hooks are called.
 
-```angular-ts {avoid}
-// inject() in ngOnInit
+```angular-ts {avoid, header: 'inject() in ngOnInit'}
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -212,8 +207,7 @@ export class UserProfile {
 
 **Solution:** Capture dependencies and derive values in field initializers.
 
-```angular-ts {prefer}
-// Derive values in field initializers
+```angular-ts {prefer, header: 'Derive values in field initializers'}
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -446,8 +440,7 @@ TIP: Always export tokens from a shared file and import them everywhere they're 
 
 When you define a TypeScript interface, it only exists during compilation for type checking. TypeScript erases all interface definitions when it compiles to JavaScript, so at runtime there's no object for Angular to use as an injection token. If you try to inject an interface type, Angular has nothing to match against the provider configuration.
 
-```angular-ts {avoid}
-// Can't inject interface
+```angular-ts {avoid, header: 'Can't inject interface'}
 interface UserConfig {
   name: string;
   email: string;
@@ -465,8 +458,7 @@ export class UserProfile {
 
 **Solution:** Use `InjectionToken` for interface types.
 
-```angular-ts {prefer}
-// Use InjectionToken for interfaces
+```angular-ts {prefer, header: 'Use InjectionToken for interfaces'}
 import {InjectionToken, inject} from '@angular/core';
 
 interface UserConfig {
@@ -693,8 +685,7 @@ The dependency path shows that `App` injected `AuthClient`, which tried to injec
 
 The most common cause is forgetting the `@Injectable()` decorator on a service class.
 
-```ts {avoid}
-// Missing decorator
+```ts {avoid, header: 'Missing decorator'}
 export class UserClient {
   getUser() {
     return {name: 'Alice'};
@@ -704,8 +695,7 @@ export class UserClient {
 
 Angular requires the `@Injectable()` decorator to generate the metadata needed for dependency injection.
 
-```ts {prefer}
-// Include @Injectable
+```ts {prefer, header: 'Include @Injectable'}
 import {Injectable} from '@angular/core';
 
 @Injectable({
@@ -724,8 +714,7 @@ NOTE: Classes with zero-argument constructors can work without `@Injectable()`, 
 
 A service may have `@Injectable()` but not specify where it should be provided.
 
-```ts {avoid}
-// No providedIn specified
+```ts {avoid, header: 'No providedIn specified'}
 import {Injectable} from '@angular/core';
 
 @Injectable()
@@ -738,8 +727,7 @@ export class UserClient {
 
 Specify `providedIn: 'root'` to make the service available throughout your application.
 
-```ts {prefer}
-// Specify providedIn
+```ts {prefer, header: 'Specify providedIn'}
 import {Injectable} from '@angular/core';
 
 @Injectable({
@@ -758,8 +746,7 @@ The `providedIn: 'root'` configuration makes the service available application-w
 
 In Angular v20+ with standalone components, you must explicitly import or provide dependencies in each component.
 
-```angular-ts {avoid}
-// Missing service import
+```angular-ts {avoid, header: 'Missing service import'}
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
@@ -775,8 +762,7 @@ export class UserProfile {
 
 Ensure the service uses `providedIn: 'root'` or add it to the component's `providers` array.
 
-```angular-ts {prefer}
-// Service uses providedIn: 'root'
+```angular-ts {prefer, header: 'Service uses providedIn: root'}
 import {Component, inject} from '@angular/core';
 import {UserClient} from './user-client';
 
