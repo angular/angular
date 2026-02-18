@@ -1,3 +1,17 @@
+## 21.2.0 (2026-02-18)
+
+- fix(vscode-extension): Highlight function calls with optional chaining ([4f8d3995f0](https://github.com/angular/angular/commit/4f8d3995f082929d1ef4163dcb4373d3ef7a67cf))
+- feat(language-service): add linked editing ranges for HTML tag synchronization ([8c21866f49](https://github.com/angular/angular/commit/8c21866f49ff74344551395ae0a5df1841d54c0d))
+- fix(vscode-extension): support highlighting for class bindings with brackets ([01ed57f297](https://github.com/angular/angular/commit/01ed57f297d6713724dfaedc9520f80471f37c10))
+- feat(language-service): add JSON schema for angularCompilerOptions ([496967e7b1](https://github.com/angular/angular/commit/496967e7b13dfe1ebdde69724cd62880914beb60))
+- fix(language-service): Detect local project version on creation ([8a7cbd4668](https://github.com/angular/angular/commit/8a7cbd46685874f4500c52629d09c5f7fd309080))
+- feat(language-server): Support client-side file watching via `onDidChangeWatchedFiles` ([6fb39d9b62](https://github.com/angular/angular/commit/6fb39d9b62cbb634e95ec00fe5ef85d84da3bdbd))
+- feat(language-server): Add completions and hover info for inline styles ([ebc90c26f5](https://github.com/angular/angular/commit/ebc90c26f5ff1ba1e0ca9b775a44e301ebfb9473))
+- feat(language-server): Add quick info for inline styles ([573aadef7e](https://github.com/angular/angular/commit/573aadef7eb8b6b5e83b82a16f95d2a556f27c01))
+- feat(language-server): Add folding range support for inline styles ([26fd0839c3](https://github.com/angular/angular/commit/26fd0839c32d2ebeaa5e3ecc10ed70ab9ca17749))
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 21.1.1 (2026-01-22)
 
 - fix(vscode-extension): add syntax highlighting for arrow functions ([a649fc8f57](https://github.com/angular/angular/commit/a649fc8f57bc4f9686a263022011a614b878048c))
