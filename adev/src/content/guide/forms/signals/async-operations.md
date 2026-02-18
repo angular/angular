@@ -20,8 +20,8 @@ Async validation runs only after all synchronous validation passes. While the va
 Here's an example checking username availability:
 
 ```angular-ts
-import { Component, signal } from '@angular/core'
-import { form, validateHttp, FormField } from '@angular/forms/signals'
+import {Component, signal} from '@angular/core';
+import {form, validateHttp, FormField} from '@angular/forms/signals';
 
 @Component({
   selector: 'app-registration',
@@ -42,32 +42,34 @@ import { form, validateHttp, FormField } from '@angular/forms/signals'
         }
       }
     </form>
-  `
+  `,
 })
 export class Registration {
-  registrationModel = signal({ username: '' })
+  registrationModel = signal({username: ''});
 
   registrationForm = form(this.registrationModel, (schemaPath) => {
     validateHttp(schemaPath.username, {
       request: ({value}) => {
-        const username = value()
-        return username ? `/api/users/check?username=${username}` : undefined
+        const username = value();
+        return username ? `/api/users/check?username=${username}` : undefined;
       },
       onSuccess: (response) => {
-        return response.available ? null : {
-          kind: 'usernameTaken',
-          message: 'Username is already taken'
-        }
+        return response.available
+          ? null
+          : {
+              kind: 'usernameTaken',
+              message: 'Username is already taken',
+            };
       },
       onError: (error) => {
-        console.error('Validation request failed:', error)
+        console.error('Validation request failed:', error);
         return {
           kind: 'serverError',
-          message: 'Could not verify username availability'
-        }
-      }
-    })
-  })
+          message: 'Could not verify username availability',
+        };
+      },
+    });
+  });
 }
 ```
 
@@ -376,10 +378,7 @@ Show the pending state in your template to provide feedback:
 Disable form submission while validation is pending:
 
 ```angular-html
-<button
-  type="submit"
-  [disabled]="loginForm().pending()"
->
+<button type="submit" [disabled]="loginForm().pending()">
   @if (loginForm().pending()) {
     Validating...
   } @else {
