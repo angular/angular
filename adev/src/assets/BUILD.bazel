@@ -10,6 +10,7 @@ copy_to_directory(
         "//adev/src/content/ai",
         "//adev/src/content/aria:aria_docs",
         "//adev/src/content/best-practices",
+        "//adev/src/content/best-practices/performance",
         "//adev/src/content/best-practices/runtime-performance",
         "//adev/src/content/cdk:cdk_docs",
         "//adev/src/content/cli:cli_docs",

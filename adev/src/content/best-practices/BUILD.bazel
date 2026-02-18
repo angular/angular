@@ -16,6 +16,7 @@ generate_guides(
 js_library(
     name = "guide_files",
     srcs = [
+        "//adev/src/content/best-practices/performance:guide_files",
         "//adev/src/content/best-practices/runtime-performance:guide_files",
     ] + glob(["**/*.md"]),
     visibility = ["//adev:__subpackages__"],

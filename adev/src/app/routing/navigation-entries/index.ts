@@ -1071,33 +1071,72 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Performance',
+        preserveOtherCategoryOrder: true,
         children: [
+          {
+            label: 'Overview',
+            path: 'best-practices/performance',
+            contentPath: 'best-practices/performance/overview',
+          },
+
+          // Loading Performance
+          {
+            label: 'Deferred loading with @defer',
+            path: 'best-practices/performance/defer',
+            contentPath: 'guide/templates/defer',
+            category: 'Loading Performance',
+          },
+          {
+            label: 'Image optimization',
+            path: 'best-practices/performance/image-optimization',
+            contentPath: 'guide/image-optimization',
+            category: 'Loading Performance',
+          },
+          {
+            label: 'Server-side rendering',
+            path: 'best-practices/performance/ssr',
+            contentPath: 'guide/ssr',
+            category: 'Loading Performance',
+          },
+
+          // Runtime Performance
           {
             label: 'Overview',
             path: 'best-practices/runtime-performance',
             contentPath: 'best-practices/runtime-performance/overview',
+            category: 'Runtime Performance',
           },
           {
-            label: 'Zone pollution',
-            path: 'best-practices/zone-pollution',
-            contentPath: 'best-practices/runtime-performance/zone-pollution',
+            label: 'Zoneless',
+            path: 'guide/zoneless',
+            contentPath: 'guide/zoneless',
+            category: 'Runtime Performance',
           },
           {
             label: 'Slow computations',
             path: 'best-practices/slow-computations',
             contentPath: 'best-practices/runtime-performance/slow-computations',
+            category: 'Runtime Performance',
           },
           {
             label: 'Skipping component subtrees',
             path: 'best-practices/skipping-subtrees',
             contentPath: 'best-practices/runtime-performance/skipping-subtrees',
+            category: 'Runtime Performance',
           },
           {
-            label: 'Profiling with the Chrome DevTools',
+            label: 'Zone pollution',
+            path: 'best-practices/zone-pollution',
+            contentPath: 'best-practices/runtime-performance/zone-pollution',
+            category: 'Runtime Performance',
+          },
+
+          {
+            label: 'Chrome DevTools profiling',
             path: 'best-practices/profiling-with-chrome-devtools',
             contentPath: 'best-practices/runtime-performance/profiling-with-chrome-devtools',
+            category: 'Runtime Performance',
           },
-          {label: 'Zoneless', path: 'guide/zoneless', contentPath: 'guide/zoneless'},
         ],
       },
       {
