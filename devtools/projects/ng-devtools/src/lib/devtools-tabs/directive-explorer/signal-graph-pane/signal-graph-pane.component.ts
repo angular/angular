@@ -10,7 +10,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
   input,
   linkedSignal,
@@ -22,7 +21,7 @@ import {MatIcon} from '@angular/material/icon';
 
 import {ApplicationOperations} from '../../../application-operations/index';
 import {FrameManager} from '../../../application-services/frame_manager';
-import {SignalsDetailsComponent} from './signals-details/signals-details.component';
+import {SignalDetailsComponent} from './signal-details/signal-details.component';
 import {ButtonComponent} from '../../../shared/button/button.component';
 import {SignalGraphManager} from '../signal-graph/signal-graph-manager';
 import {DevtoolsSignalGraphNode} from '../signal-graph';
@@ -35,13 +34,13 @@ type SelectedNodeSource = {
 };
 
 @Component({
-  templateUrl: './signals-tab.component.html',
-  selector: 'ng-signals-tab',
-  styleUrl: './signals-tab.component.scss',
-  imports: [SignalsVisualizerComponent, SignalsDetailsComponent, MatIcon, ButtonComponent],
+  templateUrl: './signal-graph-pane.component.html',
+  selector: 'ng-signal-graph-pane',
+  styleUrl: './signal-graph-pane.component.scss',
+  imports: [SignalsVisualizerComponent, SignalDetailsComponent, MatIcon, ButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SignalsTabComponent {
+export class SignalGraphPaneComponent {
   protected readonly visualizer = viewChild.required<SignalsVisualizerComponent>('visualizer');
 
   protected readonly signalGraph = inject(SignalGraphManager);

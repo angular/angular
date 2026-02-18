@@ -41,11 +41,11 @@ import {IndexedNode} from './directive-forest/index-forest';
 import {constructPathOfKeysToPropertyValue} from './property-resolver/directive-property-resolver';
 import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
 import {FlatNode as PropertyFlatNode} from '../../shared/object-tree-explorer/object-tree-types';
-import {PropertyTabComponent} from './property-tab/property-tab.component';
+import {PropertyPaneComponent} from './property-pane/property-pane.component';
 import {FormsModule} from '@angular/forms';
 import {Platform} from '@angular/cdk/platform';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
-import {SignalsTabComponent} from './signals-view/signals-tab.component';
+import {SignalGraphPaneComponent} from './signal-graph-pane/signal-graph-pane.component';
 import {
   ResponsiveSplitConfig,
   ResponsiveSplitDirective,
@@ -93,10 +93,10 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     SplitAreaDirective,
     DirectiveForestComponent,
     BreadcrumbsComponent,
-    PropertyTabComponent,
+    PropertyPaneComponent,
     FormsModule,
     MatSnackBarModule,
-    SignalsTabComponent,
+    SignalGraphPaneComponent,
     ResponsiveSplitDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

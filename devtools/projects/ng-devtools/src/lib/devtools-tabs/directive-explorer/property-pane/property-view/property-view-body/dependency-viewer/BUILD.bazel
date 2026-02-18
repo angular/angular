@@ -22,7 +22,7 @@ ng_project(
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view/property-view-body/dependency-viewer/resolution-path",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/property-view/property-view-body/dependency-viewer/resolution-path",
         "//devtools/projects/protocol",
     ],
 )

@@ -1,7 +1,7 @@
 @let currentSelectedElement = this.currentSelectedElement();
 
 @if (currentSelectedElement) {
-  <ng-property-tab-header
+  <ng-property-pane-header
     [currentSelectedElement]="currentSelectedElement"
     (showSignalGraph)="showSignalGraph.emit(null)"
   />

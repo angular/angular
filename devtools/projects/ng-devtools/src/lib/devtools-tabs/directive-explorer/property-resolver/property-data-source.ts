@@ -20,7 +20,7 @@ import {
 import {BehaviorSubject, merge, Observable, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {diff} from '../../diffing';
+import {diff} from '../diffing';
 
 import {arrayifyProps} from './arrayify-props';
 import {FlatNode, Property} from '../../../shared/object-tree-explorer/object-tree-types';
