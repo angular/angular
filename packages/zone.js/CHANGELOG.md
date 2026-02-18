@@ -1,3 +1,8 @@
+## <small>0.16.1 (2026-02-18)</small>
+
+* fix(zone.js): support passthrough of Promise.try API ([fc557f0](https://github.com/angular/angular/commit/fc557f0)), closes [#67057](https://github.com/angular/angular/issues/67057)
+
+
 ## <small>0.16.0 (2025-11-19)</small>
 
 - fix(zone.js): Support jasmine v6 ([48abe00](https://github.com/angular/angular/commit/48abe00))
