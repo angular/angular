@@ -1399,6 +1399,22 @@ describe('type check blocks', () => {
         expect(block).toContain('var _pipe1 = null! as i0.TestPipe;');
         expect(block).toContain('((_pipe1.transform as any)(((this).a), ((this).b), ((this).c))');
       });
+
+      it('should preserve type inference without explicitly filling generic arguments', () => {
+        const GENERIC_PIPES: TestDeclaration[] = [
+          {
+            type: 'pipe',
+            name: 'GenericPipe',
+            pipeName: 'generic',
+            isGeneric: true,
+          },
+        ];
+        // Test that generic pipes are instantiated like `var _pipe1 = null! as i0.GenericPipe;`
+        // instead of getting artificial padded `any` type arguments `i0.GenericPipe<any>`.
+        const block = tcb(`{{a | generic}}`, GENERIC_PIPES);
+        expect(block).toContain('var _pipe1 = null! as i0.GenericPipe;');
+        expect(block).not.toContain('var _pipe1 = null! as i0.GenericPipe<any>;');
+      });
     });
 
     describe('config.strictSafeNavigationTypes', () => {
@@ -2771,12 +2787,14 @@ describe('type check blocks', () => {
 
       FieldMock = {
         type: 'directive',
+        // Note: We don't use `bestGuessOwningModule` here because the test setup evaluates
+        // this mock via a local shim file (`/synthetic.ngtypecheck.ts`), forcing the reference
+        // emitter to resolve it as a relative local import (`./synthetic`). This completely
+        // overwrites any pseudo-module specifier we pass in, meaning `isFieldDirective` will
+        // ALWAYS fall back to scanning for the `ɵNgFieldDirective` property.
         name: 'FormField',
         selector: '[formField]',
-        bestGuessOwningModule: {
-          specifier: '@angular/forms/signals',
-          resolutionContext: '',
-        },
+        hasNgFieldDirective: true,
         inputs: {
           field: 'formField',
         },

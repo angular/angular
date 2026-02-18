@@ -15,6 +15,7 @@ import {
 } from '@angular/compiler';
 import ts from 'typescript';
 
+import {ErrorCode, FatalDiagnosticError, makeDiagnosticChain} from '../../diagnostics';
 import {
   assertSuccessfulReferenceEmit,
   ImportFlags,
@@ -80,7 +81,16 @@ export class ReferenceEmitEnvironment {
    * This is used by the TCB operations which do not hold on to the original `ts.Declaration`.
    */
   referenceTcbType(ref: TcbReferenceMetadata): ts.TypeNode {
-    if (ref.isLocal || ref.moduleName === null) {
+    if (ref.unexportedDiagnostic !== null || ref.isLocal || ref.moduleName === null) {
+      if (ref.unexportedDiagnostic !== null) {
+        throw new FatalDiagnosticError(
+          ErrorCode.IMPORT_GENERATION_FAILURE,
+          this.contextFile, // Using context file as fallback origin for external file since we lack exact node
+          makeDiagnosticChain(`Unable to import symbol ${ref.name}.`, [
+            makeDiagnosticChain(ref.unexportedDiagnostic),
+          ]),
+        );
+      }
       return ts.factory.createTypeReferenceNode(ref.name);
     }
     return this.referenceExternalType(ref.moduleName, ref.name);
@@ -90,7 +100,16 @@ export class ReferenceEmitEnvironment {
    * Generates a `ts.Expression` from a `TcbReferenceMetadata` object.
    */
   referenceTcbValue(ref: TcbReferenceMetadata): ts.Expression {
-    if (ref.isLocal || ref.moduleName === null) {
+    if (ref.unexportedDiagnostic !== null || ref.isLocal || ref.moduleName === null) {
+      if (ref.unexportedDiagnostic !== null) {
+        throw new FatalDiagnosticError(
+          ErrorCode.IMPORT_GENERATION_FAILURE,
+          this.contextFile,
+          makeDiagnosticChain(`Unable to import symbol ${ref.name}.`, [
+            makeDiagnosticChain(ref.unexportedDiagnostic),
+          ]),
+        );
+      }
       return ts.factory.createIdentifier(ref.name);
     }
     return this.referenceExternalSymbol(ref.moduleName, ref.name);
@@ -111,7 +130,7 @@ export class ReferenceEmitEnvironment {
    * This will involve importing the type into the file, and will also add type parameters if
    * provided.
    */
-  referenceExternalType(moduleName: string | null, name: string, typeParams?: Type[]): ts.TypeNode {
+  referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
     const external = new ExternalExpr({moduleName, name});
     return translateType(
       new ExpressionType(external, TypeModifier.None, typeParams),

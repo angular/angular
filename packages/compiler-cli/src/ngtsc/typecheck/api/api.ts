@@ -46,8 +46,10 @@ export interface TcbReferenceMetadata {
   name: string;
   /** The module path where the symbol is located, or null if local/ambient */
   moduleName: string | null;
-  /** Whether the reference is local to the current file */
+  /** True if the symbol successfully emitted locally (no external import required) */
   isLocal: boolean;
+  /** If the reference could not be externally emitted, this string holds the diagnostic reason why */
+  unexportedDiagnostic: string | null;
   /**
    * Defines the `AbsoluteSourceSpan` of the target's node name, if available.
    */
@@ -58,6 +60,8 @@ export interface TcbReferenceMetadata {
    */
   nodeFilePath?: string;
 }
+
+export type TcbReferenceKey = string & {__brand: 'TcbReferenceKey'};
 
 export type TcbInputMapping = InputOrOutput & {
   required: boolean;
@@ -87,7 +91,7 @@ export interface TcbDirectiveMetadata extends DirectiveMeta {
   exportAs: string[] | null;
 
   /** Type parameters of the directive, if available. */
-  typeParameters?: ts.TypeParameterDeclaration[];
+  typeParameters: ts.TypeParameterDeclaration[] | null;
   inputs: ClassPropertyMapping<TcbInputMapping>;
   outputs: ClassPropertyMapping;
   hasRequiresInlineTypeCtor: boolean;
@@ -105,7 +109,7 @@ export interface TcbDirectiveMetadata extends DirectiveMeta {
 
 export interface TcbComponentMetadata {
   ref: TcbReferenceMetadata;
-  typeParameters?: ts.TypeParameterDeclaration[];
+  typeParameters: ts.TypeParameterDeclaration[] | null;
 }
 
 export interface TcbTypeCheckBlockMetadata {

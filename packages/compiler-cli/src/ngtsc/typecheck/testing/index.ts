@@ -297,24 +297,23 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
-export interface TestDirective
-  extends Partial<
-    Pick<
-      TypeCheckableDirectiveMeta,
-      Exclude<
-        keyof TypeCheckableDirectiveMeta,
-        | 'ref'
-        | 'coercedInputFields'
-        | 'restrictedInputFields'
-        | 'stringLiteralInputFields'
-        | 'undeclaredInputFields'
-        | 'publicMethods'
-        | 'inputs'
-        | 'outputs'
-        | 'hostDirectives'
-      >
+export interface TestDirective extends Partial<
+  Pick<
+    TypeCheckableDirectiveMeta,
+    Exclude<
+      keyof TypeCheckableDirectiveMeta,
+      | 'ref'
+      | 'coercedInputFields'
+      | 'restrictedInputFields'
+      | 'stringLiteralInputFields'
+      | 'undeclaredInputFields'
+      | 'publicMethods'
+      | 'inputs'
+      | 'outputs'
+      | 'hostDirectives'
     >
-  > {
+  >
+> {
   selector: string | null;
   name: string;
   file?: AbsoluteFsPath;
@@ -346,6 +345,7 @@ export interface TestDirective
     outputs?: string[];
   }[];
   bestGuessOwningModule?: OwningModule | AmbientImport;
+  hasNgFieldDirective?: boolean;
 }
 
 export interface TestPipe {
@@ -356,6 +356,7 @@ export interface TestPipe {
   type: 'pipe';
   code?: string;
   bestGuessOwningModule?: OwningModule | AmbientImport;
+  isGeneric?: boolean;
 }
 
 export type TestDeclaration = TestDirective | TestPipe;
@@ -367,7 +368,10 @@ export function tcb(
   options?: {emitSpans?: boolean},
   templateParserOptions?: ParseTemplateOptions,
 ): string {
-  const codeLines = [`export class Test<T extends string> {}`];
+  const codeLines = [
+    'declare const ɵNgFieldDirective: unique symbol;',
+    `export class Test<T extends string> {}`,
+  ];
 
   (function addCodeLines(currentDeclarations) {
     for (const decl of currentDeclarations) {
@@ -375,7 +379,12 @@ export function tcb(
         addCodeLines(decl.hostDirectives.map((hostDir) => hostDir.directive));
       }
 
-      codeLines.push(decl.code ?? `export class ${decl.name}<T extends string> {}`);
+      codeLines.push(
+        decl.code ??
+          `export class ${decl.name}${decl.type === 'directive' || decl.isGeneric ? '<T extends string>' : ''} { ${
+            (decl as TestDirective).hasNgFieldDirective === true ? '[ɵNgFieldDirective]: any;' : ''
+          } }`,
+      );
     }
   })(declarations);
 

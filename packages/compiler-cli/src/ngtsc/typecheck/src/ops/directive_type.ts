@@ -42,7 +42,11 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
 
     let type: ts.TypeNode;
     let span: ParseSourceSpan;
-    if (this.dir.isGeneric === false || this.dir.typeParameters?.length === 0) {
+    if (
+      this.dir.isGeneric === false ||
+      this.dir.typeParameters === null ||
+      this.dir.typeParameters.length === 0
+    ) {
       type = rawType;
     } else {
       if (!ts.isTypeReferenceNode(rawType)) {
@@ -102,7 +106,7 @@ export class TcbNonGenericDirectiveTypeOp extends TcbDirectiveTypeOpBase {
  */
 export class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
   override execute(): ts.Identifier {
-    if (this.dir.typeParameters === undefined) {
+    if (this.dir.typeParameters === null) {
       throw new Error(
         `Assertion Error: expected typeParameters when creating a declaration for ${this.dir.ref.name}`,
       );

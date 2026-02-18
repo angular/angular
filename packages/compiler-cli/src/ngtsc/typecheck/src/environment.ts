@@ -8,21 +8,21 @@
 
 import ts from 'typescript';
 
-import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {ImportManager, translateExpression} from '../../translator';
+import {ReferenceEmitter} from '../../imports';
+import {ReflectionHost} from '../../reflection';
+import {ImportManager} from '../../translator';
 import {
   TcbDirectiveMetadata,
   TcbPipeMetadata,
-  TypeCheckId,
+  TcbReferenceKey,
+  TcbReferenceMetadata,
   TypeCheckingConfig,
   TypeCtorMetadata,
 } from '../api';
 
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {tsDeclareVariable} from './ts_util';
-import {generateTypeCtorDeclarationFn, requiresInlineTypeCtor} from './type_constructor';
-import {TypeParameterEmitter} from './type_parameter_emitter';
+import {generateTypeCtorDeclarationFn} from './type_constructor';
 
 /**
  * A context which hosts one or more Type Check Blocks (TCBs).
@@ -41,10 +41,10 @@ export class Environment extends ReferenceEmitEnvironment {
     typeCtor: 1,
   };
 
-  private typeCtors = new Map<string, ts.Expression>();
+  private typeCtors = new Map<TcbReferenceKey, ts.Expression>();
   protected typeCtorStatements: ts.Statement[] = [];
 
-  private pipeInsts = new Map<string, ts.Expression>();
+  private pipeInsts = new Map<TcbReferenceKey, ts.Expression>();
   protected pipeInstStatements: ts.Statement[] = [];
 
   constructor(
@@ -64,7 +64,7 @@ export class Environment extends ReferenceEmitEnvironment {
    * type constructor, or to an inline type constructor.
    */
   typeCtorFor(dir: TcbDirectiveMetadata): ts.Expression {
-    const key = dir.ref.moduleName ? `${dir.ref.moduleName}#${dir.ref.name}` : dir.ref.name;
+    const key = getTcbReferenceKey(dir.ref);
     if (this.typeCtors.has(key)) {
       return this.typeCtors.get(key)!;
     }
@@ -107,12 +107,18 @@ export class Environment extends ReferenceEmitEnvironment {
    * Get an expression referring to an instance of the given pipe.
    */
   pipeInst(pipe: TcbPipeMetadata): ts.Expression {
-    const key = pipe.ref.moduleName ? `${pipe.ref.moduleName}#${pipe.ref.name}` : pipe.ref.name;
+    const key = getTcbReferenceKey(pipe.ref);
     if (this.pipeInsts.has(key)) {
       return this.pipeInsts.get(key)!;
     }
 
-    const pipeType = this.referenceTcbType(pipe.ref);
+    // Note: It's important that we do not try to evaluate the `pipe.typeParameters` here and pad them
+    // out with `any` type arguments.
+    // If we supply `any` to a generic pipe (e.g. `var _pipe1: MyPipe<any>;`), it destroys the generic
+    // constraints and degrades the `transform` signature. When they are omitted entirely, TypeScript
+    // implicitly flags an error, which the Angular compiler filters out, and crucially recovers by
+    // falling back to constraint inference (e.g. `var _pipe1: MyPipe;` infers bounds safely).
+    let pipeType = this.referenceTcbType(pipe.ref);
     const pipeInstId = ts.factory.createIdentifier(`_pipe${this.nextIds.pipeInst++}`);
 
     this.pipeInstStatements.push(tsDeclareVariable(pipeInstId, pipeType));
@@ -124,4 +130,11 @@ export class Environment extends ReferenceEmitEnvironment {
   getPreludeStatements(): ts.Statement[] {
     return [...this.pipeInstStatements, ...this.typeCtorStatements];
   }
+}
+
+export function getTcbReferenceKey(ref: TcbReferenceMetadata): TcbReferenceKey {
+  if (ref.nodeFilePath !== undefined && ref.nodeNameSpan !== undefined) {
+    return `${ref.nodeFilePath}#${ref.nodeNameSpan.start}` as TcbReferenceKey;
+  }
+  return (ref.moduleName ? `${ref.moduleName}#${ref.name}` : ref.name) as TcbReferenceKey;
 }

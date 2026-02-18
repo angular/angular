@@ -17,12 +17,7 @@ import {
   TypeCheckableDirectiveMeta,
 } from '../api';
 import {Environment} from './environment';
-import {
-  assertSuccessfulReferenceEmit,
-  ImportFlags,
-  ReferenceEmitKind,
-  Reference,
-} from '../../imports';
+import {ImportFlags, ReferenceEmitKind, Reference} from '../../imports';
 import {
   AbsoluteSourceSpan,
   ExternalExpr,
@@ -49,19 +44,20 @@ export function adaptTypeCheckBlockMetadata(
   meta: TypeCheckBlockMetadata,
   env: Environment,
 ): {tcbMeta: TcbTypeCheckBlockMetadata; component: TcbComponentMetadata} {
-  const dirCache = new Map<any, TcbDirectiveMetadata>();
+  const refCache = new Map<Reference<ClassDeclaration>, TcbReferenceMetadata>();
+  const extractRef = (ref: Reference<ClassDeclaration>) => {
+    if (refCache.has(ref)) {
+      return refCache.get(ref)!;
+    }
+    const result = extractReferenceMetadata(ref, env);
+    refCache.set(ref, result);
+    return result;
+  };
+
+  const dirCache = new Map<TypeCheckableDirectiveMeta, TcbDirectiveMetadata>();
+
   const convertDir = (dir: TypeCheckableDirectiveMeta): TcbDirectiveMetadata => {
     if (dirCache.has(dir)) return dirCache.get(dir)!;
-
-    let name = dir.ref.debugName || dir.ref.node.name!.text;
-    let moduleName = dir.ref.ownedByModuleGuess;
-    let isLocal = true;
-    const emitted = env.refEmitter.emit(dir.ref, env.contextFile, ImportFlags.NoAliasing);
-    if (emitted.kind === ReferenceEmitKind.Success && emitted.expression instanceof ExternalExpr) {
-      name = emitted.expression.value.name!;
-      moduleName = emitted.expression.value.moduleName;
-      isLocal = false;
-    }
 
     const tcbDir: TcbDirectiveMetadata = {
       isComponent: dir.isComponent,
@@ -70,18 +66,17 @@ export function adaptTypeCheckBlockMetadata(
       exportAs: dir.exportAs,
       inputs: ClassPropertyMapping.fromMappedObject<TcbInputMapping>(
         dir.inputs.toJointMappedObject((input: InputMapping) => {
-          let transformType: ts.TypeNode | undefined = undefined;
-          if (input.transform != null) {
-            transformType = env.referenceTransplantedType(
-              new TransplantedType(input.transform.type),
-            );
-          }
           return {
             classPropertyName: input.classPropertyName,
             bindingPropertyName: input.bindingPropertyName,
             required: input.required,
             isSignal: input.isSignal,
-            transformType,
+            get transformType() {
+              if (input.transform != null) {
+                return env.referenceTransplantedType(new TransplantedType(input.transform.type));
+              }
+              return undefined;
+            },
           };
         }),
       ),
@@ -109,31 +104,22 @@ export function adaptTypeCheckBlockMetadata(
       undeclaredInputFields: dir.undeclaredInputFields,
       publicMethods: dir.publicMethods,
 
-      ref: (() => {
-        const refMeta: TcbReferenceMetadata = {
-          name,
-          moduleName,
-          isLocal,
-        };
-        const nodeName = dir.ref.node?.name;
-        if (nodeName) {
-          refMeta.nodeNameSpan = new AbsoluteSourceSpan(nodeName.getStart(), nodeName.getEnd());
-          refMeta.nodeFilePath = nodeName.getSourceFile().fileName;
-        }
-
-        return refMeta;
-      })(),
+      ref: extractRef(dir.ref as Reference<ClassDeclaration>),
       isGeneric: dir.isGeneric,
 
-      typeParameters: (() => {
+      get typeParameters() {
         const node = dir.ref.node as ClassDeclaration<ts.ClassDeclaration>;
-        if (!node.typeParameters) return undefined;
+        if (!node.typeParameters) {
+          return null;
+        }
         const emitter = new TypeParameterEmitter(node.typeParameters, env.reflector);
         if (!emitter.canEmit((ref) => env.canReferenceType(ref))) {
-          return [...node.typeParameters];
+          return [...node.typeParameters] as ts.TypeParameterDeclaration[];
         }
-        return emitter.emit((ref) => env.referenceType(ref));
-      })(),
+        return emitter.emit((ref) => env.referenceType(ref)) as
+          | ts.TypeParameterDeclaration[]
+          | null;
+      },
       hasRequiresInlineTypeCtor: requiresInlineTypeCtor(
         dir.ref.node as ClassDeclaration<ts.ClassDeclaration>,
         env.reflector,
@@ -161,11 +147,11 @@ export function adaptTypeCheckBlockMetadata(
     getUsedDirectives: () => meta.boundTarget.getUsedDirectives().map(convertDir),
     getEagerlyUsedDirectives: () => meta.boundTarget.getEagerlyUsedDirectives().map(convertDir),
     getUsedPipes: () => meta.boundTarget.getUsedPipes(),
-    getDirectivesOfNode: (node: DirectiveOwner) => {
+    getDirectivesOfNode: (node) => {
       const dirs = meta.boundTarget.getDirectivesOfNode(node);
       return dirs ? dirs.map(convertDir) : null;
     },
-    getReferenceTarget: (ref: TmplAstReference) => {
+    getReferenceTarget: (ref) => {
       const target = meta.boundTarget.getReferenceTarget(ref);
       if (target && 'directive' in target) {
         return {
@@ -175,49 +161,34 @@ export function adaptTypeCheckBlockMetadata(
       }
       return target as ReferenceTarget<TcbDirectiveMetadata>;
     },
-    getDeferredTriggerTarget: (b: any, t: any) => meta.boundTarget.getDeferredTriggerTarget(b, t),
-    isDeferred: (node: any) => meta.boundTarget.isDeferred(node),
-    referencedDirectiveExists: (name: string) => meta.boundTarget.referencedDirectiveExists(name),
-    getConsumerOfBinding: (binding: any) => {
+    getDeferredTriggerTarget: (b, t) => meta.boundTarget.getDeferredTriggerTarget(b, t),
+    isDeferred: (node) => meta.boundTarget.isDeferred(node),
+    referencedDirectiveExists: (name) => meta.boundTarget.referencedDirectiveExists(name),
+    getConsumerOfBinding: (binding) => {
       const consumer = meta.boundTarget.getConsumerOfBinding(binding);
       if (consumer && (consumer as TypeCheckableDirectiveMeta).isComponent !== undefined) {
         return convertDir(consumer as TypeCheckableDirectiveMeta);
       }
       return consumer as TmplAstElement | TmplAstTemplate | null;
     },
-    getExpressionTarget: (expr: any) => meta.boundTarget.getExpressionTarget(expr),
-    getDefinitionNodeOfSymbol: (sym: any) => meta.boundTarget.getDefinitionNodeOfSymbol(sym),
-    getNestingLevel: (node: any) => meta.boundTarget.getNestingLevel(node),
-    getEntitiesInScope: (node: any) => meta.boundTarget.getEntitiesInScope(node),
+    getExpressionTarget: (expr) => meta.boundTarget.getExpressionTarget(expr),
+    getDefinitionNodeOfSymbol: (sym) => meta.boundTarget.getDefinitionNodeOfSymbol(sym),
+    getNestingLevel: (node) => meta.boundTarget.getNestingLevel(node),
+    getEntitiesInScope: (node) => meta.boundTarget.getEntitiesInScope(node),
     getEagerlyUsedPipes: () => meta.boundTarget.getEagerlyUsedPipes(),
     getDeferBlocks: () => meta.boundTarget.getDeferBlocks(),
   };
 
   const pipes = new Map<string, TcbPipeMetadata>();
   if (meta.pipes !== null) {
-    for (const [keyName, pipe] of meta.pipes) {
-      let name = pipe.ref.node.name!.text;
-      let moduleName = pipe.ref.ownedByModuleGuess;
-      let isLocal = true;
-
-      const emitted = env.refEmitter.emit(pipe.ref, env.contextFile, ImportFlags.NoAliasing);
-      if (
-        emitted.kind === ReferenceEmitKind.Success &&
-        emitted.expression instanceof ExternalExpr
-      ) {
-        name = emitted.expression.value.name!;
-        moduleName = emitted.expression.value.moduleName;
-        isLocal = false;
+    for (const pipeName of meta.boundTarget.getUsedPipes()) {
+      if (!meta.pipes.has(pipeName) || pipes.has(pipeName)) {
+        continue;
       }
-
-      const refMeta: TcbReferenceMetadata = {
-        name,
-        moduleName,
-        isLocal,
-      };
-      pipes.set(keyName, {
+      const pipe = meta.pipes.get(pipeName)!;
+      pipes.set(pipeName, {
         name: pipe.name!,
-        ref: refMeta,
+        ref: extractRef(pipe.ref as Reference<ClassDeclaration>),
         isExplicitlyDeferred: pipe.isExplicitlyDeferred,
       });
     }
@@ -233,43 +204,51 @@ export function adaptTypeCheckBlockMetadata(
       preserveWhitespaces: meta.preserveWhitespaces,
     },
     component: (() => {
-      const emitted = env.refEmitter.emit(ref, env.contextFile, ImportFlags.NoAliasing);
-      assertSuccessfulReferenceEmit(emitted, env.contextFile, 'class');
-      let name = ref.debugName || ref.node.name!.text;
-      let moduleName = ref.ownedByModuleGuess;
-      let isLocal = true;
-
-      if (
-        emitted.kind === ReferenceEmitKind.Success &&
-        emitted.expression instanceof ExternalExpr
-      ) {
-        name = emitted.expression.value.name!;
-        moduleName = emitted.expression.value.moduleName;
-        isLocal = false;
-      }
-
-      const refMeta: TcbReferenceMetadata = {
-        name,
-        moduleName,
-        isLocal,
-      };
-      const nodeName = ref.node?.name;
-      if (nodeName) {
-        refMeta.nodeNameSpan = new AbsoluteSourceSpan(nodeName.getStart(), nodeName.getEnd());
-        refMeta.nodeFilePath = nodeName.getSourceFile().fileName;
-      }
-
       return {
-        ref: refMeta,
+        ref: extractRef(ref as Reference<ClassDeclaration>),
         typeParameters: (() => {
-          if (!ref.node.typeParameters) return undefined;
+          if (!ref.node.typeParameters) return null;
           const emitter = new TypeParameterEmitter(ref.node.typeParameters, env.reflector);
           if (!emitter.canEmit((r) => env.canReferenceType(r))) {
-            return [...ref.node.typeParameters];
+            return [...ref.node.typeParameters] as ts.TypeParameterDeclaration[];
           }
-          return emitter.emit((r) => env.referenceType(r));
+          return emitter.emit((r) => env.referenceType(r)) as ts.TypeParameterDeclaration[] | null;
         })(),
       };
     })(),
   };
+}
+
+function extractReferenceMetadata(
+  ref: Reference<ClassDeclaration>,
+  env: Environment,
+): TcbReferenceMetadata {
+  let name = ref.debugName || ref.node.name!.text;
+  let moduleName = ref.ownedByModuleGuess;
+  let unexportedDiagnostic: string | null = null;
+  let isLocal = true;
+
+  const emitted = env.refEmitter.emit(ref, env.contextFile, ImportFlags.NoAliasing);
+  if (emitted.kind === ReferenceEmitKind.Success && emitted.expression instanceof ExternalExpr) {
+    name = emitted.expression.value.name!;
+    moduleName = emitted.expression.value.moduleName;
+    isLocal = false;
+  } else if (emitted.kind === ReferenceEmitKind.Failed) {
+    unexportedDiagnostic = emitted.reason;
+    isLocal = false;
+  }
+
+  const refMeta: TcbReferenceMetadata = {
+    name,
+    moduleName,
+    isLocal,
+    unexportedDiagnostic,
+  };
+  const nodeName = ref.node?.name;
+  if (nodeName) {
+    refMeta.nodeNameSpan = new AbsoluteSourceSpan(nodeName.getStart(), nodeName.getEnd());
+    refMeta.nodeFilePath = nodeName.getSourceFile().fileName;
+  }
+
+  return refMeta;
 }

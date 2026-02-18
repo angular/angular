@@ -30,6 +30,7 @@ import {TcbGenericContextBehavior} from './ops/context';
  * hoists them to the top of the generated `ts.SourceFile`.
  */
 export class TypeCheckFile extends Environment {
+  readonly isTypeCheckFile = true;
   private nextTcbId = 1;
   private tcbStatements: ts.Statement[] = [];
 
