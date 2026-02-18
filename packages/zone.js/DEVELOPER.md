@@ -113,7 +113,8 @@ export SHA=`git log upstream/main --oneline -n 1000 | grep "release: cut the ${T
 echo "Releasing '$VERSION' which will be tagged as '$TAG' from SHA '$SHA'."
 git checkout ${SHA}
 npm login --registry https://wombat-dressing-room.appspot.com
-pnpm bazel -- run --config=release -- //packages/zone.js:npm_package.publish --access public --tag latest
+pnpm bazel build //packages/zone.js:npm_package --config=release --workspace_status_command="echo STABLE_PROJECT_VERSION $VERSION"
+npm publish dist/bin/packages/zone.js/npm_package --access public --tag latest
 git tag ${TAG} ${SHA}
 git push upstream ${TAG}
 ```
