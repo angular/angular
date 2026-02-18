@@ -2366,44 +2366,6 @@ describe('Image directive', () => {
         );
       });
 
-      it('should throw if a complex `sizes` is used', () => {
-        setupTestingModule();
-
-        const template =
-          '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw">';
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).toThrowError(
-          'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
-            'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
-            '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own `ngSrcset` value directly.',
-        );
-      });
-      it('should throw if a complex `sizes` is used with srcset', () => {
-        setupTestingModule();
-
-        const template =
-          '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw" srcset="www.example.com/img.png?w=500 768w, www.example.com/img.png?w=2000" >';
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).toThrowError(
-          'NG02952: The NgOptimizedImage directive has detected that `sizes` was set to a string including pixel values. ' +
-            'For automatic `srcset` generation, `sizes` must only include responsive values, such as `sizes="50vw"` or ' +
-            '`sizes="(min-width: 768px) 50vw, 100vw"`. To fix this, modify the `sizes` attribute, or provide your own `ngSrcset` value directly.',
-        );
-      });
-      it('should not throw if a complex `sizes` is used with ngSrcset', () => {
-        setupTestingModule();
-
-        const template =
-          '<img ngSrc="path/img.png" width="100" height="50" sizes="(min-width: 768px) 500px, 100vw" ngSrcset="100w, 200w">';
-        expect(() => {
-          const fixture = createTestComponent(template);
-          fixture.detectChanges();
-        }).not.toThrow();
-      });
     });
 
     describe('automatic srcset generation', () => {

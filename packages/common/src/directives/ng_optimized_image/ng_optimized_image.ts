@@ -445,9 +445,6 @@ export class NgOptimizedImage implements OnInit, OnChanges {
       }
       assertValidLoadingInput(this);
       assertValidDecodingInput(this);
-      if (!this.ngSrcset) {
-        assertNoComplexSizes(this);
-      }
       assertValidPlaceholder(this, this.imageLoader);
       assertNotMissingBuiltInLoader(this.ngSrc, this.imageLoader);
       assertNoNgSrcsetWithoutLoader(this, this.imageLoader);
@@ -828,22 +825,6 @@ function assertNotBase64Image(dir: NgOptimizedImage) {
         `(${ngSrc}). NgOptimizedImage does not support Base64-encoded strings. ` +
         `To fix this, disable the NgOptimizedImage directive for this element ` +
         `by removing \`ngSrc\` and using a standard \`src\` attribute instead.`,
-    );
-  }
-}
-
-/**
- * Verifies that the 'sizes' only includes responsive values.
- */
-function assertNoComplexSizes(dir: NgOptimizedImage) {
-  let sizes = dir.sizes;
-  if (sizes?.match(/((\)|,)\s|^)\d+px/)) {
-    throw new RuntimeError(
-      RuntimeErrorCode.INVALID_INPUT,
-      `${imgDirectiveDetails(dir.ngSrc, false)} \`sizes\` was set to a string including ` +
-        `pixel values. For automatic \`srcset\` generation, \`sizes\` must only include responsive ` +
-        `values, such as \`sizes="50vw"\` or \`sizes="(min-width: 768px) 50vw, 100vw"\`. ` +
-        `To fix this, modify the \`sizes\` attribute, or provide your own \`ngSrcset\` value directly.`,
     );
   }
 }
