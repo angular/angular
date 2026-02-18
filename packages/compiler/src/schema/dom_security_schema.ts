@@ -58,7 +58,7 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'mfrac|xlink:href',
       'mglyph|href',
       'mglyph|xlink:href',
-      'mglyph|src', // <--- التعديل الأمني هنا: إضافة السمة الناقصة لمنع XSS
+      'mglyph|src', 
       'msub|href',
       'msub|xlink:href',
       'msup|href',
