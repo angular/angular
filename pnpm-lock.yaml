@@ -578,6 +578,27 @@ importers:
       '@marijn/find-cluster-break':
         specifier: 1.0.2
         version: 1.0.2
+      '@shikijs/core':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/engine-javascript':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/engine-oniguruma':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/langs':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/themes':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/types':
+        specifier: ^3.21.0
+        version: 3.21.0
+      '@shikijs/vscode-textmate':
+        specifier: ^10.0.2
+        version: 10.0.2
       '@stackblitz/sdk':
         specifier: 1.11.0
         version: 1.11.0
@@ -611,6 +632,18 @@ importers:
       angular-split:
         specifier: 20.0.0
         version: 20.0.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+      ccount:
+        specifier: ^2.0.1
+        version: 2.0.1
+      character-entities-html4:
+        specifier: ^2.1.0
+        version: 2.1.0
+      character-entities-legacy:
+        specifier: ^3.0.0
+        version: 3.0.0
+      comma-separated-tokens:
+        specifier: ^2.0.3
+        version: 2.0.3
       crelt:
         specifier: 1.0.6
         version: 1.0.6
@@ -623,6 +656,15 @@ importers:
       fflate:
         specifier: 0.8.2
         version: 0.8.2
+      hast-util-to-html:
+        specifier: ^9.0.5
+        version: 9.0.5
+      hast-util-whitespace:
+        specifier: ^3.0.0
+        version: 3.0.0
+      html-void-elements:
+        specifier: ^3.0.0
+        version: 3.0.0
       jasmine-core:
         specifier: 6.0.0
         version: 6.0.0
@@ -663,14 +705,23 @@ importers:
         specifier: 6.6.5
         version: 6.6.5(preact@10.28.2)
       prettier:
-        specifier: 3.8.0
-        version: 3.8.0
+        specifier: 3.8.1
+        version: 3.8.1
+      property-information:
+        specifier: ^7.1.0
+        version: 7.1.0
       rxjs:
         specifier: 7.8.2
         version: 7.8.2
       shiki:
-        specifier: 3.21.0
-        version: 3.21.0
+        specifier: 3.22.0
+        version: 3.22.0
+      space-separated-tokens:
+        specifier: ^2.0.2
+        version: 2.0.2
+      stringify-entities:
+        specifier: ^4.0.4
+        version: 4.0.4
       style-mod:
         specifier: 4.1.3
         version: 4.1.3
@@ -686,6 +737,9 @@ importers:
       w3c-keyname:
         specifier: 2.2.8
         version: 2.2.8
+      zwitch:
+        specifier: ^2.0.4
+        version: 2.0.4
     devDependencies:
       autoprefixer:
         specifier: 10.4.23
@@ -10589,11 +10643,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  prettier@3.8.0:
-    resolution: {integrity: sha512-yEPsovQfpxYfgWNhCfECjG5AQaO+K3dp6XERmOepyPDVqcJm+bjyCVO3pmU+nAPe0N5dDvekfGezt/EIiRe1TA==}
-    engines: {node: '>=14'}
-    hasBin: true
-
   prettier@3.8.1:
     resolution: {integrity: sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg==}
     engines: {node: '>=14'}
@@ -10722,7 +10771,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
@@ -11272,9 +11320,6 @@ packages:
   shell-quote@1.8.3:
     resolution: {integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==}
     engines: {node: '>= 0.4'}
-
-  shiki@3.21.0:
-    resolution: {integrity: sha512-N65B/3bqL/TI2crrXr+4UivctrAGEjmsib5rPMMPpFp1xAx/w03v8WZ9RDDFYteXoEgY7qZ4HGgl5KBIu1153w==}
 
   shiki@3.22.0:
     resolution: {integrity: sha512-LBnhsoYEe0Eou4e1VgJACes+O6S6QC0w71fCSp5Oya79inkwkm15gQ1UF6VtQ8j/taMDh79hAB49WUk8ALQW3g==}
@@ -24759,8 +24804,6 @@ snapshots:
       tunnel-agent: 0.6.0
     optional: true
 
-  prettier@3.8.0: {}
-
   prettier@3.8.1: {}
 
   pretty-bytes@5.6.0: {}
@@ -25655,17 +25698,6 @@ snapshots:
   shebang-regex@3.0.0: {}
 
   shell-quote@1.8.3: {}
-
-  shiki@3.21.0:
-    dependencies:
-      '@shikijs/core': 3.21.0
-      '@shikijs/engine-javascript': 3.21.0
-      '@shikijs/engine-oniguruma': 3.21.0
-      '@shikijs/langs': 3.21.0
-      '@shikijs/themes': 3.21.0
-      '@shikijs/types': 3.21.0
-      '@shikijs/vscode-textmate': 10.0.2
-      '@types/hast': 3.0.4
 
   shiki@3.22.0:
     dependencies:
