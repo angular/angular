@@ -5,6 +5,19 @@
 // as well as better human-readability
 // --> https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch
 
+// Grays
+$gray-1000: oklch(16.93% 0.004 285.95); // #0f0f11
+$gray-900: oklch(19.37% 0.006 300.98); // #151417
+$gray-800: oklch(25.16% 0.008 308.11); // #232125
+$gray-700: oklch(36.98% 0.014 302.71); // #413e46
+$gray-600: oklch(44% 0.019 306.08); // #55505b
+$gray-500: oklch(54.84% 0.023 304.99); // #746e7c
+$gray-400: oklch(70.9% 0.015 304.04); // #a39fa9
+$gray-300: oklch(84.01% 0.009 308.34); // #ccc9cf
+$gray-200: oklch(91.75% 0.004 301.42); // #e4e3e6
+$gray-100: oklch(97.12% 0.002 325.59); // #f6f5f6
+$gray-50: oklch(98.81% 0 0); // #fbfbfb
+
 @mixin root-definitions() {
   // PRIMITIVES
   // Colors
@@ -46,19 +59,6 @@
   --symbolic-teal: oklch(57.59% 0.083 230.58); // #3f82a1
   --symbolic-brown: oklch(49.06% 0.128 46.41); // #994411
   --symbolic-lime: oklch(70.33% 0.2078857836035299 135.66843631046476); // #5dba00
-
-  // Grays
-  --gray-1000: oklch(16.93% 0.004 285.95); // #0f0f11
-  --gray-900: oklch(19.37% 0.006 300.98); // #151417
-  --gray-800: oklch(25.16% 0.008 308.11); // #232125
-  --gray-700: oklch(36.98% 0.014 302.71); // #413e46
-  --gray-600: oklch(44% 0.019 306.08); // #55505b
-  --gray-500: oklch(54.84% 0.023 304.99); // #746e7c
-  --gray-400: oklch(70.9% 0.015 304.04); // #a39fa9
-  --gray-300: oklch(84.01% 0.009 308.34); // #ccc9cf
-  --gray-200: oklch(91.75% 0.004 301.42); // #e4e3e6
-  --gray-100: oklch(97.12% 0.002 325.59); // #f6f5f6
-  --gray-50: oklch(98.81% 0 0); // #fbfbfb
 
   // GRADIENTS
   --red-to-pink-horizontal-gradient: linear-gradient(
@@ -124,7 +124,7 @@
   --pink-to-white-horizontal-gradient: linear-gradient(
     90deg,
     var(--vivid-pink) 0%,
-    var(--gray-200) 60%
+    #{$gray-200} 60%
   );
 
   --light-pink-to-light-purple-horizontal-gradient: linear-gradient(
@@ -166,7 +166,7 @@
   --black-to-gray-vertical-gradient: linear-gradient(
     0deg,
     var(--primary-contrast) 0%,
-    var(--gray-400) 100%
+    #{$gray-400} 100%
   );
 
   --red-to-pink-vertical-gradient: linear-gradient(0deg, var(--hot-red) 0%, var(--vivid-pink) 100%);
@@ -217,35 +217,35 @@
   // LIGHT MODE is default
   // contrast - light mode
   --full-contrast: black;
-  --primary-contrast: var(--gray-900);
-  --secondary-contrast: var(--gray-800);
-  --tertiary-contrast: var(--gray-700);
-  --quaternary-contrast: var(--gray-500);
-  --quinary-contrast: var(--gray-300);
-  --senary-contrast: var(--gray-200);
-  --septenary-contrast: var(--gray-100);
-  --octonary-contrast: var(--gray-50);
+  --primary-contrast: #{$gray-900};
+  --secondary-contrast: #{$gray-800};
+  --tertiary-contrast: #{$gray-700};
+  --quaternary-contrast: #{$gray-500};
+  --quinary-contrast: #{$gray-300};
+  --senary-contrast: #{$gray-200};
+  --septenary-contrast: #{$gray-100};
+  --octonary-contrast: #{$gray-50};
   --page-background: white;
 
   // Home page
   // for the "unfilled" portion of the word that hasn't
   // been highlighted by the gradient
-  --gray-unfilled: var(--gray-400);
-  --webgl-page-background: var(var(--page-background)) --webgl-gray-unfilled: var(--gray-400);
+  --gray-unfilled: #{$gray-400};
+  --webgl-page-background: var(var(--page-background)) --webgl-gray-unfilled: #{$gray-400};
 }
 
 @mixin dark-mode-definitions() {
   // Contrasts
   --full-contrast: white;
-  --primary-contrast: var(--gray-50);
-  --secondary-contrast: var(--gray-300);
-  --tertiary-contrast: var(--gray-300);
-  --quaternary-contrast: var(--gray-400);
-  --quinary-contrast: var(--gray-500);
-  --senary-contrast: var(--gray-700);
-  --septenary-contrast: var(--gray-800);
-  --octonary-contrast: var(--gray-900);
-  --page-background: var(--gray-1000);
+  --primary-contrast: #{$gray-50};
+  --secondary-contrast: #{$gray-300};
+  --tertiary-contrast: #{$gray-300};
+  --quaternary-contrast: #{$gray-400};
+  --quinary-contrast: #{$gray-500};
+  --senary-contrast: #{$gray-700};
+  --septenary-contrast: #{$gray-800};
+  --octonary-contrast: #{$gray-900};
+  --page-background: #{$gray-1000};
 
   --bright-blue: color-mix(in srgb, oklch(51.01% 0.274 263.83), var(--full-contrast) 60%);
   --indigo-blue: color-mix(in srgb, oklch(51.64% 0.229 281.65), var(--full-contrast) 70%);
@@ -260,7 +260,7 @@
   --orange-red: color-mix(in srgb, oklch(63.32% 0.24 31.68), var(--full-contrast) 60%);
   --super-green: color-mix(in srgb, oklch(79.12% 0.257 155.13), var(--full-contrast) 70%);
   --light-vivid-pink-to-light-electric-violet-horizontal-gradient:
-    linear-gradient(hsl(from var(--gray-1000) h s l / 0.9), hsl(from var(--gray-1000) h s l / 0.9)),
+    linear-gradient(hsl(from #{$gray-1000} h s l / 0.9), hsl(from #{$gray-1000} h s l / 0.9)),
     linear-gradient(
       hsl(from var(--full-contrast) h s l / 0.2),
       hsl(from var(--full-contrast) h s l / 0.2)
@@ -319,9 +319,9 @@
   );
 
   // Home page - dark mode
-  --gray-unfilled: var(--gray-700);
-  --webgl-page-background: var(--gray-1000);
-  --webgl-gray-unfilled: var(--gray-700);
+  --gray-unfilled: #{$gray-700};
+  --webgl-page-background: #{$gray-1000};
+  --webgl-gray-unfilled: #{$gray-700};
 
   .docs-toggle {
     input {
