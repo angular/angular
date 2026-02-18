@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, lastValueFrom} from 'rxjs';
 
 import {provideClientHydration, withNoHttpTransferCache} from '../public_api';
 import {withHttpTransferCacheOptions} from '../src/hydration';
@@ -31,21 +31,23 @@ describe('provideClientHydration', () => {
   })
   class SomeComponent {}
 
-  function makeRequestAndExpectOne(
+  async function makeRequestAndExpectOne(
     url: string,
     body: string,
     options: HttpTransferCacheOptions | boolean = true,
-  ): void {
-    TestBed.inject(HttpClient).get(url, {transferCache: options}).subscribe();
+  ): Promise<Object> {
+    const response = lastValueFrom(TestBed.inject(HttpClient).get(url, {transferCache: options}));
     TestBed.inject(HttpTestingController).expectOne(url).flush(body);
+    return response;
   }
 
-  function makeRequestAndExpectNone(
+  async function makeRequestAndExpectNone(
     url: string,
     options: HttpTransferCacheOptions | boolean = true,
-  ): void {
-    TestBed.inject(HttpClient).get(url, {transferCache: options}).subscribe();
+  ): Promise<Object> {
+    const response = lastValueFrom(TestBed.inject(HttpClient).get(url, {transferCache: options}));
     TestBed.inject(HttpTestingController).expectNone(url);
+    return response;
   }
 
   @Injectable()
@@ -88,10 +90,10 @@ describe('provideClientHydration', () => {
       ),
     );
 
-    it(`should use cached HTTP calls`, () => {
-      makeRequestAndExpectOne('/test-1', 'foo');
+    it(`should use cached HTTP calls`, async () => {
+      await makeRequestAndExpectOne('/test-1', 'foo');
       // Do the same call, this time it should served from cache.
-      makeRequestAndExpectNone('/test-1');
+      await makeRequestAndExpectNone('/test-1');
     });
   });
 
@@ -120,10 +122,10 @@ describe('provideClientHydration', () => {
       ),
     );
 
-    it(`should not cache HTTP calls`, () => {
-      makeRequestAndExpectOne('/test-1', 'foo', false);
+    it(`should not cache HTTP calls`, async () => {
+      await makeRequestAndExpectOne('/test-1', 'foo', false);
       // Do the same call, this time should pass through as cache is disabled.
-      makeRequestAndExpectOne('/test-1', 'foo');
+      await makeRequestAndExpectOne('/test-1', 'foo');
     });
   });
 
@@ -154,14 +156,11 @@ describe('provideClientHydration', () => {
       ),
     );
 
-    it(`should cache HTTP POST calls`, () => {
+    it(`should cache HTTP POST calls`, async () => {
       const url = '/test-1';
       const body = 'foo';
-      TestBed.inject(HttpClient).post(url, body).subscribe();
-      TestBed.inject(HttpTestingController).expectOne(url).flush(body);
-
-      TestBed.inject(HttpClient).post(url, body).subscribe();
-      TestBed.inject(HttpTestingController).expectNone(url);
+      await makeRequestAndExpectOne(url, body);
+      await makeRequestAndExpectNone(url);
     });
   });
 });
