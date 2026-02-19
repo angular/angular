@@ -26,6 +26,14 @@ import {inject} from '@angular/core';
 
 /// <reference types="dom-navigation" />
 
+function isFirefox() {
+  const userAgent = navigator.userAgent.toLowerCase();
+  if (userAgent.indexOf('firefox') != -1) {
+    return true;
+  }
+  return false;
+}
+
 describe('withPlatformNavigation feature', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -230,7 +238,7 @@ describe('configuration error', () => {
   });
 });
 
-if (typeof window !== 'undefined' && 'navigation' in window) {
+if (typeof window !== 'undefined' && 'navigation' in window && !isFirefox()) {
   describe('real platform navigation', () => {
     const navigation = window.navigation as Navigation;
     beforeEach(() => {
