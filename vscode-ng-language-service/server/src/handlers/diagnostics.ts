@@ -19,7 +19,24 @@ import {isDebugMode, filePathToUri, uriToFilePath} from '../utils';
  * We store the full version string (not parsed numeric) for robust change detection,
  * as the format of TypeScript's ScriptInfo version strings could change.
  */
-const diagnosticResultCache = new Map<string, {resultId: string; version: string}>();
+const diagnosticResultCache = new Map<
+  string,
+  {resultId: string; version: string; projectName: string; projectEpoch: number}
+>();
+
+/**
+ * Per-project invalidation epochs used by pull diagnostics caching.
+ *
+ * ScriptInfo.getLatestVersion() only tracks file-content changes for that one file.
+ * Diagnostics for file A can still change when:
+ * - an imported dependency B changes, or
+ * - project/compiler config changes.
+ *
+ * To avoid returning stale `Unchanged` in those cases, each cached result also stores
+ * the current project epoch, and callers bump project/global epochs on invalidation events.
+ */
+const projectDiagnosticEpoch = new Map<string, number>();
+let globalDiagnosticEpoch = 0;
 
 /**
  * Promisified setImmediate, used to yield to the event loop between files.
@@ -35,6 +52,18 @@ let nextResultId = 1;
  */
 function generateResultId(): string {
   return String(nextResultId++);
+}
+
+function getProjectDiagnosticEpoch(projectName: string): number {
+  return Math.max(globalDiagnosticEpoch, projectDiagnosticEpoch.get(projectName) ?? 0);
+}
+
+export function invalidateProjectDiagnostics(projectName: string): void {
+  projectDiagnosticEpoch.set(projectName, getProjectDiagnosticEpoch(projectName) + 1);
+}
+
+export function invalidateAllProjectDiagnostics(): void {
+  globalDiagnosticEpoch++;
 }
 
 /**
@@ -59,12 +88,22 @@ function computeDiagnosticsForFile(
   }
 
   const {languageService, scriptInfo} = result;
+  const project = session.getDefaultProjectForScriptInfo(scriptInfo);
+  if (!project) {
+    return {kind: lsp.DocumentDiagnosticReportKind.Full, items: []};
+  }
+  const projectName = project.getProjectName();
+  const projectEpoch = getProjectDiagnosticEpoch(projectName);
   const cached = diagnosticResultCache.get(uri);
   const currentVersion = scriptInfo.getLatestVersion();
 
   // Check if we can return an unchanged report
   if (previousResultId && cached && cached.resultId === previousResultId) {
-    if (currentVersion === cached.version) {
+    if (
+      currentVersion === cached.version &&
+      cached.projectName === projectName &&
+      cached.projectEpoch === projectEpoch
+    ) {
       return {
         kind: lsp.DocumentDiagnosticReportKind.Unchanged,
         resultId: cached.resultId,
@@ -90,7 +129,12 @@ function computeDiagnosticsForFile(
   }
 
   const newResultId = generateResultId();
-  diagnosticResultCache.set(uri, {resultId: newResultId, version: currentVersion});
+  diagnosticResultCache.set(uri, {
+    resultId: newResultId,
+    version: currentVersion,
+    projectName,
+    projectEpoch,
+  });
 
   return {
     kind: lsp.DocumentDiagnosticReportKind.Full,

@@ -42,6 +42,8 @@ import {
   onDocumentDiagnostic,
   onWorkspaceDiagnostic,
   clearDiagnosticCache,
+  invalidateAllProjectDiagnostics,
+  invalidateProjectDiagnostics,
 } from './handlers/diagnostics';
 import {onFoldingRanges} from './handlers/folding';
 import {onHover} from './handlers/hover';
@@ -293,7 +295,7 @@ export class Session {
     if (this.usePullDiagnostics) {
       // In pull mode, ask the client to refresh and then pull diagnostics.
       // Avoid triggering push-oriented diagnostics work via project.refreshDiagnostics().
-      this.refreshDiagnostics();
+      this.refreshDiagnostics(true);
     } else {
       project.refreshDiagnostics();
     }
@@ -452,14 +454,38 @@ export class Session {
       // If using pull-based diagnostics (LSP 3.17), ask the client to refresh
       // instead of pushing diagnostics from the server
       if (this.usePullDiagnostics) {
+        // For background project updates we do not have a precise changed-file set,
+        // so invalidate globally for correctness across project references.
+        if (reason === ts.server.ProjectsUpdatedInBackgroundEvent) {
+          this.refreshDiagnostics(true);
+          return;
+        }
+
+        // For open/change triggers we do know the relevant files, so invalidate
+        // only their owning projects to keep `Unchanged` effective elsewhere.
+        this.invalidatePullDiagnosticProjects(files);
         this.logger.info(`${reason} - Requesting client to refresh diagnostics (pull-based)`);
-        this.connection.languages.diagnostics.refresh();
+        this.refreshDiagnostics(false);
       } else {
         this.sendPendingDiagnostics(files, reason);
       }
       // Default delay is 200ms, consistent with TypeScript. See
       // https://github.com/microsoft/vscode/blob/7b944a16f52843b44cede123dd43ae36c0405dfd/extensions/typescript-language-features/src/features/bufferSyncSupport.ts#L493)
     }, delay);
+  }
+
+  private invalidatePullDiagnosticProjects(files: string[]): void {
+    for (const fileName of files) {
+      const scriptInfo = this.projectService.getScriptInfo(fileName);
+      if (!scriptInfo) {
+        continue;
+      }
+      const project = this.getDefaultProjectForScriptInfo(scriptInfo);
+      if (!project || project.isClosed()) {
+        continue;
+      }
+      invalidateProjectDiagnostics(project.getProjectName());
+    }
   }
 
   /**
@@ -832,12 +858,17 @@ export class Session {
    * Request the client to refresh all diagnostics.
    * This is useful when the server detects a project-wide change.
    */
-  refreshDiagnostics(): void {
+  refreshDiagnostics(invalidateAll: boolean = true): void {
     if (!this.usePullDiagnostics) {
       this.logger.info(
         'Skipping workspace/diagnostic/refresh because pull diagnostics is disabled.',
       );
       return;
+    }
+    if (invalidateAll) {
+      // Project-wide refresh means diagnostics may change for files whose text version did not.
+      // Bump global invalidation epoch so pull requests recompute at least once.
+      invalidateAllProjectDiagnostics();
     }
     this.connection.languages.diagnostics.refresh();
   }

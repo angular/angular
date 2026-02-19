@@ -1139,6 +1139,57 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
     expect(fullResponse.items[0].message).toContain('alsoDoesNotExist');
   });
 
+  it('should return full report when dependent component changes', async () => {
+    // Start with a valid template that references `title` from FooComponent.
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ title }}`,
+      },
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Change the component without changing the template file itself.
+    openTextDocument(
+      client,
+      FOO_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'foo-component',
+  templateUrl: 'foo.component.html',
+})
+export class FooComponent {
+  title2 = 'Angular';
+}
+`,
+    );
+
+    await waitForDiagnosticRefresh();
+
+    // Even though template text/version is unchanged, diagnostics must be recomputed
+    // because its dependent TS component changed.
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+      previousResultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = secondResponse as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(1);
+    expect(fullResponse.items[0].message).toContain("Property 'title' does not exist");
+  });
+
   it('should return diagnostics for valid template', async () => {
     // Open the app component which should have no errors
     openTextDocument(client, APP_COMPONENT);
@@ -1181,6 +1232,57 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
     expect(fullResponse.items[0].relatedInformation![0].message).toBe(
       `Error occurs in the template of component FooComponent.`,
     );
+  });
+
+  it('should return full report after tsconfig change even when document text is unchanged', async () => {
+    const tmpDir = makeTempDir();
+    const newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+    const tsconfigPathTmp = join(newProjectRoot, 'tsconfig.json');
+    const fooTemplatePathTmp = join(newProjectRoot, 'app/foo.component.html');
+    const fooTemplateUriTmp = pathToFileURL(fooTemplatePathTmp).href;
+
+    await cp(PROJECT_PATH, newProjectRoot, {
+      recursive: true,
+      mode: fs.constants.COPYFILE_FICLONE,
+    });
+
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: fooTemplateUriTmp,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: fooTemplateUriTmp},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Notify watched-files path explicitly to simulate a tsconfig change without
+    // relying on writable sandbox files.
+    client.sendNotification(lsp.DidChangeWatchedFilesNotification.type, {
+      changes: [
+        {
+          uri: pathToFileURL(tsconfigPathTmp).href,
+          type: lsp.FileChangeType.Changed,
+        },
+      ],
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: fooTemplateUriTmp},
+      previousResultId,
+    });
+
+    // Config/project changes must force a full recomputation at least once.
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
   });
 
   it('should handle workspace/diagnostic request', async () => {
