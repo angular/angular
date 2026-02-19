@@ -119,6 +119,7 @@ export interface TestBed {
     execute(tokens: any[], fn: Function, context?: any): any;
     // @deprecated
     flushEffects(): void;
+    getFixture<T = unknown>(): ComponentFixture<T>;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, options?: TestEnvironmentOptions): void;
     // (undocumented)
     inject<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {
