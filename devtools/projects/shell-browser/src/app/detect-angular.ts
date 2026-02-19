@@ -13,13 +13,13 @@ import {
   appIsAngularIvy,
   appIsSupportedAngularVersion,
 } from '../../../shared-utils';
-import {getDetectAngularScriptUri} from './comm-utils';
+import {getContentScriptUri, getDetectAngularScriptUri} from './comm-utils';
 
 import {SamePageMessageBus} from './same-page-message-bus';
 
 const detectAngularMessageBus = new SamePageMessageBus(
   getDetectAngularScriptUri(),
-  getDetectAngularScriptUri(),
+  getContentScriptUri(),
 );
 
 let detectAngularTimeout: ReturnType<typeof setTimeout>;
