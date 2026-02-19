@@ -290,7 +290,13 @@ export class Session {
     // Send diagnostics since we skipped this step when opening the file.
     // First, make sure the Angular project is complete.
     this.runGlobalAnalysisForNewlyLoadedProject(project);
-    project.refreshDiagnostics();
+    if (this.usePullDiagnostics) {
+      // In pull mode, ask the client to refresh and then pull diagnostics.
+      // Avoid triggering push-oriented diagnostics work via project.refreshDiagnostics().
+      this.refreshDiagnostics();
+    } else {
+      project.refreshDiagnostics();
+    }
   }
 
   private disableLanguageServiceForProject(project: ts.server.Project, reason: string): void {
