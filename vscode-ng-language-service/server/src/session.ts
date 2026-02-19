@@ -292,13 +292,19 @@ export class Session {
     if (!project.hasRoots()) {
       return;
     }
-    const fileName = project.getRootScriptInfos()[0].fileName;
-    const label = `Global analysis - getSemanticDiagnostics for ${fileName}`;
+    const languageService = project.getLanguageService();
+    if (!isNgLanguageService(languageService)) {
+      return;
+    }
+    const label = `Global analysis - ensureProjectAnalyzed for ${project.getProjectName()}`;
     if (isDebugMode) {
       console.time(label);
     }
-    // Getting semantic diagnostics will trigger a global analysis.
-    project.getLanguageService().getSemanticDiagnostics(fileName);
+    // Trigger Angular compilation without per-file type checking overhead.
+    // Previously this used getSemanticDiagnostics() which also ran per-file
+    // TypeScript type checking on the first root file — wasted work since those
+    // results were never consumed.
+    languageService.ensureProjectAnalyzed();
     if (isDebugMode) {
       console.timeEnd(label);
     }
