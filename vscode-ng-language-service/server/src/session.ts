@@ -461,9 +461,9 @@ export class Session {
           return;
         }
 
-        // For open/change triggers we do know the relevant files, so invalidate
-        // only their owning projects to keep `Unchanged` effective elsewhere.
-        this.invalidatePullDiagnosticProjects(files);
+        // For open/change triggers we attempt a finer-grained invalidation so
+        // unrelated files can still return cached `Unchanged` results.
+        this.invalidatePullDiagnosticsForImpactedFiles(files);
         this.logger.info(`${reason} - Requesting client to refresh diagnostics (pull-based)`);
         this.refreshDiagnostics(false);
       } else {
@@ -474,18 +474,137 @@ export class Session {
     }, delay);
   }
 
-  private invalidatePullDiagnosticProjects(files: string[]): void {
-    for (const fileName of files) {
-      const scriptInfo = this.projectService.getScriptInfo(fileName);
+  private invalidatePullDiagnosticsForImpactedFiles(files: string[]): void {
+    const impactedFiles = new Set<string>();
+    const fallbackProjects = new Set<string>();
+
+    for (const changedFile of files) {
+      impactedFiles.add(changedFile);
+      const scriptInfo = this.projectService.getScriptInfo(changedFile);
       if (!scriptInfo) {
         continue;
       }
+
       const project = this.getDefaultProjectForScriptInfo(scriptInfo);
       if (!project || project.isClosed()) {
         continue;
       }
-      invalidateProjectDiagnostics(project.getProjectName());
+      fallbackProjects.add(project.getProjectName());
+
+      const languageService = project.getLanguageService();
+      if (!isNgLanguageService(languageService)) {
+        continue;
+      }
+
+      const projectFiles = project.getFileNames(true, true);
+      const reverseDeps = this.buildReverseDependencyMap(languageService.getProgram());
+      const componentToTemplates = this.buildComponentToTemplateMap(languageService, projectFiles);
+
+      const queue = [changedFile];
+      const visited = new Set<string>();
+      while (queue.length > 0) {
+        const current = queue.pop()!;
+        if (visited.has(current)) {
+          continue;
+        }
+        visited.add(current);
+        impactedFiles.add(current);
+
+        for (const importer of reverseDeps.get(current) ?? []) {
+          if (!visited.has(importer)) {
+            queue.push(importer);
+          }
+        }
+
+        if (isExternalTemplate(current)) {
+          for (const component of languageService.getComponentLocationsForTemplate(current)) {
+            if (!visited.has(component.fileName)) {
+              queue.push(component.fileName);
+            }
+          }
+        }
+
+        for (const template of componentToTemplates.get(current) ?? []) {
+          impactedFiles.add(template);
+        }
+      }
+
+      // Angular metadata edits can affect templates without TS import edges
+      // (e.g. selector rename for an unimported component).
+      const snapshot = scriptInfo.getSnapshot();
+      const text = snapshot.getText(0, snapshot.getLength());
+      if (/@Component\s*\(|@Directive\s*\(|@Pipe\s*\(|@NgModule\s*\(/.test(text)) {
+        for (const fileName of projectFiles) {
+          impactedFiles.add(fileName);
+        }
+      }
     }
+
+    for (const fileName of impactedFiles) {
+      clearDiagnosticCache(filePathToUri(fileName));
+    }
+
+    // Fallback for cases where impacted files could not be determined.
+    if (impactedFiles.size === 0) {
+      for (const projectName of fallbackProjects) {
+        invalidateProjectDiagnostics(projectName);
+      }
+    }
+  }
+
+  private buildReverseDependencyMap(program: ts.Program | undefined): Map<string, Set<string>> {
+    const reverseDeps = new Map<string, Set<string>>();
+    if (!program) {
+      return reverseDeps;
+    }
+
+    for (const sourceFile of program.getSourceFiles()) {
+      const importer = sourceFile.fileName;
+      const resolvedModules = (
+        sourceFile as ts.SourceFile & {
+          resolvedModules?: ReadonlyMap<string, ts.ResolvedModuleFull | undefined>;
+        }
+      ).resolvedModules;
+      if (!resolvedModules) {
+        continue;
+      }
+      for (const resolved of resolvedModules.values()) {
+        const imported = resolved?.resolvedFileName;
+        if (!imported) {
+          continue;
+        }
+        let importers = reverseDeps.get(imported);
+        if (!importers) {
+          importers = new Set<string>();
+          reverseDeps.set(imported, importers);
+        }
+        importers.add(importer);
+      }
+    }
+
+    return reverseDeps;
+  }
+
+  private buildComponentToTemplateMap(
+    languageService: NgLanguageService,
+    projectFiles: string[],
+  ): Map<string, Set<string>> {
+    const componentToTemplates = new Map<string, Set<string>>();
+    for (const fileName of projectFiles) {
+      if (!isExternalTemplate(fileName)) {
+        continue;
+      }
+      const components = languageService.getComponentLocationsForTemplate(fileName);
+      for (const component of components) {
+        let templates = componentToTemplates.get(component.fileName);
+        if (!templates) {
+          templates = new Set<string>();
+          componentToTemplates.set(component.fileName, templates);
+        }
+        templates.add(fileName);
+      }
+    }
+    return componentToTemplates;
   }
 
   /**
