@@ -13,15 +13,15 @@ jobs:
       JOBS: 2
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@c231d87cc1e09e7541f9d0dbdd1fb4296a11d3ce
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@300402997d97d50374b56e5f896e1965ac04f868
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@c231d87cc1e09e7541f9d0dbdd1fb4296a11d3ce
+        uses: angular/dev-infra/github-actions/bazel/setup@300402997d97d50374b56e5f896e1965ac04f868
       - name: Setup Bazel Remote Caching
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@c231d87cc1e09e7541f9d0dbdd1fb4296a11d3ce
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@300402997d97d50374b56e5f896e1965ac04f868
       - name: Setup Saucelabs Variables
-        uses: angular/dev-infra/github-actions/saucelabs@c231d87cc1e09e7541f9d0dbdd1fb4296a11d3ce
+        uses: angular/dev-infra/github-actions/saucelabs@300402997d97d50374b56e5f896e1965ac04f868
       - name: Set up Sauce Tunnel Daemon
         run: pnpm bazel run //tools/saucelabs-daemon/background-service -- $JOBS &
         env:
