@@ -39,6 +39,8 @@ export interface CodeToken extends Tokens.Generic {
   highlight?: string;
   /** Whether to hide the copy button */
   hideCopy?: boolean;
+  /** Whether to hide the dollar sign in the shell code */
+  hideDollar?: boolean;
 
   // additional classes for the element
   classes?: string[];
@@ -132,6 +134,10 @@ function applyContainerAttributesAndClasses(el: Element, token: CodeToken) {
   if (token.hideCopy) {
     el.setAttribute('hideCopy', 'true');
   }
+  if (token.hideDollar) {
+    el.setAttribute('hideDollar', 'true');
+  }
+
   const language = token.language;
 
   if (language === 'mermaid') {

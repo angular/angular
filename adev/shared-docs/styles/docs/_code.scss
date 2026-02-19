@@ -204,15 +204,24 @@ $code-font-size: 0.875rem;
       white-space: nowrap;
     }
 
-    .shiki .line {
-      &::before {
-        content: '$';
-        padding-inline-end: 0.5rem;
+    &:not([hideDollar]) {
+      .shiki {
+        .line {
+          &::before {
+            content: '$';
+            padding-inline-end: 0.5rem;
+          }
+        }
       }
-      display: block;
+    }
 
-      &.hidden {
-        display: none;
+    .shiki {
+      .line {
+        display: block;
+
+        &.hidden {
+          display: none;
+        }
       }
     }
   }

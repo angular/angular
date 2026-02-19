@@ -41,6 +41,7 @@ export const docsCodeBlockExtension = {
       const headerRule = /header\s*:\s*(['"`])([^'"`]+)\1/; // The 2nd capture matters here
       const highlightRule = /highlight\s*:\s*(.*)([^,])/;
       const hideCopyRule = /hideCopy/;
+      const hideDollarRule = /hideDollar/;
       const preferRule = /\b(prefer|avoid)\b/;
       const linenumsRule = /linenums/;
 
@@ -52,6 +53,7 @@ export const docsCodeBlockExtension = {
         header: headerRule.exec(metadataStr)?.[2],
         highlight: highlightRule.exec(metadataStr)?.[1],
         hideCopy: hideCopyRule.test(metadataStr),
+        hideDollar: hideDollarRule.test(metadataStr),
         style: preferRule.exec(metadataStr)?.[1] as 'prefer' | 'avoid' | undefined,
         linenums: linenumsRule.test(metadataStr),
       };
