@@ -6,68 +6,66 @@
     border-radius: 0.25rem;
     margin: 1rem 0;
 
-      .docs-card-container-header {
-        align-items: flex-end;
-        border-bottom: 1px solid var(--senary-contrast);
-        display: flex;
-        justify-content: space-between;
+    .docs-card-container-header {
+      align-items: flex-end;
+      border-bottom: 1px solid var(--senary-contrast);
+      display: flex;
+      justify-content: space-between;
 
-        h2 {
-          padding: 2.5rem 1rem 2.5rem 2.5rem;
-          min-width: 350px;
+      h2 {
+        padding: 2.5rem 1rem 2.5rem 2.5rem;
+        min-width: 350px;
+      }
+
+      .theme-fill-bg {
+        fill: var(--page-background);
+        stroke: var(--primary-contrast);
+      }
+      .theme-fill-accent-bg {
+        fill: var(--septenary-contrast);
+        stroke: var(--primary-contrast);
+      }
+      .theme-stroke-primary {
+        stroke: var(--primary-contrast);
+      }
+      .theme-fill-primary {
+        fill: var(--primary-contrast);
+      }
+      .theme-fill-secondary {
+        fill: var(--octonary-contrast);
+      }
+      .theme-stroke-accent {
+        stroke: var(--vivid-pink);
+      }
+      .theme-fill-accent {
+        fill: var(--vivid-pink);
+        stroke: var(--primary-contrast);
+      }
+      .theme-stroke-secondary {
+        stroke: var(--senary-contrast);
+      }
+      .theme-fill-secondary {
+        fill: var(--senary-contrast);
+      }
+
+      .header-img {
+        margin-top: 5px;
+        overflow: hidden;
+        margin-bottom: -5px;
+      }
+
+      svg {
+        fill-opacity: 1;
+
+        @container header (max-width: 550px) {
+          display: none;
         }
 
-        .theme-fill-bg {
-          fill: var(--page-background);
-          stroke: var(--primary-contrast);
-        }
-        .theme-fill-accent-bg {
-          fill: var(--septenary-contrast);
-          stroke: var(--primary-contrast);
-        }
-        .theme-stroke-primary {
-          stroke: var(--primary-contrast);
-        }
-        .theme-fill-primary {
-          fill: var(--primary-contrast);
-        }
-        .theme-fill-secondary {
-          fill: var(--octonary-contrast);
-        }
-        .theme-stroke-accent {
-          stroke: var(--vivid-pink);
-        }
-        .theme-fill-accent {
-          fill: var(--vivid-pink);
-          stroke: var(--primary-contrast);
-        }
-        .theme-stroke-secondary {
-          stroke: var(--senary-contrast);
-        }
-        .theme-fill-secondary {
-          fill: var(--senary-contrast);
-        }
-
-
-
-        .header-img {
-          margin-top: 5px;
-          overflow: hidden;
-          margin-bottom: -5px;
-        }
-
-        svg {
-          fill-opacity: 1;
-
-          @container header (max-width: 550px) {
-            display: none;
-          }
-
-          rect {
-            fill: transparent;
-          }
+        rect {
+          fill: transparent;
         }
       }
+    }
 
     .docs-card-container-content {
       margin: 1rem;
@@ -214,7 +212,10 @@
     &:before {
       content: '';
       position: absolute;
-      top: 0; right: 0; bottom: 0; left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       z-index: -1;
       margin: -1px;
       border-radius: inherit;
@@ -223,7 +224,7 @@
 
     .docs-nav-card-title {
       background: var(--pink-to-highlight-to-purple-to-blue-horizontal-gradient);
-      padding: 1.5rem 1.5rem .5rem;
+      padding: 1.5rem 1.5rem 0.5rem;
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -264,11 +265,11 @@
         gap: 8px;
 
         h3 {
-          margin-block-end: .5rem;
+          margin-block-end: 0.5rem;
         }
 
         svg path {
-          fill: var(--gray-400);
+          fill: var(--quaternary-contrast);
         }
       }
 
