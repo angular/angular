@@ -159,7 +159,7 @@
 .docs-delete-file,
 .docs-rename-file {
   docs-icon {
-    color: var(--gray-400);
+    color: var(--quaternary-contrast);
     transition: color 0.3s ease;
     font-size: 1.2rem;
   }
@@ -270,7 +270,7 @@
   border-inline-start: 1px solid var(--senary-contrast);
 
   docs-icon {
-    color: var(--gray-400);
+    color: var(--quaternary-contrast);
     transition: color 0.3s ease;
     font-size: 1.3rem;
   }
