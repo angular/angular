@@ -50,35 +50,35 @@
 
       <div class="sliding-window">
         <div ngTabPanel [preserveContent]="true" value="signals">
-          <ng-template ngTabContent>
-            @defer (on idle) {
+          @defer (on idle) {
+            <ng-template ngTabContent>
               <adev-signals-demo />
-            }
-          </ng-template>
+            </ng-template>
+          }
         </div>
 
         <div ngTabPanel [preserveContent]="true" value="control-flow">
-          <ng-template ngTabContent>
-            @defer (on idle) {
+          @defer (on idle) {
+            <ng-template ngTabContent>
               <adev-control-flow-example />
-            }
-          </ng-template>
+            </ng-template>
+          }
         </div>
 
         <div ngTabPanel [preserveContent]="true" value="deferrable-views">
-          <ng-template ngTabContent>
-            @defer {
+          @defer (on idle) {
+            <ng-template ngTabContent>
               <adev-defer-example />
-            }
-          </ng-template>
+            </ng-template>
+          }
         </div>
 
         <div ngTabPanel [preserveContent]="true" value="hydration">
-          <ng-template ngTabContent>
-            @defer {
+          @defer (on idle) {
+            <ng-template ngTabContent>
               <adev-hydration-example />
-            }
-          </ng-template>
+            </ng-template>
+          }
         </div>
       </div>
     </div>
