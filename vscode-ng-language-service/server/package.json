@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@angular/language-service": "workspace:*",
-    "typescript": "6.0.0-beta"
+    "typescript": "6.0.0-dev.20260218"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
