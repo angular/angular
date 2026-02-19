@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {FieldState} from '../api/types';
+import type {ReadonlyFieldState} from '../api/types';
 
 /**
  * Branded type for the public name of an input we bind on control components or DOM elements.
@@ -39,7 +39,7 @@ const FIELD_STATE_KEY_TO_CONTROL_BINDING = {
   readonly: 'readonly' as ControlBindingKey,
   required: 'required' as ControlBindingKey,
   touched: 'touched' as ControlBindingKey,
-} as const satisfies {[K in keyof FieldState<unknown>]?: ControlBindingKey};
+} as const satisfies {[K in keyof ReadonlyFieldState<unknown>]?: ControlBindingKey};
 
 /**
  * Inverts `FIELD_STATE_KEY_TO_CONTROL_BINDING` to look up the minified name of the corresponding
@@ -56,7 +56,7 @@ const CONTROL_BINDING_TO_FIELD_STATE_KEY = /* @__PURE__ */ (() => {
 })();
 
 export function readFieldStateBindingValue(
-  fieldState: FieldState<unknown>,
+  fieldState: ReadonlyFieldState<unknown>,
   key: ControlBindingKey,
 ): unknown {
   const property = CONTROL_BINDING_TO_FIELD_STATE_KEY[key];
