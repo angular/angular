@@ -8,7 +8,7 @@
 
 import {inject, TestBed} from '@angular/core/testing';
 import {UpgradeModule} from '@angular/upgrade/static';
-import {CommonModule} from '../../index';
+import {CommonModule, Location} from '../../index';
 
 import {$locationShim} from '../src/location_shim';
 
@@ -504,6 +504,16 @@ describe('New URL Parsing with appBaseHref', () => {
     $location.path('/new/path');
     expect($location.absUrl()).toBe('http://server/base/new/path?a');
   });
+
+  it('should not duplicate appBaseHref when Location triggers onUrlChange', inject(
+    [Location],
+    (location: Location) => {
+      location.go('/test');
+
+      expect($location.path()).toBe('/test');
+      expect($location.absUrl()).toBe('http://server/base/test');
+    },
+  ));
 });
 
 describe('New URL Parsing', () => {
