@@ -9,4 +9,3 @@
 export * from './api';
 export {resourceFromSnapshots} from './from_snapshots';
 export {resource} from './resource';
-
