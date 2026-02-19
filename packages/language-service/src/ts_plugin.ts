@@ -346,8 +346,13 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return undefined;
   }
 
+  function ensureProjectAnalyzed(): void {
+    ngLS.ensureProjectAnalyzed();
+  }
+
   return {
     ...tsLS,
+    ensureProjectAnalyzed,
     getSyntacticDiagnostics,
     getSemanticDiagnostics,
     getSuggestionDiagnostics,

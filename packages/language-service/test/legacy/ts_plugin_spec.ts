@@ -31,4 +31,26 @@ describe('getExternalFiles()', () => {
     expect(externalFiles?.length).toBe(3);
     expect(externalFiles?.[0].endsWith('app.component.ngtypecheck.ts')).toBeTrue();
   });
+
+  it('should return all typecheck files when using ensureProjectAnalyzed', () => {
+    const {project, tsLS} = setup();
+    const plugin = initialize({typescript: ts});
+
+    let externalFiles = plugin.getExternalFiles?.(project, ts.ProgramUpdateLevel.Full);
+    expect(externalFiles).toEqual([]);
+    // Trigger compilation using the lighter ensureProjectAnalyzed() method
+    // instead of getSemanticDiagnostics(). This initializes the Angular compiler
+    // (analysis + resolution) without per-file type-checking overhead.
+    const ngLS = new LanguageService(project, tsLS, {});
+    ngLS.ensureProjectAnalyzed();
+    // After ensureProjectAnalyzed(), the Angular compiler state is initialized.
+    // Typecheck files are created lazily during diagnostics, so they don't exist yet.
+    // But subsequent getSemanticDiagnostics() calls should work correctly since
+    // the compiler is already analyzed.
+    ngLS.getSemanticDiagnostics(APP_COMPONENT);
+    externalFiles = plugin.getExternalFiles?.(project, ts.ProgramUpdateLevel.Full);
+    // Includes 1 typecheck file, 1 template, and 1 css files
+    expect(externalFiles?.length).toBe(3);
+    expect(externalFiles?.[0].endsWith('app.component.ngtypecheck.ts')).toBeTrue();
+  });
 });

@@ -101,6 +101,18 @@ export class LanguageService {
     return this.options;
   }
 
+  /**
+   * Triggers the Angular compiler's analysis pipeline without performing
+   * per-file type checking.
+   */
+  ensureProjectAnalyzed(): void {
+    this.withCompilerAndPerfTracing(PerfPhase.LsDiagnostics, (compiler) => {
+      // Accessing the template type checker forces compiler analysis through
+      // public API without requiring per-file diagnostics computation.
+      compiler.getTemplateTypeChecker();
+    });
+  }
+
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
     return this.withCompilerAndPerfTracing(PerfPhase.LsDiagnostics, (compiler) => {
       let diagnostics: ts.Diagnostic[] = [];
