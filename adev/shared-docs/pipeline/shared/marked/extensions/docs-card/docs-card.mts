@@ -23,7 +23,7 @@ interface DocsCardToken extends Tokens.Generic {
 
 // Capture group 1: all attributes on the opening tag
 // Capture group 2: all content between the open and close tags
-const cardRule = /^[^<]*<docs-card(?:\s([^>]*))?>((?:.(?!\/docs-card))*)<\/docs-card>/s;
+const cardRule = /^\s*<docs-card(?:\s([^>]*))?>((?:.(?!\/docs-card))*)<\/docs-card>/s;
 
 const titleRule = /title="([^"]*)"/;
 const linkRule = /link="([^"]*)"/;
