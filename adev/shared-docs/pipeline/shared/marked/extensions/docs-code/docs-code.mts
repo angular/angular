@@ -32,6 +32,7 @@ const visibleLinesRule = /visibleLines="([^"]*)"/;
 const regionRule = /region="([^"]*)"/;
 const previewRule = /preview/;
 const hideCodeRule = /hideCode/;
+const hideDollarRule = /hideDollar/;
 const preferRule = /\b(prefer|avoid)\b/;
 
 export const docsCodeExtension = {
@@ -52,8 +53,9 @@ export const docsCodeExtension = {
       const language = languageRule.exec(attr);
       const visibleLines = visibleLinesRule.exec(attr);
       const region = regionRule.exec(attr);
-      const preview = previewRule.exec(attr) ? true : false;
-      const hideCode = hideCodeRule.exec(attr) ? true : false;
+      const preview = previewRule.test(attr);
+      const hideCode = hideCodeRule.test(attr);
+      const hideDollar = hideDollarRule.test(attr);
       const classes = classRule.exec(attr);
       const style = preferRule.exec(attr);
 
@@ -78,6 +80,7 @@ export const docsCodeExtension = {
         region: region?.[1],
         preview: preview,
         hideCode,
+        hideDollar,
         style: style?.[1] as 'prefer' | 'avoid' | undefined,
         classes: classes?.[1]?.split(' '),
       };
