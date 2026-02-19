@@ -8,7 +8,7 @@
 
 import {AbstractControl, FormArray, FormGroup, ValidationErrors} from '@angular/forms';
 import {ValidationError} from '../api/rules';
-import {FieldTree} from '../api/types';
+import {ReadonlyFieldTree} from '../api/types';
 
 /**
  * An error used for compat errors.
@@ -19,7 +19,7 @@ import {FieldTree} from '../api/types';
 export class CompatValidationError<T = unknown> implements ValidationError {
   readonly kind: string = 'compat';
   readonly control: AbstractControl;
-  readonly fieldTree!: FieldTree<unknown>;
+  readonly fieldTree!: ReadonlyFieldTree<unknown>;
   readonly context: T;
   readonly message?: string;
 

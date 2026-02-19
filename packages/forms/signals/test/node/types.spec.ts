@@ -7,7 +7,7 @@
  */
 
 import {signal, WritableSignal} from '@angular/core';
-import {FieldTree, form, required, schema, SchemaFn} from '../../public_api';
+import {FieldTree, form, ReadonlyFieldState, required, schema, SchemaFn} from '../../public_api';
 
 interface Order {
   id: string;
@@ -111,6 +111,13 @@ function typeVerificationOnlyDoNotRunMe() {
         const p: FieldTree<string> = product;
         p().value();
       }
+    });
+
+    it('should allow assigning FieldState to ReadonlyFieldState', () => {
+      const pizzaOrder: WritableSignal<PizzaOrder> = null!;
+      const f = form(pizzaOrder);
+      const readonlyState: ReadonlyFieldState<PizzaOrder> = f();
+      readonlyState.value();
     });
   });
 }
