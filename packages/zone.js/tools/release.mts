@@ -124,14 +124,33 @@ async function createPrWorkflow(): Promise<void> {
   console.log(chalk.blue(`Pushing to ${forkRemote}...`));
   await exec(`git push ${forkRemote} "${releaseBranch}"`);
 
-  const {stdout: remoteUrl} = await exec(`git remote get-url ${forkRemote}`);
-  const {owner, repo} = getRepoDetails(remoteUrl);
-
   console.log(
     chalk.yellow(
-      `Please create a pull request by visiting: https://github.com/${owner}/${repo}/pull/new/${releaseBranch}`,
+      `Please create a pull request by visiting: https://github.com/angular/angular/pull/new/${releaseBranch}`,
     ),
   );
+
+  const continueToPublish = await select({
+    message: 'Do you want to continue to the publish step once the PR is merged?',
+    choices: [
+      {
+        name: 'Yes, I will merge the PR and then continue to publish from here.',
+        value: true,
+      },
+      {
+        name: 'No, I will run the publish step separately later.',
+        value: false,
+      },
+    ],
+  });
+
+  if (continueToPublish) {
+    await input({
+      message:
+        'Please create the pull request, get it merged, and then press Enter to continue to publish.',
+    });
+    await cutReleaseWorkflow();
+  }
 }
 
 /**
@@ -147,10 +166,9 @@ async function cutReleaseWorkflow(): Promise<void> {
   await checkCleanWorkingDirectory();
 
   console.log(chalk.blue('Fetching upstream...'));
-  await exec(`git fetch upstream`);
-  await exec(`git checkout upstream/main`);
+  await exec(`git fetch https://github.com/angular/angular.git main`);
+  await exec(`git checkout FETCH_HEAD`);
 
-  // rm -rf node_modules && pnpm install
   await cleanAndInstall();
 
   const currentVersion = await getCurrentVersion();
@@ -159,7 +177,7 @@ async function cutReleaseWorkflow(): Promise<void> {
   console.log(chalk.blue(`Looking for release commit for ${tagName}...`));
   const commitMessagePattern = `release: cut the ${tagName} release`;
   const {stdout: sha} = await exec(
-    `git log upstream/main --oneline -n 1000 | grep "${commitMessagePattern}" | cut -f 1 -d " "`,
+    `git log FETCH_HEAD --oneline -n 1000 | grep "${commitMessagePattern}" | cut -f 1 -d " "`,
   );
 
   const trimmedSha = sha.trim();
@@ -189,10 +207,6 @@ async function cutReleaseWorkflow(): Promise<void> {
     message: 'Press Enter to publish to npm.',
   });
 
-  const otp = await input({
-    message: 'Please enter your 2FA OTP code:',
-  });
-
   await execAndStream('npm', [
     'publish',
     'dist/bin/packages/zone.js/npm_package',
@@ -200,8 +214,6 @@ async function cutReleaseWorkflow(): Promise<void> {
     'public',
     '--tag',
     'latest',
-    '--otp',
-    otp,
   ]);
 
   // Tag
@@ -210,15 +222,15 @@ async function cutReleaseWorkflow(): Promise<void> {
 
   console.log(chalk.blue(`Pushing tag ${tagName} to upstream...`));
   // Note: pushing to upstream requires permissions.
-  await exec(`git push upstream ${tagName}`);
+  await exec(`git push https://github.com/angular/angular.git ${tagName}`);
 
   console.log(chalk.green('Zone.js release complete!'));
 }
 
 async function cleanAndInstall() {
-  console.log(chalk.blue('Cleaning node_modules and installing dependencies...'));
-  await exec('rm -rf node_modules');
-  await execAndStream('pnpm', ['install']);
+  console.log(chalk.blue('Cleaning and installing dependencies...'));
+  await exec('git clean -dxf');
+  await execAndStream('pnpm', ['install', , '--frozen-lockfile']);
 }
 
 async function checkCleanWorkingDirectory(): Promise<void> {

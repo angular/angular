@@ -49,7 +49,7 @@
     "dev:build": "pnpm --filter=dev-app dev:build",
     "benchmarks": "node scripts/benchmarks/index.mts",
     "diff-release-package": "node scripts/diff-release-package.mts",
-    "zonejs:release": "node packages/zone.js/tools/release.mts"
+    "zonejs:release": "pnpm --filter=zone.js release"
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
