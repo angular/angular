@@ -27,7 +27,7 @@ import {
 } from '@angular/core';
 import {type ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {type ValidationError} from '../api/rules';
-import type {Field} from '../api/types';
+import type {Field, FieldState} from '../api/types';
 import {InteropNgControl} from '../controls/interop_ng_control';
 import {RuntimeErrorCode} from '../errors';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
@@ -98,18 +98,21 @@ export const FORM_FIELD = new InjectionToken<FormField<unknown>>(
   ],
 })
 export class FormField<T> {
+  /**
+   * The field to bind to the underlying form control.
+   */
   readonly field = input.required<Field<T>>({alias: 'formField'});
+
+  /**
+   * `FieldState` for the currently bound field.
+   */
+  readonly state = computed<FieldState<T>>(() => this.field()());
 
   /** @internal */
   readonly renderer = inject(Renderer2);
 
   /** @internal */
   readonly destroyRef = inject(DestroyRef);
-
-  /**
-   * `FieldState` for the currently bound field.
-   */
-  readonly state = computed(() => this.field()());
 
   /**
    * The node injector for the element this field binding.

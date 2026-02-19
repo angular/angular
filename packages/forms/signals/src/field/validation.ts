@@ -8,7 +8,7 @@
 
 import {computed, Signal, untracked, ɵWritable} from '@angular/core';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
-import type {FieldTree, TreeValidationResult, ValidationResult} from '../api/types';
+import type {ReadonlyFieldTree, TreeValidationResult, ValidationResult} from '../api/types';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 import {shortCircuitFalse} from './util';
@@ -368,16 +368,16 @@ function normalizeErrors<T extends ValidationResult>(error: T | readonly T[]): r
  */
 export function addDefaultField<E extends ValidationError.WithOptionalFieldTree>(
   error: E,
-  fieldTree: FieldTree<unknown>,
-): E & {fieldTree: FieldTree<unknown>};
+  fieldTree: ReadonlyFieldTree<unknown>,
+): E & {fieldTree: ReadonlyFieldTree<unknown>};
 export function addDefaultField<E extends ValidationError>(
   errors: TreeValidationResult<E>,
-  fieldTree: FieldTree<unknown>,
-): ValidationResult<E & {fieldTree: FieldTree<unknown>}>;
+  fieldTree: ReadonlyFieldTree<unknown>,
+): ValidationResult<E & {fieldTree: ReadonlyFieldTree<unknown>}>;
 export function addDefaultField<E extends ValidationError>(
   errors: TreeValidationResult<E>,
-  fieldTree: FieldTree<unknown>,
-): ValidationResult<E & {fieldTree: FieldTree<unknown>}> {
+  fieldTree: ReadonlyFieldTree<unknown>,
+): ValidationResult<E & {fieldTree: ReadonlyFieldTree<unknown>}> {
   if (isArray(errors)) {
     for (const error of errors) {
       (error as ɵWritable<ValidationError.WithOptionalFieldTree>).fieldTree ??= fieldTree;
@@ -385,7 +385,7 @@ export function addDefaultField<E extends ValidationError>(
   } else if (errors) {
     (errors as ɵWritable<ValidationError.WithOptionalFieldTree>).fieldTree ??= fieldTree;
   }
-  return errors as ValidationResult<E & {fieldTree: FieldTree<unknown>}>;
+  return errors as ValidationResult<E & {fieldTree: ReadonlyFieldTree<unknown>}>;
 }
 
 function getFirstBoundElement(error: ValidationError.WithFieldTree) {

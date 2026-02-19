@@ -56,7 +56,7 @@ export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind exten
 // @public
 export abstract class BaseNgValidationError implements ValidationError {
     constructor(options?: ValidationErrorOptions);
-    readonly fieldTree: FieldTree<unknown>;
+    readonly fieldTree: ReadonlyFieldTree<unknown>;
     readonly kind: string;
     readonly message?: string;
 }
@@ -67,7 +67,7 @@ export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
 }
 
 // @public
-export type CompatFieldState<TControl extends AbstractControl, TKey extends string | number = string | number> = FieldState<TControl extends AbstractControl<unknown, infer TValue> ? TValue : never, TKey> & {
+export type CompatFieldState<TControl extends AbstractControl, TKey extends string | number = string | number, TMode extends 'writable' | 'readonly' = 'writable'> = FieldStateByMode<TControl extends AbstractControl<unknown, infer TValue> ? TValue : never, TKey, TMode> & {
     control: Signal<TControl>;
 };
 
@@ -101,7 +101,7 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(pat
 
 // @public
 export interface DisabledReason {
-    readonly fieldTree: FieldTree<unknown>;
+    readonly fieldTree: ReadonlyFieldTree<unknown>;
     readonly message?: string;
 }
 
@@ -127,42 +127,20 @@ export type Field<TValue, TKey extends string | number = string | number> = () =
 export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = TPathKind extends PathKind.Item ? ItemFieldContext<TValue> : TPathKind extends PathKind.Child ? ChildFieldContext<TValue> : RootFieldContext<TValue>;
 
 // @public
-export interface FieldState<TValue, TKey extends string | number = string | number> {
+export interface FieldState<TValue, TKey extends string | number = string | number> extends ReadonlyFieldState<TValue, TKey> {
     readonly controlValue: WritableSignal<TValue>;
-    readonly dirty: Signal<boolean>;
-    readonly disabled: Signal<boolean>;
-    // (undocumented)
-    readonly disabledReasons: Signal<readonly DisabledReason[]>;
-    // (undocumented)
-    readonly errors: Signal<ValidationError.WithFieldTree[]>;
-    readonly errorSummary: Signal<ValidationError.WithFieldTree[]>;
     readonly fieldTree: FieldTree<unknown, TKey>;
-    focusBoundControl(options?: FocusOptions): void;
-    readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
-    readonly hidden: Signal<boolean>;
-    readonly invalid: Signal<boolean>;
-    readonly keyInParent: Signal<TKey>;
     markAsDirty(): void;
     markAsTouched(): void;
-    readonly max?: Signal<number | undefined>;
-    readonly maxLength?: Signal<number | undefined>;
-    metadata<M>(key: MetadataKey<M, any, any>): M | undefined;
-    readonly min?: Signal<number | undefined>;
-    readonly minLength?: Signal<number | undefined>;
-    readonly name: Signal<string>;
-    readonly pattern: Signal<readonly RegExp[]>;
-    readonly pending: Signal<boolean>;
-    readonly readonly: Signal<boolean>;
-    readonly required: Signal<boolean>;
     reset(value?: TValue): void;
-    readonly submitting: Signal<boolean>;
-    readonly touched: Signal<boolean>;
-    readonly valid: Signal<boolean>;
     readonly value: WritableSignal<TValue>;
 }
 
 // @public
-export type FieldTree<TModel, TKey extends string | number = string | number> = (() => [TModel] extends [AbstractControl] ? CompatFieldState<TModel, TKey> : FieldState<TModel, TKey>) & ([TModel] extends [AbstractControl] ? object : [TModel] extends [ReadonlyArray<infer U>] ? ReadonlyArrayLike<MaybeFieldTree<U, number>> : TModel extends Record<string, any> ? Subfields<TModel> : object);
+export type FieldStateByMode<TValue, TKey extends string | number, TMode extends 'writable' | 'readonly'> = TMode extends 'writable' ? FieldState<TValue, TKey> : ReadonlyFieldState<TValue, TKey>;
+
+// @public
+export type FieldTree<TModel, TKey extends string | number = string | number, TMode extends 'writable' | 'readonly' = 'writable'> = (() => [TModel] extends [AbstractControl] ? CompatFieldState<TModel, TKey, TMode> : FieldStateByMode<TModel, TKey, TMode>) & ([TModel] extends [AbstractControl] ? object : [TModel] extends [ReadonlyArray<infer U>] ? ReadonlyArrayLike<MaybeFieldTree<U, number, TMode>> : TModel extends Record<string, any> ? Subfields<TModel, TMode> : object);
 
 // @public
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, ValidationResult<ValidationError.WithoutFieldTree>, TPathKind>;
@@ -190,7 +168,6 @@ export class FormField<T> {
     readonly [ɵNgFieldDirective]: true;
     readonly element: HTMLElement;
     readonly errors: Signal<ValidationError.WithFieldTree[]>;
-    // (undocumented)
     readonly field: i0.InputSignal<Field<T>>;
     focus(options?: FocusOptions): void;
     readonly injector: Injector;
@@ -341,7 +318,7 @@ export class MaxValidationError extends BaseNgValidationError {
 }
 
 // @public
-export type MaybeFieldTree<TModel, TKey extends string | number = string | number> = (TModel & undefined) | FieldTree<Exclude<TModel, undefined>, TKey>;
+export type MaybeFieldTree<TModel, TKey extends string | number = string | number, TMode extends 'writable' | 'readonly' = 'writable'> = (TModel & undefined) | FieldTree<Exclude<TModel, undefined>, TKey, TMode>;
 
 // @public
 export type MaybeSchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> = (TModel & undefined) | SchemaPathTree<Exclude<TModel, undefined>, TPathKind>;
@@ -489,6 +466,45 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(pat
 export type ReadonlyArrayLike<T> = Pick<ReadonlyArray<T>, number | 'length' | typeof Symbol.iterator>;
 
 // @public
+export type ReadonlyCompatFieldState<TControl extends AbstractControl, TKey extends string | number = string | number> = CompatFieldState<TControl, TKey, 'readonly'>;
+
+// @public
+export interface ReadonlyFieldState<TValue, TKey extends string | number = string | number> {
+    readonly controlValue: Signal<TValue>;
+    readonly dirty: Signal<boolean>;
+    readonly disabled: Signal<boolean>;
+    // (undocumented)
+    readonly disabledReasons: Signal<readonly DisabledReason[]>;
+    // (undocumented)
+    readonly errors: Signal<ValidationError.WithFieldTree[]>;
+    readonly errorSummary: Signal<ValidationError.WithFieldTree[]>;
+    readonly fieldTree: ReadonlyFieldTree<unknown, TKey>;
+    focusBoundControl(options?: FocusOptions): void;
+    readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
+    hasMetadata(key: MetadataKey<any, any, any>): boolean;
+    readonly hidden: Signal<boolean>;
+    readonly invalid: Signal<boolean>;
+    readonly keyInParent: Signal<TKey>;
+    readonly max?: Signal<number | undefined>;
+    readonly maxLength?: Signal<number | undefined>;
+    metadata<M>(key: MetadataKey<M, any, any>): M | undefined;
+    readonly min?: Signal<number | undefined>;
+    readonly minLength?: Signal<number | undefined>;
+    readonly name: Signal<string>;
+    readonly pattern: Signal<readonly RegExp[]>;
+    readonly pending: Signal<boolean>;
+    readonly readonly: Signal<boolean>;
+    readonly required: Signal<boolean>;
+    readonly submitting: Signal<boolean>;
+    readonly touched: Signal<boolean>;
+    readonly valid: Signal<boolean>;
+    readonly value: Signal<TValue>;
+}
+
+// @public
+export type ReadonlyFieldTree<TModel, TKey extends string | number = string | number> = FieldTree<TModel, TKey, 'readonly'>;
+
+// @public
 export type RemoveStringIndexUnknownKey<K, V> = string extends K ? unknown extends V ? never : K : K;
 
 // @public
@@ -513,13 +529,13 @@ export class RequiredValidationError extends BaseNgValidationError {
 
 // @public
 export interface RootFieldContext<TValue> {
-    readonly fieldTree: FieldTree<TValue>;
-    fieldTreeOf<PModel>(p: SchemaPathTree<PModel>): FieldTree<PModel>;
+    readonly fieldTree: ReadonlyFieldTree<TValue>;
+    fieldTreeOf<PModel>(p: SchemaPathTree<PModel>): ReadonlyFieldTree<PModel>;
     readonly pathKeys: Signal<readonly string[]>;
-    readonly state: FieldState<TValue>;
-    stateOf<PControl extends AbstractControl>(p: CompatSchemaPath<PControl>): CompatFieldState<PControl>;
+    readonly state: ReadonlyFieldState<TValue>;
+    stateOf<PControl extends AbstractControl>(p: CompatSchemaPath<PControl>): ReadonlyCompatFieldState<PControl>;
     // (undocumented)
-    stateOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): FieldState<PValue>;
+    stateOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): ReadonlyFieldState<PValue>;
     readonly value: Signal<TValue>;
     valueOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): PValue;
 }
@@ -584,10 +600,10 @@ export class StandardSchemaValidationError extends BaseNgValidationError {
 }
 
 // @public
-export type Subfields<TModel> = {
-    readonly [K in keyof TModel as TModel[K] extends Function ? never : K]: MaybeFieldTree<TModel[K], string>;
+export type Subfields<TModel, TMode extends 'writable' | 'readonly' = 'writable'> = {
+    readonly [K in keyof TModel as TModel[K] extends Function ? never : K]: MaybeFieldTree<TModel[K], string, TMode>;
 } & {
-    [Symbol.iterator](): Iterator<[string, MaybeFieldTree<TModel[keyof TModel], string>]>;
+    [Symbol.iterator](): Iterator<[string, MaybeFieldTree<TModel[keyof TModel], string, TMode>]>;
 };
 
 // @public
@@ -642,7 +658,7 @@ export namespace ValidationError {
     // @deprecated (undocumented)
     export type WithField = WithFieldTree;
     export interface WithFieldTree extends ValidationError {
-        readonly fieldTree: FieldTree<unknown>;
+        readonly fieldTree: ReadonlyFieldTree<unknown>;
         // (undocumented)
         readonly formField?: FormField<unknown>;
     }
@@ -653,7 +669,7 @@ export namespace ValidationError {
     // @deprecated (undocumented)
     export type WithOptionalField = WithOptionalFieldTree;
     export interface WithOptionalFieldTree extends ValidationError {
-        readonly fieldTree?: FieldTree<unknown>;
+        readonly fieldTree?: ReadonlyFieldTree<unknown>;
     }
     // @deprecated (undocumented)
     export type WithoutField = WithoutFieldTree;
@@ -683,7 +699,7 @@ export type WithField<T> = WithFieldTree<T>;
 
 // @public
 export type WithFieldTree<T> = T & {
-    fieldTree: FieldTree<unknown>;
+    fieldTree: ReadonlyFieldTree<unknown>;
 };
 
 // @public @deprecated (undocumented)
@@ -691,7 +707,7 @@ export type WithOptionalField<T> = WithOptionalFieldTree<T>;
 
 // @public
 export type WithOptionalFieldTree<T> = Omit<T, 'fieldTree'> & {
-    fieldTree?: FieldTree<unknown>;
+    fieldTree?: ReadonlyFieldTree<unknown>;
 };
 
 // @public @deprecated (undocumented)

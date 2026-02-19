@@ -17,8 +17,8 @@ import {RuntimeErrorCode} from '../errors';
 import {AbstractControl} from '@angular/forms';
 import {
   FieldContext,
-  FieldState,
-  FieldTree,
+  ReadonlyFieldState,
+  ReadonlyFieldTree,
   SchemaPath,
   SchemaPathRules,
   SchemaPathTree,
@@ -42,7 +42,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
    */
   private readonly cache = new WeakMap<
     SchemaPath<unknown, SchemaPathRules>,
-    Signal<FieldTree<unknown>>
+    Signal<ReadonlyFieldTree<unknown>>
   >();
 
   constructor(
@@ -55,9 +55,9 @@ export class FieldNodeContext implements FieldContext<unknown> {
    * @param target The path to resolve
    * @returns The field corresponding to the target path.
    */
-  private resolve<U>(target: SchemaPath<U, SchemaPathRules>): FieldTree<U> {
+  private resolve<U>(target: SchemaPath<U, SchemaPathRules>): ReadonlyFieldTree<U> {
     if (!this.cache.has(target)) {
-      const resolver = computed<FieldTree<unknown>>(() => {
+      const resolver = computed<ReadonlyFieldTree<unknown>>(() => {
         const targetPathNode = FieldPathNode.unwrapFieldPath(target);
 
         // First, find the field where the root our target path was merged in.
@@ -100,14 +100,14 @@ export class FieldNodeContext implements FieldContext<unknown> {
 
       this.cache.set(target, resolver);
     }
-    return this.cache.get(target)!() as FieldTree<U>;
+    return this.cache.get(target)!() as ReadonlyFieldTree<U>;
   }
 
-  get fieldTree(): FieldTree<unknown> {
+  get fieldTree(): ReadonlyFieldTree<unknown> {
     return this.node.fieldProxy;
   }
 
-  get state(): FieldState<unknown> {
+  get state(): ReadonlyFieldState<unknown> {
     return this.node;
   }
 

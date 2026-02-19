@@ -7,7 +7,7 @@
  */
 
 import type {FormField} from '../../../directive/form_field_directive';
-import type {FieldTree} from '../../types';
+import type {ReadonlyFieldTree} from '../../types';
 import type {StandardSchemaValidationError} from './standard_schema';
 
 /**
@@ -24,7 +24,7 @@ export interface ValidationErrorOptions {
  *
  * @experimental 21.0.0
  */
-export type WithFieldTree<T> = T & {fieldTree: FieldTree<unknown>};
+export type WithFieldTree<T> = T & {fieldTree: ReadonlyFieldTree<unknown>};
 /** @deprecated Use `WithFieldTree` instead  */
 export type WithField<T> = WithFieldTree<T>;
 
@@ -34,7 +34,9 @@ export type WithField<T> = WithFieldTree<T>;
  *
  * @experimental 21.0.0
  */
-export type WithOptionalFieldTree<T> = Omit<T, 'fieldTree'> & {fieldTree?: FieldTree<unknown>};
+export type WithOptionalFieldTree<T> = Omit<T, 'fieldTree'> & {
+  fieldTree?: ReadonlyFieldTree<unknown>;
+};
 /** @deprecated Use `WithOptionalFieldTree` instead  */
 export type WithOptionalField<T> = WithOptionalFieldTree<T>;
 
@@ -281,7 +283,7 @@ export declare namespace ValidationError {
    */
   export interface WithFieldTree extends ValidationError {
     /** The field associated with this error. */
-    readonly fieldTree: FieldTree<unknown>;
+    readonly fieldTree: ReadonlyFieldTree<unknown>;
     readonly formField?: FormField<unknown>;
   }
   /** @deprecated Use `ValidationError.WithFieldTree` instead  */
@@ -302,7 +304,7 @@ export declare namespace ValidationError {
    */
   export interface WithOptionalFieldTree extends ValidationError {
     /** The field associated with this error. */
-    readonly fieldTree?: FieldTree<unknown>;
+    readonly fieldTree?: ReadonlyFieldTree<unknown>;
   }
   /** @deprecated Use `ValidationError.WithOptionalFieldTree` instead  */
   export type WithOptionalField = WithOptionalFieldTree;
@@ -335,7 +337,7 @@ export abstract class BaseNgValidationError implements ValidationError {
   readonly kind: string = '';
 
   /** The field associated with this error. */
-  readonly fieldTree!: FieldTree<unknown>;
+  readonly fieldTree!: ReadonlyFieldTree<unknown>;
 
   /** Human readable error message. */
   readonly message?: string;
