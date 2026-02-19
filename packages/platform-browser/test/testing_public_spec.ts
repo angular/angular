@@ -1103,6 +1103,32 @@ Did you run and wait for 'resolveComponentResources()'?`);
       componentFixture.detectChanges();
       expect(componentFixture.nativeElement).toHaveText('injected value: mocked out value');
     }));
+
+    describe('getFixture', () => {
+      it('should return the last created fixture', () => {
+        const fixture = TestBed.createComponent(ChildComp);
+        expect(TestBed.getFixture()).toBe(fixture);
+      });
+
+      it('should throw if no fixture has been created', () => {
+        expect(() => TestBed.getFixture()).toThrowError('No fixture has been created yet.');
+      });
+
+      it('should throw an error if multiple fixtures are present', () => {
+        TestBed.createComponent(ChildComp);
+        TestBed.createComponent(ParentComp);
+        expect(() => TestBed.getFixture()).toThrowError(
+          `More than one component fixture has been created. Use \`TestBed.createComponent\` ` +
+            `and store the fixture on the test context, rather than using \`TestBed.getFixture\`.`,
+        );
+      });
+
+      it('should clear the fixture after reset', () => {
+        TestBed.createComponent(ChildComp);
+        TestBed.resetTestingModule();
+        expect(() => TestBed.getFixture()).toThrowError('No fixture has been created yet.');
+      });
+    });
   });
   describe('using alternate components', () => {
     beforeEach(() => {
