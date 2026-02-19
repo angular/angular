@@ -978,34 +978,32 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
 
   let client: MessageConnection;
   /**
-   * Promise that resolves when the server sends a workspace/diagnostic/refresh request.
-   * This is more reliable than a fixed setTimeout as it waits for the server signal.
+   * Number of refresh requests received that have not yet been consumed by
+   * waitForDiagnosticRefresh().
    */
-  let diagnosticRefreshPromise: Promise<void>;
-  let resolveDiagnosticRefresh: () => void;
+  let pendingDiagnosticRefreshCount = 0;
+  /** Resolver for the next waiter when there is no pending refresh signal. */
+  let resolveNextDiagnosticRefresh: (() => void) | null = null;
 
   /**
    * Wait for the server to signal it's ready for diagnostics to be pulled.
    * The server sends workspace/diagnostic/refresh after processing document changes.
-   * This replaces fixed setTimeout waits with event-driven synchronization.
+   * This uses a pending-signal counter to avoid races where the refresh signal
+   * arrives before the test starts waiting.
    */
   function waitForDiagnosticRefresh(): Promise<void> {
-    return diagnosticRefreshPromise;
-  }
-
-  /**
-   * Reset the diagnostic refresh promise for the next wait cycle.
-   * Should be called after consuming a refresh signal.
-   */
-  function resetDiagnosticRefresh(): void {
-    diagnosticRefreshPromise = new Promise((resolve) => {
-      resolveDiagnosticRefresh = resolve;
+    if (pendingDiagnosticRefreshCount > 0) {
+      pendingDiagnosticRefreshCount--;
+      return Promise.resolve();
+    }
+    return new Promise((resolve) => {
+      resolveNextDiagnosticRefresh = resolve;
     });
   }
 
   beforeEach(async () => {
-    // Initialize the diagnostic refresh promise
-    resetDiagnosticRefresh();
+    pendingDiagnosticRefreshCount = 0;
+    resolveNextDiagnosticRefresh = null;
 
     client = createConnection({});
     // If debugging, set to
@@ -1014,11 +1012,14 @@ describe('Pull-based diagnostics (LSP 3.17)', () => {
     client.trace(lsp.Trace.Off, createTracer());
 
     // Handle the workspace/diagnostic/refresh request from the server.
-    // Resolves the promise so tests can await this signal instead of using setTimeout.
+    // Resolves pending waiters or stores a pending signal for future waiters.
     client.onRequest(lsp.DiagnosticRefreshRequest.type, () => {
-      resolveDiagnosticRefresh();
-      // Reset for next wait cycle
-      resetDiagnosticRefresh();
+      if (resolveNextDiagnosticRefresh !== null) {
+        resolveNextDiagnosticRefresh();
+        resolveNextDiagnosticRefresh = null;
+      } else {
+        pendingDiagnosticRefreshCount++;
+      }
     });
 
     client.listen();

@@ -779,14 +779,6 @@ export class Session {
   }
 
   /**
-   * Get all currently open files in the session.
-   * Used by workspace diagnostics to report diagnostics for all open files.
-   */
-  getOpenFiles(): string[] {
-    return this.openFiles.getAll();
-  }
-
-  /**
    * Get all source files across all configured Angular projects.
    * Returns user source files (excluding library .d.ts files and config files)
    * that are either TypeScript files or external templates (HTML).

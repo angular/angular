@@ -22,9 +22,10 @@ export function onInitialize(session: Session, params: lsp.InitializeParams): ls
   // Also check if client supports workspace diagnostic refresh
   const supportsWorkspaceRefresh =
     params.capabilities.workspace?.diagnostics?.refreshSupport === true;
+  const usePullDiagnostics = supportsPullDiagnostics && supportsWorkspaceRefresh;
 
   // Store whether we should use pull diagnostics
-  session.setPullDiagnosticsMode(supportsPullDiagnostics && supportsWorkspaceRefresh);
+  session.setPullDiagnosticsMode(usePullDiagnostics);
 
   return {
     capabilities: {
@@ -63,8 +64,8 @@ export function onInitialize(session: Session, params: lsp.InitializeParams): ls
         codeActionKinds: [lsp.CodeActionKind.QuickFix],
       },
       // Pull-based diagnostics (LSP 3.17)
-      // Only enabled if client supports it
-      ...(supportsPullDiagnostics && {
+      // Only enabled if client supports document diagnostics and refresh
+      ...(usePullDiagnostics && {
         diagnosticProvider: {
           identifier: 'angular',
           // Angular has inter-file dependencies - editing code in one file
