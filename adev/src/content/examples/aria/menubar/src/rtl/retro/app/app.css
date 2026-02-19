@@ -14,22 +14,22 @@
   --retro-shadow-dark: color-mix(in srgb, #000 20%, transparent);
   --retro-elevated-shadow:
     inset 4px 4px 0px 0px var(--retro-shadow-light),
-    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
-    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
-    0px -4px 0px 0px var(--gray-700);
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--tertiary-contrast),
+    0px 4px 0px 0px var(--tertiary-contrast), -4px 0px 0px 0px var(--tertiary-contrast),
+    0px -4px 0px 0px var(--tertiary-contrast);
   --retro-flat-shadow:
-    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
-    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+    4px 0px 0px 0px var(--tertiary-contrast), 0px 4px 0px 0px var(--tertiary-contrast),
+    -4px 0px 0px 0px var(--tertiary-contrast), 0px -4px 0px 0px var(--tertiary-contrast);
   --retro-clickable-shadow:
     inset 4px 4px 0px 0px var(--retro-shadow-light),
-    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
-    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
-    0px -4px 0px 0px var(--gray-700), 8px 8px 0px 0px var(--gray-700);
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--tertiary-contrast),
+    0px 4px 0px 0px var(--tertiary-contrast), -4px 0px 0px 0px var(--tertiary-contrast),
+    0px -4px 0px 0px var(--tertiary-contrast), 8px 8px 0px 0px var(--tertiary-contrast);
   --retro-pressed-shadow:
     inset 4px 4px 0px 0px var(--retro-shadow-dark),
-    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--gray-700),
-    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
-    0px -4px 0px 0px var(--gray-700), 0px 0px 0px 0px var(--gray-700);
+    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--tertiary-contrast),
+    0px 4px 0px 0px var(--tertiary-contrast), -4px 0px 0px 0px var(--tertiary-contrast),
+    0px -4px 0px 0px var(--tertiary-contrast), 0px 0px 0px 0px var(--tertiary-contrast);
 }
 
 [ngMenuBar] {
