@@ -6,39 +6,54 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {ValueEqualityFn} from '../core_reactivity_export_internal';
-import {inject, type Injector} from '../di';
+import {inject} from '../di';
 import {DestroyRef} from '../linker';
 import {effect} from '../render3/reactivity/effect';
 import {signal} from '../render3/reactivity/signal';
 import {untracked} from '../render3/reactivity/untracked';
-import {Resource, ResourceSnapshot, type BaseResourceOptions} from './api';
+import {Resource, ResourceSnapshot, type DebouncedOptions} from './api';
 import {resourceFromSnapshots} from './from_snapshots';
+import {
+  invalidResourceCreationInParams,
+  isInParamsFunction,
+  rethrowFatalErrors,
+  setInParamsFunction,
+} from './resource';
 
-export interface DebounceResourceOptions<T> extends BaseResourceOptions<T, T> {
-  params: () => T;
-  wait: number | ((value: T, lastValue: ResourceSnapshot<T | undefined>) => Promise<void> | void);
-}
+/**
+ * Creates a resource representing a debounced version of the source signal.
+ *
+ * @param source The source signal to debounce.
+ * @param wait The amount of time to wait before calling the source signal, or a function that
+ *   returns a promise that resolves when the debounced value should be updated.
+ * @param options The options to use for the debounced signal.
+ * @returns A resource representing the debounced signal.
+ */
+export function debounced<T>(
+  source: () => T,
+  wait: NoInfer<number | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void)>,
+  options?: NoInfer<DebouncedOptions<T>>,
+): Resource<T> {
+  if (isInParamsFunction()) {
+    throw invalidResourceCreationInParams();
+  }
 
-export function debounceResource<T>(
-  options: DebounceResourceOptions<T> & {
-    wait: number | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void);
-    defaultValue: NoInfer<T>;
-  },
-): Resource<T>;
-export function debounceResource<T>(options: DebounceResourceOptions<T>): Resource<T | undefined>;
-export function debounceResource<T>(options: DebounceResourceOptions<T>): Resource<T | undefined> {
-  const {params, wait, injector, defaultValue} = options;
-
-  const state = signal<ResourceSnapshot<T | undefined>>({
-    status: 'loading',
-    value: defaultValue,
+  const state = signal<ResourceSnapshot<T>>({
+    status: 'resolved',
+    value: untracked(() => {
+      try {
+        setInParamsFunction(true);
+        return source();
+      } finally {
+        setInParamsFunction(false);
+      }
+    }),
   });
 
   let active: Promise<void> | void | undefined;
   let pendingValue: T | undefined;
 
-  (injector?.get(DestroyRef) ?? inject(DestroyRef)).onDestroy(() => {
+  (options?.injector?.get(DestroyRef) ?? inject(DestroyRef)).onDestroy(() => {
     active = undefined;
   });
 
@@ -48,17 +63,21 @@ export function debounceResource<T>(options: DebounceResourceOptions<T>): Resour
       // TODO: does this make sense?
       let value: T;
       try {
-        value = params();
+        setInParamsFunction(true);
+        value = source();
       } catch (err) {
+        rethrowFatalErrors(err);
         state.set({status: 'error', error: err as Error});
         active = pendingValue = undefined;
         return;
+      } finally {
+        setInParamsFunction(false);
       }
 
       const currentState = untracked(state);
 
       // Check if the value is the same as the previous one.
-      const equal = options.equal ?? Object.is;
+      const equal = options?.equal ?? Object.is;
       if (currentState.status === 'reloading') {
         if (equal(value, pendingValue!)) return;
       } else if (currentState.status === 'resolved') {
@@ -77,11 +96,11 @@ export function debounceResource<T>(options: DebounceResourceOptions<T>): Resour
         state.set({status: 'resolved', value});
         active = pendingValue = undefined;
       } else {
-        // Asynchronous case, change to loading or reloading state while the promise is pending.
-        if (currentState.status === 'error') {
-          state.set({status: 'loading', value: defaultValue});
-        } else if (currentState.status !== 'loading' && currentState.status !== 'reloading') {
-          state.set({status: 'reloading', value: currentState.value});
+        // Asynchronous case:
+        // If we're in error state or loading state, remain in that state.
+        // Otherwise, change to loading state but keep the current value until the new one loads.
+        if (currentState.status !== 'loading' && currentState.status !== 'error') {
+          state.set({status: 'loading', value: currentState.value});
         }
         active = result;
         pendingValue = value;
@@ -95,43 +114,8 @@ export function debounceResource<T>(options: DebounceResourceOptions<T>): Resour
         });
       }
     },
-    {injector: injector},
+    {injector: options?.injector},
   );
 
   return resourceFromSnapshots(state);
-}
-
-// Alternate API:
-
-export interface DebounceOptions<T> {
-  // TODO: this options only makes sense if we remove the error state stuff,
-  // otherwise we'd use the initial value when recovering from an error.
-  debounceInitialValue?: boolean;
-  injector?: Injector;
-  equal?: ValueEqualityFn<T>;
-}
-
-export function debounce<T>(
-  source: () => T,
-  wait: number | (() => Promise<void> | void),
-  options: DebounceOptions<T>,
-): Resource<T>;
-export function debounce<T>(
-  source: () => T,
-  wait: number | (() => Promise<void> | void),
-  options: DebounceOptions<T> & {debounceInitialValue: true},
-): Resource<T | undefined>;
-export function debounce<T>(
-  source: () => T,
-  wait: number | (() => Promise<void> | void),
-  options: DebounceOptions<T>,
-): Resource<T | undefined> {
-  const resOpts: DebounceResourceOptions<T> = {
-    params: source,
-    wait,
-    injector: options.injector,
-    equal: options.equal,
-    defaultValue: options.debounceInitialValue ? undefined : untracked(source),
-  };
-  return debounceResource(resOpts);
 }

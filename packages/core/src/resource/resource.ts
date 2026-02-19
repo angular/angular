@@ -17,19 +17,20 @@ import {
   ResourceLoaderParams,
   ResourceOptions,
   ResourceParamsStatus,
-  ResourceRef,
   ResourceSnapshot,
   ResourceStatus,
   ResourceStreamingLoader,
   ResourceStreamItem,
   StreamingResourceOptions,
-  WritableResource,
   type ResourceParamsContext,
+  type ResourceRef,
+  type WritableResource,
 } from './api';
 
 import {assertInInjectionContext} from '../di/contextual';
 import {Injector} from '../di/injector';
 import {inject} from '../di/injector_compatibility';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DestroyRef} from '../linker/destroy_ref';
 import {PendingTasks} from '../pending_tasks';
 import {linkedSignal} from '../render3/reactivity/linked_signal';
@@ -204,6 +205,10 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     private readonly debugName: string | undefined,
     injector: Injector,
   ) {
+    if (isInParamsFunction()) {
+      throw invalidResourceCreationInParams();
+    }
+
     super(
       // Feed a computed signal for the value to `BaseWritableResource`, which will upgrade it to a
       // `WritableSignal` that delegates to `ResourceImpl.set`.
@@ -234,14 +239,18 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     this.extRequest = linkedSignal<WrappedRequest>(
       () => {
         try {
+          setInParamsFunction(true);
           return {request: request(paramsContext), reload: 0};
         } catch (error) {
+          rethrowFatalErrors(error);
           if (error === ResourceParamsStatus.IDLE) {
             return {status: 'idle', reload: 0};
           } else if (error === ResourceParamsStatus.LOADING) {
             return {status: 'loading', reload: 0};
           }
           return {error: error as Error, reload: 0};
+        } finally {
+          setInParamsFunction(false);
         }
       },
       ngDevMode ? createDebugNameObject(debugName, 'extRequest') : undefined,
@@ -430,6 +439,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
         stream,
       });
     } catch (err) {
+      rethrowFatalErrors(err);
       if (abortSignal.aborted || untracked(this.extRequest) !== extRequest) {
         return;
       }
@@ -581,3 +591,29 @@ export const paramsContext = {
     return resource.value();
   },
 };
+
+let inParamsFunction = false;
+
+export function isInParamsFunction() {
+  return inParamsFunction;
+}
+
+export function setInParamsFunction(value: boolean) {
+  inParamsFunction = value;
+}
+
+export function invalidResourceCreationInParams(): Error {
+  return new RuntimeError(
+    RuntimeErrorCode.INVALID_RESOURCE_CREATION_IN_PARAMS,
+    ngDevMode && `Cannot create a resource inside the \`params\` of another resource`,
+  );
+}
+
+export function rethrowFatalErrors(error: unknown) {
+  if (
+    error instanceof RuntimeError &&
+    error.code === RuntimeErrorCode.INVALID_RESOURCE_CREATION_IN_PARAMS
+  ) {
+    throw error;
+  }
+}
