@@ -22,9 +22,9 @@ ng_project(
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
         "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer",
         "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
+        "//devtools/projects/ng-devtools/src/lib/shared/signal-graph",
         "//devtools/projects/protocol",
     ],
 )

@@ -12,7 +12,7 @@
  * with  cluster information that allows the visualizer to render the so-called compound nodes.
  */
 
-import {DebugSignalGraphEdge, DebugSignalGraphNode} from '../../../../../../protocol';
+import {DebugSignalGraphEdge, DebugSignalGraphNode} from '../../../../../protocol';
 
 export type DevtoolsClusterNodeType = 'resource';
 

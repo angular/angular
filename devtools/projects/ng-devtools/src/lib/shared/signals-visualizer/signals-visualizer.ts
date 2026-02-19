@@ -16,8 +16,8 @@ import {
   DevtoolsClusterNodeType,
   DevtoolsSignalNode,
   getNodeLabel,
-} from '../../signal-graph';
-import {DebugSignalGraphNode} from '../../../../../../../protocol';
+} from '../signal-graph';
+import {DebugSignalGraphNode} from '../../../../../protocol';
 import type {DagreCluster, DagreEdge, DagreNode, DagreRegularNode} from './visualizer-types';
 
 export type DependenciesHighlightEvent =
