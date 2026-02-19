@@ -21,7 +21,7 @@ import {FrameManager} from '../../application-services/frame_manager';
 import {Component, CUSTOM_ELEMENTS_SCHEMA, output, input} from '@angular/core';
 import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
-import {PropertyTabComponent} from './property-tab/property-tab.component';
+import {PropertyPaneComponent} from './property-pane/property-pane.component';
 import {SignalGraphManager} from './signal-graph/signal-graph-manager';
 import {FlatNode} from '../../shared/object-tree-explorer/object-tree-types';
 
@@ -110,7 +110,7 @@ describe('DirectiveExplorerComponent', () => {
 
     fixture = TestBed.overrideComponent(DirectiveExplorerComponent, {
       remove: {
-        imports: [DirectiveForestComponent, BreadcrumbsComponent, PropertyTabComponent],
+        imports: [DirectiveForestComponent, BreadcrumbsComponent, PropertyPaneComponent],
         providers: [SignalGraphManager],
       },
       add: {

@@ -10,7 +10,7 @@ import {ChangeDetectionStrategy, Component, computed, inject, input, output} fro
 import {MatIcon} from '@angular/material/icon';
 
 import {DebugSignalGraphNode} from '../../../../../../../protocol';
-import {SignalsValueTreeComponent} from './signals-value-tree/signals-value-tree.component';
+import {SignalValueTreeComponent} from './signal-value-tree/signal-value-tree.component';
 import {ButtonComponent} from '../../../../shared/button/button.component';
 import {
   isClusterNode,
@@ -45,13 +45,13 @@ interface ResourceCluster {
 }
 
 @Component({
-  selector: 'ng-signals-details',
-  templateUrl: './signals-details.component.html',
-  styleUrl: './signals-details.component.scss',
+  selector: 'ng-signal-details',
+  templateUrl: './signal-details.component.html',
+  styleUrl: './signal-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SignalsValueTreeComponent, MatIcon, ButtonComponent, MatTooltip],
+  imports: [SignalValueTreeComponent, MatIcon, ButtonComponent, MatTooltip],
 })
-export class SignalsDetailsComponent {
+export class SignalDetailsComponent {
   private readonly signalGraph = inject(SignalGraphManager);
 
   protected readonly node = input.required<DevtoolsSignalGraphNode>();

@@ -18,13 +18,13 @@ import {ObjectTreeExplorerComponent} from '../../../../../shared/object-tree-exp
 import {FlatNode, Property} from '../../../../../shared/object-tree-explorer/object-tree-types';
 
 @Component({
-  selector: 'ng-signals-value-tree',
-  templateUrl: './signals-value-tree.component.html',
+  selector: 'ng-signal-value-tree',
+  templateUrl: './signal-value-tree.component.html',
   imports: [ObjectTreeExplorerComponent],
-  styleUrl: './signals-value-tree.component.scss',
+  styleUrl: './signal-value-tree.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SignalsValueTreeComponent {
+export class SignalValueTreeComponent {
   private readonly signalGraph = inject(SignalGraphManager);
   private readonly messageBus = inject(MessageBus);
 

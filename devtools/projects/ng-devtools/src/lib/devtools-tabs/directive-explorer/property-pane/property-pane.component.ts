@@ -10,20 +10,20 @@ import {ChangeDetectionStrategy, Component, computed, input, output} from '@angu
 import {DirectivePosition} from '../../../../../../protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
-import {PropertyTabHeaderComponent} from './property-tab-header/property-tab-header.component';
+import {PropertyPaneHeaderComponent} from './property-pane-header/property-pane-header.component';
 import {DeferViewComponent} from './defer-view/defer-view.component';
 import {PropertyViewComponent} from './property-view/property-view.component';
 import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
 import {DevtoolsSignalGraphNode} from '../signal-graph';
 
 @Component({
-  selector: 'ng-property-tab',
-  templateUrl: './property-tab.component.html',
-  styleUrls: ['./property-tab.component.scss'],
-  imports: [PropertyTabHeaderComponent, PropertyViewComponent, DeferViewComponent],
+  selector: 'ng-property-pane',
+  templateUrl: './property-pane.component.html',
+  styleUrls: ['./property-pane.component.scss'],
+  imports: [PropertyPaneHeaderComponent, PropertyViewComponent, DeferViewComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PropertyTabComponent {
+export class PropertyPaneComponent {
   readonly currentSelectedElement = input.required<IndexedNode | null>();
 
   readonly viewSource = output<string>();

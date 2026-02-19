@@ -3,19 +3,19 @@ load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
 package(default_visibility = ["//devtools:__subpackages__"])
 
 sass_binary(
-    name = "signals-value-tree_styles",
-    src = "signals-value-tree.component.scss",
+    name = "signal-value-tree_styles",
+    src = "signal-value-tree.component.scss",
 )
 
 ng_project(
-    name = "signals-value-tree",
+    name = "signal-value-tree",
     srcs = [
         "signal-data-source.ts",
-        "signals-value-tree.component.ts",
+        "signal-value-tree.component.ts",
     ],
     angular_assets = [
-        "signals-value-tree.component.html",
-        ":signals-value-tree_styles",
+        "signal-value-tree.component.html",
+        ":signal-value-tree_styles",
     ],
     deps = [
         "//:node_modules/@angular/cdk",

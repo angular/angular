@@ -16,13 +16,13 @@ import {ButtonComponent} from '../../../../shared/button/button.component';
 import {SUPPORTED_APIS} from '../../../../application-providers/supported_apis';
 
 @Component({
-  templateUrl: './property-tab-header.component.html',
-  selector: 'ng-property-tab-header',
-  styleUrls: ['./property-tab-header.component.scss'],
+  templateUrl: './property-pane-header.component.html',
+  selector: 'ng-property-pane-header',
+  styleUrls: ['./property-pane-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatExpansionModule, MatIcon, ComponentMetadataComponent, ButtonComponent],
 })
-export class PropertyTabHeaderComponent {
+export class PropertyPaneHeaderComponent {
   private readonly supportedApis = inject(SUPPORTED_APIS);
 
   protected readonly currentSelectedElement = input.required<IndexedNode>();

@@ -3,18 +3,18 @@ load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
 package(default_visibility = ["//devtools:__subpackages__"])
 
 sass_binary(
-    name = "signals-tab_styles",
-    src = "signals-tab.component.scss",
+    name = "signal-graph-pane_styles",
+    src = "signal-graph-pane.component.scss",
 )
 
 ng_project(
-    name = "signals-tab",
+    name = "signal-graph-pane",
     srcs = [
-        "signals-tab.component.ts",
+        "signal-graph-pane.component.ts",
     ],
     angular_assets = [
-        "signals-tab.component.html",
-        ":signals-tab_styles",
+        "signal-graph-pane.component.html",
+        ":signal-graph-pane_styles",
     ],
     deps = [
         "//:node_modules/@angular/core",
@@ -22,8 +22,8 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/application-operations",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view/signals-details",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view/signals-visualizer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph-pane/signal-details",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph-pane/signals-visualizer",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
         "//devtools/projects/protocol",
     ],

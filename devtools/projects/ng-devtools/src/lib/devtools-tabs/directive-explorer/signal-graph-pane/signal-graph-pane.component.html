@@ -10,7 +10,7 @@
 
 @let node = selectedNode();
 @if (node && detailsVisible()) {
-  <ng-signals-details
+  <ng-signal-details
     [node]="node"
     (gotoSource)="gotoSource($event)"
     (expandCluster)="expandCluster($event)"

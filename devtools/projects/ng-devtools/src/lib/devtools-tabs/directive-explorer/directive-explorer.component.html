@@ -40,7 +40,7 @@
       </as-split-area>
       @if (signalsOpen() && signalGraph.element()) {
         <as-split-area [size]="signalGraphSplitSize()">
-          <ng-signals-tab
+          <ng-signal-graph-pane
             [externallySelectedNodeId]="externallySelectedSignalNodeId()"
             (close)="signalsOpen.set(false)"
           />
@@ -51,7 +51,7 @@
   <as-split-area size="40" minSize="25" class="prop-split">
     <div class="property-tab-wrapper">
       @if (currentSelectedElement(); as currentSelectedElement) {
-        <ng-property-tab
+        <ng-property-pane
           [currentSelectedElement]="currentSelectedElement"
           (showSignalGraph)="showSignalGraph($event)"
           (inspect)="inspect($event)"

@@ -3,21 +3,21 @@ load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
 package(default_visibility = ["//devtools:__subpackages__"])
 
 sass_binary(
-    name = "property-tab-header_styles",
-    src = "property-tab-header.component.scss",
+    name = "property-pane-header_styles",
+    src = "property-pane-header.component.scss",
     deps = [
         "//devtools/projects/ng-devtools/src/styles:typography",
     ],
 )
 
 ng_project(
-    name = "property-tab-header",
+    name = "property-pane-header",
     srcs = [
-        "property-tab-header.component.ts",
+        "property-pane-header.component.ts",
     ],
     angular_assets = [
-        "property-tab-header.component.html",
-        ":property-tab-header_styles",
+        "property-pane-header.component.html",
+        ":property-pane-header_styles",
     ],
     deps = [
         "//:node_modules/@angular/core",
@@ -25,7 +25,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/application-providers:supported_apis",
         "//devtools/projects/ng-devtools/src/lib/application-services:settings",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-tab-header/component-metadata",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/property-pane-header/component-metadata",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
     ],
 )

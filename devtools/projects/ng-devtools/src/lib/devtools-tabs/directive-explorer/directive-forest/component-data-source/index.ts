@@ -14,7 +14,7 @@ import {DeferInfo, DevToolsNode, HydrationStatus} from '../../../../../../../pro
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {diff} from '../../../diffing';
+import {diff} from '../../diffing';
 import {IndexedNode, indexForest} from '../index-forest';
 
 /** Flat node with expandable and level information */
