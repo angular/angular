@@ -24,7 +24,6 @@ import {
   IsInAngularProject,
 } from '../../common/requests';
 
-import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {ServerHost} from './server_host';
 import {
   filePathToUri,
@@ -42,6 +41,7 @@ import {
   onDocumentDiagnostic,
   onWorkspaceDiagnostic,
   clearDiagnosticCache,
+  getLspDiagnosticsForFile,
   invalidateAllProjectDiagnostics,
   invalidateProjectDiagnostics,
 } from './handlers/diagnostics';
@@ -501,29 +501,13 @@ export class Session {
       if (!result) {
         continue;
       }
-      const label = `${reason} - getSemanticDiagnostics for ${fileName}`;
-      if (isDebugMode) {
-        console.time(label);
-      }
-      const diagnostics = result.languageService.getSemanticDiagnostics(fileName);
-      if (isDebugMode) {
-        console.timeEnd(label);
-      }
-
-      const suggestionLabel = `${reason} - getSuggestionDiagnostics for ${fileName}`;
-      if (isDebugMode) {
-        console.time(suggestionLabel);
-      }
-      diagnostics.push(...result.languageService.getSuggestionDiagnostics(fileName));
-      if (isDebugMode) {
-        console.timeEnd(suggestionLabel);
-      }
+      const diagnostics = getLspDiagnosticsForFile(this, result.languageService, fileName, reason);
 
       // Need to send diagnostics even if it's empty otherwise editor state will
       // not be updated.
       this.connection.sendDiagnostics({
         uri: filePathToUri(fileName),
-        diagnostics: diagnostics.map((d) => tsDiagnosticToLspDiagnostic(d, this.projectService)),
+        diagnostics,
       });
       if (this.diagnosticsTimeout) {
         // There is a pending request to check diagnostics for all open files,

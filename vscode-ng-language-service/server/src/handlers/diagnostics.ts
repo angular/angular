@@ -8,10 +8,16 @@
 
 import * as lsp from 'vscode-languageserver/node';
 import type {CancellationToken, ResultProgressReporter} from 'vscode-languageserver/node';
+import type * as ts from 'typescript/lib/tsserverlibrary';
 import {promisify} from 'util';
 import {Session} from '../session';
 import {tsDiagnosticToLspDiagnostic} from '../diagnostic';
 import {isDebugMode, filePathToUri, uriToFilePath} from '../utils';
+
+interface DiagnosticFetchingLanguageService {
+  getSemanticDiagnostics(fileName: string): ts.Diagnostic[];
+  getSuggestionDiagnostics(fileName: string): ts.DiagnosticWithLocation[];
+}
 
 /**
  * Cache for tracking result IDs for unchanged diagnostic reports.
@@ -52,6 +58,35 @@ let nextResultId = 1;
  */
 function generateResultId(): string {
   return String(nextResultId++);
+}
+
+/**
+ * Shared implementation for fetching semantic + suggestion diagnostics and
+ * mapping them to LSP diagnostics with consistent timing labels.
+ */
+export function getLspDiagnosticsForFile(
+  session: Session,
+  languageService: DiagnosticFetchingLanguageService,
+  fileName: string,
+  timingPrefix: string,
+): lsp.Diagnostic[] {
+  const semanticLabel = `${timingPrefix} - getSemanticDiagnostics for ${fileName}`;
+  const suggestionLabel = `${timingPrefix} - getSuggestionDiagnostics for ${fileName}`;
+
+  if (isDebugMode) {
+    console.time(semanticLabel);
+  }
+  const diagnostics = languageService.getSemanticDiagnostics(fileName);
+  if (isDebugMode) {
+    console.timeEnd(semanticLabel);
+    console.time(suggestionLabel);
+  }
+  diagnostics.push(...languageService.getSuggestionDiagnostics(fileName));
+  if (isDebugMode) {
+    console.timeEnd(suggestionLabel);
+  }
+
+  return diagnostics.map((d) => tsDiagnosticToLspDiagnostic(d, session.projectService));
 }
 
 function getProjectDiagnosticEpoch(projectName: string): number {
@@ -112,21 +147,12 @@ function computeDiagnosticsForFile(
   }
 
   const fileName = scriptInfo.fileName;
-  const semanticLabel = `Pull diagnostics - getSemanticDiagnostics for ${fileName}`;
-  const suggestionLabel = `Pull diagnostics - getSuggestionDiagnostics for ${fileName}`;
-
-  if (isDebugMode) {
-    console.time(semanticLabel);
-  }
-  const diagnostics = languageService.getSemanticDiagnostics(fileName);
-  if (isDebugMode) {
-    console.timeEnd(semanticLabel);
-    console.time(suggestionLabel);
-  }
-  diagnostics.push(...languageService.getSuggestionDiagnostics(fileName));
-  if (isDebugMode) {
-    console.timeEnd(suggestionLabel);
-  }
+  const diagnostics = getLspDiagnosticsForFile(
+    session,
+    languageService,
+    fileName,
+    'Pull diagnostics',
+  );
 
   const newResultId = generateResultId();
   diagnosticResultCache.set(uri, {
@@ -139,7 +165,7 @@ function computeDiagnosticsForFile(
   return {
     kind: lsp.DocumentDiagnosticReportKind.Full,
     resultId: newResultId,
-    items: diagnostics.map((d) => tsDiagnosticToLspDiagnostic(d, session.projectService)),
+    items: diagnostics,
   };
 }
 
