@@ -175,6 +175,52 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should *not* produce a warning for custom structural directives imported from another file', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const dirFileName = absoluteFrom('/dir.ts');
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName: dirFileName,
+          source: `export class Foo {}`,
+        },
+        {
+          fileName,
+          templates: {
+            'TestCmp': `<div *foo="exp"></div>`,
+          },
+          source: `
+          import {Foo} from './dir';
+          export class TestCmp {}
+        `,
+          declarations: [
+            {
+              type: 'directive',
+              name: 'Foo',
+              selector: `[foo]`,
+              file: dirFileName,
+            },
+            {
+              name: 'TestCmp',
+              type: 'directive',
+              selector: `[test-cmp]`,
+              isStandalone: true,
+            },
+          ],
+        },
+      ]);
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [missingStructuralDirectiveCheck],
+        {strictNullChecks: true} /* options */,
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      // No diagnostic messages are expected.
+      expect(diags.length).toBe(0);
+    });
+
     it('should *not* produce a warning for non-standalone components', () => {
       const fileName = absoluteFrom('/main.ts');
 
