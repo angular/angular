@@ -115,7 +115,7 @@ export class FormField<T> {
   readonly destroyRef = inject(DestroyRef);
 
   /**
-   * The node injector for the element this field binding.
+   * The node injector for the DOM element hosting this field binding.
    */
   readonly injector = inject(Injector);
 
@@ -196,8 +196,7 @@ export class FormField<T> {
    */
   private installClassBindingEffect(): void {
     const classes = Object.entries(this.config?.classes ?? {}).map(
-      ([className, computation]) =>
-        [className, computed(() => computation(this as FormField<unknown>))] as const,
+      ([className, computation]) => [className, computed(() => computation(this))] as const,
     );
     if (classes.length === 0) {
       return;

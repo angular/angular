@@ -180,6 +180,14 @@ export class FormField<T> {
     static ɵfac: i0.ɵɵFactoryDeclaration<FormField<any>, never>;
 }
 
+// @public
+export interface FormFieldBinding {
+    readonly element: HTMLElement;
+    focus(options?: FocusOptions): void;
+    readonly injector: Injector;
+    readonly state: Signal<ReadonlyFieldState<unknown>>;
+}
+
 // @public (undocumented)
 export interface FormFieldBindingOptions {
     readonly focus?: (focusOptions?: FocusOptions) => void;
@@ -480,7 +488,7 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
     readonly errorSummary: Signal<ValidationError.WithFieldTree[]>;
     readonly fieldTree: ReadonlyFieldTree<unknown, TKey>;
     focusBoundControl(options?: FocusOptions): void;
-    readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
+    readonly formFieldBindings: Signal<readonly FormFieldBinding[]>;
     hasMetadata(key: MetadataKey<any, any, any>): boolean;
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
@@ -580,7 +588,7 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
 // @public
 export interface SignalFormsConfig {
     classes?: {
-        [className: string]: (state: FormField<unknown>) => boolean;
+        [className: string]: (formField: FormFieldBinding) => boolean;
     };
 }
 

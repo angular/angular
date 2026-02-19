@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Signal, WritableSignal} from '@angular/core';
+import {Injector, Signal, WritableSignal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import type {FormField} from '../directive/form_field_directive';
 import type {MetadataKey, ValidationError} from './rules';
@@ -451,7 +451,7 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
   /**
    * The {@link FormField} directives that bind this field to a UI control.
    */
-  readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
+  readonly formFieldBindings: Signal<readonly FormFieldBinding[]>;
 
   /**
    * Reads a metadata value from the field.
@@ -572,6 +572,36 @@ export type FieldStateByMode<
   TKey extends string | number,
   TMode extends 'writable' | 'readonly',
 > = TMode extends 'writable' ? FieldState<TValue, TKey> : ReadonlyFieldState<TValue, TKey>;
+
+/**
+ * Represents a binding between a field and a UI control through a {@link FormField} directive.
+ *
+ * @experimental 21.3.0
+ */
+export interface FormFieldBinding {
+  /**
+   * The HTML element on which the {@link FormField} directive is applied.
+   */
+  readonly element: HTMLElement;
+
+  /**
+   * The node injector for the element hosting this field binding.
+   */
+  readonly injector: Injector;
+
+  /**
+   * The {@link FieldState} of the field bound to the {@link FormField} directive.
+   */
+  readonly state: Signal<ReadonlyFieldState<unknown>>;
+
+  /**
+   * Focuses this field binding.
+   *
+   * By default, this will focus {@link element}. However, custom controls can implement their own
+   * focus behavior.
+   */
+  focus(options?: FocusOptions): void;
+}
 
 /**
  * Allows declaring whether the Rules are supported for a given path.
