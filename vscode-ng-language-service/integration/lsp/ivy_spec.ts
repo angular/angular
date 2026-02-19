@@ -1190,6 +1190,69 @@ export class FooComponent {
     expect(fullResponse.items[0].message).toContain("Property 'title' does not exist");
   });
 
+  it('should return full report when transitive dependency changes (C -> B -> A template)', async () => {
+    const tmpDir = makeTempDir();
+    const newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+    await cp(PROJECT_PATH, newProjectRoot, {
+      recursive: true,
+      mode: fs.constants.COPYFILE_FICLONE,
+    });
+
+    const aComponentPath = join(newProjectRoot, 'app', 'a.component.ts');
+    const aTemplatePath = join(newProjectRoot, 'app', 'a.component.html');
+    const bPath = join(newProjectRoot, 'app', 'b.ts');
+    const cPath = join(newProjectRoot, 'app', 'c.ts');
+
+    await writeFile(
+      aComponentPath,
+      `
+import {Component} from '@angular/core';
+import {value} from './b';
+
+@Component({
+  selector: 'a-component',
+  templateUrl: './a.component.html',
+})
+export class AComponent {
+  value = value;
+}
+`,
+    );
+    await writeFile(aTemplatePath, `{{ value.toFixed(2) }}`);
+    await writeFile(bPath, `export {value} from './c';\n`);
+    await writeFile(cPath, `export const value = 123;\n`);
+
+    openTextDocument(client, aComponentPath);
+    openTextDocument(client, aTemplatePath);
+
+    await waitForDiagnosticRefresh();
+
+    const aTemplateUri = pathToFileURL(aTemplatePath).href;
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    expect((firstResponse as lsp.FullDocumentDiagnosticReport).items.length).toBe(0);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Change C only. A template text and A/B files remain unchanged.
+    openTextDocument(client, cPath, `export const value = 'abc';\n`);
+
+    await waitForDiagnosticRefresh();
+
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+      previousResultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = secondResponse as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(1);
+    expect(fullResponse.items[0].message).toContain(
+      "Property 'toFixed' does not exist on type 'string'",
+    );
+  });
+
   it('should return diagnostics for valid template', async () => {
     // Open the app component which should have no errors
     openTextDocument(client, APP_COMPONENT);
