@@ -186,6 +186,35 @@ effect(() => {
 });
 ```
 
+### Reactive context and async operations
+
+The reactive context is only active for synchronous code. Any signal reads that occur after an asynchronous boundary will not be tracked as dependencies.
+
+```ts {avoid}
+effect(async () => {
+  const data = await fetchUserData();
+  // Reactive context is lost here - theme() won't be tracked
+  console.log(`User: ${data.name}, Theme: ${theme()}`);
+});
+```
+
+To ensure all signal reads are tracked, read signals before the `await`. This includes passing them as arguments to the awaited function, since arguments are evaluated synchronously:
+
+```ts {prefer}
+effect(async () => {
+  const currentTheme = theme(); // Read before await
+  const data = await fetchUserData();
+  console.log(`User: ${data.name}, Theme: ${currentTheme}`);
+});
+```
+
+```ts {prefer}
+effect(async () => {
+  // Also works: signal is read before await (as function argument)
+  await renderContent(docContent());
+});
+```
+
 ## Advanced derivations
 
 While `computed` handles simple readonly derivations, you might find yourself needing a writable state that is dependent on other signals.
