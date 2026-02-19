@@ -91,7 +91,7 @@
     width: 100vw;
     height: 100vh;
     backdrop-filter: blur(2px);
-    background-color: color-mix(in srgb, var(--gray-1000) 5%, transparent);
+    background-color: color-mix(in srgb, var(--page-background) 5%, transparent);
     z-index: 50;
     visibility: hidden;
     opacity: 0;

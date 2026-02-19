@@ -6,28 +6,28 @@
   justify-content: center;
   font-family: 'Press Start 2P';
 
-  --retro-button-color: color-mix(in srgb, var(--always-pink) 90%, var(--gray-1000));
+  --retro-button-color: color-mix(in srgb, var(--always-pink) 90%, var(--page-background));
   --retro-button-text-color: color-mix(in srgb, var(--always-pink) 10%, white);
   --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
   --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
   --retro-elevated-shadow:
     inset 4px 4px 0px 0px var(--retro-shadow-light),
-    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
-    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
-    0px -4px 0px 0px var(--gray-700);
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--tertiary-contrast),
+    0px 4px 0px 0px var(--tertiary-contrast), -4px 0px 0px 0px var(--tertiary-contrast),
+    0px -4px 0px 0px var(--tertiary-contrast);
   --retro-flat-shadow:
-    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
-    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+    4px 0px 0px 0px var(--tertiary-contrast), 0px 4px 0px 0px var(--tertiary-contrast),
+    -4px 0px 0px 0px var(--tertiary-contrast), 0px -4px 0px 0px var(--tertiary-contrast);
   --retro-clickable-shadow:
     inset 4px 4px 0px 0px var(--retro-shadow-light),
-    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
-    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
-    0px -4px 0px 0px var(--gray-700), 8px 8px 0px 0px var(--gray-700);
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--tertiary-contrast),
+    0px 4px 0px 0px var(--tertiary-contrast), -4px 0px 0px 0px var(--tertiary-contrast),
+    0px -4px 0px 0px var(--tertiary-contrast), 8px 8px 0px 0px var(--tertiary-contrast);
   --retro-pressed-shadow:
     inset 4px 4px 0px 0px var(--retro-shadow-dark),
-    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--gray-700),
-    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
-    0px -4px 0px 0px var(--gray-700), 0px 0px 0px 0px var(--gray-700);
+    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--tertiary-contrast),
+    0px 4px 0px 0px var(--tertiary-contrast), -4px 0px 0px 0px var(--tertiary-contrast),
+    0px -4px 0px 0px var(--tertiary-contrast), 0px 0px 0px 0px var(--tertiary-contrast);
 }
 
 .calendar {
