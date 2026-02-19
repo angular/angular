@@ -337,8 +337,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#0125e8e025e98825616c46350f58502dbeddb038
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0125e8e025e98825616c46350f58502dbeddb038(@modelcontextprotocol/sdk@1.26.0)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#d85ee989281e1c7c029795c7c4efae0969b8aad3
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d85ee989281e1c7c029795c7c4efae0969b8aad3(@modelcontextprotocol/sdk@1.26.0)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.29.0)
@@ -1789,9 +1789,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0125e8e025e98825616c46350f58502dbeddb038':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0125e8e025e98825616c46350f58502dbeddb038}
-    version: 0.0.0-7c08ac2a4f396bad752829fba09dbaefbcded9fc
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d85ee989281e1c7c029795c7c4efae0969b8aad3':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d85ee989281e1c7c029795c7c4efae0969b8aad3}
+    version: 0.0.0-c231d87cc1e09e7541f9d0dbdd1fb4296a11d3ce
     hasBin: true
 
   '@angular/ssr@21.2.0-rc.0':
@@ -10946,6 +10946,7 @@ packages:
   prebuild-install@7.1.3:
     resolution: {integrity: sha512-8Mf2cbV7x1cXPUILADGI3wuhfqWvtiLA1iclTDbFRZkgRQS0NqsPZphna9V+HyTEadheuPmjaJMsbzKQFOzLug==}
     engines: {node: '>=10'}
+    deprecated: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
     hasBin: true
 
   prettier@3.8.1:
@@ -13895,7 +13896,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/0125e8e025e98825616c46350f58502dbeddb038(@modelcontextprotocol/sdk@1.26.0)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d85ee989281e1c7c029795c7c4efae0969b8aad3(@modelcontextprotocol/sdk@1.26.0)':
     dependencies:
       '@actions/core': 3.0.0
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
@@ -15046,7 +15047,7 @@ snapshots:
   '@conventional-changelog/git-client@1.0.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)':
     dependencies:
       '@types/semver': 7.7.1
-      semver: 7.7.3
+      semver: 7.7.4
     optionalDependencies:
       conventional-commits-filter: 5.0.0
       conventional-commits-parser: 6.2.1
@@ -15055,7 +15056,7 @@ snapshots:
     dependencies:
       '@simple-libs/child-process-utils': 1.0.1
       '@simple-libs/stream-utils': 1.1.0
-      semver: 7.7.3
+      semver: 7.7.4
     optionalDependencies:
       conventional-commits-filter: 5.0.0
       conventional-commits-parser: 6.2.1
@@ -17380,7 +17381,7 @@ snapshots:
     dependencies:
       '@pnpm/crypto.hash': 1000.2.1
       '@pnpm/types': 1001.3.0
-      semver: 7.7.3
+      semver: 7.7.4
 
   '@pnpm/graceful-fs@1000.0.1':
     dependencies:
@@ -17427,7 +17428,7 @@ snapshots:
       extract-zip: 2.0.1
       progress: 2.0.3
       proxy-agent: 6.5.0
-      semver: 7.7.3
+      semver: 7.7.4
       tar-fs: 3.1.1
       yargs: 17.7.2
     transitivePeerDependencies:
@@ -20070,7 +20071,7 @@ snapshots:
       conventional-commits-filter: 5.0.0
       handlebars: 4.7.8
       meow: 13.2.0
-      semver: 7.7.3
+      semver: 7.7.4
 
   conventional-changelog@6.0.0(conventional-commits-filter@5.0.0):
     dependencies:
@@ -21160,7 +21161,7 @@ snapshots:
       promise-breaker: 6.0.0
       qs: 6.14.1
       raw-body: 2.5.3
-      semver: 7.7.3
+      semver: 7.7.4
     transitivePeerDependencies:
       - supports-color
 
@@ -21889,7 +21890,7 @@ snapshots:
       es6-error: 4.1.1
       matcher: 3.0.0
       roarr: 2.15.4
-      semver: 7.7.3
+      semver: 7.7.4
       serialize-error: 7.0.1
 
   global-dirs@3.0.1:
@@ -23205,7 +23206,7 @@ snapshots:
       jest-message-util: 30.2.0
       jest-util: 30.2.0
       pretty-format: 30.2.0
-      semver: 7.7.3
+      semver: 7.7.4
       synckit: 0.11.12
     transitivePeerDependencies:
       - supports-color
@@ -23415,7 +23416,7 @@ snapshots:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.7.3
+      semver: 7.7.4
 
   jsprim@1.4.2:
     dependencies:
@@ -23876,7 +23877,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   make-error@1.3.6: {}
 
@@ -24335,7 +24336,7 @@ snapshots:
 
   node-abi@3.87.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
     optional: true
 
   node-addon-api@4.3.0:
@@ -24406,13 +24407,13 @@ snapshots:
   normalize-package-data@6.0.2:
     dependencies:
       hosted-git-info: 7.0.2
-      semver: 7.7.3
+      semver: 7.7.4
       validate-npm-package-license: 3.0.4
 
   normalize-package-data@7.0.1:
     dependencies:
       hosted-git-info: 8.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       validate-npm-package-license: 3.0.4
 
   normalize-path@2.1.1:
@@ -24433,7 +24434,7 @@ snapshots:
 
   npm-install-checks@6.3.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   npm-install-checks@8.0.0:
     dependencies:
@@ -24447,7 +24448,7 @@ snapshots:
     dependencies:
       hosted-git-info: 7.0.2
       proc-log: 4.2.0
-      semver: 7.7.3
+      semver: 7.7.4
       validate-npm-package-name: 5.0.1
 
   npm-package-arg@13.0.2:
@@ -24474,7 +24475,7 @@ snapshots:
       npm-install-checks: 6.3.0
       npm-normalize-package-bin: 3.0.1
       npm-package-arg: 11.0.3
-      semver: 7.7.3
+      semver: 7.7.4
 
   npm-registry-fetch@19.1.1:
     dependencies:
@@ -27221,7 +27222,7 @@ snapshots:
       pupa: 2.1.1
       registry-auth-token: 5.1.1
       registry-url: 5.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       semver-diff: 3.1.1
       xdg-basedir: 4.0.0
     transitivePeerDependencies:
