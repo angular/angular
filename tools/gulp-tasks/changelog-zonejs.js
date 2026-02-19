@@ -24,7 +24,7 @@ module.exports = (gulp) => () => {
         {
           // Ignore commits that have a different scope than `zone.js`.
           extendedRegexp: true,
-          grep: '^[^(]+\\(zone\\.js\\)',
+          grep: '^((feat|fix|perf)\\(zone\\.js\\)|revert:.*\\(zone\\.js\\))',
           from: ptag,
           to: 'HEAD',
         },
