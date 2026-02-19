@@ -7,7 +7,7 @@
  */
 
 import {timeout} from '../../../private/testing';
-import {ApplicationRef, Injector, resource, ResourceParamsStatus, signal} from '../../src/core';
+import {Injector, resource, ResourceParamsStatus, signal} from '../../src/core';
 import {TestBed} from '../../testing';
 
 function throwStatusAndErrors<T>(source: () => T | ResourceParamsStatus | Error): () => T {
@@ -20,7 +20,7 @@ function throwStatusAndErrors<T>(source: () => T | ResourceParamsStatus | Error)
 }
 
 describe('resource with ResourceParamsStatus', () => {
-  it('should transition to idle when params returns ResourceParams.idle()', async () => {
+  it('should transition to idle when params throws ResourceParamsStatus.IDLE', async () => {
     const s = signal<string | ResourceParamsStatus>('foo');
     const res = resource({
       params: throwStatusAndErrors(s),
@@ -29,21 +29,21 @@ describe('resource with ResourceParamsStatus', () => {
       },
       injector: TestBed.inject(Injector),
     });
-
-    await TestBed.inject(ApplicationRef).whenStable();
-    await Promise.resolve();
+    TestBed.tick();
+    await timeout();
 
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('foo');
 
     s.set(ResourceParamsStatus.IDLE);
-    await TestBed.inject(ApplicationRef).whenStable();
+    TestBed.tick();
+    await timeout();
 
     expect(res.status()).toBe('idle');
     expect(res.value()).toBe(undefined);
   });
 
-  it('should transition to loading when params returns ResourceParams.loading()', async () => {
+  it('should transition to loading when params throws ResourceParamsStatus.LOADING', async () => {
     const s = signal<string | ResourceParamsStatus>('foo');
     let loadCount = 0;
     const res = resource({
@@ -54,36 +54,38 @@ describe('resource with ResourceParamsStatus', () => {
       },
       injector: TestBed.inject(Injector),
     });
-
-    await timeout(1);
+    TestBed.tick();
+    await timeout();
 
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('foo');
     expect(loadCount).toBe(1);
 
     s.set(ResourceParamsStatus.LOADING);
-    await timeout(1);
+    TestBed.tick();
+    await timeout();
 
     expect(res.status()).toBe('loading');
     expect(res.value()).toBe(undefined);
     expect(loadCount).toBe(1);
   });
 
-  it('should transition to error when params returns ResourceParams.error()', async () => {
-    const s = signal<string | ResourceParamsStatus | Error>('foo');
+  it('should transition to error when params throws an Error', async () => {
+    const s = signal<string | Error>('foo');
     const res = resource({
       params: throwStatusAndErrors(s),
       loader: async ({params}) => params as string,
       injector: TestBed.inject(Injector),
     });
+    TestBed.tick();
+    await timeout();
 
-    await TestBed.inject(ApplicationRef).whenStable();
-    await Promise.resolve();
     expect(res.status()).toBe('resolved');
 
     const err = new Error('params error');
     s.set(err);
-    await TestBed.inject(ApplicationRef).whenStable();
+    TestBed.tick();
+    await timeout();
 
     expect(res.status()).toBe('error');
     expect(res.error()).toEqual(err);
@@ -101,24 +103,32 @@ describe('resource with ResourceParamsStatus', () => {
       },
       injector: TestBed.inject(Injector),
     });
+    TestBed.tick();
+    await timeout();
 
-    await TestBed.inject(ApplicationRef).whenStable();
     expect(res.status()).toBe('idle');
 
     s.set(ResourceParamsStatus.LOADING);
-    await TestBed.inject(ApplicationRef).whenStable();
+    TestBed.tick();
+    await timeout();
+
     expect(res.status()).toBe('loading');
     expect(loadCount).toBe(0);
 
     s.set(new Error('fail'));
-    await TestBed.inject(ApplicationRef).whenStable();
+    TestBed.tick();
+    await timeout();
+
     expect(res.status()).toBe('error');
     expect(loadCount).toBe(0);
 
     s.set('foo');
     // Now it should load
     expect(res.status()).toBe('loading'); // Loader is async
-    await TestBed.inject(ApplicationRef).whenStable();
+
+    TestBed.tick();
+    await timeout();
+
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('foo');
     expect(loadCount).toBe(1);

@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import { Signal, ValueEqualityFn } from '../render3/reactivity/api';
-import { computed } from '../render3/reactivity/computed';
-import { effect, EffectRef } from '../render3/reactivity/effect';
-import { signal, signalAsReadonlyFn, WritableSignal } from '../render3/reactivity/signal';
-import { untracked } from '../render3/reactivity/untracked';
+import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
+import {computed} from '../render3/reactivity/computed';
+import {effect, EffectRef} from '../render3/reactivity/effect';
+import {signal, signalAsReadonlyFn, WritableSignal} from '../render3/reactivity/signal';
+import {untracked} from '../render3/reactivity/untracked';
 import {
   Resource,
+  ResourceDependencyError,
   ResourceLoaderParams,
   ResourceOptions,
   ResourceParamsStatus,
@@ -23,13 +24,14 @@ import {
   ResourceStreamItem,
   StreamingResourceOptions,
   WritableResource,
+  type ResourceParamsContext,
 } from './api';
 
-import { assertInInjectionContext } from '../di/contextual';
-import { Injector } from '../di/injector';
-import { inject } from '../di/injector_compatibility';
-import { DestroyRef } from '../linker/destroy_ref';
-import { PendingTasks } from '../pending_tasks';
+import {assertInInjectionContext} from '../di/contextual';
+import {Injector} from '../di/injector';
+import {inject} from '../di/injector_compatibility';
+import {DestroyRef} from '../linker/destroy_ref';
+import {PendingTasks} from '../pending_tasks';
 import {linkedSignal} from '../render3/reactivity/linked_signal';
 
 /**
@@ -195,7 +197,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
   override readonly error: Signal<Error | undefined>;
 
   constructor(
-    request: () => R,
+    request: (ctx: ResourceParamsContext) => R,
     private readonly loaderFn: ResourceStreamingLoader<T, R>,
     defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
@@ -232,7 +234,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     this.extRequest = linkedSignal<WrappedRequest>(
       () => {
         try {
-          return {request: request(), reload: 0};
+          return {request: request(paramsContext), reload: 0};
         } catch (error) {
           if (error === ResourceParamsStatus.IDLE) {
             return {status: 'idle', reload: 0};
@@ -375,7 +377,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     const {status: currentStatus, previousStatus} = untracked(this.state);
 
     if (extRequest.request === undefined) {
-      // Request represents a special status (idle, error, etc.), therefore nothing to load.
+      // Nothing to load (and we should already be in a non-loading state).
       return;
     } else if (currentStatus !== 'loading') {
       // We're not in a loading or reloading state, so this loading request is stale.
@@ -559,3 +561,23 @@ class ResourceWrappedError extends Error {
     );
   }
 }
+
+/**
+ * Chains the value of another resource into the params of the current resource, returning the value
+ * of the other resource if it is available, or propagating the status to the current resource if it
+ * is not.
+ */
+export const paramsContext = {
+  chain: <T>(resource: Resource<T>): T => {
+    if (resource.status() === 'idle') {
+      throw ResourceParamsStatus.IDLE;
+    }
+    if (resource.status() === 'error') {
+      throw new ResourceDependencyError(resource);
+    }
+    if (resource.status() === 'loading' || resource.status() === 'reloading') {
+      throw ResourceParamsStatus.LOADING;
+    }
+    return resource.value();
+  },
+};

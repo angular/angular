@@ -10,37 +10,42 @@ import {Injector} from '../di/injector';
 import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
 import {WritableSignal} from '../render3/reactivity/signal';
 
+/** Error thrown when a `Resource` dependency of another resource errors. */
+export class ResourceDependencyError extends Error {
+  /** The dependency that errored. */
+  readonly dependency: Resource<unknown>;
+
+  constructor(dependency: Resource<unknown>) {
+    super('Dependency error', {cause: dependency.error()});
+    this.name = 'ResourceDependencyError';
+    this.dependency = dependency;
+  }
+}
+
 /**
- * A return value from a resource's `params` function which indicates that the resource should
- * transition to a specific state.
+ * Special status codes that can be thrown from a resource's `params` or `request` function to
+ * indicate that the resource should transition to that status.
  */
 export class ResourceParamsStatus {
   private readonly _brand: undefined;
   private constructor() {}
 
+  /** Status code that transitions the resource to `idle` status. */
   static readonly IDLE = new ResourceParamsStatus();
+
+  /** Status code that transitions the resource to `loading` status. */
   static readonly LOADING = new ResourceParamsStatus();
 }
 
-/**
- * Options for the `chain` function.
- */
-export interface ChainOptions {
+/** Context received by a resource's `params` or `request` function. */
+export interface ResourceParamsContext {
   /**
-   * Whether to allow stale values from reloading resources.
-   *
-   * If `true`, a resource in the `reloading` state will be considered to have a value.
-   * If `false` (default), a resource in the `reloading` state will be considered loading.
+   * Chains the current params off of the value of another resource, returning the value
+   * of the other resource if it is available, or propagating the status to the current resource by
+   * throwing the appropriate status code if the value is not available.
    */
-  allowStale?: boolean;
+  chain: <T>(resource: Resource<T>) => T;
 }
-
-/**
- * Result of the `chain` function.
- */
-export type ChainResult<T extends Resource<any>[]> = () => {
-  [K in keyof T]: ReturnType<T[K]['value']>;
-};
 
 /**
  * String value capturing the status of a `Resource`.
@@ -207,7 +212,7 @@ export interface BaseResourceOptions<T, R> {
    *
    * If a params function isn't provided, the loader won't rerun unless the resource is reloaded.
    */
-  params?: () => R;
+  params?: (ctx: ResourceParamsContext) => R;
 
   /**
    * The value which will be returned from the resource when a server value is unavailable, such as

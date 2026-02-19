@@ -6,205 +6,93 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import { Injector, ResourceParamsStatus, runInInjectionContext, signal } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
-import { timeout } from '../../../private/testing';
-import { chain, ResourceDependencyError } from '../../src/resource/chain';
-import { resource } from '../../src/resource/resource';
-import { promiseWithResolvers } from '../../src/util/promise_with_resolvers';
-
-function throwStatusAndErrors<T>(source: () => T | ResourceParamsStatus | Error): () => T {
-  return () => {
-    const value = source();
-    if (value instanceof Error) throw value;
-    if (value === ResourceParamsStatus.IDLE || value === ResourceParamsStatus.LOADING) throw value;
-    return value as T;
-  };
-}
+import {
+  Injector,
+  ResourceDependencyError,
+  resourceFromSnapshots,
+  ResourceParamsStatus,
+  signal,
+  type ResourceSnapshot,
+} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {timeout} from '@angular/private/testing';
+import {paramsContext, resource} from '../../src/resource/resource';
 
 describe('chain', () => {
-  let injector: Injector;
-
-  beforeEach(() => {
-    injector = TestBed.inject(Injector);
+  it('should throw idle if resource is idle', () => {
+    const state = signal<ResourceSnapshot<number>>({status: 'idle', value: 0});
+    const res = resourceFromSnapshots(state);
+    expect(() => paramsContext.chain(res)).toThrow(ResourceParamsStatus.IDLE);
   });
 
-  function run(fn: () => void | Promise<void>) {
-    return runInInjectionContext(injector, fn);
-  }
+  it('should throw loading if resource is loading', () => {
+    const state = signal<ResourceSnapshot<number>>({status: 'loading', value: 0});
+    const res = resourceFromSnapshots(state);
+    expect(() => paramsContext.chain(res)).toThrow(ResourceParamsStatus.LOADING);
+  });
 
-  it('should return idle if any resource is idle', () =>
-    run(() => {
-      const s1 = signal(1);
-      const s2 = signal<number | undefined>(undefined);
+  it('should throw loading if resource is reloading', () => {
+    const state = signal<ResourceSnapshot<number>>({status: 'reloading', value: 2});
+    const res = resourceFromSnapshots(state);
+    expect(() => paramsContext.chain(res)).toThrow(ResourceParamsStatus.LOADING);
+  });
 
-      const res1 = resource({params: s1, loader: async () => 1});
-      const res2 = resource({params: s2, loader: async () => 2});
+  it('should throw dependency error if resource is error', () => {
+    const state = signal<ResourceSnapshot<number>>({status: 'error', error: new Error('fail')});
+    const res = resourceFromSnapshots(state);
+    expect(() => paramsContext.chain(res)).toThrow(jasmine.any(ResourceDependencyError));
+  });
 
-      // res2 is idle because s2 is undefined
-      expect(() => chain(res1, res2)).toThrow(ResourceParamsStatus.IDLE);
-    }));
+  it('should return value when resolved', () => {
+    const state = signal<ResourceSnapshot<number>>({status: 'resolved', value: 2});
+    const res = resourceFromSnapshots(state);
+    expect(paramsContext.chain(res)).toEqual(2);
+  });
 
-  it('should return error if any resource is error', async () =>
-    run(async () => {
-      const s1 = signal(1);
-      const s2 = signal(2);
+  it('should chain resources together', async () => {
+    const state = signal<ResourceSnapshot<number>>({status: 'idle', value: 0});
+    const res1 = resourceFromSnapshots(state);
+    const loaderSpy = jasmine.createSpy('loader');
+    const res2 = resource({
+      params: () => paramsContext.chain(res1) * 2,
+      loader: async ({params}) => {
+        loaderSpy();
+        return params;
+      },
+      injector: TestBed.inject(Injector),
+    });
 
-      const res1 = resource({
-        params: s1,
-        loader: async () => {
-          throw new Error('fail');
-        },
-      });
-      const res2 = resource({params: s2, loader: async () => 2});
+    // Idle because res1 is idle
+    expect(res2.status()).toBe('idle');
+    expect(loaderSpy).not.toHaveBeenCalled();
 
-      // Wait for res1 to fail
-      await new Promise((resolve) => setTimeout(resolve));
+    state.set({status: 'loading', value: 0});
+    TestBed.tick();
 
-      expect(() => chain(res1, res2)).toThrow(jasmine.any(ResourceDependencyError));
-    }));
+    // Loading because res1 is loading, res2 loader not run yet.
+    expect(res2.status()).toBe('loading');
+    expect(loaderSpy).not.toHaveBeenCalled();
 
-  it('should check idle before error', async () =>
-    run(async () => {
-      const s1 = signal<number | undefined>(undefined);
-      const s2 = signal(1);
+    state.set({status: 'resolved', value: 2});
+    TestBed.tick();
 
-      const res1 = resource({params: s1, loader: async () => 1});
-      const res2 = resource({
-        params: s2,
-        loader: async () => {
-          throw new Error('fail');
-        },
-      });
+    // Loading because res2 loader is running.
+    expect(res2.status()).toBe('loading');
+    expect(loaderSpy).toHaveBeenCalled();
 
-      await new Promise((resolve) => setTimeout(resolve));
+    await timeout();
 
-      // res1 is idle, res2 is error, chain should be idle.
-      expect(() => chain(res1, res2)).toThrow(ResourceParamsStatus.IDLE);
-    }));
+    // Resolved.
+    expect(res2.status()).toBe('resolved');
+    expect(res2.value()).toBe(4);
 
-  it('should return loading if any resource is loading', () =>
-    run(() => {
-      const s1 = signal(1);
-      const {promise, resolve} = promiseWithResolvers<void>();
-      const res1 = resource({params: s1, loader: () => promise});
+    const error = Error('fail');
+    state.set({status: 'error', error});
+    TestBed.tick();
 
-      expect(() => chain(res1)).toThrow(ResourceParamsStatus.LOADING);
-      resolve();
-    }));
-
-  it('should return values when all resolved', async () =>
-    run(async () => {
-      const res1 = resource({params: () => 1, loader: async () => 1});
-      const res2 = resource({params: () => 1, loader: async () => 2});
-
-      await new Promise((resolve) => setTimeout(resolve));
-
-      const values = chain(res1, res2);
-      expect(values()).toEqual([1, 2]);
-    }));
-
-  it('should not allow stale values by default', async () =>
-    run(async () => {
-      const s = signal(1);
-      const res = resource({
-        params: s,
-        loader: async (ctx: {params: number}) => {
-          await new Promise((resolve) => setTimeout(resolve, 10));
-          return ctx.params;
-        },
-      });
-
-      // Initial load
-      await new Promise((resolve) => setTimeout(resolve, 20));
-      expect(res.value()).toBe(1);
-      expect(res.status()).toBe('resolved');
-
-      // Trigger reload
-      res.reload();
-      expect(res.status()).toBe('reloading');
-      expect(res.value()).toBe(1);
-
-      expect(() => chain(res)).toThrow(ResourceParamsStatus.LOADING);
-    }));
-
-  it('should allow stale values if configured', async () =>
-    run(async () => {
-      const s = signal(1);
-      const res = resource({
-        params: s,
-        loader: async (ctx: {params: number}) => {
-          await new Promise((resolve) => setTimeout(resolve, 10));
-          return ctx.params;
-        },
-      });
-
-      // Initial load
-      await new Promise((resolve) => setTimeout(resolve, 20));
-      expect(res.value()).toBe(1);
-      expect(res.status()).toBe('resolved');
-
-      // Trigger reload
-      res.reload();
-      expect(res.status()).toBe('reloading');
-      expect(res.value()).toBe(1);
-
-      const values = chain(res, {allowStale: true});
-      expect(values()).toEqual([1]);
-    }));
-
- it('should chain resources together', async () =>
-   run(async () => {
-     const params1 = signal<number | ResourceParamsStatus | Error>(ResourceParamsStatus.IDLE);
-     const loader2Spy = jasmine.createSpy('loader2');
-     const res1 = resource({
-       params: throwStatusAndErrors<number>(params1),
-       loader: async ({params}) => params,
-     });
-     const res2 = resource({
-       params: () => {
-         const values = chain(res1);
-         return (values()[0] ?? 0) * 2;
-       },
-       loader: async ({params}) => {
-         loader2Spy();
-         await timeout(1);
-         return params;
-       },
-     });
-     await timeout(1);
-
-     // Idle because res1 is idle
-     expect(res2.status()).toBe('idle');
-     expect(loader2Spy).not.toHaveBeenCalled();
-
-     params1.set(ResourceParamsStatus.LOADING);
-     await timeout(1);
-
-     // Loading because res1 is loading, loader not actually run yet
-     expect(res2.status()).toBe('loading');
-     expect(loader2Spy).not.toHaveBeenCalled();
-
-     params1.set(1);
-     await timeout(1);
-
-     // Loading (running res2 loader).
-     expect(res2.status()).toBe('loading');
-     expect(loader2Spy).toHaveBeenCalled();
-
-     await timeout(2);
-
-     // Resolved.
-     expect(res2.status()).toBe('resolved');
-     expect(res2.value()).toBe(2);
-
-     const e = Error('fail');
-     params1.set(e);
-     await timeout(1);
-
-     // Error due to error in res1.
-     expect(res2.status()).toBe('error');
-     expect(res2.error()).toBeInstanceOf(ResourceDependencyError);
-     expect(res2.error()?.cause).toBe(e);
-   }));
+    // Error due to error in res1.
+    expect(res2.status()).toBe('error');
+    expect(res2.error()).toBeInstanceOf(ResourceDependencyError);
+    expect(res2.error()?.cause).toBe(error);
+  });
 });
