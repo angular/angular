@@ -12,3 +12,5 @@ const form = {
   state: ['']  
 };  
 </docs-code>
+
+<docs-code hideDollar code="echo 'hello world'" />

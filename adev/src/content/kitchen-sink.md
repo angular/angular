@@ -170,19 +170,20 @@ console.log('Awesome Angular Docs!');
 
 #### `<docs-code>` Attributes
 
-| Attributes     | Type                 | Details                                              |
-| :------------- | :------------------- | :--------------------------------------------------- |
-| code           | `string`             | Anything between tags is treated as code             |
-| `path`         | `string`             | Path to code example (root: `content/examples/`)     |
-| `header`       | `string`             | Title of the example (default: `file-name`)          |
-| `language`     | `string`             | code language                                        |
-| `linenums`     | `boolean`            | (False) displays line numbers                        |
-| `highlight`    | `string of number[]` | lines highlighted                                    |
-| `diff`         | `string`             | path to changed code                                 |
-| `visibleLines` | `string of number[]` | range of lines for collapse mode                     |
-| `region`       | `string`             | only show the provided region.                       |
-| `preview`      | `boolean`            | (False) display preview                              |
-| `hideCode`     | `boolean`            | (False) Whether to collapse code example by default. |
+| Attributes     | Type                 | Details                                                         |
+| :------------- | :------------------- | :-------------------------------------------------------------- |
+| code           | `string`             | Anything between tags is treated as code                        |
+| `path`         | `string`             | Path to code example (root: `content/examples/`)                |
+| `header`       | `string`             | Title of the example (default: `file-name`)                     |
+| `language`     | `string`             | code language                                                   |
+| `linenums`     | `boolean`            | (False) displays line numbers                                   |
+| `highlight`    | `string of number[]` | lines highlighted                                               |
+| `diff`         | `string`             | path to changed code                                            |
+| `visibleLines` | `string of number[]` | range of lines for collapse mode                                |
+| `region`       | `string`             | only show the provided region.                                  |
+| `preview`      | `boolean`            | (False) display preview                                         |
+| `hideCode`     | `boolean`            | (False) Whether to collapse code example by default.            |
+| `hideDollar`   | `boolean`            | (False) Whether to hide the dollar sign in shell code examples. |
 
 ### Multifile examples
 
@@ -201,12 +202,13 @@ You can create multifile examples by wrapping the examples inside a `<docs-code-
 
 #### `<docs-code-multifile>` Attributes
 
-| Attributes    | Type      | Details                                              |
-| :------------ | :-------- | :--------------------------------------------------- |
-| body contents | `string`  | nested tabs of `docs-code` examples                  |
-| `path`        | `string`  | Path to code example for preview and external link   |
-| `preview`     | `boolean` | (False) display preview                              |
-| `hideCode`    | `boolean` | (False) Whether to collapse code example by default. |
+| Attributes    | Type      | Details                                                         |
+| :------------ | :-------- | :-------------------------------------------------------------- |
+| body contents | `string`  | nested tabs of `docs-code` examples                             |
+| `path`        | `string`  | Path to code example for preview and external link              |
+| `preview`     | `boolean` | (False) display preview                                         |
+| `hideCode`    | `boolean` | (False) Whether to collapse code example by default.            |
+| `hideDollar`  | `boolean` | (False) Whether to hide the dollar sign in shell code examples. |
 
 ### Adding `preview` to your code example
 
