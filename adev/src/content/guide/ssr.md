@@ -636,7 +636,7 @@ NOTE: Most cloud providers and CDNs already validate these headers before the re
 
 To allow a specific hostname, you must configure the `allowedHosts` list in your `angular.json` to include all hostnames where your application is deployed. This is critical for ensuring your application works correctly and securely when deployed. The patterns support wildcards for flexible hostname matching.
 
-```json
+```json {hideCopy}
 {
   // ...
   "projects": {
@@ -675,9 +675,7 @@ const nodeAppEngine = new AngularNodeAppEngine({
 
 For the Node.js variant `AngularNodeAppEngine`, you can also provide `NG_ALLOWED_HOSTS` (comma-separated list) and `HOSTNAME` environment variables for authorizing hosts.
 
-Example:
-
-```bash
+```bash {hideDollar}
 export NG_ALLOWED_HOSTS="example.com,*.trusted-example.com"
 export HOSTNAME="example.com"
 ```
