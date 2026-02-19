@@ -48,6 +48,7 @@ minimumReleaseAgeExclude:
   - '@ngtools/webpack'
   - '@schematics/*'
   - 'ng-packagr'
+  - 'zone.js'
 
 # Allow any version of @angular/* packages to satisfy peer dependencies, as these are managed within the monorepo.
 peerDependencyRules:
