@@ -26,15 +26,17 @@ export class ResourceDependencyError extends Error {
  * Special status codes that can be thrown from a resource's `params` or `request` function to
  * indicate that the resource should transition to that status.
  */
-export class ResourceParamsStatus {
+export class ResourceParamsStatus extends Error {
   private readonly _brand: undefined;
-  private constructor() {}
+  private constructor(msg: string) {
+    super(msg);
+  }
 
   /** Status code that transitions the resource to `idle` status. */
-  static readonly IDLE = new ResourceParamsStatus();
+  static readonly IDLE = new ResourceParamsStatus('IDLE');
 
   /** Status code that transitions the resource to `loading` status. */
-  static readonly LOADING = new ResourceParamsStatus();
+  static readonly LOADING = new ResourceParamsStatus('LOADING');
 }
 
 /** Context received by a resource's `params` or `request` function. */

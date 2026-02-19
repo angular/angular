@@ -1683,7 +1683,7 @@ export interface ResourceParamsContext {
 }
 
 // @public
-export class ResourceParamsStatus {
+export class ResourceParamsStatus extends Error {
     static readonly IDLE: ResourceParamsStatus;
     static readonly LOADING: ResourceParamsStatus;
 }
