@@ -6,73 +6,89 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector} from '../../src/di/injector';
+import {timeout} from '@angular/private/testing';
+import {Injector} from '../../src/di';
 import {EnvironmentInjector} from '../../src/di/r3_injector';
 import {createEnvironmentInjector} from '../../src/render3/ng_module_ref';
 import {computed} from '../../src/render3/reactivity/computed';
 import {signal} from '../../src/render3/reactivity/signal';
-import {debounceResource} from '../../src/resource/debounce';
+import {resource} from '../../src/resource';
+import {debounced} from '../../src/resource/debounce';
 import {TestBed} from '../../testing';
 
-describe('debounceResource', () => {
-  it('should start with loading state and resolve after wait', async () => {
+describe('debounced', () => {
+  let injector: Injector;
+
+  beforeEach(() => {
+    injector = TestBed.inject(Injector);
+  });
+
+  it('should start in resolved state', async () => {
     const source = signal('initial');
-    const res = debounceResource({params: source, wait: 1, injector: TestBed.inject(Injector)});
+    const res = debounced(source, 10, {injector});
 
     TestBed.tick();
 
-    expect(res.status()).toBe('loading');
-    expect(res.value()).toBeUndefined();
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe('initial');
 
-    await delay(1);
+    TestBed.tick();
+    await timeout(10);
+
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('initial');
   });
 
   it('should debounce updates', async () => {
     const source = signal('initial');
-    const res = debounceResource({params: source, wait: 2, injector: TestBed.inject(Injector)});
+    const res = debounced(source, 10, {injector});
 
     TestBed.tick();
-    await delay(2);
+    await timeout(10);
+
     expect(res.status()).toBe('resolved');
 
     source.set('updated');
     TestBed.tick();
 
-    // Should be reloading now
-    expect(res.status()).toBe('reloading');
-    expect(res.value()).toBe('initial'); // Keeps old value while reloading
+    // Should be loading, but retain previous value.
+    expect(res.status()).toBe('loading');
+    expect(res.value()).toBe('initial');
 
-    await delay(1);
-    expect(res.status()).toBe('reloading');
+    await timeout(5);
 
-    await delay(1);
+    expect(res.status()).toBe('loading');
+    expect(res.value()).toBe('initial');
+
+    await timeout(5);
+
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('updated');
   });
 
   it('should restart debounce on rapid updates', async () => {
     const source = signal('initial');
-    const res = debounceResource({params: source, wait: 2, injector: TestBed.inject(Injector)});
+    const res = debounced(source, 10, {injector});
 
     TestBed.tick();
-    await delay(2);
+    await timeout(10);
 
     source.set('update1');
     TestBed.tick();
-    expect(res.status()).toBe('reloading');
 
-    await delay(1);
+    expect(res.status()).toBe('loading');
+
+    await timeout(5);
+
     source.set('update2');
     TestBed.tick();
+    await timeout(5); // Total 10 from start, but only 5 from update2
 
-    // Timer should have reset
-    await delay(1); // Total 2 from start, but only 1 from update2
-    expect(res.status()).toBe('reloading');
+    expect(res.status()).toBe('loading');
     expect(res.value()).toBe('initial');
 
-    await delay(1); // Total 2 from update2
+    await timeout(5); // Total 10 from update2
+
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('update2');
   });
@@ -83,10 +99,9 @@ describe('debounceResource', () => {
       if (val() === 'error') throw new Error('fail');
       return val();
     });
-
-    const res = debounceResource({params: source, wait: 1, injector: TestBed.inject(Injector)});
+    const res = debounced(source, 10, {injector});
     TestBed.tick();
-    await delay(1);
+    await timeout(10);
 
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('initial');
@@ -96,39 +111,27 @@ describe('debounceResource', () => {
 
     expect(res.status()).toBe('error');
     expect(res.error()).toEqual(new Error('fail'));
-
-    // Recover
-    val.set('recovered');
-    TestBed.tick();
-    // It should start loading (undefined value) because we were in error state
-    expect(res.status()).toBe('loading');
-    expect(res.value()).toBeUndefined();
-
-    await delay(1);
-    expect(res.status()).toBe('resolved');
-    expect(res.value()).toBe('recovered');
   });
 
   it('should cleanup timer when injector is destroyed', async () => {
     const parentInjector = TestBed.inject(EnvironmentInjector);
     const injector = createEnvironmentInjector([], parentInjector);
     const source = signal('initial');
-    const res = debounceResource({params: source, wait: 1, injector});
+    const res = debounced(source, 10, {injector});
 
     TestBed.tick();
-    await delay(1);
+    await timeout(10);
 
     source.set('updated');
     TestBed.tick();
 
-    expect(res.status()).toBe('reloading');
+    expect(res.status()).toBe('loading');
 
     injector.destroy();
-
-    await delay(2);
+    await timeout(10);
 
     // Verify it didn't update to 'resolved'
-    expect(res.status()).toBe('reloading');
+    expect(res.status()).toBe('loading');
     expect(res.value()).toBe('initial');
   });
 
@@ -136,39 +139,34 @@ describe('debounceResource', () => {
     const source = signal('initial');
     let release: () => void = () => {};
     let calls = 0;
-    const waitFn = () =>
-      new Promise<void>((resolve) => {
-        calls++;
-        release = resolve;
-      });
 
-    const res = debounceResource({
-      params: source,
-      wait: waitFn,
-      injector: TestBed.inject(Injector),
-    });
+    const res = debounced(
+      source,
+      () =>
+        new Promise<void>((resolve) => {
+          calls++;
+          release = resolve;
+        }),
+      {injector},
+    );
 
-    // Initial load
-    expect(res.status()).toBe('loading');
+    expect(res.status()).toBe('resolved');
 
-    TestBed.tick(); // trigger effect (if not already triggered)
-
-    // Release initial
+    TestBed.tick();
     release();
-    // We need to wait for the promise to resolve, which is async
-    await Promise.resolve();
+    await timeout();
+
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('initial');
 
     source.set('updated');
     TestBed.tick();
 
-    expect(res.status()).toBe('reloading');
+    expect(res.status()).toBe('loading');
     expect(res.value()).toBe('initial');
 
     release();
-    // Promise resolution is microtask
-    await Promise.resolve();
+    await timeout();
 
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('updated');
@@ -176,20 +174,12 @@ describe('debounceResource', () => {
 
   it('should support a custom wait function returning void (synchronous)', async () => {
     const source = signal('initial');
-    const waitFn = () => {};
+    const res = debounced(source, () => {}, {injector});
 
-    const res = debounceResource({
-      params: source,
-      wait: waitFn,
-      injector: TestBed.inject(Injector),
-    });
-
-    // Initially loading before effect runs
-    expect(res.status()).toBe('loading');
+    expect(res.status()).toBe('resolved');
 
     TestBed.tick();
 
-    // Should be resolved after effect runs
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('initial');
 
@@ -206,54 +196,58 @@ describe('debounceResource', () => {
     let release1: () => void = () => {};
     let release2: () => void = () => {};
 
-    const waitFn = (val: string) =>
-      new Promise<void>((resolve) => {
-        if (val === 'initial') releaseInitial = resolve;
-        if (val === 'update1') release1 = resolve;
-        if (val === 'update2') release2 = resolve;
-      });
+    const res = debounced(
+      source,
+      (val: string) =>
+        new Promise<void>((resolve) => {
+          if (val === 'initial') releaseInitial = resolve;
+          if (val === 'update1') release1 = resolve;
+          if (val === 'update2') release2 = resolve;
+        }),
+      {injector},
+    );
 
-    const res = debounceResource({
-      params: source,
-      wait: waitFn,
-      injector: TestBed.inject(Injector),
-    });
+    expect(res.status()).toBe('resolved');
 
-    // Initial load
-    expect(res.status()).toBe('loading');
     TestBed.tick();
 
     releaseInitial();
-    await Promise.resolve();
+    await timeout();
+
     expect(res.status()).toBe('resolved');
 
     source.set('update1');
     TestBed.tick();
-    expect(res.status()).toBe('reloading');
+
+    expect(res.status()).toBe('loading');
 
     source.set('update2');
     TestBed.tick();
-    expect(res.status()).toBe('reloading');
+
+    expect(res.status()).toBe('loading');
 
     // Release first promise - should be ignored
     release1();
-    await Promise.resolve();
-    expect(res.status()).toBe('reloading');
+    await timeout();
+
+    expect(res.status()).toBe('loading');
     expect(res.value()).toBe('initial');
 
     // Release second promise - should update
     release2();
-    await Promise.resolve();
+    await timeout();
+
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('update2');
   });
 
   it('should not reload if value is equal to current resolved value (default equality)', async () => {
     const source = signal('initial');
-    const res = debounceResource({params: source, wait: 1, injector: TestBed.inject(Injector)});
+    const res = debounced(source, 10, {injector});
 
     TestBed.tick();
-    await delay(1);
+    await timeout(10);
+
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('initial');
 
@@ -265,94 +259,87 @@ describe('debounceResource', () => {
 
   it('should not restart debounce if value is equal to current pending value (default equality)', async () => {
     const source = signal('initial');
-    const res = debounceResource({params: source, wait: 2, injector: TestBed.inject(Injector)});
+    const res = debounced(source, 10, {injector});
 
     TestBed.tick();
-    await delay(2);
+    await timeout(10);
+
     expect(res.status()).toBe('resolved');
 
     source.set('update1');
     TestBed.tick();
-    expect(res.status()).toBe('reloading');
 
-    await delay(1);
+    expect(res.status()).toBe('loading');
+
+    await timeout(5);
     source.set('update1'); // Same pending value
-    TestBed.tick();
 
-    await delay(1); // Total 2 from first update1
+    TestBed.tick();
+    await timeout(5); // Total 10 from first update1
+
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('update1');
   });
 
   it('should use custom equality function', async () => {
     const source = signal({id: 1, val: 'a'});
-    const res = debounceResource({
-      params: source,
-      wait: 1,
-      injector: TestBed.inject(Injector),
+    const res = debounced(source, 10, {
+      injector,
       equal: (a, b) => a.id === b.id,
     });
 
     TestBed.tick();
-    await delay(1);
+    await timeout(10);
+
     expect(res.value()).toEqual({id: 1, val: 'a'});
 
     source.set({id: 1, val: 'b'}); // Different object, same ID
     TestBed.tick();
 
     expect(res.status()).toBe('resolved'); // Should not reload
-    expect(res.value()).toEqual({id: 1, val: 'a'}); // Should keep old value
+    expect(res.value()).toEqual({id: 1, val: 'a'});
   });
 
-  it('should use defaultValue for initial value', () => {
-    const source = signal('initial');
-    const res = debounceResource({
-      params: source,
-      wait: 1,
-      injector: TestBed.inject(Injector),
-      defaultValue: 'default',
-    });
-
-    TestBed.tick(); // Start effect
-    expect(res.status()).toBe('loading');
-    expect(res.value()).toBe('default');
-  });
-
-  it('should use defaultValue when recovering from error state', async () => {
+  it('should remain in error state until successfully recovered', async () => {
     const val = signal('initial');
     const source = computed(() => {
       if (val() === 'error') throw new Error('fail');
       return val();
     });
-
-    const res = debounceResource({
-      params: source,
-      wait: 1,
-      injector: TestBed.inject(Injector),
-      defaultValue: 'default',
-    });
+    const res = debounced(source, 10, {injector});
 
     TestBed.tick();
-    await delay(1);
+    await timeout(10);
+
     expect(res.value()).toBe('initial');
 
     val.set('error');
     TestBed.tick();
+
     expect(res.status()).toBe('error');
+    expect(res.error()).toBeDefined();
 
     val.set('recovered');
     TestBed.tick();
 
-    // Should go back to loading with defaultValue
-    expect(res.status()).toBe('loading');
-    expect(res.value()).toBe('default');
+    // Should remain in error state until new value is resolved.
+    expect(res.status()).toBe('error');
+    expect(res.error()).toBeDefined();
 
-    await delay(1);
+    await timeout(10);
+
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('recovered');
   });
-});
 
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+  it('should throw if used in params of another resource', () => {
+    const res = resource({
+      params: () => debounced(signal(1), 1),
+      loader: async () => {},
+      injector,
+    });
+    expect(() => res.status()).toThrowError(
+      /Cannot create a resource inside the `params` of another resource/,
+    );
+  });
+});
