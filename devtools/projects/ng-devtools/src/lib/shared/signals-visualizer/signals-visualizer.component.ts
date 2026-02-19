@@ -30,10 +30,10 @@ import {
   DevtoolsSignalGraphCluster,
   DevtoolsSignalGraphNode,
   getNodeLabel,
-} from '../../signal-graph';
+} from '../signal-graph';
 import {DependenciesHighlightEvent, SignalsGraphVisualizer} from './signals-visualizer';
-import {ElementPosition} from '../../../../../../../protocol';
-import {ButtonComponent} from '../../../../shared/button/button.component';
+import {ElementPosition} from '../../../../../protocol';
+import {ButtonComponent} from '../button/button.component';
 
 @Component({
   selector: 'ng-signals-visualizer',

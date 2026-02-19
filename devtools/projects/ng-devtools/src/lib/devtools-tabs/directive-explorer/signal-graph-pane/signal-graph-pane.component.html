@@ -12,6 +12,8 @@
 @if (node && detailsVisible()) {
   <ng-signal-details
     [node]="node"
+    [graph]="signalGraph.graph()!"
+    [element]="signalGraph.element()!"
     (gotoSource)="gotoSource($event)"
     (expandCluster)="expandCluster($event)"
     (highlightDeps)="highlightDeps($event)"
