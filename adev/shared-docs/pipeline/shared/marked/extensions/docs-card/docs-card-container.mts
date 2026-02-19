@@ -21,7 +21,7 @@ interface DocsCardContainerToken extends Tokens.Generic {
 // Capture group 1: all attributes on the opening tag
 // Capture group 2: all content between the open and close tags
 const cardContainerRule =
-  /^[^<]*<docs-card-container(?:\s([^>]*))?>((?:.(?!\/docs-card-container))*)<\/docs-card-container>/s;
+  /^\s*<docs-card-container(?:\s([^>]*))?>((?:.(?!\/docs-card-container))*)<\/docs-card-container>/s;
 const headerTitleRule = /headerTitle="([^"]*)"/;
 const headerImgSrcRule = /headerImgSrc="([^"]*)"/;
 
