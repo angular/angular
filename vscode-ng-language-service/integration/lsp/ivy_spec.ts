@@ -1253,6 +1253,84 @@ export class AComponent {
     );
   });
 
+  it('should return full report when unimported component selector changes', async () => {
+    const tmpDir = makeTempDir();
+    const newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+    await cp(PROJECT_PATH, newProjectRoot, {
+      recursive: true,
+      mode: fs.constants.COPYFILE_FICLONE,
+    });
+
+    const aComponentPath = join(newProjectRoot, 'app', 'a.component.ts');
+    const aTemplatePath = join(newProjectRoot, 'app', 'a.component.html');
+    const bComponentPath = join(newProjectRoot, 'app', 'b.component.ts');
+
+    await writeFile(
+      aComponentPath,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'a-component',
+  templateUrl: './a.component.html',
+})
+export class AComponent {}
+`,
+    );
+
+    await writeFile(aTemplatePath, `<component-b />`);
+
+    await writeFile(
+      bComponentPath,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'component-b',
+  template: '',
+})
+export class BComponent {}
+`,
+    );
+
+    openTextDocument(client, aComponentPath);
+    openTextDocument(client, aTemplatePath);
+
+    await waitForDiagnosticRefresh();
+
+    const aTemplateUri = pathToFileURL(aTemplatePath).href;
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    openTextDocument(
+      client,
+      bComponentPath,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'component-super-b',
+  template: '',
+})
+export class BComponent {}
+`,
+    );
+
+    await waitForDiagnosticRefresh();
+
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+      previousResultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = secondResponse as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBeGreaterThan(0);
+  });
+
   it('should return diagnostics for valid template', async () => {
     // Open the app component which should have no errors
     openTextDocument(client, APP_COMPONENT);
