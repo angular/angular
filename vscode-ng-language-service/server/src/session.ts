@@ -833,6 +833,12 @@ export class Session {
    * This is useful when the server detects a project-wide change.
    */
   refreshDiagnostics(): void {
+    if (!this.usePullDiagnostics) {
+      this.logger.info(
+        'Skipping workspace/diagnostic/refresh because pull diagnostics is disabled.',
+      );
+      return;
+    }
     this.connection.languages.diagnostics.refresh();
   }
 }
