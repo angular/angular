@@ -68,9 +68,12 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  */
 export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
-  (<any>forwardRefFn).toString = function () {
-    return stringify(this());
-  };
+  if (ngDevMode) {
+    (<any>forwardRefFn).toString = function () {
+      return stringify(this());
+    };
+  }
+
   return <Type<any>>(<any>forwardRefFn);
 }
 
