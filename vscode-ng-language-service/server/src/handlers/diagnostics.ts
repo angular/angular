@@ -50,6 +50,33 @@ let globalDiagnosticEpoch = 0;
  */
 const setImmediateP = promisify(setImmediate);
 
+/**
+ * Shared loop helper for diagnostics file traversal.
+ *
+ * Keeps yield/cancel mechanics consistent between pull and push flows while
+ * allowing each caller to provide its own per-file behavior.
+ */
+export async function forEachDiagnosticsFile(
+  files: string[],
+  options: {
+    shouldStop: () => boolean;
+    onFile: (fileName: string) => Promise<void> | void;
+    yieldBetween?: boolean;
+  },
+): Promise<void> {
+  for (let i = 0; i < files.length; i++) {
+    if (options.shouldStop()) {
+      return;
+    }
+
+    await options.onFile(files[i]);
+
+    if ((options.yieldBetween ?? true) && i < files.length - 1) {
+      await setImmediateP();
+    }
+  }
+}
+
 /** Monotonically increasing counter for generating unique result IDs. */
 let nextResultId = 1;
 
@@ -214,46 +241,44 @@ export async function onWorkspaceDiagnostic(
   // Get all project source files (open files first, then remaining project files)
   const projectFiles = session.getProjectFileNames();
 
-  for (const filePath of projectFiles) {
-    // Check cancellation between files so we stop processing when the request
-    // has been superseded (e.g., the user made another edit).
-    if (token.isCancellationRequested) {
-      return {items};
-    }
+  await forEachDiagnosticsFile(projectFiles, {
+    shouldStop: () => token.isCancellationRequested,
+    onFile: async (filePath) => {
+      const uri = filePathToUri(filePath);
+      const previousResultId = previousResults.get(uri);
+      const report = computeDiagnosticsForFile(session, uri, previousResultId);
 
-    // Yield to event loop between files to allow other requests (hover, completion) to be handled
-    await setImmediateP();
+      // Wrap the document report in a workspace report (adds uri + version)
+      let workspaceReport: lsp.WorkspaceDocumentDiagnosticReport;
+      if (report.kind === lsp.DocumentDiagnosticReportKind.Unchanged) {
+        workspaceReport = {
+          kind: lsp.DocumentDiagnosticReportKind.Unchanged,
+          resultId: report.resultId,
+          uri,
+          version: null,
+        };
+      } else {
+        workspaceReport = {
+          kind: lsp.DocumentDiagnosticReportKind.Full,
+          resultId: report.resultId,
+          uri,
+          version: null,
+          items: report.items,
+        };
+      }
 
-    const uri = filePathToUri(filePath);
-    const previousResultId = previousResults.get(uri);
-    const report = computeDiagnosticsForFile(session, uri, previousResultId);
+      items.push(workspaceReport);
 
-    // Wrap the document report in a workspace report (adds uri + version)
-    let workspaceReport: lsp.WorkspaceDocumentDiagnosticReport;
-    if (report.kind === lsp.DocumentDiagnosticReportKind.Unchanged) {
-      workspaceReport = {
-        kind: lsp.DocumentDiagnosticReportKind.Unchanged,
-        resultId: report.resultId,
-        uri,
-        version: null,
-      };
-    } else {
-      workspaceReport = {
-        kind: lsp.DocumentDiagnosticReportKind.Full,
-        resultId: report.resultId,
-        uri,
-        version: null,
-        items: report.items,
-      };
-    }
+      // Stream partial results so the Problems panel populates incrementally
+      // as files are processed, rather than waiting for the entire workspace scan.
+      if (resultProgress) {
+        resultProgress.report({items: [workspaceReport]});
+      }
+    },
+  });
 
-    items.push(workspaceReport);
-
-    // Stream partial results so the Problems panel populates incrementally
-    // as files are processed, rather than waiting for the entire workspace scan.
-    if (resultProgress) {
-      resultProgress.report({items: [workspaceReport]});
-    }
+  if (token.isCancellationRequested) {
+    return {items};
   }
 
   return {items};

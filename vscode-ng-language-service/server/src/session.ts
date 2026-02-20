@@ -8,7 +8,6 @@
 
 import {isNgLanguageService, NgLanguageService, PluginConfig} from '@angular/language-service/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {promisify} from 'util';
 import * as lsp from 'vscode-languageserver/node';
 
 import {
@@ -41,6 +40,7 @@ import {
   onDocumentDiagnostic,
   onWorkspaceDiagnostic,
   clearDiagnosticCache,
+  forEachDiagnosticsFile,
   getLspDiagnosticsForFile,
   invalidateAllProjectDiagnostics,
   invalidateProjectDiagnostics,
@@ -75,8 +75,6 @@ enum LanguageId {
   TS = 'typescript',
   HTML = 'html',
 }
-
-const setImmediateP = promisify(setImmediate);
 
 const alwaysSuppressDiagnostics: number[] = [
   // Diagnostics codes whose errors should always be suppressed, regardless of the options
@@ -516,11 +514,12 @@ export class Session {
    * @param reason Trace to explain why diagnostics is triggered
    */
   private async sendPendingDiagnostics(files: string[], reason: string) {
-    for (let i = 0; i < files.length; ++i) {
-      const fileName = files[i];
+    await forEachDiagnosticsFile(files, {
+      shouldStop: () => this.diagnosticsTimeout !== null,
+      onFile: async (fileName) => {
       const result = this.getLSAndScriptInfo(fileName);
       if (!result) {
-        continue;
+        return;
       }
       const diagnostics = getLspDiagnosticsForFile(this, result.languageService, fileName, reason);
 
@@ -530,19 +529,8 @@ export class Session {
         uri: filePathToUri(fileName),
         diagnostics,
       });
-      if (this.diagnosticsTimeout) {
-        // There is a pending request to check diagnostics for all open files,
-        // so stop this one immediately.
-        return;
-      }
-      if (i < files.length - 1) {
-        // If this is not the last file, yield so that pending I/O events get a
-        // chance to run. This will open an opportunity for the server to process
-        // incoming requests. The next file will be checked in the next iteration
-        // of the event loop.
-        await setImmediateP();
-      }
-    }
+      },
+    });
   }
 
   /**
