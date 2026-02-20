@@ -25,6 +25,7 @@ interface ObservedImageState {
   modified: boolean;
   alreadyWarnedPriority: boolean;
   alreadyWarnedModified: boolean;
+  count: number;
 }
 
 /**
@@ -94,28 +95,76 @@ export class LCPImageObserver implements OnDestroy {
 
   registerImage(rewrittenSrc: string, isPriority: boolean) {
     if (!this.observer) return;
-    const newObservedImageState: ObservedImageState = {
-      priority: isPriority,
-      modified: false,
-      alreadyWarnedModified: false,
-      alreadyWarnedPriority: false,
-    };
-    this.images.set(getUrl(rewrittenSrc, this.window!).href, newObservedImageState);
+    const url = getUrl(rewrittenSrc, this.window!).href;
+    const existingState = this.images.get(url);
+
+    if (existingState) {
+      // If any instance has priority, the URL is considered to have priority
+      existingState.priority = existingState.priority || isPriority;
+      existingState.count++;
+    } else {
+      const newObservedImageState: ObservedImageState = {
+        priority: isPriority,
+        modified: false,
+        alreadyWarnedModified: false,
+        alreadyWarnedPriority: false,
+        count: 1,
+      };
+      this.images.set(url, newObservedImageState);
+    }
   }
 
   unregisterImage(rewrittenSrc: string) {
     if (!this.observer) return;
-    this.images.delete(getUrl(rewrittenSrc, this.window!).href);
+    const url = getUrl(rewrittenSrc, this.window!).href;
+    const existingState = this.images.get(url);
+
+    if (existingState) {
+      existingState.count--;
+      if (existingState.count <= 0) {
+        this.images.delete(url);
+      }
+    }
   }
 
   updateImage(originalSrc: string, newSrc: string) {
     if (!this.observer) return;
     const originalUrl = getUrl(originalSrc, this.window!).href;
-    const img = this.images.get(originalUrl);
-    if (img) {
-      img.modified = true;
-      this.images.set(getUrl(newSrc, this.window!).href, img);
+    const newUrl = getUrl(newSrc, this.window!).href;
+
+    // URL hasn't changed
+    if (originalUrl === newUrl) return;
+
+    const originalState = this.images.get(originalUrl);
+    if (!originalState) return;
+
+    // Decrement count for original URL
+    originalState.count--;
+    if (originalState.count <= 0) {
       this.images.delete(originalUrl);
+    }
+
+    // Add or update entry for new URL
+    const newState = this.images.get(newUrl);
+    if (newState) {
+      // Merge if original had priority, new should too
+      newState.priority = newState.priority || originalState.priority;
+      newState.modified = true;
+      // Preserve warning flags from the original state to avoid duplicate warnings
+      newState.alreadyWarnedPriority =
+        newState.alreadyWarnedPriority || originalState.alreadyWarnedPriority;
+      newState.alreadyWarnedModified =
+        newState.alreadyWarnedModified || originalState.alreadyWarnedModified;
+      newState.count++;
+    } else {
+      // Create new entry, preserving state from the image that moved
+      this.images.set(newUrl, {
+        priority: originalState.priority,
+        modified: true,
+        alreadyWarnedModified: originalState.alreadyWarnedModified,
+        alreadyWarnedPriority: originalState.alreadyWarnedPriority,
+        count: 1,
+      });
     }
   }
 
