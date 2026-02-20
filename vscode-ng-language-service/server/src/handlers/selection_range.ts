@@ -26,21 +26,25 @@ export function onSelectionRange(
   }
 
   const {languageService, scriptInfo} = lsInfo;
-  const results: lsp.SelectionRange[] = [];
 
-  for (const position of params.positions) {
+  // LSP requires result[i] to correspond to positions[i].
+  // Keep cardinality and index alignment by returning an empty range fallback
+  // whenever TS doesn't provide a selection chain for a position.
+  return params.positions.map((position) => {
     const offset = lspPositionToTsPosition(scriptInfo, position);
     const selectionRange = languageService.getSelectionRangeAtPosition(scriptInfo.fileName, offset);
 
     if (selectionRange) {
       const lspRange = convertSelectionRange(selectionRange, scriptInfo);
       if (lspRange) {
-        results.push(lspRange);
+        return lspRange;
       }
     }
-  }
 
-  return results.length > 0 ? results : null;
+    return {
+      range: lsp.Range.create(position, position),
+    };
+  });
 }
 
 /**
