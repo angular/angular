@@ -39,6 +39,7 @@ import {
   ViewChildren,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
 } from '../../src/core';
+import {IdleScheduler} from '../../src/defer/idle_scheduler';
 import {TimerScheduler} from '../../src/defer/timer_scheduler';
 import {formatRuntimeErrorCode, RuntimeErrorCode} from '../../src/errors';
 import {provideNgReflectAttributes} from '../../src/ng_reflect';
@@ -4423,5 +4424,171 @@ describe('@defer', () => {
       expect(app.nativeElement.innerHTML).toContain('child: b | token: root');
       expect(app.nativeElement.innerHTML).toContain('another child: b | token: nested');
     });
+  });
+});
+
+describe('IdleScheduler', () => {
+  let scheduler: IdleScheduler;
+
+  beforeEach(() => {
+    scheduler = TestBed.inject(IdleScheduler);
+  });
+
+  afterEach(() => {
+    scheduler.ngOnDestroy();
+  });
+
+  it('should execute all callbacks when there is enough time', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    scheduler.requestIdleCallbackFn = jasmine
+      .createSpy('requestIdleCallbackFn')
+      .and.callFake((cb: any) => {
+        ricCount++;
+        capturedCb = cb;
+        return 100 + ricCount;
+      });
+
+    const cb1 = jasmine.createSpy('cb1');
+    const cb2 = jasmine.createSpy('cb2');
+
+    scheduler.add(cb1);
+    scheduler.add(cb2);
+
+    expect(ricCount).toBe(1);
+    expect(capturedCb).not.toBeNull();
+
+    const deadline = {
+      didTimeout: false,
+      timeRemaining: () => 10,
+    };
+
+    const previousCb = capturedCb!;
+    capturedCb = null;
+    previousCb(deadline);
+
+    expect(cb1).toHaveBeenCalledTimes(1);
+    expect(cb2).toHaveBeenCalledTimes(1);
+
+    expect(ricCount).toBe(1); // No more scheduled
+    expect(capturedCb).toBeNull();
+  });
+
+  it('should split callbacks across requestIdleCallback invocations when deadline is reached', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    scheduler.requestIdleCallbackFn = jasmine
+      .createSpy('requestIdleCallbackFn')
+      .and.callFake((cb: any) => {
+        ricCount++;
+        capturedCb = cb;
+        return 100 + ricCount;
+      });
+
+    const cb1 = jasmine.createSpy('cb1');
+    const cb2 = jasmine.createSpy('cb2');
+    const cb3 = jasmine.createSpy('cb3');
+
+    scheduler.add(cb1);
+    scheduler.add(cb2);
+    scheduler.add(cb3);
+
+    expect(ricCount).toBe(1);
+    expect(capturedCb).not.toBeNull();
+
+    let timeRemainingCalls = 0;
+    let deadline = {
+      didTimeout: false,
+      timeRemaining: () => {
+        timeRemainingCalls++;
+        // 1st check (after cb1): return 10
+        // 2nd check (after cb2): return 0 -> should break
+        return timeRemainingCalls === 1 ? 10 : 0;
+      },
+    };
+
+    let previousCb = capturedCb!;
+    capturedCb = null;
+    previousCb(deadline);
+
+    expect(cb1).toHaveBeenCalledTimes(1);
+    expect(cb2).toHaveBeenCalledTimes(1);
+    expect(cb3).toHaveBeenCalledTimes(0); // Did not run yet
+
+    expect(ricCount).toBe(2); // A new idle callback was scheduled
+    expect(capturedCb).not.toBeNull(); // with a new cb
+
+    // Invoke the second callback, this time with plenty of time
+    deadline = {
+      didTimeout: false,
+      timeRemaining: () => 10,
+    };
+
+    previousCb = capturedCb!;
+    capturedCb = null;
+    previousCb(deadline);
+
+    expect(cb3).toHaveBeenCalledTimes(1); // Now it ran
+
+    expect(ricCount).toBe(2); // No more idle callbacks scheduled
+    expect(capturedCb).toBeNull();
+  });
+
+  it('should ignore time remaining if didTimeout is true', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    scheduler.requestIdleCallbackFn = jasmine
+      .createSpy('requestIdleCallbackFn')
+      .and.callFake((cb: any) => {
+        ricCount++;
+        capturedCb = cb;
+        return 100 + ricCount;
+      });
+
+    const cb1 = jasmine.createSpy('cb1');
+    const cb2 = jasmine.createSpy('cb2');
+
+    scheduler.add(cb1);
+    scheduler.add(cb2);
+
+    expect(ricCount).toBe(1);
+    expect(capturedCb).not.toBeNull();
+
+    const deadline = {
+      didTimeout: true,
+      timeRemaining: () => 0, // Even with 0 time, didTimeout should force execution
+    };
+
+    const previousCb = capturedCb!;
+    capturedCb = null;
+    previousCb(deadline);
+
+    expect(cb1).toHaveBeenCalledTimes(1);
+    expect(cb2).toHaveBeenCalledTimes(1);
+
+    expect(ricCount).toBe(1); // No more idle callbacks scheduled
+    expect(capturedCb).toBeNull();
+  });
+
+  it('should fallback properly if deadline is not passed in (setTimeout shim)', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let ricCount = 0;
+
+    scheduler.requestIdleCallbackFn = jasmine
+      .createSpy('requestIdleCallbackFn')
+      .and.callFake((cb: any) => {
+        ricCount++;
+        capturedCb = cb;
+        return 100 + ricCount;
+      });
+
+    // Test with undefined (empty arguments, typical of setTimeout)
+    let cb1 = jasmine.createSpy('cb1');
+    scheduler.add(cb1);
+    capturedCb!(undefined);
+    expect(cb1).toHaveBeenCalledTimes(1);
   });
 });
