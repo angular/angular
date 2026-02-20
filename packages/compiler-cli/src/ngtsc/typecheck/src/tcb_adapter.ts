@@ -28,6 +28,7 @@ import {
   TmplAstReference,
   TmplAstElement,
   TmplAstTemplate,
+  WrappedNodeExpr,
 } from '@angular/compiler';
 import {ClassPropertyMapping, InputMapping} from '../../metadata';
 import {requiresInlineTypeCtor} from './type_constructor';
@@ -229,10 +230,18 @@ function extractReferenceMetadata(
   let isLocal = true;
 
   const emitted = env.refEmitter.emit(ref, env.contextFile, ImportFlags.NoAliasing);
-  if (emitted.kind === ReferenceEmitKind.Success && emitted.expression instanceof ExternalExpr) {
-    name = emitted.expression.value.name!;
-    moduleName = emitted.expression.value.moduleName;
-    isLocal = false;
+  if (emitted.kind === ReferenceEmitKind.Success) {
+    if (emitted.expression instanceof ExternalExpr) {
+      name = emitted.expression.value.name!;
+      moduleName = emitted.expression.value.moduleName;
+      isLocal = false;
+    } else if (emitted.expression instanceof WrappedNodeExpr) {
+      const node = emitted.expression.node;
+      const extractedName = extractNameFromExpr(node);
+      if (extractedName !== null) {
+        name = extractedName;
+      }
+    }
   } else if (emitted.kind === ReferenceEmitKind.Failed) {
     unexportedDiagnostic = emitted.reason;
     isLocal = false;
@@ -251,4 +260,14 @@ function extractReferenceMetadata(
   }
 
   return refMeta;
+}
+
+function extractNameFromExpr(node: ts.Node): string | null {
+  if (ts.isIdentifier(node)) {
+    return node.text;
+  } else if (ts.isPropertyAccessExpression(node)) {
+    const receiver = extractNameFromExpr(node.expression);
+    return receiver !== null ? `${receiver}.${node.name.text}` : null;
+  }
+  return null;
 }

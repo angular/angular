@@ -522,6 +522,7 @@ export function setup(
     options?: ts.CompilerOptions;
     inlining?: boolean;
     parseOptions?: ParseTemplateOptions;
+    referenceEmitter?: ReferenceEmitter;
   } = {},
 ): {
   templateTypeChecker: TemplateTypeChecker;
@@ -572,16 +573,18 @@ export function setup(
     host,
     /* moduleResolutionCache */ null,
   );
-  const emitter = new ReferenceEmitter([
-    new LocalIdentifierStrategy(),
-    new AbsoluteModuleStrategy(
-      program,
-      checker,
-      moduleResolver,
-      new TypeScriptReflectionHost(checker),
-    ),
-    new LogicalProjectStrategy(reflectionHost, logicalFs),
-  ]);
+  const emitter =
+    overrides.referenceEmitter ??
+    new ReferenceEmitter([
+      new LocalIdentifierStrategy(),
+      new AbsoluteModuleStrategy(
+        program,
+        checker,
+        moduleResolver,
+        new TypeScriptReflectionHost(checker),
+      ),
+      new LogicalProjectStrategy(reflectionHost, logicalFs),
+    ]);
 
   const fullConfig = {
     ...ALL_ENABLED_CONFIG,
