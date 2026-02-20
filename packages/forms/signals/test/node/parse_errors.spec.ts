@@ -11,6 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {
   form,
   FormField,
+  maxError,
   transformedValue,
   validate,
   type FormValueControl,
@@ -304,6 +305,25 @@ describe('parse errors', () => {
     expect(errors1).toEqual([]);
     expect(input1.value).toBe('42');
   });
+
+  it('should preserve parse errors when transformedValue parse returns both value and errors', async () => {
+    @Component({
+      imports: [TestNumberInput, FormField],
+      template: `<test-number-input [parseMax]="10" [formField]="f" />`,
+    })
+    class TestCmp {
+      state = signal<number | null>(5);
+      f = form(this.state);
+    }
+
+    const fix = await act(() => TestBed.createComponent(TestCmp));
+    const comp = fix.componentInstance;
+    const input: HTMLInputElement = fix.nativeElement.querySelector('input')!;
+
+    input.value = '11';
+    await act(() => input.dispatchEvent(new Event('input')));
+    expect(comp.f().errors()).toEqual([jasmine.objectContaining({kind: 'max'})]);
+  });
 });
 
 @Component({
@@ -318,6 +338,7 @@ describe('parse errors', () => {
 class TestNumberInput implements FormValueControl<number | null> {
   readonly value = model.required<number | null>();
   readonly errors = input<readonly ValidationError[]>([]);
+  readonly parseMax = input<number | undefined>(undefined);
 
   protected readonly rawValue = transformedValue(this.value, {
     parse: (rawValue) => {
@@ -325,6 +346,9 @@ class TestNumberInput implements FormValueControl<number | null> {
       const value = Number(rawValue);
       if (Number.isNaN(value)) {
         return {errors: [{kind: 'parse', message: `${rawValue} is not numeric`}]};
+      }
+      if (this.parseMax() != null && value > this.parseMax()!) {
+        return {value, errors: [maxError(this.parseMax()!)]};
       }
       return {value};
     },
