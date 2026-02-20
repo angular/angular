@@ -851,6 +851,7 @@ describe('selection range', () => {
         // Second → <div>Second</div> → @else if branch body → @else if branch → all branches (siblings) → @if block
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
@@ -895,6 +896,7 @@ describe('selection range', () => {
         // user → user.isLoggedIn → user.isLoggedIn && user.hasPermission → @if branch → @if block
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
@@ -943,6 +945,7 @@ describe('selection range', () => {
         // item → item.name → {{item.name}} → <span> → @if body → @if → @for body → @for → @case body → @case → @switch
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         // Verify innermost is 'item'
         const innermostText = template.substring(
@@ -1905,6 +1908,7 @@ describe('selection range', () => {
         // nameInput → nameInput.value → args span → greet(nameInput.value) → click key → event binding → siblings → element
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         // Verify innermost is nameInput
         const innermostText = template.substring(
@@ -1947,6 +1951,7 @@ describe('selection range', () => {
         // Loading → Loading... → <p>Loading...</p> → ng-template content → ng-template element
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
@@ -1986,6 +1991,7 @@ describe('selection range', () => {
         // firstName → firstName + ' ' → firstName + ' ' + lastName → @let declaration → root
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
@@ -2021,6 +2027,7 @@ describe('selection range', () => {
         // upperName → {{upperName}} → ... → root siblings
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
@@ -2058,6 +2065,7 @@ describe('selection range', () => {
         // user → user.name → children siblings → element
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
@@ -2095,6 +2103,7 @@ describe('selection range', () => {
         // isFirst → ternary expression → siblings → element
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
@@ -2141,6 +2150,7 @@ describe('selection range', () => {
         // Verify innermost is "Deep" (word), outermost is the full template
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
@@ -2264,6 +2274,7 @@ describe('selection range', () => {
         // remove → remove(item) → click key → event binding → element → children → outer div
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
@@ -2302,6 +2313,9 @@ describe('selection range', () => {
         expect(selectionRange)
           .withContext('Selection range should be defined for ICU content')
           .toBeDefined();
+        if (selectionRange) {
+          expectParentChainContainment(selectionRange, template);
+        }
       });
 
       it('should expand within ICU variable expression', () => {
@@ -2331,6 +2345,7 @@ describe('selection range', () => {
         // count → {{count}} → Count: {{count}} text → <p>Count: {{count}}</p> → siblings → root
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
@@ -2366,6 +2381,9 @@ describe('selection range', () => {
         expect(selectionRange)
           .withContext('Selection range should be defined for ICU select')
           .toBeDefined();
+        if (selectionRange) {
+          expectParentChainContainment(selectionRange, template);
+        }
       });
     });
 
@@ -2394,6 +2412,7 @@ describe('selection range', () => {
         // Position 4 is at the start of </div> - cursor should snap to the empty element
         // For an empty element, we might get just the element span or undefined
         if (selectionRange) {
+          expectParentChainContainment(selectionRange, template);
           const text = template.substring(
             selectionRange.textSpan.start,
             selectionRange.textSpan.start + selectionRange.textSpan.length,
@@ -2460,6 +2479,7 @@ describe('selection range', () => {
         // Content → <span>Content</span> → children (whitespace text nodes are siblings) → <div>
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
@@ -2673,6 +2693,7 @@ Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
         // YELLOW (word) → line → text node → content span → full element
         expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
         if (!selectionRange) return;
+        expectParentChainContainment(selectionRange, template);
 
         const innermostText = template.substring(
           selectionRange.textSpan.start,
