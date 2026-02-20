@@ -2524,62 +2524,38 @@ describe('selection range', () => {
         );
       });
 
-      it('should handle complex element with many attributes and bound properties', () => {
-        // Complex template similar to user's bug report — many attributes + NgStyle
-        const template = `<div data-test-id="test1" myDirectiveA [style.backgroundColor]="'rgb(0, 0, 255)'" [style.color]="'rgb(255, 255, 0)'" [ngStyle]="{'border': '5px solid green'}" [style]="{'padding': '20px', 'margin': '10px'}" style="border: 1px 2px 3px var(--help);"><strong>TEST 1: Template</strong><br>Expected: BLUE background<br>Actual: This should be BLUE with YELLOW text</div>`;
-        verifySelectionRanges(
-          env,
-          template,
-          '',
-          [
-            {
-              label: 'cursor on should in text content (not in attributes)',
-              cursorAt: 'should be BLUE',
-              chain: [
-                'should',
-                'Actual: This should be BLUE with YELLOW text',
-                '<strong>TEST 1: Template</strong><br>Expected: BLUE background<br>Actual: This should be BLUE with YELLOW text',
-                template,
-              ],
-            },
-          ],
-          {imports: ['NgStyle']},
-        );
+      it('should keep [style] object-key stops consistent between inline and external templates', () => {
+        const template = `<div [style]="{'border': '5px solid gold'}"></div>`;
+
+        verifySelectionRanges(env, template, '', [
+          {
+            label: 'cursor on border key in [style] object literal',
+            cursorAt: 'border',
+            chain: [
+              'border',
+              `{'border': '5px solid gold'}`,
+              `[style]="{'border': '5px solid gold'}"`,
+              template,
+            ],
+          },
+        ]);
       });
 
-      it('should handle multiline template similar to user bug report', () => {
-        // Template with newlines — similar to the user's actual template
-        const template = `<div data-test-id="test1" myDirectiveA 
-[style.backgroundColor]="'rgb(0, 0, 255)'" 
-[style.color]="'rgb(255, 255, 0)'" 
-[ngStyle]="{'border': '5px solid green'}" 
-[style]="{'padding': '20px', 'margin': '10px'}" 
-style="border: 1px 2px 3px var(--help);">
-<strong>TEST 1: Template [style.backgroundColor]</strong><br>
-Expected: BLUE background rgb(0, 0, 255)<br>
-Expected: YELLOW text rgb(255, 255, 0)<br>
-Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS
-</div>`;
+      it('should keep [style.color] string-literal stops consistent between inline and external templates', () => {
+        const template = `<div [style.color]="'rgb(255, 255, 255)'"></div>`;
 
-        verifySelectionRanges(
-          env,
-          template,
-          '',
-          [
-            {
-              label: 'cursor on should in multiline text content',
-              cursorAt: 'should be BLUE',
-              chain: [
-                'should',
-                'Actual: This should be BLUE with YELLOW text ← TEMPLATE WINS',
-                '\nActual: This should be BLUE with YELLOW text ← TEMPLATE WINS\n',
-                '\n<strong>TEST 1: Template [style.backgroundColor]</strong><br>\nExpected: BLUE background rgb(0, 0, 255)<br>\nExpected: YELLOW text rgb(255, 255, 0)<br>\nActual: This should be BLUE with YELLOW text ← TEMPLATE WINS\n',
-                template,
-              ],
-            },
-          ],
-          {imports: ['NgStyle']},
-        );
+        verifySelectionRanges(env, template, '', [
+          {
+            label: 'cursor on first 255 in [style.color] rgb literal',
+            cursorAt: '255, 255, 255',
+            chain: [
+              'rgb(255, 255, 255)',
+              `'rgb(255, 255, 255)'`,
+              `[style.color]="'rgb(255, 255, 255)'"`,
+              template,
+            ],
+          },
+        ]);
       });
     });
 
