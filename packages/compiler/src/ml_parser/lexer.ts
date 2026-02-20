@@ -804,6 +804,28 @@ class _Tokenizer {
     return [prefix, name];
   }
 
+  private _consumeSingleLineComment() {
+    this._attemptCharCodeUntilFn((code) => chars.isNewLine(code) || code === chars.$EOF);
+    this._attemptCharCodeUntilFn(isNotWhitespace);
+  }
+
+  private _consumeMultiLineComment() {
+    this._attemptCharCodeUntilFn((code) => {
+      if (code === chars.$EOF) {
+        return true;
+      }
+      if (code === chars.$STAR) {
+        const next = this._cursor.clone();
+        next.advance();
+        return next.peek() === chars.$SLASH;
+      }
+      return false;
+    });
+    if (this._attemptStr('*/')) {
+      this._attemptCharCodeUntilFn(isNotWhitespace);
+    }
+  }
+
   private _consumeTagOpen(start: CharacterCursor) {
     let tagName: string;
     let prefix: string;
@@ -840,7 +862,21 @@ class _Tokenizer {
         this._attemptCharCodeUntilFn(isNotWhitespace);
       }
 
-      while (!isAttributeTerminator(this._cursor.peek())) {
+      while (true) {
+        if (this._attemptStr('//')) {
+          this._consumeSingleLineComment();
+          continue;
+        }
+
+        if (this._attemptStr('/*')) {
+          this._consumeMultiLineComment();
+          continue;
+        }
+
+        if (isAttributeTerminator(this._cursor.peek())) {
+          break;
+        }
+
         if (this._selectorlessEnabled && this._cursor.peek() === chars.$AT) {
           const start = this._cursor.clone();
           const nameStart = start.clone();
