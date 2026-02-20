@@ -36,90 +36,34 @@ const _cancelIdleCallback = () =>
   typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout;
 
 /**
- * Helper service to schedule `requestIdleCallback`s for batches of defer blocks,
- * to avoid calling `requestIdleCallback` for each defer block (e.g. if
- * defer blocks are defined inside a for loop).
+ * Helper service to schedule and manage `requestIdleCallback`s.
  */
 export class IdleScheduler implements OnDestroy {
-  // Indicates whether current callbacks are being invoked.
-  executingCallbacks = false;
-
-  // Currently scheduled idle callback id.
-  idleId: number | null = null;
-
-  // Set of callbacks to be invoked next.
-  current = new Set<VoidFunction>();
-
-  // Set of callbacks collected while invoking current set of callbacks.
-  // Those callbacks are scheduled for the next idle period.
-  deferred = new Set<VoidFunction>();
-
   ngZone = inject(NgZone);
 
   requestIdleCallbackFn = _requestIdleCallback().bind(globalThis);
   cancelIdleCallbackFn = _cancelIdleCallback().bind(globalThis);
 
+  idleCallbackIds = new Map<VoidFunction, number>();
+
   add(callback: VoidFunction) {
-    const target = this.executingCallbacks ? this.deferred : this.current;
-    target.add(callback);
-    if (this.idleId === null) {
-      this.scheduleIdleCallback();
-    }
+    const id = this.requestIdleCallbackFn(() => this.ngZone.run(callback)) as number;
+    this.idleCallbackIds.set(callback, id);
   }
 
   remove(callback: VoidFunction) {
-    const {current, deferred} = this;
-
-    current.delete(callback);
-    deferred.delete(callback);
-
-    // If the last callback was removed and there is a pending
-    // idle callback - cancel it.
-    if (current.size === 0 && deferred.size === 0) {
-      this.cancelIdleCallback();
-    }
-  }
-
-  private scheduleIdleCallback() {
-    const callback = () => {
-      this.cancelIdleCallback();
-
-      this.executingCallbacks = true;
-
-      for (const callback of this.current) {
-        callback();
-      }
-      this.current.clear();
-
-      this.executingCallbacks = false;
-
-      // If there are any callbacks added during an invocation
-      // of the current ones - make them "current" and schedule
-      // a new idle callback.
-      if (this.deferred.size > 0) {
-        for (const callback of this.deferred) {
-          this.current.add(callback);
-        }
-        this.deferred.clear();
-        this.scheduleIdleCallback();
-      }
-    };
-    // Ensure that the callback runs in the NgZone since
-    // the `requestIdleCallback` is not currently patched by Zone.js.
-    this.idleId = this.requestIdleCallbackFn(() => this.ngZone.run(callback)) as number;
-  }
-
-  private cancelIdleCallback() {
-    if (this.idleId !== null) {
-      this.cancelIdleCallbackFn(this.idleId);
-      this.idleId = null;
+    if (this.idleCallbackIds.has(callback)) {
+      const id = this.idleCallbackIds.get(callback);
+      this.cancelIdleCallbackFn(id!);
+      this.idleCallbackIds.delete(callback);
     }
   }
 
   ngOnDestroy() {
-    this.cancelIdleCallback();
-    this.current.clear();
-    this.deferred.clear();
+    for (const [_, id] of this.idleCallbackIds) {
+      this.cancelIdleCallbackFn(id);
+    }
+    this.idleCallbackIds.clear();
   }
 
   /** @nocollapse */

@@ -1521,7 +1521,6 @@ describe('@defer', () => {
       options?: IdleRequestOptions,
     ): number => {
       onIdleCallbackQueue.set(id, callback);
-      expect(idleCallbacksRequested).toBe(0);
       expect(NgZone.isInAngularZone()).toBe(true);
       idleCallbacksRequested++;
       return id++;
@@ -2172,7 +2171,7 @@ describe('@defer', () => {
       expect(loadingFnInvokedTimes).toBe(2);
     });
 
-    it('should not request idle callback for each block in a for loop', async () => {
+    it('should request idle callback for each block in a for loop', async () => {
       @Component({
         selector: 'nested-cmp',
         template: 'Rendering {{ block }} block.',
@@ -2259,8 +2258,8 @@ describe('@defer', () => {
       const fixture = TestBed.createComponent(RootCmp);
       fixture.detectChanges();
 
-      // Expecting that an idle callback was requested.
-      expect(idleCallbacksRequested).toBe(1);
+      // Expecting that two idle callbacks were requested (one for prefetch, one for load).
+      expect(idleCallbacksRequested).toBe(2);
       expect(idleCallbacksInvoked).toBe(0);
       expect(idleCallbacksCancelled).toBe(0);
 
@@ -2271,10 +2270,10 @@ describe('@defer', () => {
       await allPendingDynamicImports();
       fixture.detectChanges();
 
-      // Expecting that an idle callback was cancelled and never invoked.
+      // Expecting that two idle callbacks were cancelled and never invoked.
       expect(idleCallbacksRequested).toBe(0);
       expect(idleCallbacksInvoked).toBe(0);
-      expect(idleCallbacksCancelled).toBe(1);
+      expect(idleCallbacksCancelled).toBe(2);
     });
   });
 
