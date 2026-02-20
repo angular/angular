@@ -1331,6 +1331,97 @@ export class BComponent {}
     expect(fullResponse.items.length).toBeGreaterThan(0);
   });
 
+  it('should return full report when unrelated component implementation changes', async () => {
+    const tmpDir = makeTempDir();
+    const newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+    await cp(PROJECT_PATH, newProjectRoot, {
+      recursive: true,
+      mode: fs.constants.COPYFILE_FICLONE,
+    });
+
+    const aComponentPath = join(newProjectRoot, 'app', 'a.component.ts');
+    const aTemplatePath = join(newProjectRoot, 'app', 'a.component.html');
+    const bComponentPath = join(newProjectRoot, 'app', 'b.component.ts');
+
+    await writeFile(
+      aComponentPath,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'a-component',
+  templateUrl: './a.component.html',
+})
+export class AComponent {
+  value = 123;
+}
+`,
+    );
+
+    await writeFile(aTemplatePath, `{{ value.toFixed(2) }}`);
+
+    await writeFile(
+      bComponentPath,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'component-b',
+  template: '',
+})
+export class BComponent {
+  value = 1;
+}
+`,
+    );
+
+    openTextDocument(client, aComponentPath);
+    openTextDocument(client, aTemplatePath);
+    openTextDocument(client, bComponentPath);
+
+    await waitForDiagnosticRefresh();
+
+    const aTemplateUri = pathToFileURL(aTemplatePath).href;
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    expect((firstResponse as lsp.FullDocumentDiagnosticReport).items.length).toBe(0);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Change B implementation only (metadata/signature unchanged).
+    client.sendNotification(lsp.DidChangeTextDocumentNotification.type, {
+      textDocument: {
+        uri: pathToFileURL(bComponentPath).href,
+        version: 2,
+      },
+      contentChanges: [
+        {
+          text: `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'component-b',
+  template: '',
+})
+export class BComponent {
+  value = 2;
+}
+`,
+        },
+      ],
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: aTemplateUri},
+      previousResultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+  });
+
   it('should return diagnostics for valid template', async () => {
     // Open the app component which should have no errors
     openTextDocument(client, APP_COMPONENT);

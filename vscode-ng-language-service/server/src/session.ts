@@ -106,6 +106,7 @@ export class Session {
    * instead of pushing diagnostics via textDocument/publishDiagnostics.
    */
   private usePullDiagnostics = false;
+  private readonly angularMetadataSignature = new Map<string, string>();
   /**
    * Tracks which `ts.server.Project`s have the renaming capability disabled.
    *
@@ -474,6 +475,42 @@ export class Session {
     }, delay);
   }
 
+  private computeAngularMetadataSignature(text: string): string {
+    const hasAngularDecorator = /@(Component|Directive|Pipe|NgModule)\s*\(/.test(text);
+    if (!hasAngularDecorator) {
+      return '';
+    }
+
+    const matches = [
+      ...text.matchAll(/selector\s*:\s*(['"`])([^'"`]+)\1/g),
+      ...text.matchAll(/standalone\s*:\s*(true|false)/g),
+      ...text.matchAll(/\b(imports|exports|declarations)\s*:\s*\[[\s\S]*?\]/g),
+    ];
+
+    return matches.map((m) => m[0].replace(/\s+/g, ' ').trim()).join('|');
+  }
+
+  private seedAngularMetadataSignature(fileName: string, scriptInfo: ts.server.ScriptInfo): void {
+    if (this.angularMetadataSignature.has(fileName)) {
+      return;
+    }
+    const snapshot = scriptInfo.getSnapshot();
+    const text = snapshot.getText(0, snapshot.getLength());
+    this.angularMetadataSignature.set(fileName, this.computeAngularMetadataSignature(text));
+  }
+
+  private angularMetadataSignatureChanged(
+    fileName: string,
+    scriptInfo: ts.server.ScriptInfo,
+  ): boolean {
+    const previous = this.angularMetadataSignature.get(fileName);
+    const snapshot = scriptInfo.getSnapshot();
+    const text = snapshot.getText(0, snapshot.getLength());
+    const current = this.computeAngularMetadataSignature(text);
+    this.angularMetadataSignature.set(fileName, current);
+    return previous !== undefined && previous !== current;
+  }
+
   private invalidatePullDiagnosticsForImpactedFiles(files: string[]): void {
     const impactedFiles = new Set<string>();
     const fallbackProjects = new Set<string>();
@@ -530,10 +567,9 @@ export class Session {
       }
 
       // Angular metadata edits can affect templates without TS import edges
-      // (e.g. selector rename for an unimported component).
-      const snapshot = scriptInfo.getSnapshot();
-      const text = snapshot.getText(0, snapshot.getLength());
-      if (/@Component\s*\(|@Directive\s*\(|@Pipe\s*\(|@NgModule\s*\(/.test(text)) {
+      // (e.g. selector rename for an unimported component). Invalidate broadly
+      // only when metadata-relevant signature actually changes.
+      if (this.angularMetadataSignatureChanged(changedFile, scriptInfo)) {
         for (const fileName of projectFiles) {
           impactedFiles.add(fileName);
         }
@@ -720,6 +756,10 @@ export class Session {
       const project = configFileName
         ? this.projectService.findProject(configFileName)
         : this.projectService.getScriptInfo(filePath)?.containingProjects.find(isConfiguredProject);
+      const openedScriptInfo = this.projectService.getScriptInfo(filePath);
+      if (openedScriptInfo) {
+        this.seedAngularMetadataSignature(filePath, openedScriptInfo);
+      }
       if (!project?.languageServiceEnabled) {
         return;
       }
@@ -773,6 +813,9 @@ export class Session {
       this.error(`Failed to get script info for ${filePath}`);
       return;
     }
+    // Capture pre-edit metadata signature so we can detect metadata changes
+    // after applying edits and invalidate broadly only when necessary.
+    this.seedAngularMetadataSignature(filePath, scriptInfo);
     for (const change of contentChanges) {
       if ('range' in change) {
         const [start, end] = lspRangeToTsPositions(scriptInfo, change.range);
