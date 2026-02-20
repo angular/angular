@@ -61,6 +61,34 @@ function verifyExpansionChain(
   }
 }
 
+function expectParentChainContainment(
+  selectionRange: ts.SelectionRange | undefined,
+  template: string,
+  templateOffset: number = 0,
+): void {
+  expect(selectionRange).withContext('Selection range should be defined').toBeDefined();
+  if (!selectionRange) return;
+
+  let child: ts.SelectionRange | undefined = selectionRange;
+  while (child?.parent) {
+    const parent: ts.SelectionRange = child.parent;
+    const childStart = child.textSpan.start;
+    const childEnd = child.textSpan.start + child.textSpan.length;
+    const parentStart = parent.textSpan.start;
+    const parentEnd = parent.textSpan.start + parent.textSpan.length;
+
+    expect(parentStart <= childStart && parentEnd >= childEnd)
+      .withContext(
+        `Parent range must contain child range.\n` +
+          `Child: ${JSON.stringify({start: childStart - templateOffset, end: childEnd - templateOffset})} => "${template.substring(childStart - templateOffset, childEnd - templateOffset)}"\n` +
+          `Parent: ${JSON.stringify({start: parentStart - templateOffset, end: parentEnd - templateOffset})} => "${template.substring(parentStart - templateOffset, parentEnd - templateOffset)}"`,
+      )
+      .toBeTrue();
+
+    child = parent;
+  }
+}
+
 /**
  * Describes a cursor position within a template for testing expansion chains.
  */
@@ -143,6 +171,7 @@ function verifySelectionRanges(
 
     const selectionRange = externalProject.getSelectionRangeAtPosition('app.html', pos);
     verifyExpansionChain(selectionRange, template, cursor.chain);
+    expectParentChainContainment(selectionRange, template);
   }
 
   // --- Inline template mode ---
@@ -184,6 +213,7 @@ function verifySelectionRanges(
 
       const selectionRange = inlineProject.getSelectionRangeAtPosition('app.ts', pos);
       verifyExpansionChain(selectionRange, template, cursor.chain, templateOffset);
+      expectParentChainContainment(selectionRange, template, templateOffset);
     }
   }
 }
@@ -493,6 +523,21 @@ describe('selection range', () => {
             label: 'cursor on userName',
             cursorAt: 'userName',
             chain: ['userName', '[value]="userName"', '<input [value]="userName">'],
+          },
+        ]);
+      });
+
+      it('should preserve parent containment for attribute cursor with child content', () => {
+        const template = `<div [title]="userName">
+  <span>One</span>
+  <span>Two</span>
+</div>`;
+
+        verifySelectionRanges(env, template, `userName = 'test';`, [
+          {
+            label: 'cursor on userName in bound attribute with multiple children',
+            cursorAt: 'userName',
+            chain: ['userName', '[title]="userName"', template],
           },
         ]);
       });
@@ -1478,7 +1523,7 @@ describe('selection range', () => {
     describe('unary expressions', () => {
       it('should expand through prefix not', () => {
         // *ngIf desugars in the template AST. The chain walks through the desugared attribute.
-        // isHidden → !isHidden → ngIf="!isHidden (partial attr) → Content → element
+        // isHidden → !isHidden → ngIf="!isHidden (partial attr) → element
         // keySpan (ngIf) is NOT included when cursor is on the expression
         verifySelectionRanges(env, '<div *ngIf="!isHidden">Content</div>', `isHidden = false;`, [
           {
@@ -1488,7 +1533,6 @@ describe('selection range', () => {
               'isHidden',
               '!isHidden',
               'ngIf="!isHidden',
-              'Content',
               '<div *ngIf="!isHidden">Content</div>',
             ],
           },
@@ -1554,7 +1598,6 @@ describe('selection range', () => {
                 'isB',
                 'isA && isB',
                 'ngIf="isA && isB',
-                'Visible',
                 '<div *ngIf="isA && isB">Visible</div>',
               ],
             },

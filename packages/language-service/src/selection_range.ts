@@ -161,12 +161,25 @@ function buildSelectionRangeChain(path: PathEntry[]): ts.SelectionRange | undefi
     }
     seenSpans.add(spanKey);
 
+    // Ensure SelectionRange parent containment invariant:
+    // parent.textSpan must contain child.textSpan.
+    // If intermediate spans are disjoint, skip them as parents.
+    let parent = current;
+    while (parent) {
+      const parentStart = parent.textSpan.start;
+      const parentEnd = parent.textSpan.start + parent.textSpan.length;
+      if (entry.span.start >= parentStart && entry.span.end <= parentEnd) {
+        break;
+      }
+      parent = parent.parent;
+    }
+
     const range: ts.SelectionRange = {
       textSpan: {
         start: entry.span.start,
         length: entry.span.end - entry.span.start,
       },
-      parent: current,
+      parent,
     };
 
     current = range;
@@ -582,6 +595,7 @@ class SelectionRangeVisitor implements TmplAstVisitor {
       // Add content span only if it's different from children combined span
       if (
         contentSpan &&
+        positionShouldSnapToSpan(this.position, contentSpan) &&
         (!childrenSpan ||
           contentSpan.start !== childrenSpan.start ||
           contentSpan.end !== childrenSpan.end)
@@ -623,7 +637,11 @@ class SelectionRangeVisitor implements TmplAstVisitor {
   visitTemplate(template: TmplAstTemplate): void {
     // Add content span before visiting children
     const contentSpan = getElementContentSpan(template);
-    if (contentSpan && template.children.length > 0) {
+    if (
+      contentSpan &&
+      template.children.length > 0 &&
+      positionShouldSnapToSpan(this.position, contentSpan)
+    ) {
       this.path.push({node: null, span: contentSpan});
     }
 
@@ -671,6 +689,7 @@ class SelectionRangeVisitor implements TmplAstVisitor {
       // Add content span only if it's different from children combined span
       if (
         contentSpan &&
+        positionShouldSnapToSpan(this.position, contentSpan) &&
         (!childrenSpan ||
           contentSpan.start !== childrenSpan.start ||
           contentSpan.end !== childrenSpan.end)
