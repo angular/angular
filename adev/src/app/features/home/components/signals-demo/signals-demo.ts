@@ -51,7 +51,7 @@ searchTerm = signal('');
 // A computed signal that derives the filtered list.
 // It automatically re-runs when a dependency changes.
 filteredItems = computed(() => 
-  this.items.filter(item =>
+  this.items().filter(item =>
     item.toLowerCase().includes (
        this.searchTerm().toLowerCase()
     )
@@ -60,9 +60,9 @@ filteredItems = computed(() =>
 `.trim();
 
 const htmlExample = `
-<input [valuel="searchTerm()" (input)="searchTerm.set($event)" />
+<input [value]="searchTerm()" (input)="searchTerm.set($event)" />
 <ul>
-  @for (item of filteredItems (); track item) {
+  @for (item of filteredItems(); track item) {
     <li>{{ item }}</Li>
   }
 </ul>
