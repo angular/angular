@@ -1,4 +1,5 @@
 # Deployment
+| [Hostinger Web Apps Hosting](https://www.hostinger.com/web-apps-hosting) | Deploy by building with `ng build` and connecting the repository in Hostinger Web Apps Hosting |
 
 When you are ready to deploy your Angular application to a remote server, you have various options.
 
