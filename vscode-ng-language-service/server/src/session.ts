@@ -107,6 +107,7 @@ export class Session {
    */
   private usePullDiagnostics = false;
   private readonly angularMetadataSignature = new Map<string, string>();
+  private lastPullTextChangeInvalidationAt = 0;
   /**
    * Tracks which `ts.server.Project`s have the renaming capability disabled.
    *
@@ -457,7 +458,15 @@ export class Session {
       if (this.usePullDiagnostics) {
         // For background project updates we do not have a precise changed-file set,
         // so invalidate globally for correctness across project references.
+        //
+        // However, TS often emits this event immediately after a direct text edit
+        // that we already invalidated precisely via `Changing ...` path. In that
+        // case, avoid broad invalidation to preserve fine-grained cache hits.
         if (reason === ts.server.ProjectsUpdatedInBackgroundEvent) {
+          if (Date.now() - this.lastPullTextChangeInvalidationAt < 1000) {
+            this.refreshDiagnostics(false);
+            return;
+          }
           this.refreshDiagnostics(true);
           return;
         }
@@ -465,6 +474,9 @@ export class Session {
         // For open/change triggers we attempt a finer-grained invalidation so
         // unrelated files can still return cached `Unchanged` results.
         this.invalidatePullDiagnosticsForImpactedFiles(files);
+        if (reason.startsWith('Changing ')) {
+          this.lastPullTextChangeInvalidationAt = Date.now();
+        }
         this.logger.info(`${reason} - Requesting client to refresh diagnostics (pull-based)`);
         this.refreshDiagnostics(false);
       } else {
