@@ -23,5 +23,6 @@ syntaxes/inline-styles.json
 syntaxes/inline-template.json
 syntaxes/let-declaration.json
 syntaxes/template-blocks.json
+syntaxes/template-tag-language-configuration.json
 syntaxes/template-tag.json
 syntaxes/template.json

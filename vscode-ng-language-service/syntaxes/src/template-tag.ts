@@ -12,12 +12,34 @@ export const TemplateTag: GrammarDefinition = {
   scopeName: 'template.tag.ng',
   injectionSelector: 'L:text.html#meta.tag -comment',
   patterns: [
+    {include: '#inlineComments'},
     {include: '#twoWayBinding'},
     {include: '#propertyBinding'},
     {include: '#eventBinding'},
     {include: '#templateBinding'},
+    {include: '#standardAttribute'},
+    {include: '#other'},
   ],
   repository: {
+    other: {
+      match: /\s+/,
+      name: 'template.tag.ng',
+    },
+    standardAttribute: {
+      begin: /([-_a-zA-Z0-9.$:]+)(=)(["'])/,
+      beginCaptures: {
+        1: {name: 'entity.other.attribute-name.html'},
+        2: {name: 'punctuation.separator.key-value.html'},
+        3: {name: 'string.quoted.html punctuation.definition.string.begin.html'},
+      },
+      // @ts-ignore
+      end: /\3/,
+      endCaptures: {
+        0: {name: 'string.quoted.html punctuation.definition.string.end.html'},
+      },
+      name: 'meta.attribute.standard.html',
+      patterns: [{include: 'expression.ng'}],
+    },
     propertyBinding: {
       begin: /(\[\s*@?(?:[-_a-zA-Z0-9.$]+|\[[^\[\]]*]|\([^()]*\))*%?\s*])(=)(["'])/,
       beginCaptures: {
@@ -116,6 +138,22 @@ export const TemplateTag: GrammarDefinition = {
             },
             3: {name: 'punctuation.definition.ng-binding-name.end.html'},
           },
+        },
+      ],
+    },
+    inlineComments: {
+      patterns: [
+        {
+          begin: /\/\*/,
+          captures: {0: {name: 'punctuation.definition.comment.ts'}},
+          name: 'comment.block.ts',
+          end: /\*\//,
+        },
+        {
+          begin: /\/\//,
+          beginCaptures: {0: {name: 'punctuation.definition.comment.ts'}},
+          name: 'comment.line.double-slash.ts',
+          end: /(?=$)/,
         },
       ],
     },
