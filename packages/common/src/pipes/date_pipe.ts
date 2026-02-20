@@ -11,7 +11,7 @@ import {Inject, InjectionToken, LOCALE_ID, Optional, Pipe, PipeTransform} from '
 import {formatDate} from '../i18n/format_date';
 
 import {DatePipeConfig, DEFAULT_DATE_FORMAT} from './date_pipe_config';
-import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './utils';
 
 /**
  * Optionally-provided default timezone to use for all instances of `DatePipe` (such as `'+0430'`).
