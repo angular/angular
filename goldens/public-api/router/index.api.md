@@ -84,7 +84,6 @@ export class ActivationEnd {
     snapshot: ActivatedRouteSnapshot);
     // (undocumented)
     snapshot: ActivatedRouteSnapshot;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.ActivationEnd;
@@ -96,7 +95,6 @@ export class ActivationStart {
     snapshot: ActivatedRouteSnapshot);
     // (undocumented)
     snapshot: ActivatedRouteSnapshot;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.ActivationStart;
@@ -163,7 +161,6 @@ export class ChildActivationEnd {
     snapshot: ActivatedRouteSnapshot);
     // (undocumented)
     snapshot: ActivatedRouteSnapshot;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.ChildActivationEnd;
@@ -175,7 +172,6 @@ export class ChildActivationStart {
     snapshot: ActivatedRouteSnapshot);
     // (undocumented)
     snapshot: ActivatedRouteSnapshot;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.ChildActivationStart;
@@ -329,7 +325,6 @@ export class GuardsCheckEnd extends RouterEvent {
     shouldActivate: boolean;
     // (undocumented)
     state: RouterStateSnapshot;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.GuardsCheckEnd;
@@ -346,7 +341,6 @@ export class GuardsCheckStart extends RouterEvent {
     state: RouterStateSnapshot);
     // (undocumented)
     state: RouterStateSnapshot;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.GuardsCheckStart;
@@ -438,7 +432,6 @@ export class NavigationCancel extends RouterEvent {
     code?: NavigationCancellationCode | undefined);
     readonly code?: NavigationCancellationCode | undefined;
     reason: string;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.NavigationCancel;
@@ -459,7 +452,6 @@ export class NavigationEnd extends RouterEvent {
     id: number,
     url: string,
     urlAfterRedirects: string);
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.NavigationEnd;
@@ -477,7 +469,6 @@ export class NavigationError extends RouterEvent {
     // (undocumented)
     error: any;
     readonly target?: RouterStateSnapshot | undefined;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.NavigationError;
@@ -524,7 +515,6 @@ export class NavigationStart extends RouterEvent {
         [k: string]: any;
         navigationId: number;
     } | null;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.NavigationStart;
@@ -637,7 +627,6 @@ export class ResolveEnd extends RouterEvent {
     state: RouterStateSnapshot);
     // (undocumented)
     state: RouterStateSnapshot;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.ResolveEnd;
@@ -657,7 +646,6 @@ export class ResolveStart extends RouterEvent {
     state: RouterStateSnapshot);
     // (undocumented)
     state: RouterStateSnapshot;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.ResolveStart;
@@ -695,7 +683,6 @@ export class RouteConfigLoadEnd {
     route: Route);
     // (undocumented)
     route: Route;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.RouteConfigLoadEnd;
@@ -707,7 +694,6 @@ export class RouteConfigLoadStart {
     route: Route);
     // (undocumented)
     route: Route;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.RouteConfigLoadStart;
@@ -999,7 +985,6 @@ export class RoutesRecognized extends RouterEvent {
     state: RouterStateSnapshot);
     // (undocumented)
     state: RouterStateSnapshot;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.RoutesRecognized;
@@ -1025,7 +1010,6 @@ export class Scroll {
     readonly routerEvent: NavigationEnd | NavigationSkipped;
     // (undocumented)
     readonly scrollBehavior?: "manual" | "after-transition" | undefined;
-    // (undocumented)
     toString(): string;
     // (undocumented)
     readonly type = EventType.Scroll;
@@ -1087,7 +1071,6 @@ export class UrlSegment {
         [name: string]: string;
     };
     path: string;
-    // (undocumented)
     toString(): string;
 }
 
@@ -1105,7 +1088,6 @@ export class UrlSegmentGroup {
     get numberOfChildren(): number;
     parent: UrlSegmentGroup | null;
     segments: UrlSegment[];
-    // (undocumented)
     toString(): string;
 }
 
@@ -1130,7 +1112,6 @@ export class UrlTree {
     get queryParamMap(): ParamMap;
     queryParams: Params;
     root: UrlSegmentGroup;
-    // (undocumented)
     toString(): string;
 }
 
