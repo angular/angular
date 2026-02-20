@@ -1190,6 +1190,65 @@ export class FooComponent {
     expect(fullResponse.items[0].message).toContain("Property 'title' does not exist");
   });
 
+  it('should return full report when text change and broad invalidation happen in quick succession', async () => {
+    // Start from a template that depends on `title` from FooComponent.
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: FOO_TEMPLATE_URI,
+        languageId: 'html',
+        version: 1,
+        text: `{{ title }}`,
+      },
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // 1) Precise invalidation trigger: component text change
+    openTextDocument(
+      client,
+      FOO_COMPONENT,
+      `
+import {Component} from '@angular/core';
+
+@Component({
+  selector: 'foo-component',
+  templateUrl: 'foo.component.html',
+})
+export class FooComponent {
+  title2 = 'Angular';
+}
+`,
+    );
+
+    // 2) Broad invalidation trigger shortly after (simulates a background project/config update)
+    client.sendNotification(lsp.DidChangeWatchedFilesNotification.type, {
+      changes: [
+        {
+          uri: pathToFileURL(join(PROJECT_PATH, 'tsconfig.json')).href,
+          type: lsp.FileChangeType.Changed,
+        },
+      ],
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: FOO_TEMPLATE_URI},
+      previousResultId,
+    });
+
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const fullResponse = secondResponse as lsp.FullDocumentDiagnosticReport;
+    expect(fullResponse.items.length).toBe(1);
+    expect(fullResponse.items[0].message).toContain("Property 'title' does not exist");
+  });
+
   it('should return full report when transitive dependency changes (C -> B -> A template)', async () => {
     const tmpDir = makeTempDir();
     const newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
