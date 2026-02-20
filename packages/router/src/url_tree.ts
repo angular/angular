@@ -9,9 +9,9 @@
 import {computed, Injectable, ɵRuntimeError as RuntimeError, Signal} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
+import type {Router} from './router';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET} from './shared';
 import {equalArraysOrString, shallowEqual} from './utils/collection';
-import type {Router} from './router';
 
 /**
  * A set of options which specify how to determine if a `UrlTree` is active, given the `UrlTree`
@@ -258,7 +258,7 @@ export class UrlTree {
     return this._queryParamMap;
   }
 
-  /** @docsNotRequired */
+  /** @docs-private */
   toString(): string {
     return DEFAULT_SERIALIZER.serialize(this);
   }
@@ -296,7 +296,7 @@ export class UrlSegmentGroup {
     return Object.keys(this.children).length;
   }
 
-  /** @docsNotRequired */
+  /** @docs-private */
   toString(): string {
     return serializePaths(this);
   }
@@ -345,7 +345,7 @@ export class UrlSegment {
     return this._parameterMap;
   }
 
-  /** @docsNotRequired */
+  /** @docs-private */
   toString(): string {
     return serializePath(this);
   }
