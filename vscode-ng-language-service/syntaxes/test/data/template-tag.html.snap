@@ -790,3 +790,32 @@
 #                           ^ template.tag.ng meta.ng-binding.template.html string.quoted.html punctuation.definition.string.end.html
 #                            ^^^^^^^^ template.tag.ng
 >
+><!-- inline comments in the HTML element -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.tag.ng
+><div
+#^^^^^ template.tag.ng
+>  // comment 0
+#^^ template.tag.ng
+#  ^^ template.tag.ng comment.line.double-slash.ts punctuation.definition.comment.ts
+#    ^^^^^^^^^^ template.tag.ng comment.line.double-slash.ts
+>  /* comment 1 */
+#^^ template.tag.ng
+#  ^^ template.tag.ng comment.block.ts punctuation.definition.comment.ts
+#    ^^^^^^^^^^^ template.tag.ng comment.block.ts
+#               ^^ template.tag.ng comment.block.ts punctuation.definition.comment.ts
+>  attr1="value1"
+#^^^^^^^^^^^^^^^^^ template.tag.ng
+>  /*
+#^^ template.tag.ng
+#  ^^ template.tag.ng comment.block.ts punctuation.definition.comment.ts
+>     comment 2
+#^^^^^^^^^^^^^^^ template.tag.ng comment.block.ts
+>     spanning multiple lines
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.tag.ng comment.block.ts
+>  */
+#^^ template.tag.ng comment.block.ts
+#  ^^ template.tag.ng comment.block.ts punctuation.definition.comment.ts
+>  attr2="value2"
+#^^^^^^^^^^^^^^^^^ template.tag.ng
+>></div>
+#^^^^^^^^ template.tag.ng

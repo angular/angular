@@ -3,6 +3,9 @@
   "injectionSelector": "L:text.html#meta.tag -comment",
   "patterns": [
     {
+      "include": "#inlineComments"
+    },
+    {
       "include": "#twoWayBinding"
     },
     {
@@ -165,6 +168,30 @@
               "name": "punctuation.definition.ng-binding-name.end.html"
             }
           }
+        }
+      ]
+    },
+    "inlineComments": {
+      "patterns": [
+        {
+          "begin": "\\/\\*",
+          "captures": {
+            "0": {
+              "name": "punctuation.definition.comment.ts"
+            }
+          },
+          "name": "comment.block.ts",
+          "end": "\\*\\/"
+        },
+        {
+          "begin": "\\/\\/",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.ts"
+            }
+          },
+          "name": "comment.line.double-slash.ts",
+          "end": "(?=$)"
         }
       ]
     }
