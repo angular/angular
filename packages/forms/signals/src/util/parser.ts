@@ -44,10 +44,12 @@ export function createParser<TValue, TRaw>(
 
   const setRawValue = (rawValue: TRaw) => {
     const result = parse(rawValue);
-    errors.set(result.errors ?? []);
     if (result.value !== undefined) {
       setValue(result.value);
     }
+    // `errors` is a linked signal sourced from the model value; write parse errors after
+    // model updates so `{value, errors}` results do not get reset by the recomputation.
+    errors.set(result.errors ?? []);
   };
 
   return {errors: errors.asReadonly(), setRawValue};
