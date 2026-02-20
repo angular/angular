@@ -33,13 +33,13 @@ import {NgModuleType} from '../../src/render3';
 import {getNgModuleDef} from '../../src/render3/def_getters';
 import {ComponentFixture, inject, TestBed} from '../../testing';
 
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {
   clearModulesForTest,
   setAllowDuplicateNgModuleIdsForTest,
 } from '../../src/linker/ng_module_registration';
 import {stringify} from '../../src/util/stringify';
-import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 
 class Engine {}
 
@@ -542,7 +542,7 @@ describe('NgModule', () => {
 
     it('should throw when no type and not @Inject (class case)', () => {
       expect(() => createInjector([NoAnnotations])).toThrowError(
-        "NG0204: Can't resolve all parameters for NoAnnotations: (?).",
+        /NG0204: Can't resolve all parameters for NoAnnotations: \(\?\)./,
       );
     });
 
