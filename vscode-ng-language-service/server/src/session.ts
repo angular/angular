@@ -106,8 +106,6 @@ export class Session {
    * instead of pushing diagnostics via textDocument/publishDiagnostics.
    */
   private usePullDiagnostics = false;
-  private readonly angularMetadataSignature = new Map<string, string>();
-  private lastPullTextChangeInvalidationAt = 0;
   /**
    * Tracks which `ts.server.Project`s have the renaming capability disabled.
    *
@@ -457,26 +455,16 @@ export class Session {
       // instead of pushing diagnostics from the server
       if (this.usePullDiagnostics) {
         // For background project updates we do not have a precise changed-file set,
-        // so invalidate globally for correctness across project references.
-        //
-        // However, TS often emits this event immediately after a direct text edit
-        // that we already invalidated precisely via `Changing ...` path. In that
-        // case, avoid broad invalidation to preserve fine-grained cache hits.
+        // so invalidate broadly for correctness across project references.
         if (reason === ts.server.ProjectsUpdatedInBackgroundEvent) {
-          if (Date.now() - this.lastPullTextChangeInvalidationAt < 1000) {
-            this.refreshDiagnostics(false);
-            return;
-          }
           this.refreshDiagnostics(true);
           return;
         }
 
-        // For open/change triggers we attempt a finer-grained invalidation so
-        // unrelated files can still return cached `Unchanged` results.
+        // For open/change triggers, use lightweight tiered invalidation:
+        // - external template edits: invalidate template + owning component files
+        // - TS edits: invalidate project diagnostics epoch
         this.invalidatePullDiagnosticsForImpactedFiles(files);
-        if (reason.startsWith('Changing ')) {
-          this.lastPullTextChangeInvalidationAt = Date.now();
-        }
         this.logger.info(`${reason} - Requesting client to refresh diagnostics (pull-based)`);
         this.refreshDiagnostics(false);
       } else {
@@ -487,45 +475,9 @@ export class Session {
     }, delay);
   }
 
-  private computeAngularMetadataSignature(text: string): string {
-    const hasAngularDecorator = /@(Component|Directive|Pipe|NgModule)\s*\(/.test(text);
-    if (!hasAngularDecorator) {
-      return '';
-    }
-
-    const matches = [
-      ...text.matchAll(/selector\s*:\s*(['"`])([^'"`]+)\1/g),
-      ...text.matchAll(/standalone\s*:\s*(true|false)/g),
-      ...text.matchAll(/\b(imports|exports|declarations)\s*:\s*\[[\s\S]*?\]/g),
-    ];
-
-    return matches.map((m) => m[0].replace(/\s+/g, ' ').trim()).join('|');
-  }
-
-  private seedAngularMetadataSignature(fileName: string, scriptInfo: ts.server.ScriptInfo): void {
-    if (this.angularMetadataSignature.has(fileName)) {
-      return;
-    }
-    const snapshot = scriptInfo.getSnapshot();
-    const text = snapshot.getText(0, snapshot.getLength());
-    this.angularMetadataSignature.set(fileName, this.computeAngularMetadataSignature(text));
-  }
-
-  private angularMetadataSignatureChanged(
-    fileName: string,
-    scriptInfo: ts.server.ScriptInfo,
-  ): boolean {
-    const previous = this.angularMetadataSignature.get(fileName);
-    const snapshot = scriptInfo.getSnapshot();
-    const text = snapshot.getText(0, snapshot.getLength());
-    const current = this.computeAngularMetadataSignature(text);
-    this.angularMetadataSignature.set(fileName, current);
-    return previous !== undefined && previous !== current;
-  }
-
   private invalidatePullDiagnosticsForImpactedFiles(files: string[]): void {
     const impactedFiles = new Set<string>();
-    const fallbackProjects = new Set<string>();
+    const impactedProjects = new Set<string>();
 
     for (const changedFile of files) {
       impactedFiles.add(changedFile);
@@ -538,52 +490,12 @@ export class Session {
       if (!project || project.isClosed()) {
         continue;
       }
-      fallbackProjects.add(project.getProjectName());
+      impactedProjects.add(project.getProjectName());
 
       const languageService = project.getLanguageService();
-      if (!isNgLanguageService(languageService)) {
-        continue;
-      }
-
-      const projectFiles = project.getFileNames(true, true);
-      const reverseDeps = this.buildReverseDependencyMap(languageService.getProgram());
-      const componentToTemplates = this.buildComponentToTemplateMap(languageService, projectFiles);
-
-      const queue = [changedFile];
-      const visited = new Set<string>();
-      while (queue.length > 0) {
-        const current = queue.pop()!;
-        if (visited.has(current)) {
-          continue;
-        }
-        visited.add(current);
-        impactedFiles.add(current);
-
-        for (const importer of reverseDeps.get(current) ?? []) {
-          if (!visited.has(importer)) {
-            queue.push(importer);
-          }
-        }
-
-        if (isExternalTemplate(current)) {
-          for (const component of languageService.getComponentLocationsForTemplate(current)) {
-            if (!visited.has(component.fileName)) {
-              queue.push(component.fileName);
-            }
-          }
-        }
-
-        for (const template of componentToTemplates.get(current) ?? []) {
-          impactedFiles.add(template);
-        }
-      }
-
-      // Angular metadata edits can affect templates without TS import edges
-      // (e.g. selector rename for an unimported component). Invalidate broadly
-      // only when metadata-relevant signature actually changes.
-      if (this.angularMetadataSignatureChanged(changedFile, scriptInfo)) {
-        for (const fileName of projectFiles) {
-          impactedFiles.add(fileName);
+      if (isExternalTemplate(changedFile) && isNgLanguageService(languageService)) {
+        for (const component of languageService.getComponentLocationsForTemplate(changedFile)) {
+          impactedFiles.add(component.fileName);
         }
       }
     }
@@ -592,67 +504,9 @@ export class Session {
       clearDiagnosticCache(filePathToUri(fileName));
     }
 
-    // Fallback for cases where impacted files could not be determined.
-    if (impactedFiles.size === 0) {
-      for (const projectName of fallbackProjects) {
-        invalidateProjectDiagnostics(projectName);
-      }
+    for (const projectName of impactedProjects) {
+      invalidateProjectDiagnostics(projectName);
     }
-  }
-
-  private buildReverseDependencyMap(program: ts.Program | undefined): Map<string, Set<string>> {
-    const reverseDeps = new Map<string, Set<string>>();
-    if (!program) {
-      return reverseDeps;
-    }
-
-    for (const sourceFile of program.getSourceFiles()) {
-      const importer = sourceFile.fileName;
-      const resolvedModules = (
-        sourceFile as ts.SourceFile & {
-          resolvedModules?: ReadonlyMap<string, ts.ResolvedModuleFull | undefined>;
-        }
-      ).resolvedModules;
-      if (!resolvedModules) {
-        continue;
-      }
-      for (const resolved of resolvedModules.values()) {
-        const imported = resolved?.resolvedFileName;
-        if (!imported) {
-          continue;
-        }
-        let importers = reverseDeps.get(imported);
-        if (!importers) {
-          importers = new Set<string>();
-          reverseDeps.set(imported, importers);
-        }
-        importers.add(importer);
-      }
-    }
-
-    return reverseDeps;
-  }
-
-  private buildComponentToTemplateMap(
-    languageService: NgLanguageService,
-    projectFiles: string[],
-  ): Map<string, Set<string>> {
-    const componentToTemplates = new Map<string, Set<string>>();
-    for (const fileName of projectFiles) {
-      if (!isExternalTemplate(fileName)) {
-        continue;
-      }
-      const components = languageService.getComponentLocationsForTemplate(fileName);
-      for (const component of components) {
-        let templates = componentToTemplates.get(component.fileName);
-        if (!templates) {
-          templates = new Set<string>();
-          componentToTemplates.set(component.fileName, templates);
-        }
-        templates.add(fileName);
-      }
-    }
-    return componentToTemplates;
   }
 
   /**
@@ -768,10 +622,6 @@ export class Session {
       const project = configFileName
         ? this.projectService.findProject(configFileName)
         : this.projectService.getScriptInfo(filePath)?.containingProjects.find(isConfiguredProject);
-      const openedScriptInfo = this.projectService.getScriptInfo(filePath);
-      if (openedScriptInfo) {
-        this.seedAngularMetadataSignature(filePath, openedScriptInfo);
-      }
       if (!project?.languageServiceEnabled) {
         return;
       }
@@ -825,9 +675,6 @@ export class Session {
       this.error(`Failed to get script info for ${filePath}`);
       return;
     }
-    // Capture pre-edit metadata signature so we can detect metadata changes
-    // after applying edits and invalidate broadly only when necessary.
-    this.seedAngularMetadataSignature(filePath, scriptInfo);
     for (const change of contentChanges) {
       if ('range' in change) {
         const [start, end] = lspRangeToTsPositions(scriptInfo, change.range);
