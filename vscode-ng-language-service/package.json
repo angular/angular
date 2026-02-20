@@ -361,7 +361,10 @@
         "injectTo": [
           "text.html.derivative",
           "source.ts"
-        ]
+        ],
+        "embeddedLanguages": {
+          "template.tag.ng": "angular-tag-comment"
+        }
       },
       {
         "path": "./syntaxes/expression.json",
@@ -372,6 +375,12 @@
       {
         "fileMatch": "tsconfig*.json",
         "url": "./schemas/tsconfig-ng.schema.json"
+      }
+    ],
+    "languages": [
+      {
+        "id": "angular-tag-comment",
+        "configuration": "./syntaxes/template-tag-language-configuration.json"
       }
     ]
   },
