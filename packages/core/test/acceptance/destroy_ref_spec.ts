@@ -73,7 +73,7 @@ describe('DestroyRef', () => {
 
       expect(() => {
         destroyRef.onDestroy(() => {});
-      }).toThrowError('NG0205: Injector has already been destroyed.');
+      }).toThrowError(/NG0205: Injector has already been destroyed./);
     });
   });
 

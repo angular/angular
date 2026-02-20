@@ -74,7 +74,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INFINITE_CHANGE_DETECTION = 103,
     // (undocumented)
-    INJECTOR_ALREADY_DESTROYED = 205,
+    INJECTOR_ALREADY_DESTROYED = -205,
     // (undocumented)
     INVALID_APP_ID = 211,
     // (undocumented)
@@ -90,7 +90,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_INHERITANCE = 903,
     // (undocumented)
-    INVALID_INJECTION_TOKEN = 204,
+    INVALID_INJECTION_TOKEN = -204,
     // (undocumented)
     INVALID_MULTI_PROVIDER = -209,
     // (undocumented)
@@ -152,7 +152,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PROVIDED_BOTH_ZONE_AND_ZONELESS = 408,
     // (undocumented)
-    PROVIDER_IN_WRONG_CONTEXT = 207,
+    PROVIDER_IN_WRONG_CONTEXT = -207,
     // (undocumented)
     PROVIDER_NOT_FOUND = -201,
     // (undocumented)

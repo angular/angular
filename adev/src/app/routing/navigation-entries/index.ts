@@ -341,6 +341,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/di/di-in-action',
             contentPath: 'guide/di/di-in-action',
           },
+          {
+            label: 'Debugging and troubleshooting DI',
+            path: 'guide/di/debugging-and-troubleshooting-di',
+            contentPath: 'guide/di/debugging-and-troubleshooting-di',
+            status: 'new',
+          },
         ],
       },
       {
