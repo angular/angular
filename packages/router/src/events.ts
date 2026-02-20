@@ -7,9 +7,9 @@
  */
 
 import {NavigationBehaviorOptions, Route} from './models';
+import type {Navigation} from './navigation_transition';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 import {UrlTree} from './url_tree';
-import type {Navigation} from './navigation_transition';
 
 /**
  * Identifies the call or event that triggered a navigation.
@@ -135,7 +135,7 @@ export class NavigationStart extends RouterEvent {
     this.restoredState = restoredState;
   }
 
-  /** @docsNotRequired */
+  /** @docs-private */
   override toString(): string {
     return `NavigationStart(id: ${this.id}, url: '${this.url}')`;
   }
@@ -164,7 +164,7 @@ export class NavigationEnd extends RouterEvent {
     super(id, url);
   }
 
-  /** @docsNotRequired */
+  /** @docs-private */
   override toString(): string {
     return `NavigationEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}')`;
   }
@@ -255,7 +255,7 @@ export class NavigationCancel extends RouterEvent {
     super(id, url);
   }
 
-  /** @docsNotRequired */
+  /** @docs-private */
   override toString(): string {
     return `NavigationCancel(id: ${this.id}, url: '${this.url}')`;
   }
@@ -331,7 +331,7 @@ export class NavigationError extends RouterEvent {
     super(id, url);
   }
 
-  /** @docsNotRequired */
+  /** @docs-private */
   override toString(): string {
     return `NavigationError(id: ${this.id}, url: '${this.url}', error: ${this.error})`;
   }
@@ -358,7 +358,7 @@ export class RoutesRecognized extends RouterEvent {
     super(id, url);
   }
 
-  /** @docsNotRequired */
+  /** @docs-private */
   override toString(): string {
     return `RoutesRecognized(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
   }
@@ -387,6 +387,7 @@ export class GuardsCheckStart extends RouterEvent {
     super(id, url);
   }
 
+  /** @docs-private */
   override toString(): string {
     return `GuardsCheckStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
   }
@@ -417,6 +418,7 @@ export class GuardsCheckEnd extends RouterEvent {
     super(id, url);
   }
 
+  /** @docs-private */
   override toString(): string {
     return `GuardsCheckEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state}, shouldActivate: ${this.shouldActivate})`;
   }
@@ -448,6 +450,7 @@ export class ResolveStart extends RouterEvent {
     super(id, url);
   }
 
+  /** @docs-private */
   override toString(): string {
     return `ResolveStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
   }
@@ -475,6 +478,7 @@ export class ResolveEnd extends RouterEvent {
     super(id, url);
   }
 
+  /** @docs-private */
   override toString(): string {
     return `ResolveEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
   }
@@ -494,6 +498,8 @@ export class RouteConfigLoadStart {
     /** @docsNotRequired */
     public route: Route,
   ) {}
+
+  /** @docs-private */
   toString(): string {
     return `RouteConfigLoadStart(path: ${this.route.path})`;
   }
@@ -513,6 +519,8 @@ export class RouteConfigLoadEnd {
     /** @docsNotRequired */
     public route: Route,
   ) {}
+
+  /** @docs-private */
   toString(): string {
     return `RouteConfigLoadEnd(path: ${this.route.path})`;
   }
@@ -533,6 +541,8 @@ export class ChildActivationStart {
     /** @docsNotRequired */
     public snapshot: ActivatedRouteSnapshot,
   ) {}
+
+  /** @docs-private */
   toString(): string {
     const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
     return `ChildActivationStart(path: '${path}')`;
@@ -553,6 +563,8 @@ export class ChildActivationEnd {
     /** @docsNotRequired */
     public snapshot: ActivatedRouteSnapshot,
   ) {}
+
+  /** @docs-private */
   toString(): string {
     const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
     return `ChildActivationEnd(path: '${path}')`;
@@ -574,6 +586,8 @@ export class ActivationStart {
     /** @docsNotRequired */
     public snapshot: ActivatedRouteSnapshot,
   ) {}
+
+  /** @docs-private */
   toString(): string {
     const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
     return `ActivationStart(path: '${path}')`;
@@ -595,6 +609,8 @@ export class ActivationEnd {
     /** @docsNotRequired */
     public snapshot: ActivatedRouteSnapshot,
   ) {}
+
+  /** @docs-private */
   toString(): string {
     const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
     return `ActivationEnd(path: '${path}')`;
@@ -623,6 +639,7 @@ export class Scroll {
     readonly scrollBehavior?: 'manual' | 'after-transition',
   ) {}
 
+  /** @docs-private */
   toString(): string {
     const pos = this.position ? `${this.position[0]}, ${this.position[1]}` : null;
     return `Scroll(anchor: '${this.anchor}', position: '${pos}')`;
