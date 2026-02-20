@@ -10,7 +10,7 @@
     <div class="demo-display">
       <input
         [value]="searchTerm()"
-        (input)="onSearch($event)"
+        (input)="onSearch($event.target.value)"
         placeholder="Search for fruit..."
         class="demo-input"
       />

@@ -35,12 +35,13 @@ export class SignalsDemo {
 
   // A computed signal that derives the filtered list.
   // It automatically re-runs when a dependency changes.
-  filteredItems = computed(() =>
-    this.items().filter((item) => item.toLowerCase().includes(this.searchTerm().toLowerCase())),
-  );
+  filteredItems = computed(() => {
+    const lowerCaseSearchTerm = this.searchTerm().toLowerCase();
+    return this.items().filter((item) => item.toLowerCase().includes(lowerCaseSearchTerm));
+  });
 
-  onSearch(event: Event) {
-    this.searchTerm.set((event.target as HTMLInputElement).value);
+  onSearch(searchTerm: string) {
+    this.searchTerm.set(searchTerm);
   }
 }
 
@@ -50,20 +51,19 @@ items = signal(['Apple', 'Banana', /*...*/ ]);
 searchTerm = signal('');
 // A computed signal that derives the filtered list.
 // It automatically re-runs when a dependency changes.
-filteredItems = computed(() => 
-  this.items.filter(item =>
-    item.toLowerCase().includes (
-       this.searchTerm().toLowerCase()
-    )
-  )
-) ;
+filteredItems = computed(() => {
+  const lowerCaseSearchTerm = this.searchTerm().toLowerCase();
+  return this.items().filter(item =>
+    item.toLowerCase().includes(lowerCaseSearchTerm)
+  );
+});
 `.trim();
 
 const htmlExample = `
-<input [valuel="searchTerm()" (input)="searchTerm.set($event)" />
+<input [value]="searchTerm()" (input)="searchTerm.set($event.target.value)" />
 <ul>
-  @for (item of filteredItems (); track item) {
-    <li>{{ item }}</Li>
+  @for (item of filteredItems(); track $index) {
+    <li>{{ item }}</li>
   }
 </ul>
 `.trim();
