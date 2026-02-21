@@ -50,6 +50,40 @@ This would start a development server that you can access on <http://localhost:4
 uses a "development shell." This is different from "chrome shell" in a way, that it runs the user's app in an iframe.
 DevTools then communicate with the user's app via message passing.
 
+#### Dev Install
+
+To actually build and install as a real browser extension in dev mode, use:
+
+```shell
+pnpm devtools:build:chrome:debug
+```
+
+This will build the extension at `dist/bin/devtools/projects/shell-browser/src/prodapp`. Then go to `chrome://extensions`,
+enable developer mode, and click "Load unpacked" to load the extension from that directory.
+
+Whenever you rebuild the extension, make sure to reload the extension in `chrome://extensions`, right click on the
+Angular DevTools panel and click "Reload frame", and refresh the page you're inspecting to make sure changes are applied.
+
+#### Debugging
+
+Depending on which script you want to debug, you can find them in different locations. In debug mode, these should all
+have sourcemaps loaded and be unminified.
+
+- The main "Angular DevTools" panel UI runs in its own frame and can be found by clicking "Inspect Element" directly
+  on that UI.
+  - Note that this inspects _all_ of Chrome DevTools, which loads Angular DevTools in an iframe.
+  - The right entry point is under `index.html/ienfalfjdbdpebioblfackkekamfmbnh/...`
+- Scripts directly executed in the inspected page content's can be found in the normal Sources panel under "Angular DevTools".
+  - `backend_bundle.js`
+  - `detect_angular_bundle.js`
+- Content scripts are executed in the inspected page, but within an isolated environment and found in the normal Sources panel,
+  but under the "Content Scripts" section (as opposed to "Page", "Workspace", "Overrides", etc., you may need to click an
+  arrow to expand the list of sections).
+  - `content_script_bundle.js`
+  - `ng_validate_bundle.js`
+- The background service worker is found at `chrome://extensions`.
+  - Click on the "Angular DevTools" extension and the "Inspect Views > service worker" button to open a debugger.
+
 ### Running End-to-End Tests
 
 Before running end-to-end tests, you need to start the development server using:
