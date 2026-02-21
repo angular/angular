@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
     inputs: {}
 
+permissions:
+  contents: read
+
 jobs:
   # Bazel saucelabs job resides in `manual.yml` because it's currently unstable, but
   # kept as "runnable" for debugging/stabilization effort purposes.
