@@ -23,7 +23,14 @@ sass_library = _sass_library
 npm_sass_library = _npm_sass_library
 http_server = _http_server
 js_library = _js_library
-esbuild = _esbuild
+
+def esbuild(sourcemap = "linked", sources_content = True, **kwargs):
+    _esbuild(
+        sourcemap = sourcemap,
+        sources_content = sources_content,
+        **kwargs
+    )
+
 copy_to_bin = _copy_to_bin
 copy_to_directory = _copy_to_directory
 string_flag = _string_flag

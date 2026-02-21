@@ -215,6 +215,8 @@ esbuild(
     format = "iife",
     minify = True,
     platform = "browser",
+    # Need to inline sourcemaps for injected scripts as Chrome doesn't seem to load them correctly otherwise.
+    sourcemap = "inline",
     splitting = False,
     target = "esnext",
     deps = [
@@ -234,6 +236,8 @@ esbuild(
     format = "iife",
     minify = True,
     platform = "browser",
+    # Need to inline sourcemaps for injected scripts as Chrome doesn't seem to load them correctly otherwise.
+    sourcemap = "inline",
     splitting = False,
     target = "esnext",
     deps = [
@@ -253,6 +257,8 @@ esbuild(
     format = "iife",
     minify = True,
     platform = "browser",
+    # Need to inline sourcemaps for injected scripts as Chrome doesn't seem to load them correctly otherwise.
+    sourcemap = "inline",
     splitting = False,
     target = "esnext",
     deps = [
@@ -291,6 +297,8 @@ esbuild(
     format = "iife",
     minify = True,
     platform = "browser",
+    # Need to inline sourcemaps for injected scripts as Chrome doesn't seem to load them correctly otherwise.
+    sourcemap = "inline",
     splitting = False,
     target = "esnext",
     deps = [
