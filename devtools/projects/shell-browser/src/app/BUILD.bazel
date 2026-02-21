@@ -213,7 +213,6 @@ esbuild(
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "detect-angular.ts",
     format = "iife",
-    minify = True,
     platform = "browser",
     # Need to inline sourcemaps for injected scripts as Chrome doesn't seem to load them correctly otherwise.
     sourcemap = "inline",
@@ -234,7 +233,6 @@ esbuild(
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "backend.ts",
     format = "iife",
-    minify = True,
     platform = "browser",
     # Need to inline sourcemaps for injected scripts as Chrome doesn't seem to load them correctly otherwise.
     sourcemap = "inline",
@@ -255,7 +253,6 @@ esbuild(
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "ng-validate.ts",
     format = "iife",
-    minify = True,
     platform = "browser",
     # Need to inline sourcemaps for injected scripts as Chrome doesn't seem to load them correctly otherwise.
     sourcemap = "inline",
@@ -276,7 +273,6 @@ esbuild(
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "background.ts",
     format = "iife",
-    minify = True,
     platform = "browser",
     splitting = False,
     target = "esnext",
@@ -295,7 +291,6 @@ esbuild(
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "content-script.ts",
     format = "iife",
-    minify = True,
     platform = "browser",
     # Need to inline sourcemaps for injected scripts as Chrome doesn't seem to load them correctly otherwise.
     sourcemap = "inline",
