@@ -358,6 +358,11 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/define-routes',
           },
           {
+            label: 'Route Loading Strategies',
+            path: 'guide/routing/loading-strategies',
+            contentPath: 'guide/routing/loading-strategies',
+          },
+          {
             label: 'Show routes with Outlets',
             path: 'guide/routing/show-routes-with-outlets',
             contentPath: 'guide/routing/show-routes-with-outlets',
@@ -1080,6 +1085,12 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
           },
 
           // Loading Performance
+          {
+            label: 'Lazy-loaded routes',
+            path: 'best-practices/performance/lazy-loaded-routes',
+            contentPath: 'guide/routing/loading-strategies',
+            category: 'Loading Performance',
+          },
           {
             label: 'Deferred loading with @defer',
             path: 'best-practices/performance/defer',

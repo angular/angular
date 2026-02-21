@@ -76,6 +76,7 @@ Angular — Deliver web apps with confidence 🚀
 ## Routing
 - [Routing overview](https://angular.dev/guide/routing)
 - [Define routes](https://angular.dev/guide/routing/define-routes)
+- [Route loading strategies](https://angular.dev/guide/routing/loading-strategies)
 - [Show routes with outlets](https://angular.dev/guide/routing/show-routes-with-outlets)
 - [Navigate to routes](https://angular.dev/guide/routing/navigate-to-routes)
 - [Read route state](https://angular.dev/guide/routing/read-route-state)
