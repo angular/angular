@@ -24,8 +24,12 @@ npm_sass_library = _npm_sass_library
 http_server = _http_server
 js_library = _js_library
 
-def esbuild(sourcemap = "linked", sources_content = True, **kwargs):
+def esbuild(minify = None, sourcemap = "linked", sources_content = True, **kwargs):
     _esbuild(
+        minify = minify if minify != None else select({
+            "//devtools:debug_build": False,
+            "//conditions:default": True,
+        }),
         sourcemap = sourcemap,
         sources_content = sources_content,
         **kwargs
