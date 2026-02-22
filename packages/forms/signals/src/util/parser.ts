@@ -8,6 +8,7 @@
 
 import {type Signal, linkedSignal} from '@angular/core';
 import type {ValidationError} from '../api/rules';
+import {normalizeErrors} from '../api/rules/validation/util';
 import type {ParseResult} from '../api/transformed_value';
 
 /**
@@ -44,12 +45,13 @@ export function createParser<TValue, TRaw>(
 
   const setRawValue = (rawValue: TRaw) => {
     const result = parse(rawValue);
+    errors.set(normalizeErrors(result.error));
     if (result.value !== undefined) {
       setValue(result.value);
     }
     // `errors` is a linked signal sourced from the model value; write parse errors after
     // model updates so `{value, errors}` results do not get reset by the recomputation.
-    errors.set(result.errors ?? []);
+    errors.set(normalizeErrors(result.error));
   };
 
   return {errors: errors.asReadonly(), setRawValue};
