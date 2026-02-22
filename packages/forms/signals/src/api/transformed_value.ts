@@ -16,6 +16,7 @@ import {
 import {FORM_FIELD_PARSE_ERRORS} from '../directive/parse_errors';
 import {createParser} from '../util/parser';
 import type {ValidationError} from './rules';
+import type {OneOrMany} from './types';
 
 /**
  * Result of parsing a raw value into a model value.
@@ -28,7 +29,7 @@ export interface ParseResult<TValue> {
   /**
    * Errors encountered during parsing, if any.
    */
-  readonly errors?: readonly ValidationError.WithoutFieldTree[];
+  readonly error?: OneOrMany<ValidationError.WithoutFieldTree>;
 }
 
 /**
@@ -42,7 +43,7 @@ export interface TransformedValueOptions<TValue, TRaw> {
    *
    * Should return an object containing the parsed result, which may contain:
    *   - `value`: The parsed model value. If `undefined`, the model will not be updated.
-   *   - `errors`: Any parse errors encountered. If `undefined`, no errors are reported.
+   *   - `error`: Any parse errors encountered. If `undefined`, no errors are reported.
    */
   parse: (rawValue: TRaw) => ParseResult<TValue>;
 
@@ -93,7 +94,7 @@ export interface TransformedValueSignal<TRaw> extends WritableSignal<TRaw> {
  *       if (val === '') return {value: null};
  *       const num = Number(val);
  *       if (Number.isNaN(num)) {
- *         return {errors: [{kind: 'parse', message: `${val} is not numeric`}]};
+ *         return {error: {kind: 'parse', message: `${val} is not numeric`}};
  *       }
  *       return {value: num};
  *     },
