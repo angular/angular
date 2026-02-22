@@ -345,10 +345,10 @@ class TestNumberInput implements FormValueControl<number | null> {
       if (rawValue === '') return {value: null};
       const value = Number(rawValue);
       if (Number.isNaN(value)) {
-        return {errors: [{kind: 'parse', message: `${rawValue} is not numeric`}]};
+        return {error: {kind: 'parse', message: `${rawValue} is not numeric`}};
       }
       if (this.parseMax() != null && value > this.parseMax()!) {
-        return {value, errors: [maxError(this.parseMax()!)]};
+        return {value, error: [maxError(this.parseMax()!)]};
       }
       return {value};
     },

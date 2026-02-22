@@ -70,7 +70,7 @@ export function getNativeControlValue(
 
   if (element.validity.badInput) {
     return {
-      errors: [new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>],
+      error: new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>,
     };
   }
 

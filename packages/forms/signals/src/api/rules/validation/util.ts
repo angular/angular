@@ -58,3 +58,17 @@ export function isEmpty(value: unknown): boolean {
   }
   return value === '' || value === false || value == null;
 }
+
+/**
+ * Normalizes validation errors (which can be a single error, an array of errors, or undefined)
+ * into a list of errors.
+ */
+export function normalizeErrors<T>(error: OneOrMany<T> | undefined): readonly T[] {
+  if (error === undefined) {
+    return [];
+  }
+  if (Array.isArray(error)) {
+    return error as readonly T[];
+  }
+  return [error as T];
+}

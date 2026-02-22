@@ -435,7 +435,7 @@ export type OneOrMany<T> = T | readonly T[];
 
 // @public
 export interface ParseResult<TValue> {
-    readonly errors?: readonly ValidationError.WithoutFieldTree[];
+    readonly error?: OneOrMany<ValidationError.WithoutFieldTree>;
     readonly value?: TValue;
 }
 
