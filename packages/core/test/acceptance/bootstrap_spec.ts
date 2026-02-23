@@ -10,6 +10,7 @@ import {
   ApplicationRef,
   COMPILER_OPTIONS,
   Component,
+  DestroyRef,
   destroyPlatform,
   forwardRef,
   NgModule,
@@ -423,6 +424,25 @@ describe('bootstrap', () => {
           ngModuleRef.destroy();
 
           expect(ngZone.onError.observers.length).toBe(0);
+        }),
+      );
+
+      it(
+        'should invoke DestroyRef callbacks when the platform is destroyed',
+        withBody('<my-app></my-app>', async () => {
+          const TestModule = createComponentAndModule();
+          const platformRef = platformBrowser();
+
+          await platformRef.bootstrapModule(TestModule);
+
+          let destroyed = false;
+          const destroyRef = platformRef.injector.get(DestroyRef);
+          destroyRef.onDestroy(() => (destroyed = true));
+
+          expect(destroyed).toBe(false);
+
+          platformRef.destroy();
+          expect(destroyed).toBe(true);
         }),
       );
     });

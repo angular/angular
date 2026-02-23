@@ -11,6 +11,7 @@ import {BootstrapOptions, optionsReducer} from '../application/application_ref';
 import {validAppIdInitializer} from '../application/application_tokens';
 import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {EnvironmentProviders, Injectable, Injector, Provider} from '../di';
+import {type R3Injector} from '../di/r3_injector';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
@@ -134,6 +135,13 @@ export class PlatformRef {
     if (destroyListeners) {
       destroyListeners.forEach((listener) => listener());
       destroyListeners.clear();
+    }
+
+    // Destroy the platform injector, which triggers DestroyRef callbacks and
+    // ngOnDestroy lifecycle hooks for platform-scoped services.
+    const injector = this._injector as R3Injector;
+    if (injector.destroy && !injector.destroyed) {
+      injector.destroy();
     }
 
     this._destroyed = true;
