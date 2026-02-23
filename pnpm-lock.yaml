@@ -13,6 +13,11 @@ packageExtensionsChecksum: sha256-3L73Fw32UVtE6x5BJxJPBtQtH/mgsr31grNpdhHP1IY=
 
 pnpmfileChecksum: sha256-TYPFsbGgXlr65uhno3A1oHE+n2qqt8R+w/szQ+Wq97s=
 
+patchedDependencies:
+  '@angular/build':
+    hash: 829b9bd5726f4397309cded42be6dd908b878b66938776a2740874c31a29aa18
+    path: patches/@angular__build.patch
+
 importers:
 
   .:
@@ -34,7 +39,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 21.2.0-rc.0
-        version: 21.2.0-rc.0(d58eab1642a2d533b7d3a0499c748672)
+        version: 21.2.0-rc.0(patch_hash=829b9bd5726f4397309cded42be6dd908b878b66938776a2740874c31a29aa18)(d58eab1642a2d533b7d3a0499c748672)
       '@angular/cdk':
         specifier: 21.2.0-rc.0
         version: 21.2.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -479,7 +484,7 @@ importers:
         version: 21.2.0-rc.0(@angular/cdk@21.2.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 21.2.0-rc.0
-        version: 21.2.0-rc.0(5b4de4328d11dbe9345fa1de115fb0ce)
+        version: 21.2.0-rc.0(patch_hash=829b9bd5726f4397309cded42be6dd908b878b66938776a2740874c31a29aa18)(5b4de4328d11dbe9345fa1de115fb0ce)
       '@angular/cdk':
         specifier: 21.2.0-rc.0
         version: 21.2.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
@@ -847,7 +852,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: 21.2.0-rc.0
-        version: 21.2.0-rc.0(5b4de4328d11dbe9345fa1de115fb0ce)
+        version: 21.2.0-rc.0(patch_hash=829b9bd5726f4397309cded42be6dd908b878b66938776a2740874c31a29aa18)(5b4de4328d11dbe9345fa1de115fb0ce)
       '@angular/cli':
         specifier: 21.2.0-rc.0
         version: 21.2.0-rc.0(@types/node@24.10.11)(chokidar@5.0.0)
@@ -919,7 +924,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 21.2.0-rc.0
-        version: 21.2.0-rc.0(5b4de4328d11dbe9345fa1de115fb0ce)
+        version: 21.2.0-rc.0(patch_hash=829b9bd5726f4397309cded42be6dd908b878b66938776a2740874c31a29aa18)(5b4de4328d11dbe9345fa1de115fb0ce)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1090,7 +1095,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 21.2.0-rc.0
-        version: 21.2.0-rc.0(5b4de4328d11dbe9345fa1de115fb0ce)
+        version: 21.2.0-rc.0(patch_hash=829b9bd5726f4397309cded42be6dd908b878b66938776a2740874c31a29aa18)(5b4de4328d11dbe9345fa1de115fb0ce)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -13510,7 +13515,7 @@ snapshots:
       '@angular-devkit/architect': 0.2102.0-rc.0(chokidar@5.0.0)
       '@angular-devkit/build-webpack': 0.2102.0-rc.0(chokidar@5.0.0)(webpack-dev-server@5.2.3(bufferutil@4.1.0)(tslib@2.8.1)(utf-8-validate@6.0.6)(webpack@5.105.2(esbuild@0.27.3)))(webpack@5.105.2(esbuild@0.27.3))
       '@angular-devkit/core': 21.2.0-rc.0(chokidar@5.0.0)
-      '@angular/build': 21.2.0-rc.0(10a4630587567062e8506fb4541da297)
+      '@angular/build': 21.2.0-rc.0(patch_hash=829b9bd5726f4397309cded42be6dd908b878b66938776a2740874c31a29aa18)(10a4630587567062e8506fb4541da297)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@babel/core': 7.29.0
       '@babel/generator': 7.29.1
@@ -13635,7 +13640,7 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  '@angular/build@21.2.0-rc.0(10a4630587567062e8506fb4541da297)':
+  '@angular/build@21.2.0-rc.0(patch_hash=829b9bd5726f4397309cded42be6dd908b878b66938776a2740874c31a29aa18)(10a4630587567062e8506fb4541da297)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2102.0-rc.0(chokidar@5.0.0)
@@ -13695,7 +13700,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.2.0-rc.0(5b4de4328d11dbe9345fa1de115fb0ce)':
+  '@angular/build@21.2.0-rc.0(patch_hash=829b9bd5726f4397309cded42be6dd908b878b66938776a2740874c31a29aa18)(5b4de4328d11dbe9345fa1de115fb0ce)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2102.0-rc.0(chokidar@5.0.0)
@@ -13755,7 +13760,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.2.0-rc.0(d58eab1642a2d533b7d3a0499c748672)':
+  '@angular/build@21.2.0-rc.0(patch_hash=829b9bd5726f4397309cded42be6dd908b878b66938776a2740874c31a29aa18)(d58eab1642a2d533b7d3a0499c748672)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2102.0-rc.0(chokidar@5.0.0)

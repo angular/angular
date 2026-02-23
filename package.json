@@ -208,7 +208,9 @@
     "typescript": "6.0.0-beta"
   },
   "pnpm": {
-    "patchedDependencies": {},
+    "patchedDependencies": {
+      "@angular/build": "patches/@angular__build.patch"
+    },
     "packageExtensions": {
       "grpc-gcp": {
         "peerDependencies": {
