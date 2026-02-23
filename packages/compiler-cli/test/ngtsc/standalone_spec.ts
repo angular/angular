@@ -528,6 +528,34 @@ runInEachFileSystem(() => {
         );
       });
 
+      it('should provide a specific error when a non-exported class is used in imports', () => {
+        env.tsconfig({strictTemplates: true, compileNonExportedClasses: false});
+        env.write(
+          'test.ts',
+          `
+            import {Component, Directive} from '@angular/core';
+
+            @Directive({
+              selector: '[dir]',
+            })
+            class TestDir {}
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<div dir></div>',
+              imports: [TestDir],
+            })
+            export class TestCmp {}
+          `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_UNKNOWN_IMPORT));
+        expect(diags[0].messageText).toContain(`is not exported`);
+        expect(diags[0].relatedInformation).not.toBeUndefined();
+        expect(diags[0].relatedInformation![0].messageText).toContain(`Add the 'export' keyword`);
+      });
+
       it('should type-check standalone component templates', () => {
         env.write(
           'test.ts',

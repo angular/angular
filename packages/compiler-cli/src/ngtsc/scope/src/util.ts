@@ -66,6 +66,16 @@ export function makeUnknownComponentImportDiagnostic(
   ref: Reference<ClassDeclaration>,
   rawExpr: ts.Expression,
 ) {
+  if (isNonExportedClass(ref.node)) {
+    return makeDiagnostic(
+      ErrorCode.COMPONENT_UNKNOWN_IMPORT,
+      getDiagnosticNode(ref, rawExpr),
+      `The class '${ref.node.name.text}' is used in 'imports' but is not exported from its declaring ` +
+        `file. Angular requires imported classes to be exported so that they can be resolved during compilation.`,
+      [makeRelatedInformation(ref.node.name, `Add the 'export' keyword to the class declaration.`)],
+    );
+  }
+
   return makeDiagnostic(
     ErrorCode.COMPONENT_UNKNOWN_IMPORT,
     getDiagnosticNode(ref, rawExpr),
@@ -77,9 +87,35 @@ export function makeUnknownComponentDeferredImportDiagnostic(
   ref: Reference<ClassDeclaration>,
   rawExpr: ts.Expression,
 ) {
+  if (isNonExportedClass(ref.node)) {
+    return makeDiagnostic(
+      ErrorCode.COMPONENT_UNKNOWN_DEFERRED_IMPORT,
+      getDiagnosticNode(ref, rawExpr),
+      `The class '${ref.node.name.text}' is used in 'deferredImports' but is not exported from its declaring ` +
+        `file. Angular requires imported classes to be exported so that they can be resolved during compilation.`,
+      [makeRelatedInformation(ref.node.name, `Add the 'export' keyword to the class declaration.`)],
+    );
+  }
+
   return makeDiagnostic(
     ErrorCode.COMPONENT_UNKNOWN_DEFERRED_IMPORT,
     getDiagnosticNode(ref, rawExpr),
     `Component deferred imports must be standalone components, directives or pipes.`,
+  );
+}
+
+/**
+ * Checks whether the given node is a class declaration that is not exported from its file.
+ * Non-exported classes cannot be resolved by the Angular compiler, which can lead to confusing
+ * "unknown import" errors when the real issue is a missing `export` keyword.
+ */
+function isNonExportedClass(node: ClassDeclaration): boolean {
+  if (!ts.isClassDeclaration(node)) {
+    return false;
+  }
+  const modifiers = ts.canHaveModifiers(node) ? ts.getModifiers(node) : undefined;
+  return (
+    modifiers === undefined ||
+    !modifiers.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
   );
 }
