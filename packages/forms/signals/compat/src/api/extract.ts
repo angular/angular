@@ -31,11 +31,13 @@ export type RawValue<T> =
  * Used for the result of `extractValue` when filtering is applied.
  * @experimental 21.2.0
  */
-export type DeepPartial<T> = T extends (infer U)[]
-  ? DeepPartial<U>[]
-  : T extends object
-    ? {[K in keyof T]?: DeepPartial<T[K]>}
-    : T;
+export type DeepPartial<T> =
+  | (T extends (infer U)[]
+      ? (DeepPartial<U> | undefined)[]
+      : T extends object
+        ? {[K in keyof T]?: DeepPartial<T[K]>}
+        : T)
+  | undefined;
 
 /**
  * Criteria that determine whether a field should be included in the extraction.
@@ -58,43 +60,61 @@ export interface ExtractFilter {
  * the result will be an object or an array of the raw values of its children.
  *
  * @param field The field tree to extract the value from.
- * @param filter Optional predicate to include only fields matching certain criteria.
- * @returns The raw value of the field tree, or a partial value if filtering is applied.
+ * @returns The raw value of the field tree.
  *
  * @category interop
  * @experimental 21.2.0
  */
 export function extractValue<T>(field: FieldTree<T>): RawValue<T>;
+/**
+ * Utility to unwrap a {@link FieldTree} into its underlying raw value.
+ *
+ * This function is recursive, so if the field tree represents an object or an array,
+ * the result will be an object or an array of the raw values of its children.
+ *
+ * @param field The field tree to extract the value from.
+ * @param filter Criteria to include only fields matching certain state (dirty, touched, enabled).
+ * @returns A partial value containing only the fields matching the filter, or `undefined` if none match.
+ *
+ * @category interop
+ * @experimental 21.2.0
+ */
 export function extractValue<T>(
   field: FieldTree<T>,
   filter: ExtractFilter,
-): DeepPartial<RawValue<T>> | undefined;
+): DeepPartial<RawValue<T>>;
 export function extractValue<T>(
   field: FieldTree<T>,
   filter?: ExtractFilter,
-): RawValue<T> | DeepPartial<RawValue<T>> | undefined;
-export function extractValue<T>(
-  field: FieldTree<T>,
-  filter?: ExtractFilter,
-): RawValue<T> | DeepPartial<RawValue<T>> | undefined {
-  return visitFieldTree(field, filter) as RawValue<T> | DeepPartial<RawValue<T>> | undefined;
+): RawValue<T> | DeepPartial<RawValue<T>> {
+  return untracked(() => visitFieldTree(field, filter)) as RawValue<T> | DeepPartial<RawValue<T>>;
 }
 
 function visitFieldTree(
   field: FieldTree<unknown>,
   filter?: ExtractFilter,
-): RawValue<unknown> | DeepPartial<RawValue<unknown>> | undefined {
-  return untracked(() => {
-    const state = field();
-    const value = state.value();
+): RawValue<unknown> | DeepPartial<RawValue<unknown>> {
+  const state = field();
+  const value = state.value();
 
-    if (!matchesFilter(state, filter)) {
-      return undefined;
-    }
+  const matchingChildren = extractChildren(field, value, filter);
 
-    const extracted = extractChildren(field, value, filter);
-    return hasChildren(extracted) ? extracted : value;
-  });
+  if (matchingChildren !== undefined || isContainerNode(field, value)) {
+    return matchingChildren;
+  }
+
+  if (matchesFilter(state, filter)) {
+    return value;
+  }
+
+  return undefined;
+}
+
+function isContainerNode(field: FieldTree<unknown>, value: unknown): boolean {
+  return (
+    (isArray(value) || isObject(value)) &&
+    Object.keys(value).some((k) => isFieldTreeNode(field[k as keyof FieldTree<unknown>]))
+  );
 }
 
 function extractChildren(
@@ -114,11 +134,11 @@ function extractChildren(
         result[i] = undefined;
         continue;
       }
-      const extracted = visitFieldTree(child, filter);
-      if (hasChildren(extracted)) {
+      const childResult = visitFieldTree(child, filter);
+      if (childResult !== undefined) {
         hasMatch = true;
       }
-      result[i] = extracted;
+      result[i] = childResult;
     }
 
     return hasMatch ? result : undefined;
@@ -134,8 +154,8 @@ function extractChildren(
       })
       .filter(isKeyedChild)
       .map(([key, child]) => {
-        const extracted = visitFieldTree(child, filter);
-        return hasChildren(extracted) ? ([key, extracted] as [string, unknown]) : undefined;
+        const childResult = visitFieldTree(child, filter);
+        return childResult !== undefined ? ([key, childResult] as [string, unknown]) : undefined;
       })
       .filter(isKeyedResult);
 
@@ -156,10 +176,6 @@ function isKeyedChild(
 }
 
 function isKeyedResult(value: [string, unknown] | undefined): value is [string, unknown] {
-  return value !== undefined;
-}
-
-function hasChildren(value: unknown): value is Exclude<unknown, undefined> {
   return value !== undefined;
 }
 
