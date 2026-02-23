@@ -32,6 +32,8 @@ export class AlertManager {
 
     this.decreaseInstancesCounterOnPageClose();
 
+    this.restoreInstancesCounterOnPageShow();
+
     this.checkDevice();
   }
 
@@ -54,21 +56,49 @@ export class AlertManager {
   // Decrease count of running instances of the webcontainers when user close the app.
   private decreaseInstancesCounterOnPageClose(): void {
     this.window.addEventListener('beforeunload', () => {
-      const countOfRunningInstances = this.getStoredCountOfWebcontainerInstances() - 1;
+      const countOfRunningInstances = Math.max(this.getStoredCountOfWebcontainerInstances() - 1, 0);
 
       this.localStorage?.setItem(WEBCONTAINERS_COUNTER_KEY, countOfRunningInstances.toString());
-      this.validateRunningInstances(countOfRunningInstances);
+    });
+  }
+
+  /**
+   * Re-increment the counter when a page is restored from the back-forward cache.
+   *
+   * When a page enters the bfcache the browser fires `pagehide`/`beforeunload`
+   * which decrements the counter. If the user navigates back, `pageshow` fires
+   * with `event.persisted === true` — at that point the tab is alive again so
+   * we need to re-add it.
+   *
+   * This also covers Safari's automatic tab reload after an OOM crash: the
+   * reloaded tab goes through `init()` which increments the counter, but the
+   * crashed tab never fired `beforeunload`, so the counter was never
+   * decremented for it. In that scenario the `pageshow` event does **not**
+   * have `persisted === true` (it is a fresh load), so this handler
+   * correctly avoids double-counting.
+   */
+  private restoreInstancesCounterOnPageShow(): void {
+    this.window.addEventListener('pageshow', (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        this.increaseInstancesCounter();
+      }
     });
   }
 
   private getStoredCountOfWebcontainerInstances(): number {
     const countStoredInLocalStorage = this.localStorage?.getItem(WEBCONTAINERS_COUNTER_KEY);
 
-    if (!countStoredInLocalStorage || Number.isNaN(countStoredInLocalStorage)) {
+    if (!countStoredInLocalStorage) {
       return 0;
     }
 
-    return Number(countStoredInLocalStorage);
+    const count = Number(countStoredInLocalStorage);
+
+    if (Number.isNaN(count)) {
+      return 0;
+    }
+
+    return Math.max(count, 0);
   }
 
   private validateRunningInstances(countOfRunningInstances: number): void {
@@ -94,12 +124,21 @@ export class AlertManager {
         break;
     }
 
-    this.snackBar.openFromComponent(ErrorSnackBar, {
+    const snackBarRef = this.snackBar.openFromComponent(ErrorSnackBar, {
       panelClass: 'docs-invert-mode',
       data: {
         message,
         actionText: 'I understand',
       } satisfies ErrorSnackBarData,
     });
+
+    // When the user dismisses the OOM warning, reset the counter to 1 (this tab only).
+    // This provides a recovery mechanism for stale counters caused by tabs that crashed
+    // (e.g. Safari OOM) without firing `beforeunload`.
+    if (reason === AlertReason.OUT_OF_MEMORY) {
+      snackBarRef.onAction().subscribe(() => {
+        this.localStorage?.setItem(WEBCONTAINERS_COUNTER_KEY, '1');
+      });
+    }
   }
 }
