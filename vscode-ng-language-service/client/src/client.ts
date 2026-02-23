@@ -26,7 +26,11 @@ import {
 } from '../../common/requests';
 import {NodeModule, resolve, Version} from '../../common/resolver';
 
-import {isInsideStringLiteral, isNotTypescriptOrSupportedDecoratorField} from './embedded_support';
+import {
+  isInsideStringLiteral,
+  isNotTypescriptOrSupportedDecoratorField,
+  isNotTypescriptOrSupportedDecoratorRange,
+} from './embedded_support';
 
 interface GetTcbResponse {
   uri: vscode.Uri;
@@ -85,6 +89,7 @@ export class AngularLanguageClient implements vscode.Disposable {
         {scheme: 'file', language: 'typescript'},
       ],
       synchronize: {
+        configurationSection: ['angular', 'typescript', 'editor.inlayHints'],
         fileEvents,
       },
       // Don't let our output console pop open
@@ -262,6 +267,26 @@ export class AngularLanguageClient implements vscode.Disposable {
           ) {
             return next(document, position, token);
           }
+        },
+        provideInlayHints: async (
+          document: vscode.TextDocument,
+          range: vscode.Range,
+          token: vscode.CancellationToken,
+          next,
+        ) => {
+          if (!(await this.isInAngularProject(document))) {
+            return null;
+          }
+
+          // For TypeScript files, only request Angular inlay hints when the
+          // visible range intersects supported decorator fields (e.g. inline
+          // template/style metadata). This matches the guarding strategy used
+          // by other Angular LSP features and avoids work on unsupported TS regions.
+          if (!isNotTypescriptOrSupportedDecoratorRange(document, range)) {
+            return null;
+          }
+
+          return next(document, range, token);
         },
       },
     };
