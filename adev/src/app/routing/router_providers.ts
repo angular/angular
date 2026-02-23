@@ -17,6 +17,7 @@ import {
   RouteReuseStrategy,
   TitleStrategy,
   NavigationCancel,
+  NavigationEnd,
   NavigationError,
   NavigationStart,
   RedirectCommand,
@@ -31,7 +32,7 @@ import {AppScroller} from '../app-scroller';
 import {Subject} from 'rxjs/internal/Subject';
 import {HttpErrorResponse} from '@angular/common/http';
 import {WINDOW} from '@angular/docs';
-import {merge, map} from 'rxjs';
+import {merge, map, filter, first} from 'rxjs';
 
 const transitionCreated = new Subject<void>();
 export const routerProviders = [
@@ -73,7 +74,54 @@ export const routerProviders = [
   {provide: TitleStrategy, useClass: ADevTitleStrategy},
   provideEnvironmentInitializer(() => inject(AppScroller)),
   provideEnvironmentInitializer(() => initializeNavigationAdapter()),
+  provideEnvironmentInitializer(() => preserveTextFragmentHighlight()),
 ];
+
+/**
+ * Preserves browser text fragment highlights (`:~:text=...`) during the initial
+ * navigation. Chrome and other browsers clear text fragment highlights whenever
+ * `history.pushState` or `history.replaceState` is called. During Angular's
+ * initial navigation, the router calls `replaceState` to update the history
+ * state with a `navigationId`, which strips the highlight.
+ *
+ * This function temporarily suppresses `pushState`/`replaceState` calls on
+ * the initial navigation when text fragment support is detected, and restores
+ * the original methods after the first navigation completes.
+ */
+const preserveTextFragmentHighlight = () => {
+  const document = inject(DOCUMENT);
+  const window = inject(WINDOW);
+
+  // Only activate when the browser supports text fragment directives.
+  if (!('fragmentDirective' in document)) {
+    return;
+  }
+
+  const history = window.history;
+  const originalReplaceState = history.replaceState.bind(history);
+  const originalPushState = history.pushState.bind(history);
+
+  // Suppress replaceState/pushState to prevent clearing the text highlight.
+  history.replaceState = () => {};
+  history.pushState = () => {};
+
+  // Restore after the first navigation completes (or fails/cancels).
+  const router = inject(Router);
+  router.events
+    .pipe(
+      filter(
+        (e) =>
+          e instanceof NavigationEnd ||
+          e instanceof NavigationCancel ||
+          e instanceof NavigationError,
+      ),
+      first(),
+    )
+    .subscribe(() => {
+      history.replaceState = originalReplaceState;
+      history.pushState = originalPushState;
+    });
+};
 
 /**
  * This function creates an adapter for the Router which creates a browser navigation
