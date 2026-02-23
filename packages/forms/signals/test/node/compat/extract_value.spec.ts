@@ -191,7 +191,7 @@ describe('extractValue', () => {
   });
 
   it('should keep indexes when only later array elements match filter', () => {
-    const model = {items: [10, 20, 30]};
+    const model = {items: [10, 20, 30, 40]};
     const f = form(
       signal(model),
       (p) => {
@@ -205,7 +205,7 @@ describe('extractValue', () => {
     const enabledItems = extractValue(f, {enabled: true})?.items as
       | Array<number | undefined>
       | undefined;
-    expect(enabledItems).toEqual([undefined, undefined, 30]);
+    expect(enabledItems).toEqual([undefined, undefined, 30, undefined]);
   });
 
   it('should handle hybrid deep nesting', () => {

@@ -84,16 +84,15 @@ function visitFieldTree(
   field: FieldTree<unknown>,
   filter?: ExtractFilter,
 ): RawValue<unknown> | DeepPartial<RawValue<unknown>> | undefined {
-  const fieldFn = field as () => FieldState<unknown>;
   return untracked(() => {
-    const state = fieldFn();
+    const state = field();
     const value = state.value();
 
     if (!matchesFilter(state, filter)) {
       return undefined;
     }
 
-    const extracted = extractChildren(fieldFn, value, filter);
+    const extracted = extractChildren(field, value, filter);
     return hasChildren(extracted) ? extracted : value;
   });
 }
