@@ -8,6 +8,7 @@
 
 import {Tokens} from 'marked';
 import {AdevDocsRenderer} from '../renderer.mjs';
+import {getIdFromHeading} from '../../heading.mjs';
 
 export function headingRender(
   this: AdevDocsRenderer,
@@ -25,14 +26,7 @@ export function headingRender(
     `;
   }
 
-  // extract the extended markdown heading id
-  // ex:  ## MyHeading {# myId}
-  // This is recommended in case we end up having duplicate Ids but we still want the same heading text.
-  // We don't want to make Id generation stateful/too complex to handle duplicates automatically.
-  const customIdRegex = /{#\s*([\w-]+)\s*}/g;
-  const customId = customIdRegex.exec(headingText)?.[1];
-
-  const link = customId ?? getIdFromHeading(headingText);
+  const link = getIdFromHeading(headingText);
 
   // Replace code backticks and remove custom ID syntax from the displayed label
   let label = parsedText.replace(/`(.*?)`/g, '<code>$1</code>');
@@ -66,11 +60,4 @@ export function getPageTitle(text: string, filePath?: string): string {
         : ''
     }
   </div>`;
-}
-
-function getIdFromHeading(heading: string): string {
-  return heading
-    .toLowerCase()
-    .replace(/\s|\//g, '-') // replace spaces and slashes with dashes
-    .replace(/[^\p{L}\d\-]/gu, ''); // only keep letters, digits & dashes
 }
