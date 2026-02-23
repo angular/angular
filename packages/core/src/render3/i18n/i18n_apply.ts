@@ -313,6 +313,7 @@ export function applyMutableOpCodes(
           const attrValue = mutableOpCodes[++i] as string;
           // This code is used for ICU expressions only, since we don't support
           // directives/components in ICUs, we don't need to worry about inputs here
+          ngDevMode && assertValidIcuAttribute(attrName);
           setElementAttribute(
             renderer,
             getNativeByIndex(elementNodeIndex, lView) as RElement,
@@ -429,6 +430,7 @@ export function applyUpdateOpCodes(
                   // IF we don't have a `TNode`, then we are an element in ICU (as ICU content does
                   // not have TNode), in which case we know that there are no directives, and hence
                   // we use attribute setting.
+                  ngDevMode && assertValidIcuAttribute(propName);
                   setElementAttribute(
                     lView[RENDERER],
                     lView[nodeIndex],
@@ -587,4 +589,29 @@ function getCaseIndex(icuExpression: TIcu, bindingValue: string): number | null 
     }
   }
   return index === -1 ? null : index;
+}
+
+/**
+ * Asserts that an attribute name used inside an ICU expression is a plain attribute
+ * and not a binding-like syntax (e.g. `[prop]`, `(event)`, `*structural`).
+ *
+ * Directives and bindings are not supported inside ICU expressions. When a binding-like
+ * attribute name is used, the DOM `setAttribute` call would throw an `InvalidCharacterError`
+ * with a confusing message. This assertion provides a clearer error in development mode.
+ */
+export function assertValidIcuAttribute(attrName: string): void {
+  if (
+    attrName.startsWith('[') ||
+    attrName.startsWith('(') ||
+    attrName.startsWith('*') ||
+    attrName.startsWith('#') ||
+    attrName.startsWith('@')
+  ) {
+    throw new RuntimeError(
+      RuntimeErrorCode.INVALID_I18N_STRUCTURE,
+      `ICU expressions cannot contain bindings or structural directives. ` +
+        `The attribute "${attrName}" on an element inside an ICU expression is not supported. ` +
+        `Only static attributes are allowed inside ICU cases.`,
+    );
+  }
 }
