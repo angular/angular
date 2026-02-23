@@ -14,15 +14,15 @@ import {
   InjectionToken,
   Injector,
   NgModuleFactory,
+  ɵresolveComponentResources as resolveComponentResources,
   runInInjectionContext,
   Type,
-  ɵresolveComponentResources as resolveComponentResources,
 } from '@angular/core';
 
-import {DefaultExport, LoadedRouterConfig, Route, Routes} from './models';
-import {assertStandalone, validateConfig} from './utils/config';
 import {standardizeConfig} from './components/empty_outlet';
+import {DefaultExport, LoadedRouterConfig, Route, Routes} from './models';
 import {wrapIntoPromise} from './utils/collection';
+import {assertStandalone, validateConfig} from './utils/config';
 
 /**
  * The DI token for a router configuration.
@@ -34,7 +34,7 @@ import {wrapIntoPromise} from './utils/collection';
  *
  * @publicApi
  */
-export const ROUTES = new InjectionToken<Route[][]>(
+export const ROUTES = new InjectionToken<ReadonlyArray<Route[]>>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'ROUTES' : '',
 );
 

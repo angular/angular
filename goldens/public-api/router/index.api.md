@@ -971,7 +971,7 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
 }
 
 // @public
-export const ROUTES: InjectionToken<Route[][]>;
+export const ROUTES: InjectionToken<readonly Route[][]>;
 
 // @public
 export type Routes = Route[];
