@@ -57,6 +57,12 @@ Start developing with the latest Angular features from our roadmap. This list re
 ### Developer velocity
 
 <docs-card-container>
+  <docs-card title="Compiler">
+    Microsoft has spent the last year porting the TypeScript compiler to Go, with the promise of a 5 - 10x speedup for typical TypeScript compilations. Angular has perhaps one of the deepest integrations with the TypeScript compiler, which will require bigger architectural changes to support new tsgo-based workflows for both the compiler and language service.
+
+We're in the process of prototyping and exploring what this support would look like, and will deliver an Angular compiler that is compatible with tsgo and brings the performance benefits of Microsoft's native port to the Angular ecosystem.
+</docs-card>
+
   <docs-card title="Signal Forms" href="/guide/forms/signals/overview">
   In Angular v21, we landed an experimental version of Signal Forms. This new approach allows developers to manage form state using signals, providing an ergonomic forms creation experience. Next, our plans include promoting Signal Forms to stable and enhancing interoperability with reactive forms - enabling teams to progressively migrate large forms at their own pace.
   </docs-card>
