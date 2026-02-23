@@ -190,6 +190,11 @@ export enum PerfPhase {
   LSSemanticClassification,
 
   /**
+   * Time spent by the Angular Language Service calculating navigation tree items.
+   */
+  LsNavigationTree,
+
+  /**
    * Tracks the number of `PerfPhase`s, and must appear at the end of the list.
    */
   LAST,

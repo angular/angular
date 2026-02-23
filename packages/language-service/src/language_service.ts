@@ -37,6 +37,7 @@ import {CompilerFactory} from './compiler_factory';
 import {CompletionBuilder} from './completions';
 import {DefinitionBuilder} from './definitions';
 import {getLinkedEditingRangeAtPosition} from './linked_editing_range';
+import {getNavigationTree} from './navigation_tree';
 import {getOutliningSpans} from './outlining_spans';
 import {QuickInfoBuilder} from './quick_info';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
@@ -488,6 +489,12 @@ export class LanguageService {
   getOutliningSpans(fileName: string): ts.OutliningSpan[] {
     return this.withCompilerAndPerfTracing(PerfPhase.OutliningSpans, (compiler) => {
       return getOutliningSpans(compiler, fileName);
+    });
+  }
+
+  getNavigationTree(fileName: string, tsNavigationTree: ts.NavigationTree): ts.NavigationTree {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsNavigationTree, (compiler) => {
+      return getNavigationTree(compiler, tsNavigationTree, fileName);
     });
   }
 

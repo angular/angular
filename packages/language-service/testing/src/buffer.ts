@@ -113,6 +113,12 @@ export class OpenBuffer {
     return this.ngLS.getOutliningSpans(this.scriptInfo.fileName);
   }
 
+  getNavigationTree(): ts.NavigationTree {
+    const tsLS = this.project.getLanguageService();
+    const tsTree = tsLS.getNavigationTree(this.scriptInfo.fileName);
+    return this.ngLS.getNavigationTree(this.scriptInfo.fileName, tsTree);
+  }
+
   getTemplateLocationForComponent() {
     return this.ngLS.getTemplateLocationForComponent(this.scriptInfo.fileName, this._cursor);
   }

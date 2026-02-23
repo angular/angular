@@ -220,6 +220,11 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return withFallback(fileName, (ls) => ls.getOutliningSpans(fileName)) ?? [];
   }
 
+  function getNavigationTree(fileName: string): ts.NavigationTree {
+    const tsTree = tsLS.getNavigationTree(fileName);
+    return ngLS.getNavigationTree(fileName, tsTree);
+  }
+
   function getTcb(fileName: string, position: number): GetTcbResponse | undefined {
     return ngLS.getTcb(fileName, position);
   }
@@ -374,6 +379,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getComponentLocationsForTemplate,
     getSignatureHelpItems,
     getOutliningSpans,
+    getNavigationTree,
     getTemplateLocationForComponent,
     hasCodeFixesForErrorCode: ngLS.hasCodeFixesForErrorCode.bind(ngLS),
     getCodeFixesAtPosition,
