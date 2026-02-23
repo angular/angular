@@ -79,7 +79,7 @@ import {addLViewToLContainer, createLContainer, detachView} from '../render3/vie
 import {addToEndOfViewTree} from '../render3/view/construction';
 import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {patchSpecialProvider} from '../render3/debug/special_providers';
+import {registerSpecialProvider} from '../render3/debug/special_providers';
 
 /**
  * Represents a container where one or more views can be attached to a component.
@@ -315,8 +315,16 @@ export abstract class ViewContainerRef {
    * If not specified, the last view in the container is detached.
    */
   abstract detach(index?: number): ViewRef | null;
+  /**
+   * @internal
+   * @nocollapse
+   */
+  static __NG_ELEMENT_ID__: () => ViewContainerRef = injectViewContainerRef;
 }
-patchSpecialProvider(ViewContainerRef, injectViewContainerRef);
+
+if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+  registerSpecialProvider(ViewContainerRef);
+}
 
 /**
  * Creates a ViewContainerRef and stores it on the injector. Or, if the ViewContainerRef

@@ -9,17 +9,14 @@
 const specialProviders = new Set<any>();
 
 /**
- * Patched a class with a special element ID and registers it as a special provider.
+ * Registers a class as a special provider.
  *
- * @param clazz The class to patch
- * @param prov The factory function OR the special element ID
+ * @param clazz The class to register
  */
-export function patchSpecialProvider<T>(clazz: T, prov: any): T {
-  (clazz as any).__NG_ELEMENT_ID__ = prov;
+export function registerSpecialProvider<T>(clazz: T): void {
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     specialProviders.add(clazz);
   }
-  return clazz;
 }
 
 /**
