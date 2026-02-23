@@ -24,6 +24,7 @@ import {
   IsInAngularProject,
 } from '../../common/requests';
 
+import {clearWorkspaceConfigurationCache} from './config';
 import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {ServerHost} from './server_host';
 import {
@@ -231,6 +232,9 @@ export class Session {
     conn.onDidCloseTextDocument((p) => this.onDidCloseTextDocument(p));
     conn.onDidChangeTextDocument((p) => this.onDidChangeTextDocument(p));
     conn.onDidSaveTextDocument((p) => this.onDidSaveTextDocument(p));
+    conn.onDidChangeConfiguration(() => {
+      clearWorkspaceConfigurationCache(this.connection);
+    });
     conn.onDefinition((p) => onDefinition(this, p));
     conn.onTypeDefinition((p) => onTypeDefinition(this, p));
     conn.onReferences((p) => onReferences(this, p));
