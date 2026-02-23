@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 
 import {HttpBackend, HttpHandler, HttpInterceptorHandler} from './backend';
+import {NG_DEFAULT_HTTP_BACKEND} from './backend-default-value';
 import {HttpClient} from './client';
 import {FETCH_BACKEND, FetchBackend} from './fetch';
 import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, legacyInterceptorFnFactory} from './interceptor';
@@ -40,6 +41,7 @@ export enum HttpFeatureKind {
   JsonpSupport,
   RequestsMadeViaParent,
   Fetch,
+  Xhr,
 }
 
 /**
@@ -89,7 +91,7 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * @see {@link withNoXsrfProtection}
  * @see {@link withJsonpSupport}
  * @see {@link withRequestsMadeViaParent}
- * @see {@link withFetch}
+ * @see {@link withXhr}
  */
 export function provideHttpClient(
   ...features: HttpFeature<HttpFeatureKind>[]
@@ -110,12 +112,13 @@ export function provideHttpClient(
 
   const providers: Provider[] = [
     HttpClient,
+    NG_DEFAULT_HTTP_BACKEND,
     HttpInterceptorHandler,
     {provide: HttpHandler, useExisting: HttpInterceptorHandler},
     {
       provide: HttpBackend,
       useFactory: () => {
-        return inject(FETCH_BACKEND, {optional: true}) ?? inject(HttpXhrBackend);
+        return inject(FETCH_BACKEND, {optional: true}) ?? inject(NG_DEFAULT_HTTP_BACKEND);
       },
     },
     {
@@ -295,5 +298,20 @@ export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
     FetchBackend,
     {provide: FETCH_BACKEND, useExisting: FetchBackend},
     {provide: HttpBackend, useExisting: FetchBackend},
+  ]);
+}
+
+/**
+ * Configures the current `HttpClient` instance to make requests using the Xhr API.
+ *
+ * Use this feature if you want to report progress on uploads as the Xhr API supports it.
+ *
+ * @see {@link provideHttpClient}
+ * @publicApi
+ */
+export function withXhr(): HttpFeature<HttpFeatureKind.Xhr> {
+  return makeHttpFeature(HttpFeatureKind.Xhr, [
+    HttpXhrBackend,
+    {provide: HttpBackend, useExisting: HttpXhrBackend},
   ]);
 }
