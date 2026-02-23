@@ -6,10 +6,11 @@ As an open source project, Angular’s daily commits, PRs and momentum is all tr
 
 The following projects are not associated with a particular Angular version. We will release them on completion, and they will be part of a specific version based on our release schedule, following semantic versioning. For example, we release features in the next minor after completion or the next major if they include breaking changes.
 
-Currently, Angular has two goals for the framework:
+Currently, Angular has the goals for the framework:
 
-1. Improve the [Angular developer experience](#improving-the-angular-developer-experience) and
-2. Improve the framework’s performance.
+1. Improve the [AI experience for developers](/ai)
+1. Improve the [Angular developer experience](#improving-the-angular-developer-experience)
+1. Improve the framework’s performance
 
 Continue reading to learn how we plan to deliver these objectives with specific project work.
 
@@ -19,6 +20,7 @@ Start developing with the latest Angular features from our roadmap. This list re
 
 ### Available to experiment with
 
+- [Signal Forms](/guide/forms/signals/overview)
 - [Resource API](/guide/signals/resource)
 - [httpResource](/api/common/http/httpResource)
 
@@ -31,50 +33,45 @@ Start developing with the latest Angular features from our roadmap. This list re
 - [Event replay with SSR](/api/platform-browser/withEventReplay)
 - [Route-level render mode](/guide/ssr)
 
+## Improving the AI experience for Angular Developers
+
+### Bringing the best of AI to Angular
+
+<docs-card-container>
+  <docs-card title="AI Powered Angular" href="">
+  AI continues to shape the development landscape. It has changed how we develop apps and the types of user experiences that are possible. We plan to best support the developer community in AI-assisted coding and integrating AI in their applications. 
+  </docs-card>
+  <docs-card title="AI Development">
+  The team will continue to develop meaningful integrations with tools like Google AI Studio, Gemini CLI and other agentic tooling such as Agentic IDEs like Antigravity. We plan to launch solutions that stay in line with the rapidly evolving industry. Some examples include agent skills, new MCP features and AI SDKs.
+  </docs-card>
+  <docs-card title="Code Generation">
+  [Based on our research](https://blog.angular.dev/beyond-the-horizon-how-angular-is-embracing-ai-for-next-gen-apps-7a7ed706e1a3), code generation for Angular is already high quality with modern LLMs. We will continue our investments in improving code generation for Angular. This means we will regularly evaluate code generation quality using current models and work to improve it through system instructions, documentation, and tactical framework changes. We also will continue investments in [Web Codegen Scorer](https://github.com/angular/web-codegen-scorer), our evaluation infrastructure.
+  </docs-card>
+  <docs-card title="AI Powered Experiences">
+  There is a new frontier for Angular developers to explore with new concepts such as Dynamic UI generation. We started with building Angular support for A2UI and are actively searching out more opportunities to support modern application experiences.
+  </docs-card>
+</docs-card-container>
+
 ## Improving the Angular developer experience
 
 ### Developer velocity
 
 <docs-card-container>
-  <docs-card title="Selectorless" href="">
-  To reduce boilerplate and improve the ergonomics of standalone components we are now designing a solution that will make selectors optional. To use a component or directive you'll be able to import it and directly use it in a component's template.
-
-We kicked off early prototyping of selectorless and we're still in early stages of planning. We'll share a request for comments when we have a design and we're ready for next steps.
-</docs-card>
-<docs-card title="Signal Forms" href="">
-We plan to analyze existing feedback about Angular forms and design a solution which addresses developers' requirements and uses Signals for management of reactive state.
-</docs-card>
-<docs-card title="Asynchronous reactivity" href="https://github.com/angular/angular/discussions/60121">
-To enable developers to handle asynchronous data flow with signals we developed the `resource` async primitive. Building on top of it, we introduced `httpResource` which allows you to send HTTP requests and receive your response as a signal.
-
-We're still actively collecting feedback for these new experimental APIs. Please give them a try and share your feedback with us on GitHub!
-</docs-card>
-<docs-card title="Zoneless Angular" href="">
-In v18 we shipped experimental zoneless support in Angular. It enables developers to use the framework without including zone.js in their bundle, which improves performance, debugging experience, and interoperability. As part of the initial release we also introduced zoneless support to the Angular CDK and Angular Material.
-
-In v19 we introduced zoneless support in server-side rendering, addressed some edge cases, and created a schematic to scaffold zoneless projects. We transitioned <a href="https://fonts.google.com/">Google Fonts</a> to zoneless which improved performance, developer experience, and allowed us to identify gaps that we need to address before moving this feature to developer preview.
-
-As of Angular v20.2, Zoneless Angular is now stable and includes improvements in error handling and server-side rendering.
-</docs-card>
-<docs-card title="Signal integrations" href="">
-We're working towards improving the integration of fundamental Angular packages, such as forms, HTTP, and router, with Signals. As part of this project, we'll seek opportunities to introduce convenient signal-based APIs or wrappers to improve the holistic developer experience.
-</docs-card>
-<docs-card title="Improve HMR (Hot Module Reload)" href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306">
-We're working towards faster edit/refresh cycle by enabling hot module replacement.
-
-In Angular v19 we shipped initial support for CSS and template HMR and in v20 we graduated template HMR to stable. We'll continue collecting feedback to make sure we're addressing developers' needs before we mark this project as complete.
-</docs-card>
-</docs-card-container>
-
-### Improve Angular Material and the CDK
-
-<docs-card-container>
-  <docs-card title="New CDK primitives" href="">
-  We are working on new CDK primitives to facilitate creating custom components based on the WAI-ARIA design patterns for [Combobox](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox). Angular v14 introduced stable [menu and dialog primitives](https://material.angular.dev/cdk/categories) as part of this project, and in v15 Listbox.
+  <docs-card title="Signal Forms" href="/guide/forms/signals/overview">
+  In Angular v21, we landed an experimental version of Signal Forms. This new approach allows developers to manage form state using signals, providing an ergonomic forms creation experience. Next, our plans include promoting Signal Forms to stable and enhancing interoperability with reactive forms - enabling teams to progressively migrate large forms at their own pace.
   </docs-card>
-  <docs-card title="Angular component accessibility" href="">
-  We are evaluating components in Angular Material against accessibility standards such as WCAG and working to fix any issues that arise from this process.
+  <docs-card title="Reactivity" href="">
+  We introduced experimental signal APIs, resource() and httpResource(), for flexible asynchronous data handling. We plan to promote these APIs to developer preview/stable based on community feedback.
+  We are also evaluating new APIs for unhandled use cases, considering community benefits and tradeoffs before implementation after careful consideration.
   </docs-card>
+  <docs-card title="Change Detection" href="">
+  With Zoneless being stable and default, we are also planning to shift the default change detection strategy to OnPush, to follow current best practices. [See the RFC discussion for details](https://github.com/angular/angular/discussions/66779).
+  </docs-card>
+  <docs-card title="Components">
+  In Angular v21, we launched Angular Aria in developer preview, providing eight patterns for accessible, headless components. We're planning to promote these patterns to stable and introduce new patterns where needed . We want to provide developers with a solid foundation for developing their own components using Angular Aria - we provide the interactions and you bring the style that matches your design systems. Developers will have the choice of developing custom components with Angular Aria, use interaction patterns from the CDK, or use ready-made styled Material Components.
+
+For accessibility, we are continuously evaluating the components and patterns against accessibility standards such as WCAG and are working to fix any issues that arise from this process.
+</docs-card>
 </docs-card-container>
 
 ### Improve tooling
@@ -85,42 +82,28 @@ In Angular v19 we shipped initial support for CSS and template HMR and in v20 we
 
 In Angular v20 we introduced experimental support for vitest. Make sure you give it a try and share your feedback with us!
 </docs-card>
-<docs-card title="Evaluating Nitro support in the Angular CLI" href="https://nitro.unjs.io/">
-We're excited about the set of features that Nitro offers such as more deployment options, improved compatibility of server-side rendering with different runtimes and file-based routing. In 2025 we'll evaluate how it fits in the Angular server-side rendering model.
-
-We'll share updates as we make progress in this investigation.
-</docs-card>
-<docs-card title="Signal debugging in Angular DevTools" href="">
-With the evolution of Signals in Angular, we are working on a better tooling for debugging them. High on the priority list is a UI for inspecting and debugging signals.
-</docs-card>
-</docs-card-container>
-
-## Future work, explorations, and prototyping
-
-This section represents explorations and prototyping of potential future projects. A reasonable outcome is to decide that our current solutions are the best options. Other projects may result in RFCs, graduating to in-progress projects, or being deprioritized as the web continues to innovate along with our framework.
-
-<docs-card-container>
-  <docs-card title="Exploration of streamed server-side rendering" href="">
-  Over the past few releases we've been working on making Angular's server-side rendering story more robust. On our priority list is to explore streamed server-side rendering for zoneless application.
-  </docs-card>
-  <docs-card title="Investigation for authoring format improvements" href="">
-  Based on our developer surveys' results we saw there are opportunities for improving the ergonomics of the component authoring format. The first step of the process will be to gather requirements and understand the problem space in advanced to an RFC. We'll share updates as we make progress. High priority in the future work will be backward compatibility and interoperability.
-  </docs-card>
-  <docs-card title="Improve TestBed" href="">
-  Based on feedback over the years and the recent updates in Angular's runtime, we'll evaluate TestBed to identify opportunities to improve developer experience and reduce boilerplate when developing unit tests.
-  </docs-card>
-  <docs-card title="Incremental adoption" href="">
-  Angular has been lacking the tools and the flexibility to add interactivity to a multi-page app or embed an Angular component inside of an existing app built with a different framework.
-
-As part of this project, we'll explore the requirement space of cross framework interop and our build tooling offering to make this use case possible.
-</docs-card>
 </docs-card-container>
 
 ## Completed projects
 
 <docs-card-container>
-  <docs-card title="Server route configuration" link="Completed in Q2 2025" href="">
-  We're working towards enabling a more ergonomic route configuration on the server. We want to make it trivial to declare which routes should be server-side rendered, prerendered or client-side rendered.
+  <docs-card title="Signal debugging in Angular DevTools" href="" link="Completed in 2025">
+  With the evolution of Signals in Angular, we are working on a better tooling for debugging them. High on the priority list is a UI for inspecting and debugging signals.
+  </docs-card>
+  <docs-card title="Improve HMR (Hot Module Reload)" href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306" link="Completed in 2025">
+  We're working towards faster edit/refresh cycle by enabling hot module replacement.
+
+In Angular v19 we shipped initial support for CSS and template HMR and in v20 we graduated template HMR to stable. We'll continue collecting feedback to make sure we're addressing developers' needs before we mark this project as complete.
+</docs-card>
+<docs-card title="Zoneless Angular" href="" link="Completed in Q4 2025">
+In v18 we shipped experimental zoneless support in Angular. It enables developers to use the framework without including zone.js in their bundle, which improves performance, debugging experience, and interoperability. As part of the initial release we also introduced zoneless support to the Angular CDK and Angular Material.
+
+    In v19 we introduced zoneless support in server-side rendering, addressed some edge cases, and created a schematic to scaffold zoneless projects. We transitioned <a href="https://fonts.google.com/">Google Fonts</a> to zoneless which improved performance, developer experience, and allowed us to identify gaps that we need to address before moving this feature to developer preview.
+
+    As of Angular v20.2, Zoneless Angular is now stable and includes improvements in error handling and server-side rendering.
+    </docs-card>
+    <docs-card title="Server route configuration" link="Completed in Q2 2025" href="">
+    We're working towards enabling a more ergonomic route configuration on the server. We want to make it trivial to declare which routes should be server-side rendered, prerendered or client-side rendered.
 
 In Angular v19 we shipped developer preview of route-level render mode which allows you to granularly configure which routes you want Angular to prerender, server-side render or client-side render. In Angular v20 we graduated it to stable.
 </docs-card>
