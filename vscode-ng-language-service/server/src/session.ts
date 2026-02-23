@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isNgLanguageService, NgLanguageService, PluginConfig} from '@angular/language-service/api';
+import {
+  isNgLanguageService,
+  NgLanguageService,
+  PluginConfig,
+  InlayHintsConfig,
+} from '@angular/language-service/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {promisify} from 'util';
 import * as lsp from 'vscode-languageserver/node';
@@ -47,6 +52,8 @@ import {onSignatureHelp} from './handlers/signature';
 import {onGetTcb} from './handlers/tcb';
 import {onGetTemplateLocationForComponent, isInAngularProject} from './handlers/template_info';
 import {onDidChangeWatchedFiles} from './handlers/did_change_watched_files';
+import {onInlayHint, onInlayHintResolve} from './handlers/inlay_hints';
+import {clearWorkspaceConfigurationCache} from './config';
 
 export interface SessionOptions {
   host: ServerHost;
@@ -102,6 +109,11 @@ export class Session {
   readonly renameDisabledProjects: WeakSet<ts.server.Project> = new WeakSet();
   clientCapabilities: lsp.ClientCapabilities = {};
   readonly defaultPreferences: ts.UserPreferences = {};
+  /**
+   * Configuration for Angular inlay hints.
+   * Updated via workspace/didChangeConfiguration notifications.
+   */
+  inlayHintsConfig: InlayHintsConfig = {};
 
   constructor(options: SessionOptions) {
     this.includeAutomaticOptionalChainCompletions =
@@ -230,6 +242,13 @@ export class Session {
     conn.onDidCloseTextDocument((p) => this.onDidCloseTextDocument(p));
     conn.onDidChangeTextDocument((p) => this.onDidChangeTextDocument(p));
     conn.onDidSaveTextDocument((p) => this.onDidSaveTextDocument(p));
+    conn.onDidChangeConfiguration(() => {
+      clearWorkspaceConfigurationCache(this.connection);
+      // Apply updated inlay settings without requiring extension restart.
+      void this.connection.languages.inlayHint.refresh().catch(() => {
+        // Ignore if client does not support inlay hint refresh.
+      });
+    });
     conn.onDefinition((p) => onDefinition(this, p));
     conn.onTypeDefinition((p) => onTypeDefinition(this, p));
     conn.onReferences((p) => onReferences(this, p));
@@ -251,6 +270,10 @@ export class Session {
     conn.onSignatureHelp((p) => onSignatureHelp(this, p));
     conn.onCodeAction((p) => onCodeAction(this, p));
     conn.onCodeActionResolve(async (p) => await onCodeActionResolve(this, p));
+
+    // Inlay hints (LSP 3.17)
+    conn.onRequest(lsp.InlayHintRequest.type, (p) => onInlayHint(this, p));
+    conn.onRequest(lsp.InlayHintResolveRequest.type, (p) => onInlayHintResolve(this, p));
   }
 
   private enableLanguageServiceForProject(project: ts.server.Project): void {

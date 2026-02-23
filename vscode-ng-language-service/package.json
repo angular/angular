@@ -161,6 +161,119 @@
             "markdownDescription": "When enabled, the Angular Language Service will delegate file watching to VS Code instead of creating its own internal file watchers. This can significantly improve performance (greater than 10x faster initialization) and reduce resource usage in large repositories."
           }
         }
+      },
+      {
+        "title": "Inlay Hints",
+        "properties": {
+          "angular.inlayHints.bindingHints.pipeOutputTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show type hints for pipe output types.\n\nExample:\n\n```html\n{{ value | async /* : User | null */ }}\n```"
+          },
+          "angular.inlayHints.bindingHints.propertyBindingTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show type hints for property/input bindings.\n\nExample:\n\n```html\n<cmp [disabled /* : boolean */]=\"flag\" />\n```"
+          },
+          "angular.inlayHints.bindingHints.requiredInputIndicator": {
+            "type": "string",
+            "enum": [
+              "none",
+              "asterisk",
+              "exclamation"
+            ],
+            "default": "none",
+            "markdownDescription": "Visual indicator for required inputs. `'asterisk'` shows `*`, `'exclamation'` shows `!` after the type.\n\nExample:\n\n```html\n<cmp [requiredInput /* : string* */]=\"value\" />\n```"
+          },
+          "angular.inlayHints.bindingHints.twoWayBindingSignalTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show signal type hints for two-way bindings.\n\nExample:\n\n```html\n<cmp [(value /* : WritableSignal<string> */)]=\"model\" />\n```"
+          },
+          "angular.inlayHints.controlFlowHints.deferTriggerTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show type hints for `@defer` `when` trigger expressions. The expression is evaluated by truthiness, so its type is not always `boolean`.\n\nExample:\n\n```html\n@defer (when user /* : User | null */) { ... }\n```"
+          },
+          "angular.inlayHints.controlFlowHints.switchExpressionTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show type hints for `@switch` expression types.\n\nExample:\n\n```html\n@switch (status /* : Status */) { ... }\n```"
+          },
+          "angular.inlayHints.eventHints.hostListenerArgumentTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show type hints for host listener handler arguments.\n\nExamples:\n\n```ts\n@HostListener('keydown', ['$event', '$event.target'])\nonHostKey(event /* : KeyboardEvent */, target /* : EventTarget | null */) {}\n```\n\n```ts\nhost: {\n  '(keydown)': 'onHostKey($event /* : KeyboardEvent */, $event.target /* : EventTarget | null */)',\n}\n```"
+          },
+          "angular.inlayHints.eventHints.parameterTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show type hints for event binding `$event` parameter.\n\nExample:\n\n```html\n<button (click)=\"onClick($event /* : MouseEvent */)\"></button>\n```"
+          },
+          "angular.inlayHints.functionTypes.arrowFunctionParameterTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show type hints for arrow function parameters in templates.\n\nExample:\n\n```html\n{{ value | apply : (x /* : number */) => x * 2 }}\n```"
+          },
+          "angular.inlayHints.functionTypes.arrowFunctionReturnTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show return type hints for arrow functions in templates.\n\nExample:\n\n```html\n{{ value | apply : (x) /* : number */ => x * 2 }}\n```"
+          },
+          "angular.inlayHints.interaction.interactiveInlayHints": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Enable interactive inlay hints that navigate to definitions when clicked.\n\nExample:\n\n```html\n{{ formatAmount(/* precision: */ 2) }}\n```\n\nWith this enabled, hint parts can be navigated."
+          },
+          "angular.inlayHints.parameterHints.nameHints": {
+            "type": "string",
+            "enum": [
+              "none",
+              "literals",
+              "all"
+            ],
+            "default": "all",
+            "markdownDescription": "Show parameter name hints for function/method calls. `'literals'` shows hints only for literal arguments.\n\nExample:\n\n```html\n{{ formatAmount(/* value: */ amount, /* precision: */ 2) }}\n```"
+          },
+          "angular.inlayHints.variableTypes.forLoopVariableTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show type hints for `@for` loop variables.\n\nExample:\n\n```html\n@for (user /* : User */ of users) { ... }\n```"
+          },
+          "angular.inlayHints.variableTypes.ifAliasTypes": {
+            "type": [
+              "boolean",
+              "string"
+            ],
+            "enum": [
+              true,
+              false,
+              "complex"
+            ],
+            "default": false,
+            "markdownDescription": "Show type hints for `@if` alias variables. Set to `'complex'` to only show hints for complex expressions.\n\nExamples:\n\n```html\n@if (user; as u) { {{ u.name }} } // simple expression\n@if (user.profile; as profile /* : Profile */) { {{ profile.name }} } // complex expression\n```"
+          },
+          "angular.inlayHints.variableTypes.letDeclarationTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show type hints for `@let` declarations.\n\nExample:\n\n```html\n@let count /* : number */ = items.length\n```"
+          },
+          "angular.inlayHints.variableTypes.referenceVariableTypes": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Show type hints for template reference variables.\n\nExample:\n\n```html\n<input #input /* : HTMLInputElement */ />\n```"
+          },
+          "angular.inlayHints.parameterHints.suppressWhenArgumentMatchesName": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "Suppress parameter name hints when argument name matches parameter name.\n\nExample:\n\n```html\n{{ onClick(user) }}\n```\n\nWhen enabled, suppresses hints where argument text already conveys the same name."
+          },
+          "angular.inlayHints.variableTypes.suppressWhenTypeMatchesName": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Suppress variable type hints when variable name matches type name (case-insensitive).\n\nExample:\n\n```html\n@let user = getUser()\n```\n\nWhen enabled, suppresses `/* : User */` for names like `user: User`."
+          }
+        }
       }
     ],
     "grammars": [
