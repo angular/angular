@@ -59,6 +59,12 @@ export async function onDocumentSymbol(
   // Check if document symbols are enabled (default: true)
   const isEnabled = config?.enabled !== false;
 
+  // When disabled, do not return Angular symbols. This lets other providers
+  // (e.g. TypeScript/HTML) remain visible.
+  if (!isEnabled) {
+    return null;
+  }
+
   // For HTML template files, we only need Angular template symbols (no TS symbols)
   if (isHtmlFile) {
     if (isEnabled && isNgLanguageService(languageService)) {
@@ -74,7 +80,7 @@ export async function onDocumentSymbol(
 
   // Get template symbols for Angular files
   let templateSymbols: TemplateDocumentSymbol[] = [];
-  if (isEnabled && isNgLanguageService(languageService)) {
+  if (isNgLanguageService(languageService)) {
     templateSymbols = languageService.getTemplateDocumentSymbols(scriptInfo.fileName, {
       showImplicitForVariables: config?.showImplicitForVariables ?? false,
     });
@@ -285,8 +291,15 @@ function filterNavigationItem(
       if (filteredChildren.length > 0) {
         const spans = item.spans;
         if (!spans || spans.length === 0) {
-          // If no span for container, just return children directly
-          return null;
+          // Keep the container instead of dropping the subtree when span info is missing.
+          const childRange = filteredChildren[0].range;
+          return {
+            name: item.text || '',
+            kind: scriptElementKindToSymbolKind(item.kind),
+            range: childRange,
+            selectionRange: childRange,
+            children: filteredChildren,
+          };
         }
 
         const range = tsTextSpanToLspRange(scriptInfo, spans[0]);

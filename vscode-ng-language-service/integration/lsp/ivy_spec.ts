@@ -710,7 +710,7 @@ export class AppComponent {
     expect(emptySymbol).toBeDefined();
   });
 
-  it('provides document symbols for @if with expression alias', async () => {
+  it('provides document symbols for @if/@else-if expression aliases', async () => {
     openTextDocument(
       client,
       APP_COMPONENT,
@@ -747,7 +747,7 @@ export class AppComponent {
     expect(ifSymbol!.children).toBeDefined();
 
     // Check for alias variable
-    const aliasVar = ifSymbol!.children!.find((c) => c.name === 'let user');
+    const aliasVar = ifSymbol!.children!.find((c) => c.name === 'as user');
     expect(aliasVar).toBeDefined();
   });
 
@@ -911,6 +911,53 @@ export class AppComponent {
     expect(notVisibleRef).toBeDefined();
   });
 
+  it('provides document symbols for custom structural directive let/as microsyntax', async () => {
+    openTextDocument(
+      client,
+      APP_COMPONENT,
+      `
+import {Component, Directive, Input} from '@angular/core';
+
+@Directive({
+  selector: '[myDir]',
+  standalone: true,
+})
+export class MyDir<T = unknown> {
+  @Input() myDir: T | null = null;
+  @Input() myDirOf: readonly T[] | null = null;
+  @Input() myDirTrackBy: ((index: number, value: T) => unknown) | null = null;
+}
+
+@Component({
+  selector: 'my-app',
+  standalone: true,
+  imports: [MyDir],
+  template: \
+    '<ng-container *myDir="let item of [1,2,3] as items; trackBy: track; index as i">{{ item }}{{ items.length }}{{ i }}</ng-container>',
+})
+export class AppComponent {
+  track = (index: number) => index;
+}`,
+    );
+    const response = (await client.sendRequest(lsp.DocumentSymbolRequest.type, {
+      textDocument: {
+        uri: APP_COMPONENT_URI,
+      },
+    })) as lsp.DocumentSymbol[];
+
+    const appComponentSymbol = response.find((s) => s.name === 'AppComponent');
+    const templateSymbol = appComponentSymbol!.children?.find((c) => c.name === '(template)');
+    expect(templateSymbol).toBeDefined();
+
+    const myDirSymbol = templateSymbol!.children!.find((c) => c.name.includes('*myDir'));
+    expect(myDirSymbol).toBeDefined();
+
+    const childNames = myDirSymbol!.children?.map((c) => c.name) ?? [];
+    expect(childNames).toContain('let item');
+    expect(childNames).toContain('as items');
+    expect(childNames).toContain('as i');
+  });
+
   it('provides document symbols for @if with expression alias', async () => {
     openTextDocument(
       client,
@@ -954,7 +1001,7 @@ export class AppComponent {
     expect(ifSymbol!.name).toContain('as currentUser');
 
     // The alias should appear exactly once as a child
-    const currentUserAliases = ifSymbol!.children!.filter((c) => c.name === 'let currentUser');
+    const currentUserAliases = ifSymbol!.children!.filter((c) => c.name === 'as currentUser');
     expect(currentUserAliases.length).toBe(1);
 
     // Check for @else if block with alias
@@ -965,7 +1012,7 @@ export class AppComponent {
     expect(elseIfSymbol!.name).toContain('as name');
 
     // The alias should appear exactly once
-    const nameAliases = elseIfSymbol!.children!.filter((c) => c.name === 'let name');
+    const nameAliases = elseIfSymbol!.children!.filter((c) => c.name === 'as name');
     expect(nameAliases.length).toBe(1);
 
     // Check for @else block (no alias)
@@ -1041,7 +1088,7 @@ export class AppComponent {
     expect(ifSymbol).toBeDefined();
 
     // The 'tr' alias should appear exactly once
-    const trAliases = ifSymbol!.children!.filter((c) => c.name === 'let tr');
+    const trAliases = ifSymbol!.children!.filter((c) => c.name === 'as tr');
     expect(trAliases.length).toBe(1);
   });
 
