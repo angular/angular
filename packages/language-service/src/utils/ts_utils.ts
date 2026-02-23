@@ -391,7 +391,13 @@ export function updateImportsForTypescriptFile(
     // TODO: Why does the compiler insist this is null?
     span.start = lastImport!.getStart() + lastImport!.getWidth();
   }
-  const newImportDeclaration = generateImport(symbolName, importName, moduleSpecifier);
+  const isSingleQuote = detectImportQuoteStyle(file);
+  const newImportDeclaration = generateImport(
+    symbolName,
+    importName,
+    moduleSpecifier,
+    isSingleQuote,
+  );
   const importString = '\n' + printNode(newImportDeclaration, file);
   return [[{span, newText: importString}], importName];
 }
@@ -556,17 +562,39 @@ export function isStandaloneDecorator(decorator: ts.Decorator): boolean | null {
  * If `exportedSpecifierName` is null, or is equal to `name`, then the qualified import alias will
  * be omitted.
  */
+/**
+ * Detects whether the given source file uses single quotes for import module specifiers.
+ * Returns `true` if the file predominantly uses single quotes, `false` otherwise.
+ * Falls back to `false` (double quotes) if no imports are found.
+ */
+export function detectImportQuoteStyle(file: ts.SourceFile): boolean {
+  let singleQuoteCount = 0;
+  let doubleQuoteCount = 0;
+  for (const statement of file.statements) {
+    if (ts.isImportDeclaration(statement) && ts.isStringLiteral(statement.moduleSpecifier)) {
+      const text = statement.moduleSpecifier.getText(file);
+      if (text.startsWith("'")) {
+        singleQuoteCount++;
+      } else if (text.startsWith('"')) {
+        doubleQuoteCount++;
+      }
+    }
+  }
+  return singleQuoteCount > doubleQuoteCount;
+}
+
 export function generateImport(
   localName: string,
   exportedSpecifierName: string | null,
   rawModuleSpecifier: string,
+  isSingleQuote: boolean = false,
 ): ts.ImportDeclaration {
   let propName: ts.Identifier | undefined;
   if (exportedSpecifierName !== null && exportedSpecifierName !== localName) {
     propName = ts.factory.createIdentifier(exportedSpecifierName);
   }
   const name = ts.factory.createIdentifier(localName);
-  const moduleSpec = ts.factory.createStringLiteral(rawModuleSpecifier);
+  const moduleSpec = ts.factory.createStringLiteral(rawModuleSpecifier, isSingleQuote);
   let importClauseName: ts.Identifier | undefined;
   let importBindings: ts.NamedImportBindings | undefined;
 
@@ -810,9 +838,7 @@ function getStringLiteralText(moduleSpecifier: ts.Expression): string | undefine
  * The developer should export the `FooComponent` in the `AppModule`.
  *
  */
-class PotentialDirectiveModuleSpecifierResolverImpl
-  implements PotentialDirectiveModuleSpecifierResolver
-{
+class PotentialDirectiveModuleSpecifierResolverImpl implements PotentialDirectiveModuleSpecifierResolver {
   constructor(
     private readonly compiler: NgCompiler,
     private readonly directive: PotentialDirective | PotentialPipe,

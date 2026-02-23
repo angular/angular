@@ -12,6 +12,7 @@ import ts from 'typescript';
 import {
   addElementToArrayLiteral,
   collectMemberMethods,
+  detectImportQuoteStyle,
   ensureArrayWithIdentifier,
   findTightestNode,
   generateImport,
@@ -211,6 +212,13 @@ describe('TS util', () => {
       expect(print(imp)).toEqual(`import { Bar as Foo } from "./foo";`);
     });
 
+    it('generateImport with single quotes', () => {
+      let imp = generateImport('Foo', null, './foo', true);
+      expect(print(imp)).toEqual(`import { Foo } from './foo';`);
+      imp = generateImport('Foo', 'Bar', './foo', true);
+      expect(print(imp)).toEqual(`import { Bar as Foo } from './foo';`);
+    });
+
     it('updateImport', () => {
       let imp = generateImport('Foo', null, './foo');
       let namedImp = updateImport(imp, 'Bar', null);
@@ -234,6 +242,48 @@ describe('TS util', () => {
       expect(nonCollidingImportName(imps, 'Other')).toEqual('Other');
       expect(nonCollidingImportName(imps, 'Foo')).toEqual('Foo_1');
       expect(nonCollidingImportName(imps, 'ExternalBar')).toEqual('ExternalBar');
+    });
+  });
+
+  describe('detectImportQuoteStyle', () => {
+    function createSourceFile(content: string): ts.SourceFile {
+      return ts.createSourceFile(
+        'test.ts',
+        content,
+        ts.ScriptTarget.ESNext,
+        true,
+        ts.ScriptKind.TS,
+      );
+    }
+
+    it('should detect single quotes from existing imports', () => {
+      const sf = createSourceFile(`
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+      `);
+      expect(detectImportQuoteStyle(sf)).toBe(true);
+    });
+
+    it('should detect double quotes from existing imports', () => {
+      const sf = createSourceFile(`
+        import {Component} from "@angular/core";
+        import {NgIf} from "@angular/common";
+      `);
+      expect(detectImportQuoteStyle(sf)).toBe(false);
+    });
+
+    it('should return false (double quotes) when no imports exist', () => {
+      const sf = createSourceFile(`const x = 1;`);
+      expect(detectImportQuoteStyle(sf)).toBe(false);
+    });
+
+    it('should use majority vote when imports have mixed quotes', () => {
+      const sf = createSourceFile(`
+        import {A} from '@angular/core';
+        import {B} from "@angular/common";
+        import {C} from '@angular/router';
+      `);
+      expect(detectImportQuoteStyle(sf)).toBe(true);
     });
   });
 });

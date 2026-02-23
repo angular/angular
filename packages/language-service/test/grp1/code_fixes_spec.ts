@@ -600,7 +600,7 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooComponent`, [
-        [``, `import { BarComponent } from "./bar";`],
+        [``, `import { BarComponent } from './bar';`],
         [``, `, imports: [BarComponent]`],
       ]);
     });
@@ -642,7 +642,7 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarModule from './bar' on FooComponent`, [
-        [``, `import { BarModule } from "./bar";`],
+        [``, `import { BarModule } from './bar';`],
         [``, `, imports: [BarModule]`],
       ]);
     });
@@ -684,7 +684,7 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooModule`, [
-        [``, `import { BarComponent } from "./bar";`],
+        [``, `import { BarComponent } from './bar';`],
         [`imports: []`, `imports: [BarComponent]`],
       ]);
     });
@@ -723,7 +723,7 @@ describe('code fixes', () => {
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
 
       actionChangesMatch(actionChanges, `Import BarPipe from './bar' on FooComponent`, [
-        [``, `import { BarPipe } from "./bar";`],
+        [``, `import { BarPipe } from './bar';`],
         ['', `, imports: [BarPipe]`],
       ]);
     });
@@ -770,11 +770,11 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarModule from './bar' on FooComponent`, [
-        [``, `import { BarModule } from "./bar";`],
+        [``, `import { BarModule } from './bar';`],
         [``, `, imports: [BarModule]`],
       ]);
       actionChangesMatch(actionChanges, `Import Bar2Module from './bar' on FooComponent`, [
-        [``, `import { Bar2Module } from "./bar";`],
+        [``, `import { Bar2Module } from './bar';`],
         [``, `, imports: [Bar2Module]`],
       ]);
     });
@@ -810,7 +810,7 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooComponent`, [
-        [``, `import BarComponent from "./bar";`],
+        [``, `import BarComponent from './bar';`],
         [``, `, imports: [BarComponent]`],
       ]);
     });
@@ -950,7 +950,7 @@ describe('code fixes', () => {
       ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import MatCard from '@angular/common' on FooComponent`, [
-        [``, `import { MatCard } from "@angular/common";`],
+        [``, `import { MatCard } from '@angular/common';`],
         [``, `, imports: [MatCard]`],
       ]);
     });
@@ -990,7 +990,7 @@ describe('code fixes', () => {
       );
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from '@app/bar' on FooComponent`, [
-        [``, `import { BarComponent } from "@app/bar";`],
+        [``, `import { BarComponent } from '@app/bar';`],
         [``, `, imports: [BarComponent]`],
       ]);
     });
@@ -1043,7 +1043,7 @@ describe('code fixes', () => {
         actionChanges,
         `Import NewBarComponent3 from '@app/index' on FooComponent`,
         [
-          [``, `import { NewBarComponent3 } from "@app/index";`],
+          [``, `import { NewBarComponent3 } from '@app/index';`],
           [``, `, imports: [NewBarComponent3]`],
         ],
       );
