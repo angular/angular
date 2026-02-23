@@ -15,6 +15,6 @@ Debugging in the default Node.js environment is often the quickest way to diagno
 
 ## Debugging in a browser
 
-Debugging with Vitest and [browser mode](/guide/testing/migrating-to-vitest#5-configure-browser-mode-optional) is not supported today.
+The same way you start a debugging session with in Node, you can use `ng test` with the `--debug` flag with Vitest and [browser mode](/guide/testing/migrating-to-vitest#5-configure-browser-mode-optional).
 
-<!-- Update this section when https://github.com/angular/angular-cli/issues/31652 is fixed>
+The test runner will start in debug mode and wait for you to open the browser devtools to debug the tests.
