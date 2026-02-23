@@ -1,6 +1,6 @@
 {
   "name": "ng-template",
-  "displayName": "Angular Language Service",
+  "displayName": "Angular",
   "description": "Editor services for Angular templates",
   "version": "22.0.0-rc.0",
   "private": true,
@@ -99,68 +99,70 @@
         }
       ]
     },
-    "configuration": {
-      "title": "Angular Language Service",
-      "properties": {
-        "angular.log": {
-          "type": "string",
-          "enum": [
-            "off",
-            "terse",
-            "normal",
-            "verbose"
-          ],
-          "default": "off",
-          "description": "Enables logging of the Angular server to a file. This log can be used to diagnose Angular Server issues. The log may contain file paths, source code, and other potentially sensitive information from your project."
-        },
-        "angular.enable-strict-mode-prompt": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Prompt to enable the [strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) flag in [angularCompilerOptions](https://angular.dev/reference/configs/angular-compiler-options)."
-        },
-        "angular.trace.server": {
-          "type": "string",
-          "scope": "window",
-          "enum": [
-            "off",
-            "messages",
-            "verbose"
-          ],
-          "default": "off",
-          "description": "Traces the communication between VS Code and the Angular language server."
-        },
-        "angular.suggest.includeAutomaticOptionalChainCompletions": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Enable showing completions on potentially undefined values that insert an optional chain call. Requires TS 3.7+ and strict null checks to be enabled."
-        },
-        "angular.suggest.includeCompletionsWithSnippetText": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Enable snippet completions from Angular language server. Requires using TypeScript 4.3+ in the workspace."
-        },
-        "angular.suggest.autoImports": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "Enable/disable auto import suggestions for the exported Angular components from the current project."
-        },
-        "angular.forceStrictTemplates": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "Enabling this option will force the language service to use [strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) and ignore the user settings in the `tsconfig.json`."
-        },
-        "angular.suppressAngularDiagnosticCodes": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "A comma-separated list of error codes in templates whose diagnostics should be ignored."
-        },
-        "angular.server.useClientSideFileWatcher": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "When enabled, the Angular Language Service will delegate file watching to VS Code instead of creating its own internal file watchers. This can significantly improve performance (greater than 10x faster initialization) and reduce resource usage in large repositories."
+    "configuration": [
+      {
+        "title": "Preferences",
+        "properties": {
+          "angular.log": {
+            "type": "string",
+            "enum": [
+              "off",
+              "terse",
+              "normal",
+              "verbose"
+            ],
+            "default": "off",
+            "description": "Enables logging of the Angular server to a file. This log can be used to diagnose Angular Server issues. The log may contain file paths, source code, and other potentially sensitive information from your project."
+          },
+          "angular.trace.server": {
+            "type": "string",
+            "scope": "window",
+            "enum": [
+              "off",
+              "messages",
+              "verbose"
+            ],
+            "default": "off",
+            "description": "Traces the communication between VS Code and the Angular language server."
+          },
+          "angular.enable-strict-mode-prompt": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "Prompt to enable the [strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) flag in [angularCompilerOptions](https://angular.dev/reference/configs/angular-compiler-options)."
+          },
+          "angular.forceStrictTemplates": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "Enabling this option will force the language service to use [strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) and ignore the user settings in the `tsconfig.json`."
+          },
+          "angular.suppressAngularDiagnosticCodes": {
+            "type": "string",
+            "default": "",
+            "markdownDescription": "A comma-separated list of error codes in templates whose diagnostics should be ignored."
+          },
+          "angular.suggest.includeAutomaticOptionalChainCompletions": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "Enable showing completions on potentially undefined values that insert an optional chain call. Requires TS 3.7+ and strict null checks to be enabled."
+          },
+          "angular.suggest.includeCompletionsWithSnippetText": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "Enable snippet completions from Angular language server. Requires using TypeScript 4.3+ in the workspace."
+          },
+          "angular.suggest.autoImports": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "Enable/disable auto import suggestions for the exported Angular components from the current project."
+          },
+          "angular.server.useClientSideFileWatcher": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "When enabled, the Angular Language Service will delegate file watching to VS Code instead of creating its own internal file watchers. This can significantly improve performance (greater than 10x faster initialization) and reduce resource usage in large repositories."
+          }
         }
       }
-    },
+    ],
     "grammars": [
       {
         "path": "./syntaxes/inline-template.json",
