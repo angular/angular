@@ -106,7 +106,6 @@ groups:
         - thePunderWoman
         - kirjs
         - JoostK
-        - mmalerba
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
@@ -153,7 +152,6 @@ groups:
         - kirjs
         - thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
         - JeanMeche
         - ~amishne
         - ~leonsenft
@@ -209,7 +207,6 @@ groups:
         - kirjs
         - thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
@@ -263,7 +260,6 @@ groups:
         - ~pkozlowski-opensource
         - ~mgechev
         - MarkTechson
-        - mmalerba
         - ~hawkgs
         - ~amishne
         - ~leonsenft
@@ -376,7 +372,6 @@ groups:
         - thePunderWoman
         - ~pkozlowski-opensource
         - kirjs
-        - mmalerba
         - crisbeto
         - devversion
         - JeanMeche
@@ -412,7 +407,6 @@ groups:
         - kirjs
         - thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
