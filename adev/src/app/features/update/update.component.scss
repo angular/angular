@@ -46,8 +46,6 @@ h4 {
 }
 
 .wizard {
-  padding-inline: 1rem;
-
   .show-button {
     display: block;
     margin-block-start: 2rem;
@@ -163,9 +161,15 @@ h4 {
     }
   }
 
-  .adev-complexity-1 { --badge-color: var(--super-green); }
-  .adev-complexity-2 { --badge-color: var(--bright-blue); }
-  .adev-complexity-3 { --badge-color: var(--symbolic-orange); }
+  .adev-complexity-1 {
+    --badge-color: var(--super-green);
+  }
+  .adev-complexity-2 {
+    --badge-color: var(--bright-blue);
+  }
+  .adev-complexity-3 {
+    --badge-color: var(--symbolic-orange);
+  }
 
   // Code blocks are generable from the markdown, we need to opt-out of the scoping
   ::ng-deep code {
