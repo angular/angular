@@ -38,7 +38,15 @@ HELPFUL: To add or remove a _single_ class, use [class binding](/guide/templates
 
 To use `NgClass`, add it to the component's `imports` list.
 
-<docs-code header="app.component.ts (NgClass import)" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" region="import-ng-class"/>
+```angular-ts
+import {NgClass} from '@angular/common';
+
+@Component({
+  /* ... */
+  imports: [NgClass],
+})
+export class AppComponent {}
+```
 
 ### Using `NgClass` with an expression
 
@@ -61,7 +69,7 @@ Because `isSpecial` is true, `ngClass` applies the class of `special` to the `<d
 
 1. In the template, add the `ngClass` property binding to `currentClasses` to set the element's classes:
 
-<docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="NgClass-1"/>
+   <docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="NgClass-1"/>
 
 For this use case, Angular applies the classes on initialization and in case of changes caused by reassigning the `currentClasses` object.
 The full example calls `setCurrentClasses()` initially with `ngOnInit()` when the user clicks on the `Refresh currentClasses` button.
@@ -75,7 +83,15 @@ HELPFUL: To add or remove a _single_ style, use [style bindings](guide/templates
 
 To use `NgStyle`, add it to the component's `imports` list.
 
-<docs-code header="app.component.ts (NgStyle import)" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" region="import-ng-style"/>
+```angular-ts
+import {NgStyle} from '@angular/common';
+
+@Component({
+  /* ... */
+  imports: [NgStyle],
+})
+export class AppComponent {}
+```
 
 Use `NgStyle` to set multiple inline styles simultaneously, based on the state of the component.
 
@@ -87,7 +103,7 @@ Use `NgStyle` to set multiple inline styles simultaneously, based on the state o
 
 1. To set the element's styles, add an `ngStyle` property binding to `currentStyles`.
 
-<docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="NgStyle-2"/>
+   <docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" region="NgStyle-2"/>
 
 For this use case, Angular applies the styles upon initialization and in case of changes.
 To do this, the full example calls `setCurrentStyles()` initially with `ngOnInit()` and when the dependent properties change through a button click.
