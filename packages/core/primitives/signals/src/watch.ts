@@ -140,7 +140,6 @@ const NOOP_CLEANUP_FN: WatchCleanupFn = () => {};
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.
-// TODO: remove when https://github.com/evanw/esbuild/issues/3392 is resolved.
 const WATCH_NODE: Partial<WatchNode> = /* @__PURE__ */ (() => {
   return {
     ...REACTIVE_NODE,
