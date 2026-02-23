@@ -14,13 +14,13 @@
     "@angular/platform-browser": "workspace:*",
     "@angular/platform-server": "workspace:*",
     "@angular/router": "workspace:*",
-    "@angular/ssr": "21.2.0-rc.0",
+    "@angular/ssr": "21.2.0-rc.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular/build": "21.2.0-rc.0",
-    "@angular/cli": "21.2.0-rc.0",
+    "@angular/build": "21.2.0-rc.1",
+    "@angular/cli": "21.2.0-rc.1",
     "@angular/compiler-cli": "workspace:*",
     "jsdom": "^28.0.0",
     "typescript": "~5.9.2",
