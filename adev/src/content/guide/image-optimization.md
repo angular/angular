@@ -346,20 +346,20 @@ You can learn more about the base URL structure in the docs of a corresponding C
 
 ### Custom Loaders
 
-To use a **custom loader**, provide your loader function as a value for the `IMAGE_LOADER` DI token. In the example below, the custom loader function returns a URL starting with `https://example.com` that includes `src` and `width` as URL parameters.
+To use a **custom loader**, provide your loader function as a value for the `IMAGE_LOADER` DI token. In the example below, the custom loader function returns a URL starting with `https://example.com` that includes `src`, `width`, and `height` as URL parameters.
 
 ```ts
 providers: [
   {
     provide: IMAGE_LOADER,
     useValue: (config: ImageLoaderConfig) => {
-      return `https://example.com/images?src=${config.src}&width=${config.width}`;
+      return `https://example.com/images?src=${config.src}&width=${config.width}&height=${config.height}`;
     },
   },
 ],
 ```
 
-A loader function for the `NgOptimizedImage` directive takes an object with the `ImageLoaderConfig` type (from `@angular/common`) as its argument and returns the absolute URL of the image asset. The `ImageLoaderConfig` object contains the `src` property, and optional `width` and `loaderParams` properties.
+A loader function for the `NgOptimizedImage` directive takes an object with the `ImageLoaderConfig` type (from `@angular/common`) as its argument and returns the absolute URL of the image asset. The `ImageLoaderConfig` object contains the `src` property, and optional `width`, `height`, and `loaderParams` properties.
 
 NOTE: even though the `width` property may not always be present, a custom loader must use it to support requesting images at various widths in order for `ngSrcset` to work properly.
 
@@ -405,7 +405,7 @@ NOTE: The `transform` property is not supported by the Netlify loader, as Netlif
 
 ### Example custom loader
 
-The following shows an example of a custom loader function. This example function concatenates `src` and `width`, and uses `loaderParams` to control a custom CDN feature for rounded corners:
+The following shows an example of a custom loader function. This example function concatenates `src`, `width`, and `height`, and uses `loaderParams` to control a custom CDN feature for rounded corners:
 
 ```ts
 const myCustomLoader = (config: ImageLoaderConfig) => {
@@ -413,6 +413,9 @@ const myCustomLoader = (config: ImageLoaderConfig) => {
   let queryParams = [];
   if (config.width) {
     queryParams.push(`w=${config.width}`);
+  }
+  if (config.height) {
+    queryParams.push(`h=${config.height}`);
   }
   if (config.loaderParams?.roundedCorners) {
     queryParams.push('mask=corners&corner-radius=5');
