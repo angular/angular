@@ -196,13 +196,12 @@ export interface InMemoryScrollingOptions {
 /**
  * Configuration options for the component input binding feature which can be used
  * with `withComponentInputBinding` function or `RouterModule.forRoot`
- * 
+ *
  * @publicApi
  * @see withComponentInputBinding
  * @see RouterModule#forRoot
  */
-export interface ComponentInputBindingOptions
-{
+export interface ComponentInputBindingOptions {
   /**
    * When true (default), will configure query parameters to bind to component
    * inputs.

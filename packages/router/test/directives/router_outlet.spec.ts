@@ -229,7 +229,10 @@ describe('component input binding', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([{path: '**', component: MyComponent}], withComponentInputBinding({queryParams: false})),
+        provideRouter(
+          [{path: '**', component: MyComponent}],
+          withComponentInputBinding({queryParams: false}),
+        ),
       ],
     });
     const harness = await RouterTestingHarness.create();
@@ -333,7 +336,10 @@ describe('component input binding', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([{path: '**', component: MyComponent}], withComponentInputBinding({params: false})),
+        provideRouter(
+          [{path: '**', component: MyComponent}],
+          withComponentInputBinding({params: false}),
+        ),
       ],
     });
     const harness = await RouterTestingHarness.create();

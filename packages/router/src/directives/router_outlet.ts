@@ -35,7 +35,7 @@ import {Data} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
 import {Params, PRIMARY_OUTLET} from '../shared';
-import { ComponentInputBindingOptions } from '../router_config';
+import {ComponentInputBindingOptions} from '../router_config';
 
 /**
  * An `InjectionToken` provided by the `RouterOutlet` and can be set using the `routerOutletData`
@@ -497,7 +497,7 @@ export class RoutedComponentInputBinder {
         switchMap((datasets, index) => {
           let newData: Params & Data = {};
           for (const data of datasets) {
-            newData = { ...newData, ...data };
+            newData = {...newData, ...data};
           }
 
           // Get the first result from the data subscription synchronously so it's available to

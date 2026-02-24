@@ -41,7 +41,12 @@ import {RedirectCommand, Routes} from './models';
 import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
 import {ROUTE_INJECTOR_CLEANUP, routeInjectorCleanup} from './route_injector_cleanup';
 import {Router} from './router';
-import {ComponentInputBindingOptions, InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';
+import {
+  ComponentInputBindingOptions,
+  InMemoryScrollingOptions,
+  ROUTER_CONFIGURATION,
+  RouterConfigOptions,
+} from './router_config';
 import {ROUTES} from './router_config_loader';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
 
@@ -864,7 +869,7 @@ export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * retained if the data got removed from the route (i.e. if a query parameter is removed).
  * Default values can be provided with a resolver on the route to ensure the value is always present
  * or an input and use an input transform in the component.
- * 
+ *
  * Advanced example of how you can disable binding from certain sources:
  * ```ts
  * const appRoutes: Routes = [];
@@ -886,7 +891,7 @@ export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * @returns A set of providers for use with `provideRouter`.
  */
 export function withComponentInputBinding(
-  options: ComponentInputBindingOptions = {}
+  options: ComponentInputBindingOptions = {},
 ): ComponentInputBindingFeature {
   const providers = [
     {provide: INPUT_BINDER, useFactory: () => new RoutedComponentInputBinder(options)},
