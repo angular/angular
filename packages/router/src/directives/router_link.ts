@@ -28,6 +28,7 @@ import {
   untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
   ɵRuntimeError as RuntimeError,
+  input,
 } from '@angular/core';
 import {Subject} from 'rxjs';
 
@@ -354,6 +355,14 @@ export class RouterLink implements OnChanges, OnDestroy {
   private _replaceUrl = signal<boolean>(false);
 
   /**
+   * Passed to {@link Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#browserUrl}
+   * @see {@link Router#navigateByUrl}
+   */
+  browserUrl = input<UrlTree | string | undefined>(undefined);
+
+  /**
    * Whether a host element is an `<a>`/`<area>` tag or a compatible custom
    * element.
    */
@@ -490,11 +499,13 @@ export class RouterLink implements OnChanges, OnDestroy {
       }
     }
 
+    const browserUrl = this.browserUrl();
     const extras = {
       skipLocationChange: this.skipLocationChange,
       replaceUrl: this.replaceUrl,
       state: this.state,
       info: this.info,
+      ...(browserUrl !== undefined && {browserUrl}),
     };
     // navigateByUrl is mocked frequently in tests... Reduce breakages when
     // adding `catch`
