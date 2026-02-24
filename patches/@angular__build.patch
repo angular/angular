@@ -1,0 +1,51 @@
+diff --git a/src/utils/version.js b/src/utils/version.js
+index 4a2fe8ac8e57fc0c0d3c58000346887d5072f712..7a78858d7b5ae14c284f521ce7f6056074cdf33f 100755
+--- a/src/utils/version.js
++++ b/src/utils/version.js
+@@ -11,9 +11,6 @@ exports.assertCompatibleAngularVersion = assertCompatibleAngularVersion;
+ /* eslint-disable no-console */
+ const node_module_1 = require("node:module");
+ const semver_1 = require("semver");
+-// Matches exactly '0.0.0' or any string ending in '.0.0-next.0'
+-// This allows FW to bump the package.json to a new major version without requiring a new CLI version.
+-const angularVersionRegex = /^0\.0\.0$|\.0\.0-next\.0$/;
+ function assertCompatibleAngularVersion(projectRoot) {
+     let angularPkgJson;
+     // Create a custom require function for ESM compliance.
+@@ -31,16 +28,31 @@ function assertCompatibleAngularVersion(projectRoot) {
+             'This likely indicates a corrupted local installation. Please try reinstalling your packages.');
+         process.exit(2);
+     }
++    const angularCoreSemVer = new semver_1.SemVer(angularPkgJson['version']);
++    const { version, build, raw } = angularCoreSemVer;
+     const supportedAngularSemver = '^21.0.0 || ^21.2.0-next.0';
+-    if (angularVersionRegex.test(angularPkgJson['version']) ||
+-        supportedAngularSemver.startsWith('0.0.0')) {
++  if (version.startsWith('0.0.0') || supportedAngularSemver.startsWith('0.0.0')) {
+         // Internal CLI and FW testing version.
+         return;
+     }
+-    const angularVersion = new semver_1.SemVer(angularPkgJson['version']);
+-    if (!(0, semver_1.satisfies)(angularVersion, supportedAngularSemver, { includePrerelease: true })) {
++    if (build.length && version.endsWith('.0.0-next.0')) {
++        // Special handle for local builds only when it's prerelease of major version and it's the 0th version.
++        // This happends when we are bumping to a new major version. and the cli has not releated a verion.
++
++        // Example:
++        // raw: '22.0.0-next.0+sha-c7dc705-with-local-changes',
++        // major: 22,
++        // minor: 0,
++        // patch: 0,
++        // prerelease: [ 'next', 0 ],
++        // build: [ 'sha-c7dc705-with-local-changes' ],
++        // version: '22.0.0-next.0'
++
++        return;
++    }
++    if (!(0, semver_1.satisfies)(angularCoreSemVer, supportedAngularSemver, { includePrerelease: true })) {
+         console.error(`Error: The current version of "@angular/build" supports Angular versions ${supportedAngularSemver},\n` +
+-            `but detected Angular version ${angularVersion} instead.\n` +
++            `but detected Angular version ${raw} instead.\n` +
+             'Please visit the link below to find instructions on how to update Angular.\nhttps://update.angular.dev/');
+         process.exit(3);
+     }
