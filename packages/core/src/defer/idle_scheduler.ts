@@ -10,6 +10,7 @@ import type {OnDestroy} from '../core';
 import {Injector, inject, ɵɵdefineInjectable} from '../di';
 import {NgZone} from '../zone';
 import {IDLE_SERVICE} from './idle_service';
+import {ApplicationRef} from '../application/application_ref';
 
 /**
  * Helper function to schedule a callback to be invoked when a browser becomes idle.
@@ -35,6 +36,7 @@ export class IdleScheduler implements OnDestroy {
 
   // Queue of callbacks to be invoked next.
   queue = new Set<VoidFunction>();
+  applicationRef = inject(ApplicationRef);
 
   ngZone = inject(NgZone);
   private readonly idleService = inject(IDLE_SERVICE);
@@ -64,6 +66,10 @@ export class IdleScheduler implements OnDestroy {
 
       for (const callbackFn of this.queue) {
         callbackFn();
+        // _tick here is an optimized change detection check and is safe to call here.
+        // We also account for the time it takes to run change detection
+        // for the newly-created view as a part of the same idle callback.
+        this.applicationRef._tick();
         this.queue.delete(callbackFn);
 
         if (deadline && deadline.timeRemaining() === 0 && !deadline.didTimeout) {
