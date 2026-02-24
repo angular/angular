@@ -505,7 +505,7 @@ export class RouterLink implements OnChanges, OnDestroy {
       replaceUrl: this.replaceUrl,
       state: this.state,
       info: this.info,
-      // TODO: Remove conditional spread once all consumers handle `browserUrl: undefined`.
+      // TODO: Remove conditional spread once all consumers handle `browserUrl`.
       // Having this property always set broke some tests in G3.
       ...(browserUrl !== undefined && {browserUrl}),
     };
