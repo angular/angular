@@ -106,9 +106,6 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
 
   return makeEnvironmentProviders([
     {provide: ROUTES, multi: true, useValue: routes},
-    typeof ngDevMode === 'undefined' || ngDevMode
-      ? {provide: ROUTER_IS_PROVIDED, useValue: true}
-      : [],
     {provide: ActivatedRoute, useFactory: rootRoute},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
     features.map((feature) => feature.ɵproviders),
@@ -137,56 +134,6 @@ function routerFeature<FeatureKind extends RouterFeatureKind>(
   providers: Array<Provider | EnvironmentProviders>,
 ): RouterFeature<FeatureKind> {
   return {ɵkind: kind, ɵproviders: providers};
-}
-
-/**
- * An Injection token used to indicate whether `provideRouter` or `RouterModule.forRoot` was ever
- * called.
- */
-export const ROUTER_IS_PROVIDED = new InjectionToken<boolean>(
-  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Router is provided' : '',
-  {
-    factory: () => false,
-  },
-);
-
-const routerIsProvidedDevModeCheck = {
-  provide: ENVIRONMENT_INITIALIZER,
-  multi: true,
-  useFactory() {
-    return () => {
-      if (!inject(ROUTER_IS_PROVIDED)) {
-        console.warn(
-          '`provideRoutes` was called without `provideRouter` or `RouterModule.forRoot`. ' +
-            'This is likely a mistake.',
-        );
-      }
-    };
-  },
-};
-
-/**
- * Registers a DI provider for a set of routes.
- * @param routes The route configuration to provide.
- *
- * @usageNotes
- *
- * ```ts
- * @NgModule({
- *   providers: [provideRoutes(ROUTES)]
- * })
- * class LazyLoadedChildModule {}
- * ```
- *
- * @deprecated If necessary, provide routes using the `ROUTES` `InjectionToken`.
- * @see {@link ROUTES}
- * @publicApi
- */
-export function provideRoutes(routes: Routes): Provider[] {
-  return [
-    {provide: ROUTES, multi: true, useValue: routes},
-    typeof ngDevMode === 'undefined' || ngDevMode ? routerIsProvidedDevModeCheck : [],
-  ];
 }
 
 /**

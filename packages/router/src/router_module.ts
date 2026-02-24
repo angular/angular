@@ -34,7 +34,6 @@ import {NAVIGATION_ERROR_HANDLER} from './navigation_transition';
 import {
   getBootstrapListener,
   rootRoute,
-  ROUTER_IS_PROVIDED,
   withComponentInputBinding,
   withDebugTracing,
   withDisabledInitialNavigation,
@@ -73,11 +72,6 @@ export const ROUTER_PROVIDERS: Provider[] = [
   ChildrenOutletContexts,
   {provide: ActivatedRoute, useFactory: rootRoute},
   RouterConfigLoader,
-  // Only used to warn when `provideRoutes` is used without `RouterModule` or `provideRouter`. Can
-  // be removed when `provideRoutes` is removed.
-  typeof ngDevMode === 'undefined' || ngDevMode
-    ? {provide: ROUTER_IS_PROVIDED, useValue: true}
-    : [],
 ];
 
 /**

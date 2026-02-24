@@ -15,10 +15,9 @@ import {findClassDeclaration} from '../../utils/typescript/class_declaration';
 import {findLiteralProperty} from '../../utils/typescript/property_name';
 import {
   isAngularRoutesArray,
-  isProvideRoutesCallExpression,
+  isProvideRouterCallExpression,
   isRouterCallExpression,
   isRouterModuleCallExpression,
-  isRouterProviderCallExpression,
   isStandaloneComponent,
 } from './util';
 
@@ -79,9 +78,8 @@ function findRoutesArrayToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.Typ
     if (ts.isCallExpression(node)) {
       if (
         isRouterModuleCallExpression(node, typeChecker) ||
-        isRouterProviderCallExpression(node, typeChecker) ||
         isRouterCallExpression(node, typeChecker) ||
-        isProvideRoutesCallExpression(node, typeChecker)
+        isProvideRouterCallExpression(node, typeChecker)
       ) {
         const arg = node.arguments[0]; // ex: RouterModule.forRoot(routes) or provideRouter(routes)
         const routeFileImports = sourceFile.statements.filter(ts.isImportDeclaration);
@@ -95,7 +93,7 @@ function findRoutesArrayToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.Typ
           });
         } else if (ts.isIdentifier(arg)) {
           // ex: reference to routes array: RouterModule.forRoot(routes)
-          // RouterModule.forRoot(routes), provideRouter(routes), provideRoutes(routes)
+          // RouterModule.forRoot(routes), provideRouter(routes)
           const symbol = typeChecker.getSymbolAtLocation(arg);
           if (!symbol?.declarations) return;
 
