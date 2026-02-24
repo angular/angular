@@ -19,6 +19,10 @@
     gap: 2rem;
     padding: 1.5rem;
   }
+
+  @include mq.for-phone-only {
+    padding: 1rem;
+  }
 }
 
 .step-description {
@@ -42,6 +46,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-width: 0;
 
   .code-block {
     background: var(--card-background);
