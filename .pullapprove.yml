@@ -243,6 +243,8 @@ groups:
       - >
         contains_any_globs(files, [
           'adev/**/{*,.*}',
+          'tools/manual_api_docs/blocks/**/*.md',
+          'tools/manual_api_docs/elements/**/*.md',
         ])
     reviewers:
       users:
@@ -295,7 +297,11 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files.exclude('.pullapprove.yml'), [
+        contains_any_globs(files
+            .exclude('.pullapprove.yml') 
+            .exclude('tools/manual_api_docs/blocks/**/*.md')
+            .exclude('tools/manual_api_docs/elements/**/*.md'),
+        [
           '{*,.*}',
           '.agent/**/{*,.*}',
           '.devcontainer/**/{*,.*}',
