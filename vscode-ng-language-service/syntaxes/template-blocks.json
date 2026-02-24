@@ -55,7 +55,7 @@
           "include": "#blockExpression"
         }
       ],
-      "end": "(?=@|{)",
+      "end": "(?=@|{|})",
       "name": "control.block.case.header.ng"
     },
     "caseBlock": {
@@ -69,6 +69,25 @@
         }
       ],
       "end": "(?<=\\})",
+      "name": "control.block.case.ng"
+    },
+    "caseExhaustive": {
+      "match": "(@)(default\\s+never)\\s*(;)",
+      "captures": {
+        "1": {
+          "patterns": [
+            {
+              "include": "#transition"
+            }
+          ]
+        },
+        "2": {
+          "name": "keyword.control.block.kind.ng"
+        },
+        "3": {
+          "name": "punctuation.terminator.statement.ng"
+        }
+      },
       "name": "control.block.case.ng"
     },
     "blockExpression": {
@@ -160,6 +179,9 @@
       },
       "contentName": "control.block.body.ng",
       "patterns": [
+        {
+          "include": "#caseExhaustive"
+        },
         {
           "include": "#caseBlock"
         },

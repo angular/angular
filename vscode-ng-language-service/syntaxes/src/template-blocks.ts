@@ -39,13 +39,22 @@ export const TemplateBlocks: GrammarDefinition = {
         2: {name: 'keyword.control.block.kind.ng'},
       },
       patterns: [{include: '#blockExpression'}],
-      end: /(?=@|{)/,
+      end: /(?=@|{|})/,
       name: 'control.block.case.header.ng',
     },
     caseBlock: {
       begin: /(?=@(?:case|default))/,
       patterns: [{include: '#caseHeader'}, {include: '#blockBody'}],
       end: /(?<=\})/,
+      name: 'control.block.case.ng',
+    },
+    caseExhaustive: {
+      match: /(@)(default\s+never)\s*(;)/,
+      captures: {
+        1: {patterns: [{include: '#transition'}]},
+        2: {name: 'keyword.control.block.kind.ng'},
+        3: {name: 'punctuation.terminator.statement.ng'},
+      },
       name: 'control.block.case.ng',
     },
     blockExpression: {
@@ -105,6 +114,7 @@ export const TemplateBlocks: GrammarDefinition = {
       },
       contentName: 'control.block.body.ng',
       patterns: [
+        {include: '#caseExhaustive'},
         {include: '#caseBlock'},
         {include: 'text.html.derivative'},
         {include: 'template.ng'},
