@@ -131,6 +131,7 @@ export {
   AnimationFunction,
   MAX_ANIMATION_TIMEOUT,
 } from './animation/interfaces';
+export {IdleService, provideIdleServiceWith} from './defer/idle_service';
 
 import {global} from './util/global';
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
