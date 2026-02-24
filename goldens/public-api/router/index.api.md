@@ -300,9 +300,9 @@ export enum EventType {
 
 // @public
 export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions {
-    bindToComponentInputs?: boolean;
+    bindToComponentInputs?: boolean | ComponentInputBindingOptions;
     enableTracing?: boolean;
-    enableViewTransitions?: boolean | ComponentInputBindingOptions;
+    enableViewTransitions?: boolean;
     errorHandler?: (error: any) => RedirectCommand | any;
     initialNavigation?: InitialNavigation;
     preloadingStrategy?: any;
