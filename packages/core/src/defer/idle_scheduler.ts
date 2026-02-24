@@ -9,6 +9,7 @@
 import type {OnDestroy} from '../core';
 import {Injector, inject, ɵɵdefineInjectable} from '../di';
 import {NgZone} from '../zone';
+import {PendingTasksInternal} from '../pending_tasks_internal';
 
 /**
  * Helper function to schedule a callback to be invoked when a browser becomes idle.
@@ -48,6 +49,7 @@ export class IdleScheduler implements OnDestroy {
   queue = new Set<VoidFunction>();
 
   ngZone = inject(NgZone);
+  private readonly pendingTasks = inject(PendingTasksInternal);
 
   requestIdleCallbackFn = _requestIdleCallback().bind(globalThis);
   cancelIdleCallbackFn = _cancelIdleCallback().bind(globalThis);
@@ -79,7 +81,10 @@ export class IdleScheduler implements OnDestroy {
         callbackFn();
         this.queue.delete(callbackFn);
 
-        if (deadline && deadline.timeRemaining() === 0 && !deadline.didTimeout) {
+        if (
+          this.pendingTasks.hasPendingTasks ||
+          (deadline && deadline.timeRemaining() === 0 && !deadline.didTimeout)
+        ) {
           break;
         }
       }
