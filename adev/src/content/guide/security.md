@@ -365,12 +365,11 @@ For more information, see the XSSI section of this [Google web security blog pos
 
 ## Preventing Server-Side Request Forgery (SSRF)
 
-Angular includes strict validation for `Host`, `X-Forwarded-Host`, `X-Forwarded-Proto`, and `X-Forwarded-Port` headers in the request handling pipeline to prevent header-based [Server-Side Request Forgery (SSRF)](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/SSRF).
+Angular includes strict validation for `Host`, `X-Forwarded-Host`, `X-Forwarded-Proto`, `X-Forwarded-Prefix` and `X-Forwarded-Port` headers in the request handling pipeline to prevent header-based [Server-Side Request Forgery (SSRF)](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/SSRF).
 
 The validation rules are:
 
-- `Host` and `X-Forwarded-Host` headers are validated against a strict allowlist.
-- `Host` and `X-Forwarded-Host` headers cannot contain path separators.
+- `Host` and `X-Forwarded-Host` headers are validated against a strict allowlist and cannot contain path separators.
 - `X-Forwarded-Port` header must be numeric.
 - `X-Forwarded-Proto` header must be `http` or `https`.
 - `X-Forwarded-Prefix` header must not start with multiple `/` or `\` or contain `.`, `..` path segments.
