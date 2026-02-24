@@ -39,6 +39,7 @@ import {
   ViewChildren,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
 } from '../../src/core';
+import {IDLE_SERVICE, IdleService, provideIdleServiceWith} from '../../src/defer/idle_service';
 import {IdleScheduler} from '../../src/defer/idle_scheduler';
 import {TimerScheduler} from '../../src/defer/timer_scheduler';
 import {formatRuntimeErrorCode, RuntimeErrorCode} from '../../src/errors';
@@ -1814,8 +1815,31 @@ describe('@defer', () => {
         },
       };
 
+      @Injectable({providedIn: 'root'})
+      class CustomIdleService implements IdleService {
+        private callbacks: Array<((deadline?: IdleDeadline) => void) | undefined> = [];
+
+        requestOnIdle(callback: (deadline?: IdleDeadline) => void): number {
+          return this.callbacks.push(callback) - 1;
+        }
+
+        cancelOnIdle(id: number): void {
+          this.callbacks[id] = undefined;
+        }
+
+        trigger(): void {
+          for (const callback of this.callbacks) {
+            callback?.();
+          }
+          this.callbacks.length = 0;
+        }
+      }
+
       TestBed.configureTestingModule({
-        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          provideIdleServiceWith(CustomIdleService),
+        ],
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1828,7 +1852,7 @@ describe('@defer', () => {
       // Make sure loading function is not yet invoked.
       expect(loadingFnInvokedTimes).toBe(0);
 
-      triggerIdleCallbacks();
+      TestBed.inject(CustomIdleService).trigger();
       await allPendingDynamicImports();
       fixture.detectChanges();
 
@@ -4429,8 +4453,23 @@ describe('@defer', () => {
 
 describe('IdleScheduler', () => {
   let scheduler: IdleScheduler;
+  let customIdleService: CustomIdleService;
+
+  class CustomIdleService implements IdleService {
+    requestOnIdleSpy = jasmine.createSpy('requestOnIdleFn');
+
+    requestOnIdle(callback: (deadline?: IdleDeadline) => void): number {
+      return this.requestOnIdleSpy(callback);
+    }
+
+    cancelOnIdle(id: number): void {}
+  }
 
   beforeEach(() => {
+    customIdleService = new CustomIdleService();
+    TestBed.configureTestingModule({
+      providers: [{provide: IDLE_SERVICE, useValue: customIdleService}],
+    });
     scheduler = TestBed.inject(IdleScheduler);
   });
 
@@ -4442,13 +4481,11 @@ describe('IdleScheduler', () => {
     let capturedCb: ((deadline: any) => void) | null = null;
     let ricCount = 0;
 
-    scheduler.requestIdleCallbackFn = jasmine
-      .createSpy('requestIdleCallbackFn')
-      .and.callFake((cb: any) => {
-        ricCount++;
-        capturedCb = cb;
-        return 100 + ricCount;
-      });
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
 
     const cb1 = jasmine.createSpy('cb1');
     const cb2 = jasmine.createSpy('cb2');
@@ -4479,13 +4516,11 @@ describe('IdleScheduler', () => {
     let capturedCb: ((deadline: any) => void) | null = null;
     let ricCount = 0;
 
-    scheduler.requestIdleCallbackFn = jasmine
-      .createSpy('requestIdleCallbackFn')
-      .and.callFake((cb: any) => {
-        ricCount++;
-        capturedCb = cb;
-        return 100 + ricCount;
-      });
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
 
     const cb1 = jasmine.createSpy('cb1');
     const cb2 = jasmine.createSpy('cb2');
@@ -4540,13 +4575,11 @@ describe('IdleScheduler', () => {
     let capturedCb: ((deadline: any) => void) | null = null;
     let ricCount = 0;
 
-    scheduler.requestIdleCallbackFn = jasmine
-      .createSpy('requestIdleCallbackFn')
-      .and.callFake((cb: any) => {
-        ricCount++;
-        capturedCb = cb;
-        return 100 + ricCount;
-      });
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
 
     const cb1 = jasmine.createSpy('cb1');
     const cb2 = jasmine.createSpy('cb2');
@@ -4577,13 +4610,11 @@ describe('IdleScheduler', () => {
     let capturedCb: ((deadline: any) => void) | null = null;
     let ricCount = 0;
 
-    scheduler.requestIdleCallbackFn = jasmine
-      .createSpy('requestIdleCallbackFn')
-      .and.callFake((cb: any) => {
-        ricCount++;
-        capturedCb = cb;
-        return 100 + ricCount;
-      });
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any) => {
+      ricCount++;
+      capturedCb = cb;
+      return 100 + ricCount;
+    });
 
     // Test with undefined (empty arguments, typical of setTimeout)
     let cb1 = jasmine.createSpy('cb1');
