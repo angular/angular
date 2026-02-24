@@ -104,6 +104,32 @@
 >}
 #^ template.blocks.ng control.block.ng punctuation.definition.block.ts
 >
+>@switch(aOrb) {
+#^ template.blocks.ng control.block.ng keyword.control.block.transition.ng
+# ^^^^^^ template.blocks.ng control.block.ng keyword.control.block.kind.ng
+#       ^ template.blocks.ng control.block.ng meta.brace.round.ts
+#        ^^^^ template.blocks.ng control.block.ng control.block.expression.ng variable.other.readwrite.ts
+#            ^ template.blocks.ng control.block.ng meta.brace.round.ts
+#             ^ template.blocks.ng control.block.ng
+#              ^ template.blocks.ng control.block.ng punctuation.definition.block.ts
+>    @case(a) {}
+#^^^^ template.blocks.ng control.block.ng control.block.body.ng
+#    ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.transition.ng
+#     ^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng keyword.control.block.kind.ng
+#         ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng meta.brace.round.ts
+#          ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng control.block.expression.ng variable.other.readwrite.ts
+#           ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng meta.brace.round.ts
+#            ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng control.block.case.header.ng
+#             ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng punctuation.definition.block.ts
+#              ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng punctuation.definition.block.ts
+>    @default never;
+#^^^^ template.blocks.ng control.block.ng control.block.body.ng
+#    ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng keyword.control.block.transition.ng
+#     ^^^^^^^^^^^^^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng keyword.control.block.kind.ng
+#                  ^ template.blocks.ng control.block.ng control.block.body.ng control.block.case.ng punctuation.terminator.statement.ng
+>}
+#^ template.blocks.ng control.block.ng punctuation.definition.block.ts
+>
 >@if (a==b) { hello } @else  { goodbye }
 #^ template.blocks.ng control.block.ng keyword.control.block.transition.ng
 # ^^ template.blocks.ng control.block.ng keyword.control.block.kind.ng
