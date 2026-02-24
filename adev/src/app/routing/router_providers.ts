@@ -17,6 +17,7 @@ import {
   RouteReuseStrategy,
   TitleStrategy,
   NavigationCancel,
+  NavigationEnd,
   NavigationError,
   NavigationStart,
   RedirectCommand,
@@ -31,7 +32,7 @@ import {AppScroller} from '../app-scroller';
 import {Subject} from 'rxjs/internal/Subject';
 import {HttpErrorResponse} from '@angular/common/http';
 import {WINDOW} from '@angular/docs';
-import {merge, map} from 'rxjs';
+import {merge, map, filter, first} from 'rxjs';
 
 const transitionCreated = new Subject<void>();
 export const routerProviders = [
@@ -72,8 +73,63 @@ export const routerProviders = [
   },
   {provide: TitleStrategy, useClass: ADevTitleStrategy},
   provideEnvironmentInitializer(() => inject(AppScroller)),
+  // Must run before initializeNavigationAdapter so replaceState/pushState are
+  // already suppressed when the adapter subscribes to router events.
+  provideEnvironmentInitializer(() => preserveTextFragmentHighlight()),
   provideEnvironmentInitializer(() => initializeNavigationAdapter()),
 ];
+
+/**
+ * Preserves browser text fragment highlights (`:~:text=...`) during the initial
+ * navigation. Chromium-based browsers clear text fragment highlights whenever
+ * `history.pushState` or `history.replaceState` is called. During Angular's
+ * initial navigation, the Router (and the navigation adapter) call these methods
+ * to update history state, which strips the highlight.
+ *
+ * This function temporarily replaces `pushState`/`replaceState` with no-ops during
+ * the first navigation. The navigation adapter's `replaceState` call (used to trigger
+ * a Navigation API intercept) is also suppressed, which is acceptable because the
+ * browser already shows a loading indicator during the initial page load.
+ *
+ * Must be registered BEFORE `initializeNavigationAdapter` so the suppression is in
+ * place when the adapter subscribes to router events.
+ */
+const preserveTextFragmentHighlight = () => {
+  const window = inject(WINDOW);
+
+  // Text fragment directives are stripped from location.href by the browser
+  // after the first history state change. If the current URL contains `:~:`,
+  // a text fragment highlight is active and must be preserved.
+  const href = window.location.href;
+  if (!href.includes(':~:')) {
+    return;
+  }
+
+  const history = window.history;
+  const originalReplaceState = history.replaceState.bind(history);
+  const originalPushState = history.pushState.bind(history);
+
+  // Suppress replaceState/pushState to prevent clearing the text highlight.
+  history.replaceState = () => {};
+  history.pushState = () => {};
+
+  // Restore originals after the first navigation completes (or fails/cancels).
+  const router = inject(Router);
+  router.events
+    .pipe(
+      filter(
+        (e) =>
+          e instanceof NavigationEnd ||
+          e instanceof NavigationCancel ||
+          e instanceof NavigationError,
+      ),
+      first(),
+    )
+    .subscribe(() => {
+      history.replaceState = originalReplaceState;
+      history.pushState = originalPushState;
+    });
+};
 
 /**
  * This function creates an adapter for the Router which creates a browser navigation
