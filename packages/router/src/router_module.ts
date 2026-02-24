@@ -158,7 +158,7 @@ export class RouterModule {
         provideRouterScroller(),
         config?.preloadingStrategy ? withPreloading(config.preloadingStrategy).ɵproviders : [],
         config?.initialNavigation ? provideInitialNavigation(config) : [],
-        config?.bindToComponentInputs ? withComponentInputBinding().ɵproviders : [],
+        config?.bindToComponentInputs ? withComponentInputBinding(typeof config.bindToComponentInputs === 'object' ? config.bindToComponentInputs : {}).ɵproviders : [],
         config?.enableViewTransitions ? withViewTransitions().ɵproviders : [],
         provideRouterInitializer(),
       ],

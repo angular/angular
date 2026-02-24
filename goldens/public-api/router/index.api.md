@@ -302,7 +302,7 @@ export enum EventType {
 export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOptions {
     bindToComponentInputs?: boolean;
     enableTracing?: boolean;
-    enableViewTransitions?: boolean;
+    enableViewTransitions?: boolean | ComponentInputBindingOptions;
     errorHandler?: (error: any) => RedirectCommand | any;
     initialNavigation?: InitialNavigation;
     preloadingStrategy?: any;
@@ -1135,7 +1135,7 @@ export interface ViewTransitionsFeatureOptions {
 }
 
 // @public
-export function withComponentInputBinding(): ComponentInputBindingFeature;
+export function withComponentInputBinding(options?: ComponentInputBindingOptions): ComponentInputBindingFeature;
 
 // @public
 export function withDebugTracing(): DebugTracingFeature;
