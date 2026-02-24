@@ -15,13 +15,12 @@ import {
 } from '../hydration/interfaces';
 import {assertLContainer, assertTNodeForLView} from '../render3/assert';
 import {ChainedInjector} from '../render3/chained_injector';
-import {markViewDirty} from '../render3/instructions/mark_view_dirty';
 import {handleUncaughtError} from '../render3/instructions/shared';
 import {DEHYDRATED_VIEWS, LContainer} from '../render3/interfaces/container';
 import {TContainerNode, TNode} from '../render3/interfaces/node';
 import {isDestroyed} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, INJECTOR, LView, PARENT, TVIEW, TView} from '../render3/interfaces/view';
-import {getConstant, getTNode} from '../render3/util/view_utils';
+import {markViewForRefresh, getConstant, getTNode} from '../render3/util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../render3/view_manipulation';
 import {assertDefined} from '../util/assert';
 
@@ -289,7 +288,7 @@ function applyDeferBlockState(
       viewIndex,
       shouldAddViewToDom(activeBlockTNode, dehydratedView),
     );
-    markViewDirty(embeddedLView, NotificationSource.DeferBlockStateUpdate);
+    markViewForRefresh(embeddedLView);
 
     if (dehydratedViewIx > -1) {
       // Erase dehydrated view info in a given LContainer, so that the view is not

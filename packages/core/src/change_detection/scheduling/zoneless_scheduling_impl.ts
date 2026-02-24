@@ -149,12 +149,12 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler, O
     }
 
     switch (source) {
-      case NotificationSource.MarkAncestorsForTraversal: {
+      case NotificationSource.MarkAncestorsForTraversal:
+      case NotificationSource.DeferBlockStateUpdate: {
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
         break;
       }
       case NotificationSource.DebugApplyChanges:
-      case NotificationSource.DeferBlockStateUpdate:
       case NotificationSource.MarkForCheck:
       case NotificationSource.Listener:
       case NotificationSource.SetInput: {
