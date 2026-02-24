@@ -9,8 +9,8 @@
 import {Component, inject, Injectable, InjectionToken, NgModule} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {provideRoutes, Router, RouterModule, ROUTES} from '../index';
 import {timeout} from '@angular/private/testing';
+import {Router, RouterModule} from '../index';
 
 @Component({template: '<div>simple standalone</div>'})
 export class SimpleStandaloneComponent {}
@@ -543,15 +543,6 @@ describe('standalone in Router API', () => {
       await TestBed.inject(Router).navigateByUrl('/parent/child');
       expect(TestBed.inject(Router).url).toContain('parent/child');
     });
-  });
-});
-
-describe('provideRoutes', () => {
-  it('warns if provideRoutes is used without provideRouter, RouterModule, or RouterModule.forRoot', () => {
-    spyOn(console, 'warn');
-    TestBed.configureTestingModule({providers: [provideRoutes([])]});
-    TestBed.inject(ROUTES);
-    expect(console.warn).toHaveBeenCalled();
   });
 });
 

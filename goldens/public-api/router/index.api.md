@@ -589,9 +589,6 @@ export const PRIMARY_OUTLET = "primary";
 // @public
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders;
 
-// @public @deprecated
-export function provideRoutes(routes: Routes): Provider[];
-
 // @public
 export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 
