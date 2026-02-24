@@ -14,12 +14,12 @@ import {isSchemaOrSchemaFn} from '../schema/schema';
 /**
  * Extracts the model, schema, and options from the arguments passed to `form()`.
  */
-export function normalizeFormArgs<TModel>(
+export function normalizeFormArgs<TModel, TOptions = FormOptions<TModel>>(
   args: any[],
-): [WritableSignal<TModel>, SchemaOrSchemaFn<TModel> | undefined, FormOptions<TModel> | undefined] {
+): [WritableSignal<TModel>, SchemaOrSchemaFn<TModel> | undefined, TOptions | undefined] {
   let model: WritableSignal<TModel>;
   let schema: SchemaOrSchemaFn<TModel> | undefined;
-  let options: FormOptions<TModel> | undefined;
+  let options: TOptions | undefined;
 
   if (args.length === 3) {
     [model, schema, options] = args;
