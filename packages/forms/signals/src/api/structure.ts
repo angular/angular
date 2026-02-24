@@ -55,13 +55,6 @@ export interface FormOptions<TModel> {
   name?: string;
   /** Options that define how to handle form submission. */
   submission?: FormSubmitOptions<TModel, unknown>;
-
-  /**
-   * Adapter allows managing fields in a more flexible way.
-   * Currently this is used to support interop with reactive forms.
-   * @internal
-   */
-  adapter?: FieldAdapter;
 }
 
 /**
@@ -192,7 +185,10 @@ export function form<TModel>(
 ): FieldTree<TModel>;
 
 export function form<TModel>(...args: any[]): FieldTree<TModel> {
-  const [model, schema, options] = normalizeFormArgs<TModel>(args);
+  const [model, schema, options] = normalizeFormArgs<
+    TModel,
+    FormOptions<TModel> & {adapter?: FieldAdapter}
+  >(args);
   const injector = options?.injector ?? inject(Injector);
   const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
   const fieldManager = new FormFieldManager(

@@ -41,11 +41,11 @@ export type CompatFormOptions<TModel> = Omit<FormOptions<TModel>, 'adapter'>;
  *
  * nameForm.last().value(); // lastName, not FormControl
  * ```
- * 
+ *
  * @param model A writable signal that contains the model data for the form. The resulting field
  * structure will match the shape of the model and any changes to the form data will be written to
  * the model.
-
+ *
  * @category interop
  * @experimental 21.0.0
  */
@@ -130,5 +130,5 @@ export function compatForm<TModel>(...args: any[]): FieldTree<TModel> {
 
   const options = {...maybeOptions, adapter: new CompatFieldAdapter()};
   const schema = maybeSchema || ((() => {}) as SchemaOrSchemaFn<TModel, PathKind>);
-  return form(model, schema, options) as FieldTree<TModel>;
+  return form(model, schema, options);
 }
