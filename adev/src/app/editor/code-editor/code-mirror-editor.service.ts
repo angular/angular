@@ -483,6 +483,10 @@ export class CodeMirrorEditor {
         file.filename === this.currentFile().filename ? {...file, content: newContent} : file,
       ),
     );
+    this.embeddedTutorialManager.tutorialFiles.update((files) => ({
+      ...files,
+      [this.currentFile().filename]: newContent,
+    }));
 
     // send current file content to Ts Vfs worker to run diagnostics on current file state
     this.sendRequestToTsVfs<CodeChangeRequest>({

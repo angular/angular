@@ -59,6 +59,7 @@ describe('Tutorial', () => {
     type: signal(TutorialType.EDITOR),
     revealAnswer: () => {},
     resetRevealAnswer: () => {},
+    restoreWorkInProgress: () => {},
     tutorialChanged$: of(false),
     openFiles: signal<NonNullable<TutorialConfig['openFiles']>>(['app.component.ts']),
   };
@@ -189,5 +190,20 @@ describe('Tutorial', () => {
     await fixture.whenStable();
 
     expect(component.revealAnswerButton()).toBe(undefined);
+  });
+
+  it('should reset to initial state when requested', async () => {
+    setupResetRevealAnswerValues();
+    await fixture.whenStable();
+
+    const restoreWorkInProgressSpy = spyOn(
+      component['embeddedTutorialManager'],
+      'restoreWorkInProgress',
+    );
+
+    await component.handleBackToMyCode();
+
+    expect(restoreWorkInProgressSpy).toHaveBeenCalled();
+    expect(component['answerRevealed']()).toBe(false);
   });
 });
