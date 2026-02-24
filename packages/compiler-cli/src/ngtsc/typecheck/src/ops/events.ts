@@ -12,7 +12,6 @@ import {
   ImplicitReceiver,
   ParsedEventType,
   PropertyRead,
-  ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstElement,
@@ -23,7 +22,11 @@ import type {Context} from './context';
 import type {Scope} from './scope';
 import {TypeCheckableDirectiveMeta} from '../../api';
 import {addParseSpanInfo} from '../diagnostics';
-import {TcbExpressionTranslator, unwrapWritableSignal} from './expression';
+import {
+  TcbExpressionTranslator,
+  assertWritableTwoWayBinding,
+  unwrapWritableSignal,
+} from './expression';
 import {tsCreateVariable} from '../ts_util';
 import {addExpressionIdentifier, ExpressionIdentifier} from '../comments';
 import {checkSplitTwoWayBinding} from './bindings';
@@ -323,6 +326,12 @@ function tcbCreateEventHandler(
 
   if (assertionExpression !== undefined) {
     statements.push(ts.factory.createExpressionStatement(assertionExpression));
+  }
+
+  if (event.type === ParsedEventType.TwoWay && tcb.env.config.allowSignalsInTwoWayBindings) {
+    statements.push(
+      ts.factory.createExpressionStatement(assertWritableTwoWayBinding(handler, tcb)),
+    );
   }
 
   // TODO(crisbeto): remove the `checkTwoWayBoundEvents` check in v20.

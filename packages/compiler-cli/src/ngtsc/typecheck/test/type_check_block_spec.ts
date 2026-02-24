@@ -852,6 +852,7 @@ describe('type check blocks', () => {
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('var _t1 = null! as i0.TwoWay;');
     expect(block).toContain('_t1.input = i1.ɵunwrapWritableSignal((((this).value)));');
+    expect(block).toContain('i1.ɵassertWritableTwoWayBinding(((this).value));');
     expect(block).toContain('var _t2 = i1.ɵunwrapWritableSignal(((this).value));');
     expect(block).toContain('_t2 = $event;');
   });
@@ -876,6 +877,7 @@ describe('type check blocks', () => {
       'var _t1 = _ctor1({ "input": (i1.ɵunwrapWritableSignal(((this).value))) });',
     );
     expect(block).toContain('_t1.input = i1.ɵunwrapWritableSignal((((this).value)));');
+    expect(block).toContain('i1.ɵassertWritableTwoWayBinding(((this).value));');
     expect(block).toContain('var _t2 = i1.ɵunwrapWritableSignal(((this).value));');
     expect(block).toContain('_t2 = $event;');
   });
@@ -904,6 +906,7 @@ describe('type check blocks', () => {
     expect(block).toContain(
       '_t1.input[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((this).value)));',
     );
+    expect(block).toContain('i1.ɵassertWritableTwoWayBinding(((this).value));');
     expect(block).toContain('var _t2 = i1.ɵunwrapWritableSignal(((this).value));');
     expect(block).toContain('_t2 = $event;');
   });
@@ -947,6 +950,7 @@ describe('type check blocks', () => {
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('var _t1 = null! as boolean | string;');
     expect(block).toContain('_t1 = i1.ɵunwrapWritableSignal((((this).value)));');
+    expect(block).toContain('i1.ɵassertWritableTwoWayBinding(((this).value));');
     expect(block).toContain('var _t3 = i1.ɵunwrapWritableSignal(((this).value));');
     expect(block).toContain('_t3 = $event;');
   });
@@ -1076,6 +1080,7 @@ describe('type check blocks', () => {
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('var _t1 = null! as i0.TwoWay;');
       expect(block).toContain('_t1.input = i1.ɵunwrapWritableSignal(((((this).value) as any)));');
+      expect(block).toContain('i1.ɵassertWritableTwoWayBinding((((this).value) as any));');
       expect(block).toContain('var _t2 = i1.ɵunwrapWritableSignal((((this).value) as any));');
       expect(block).toContain('_t2 = $event;');
     });
@@ -1539,6 +1544,7 @@ describe('type check blocks', () => {
           allowSignalsInTwoWayBindings: false,
         });
         expect(block).not.toContain('ɵunwrapWritableSignal');
+        expect(block).not.toContain('ɵassertWritableTwoWayBinding');
       });
 
       it('should not unwrap signals in two-way bindings to generic directives', () => {
@@ -1558,6 +1564,7 @@ describe('type check blocks', () => {
           allowSignalsInTwoWayBindings: false,
         });
         expect(block).not.toContain('ɵunwrapWritableSignal');
+        expect(block).not.toContain('ɵassertWritableTwoWayBinding');
       });
     });
   });

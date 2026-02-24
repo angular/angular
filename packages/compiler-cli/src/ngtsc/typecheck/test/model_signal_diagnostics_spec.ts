@@ -680,6 +680,9 @@ runInEachFileSystem(() => {
         component: `val!: InputSignal<boolean>;`,
         expected: [
           `TestComponent.html(1, 10): Type 'InputSignal<boolean>' is not assignable to type 'boolean'.`,
+          jasmine.stringContaining(
+            `TestComponent.html(1, 21): Argument of type 'InputSignal<boolean>' is not assignable to parameter of type 'WritableSignal<boolean>'.`,
+          ),
           `TestComponent.html(1, 10): Type 'boolean' is not assignable to type 'InputSignal<boolean>'.`,
         ],
       },

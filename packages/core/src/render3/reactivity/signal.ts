@@ -51,6 +51,17 @@ export function ɵunwrapWritableSignal<T>(value: T | {[ɵWRITABLE_SIGNAL]: T}): 
 }
 
 /**
+ * Type-check-only assertion for two-way bindings requiring writable signals.
+ */
+type WritableOrNonSignal<T> = T extends Signal<infer U> ? WritableSignal<U> : T;
+
+/**
+ * Utility for template type-checking to extract a `WritableSignal` value.
+ * @codeGenApi
+ */
+export function ɵassertWritableTwoWayBinding<T>(value: WritableOrNonSignal<T>): void {}
+
+/**
  * Options passed to the `signal` creation function.
  */
 export interface CreateSignalOptions<T> {

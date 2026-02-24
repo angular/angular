@@ -382,12 +382,109 @@ runInEachFileSystem(() => {
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(2);
+        expect(diags.length).toBe(3);
         expect(diags[0].messageText).toBe(
           `Type 'InputSignal<number>' is not assignable to type 'number'.`,
         );
-        expect(diags[1].messageText).toBe(
+
+        expect(diags[1].messageText).toEqual(
+          jasmine.objectContaining({
+            messageText: `Argument of type 'InputSignal<number>' is not assignable to parameter of type 'WritableSignal<number>'.`,
+          }),
+        );
+        expect(diags[2].messageText).toBe(
           `Type 'number' is not assignable to type 'InputSignal<number>'.`,
+        );
+      });
+
+      it('should not allow a computed() signal directly bound to an any-typed model input', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, model, computed, signal} from '@angular/core';
+
+          @Directive({selector: '[anyModel]'})
+          export class AnyModel {
+            anyModel = model.required<any>();
+          }
+
+          @Component({
+            template: \`<input anyModel [(anyModel)]="computedValue" />\`,
+            imports: [AnyModel],
+          })
+          export class TestComp {
+            base = signal(1);
+            computedValue = computed(() => this.base() + 1);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toEqual(
+          jasmine.objectContaining({
+            messageText: `Argument of type 'Signal<number>' is not assignable to parameter of type 'WritableSignal<number>'.`,
+          }),
+        );
+      });
+
+      it('should not allow a signal().asReadonly() directly bound to an any-typed model input', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, model, signal} from '@angular/core';
+
+          @Directive({selector: '[anyModel]'})
+          export class AnyModel {
+            anyModel = model.required<any>();
+          }
+
+          @Component({
+            template: \`<input anyModel [(anyModel)]="valueReadonly" />\`,
+            imports: [AnyModel],
+          })
+          export class TestComp {
+            valueReadonly = signal(1).asReadonly();
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toEqual(
+          jasmine.objectContaining({
+            messageText: `Argument of type 'Signal<number>' is not assignable to parameter of type 'WritableSignal<number>'.`,
+          }),
+        );
+      });
+
+      it('should not allow an input() signal directly bound to an any-typed model input', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, model, input} from '@angular/core';
+
+          @Directive({selector: '[anyModel]'})
+          export class AnyModel {
+            anyModel = model.required<any>();
+          }
+
+          @Component({
+            template: \`<input anyModel [(anyModel)]="inputValue" />\`,
+            imports: [AnyModel],
+          })
+          export class TestComp {
+            inputValue = input(1);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toEqual(
+          jasmine.objectContaining({
+            messageText: `Argument of type 'InputSignal<number>' is not assignable to parameter of type 'WritableSignal<number>'.`,
+          }),
         );
       });
 
