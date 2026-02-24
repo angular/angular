@@ -345,6 +345,10 @@ section {
     min-height: 100px;
     width: 25%;
     box-sizing: border-box;
+
+    @include mq.for-phone-only {
+      padding: 0.5rem;
+    }
   }
 }
 
