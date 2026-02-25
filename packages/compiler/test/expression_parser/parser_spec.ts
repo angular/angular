@@ -234,6 +234,53 @@ describe('parser', () => {
         checkAction('a.a');
       });
 
+      it('should parse unicode identifier field access', () => {
+        checkAction('变量');
+        checkAction('this.变量', '变量');
+        checkAction('对象.变量');
+      });
+
+      it('should parse astral unicode identifier field access', () => {
+        checkAction('𐐷x');
+        checkAction('this.𐐷x', '𐐷x');
+        checkAction('对象.𐐷x');
+      });
+
+      it('should parse unicode identifiers across expression contexts', () => {
+        checkAction('函数(变量)');
+        checkAction('对象.方法(变量)');
+        checkAction('对象[键]');
+        checkAction('对象[键] = 值');
+        checkAction('对象?.属性');
+        checkAction('对象.属性 ?? 默认值');
+        checkAction('对象.属性 = 值 + 变量');
+        checkAction('{属性: 值, 变量}', '{属性: 值, 变量: 变量}');
+        checkAction('[变量, 对象.属性]');
+      });
+
+      it('should report stable unicode columns for malformed member access', () => {
+        checkActionWithError('𐐷x.', '𐐷x.', 'identifier or keyword');
+        expectActionError('𐐷x.', 'expression [𐐷x.]');
+      });
+
+      it('should reject astral private identifiers with consistent diagnostics', () => {
+        checkActionWithError(
+          '#𐐷',
+          '',
+          'Private identifiers are not supported. Unexpected private identifier: #𐐷 at column 1',
+        );
+        checkActionWithError(
+          'x.#𐐷',
+          'x.',
+          'Private identifiers are not supported. Unexpected private identifier: #𐐷, expected identifier or keyword',
+        );
+      });
+
+      it('should reject unicode code points outside identifier ranges', () => {
+        expectActionError('😀x', 'Unexpected character [\\u{1F600}]');
+        expectActionError('obj.😀x', 'Unexpected character [\\u{1F600}]');
+      });
+
       it('should error for private identifiers with implicit receiver', () => {
         checkActionWithError(
           '#privateField',
