@@ -24,7 +24,7 @@ export class DeferrableViewsExample {
 
 const exampleTs = `
 @Component({
-  // importing the component that will be loaded lazily
+  // lazily (gecikmiş) yüklənəcək komponentin import (daxil) edilməsi
   imports: [DataVisualization],
 })
 export class DataVisualizationPage {
@@ -35,9 +35,8 @@ export class DataVisualizationPage {
 
 const exampleHtml = `
 <section>
-  <h2>Data visualization</h2>
+  <h2>Data visualization (Məlumatların vizuallaşdırılması)</h2>
   @defer {
-    <!-- lazy loading a heavy component -->
     <app-data-visualization [data]="dataSet">
   }
 </section>

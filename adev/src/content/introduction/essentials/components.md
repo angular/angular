@@ -1,19 +1,20 @@
-<docs-decorative-header title="Components" imgSrc="adev/src/assets/images/components.svg"> <!-- markdownlint-disable-line -->
-The fundamental building block for creating applications in Angular.
+<docs-decorative-header title="Komponentlər" imgSrc="adev/src/assets/images/components.svg"> 
+<!-- markdownlint-disable-line -->
+Angular-da tətbiqlər yaratmaq üçün əsas tikinti bloku (building block).
 </docs-decorative-header>
 
-Components are the main building blocks of Angular applications. Each component represents a part of a larger web page. Organizing an application into components helps provide structure to your project, clearly separating code into specific parts that are easy to maintain and grow over time.
+Komponentlər Angular tətbiqlərinin əsas tikinti bloklarıdır (building block). Hər bir komponent daha böyük bir veb səhifənin bir hissəsini təmsil edir. Tətbiqi komponentlərə bölmək layihənizə struktur qazandırır, kodu asan idarə edilə bilən və zamanla inkişaf etdirilə bilən spesifik hissələrə aydın şəkildə ayırır.
 
-## Defining a component
+## Komponentin təyini
 
-Every component has a few main parts:
+Hər bir komponentin bir neçə əsas hissəsi vardır:
 
-1. A `@Component`[decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) that contains some configuration used by Angular.
-2. An HTML template that controls what renders into the DOM.
-3. A [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors) that defines how the component is used in HTML.
-4. A TypeScript class with behaviors, such as handling user input or making requests to a server.
+1. Angular tərəfindən istifadə olunan bəzi konfiqurasiyaları ehtiva edən `@Component`[decorator-u](https://www.typescriptlang.org/docs/handbook/decorators.html).
+2. DOM-a nə render olunacağını idarə edən HTML şablonu.
+3. Komponentin HTML-də necə istifadə olunacağını müəyyən edən [CSS selector-u](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors).
+4. İstifadəçi daxilolmasını idarə etmək və ya serverə sorğular göndərmək kimi davranışları olan TypeScript sinfi.
 
-Here is a simplified example of a `UserProfile` component.
+Budur `UserProfile` komponentinin sadələşdirilmiş nümunəsi.
 
 ```angular-ts
 // user-profile.ts
@@ -25,11 +26,11 @@ Here is a simplified example of a `UserProfile` component.
   `,
 })
 export class UserProfile {
-  /* Your component code goes here */
+  /* Komponent kodu buraya yazılır */
 }
 ```
 
-The `@Component` decorator also optionally accepts a `styles` property for any CSS you want to apply to your template:
+`@Component` dekoratoru həmçinin şablonunuza tətbiq etmək istədiyiniz hər hansı CSS üçün istəyə bağlı olaraq `styles` xassəsini qəbul edir:
 
 ```angular-ts
 // user-profile.ts
@@ -46,13 +47,13 @@ The `@Component` decorator also optionally accepts a `styles` property for any C
   `,
 })
 export class UserProfile {
-  /* Your component code goes here */
+  /* Komponent kodu buraya yazılır */
 }
 ```
 
-### Separating HTML and CSS into separate files
+### HTML və CSS-i ayrı fayllara ayırmaq
 
-You can define a component's HTML and CSS in separate files using `templateUrl` and `styleUrl`:
+komponentin `templateUrl` və `styleUrl` istifadə edərək HTML və CSS-ni ayrı fayllarda təyin edə bilərsiniz:
 
 ```angular-ts
 // user-profile.ts
@@ -62,7 +63,7 @@ You can define a component's HTML and CSS in separate files using `templateUrl` 
   styleUrl: 'user-profile.css',
 })
 export class UserProfile {
-  // Component behavior is defined in here
+  // Komponent davranışı burada müəyyən edilir
 }
 ```
 
@@ -79,9 +80,9 @@ h1 {
 }
 ```
 
-## Using components
+## Komponentləri istifadə etmək
 
-You build an application by composing multiple components together. For example, if you are building a user profile page, you might break the page up into several components like this:
+Bir tətbiqi bir neçə komponenti birləşdirərək qurursunuz. Məsələn, istifadəçi profil səhifəsi yaradarkən səhifəni aşağıdakı kimi bir neçə komponentə bölə bilərsiniz:
 
 ```mermaid
 flowchart TD
@@ -92,15 +93,15 @@ flowchart TD
     D[UserAddress]
 ```
 
-Here, the `UserProfile` component uses several other components to produce the final page.
+Burada `UserProfile` komponenti son səhifəni yaratmaq üçün bir neçə digər komponentdən istifadə edir.
 
-To import and use a component, you need to:
+Bir komponenti idxal edib istifadə etmək üçün aşağıdakıları etməlisiniz:
 
-1. In your component's TypeScript file, add an `import` statement for the component you want to use.
-2. In your `@Component` decorator, add an entry to the `imports` array for the component you want to use.
-3. In your component's template, add an element that matches the selector of the component you want to use.
+1. Komponentinizin TypeScript faylında istifadə etmək istədiyiniz komponent üçün `import` bəyanatı əlavə edin.
+2. `@Component` dekoratorunda istifadə etmək istədiyiniz komponent üçün `imports` massivinə giriş əlavə edin.
+3. Komponentinizin şablonunda istifadə etmək istədiyiniz komponentin seçicisinə uyğun element əlavə edin.
 
-Here's an example of a `UserProfile` component importing a `ProfilePhoto` component:
+Budur `UserProfile` komponentinin `ProfilePhoto` komponentini idxal etmə nümunəsi:
 
 ```angular-ts
 // user-profile.ts
@@ -116,17 +117,17 @@ import {ProfilePhoto} from 'profile-photo.ts';
   `,
 })
 export class UserProfile {
-  // Component behavior is defined in here
+  // Komponent davranışı burada müəyyən edilir
 }
 ```
 
-TIP: Want to know more about Angular components? See the [In-depth Components guide](guide/components) for the full details.
+MƏSLƏHƏT: Angular komponentləri haqqında daha çox məlumat əldə etmək istəyirsiniz? Tam təfərrüatlar üçün [Dərin Komponentlər bələdçisinə (In-depth Components guide)](guide/components) baxın.
 
-## Next Step
+## Növbəti addım
 
-Now that you know how components work in Angular, it's time to learn how we add and manage dynamic data in our application.
+İndi Angular-da komponentlərin necə işlədiyini bildiyinizə görə, tətbiqimizdə dinamik məlumatı necə əlavə edib idarə edəcəyimizi öyrənmək vaxtıdır.
 
 <docs-pill-row>
-  <docs-pill title="Reactivity with signals" href="essentials/signals" />
-  <docs-pill title="In-depth components guide" href="guide/components" />
+  <docs-pill title="Siqnallarla Reaktivlik" href="essentials/signals" />
+  <docs-pill title="Dərin komponentlər bələdçisi (In-depth components guide)" href="guide/components" />
 </docs-pill-row>

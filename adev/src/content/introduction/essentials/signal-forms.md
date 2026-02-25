@@ -1,16 +1,16 @@
-<docs-decorative-header title="Forms with signals" imgSrc="adev/src/assets/images/signals.svg"> </docs-decorative-header>
+<docs-decorative-header title="Siqnallarla formalar" imgSrc="adev/src/assets/images/signals.svg"> </docs-decorative-header>
 
-IMPORTANT: Signal Forms are [experimental](/reference/releases#experimental). The API may change in future releases. Avoid using experimental APIs in production applications without understanding the risks.
+VACİB: Siqnal Formaları [eksperimentaldir](/reference/releases#experimental). API gələcək buraxılışlarda dəyişə bilər. Riskləri anlamadan eksperimental API-ləri istehsalat (production) tətbiqlərində istifadə etməkdən çəkinin.
 
-Signal Forms manage form state using Angular signals to provide automatic synchronization between your data model and the UI with Angular Signals.
+Siqnal Formaları, məlumat modeliniz və istifadəçi interfeysi (UI) arasında avtomatik sinxronizasiyanı təmin etmək üçün Angular siqnallarından istifadə edərək forma vəziyyətini idarə edir.
 
-This guide walks you through the core concepts to create forms with Signal Forms. Here's how it works:
+Bu bələdçi sizə Siqnal Formaları ilə formalar yaratmaq üçün əsas anlayışları izah edir. İşləmə prinsipi belədir:
 
-## Creating your first form
+## İlk formanızı yaratmaq
 
-### 1. Create a form model with `signal()`
+### 1. `signal()` ilə forma modeli yaradın
 
-Every form starts by creating a signal that holds your form's data model:
+Hər bir forma, formanızın məlumat modelini saxlayan bir siqnal yaratmaqla başlayır:
 
 ```ts
 interface LoginData {
@@ -24,68 +24,68 @@ const loginModel = signal<LoginData>({
 });
 ```
 
-### 2. Pass the form model to `form()` to create a `FieldTree`
+### 2. Forma modelini `form()` funksiyasına ötürərək `FieldTree` yaradın
 
-Then, you pass your form model into the `form()` function to create a **field tree** - an object structure that mirrors your model's shape, allowing you to access fields with dot notation:
+Daha sonra, forma modelinizi `form()` funksiyasına ötürərək **sahə ağacı (field tree)** yaradırsınız. Bu, modelinizin strukturunu əks etdirən bir obyektdir və sahələrə nöqtə (dot notation) vasitəsilə daxil olmağa imkan verir:
 
 ```ts
 const loginForm = form(loginModel);
 
-// Access fields directly by property name
+// Sahələrə birbaşa xüsusiyyət adı ilə müraciət edin
 loginForm.email;
 loginForm.password;
 ```
 
-### 3. Bind HTML inputs with `[formField]` directive
+### 3. HTML girişlərini (inputs) `[formField]` direktivi ilə bağlayın
 
-Next, you bind your HTML inputs to the form using the `[formField]` directive, which creates two-way binding between them:
+Bundan sonra, `[formField]` direktivindən istifadə edərək HTML girişlərinizi formaya bağlayırsınız. Bu, onlar arasında ikitərəfli bağlama (two-way binding) yaradır:
 
 ```html
 <input type="email" [formField]="loginForm.email" />
 <input type="password" [formField]="loginForm.password" />
 ```
 
-As a result, user changes (such as typing in the field) automatically updates the form.
+Nəticədə, istifadəçi tərəfindən edilən dəyişikliklər (məsələn, sahəyə yazı yazmaq) avtomatik olaraq formanı yeniləyir.
 
-NOTE: The `[formField]` directive also syncs field state for attributes like `required`, `disabled`, and `readonly` when appropriate.
+QEYD: `[formField]` direktivi həmçinin uyğun gəldikdə `required`, `disabled` və `readonly` kimi atributlar üçün sahə vəziyyətini sinxronlaşdırır.
 
-### 4. Read field values with `value()`
+### 4. Sahə dəyərlərini `value()` ilə oxuyun
 
-You can access field state by calling the field as a function. This returns a `FieldState` object containing reactive signals for the field's value, validation status, and interaction state:
+Sahə vəziyyətinə müraciət etmək üçün sahəni funksiya kimi çağıra bilərsiniz. Bu, sahənin dəyəri, doğrulama (validation) statusu və qarşılıqlı əlaqə vəziyyəti üçün reaktiv siqnalları ehtiva edən `FieldState` obyektini qaytarır:
 
 ```ts
-loginForm.email(); // Returns FieldState with value(), valid(), touched(), etc.
+loginForm.email(); // value(), valid(), touched() və s. olan FieldState qaytarır.
 ```
 
-To read the field's current value, access the `value()` signal:
+Sahənin cari dəyərini oxumaq üçün `value()` siqnalına müraciət edin:
 
 ```html
-<!-- Render form value that updates automatically as user types -->
+<!-- İstifadəçi yazdıqca avtomatik yenilənən forma dəyərini göstərin -->
 <p>Email: {{ loginForm.email().value() }}</p>
 ```
 
 ```ts
-// Get the current value
+// Cari dəyəri əldə edin
 const currentEmail = loginForm.email().value();
 ```
 
-### 5. Update field values with `set()`
+### 5. Sahə dəyərlərini `set()` ilə yeniləyin
 
-You can programmatically update a field's value using the `value.set()` method. This updates both the field and the underlying model signal:
+`value.set()` metodundan istifadə edərək sahənin dəyərini proqramlı şəkildə yeniləyə bilərsiniz. Bu, həm sahəni, həm də əsas model siqnalını yeniləyir:
 
 ```ts
-// Update the value programmatically
+// Dəyəri proqramlı şəkildə yeniləyin
 loginForm.email().value.set('alice@wonderland.com');
 ```
 
-As a result, both the field value and the model signal are updated automatically:
+Nəticədə həm sahə dəyəri, həm də model siqnalı avtomatik yenilənir:
 
 ```ts
-// The model signal is also updated
+// Model siqnalı da yenilənir
 console.log(loginModel().email); // 'alice@wonderland.com'
 ```
 
-Here's a complete example:
+Budur tam bir nümunə:
 
 <docs-code-multifile preview path="adev/src/content/examples/signal-forms/src/login-simple/app/app.ts">
   <docs-code header="app.ts" path="adev/src/content/examples/signal-forms/src/login-simple/app/app.ts"/>
@@ -93,89 +93,89 @@ Here's a complete example:
   <docs-code header="app.css" path="adev/src/content/examples/signal-forms/src/login-simple/app/app.css"/>
 </docs-code-multifile>
 
-## Basic usage
+## Əsas istifadə {#basic-usage}
 
-The `[formField]` directive works with all standard HTML input types. Here are the most common patterns:
+`[formField]` direktivi bütün standart HTML giriş tipləri ilə işləyir. Ən çox yayılan nümunələr bunlardır:
 
-### Text inputs
+### Mətn girişləri (Text inputs)
 
-Text inputs work with various `type` attributes and textareas:
+Mətn girişləri müxtəlif `type` atributları və `textarea` elementləri ilə işləyir:
 
 ```html
-<!-- Text and email -->
+<!-- Mətn və email -->
 <input type="text" [formField]="form.name" />
 <input type="email" [formField]="form.email" />
 ```
 
-#### Numbers
+#### Rəqəmlər
 
-Number inputs automatically convert between strings and numbers:
+Rəqəm girişləri sətirlər (strings) və rəqəmlər arasında avtomatik çevrilmə aparır:
 
 ```html
-<!-- Number - automatically converts to number type -->
+<!-- Rəqəm - avtomatik rəqəm tipinə çevrilir -->
 <input type="number" [formField]="form.age" />
 ```
 
-#### Date and time
+#### Tarix və vaxt
 
-Date inputs store values as `YYYY-MM-DD` strings, and time inputs use `HH:mm` format:
+Tarix girişləri dəyərləri `YYYY-MM-DD` sətirləri kimi, vaxt girişləri isə `HH:mm` formatında saxlayır:
 
 ```html
-<!-- Date and time - stores as ISO format strings -->
+<!-- Tarix və vaxt - ISO formatlı sətirlər kimi saxlanılır -->
 <input type="date" [formField]="form.eventDate" />
 <input type="time" [formField]="form.eventTime" />
 ```
 
-If you need to convert date strings to Date objects, you can do so by passing the field value into `Date()`:
+Tarix sətirlərini `Date` obyektlərinə çevirmək lazımdırsa, sahə dəyərini `Date()` funksiyasına ötürərək bunu edə bilərsiniz:
 
 ```ts
 const dateObject = new Date(form.eventDate().value());
 ```
 
-#### Multiline text
+#### Çoxsətirli (Multiline) mətn
 
-Textareas work the same way as text inputs:
+`textarea` elementləri mətn girişləri ilə eyni şəkildə işləyir:
 
 ```html
 <!-- Textarea -->
 <textarea [formField]="form.message" rows="4"></textarea>
 ```
 
-### Checkboxes
+### İşarə qutuları (Checkboxes)
 
-Checkboxes bind to boolean values:
+İşarə qutuları (checkbooks) boolean dəyərlərinə bağlanır:
 
 ```html
-<!-- Single checkbox -->
+<!-- Tək işarə qutusu -->
 <label>
   <input type="checkbox" [formField]="form.agreeToTerms" />
-  I agree to the terms
+  Şərtlərlə razıyam
 </label>
 ```
 
-#### Multiple checkboxes
+#### Çoxsaylı işarə qutuları (Multiple checkboxes)
 
-For multiple options, create a separate boolean `formField` for each:
+Birdən çox seçim üçün hər biri üçün ayrı bir boolean `formField` yaradın:
 
 ```html
 <label>
   <input type="checkbox" [formField]="form.emailNotifications" />
-  Email notifications
+  Email bildirişləri
 </label>
 <label>
   <input type="checkbox" [formField]="form.smsNotifications" />
-  SMS notifications
+  SMS bildirişləri
 </label>
 ```
 
-### Radio buttons
+### Radio düymələri (Radio buttons)
 
-Radio buttons work similarly to checkboxes. As long as the radio buttons use the same `[formField]` value, Signal Forms will automatically bind the same `name` attribute to all of them:
+Radio düymələri işarə qutuları kimi işləyir. Radio düymələri eyni `[formField]` dəyərindən istifadə etdiyi müddətcə, Siqnal Formaları avtomatik olaraq onların hamısına eyni `name` atributunu bağlayacaq:
 
 ```html
 <label>
   <input type="radio" value="free" [formField]="form.plan" />
-  Free
+  Pulsuz
 </label>
 <label>
   <input type="radio" value="premium" [formField]="form.plan" />
@@ -183,34 +183,34 @@ Radio buttons work similarly to checkboxes. As long as the radio buttons use the
 </label>
 ```
 
-When a user selects a radio button, the form `formField` stores the value from that radio button's `value` attribute. For example, selecting "Premium" sets `form.plan().value()` to `"premium"`.
+İstifadəçi radio düyməsini seçdikdə, `formField` həmin radio düyməsinin `value` atributundakı dəyəri saxlayır. Məsələn, "Premium" seçmək `form.plan().value()` dəyərini `"premium"` olaraq təyin edir.
 
-### Select dropdowns
+### Seçim siyahıları (Select dropdowns)
 
-Select elements work with both static and dynamic options:
+`select` elementləri həm statik, həm də dinamik seçimlərlə işləyir:
 
 ```angular-html
-<!-- Static options -->
+<!-- Statik seçimlər -->
 <select [formField]="form.country">
-  <option value="">Select a country</option>
-  <option value="us">United States</option>
-  <option value="ca">Canada</option>
+  <option value="">Ölkə seçin</option>
+  <option value="us">Amerika Birləşmiş Ştatları</option>
+  <option value="ca">Kanada</option>
 </select>
 
-<!-- Dynamic options with @for -->
+<!-- @for ilə dinamik seçimlər -->
 <select [formField]="form.productId">
-  <option value="">Select a product</option>
+  <option value="">Məhsul seçin</option>
   @for (product of products; track product.id) {
     <option [value]="product.id">{{ product.name }}</option>
   }
 </select>
 ```
 
-NOTE: Multiple select (`<select multiple>`) is not supported by the `[formField]` directive at this time.
+QEYD: Çoxlu seçim (`<select multiple>`) hazırda `[formField]` direktivi tərəfindən dəstəklənmir.
 
-## Validation and state
+## Doğrulama və vəziyyət (Validation and state)
 
-Signal Forms provides built-in validators that you can apply to your form fields. To add validation, pass a schema function as the second argument to `form()`:
+Siqnal Formaları forma sahələrinizə tətbiq edə biləcəyiniz daxili doğrulayıcılar (validators) təqdim edir. Doğrulama əlavə etmək üçün `form()` funksiyasına ikinci arqument kimi bir sxem (schema) funksiyası ötürün:
 
 ```ts
 const loginForm = form(loginModel, (schemaPath) => {
@@ -220,26 +220,26 @@ const loginForm = form(loginModel, (schemaPath) => {
 });
 ```
 
-The schema function receives a **schema path** parameter that provides paths to your fields for configuring validation rules.
+Sxem funksiyası, doğrulama qaydalarını konfiqurasiya etmək üçün sahələrinizə yol göstərən bir **sxem yolu (schema path)** parametri qəbul edir.
 
-Common validators include:
+Ümumi doğrulayıcılara aşağıdakılar daxildir:
 
-- **`required()`** - Ensures the field has a value
-- **`email()`** - Validates email format
-- **`min()`** / **`max()`** - Validates number ranges
-- **`minLength()`** / **`maxLength()`** - Validates string or collection length
-- **`pattern()`** - Validates against a regex pattern
+- **`required()`** - Sahənin dəyərinin olmasını təmin edir
+- **`email()`** - Email formatını doğrulayır
+- **`min()`** / **`max()`** - Rəqəm diapazonlarını doğrulayır
+- **`minLength()`** / **`maxLength()`** - Sətir və ya kolleksiya uzunluğunu doğrulayır
+- **`pattern()`** - Regex şablonuna qarşı doğrulayır
 
-You can also customize error messages by passing an options object as the second argument to the validator:
+Həmçinin, doğrulayıcıya ikinci arqument kimi seçimlər obyekti ötürərək xəta mesajlarını fərdiləşdirə bilərsiniz:
 
 ```ts
-required(schemaPath.email, {message: 'Email is required'});
-email(schemaPath.email, {message: 'Please enter a valid email address'});
+required(schemaPath.email, {message: 'Email mütləqdir'});
+email(schemaPath.email, {message: 'Zəhmət olmasa düzgün email ünvanı daxil edin'});
 ```
 
-Each form field exposes its validation state through signals. For example, you can check `field().valid()` to see if validation passes, `field().touched()` to see if the user has interacted with it, and `field().errors()` to get the list of validation errors.
+Hər bir forma sahəsi öz doğrulama vəziyyətini siqnallar vasitəsilə təqdim edir. Məsələn, doğrulamanın keçib-keçmədiyini görmək üçün `field().valid()`, istifadəçinin onunla qarşılıqlı əlaqədə olub-olmadığını görmək üçün `field().touched()` və doğrulama xətalarının siyahısını əldə etmək üçün `field().errors()` yoxlaya bilərsiniz.
 
-Here's a complete example:
+Budur tam bir nümunə:
 
 <docs-code-multifile preview path="adev/src/content/examples/signal-forms/src/login-validation/app/app.ts">
   <docs-code header="app.ts" path="adev/src/content/examples/signal-forms/src/login-validation/app/app.ts"/>
@@ -247,25 +247,25 @@ Here's a complete example:
   <docs-code header="app.css" path="adev/src/content/examples/signal-forms/src/login-validation/app/app.css"/>
 </docs-code-multifile>
 
-### Field State Signals
+### Sahə Vəziyyəti Siqnalları (Field State Signals)
 
-Every `field()` provides these state signals:
+Hər bir `field()` bu vəziyyət siqnallarını təmin edir:
 
-| State        | Description                                                                |
-| ------------ | -------------------------------------------------------------------------- |
-| `valid()`    | Returns `true` if the field passes all validation rules                    |
-| `touched()`  | Returns `true` if the user has focused and blurred the field               |
-| `dirty()`    | Returns `true` if the user has changed the value                           |
-| `disabled()` | Returns `true` if the field is disabled                                    |
-| `readonly()` | Returns `true` if the field is readonly                                    |
-| `pending()`  | Returns `true` if async validation is in progress                          |
-| `errors()`   | Returns an array of validation errors with `kind` and `message` properties |
+| Vəziyyət     | Təsvir                                                                           |
+| ------------ | -------------------------------------------------------------------------------- |
+| `valid()`    | Sahə bütün doğrulama qaydalarından keçdikdə `true` qaytarır                      |
+| `touched()`  | İstifadəçi sahəyə fokuslanıb sonra çıxdıqda (blur) `true` qaytarır               |
+| `dirty()`    | İstifadəçi dəyəri dəyişdikdə `true` qaytarır                                     |
+| `disabled()` | Sahə deaktiv edildikdə `true` qaytarır                                           |
+| `readonly()` | Sahə yalnız oxunabilən (readonly) olduqda `true` qaytarır                        |
+| `pending()`  | Asinxron doğrulama davam etdikdə `true` qaytarır                                 |
+| `errors()`   | `kind` və `message` xüsusiyyətlərinə malik doğrulama xətaları massivini qaytarır |
 
-## Next steps
+## Növbəti addımlar
 
-To learn more about Signal Forms and how it works, check out the in-depth guides:
+Siqnal Formaları və onların necə işlədiyi haqqında daha çox öyrənmək üçün ətraflı bələdçilərə baxın:
 
-- [Overview](guide/forms/signals/overview) - Introduction to Signal Forms and when to use them
-- [Form models](guide/forms/signals/models) - Creating and managing form data with signals
-- [Field state management](guide/forms/signals/field-state-management) - Working with validation state, interaction tracking, and field visibility
-- [Validation](guide/forms/signals/validation) - Built-in validators, custom validation rules, and async validation
+- [İcmal](guide/forms/signals/overview) - Siqnal Formalarına giriş və onlardan nə vaxt istifadə etməli
+- [Form modelləri](guide/forms/signals/models) - Siqnallarla forma məlumatlarının yaradılması və idarə edilməsi
+- [Sahə vəziyyətinin idarə edilməsi](guide/forms/signals/field-state-management) - Doğrulama vəziyyəti, qarşılıqlı əlaqənin izlənilməsi və sahə görünürlüğü ilə işləmək
+- [Doğrulama (Validation)](guide/forms/signals/validation) - Daxili doğrulayıcılar, xüsusi doğrulama qaydaları və asinxron doğrulama

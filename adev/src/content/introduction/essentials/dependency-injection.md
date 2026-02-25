@@ -1,19 +1,20 @@
-<docs-decorative-header title="Dependency Injection" imgSrc="adev/src/assets/images/dependency_injection.svg"> <!-- markdownlint-disable-line -->
-Reuse code and control behaviors across your application and tests.
+<docs-decorative-header title="Asılılıqların yeridilməsi (DI)" imgSrc="adev/src/assets/images/dependency_injection.svg"> 
+<!-- markdownlint-disable-line -->
+Tətbiqiniz və testləriniz boyu kodu təkrar istifadə edin və davranışları idarə edin.
 </docs-decorative-header>
 
-When you need to share logic between components, Angular leverages the design pattern of [dependency injection](guide/di) that allows you to create a “service” which allows you to inject code into components while managing it from a single source of truth.
+Komponentlər arasında məntiqi paylaşmaq lazım olduqda, Angular [Asılılıqların yeridilməsi (dependency injection)](guide/di) dizayn nümunəsindən istifadə edir. Bu nümunə sizə "servis" yaratmağa imkan verir ki, bu da kodu tək bir mənbədən idarə edərək komponentlərə daxil etməyə (inject etməyə) şərait yaradır.
 
-## What are services?
+## Servislər nədir?
 
-Services are reusable pieces of code that can be injected.
+Servislər, tətbiq daxilində komponentlərə daxil edilə bilən (injectable) təkrar istifadə edilə bilən kod parçalarıdır.
 
-Similar to defining a component, services are comprised of the following:
+Komponent tərifi kimi, servislər də aşağıdakılardan ibarətdir:
 
-- A **TypeScript decorator** that declares the class as an Angular service via `@Injectable` and allows you to define what part of the application can access the service via the `providedIn` property (which is typically `'root'`) to allow a service to be accessed anywhere within the application.
-- A **TypeScript class** that defines the desired code that will be accessible when the service is injected
+- **TypeScript dekoratoru**: `@Injectable` vasitəsilə sinfin Angular servisi olduğunu bəyan edir və `providedIn` xüsusiyyəti (adətən `'root'`) vasitəsilə tətbiqin hansı hissəsinin servisə daxil ola biləcəyini müəyyən edir. `'root'` dəyəri servisin tətbiqin istənilən yerindən əlçatan olmasını təmin edir.
+- **TypeScript sinfi**: Servis daxil edildikdə (inject olunduqda) əlçatan olacaq kodu təyin edir.
 
-Here is an example of a `Calculator` service.
+Budur bir `Calculator` servisi nümunəsi:
 
 ```angular-ts
 import {Injectable} from '@angular/core';
@@ -26,14 +27,14 @@ export class Calculator {
 }
 ```
 
-## How to use a service
+## Servisdən necə istifadə etməli
 
-When you want to use a service in a component, you need to:
+Komponentdə servisdən istifadə etmək istədikdə aşağıdakıları etməlisiniz:
 
-1. Import the service
-2. Declare a class field where the service is injected. Assign the class field to the result of the call of the built-in function [`inject`](/api/core/inject) which creates the service
+1. Servisi idxal (import) edin.
+2. Servisin daxil ediləcəyi sinif sahəsini (field) bəyan edin. Sinif sahəsinə servisi yaradan daxili [`inject`](/api/core/inject) funksiyasının çağırış nəticəsini mənimsədin.
 
-Here’s what it might look like in the `Receipt` component:
+`Receipt` komponentində bu aşağıdakı kimi görünə bilər:
 
 ```angular-ts
 import {Component, inject} from '@angular/core';
@@ -41,7 +42,7 @@ import {Calculator} from './calculator';
 
 @Component({
   selector: 'app-receipt',
-  template: `<h1>The total is {{ totalCost }}</h1>`,
+  template: `<h1>Ümumi məbləğ: {{ totalCost }}</h1>`,
 })
 export class Receipt {
   private calculator = inject(Calculator);
@@ -49,11 +50,11 @@ export class Receipt {
 }
 ```
 
-In this example, the `Calculator` is being used by calling the Angular function [`inject`](/api/core/inject) and passing in the service to it.
+Bu nümunədə `Calculator` servisi, Angular-ın [`inject`](/api/core/inject) funksiyasını çağırıb ona servisi ötürməklə istifadə olunur.
 
-## Next Step
+## Növbəti addım
 
 <docs-pill-row>
-  <docs-pill title="Next Steps After Essentials" href="essentials/next-steps" />
-  <docs-pill title="In-depth dependency injection guide" href="guide/di" />
+  <docs-pill title="Əsaslardan sonrakı addımlar" href="essentials/next-steps" />
+  <docs-pill title="Dərindən dependency injection bələdçisi" href="guide/di" />
 </docs-pill-row>

@@ -46,11 +46,11 @@ export class SignalsDemo {
 }
 
 const tsExample = `
-// Source signals for state.
-items = signal(['Apple', 'Banana', /*...*/ ]);
+// State (Vəziyyət) üçün source signals (mənbə siqnalları).
+items = signal(['Alma', 'Banan', /*...*/ ]);
 searchTerm = signal('');
-// A computed signal that derives the filtered list.
-// It automatically re-runs when a dependency changes.
+// Filtrlənmiş siyahını törədən computed signal (hesablanmış siqnal).
+// Dependency (asılılıq) dəyişdikdə avtomatik olaraq yenidən işə düşür.
 filteredItems = computed(() => {
   const lowerCaseSearchTerm = this.searchTerm().toLowerCase();
   return this.items().filter(item =>

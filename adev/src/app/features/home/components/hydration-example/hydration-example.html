@@ -1,28 +1,30 @@
-<div class="header">Hydration</div>
+<div class="header">Hydration (Hidrasiya)</div>
 <div class="description">
-  Hydration is the process that restores the server-side rendered application on the client
+  Hydration (Hidrasiya) — server tərəfindən render edilmiş (server-side rendered) tətbiqi müştəri
+  (client) tərəfində bərpa edən prosesdir.
 
   <p>
-    This demo showcases Angular's hydration strategies, allowing you to simulate network latency and
-    observe how different components hydrate based on their configured triggers.
+    Bu demo Angular-ın Hydration (Hidrasiya) strategiyalarını nümayiş etdirir; bu, sizə şəbəkə
+    gecikməsini (network latency) simulyasiya etməyə və müxtəlif komponentlərin konfiqurasiya
+    edilmiş tətikləyicilər (triggers) əsasında necə hidratasiya olunduğunu müşahidə etməyə imkan
+    verir.
   </p>
 </div>
 
 <div class="demo-container">
   <div class="max-width-wrapper">
     <div class="main-layout">
-      <!-- Controls & Logs -->
       <div class="sidebar">
         <div class="card config-card">
           <h3 class="sidebar-title font-mono">
             <docs-icon>schedule</docs-icon>
-            Simulation Config
+            Simulyasiya Konfiqurasiyası
           </h3>
 
           <div class="config-controls">
             <div class="control-group">
               <div class="label-row">
-                <label>Network Latency</label>
+                <label>Şəbəkə Gecikməsi (Network Latency)</label>
                 <span class="latency-value font-mono">{{ latency() }}ms</span>
               </div>
               <input
@@ -42,33 +44,30 @@
               class="btn-reset"
             >
               <docs-icon>refresh</docs-icon>
-              Reset Lifecycle
+              Həyat Dövrünü (Lifecycle) Sıfırla
             </button>
           </div>
         </div>
 
-        <!-- Terminal Log -->
         <div class="terminal">
-          <h3 class="terminal-title font-mono">Hydration Engine Log</h3>
+          <h3 class="terminal-title font-mono">Hydration Engine Log (Hidrasiya Motoru Jurnalı)</h3>
           <div class="terminal-body font-mono custom-scrollbar">
             @for (evt of eventQueue(); track $index) {
               <div class="log-entry animate-in">
                 <span class="log-index">0{{ $index + 1 }}</span>
-                <span class="log-tag">event:</span>
+                <span class="log-tag">hadisə:</span>
                 <span class="log-msg">{{ evt }}</span>
               </div>
             }
             @if (eventQueue().length === 0) {
-              <div class="log-placeholder">Awaiting app bootstrap...</div>
+              <div class="log-placeholder">Tətbiqin başladılması (bootstrap) gözlənilir...</div>
             }
           </div>
         </div>
       </div>
 
-      <!-- Simulator Stage -->
       <div class="simulator-stage">
         <div class="browser-window">
-          <!-- Browser UI -->
           <div class="browser-header">
             <div class="window-controls">
               <div class="dot-win"></div>
@@ -81,7 +80,6 @@
             </div>
           </div>
 
-          <!-- Viewport Content -->
           <div class="viewport">
             @if (currentState() === 'Server-Side Rendering...') {
               <div class="ssr-overlay animate-fade">
@@ -89,18 +87,21 @@
                   <div class="spinner-outer"></div>
                   <div class="spinner-inner"></div>
                 </div>
-                <p class="ssr-title">Generating SSR Markup...</p>
+                <p class="ssr-title">SSR Markup (Nişanlanma) Yaradılır...</p>
               </div>
             }
 
             <div class="viewport-flex">
               <div class="viewport-header">
                 <div class="header-text">
-                  <h4 class="viewport-title">Component Strategies</h4>
-                  <p class="viewport-subtitle">Mixing eager and deferred hydration triggers.</p>
+                  <h4 class="viewport-title">Komponent Strategiyaları</h4>
+                  <p class="viewport-subtitle">
+                    Eager (təcili) və deferred (təxirə salınmış) hidrasiya tətikləyicilərinin
+                    qarışığı.
+                  </p>
                 </div>
                 <div class="viewport-stats">
-                  <div class="stats-label">Main App</div>
+                  <div class="stats-label">Əsas Tətbiq</div>
                   <div class="stats-value font-tabular">{{ progress() }}%</div>
                 </div>
               </div>
@@ -130,7 +131,7 @@
                       </div>
                       @if (card.clickCount > 0) {
                         <div class="click-badge font-tabular animate-zoom">
-                          <span class="badge-label">CLICKS:</span> {{ card.clickCount }}
+                          <span class="badge-label">KLİKLƏR:</span> {{ card.clickCount }}
                         </div>
                       }
                     </div>
@@ -144,17 +145,17 @@
                       @if (card.isHydrating) {
                         <div class="tag tag-deferred animate-slide-in">
                           <span class="tag-dot spin"></span>
-                          Hydrating...
+                          Hidratasiya olunur...
                         </div>
                       } @else if (!card.isHydrated) {
                         <div class="tag tag-deferred">
                           <span class="tag-dot pulse"></span>
-                          Static
+                          Statik (Static)
                         </div>
                       } @else {
                         <div class="tag tag-hydrated animate-slide-in">
                           <span class="tag-dot"></span>
-                          Hydrated
+                          Hidratasiya olundu (Hydrated)
                         </div>
                       }
                     </div>
@@ -173,7 +174,6 @@
             </div>
           </div>
 
-          <!-- Main Lifecycle Progress -->
           <div class="lifecycle-progress-bar">
             <div class="progress-fill transition-all" [style.width.%]="progress()"></div>
           </div>
@@ -181,36 +181,42 @@
       </div>
     </div>
 
-    <!-- Explanatory Feature Cards -->
     <div class="explainer-grid">
       <div class="explainer-item">
-        <h5 class="explainer-title"><span class="dot-red"></span> Eager Hydration</h5>
+        <h5 class="explainer-title">
+          <span class="dot-red"></span> Eager Hydration (Təcili Hidrasiya)
+        </h5>
         <p class="explainer-text">
-          Essential components (like navigation or top-fold content) hydrate as soon as the main
-          application bundle is ready.
+          Vacib komponentlər (naviqasiya və ya görünən ilkin hissə kimi) əsas tətbiq paketi (bundle)
+          hazır olan kimi hidratasiya olunur.
         </p>
       </div>
       <div class="explainer-item">
-        <h5 class="explainer-title"><span class="dot-violet"></span> Incremental Hydration</h5>
+        <h5 class="explainer-title">
+          <span class="dot-violet"></span> Incremental Hydration (Artımlı Hidrasiya)
+        </h5>
         <p class="explainer-text">
-          Use hydration triggers like <code>on interaction</code> or <code>on timer</code> to delay
-          JS execution for non-critical elements.
+          Kritik olmayan elementlər üçün JS icrasını gecikdirmək məqsədilə
+          <code>on interaction</code> və ya <code>on timer</code> kimi hidrasiya tətikləyicilərindən
+          istifadə edin.
         </p>
       </div>
       <div class="explainer-item">
-        <h5 class="explainer-title"><span class="dot-green"></span> Event Replay</h5>
+        <h5 class="explainer-title">
+          <span class="dot-green"></span> Event Replay (Hadisənin Təkrarı)
+        </h5>
         <p class="explainer-text">
-          User clicks are never lost. Angular records events during the "Static" phase and
-          re-dispatches them once hydrated.
+          İstifadəçi klikləri heç vaxt itmir. Angular "Statik" faza zamanı hadisələri qeyd edir və
+          hidratasiya olunduqdan sonra onları yenidən işə salır.
         </p>
       </div>
     </div>
   </div>
   <button
     class="docs-primary-btn"
-    [attr.text]="'Learn more about hydration'"
+    [attr.text]="'Hydration (Hidrasiya) haqqında daha çox öyrənin'"
     routerLink="/guide/hydration"
   >
-    Learn more about hydration
+    Hydration (Hidrasiya) haqqında daha çox öyrənin
   </button>
 </div>

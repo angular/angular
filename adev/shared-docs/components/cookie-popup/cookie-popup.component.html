@@ -1,6 +1,9 @@
 @if (!hasAccepted()) {
   <div class="docs-cookies-popup docs-invert-mode">
-    <p>This site uses cookies from Google to deliver its services and to analyze traffic.</p>
+    <p>
+      Bu sayt xidmətlərini təqdim etmək və trafiki təhlil etmək üçün Google tərəfindən təqdim olunan
+      cookie fayllarından istifadə edir.
+    </p>
 
     <div>
       <a
@@ -8,20 +11,20 @@
         target="_blank"
         rel="noopener"
         class="docs-primary-btn"
-        aria-label="Learn more about how Google uses cookies"
-        text="Learn more"
+        aria-label="Google-un cookie fayllarından necə istifadə etdiyi haqqında daha çox öyrənin"
+        text="Daha çox öyrən"
       >
-        Learn more
+        Daha çox öyrən
       </a>
 
       <button
         type="button"
         (click)="accept()"
         class="docs-primary-btn"
-        text="Ok, Got it"
-        aria-label="Ok, Got it"
+        text="Oldu, başa düşdüm"
+        aria-label="Oldu, başa düşdüm"
       >
-        Ok, Got it
+        Oldu, başa düşdüm
       </button>
     </div>
   </div>

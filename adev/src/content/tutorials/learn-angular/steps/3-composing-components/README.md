@@ -4,7 +4,7 @@ You've learned to update the component template, component logic, and component 
 
 The `selector` property of the component configuration gives you a name to use when referencing the component in another template. You use the `selector` like an HTML tag, for example `app-user` would be `<app-user />` in the template.
 
-NOTE: Learn more about [using components in the essentials guide](/essentials/components#using-components).
+NOTE: Learn more about [using components in the essentials guide](/essentials/components#komponentləri-istifadə-etmək).
 
 In this activity, you'll learn how to compose components.
 

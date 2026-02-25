@@ -1,246 +1,244 @@
-# Contributing to Angular
+# Angular-a Töhfə Vermək
 
-We would love for you to contribute to Angular and help make it even better than it is today!
-As a contributor, here are the guidelines we would like you to follow:
+Biz sizin Angular-a töhfə verməyinizi və onu daha da yaxşılaşdırmağınıza kömək etməyinizi çox istərdik!
+Töhfəçi olaraq, aşağıdakı qaydaları izləməyinizi xahiş edirik:
 
-- [Code of Conduct](#coc)
-- [Question or Problem?](#question)
-- [Issues and Bugs](#issue)
-- [Feature Requests](#feature)
-- [Submission Guidelines](#submit)
-- [Coding Rules](#rules)
-- [Commit Message Guidelines](#commit)
-- [Signing the CLA](#cla)
+- [Davranış Qaydaları](#coc)
+- [Sualınız və ya Probleminiz?](#question)
+- [Problemlər və Xətalar](#issue)
+- [Funksiya Təklifləri](#feature)
+- [Göndərmə Qaydaları](#submit)
+- [Kodlaşdırma Qaydaları](#rules)
+- [Commit Mesajı Qaydaları](#commit)
+- [CLA-nın İmzalanması](#cla)
 
-## <a name="coc"></a> Code of Conduct
+## <a name="coc"></a> Davranış Qaydaları
 
-Help us keep Angular open and inclusive.
-Please read and follow our [Code of Conduct][coc].
+Angular-ı açıq və inklüziv saxlamağa kömək edin.
+Zəhmət olmasa [Davranış Qaydalarımızı][coc] oxuyun və onlara əməl edin.
 
-## <a name="question"></a> Got a Question or Problem?
+## <a name="question"></a> Sualınız və ya Probleminiz var?
 
-Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests.
-Instead, we recommend using [Stack Overflow](https://stackoverflow.com/questions/tagged/angular) to ask support-related questions. When creating a new question on Stack Overflow, make sure to add the `angular` tag.
+GitHub məsələlərini yalnız xəta hesabatları və funksiya təklifləri üçün saxlamaq istədiyimizə görə ümumi dəstək sualları üçün issue açmayın.
+Bunun əvəzinə, dəstəklə bağlı sualları [Stack Overflow](https://stackoverflow.com/questions/tagged/angular) vasitəsilə soruşmanızı tövsiyə edirik. Stack Overflow-da yeni sual yaradarkən `angular` teqini əlavə etməyi unutmayın.
 
-Stack Overflow is a much better place to ask questions since:
+Stack Overflow suallar üçün daha yaxşı yerdir, çünki:
 
-- there are thousands of people willing to help on Stack Overflow
-- questions and answers stay available for public viewing so your question/answer might help someone else
-- Stack Overflow's voting system assures that the best answers are prominently visible.
+- Stack Overflow-da kömək etməyə hazır minlərlə insan var
+- Suallar və cavablar ictimai baxış üçün mövcud olur, beləliklə sualınız/cavabınız başqasına da kömək edə bilər
+- Stack Overflow-un səsvermə sistemi ən yaxşı cavabların ön planda görünməsini təmin edir.
 
-To save your and our time, we will systematically close all issues that are requests for general support and redirect people to Stack Overflow.
+Vaxtınıza və bizim vaxtımıza qənaət etmək üçün ümumi dəstək tələb edən bütün məsələləri sistemli şəkildə bağlayacaq və insanları Stack Overflow-a yönləndirəcəyik.
 
-If you would like to chat about the question in real-time, you can reach out via [the Angular community Discord server][discord].
+Sualı real vaxtda müzakirə etmək istəyirsinizsə, [Angular icma Discord serverinə][discord] müraciət edə bilərsiniz.
 
-## <a name="issue"></a> Found a Bug?
+## <a name="issue"></a> Xəta Tapdınız?
 
-If you find a bug in the source code, you can help us by [submitting an issue](#submit-issue) to our [GitHub Repository][github].
-Even better, you can [submit a Pull Request](#submit-pr) with a fix.
+Mənbə kodunda xəta tapsanız, [GitHub Repozitoriyamıza][github] [məsələ göndərərək](#submit-issue) bizə kömək edə bilərsiniz.
+Daha da yaxşısı, düzəlişlə [Pull Request göndərə bilərsiniz](#submit-pr).
 
-## <a name="feature"></a> Missing a Feature?
+## <a name="feature"></a> Funksiya Çatışmır?
 
-You can _request_ a new feature by [submitting an issue](#submit-issue) to our GitHub Repository.
-If you would like to _implement_ a new feature, please consider the size of the change in order to determine the right steps to proceed:
+GitHub Repozitoriyamıza [məsələ göndərərək](#submit-issue) yeni funksiya _tələb edə_ bilərsiniz.
+Yeni funksiya _tətbiq etmək_ istəyirsinizsə, düzgün addımları müəyyən etmək üçün dəyişikliyin ölçüsünü nəzərə alın:
 
-- For a **Major Feature**, first open an issue and outline your proposal so that it can be discussed.
-  This process allows us to better coordinate our efforts, prevent duplication of work, and help you to craft the change so that it is successfully accepted into the project.
+- **Böyük Funksiya** üçün əvvəlcə bir məsələ açın və müzakirə edilə bilməsi üçün təklifinizi təsvir edin.
+  Bu proses səylərimizi daha yaxşı koordinasiya etməyə, işin təkrarlanmasının qarşısını almağa və dəyişikliyi uğurla layihəyə qəbul etdirməyə kömək edir.
 
-  **Note**: Adding a new topic to the documentation, or significantly re-writing a topic, counts as a major feature.
+  **Qeyd**: Sənədlərə yeni mövzu əlavə etmək və ya mövcud mövzunu əhəmiyyətli dərəcədə yenidən yazmaq böyük funksiya sayılır.
 
-- **Small Features** can be crafted and directly [submitted as a Pull Request](#submit-pr).
+- **Kiçik Funksiyalar** hazırlanıb birbaşa [Pull Request kimi göndərilə bilər](#submit-pr).
 
-## <a name="submit"></a> Submission Guidelines
+## <a name="submit"></a> Göndərmə Qaydaları
 
-### <a name="submit-issue"></a> Submitting an Issue
+### <a name="submit-issue"></a> Məsələ Göndərmək
 
-Before you submit an issue, please search the issue tracker. An issue for your problem might already exist and the discussion might inform you of workarounds readily available.
+Məsələ göndərməzdən əvvəl, zəhmət olmasa məsələ izləyicisini axtarın. Probleminiz üçün artıq mövcud bir məsələ ola bilər və müzakirə sizə mövcud həll yolları haqqında məlumat verə bilər.
 
-We want to fix all the issues as soon as possible, but before fixing a bug, we need to reproduce and confirm it.
-In order to reproduce bugs, we require that you provide a minimal reproduction.
-Having a minimal reproducible scenario gives us a wealth of important information without going back and forth to you with additional questions.
+Bütün məsələləri mümkün qədər tez həll etmək istəyirik, lakin xətanı düzəltməzdən əvvəl onu yenidən yaratmaq və təsdiqləmək lazımdır.
+Xətaları yenidən yaratmaq üçün minimal bir reproduksiya təqdim etməyinizi tələb edirik.
+Minimal reproduksiya ssenarisi bizə əlavə suallar soruşmadan çoxlu vacib məlumat verir.
 
-A minimal reproduction allows us to quickly confirm a bug (or point out a coding problem) as well as confirm that we are fixing the right problem.
+Minimal reproduksiya xətanı (və ya kodlaşdırma problemini) tez təsdiqləməyə, həmçinin düzgün problemi həll etdiyimizi təsdiqləməyə imkan verir.
 
-We require a minimal reproduction to save maintainers' time and ultimately be able to fix more bugs.
-Often, developers find coding problems themselves while preparing a minimal reproduction.
-We understand that sometimes it might be hard to extract essential bits of code from a larger codebase, but we really need to isolate the problem before we can fix it.
+Minimal reproduksiya tələb edirik ki, maintainerlərin vaxtına qənaət edək və nəticədə daha çox xətanı düzəldə bilək.
+Çox vaxt developerlər minimal reproduksiya hazırlayarkən kodlaşdırma problemlərini özləri kəşf edirlər.
+Biz başa düşürük ki, bəzən daha böyük kod bazasından əsas kod parçalarını çıxarmaq çətin ola bilər, lakin düzəltməzdən əvvəl problemi izole etməmiz həqiqətən lazımdır.
 
-Unfortunately, we are not able to investigate / fix bugs without a minimal reproduction, so if we don't hear back from you, we are going to close an issue that doesn't have enough info to be reproduced.
+Təəssüf ki, minimal reproduksiya olmadan xətaları araşdıra/düzəldə bilmirik, ona görə də əgər sizdən cavab almırıqsa, yenidən yaradılması üçün kifayət qədər məlumatı olmayan məsələni bağlayacağıq.
 
-You can file new issues by selecting from our [new issue templates](https://github.com/angular/angular/issues/new/choose) and filling out the issue template.
+[Yeni məsələ şablonlarımızdan](https://github.com/angular/angular/issues/new/choose) birini seçib məsələ şablonunu doldurararaq yeni məsələlər təqdim edə bilərsiniz.
 
-### <a name="pr-quality"></a> Contribution Quality
+### <a name="pr-quality"></a> Töhfə Keyfiyyəti
 
-We strongly value open source contribution and pull requests from community contributors. Please note that every pull request is reviewed and merged by an actual person on the team, which does take time and effort. That is time and effort that does take away from other valuable work. With that in mind we have an minimum set of expectations that are required of any community contribution pull request that is opened.
+Biz açıq mənbə töhfəsini və icma üzvlərindən gələn pull request-ləri çox dəyərləndiririk. Nəzərə alın ki, hər pull request real bir komanda üzvü tərəfindən baxılır və birləşdirilir, bu isə vaxt və səy tələb edir. Bu, digər dəyərli işdən vaxt və səy götürür. Bunu nəzərə alaraq, açılan hər icma töhfəsi pull request-i üçün minimum tələblər dəstimiz var.
 
-1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR that relates to your submission.
-   - You don't want to duplicate existing efforts.
-2. Be sure that an issue or pull request clearly describes the problem you're fixing, or documents the design for the feature you'd like to add. Issues require a _minimal_ reproduction.
+1. Göndərişinizlə bağlı açıq və ya bağlı PR üçün [GitHub](https://github.com/angular/angular/pulls)-ı axtarın.
+   - Mövcud səyləri təkrarlamamaq lazımdır.
+2. Bir məsələ və ya pull request-in düzəltdiyiniz problemi aydın şəkildə təsvir etdiyindən və ya əlavə etmək istədiyiniz funksiya üçün dizaynı sənədləşdirdiyindən əmin olun. Məsələlər _minimal_ reproduksiya tələb edir.
 
-3. Discussing the design in an issue upfront helps to ensure that we're ready to accept your work. Pull requests are not the right place to do design work.
-   - When in doubt, open an issue first before doing any sort of speculative implementation work
+3. Dizaynı əvvəlcədən bir məsələdə müzakirə etmək işinizi qəbul etməyə hazır olduğumuzu təmin etməyə kömək edir. Pull request-lər dizayn işi üçün doğru yer deyil.
+   - Şübhə olduqda, hər hansı spekulyativ tətbiq işindən əvvəl əvvəlcə məsələ açın.
 
-4. Ideally the PR should be tied to an issue, but this is not required
+4. İdeal olaraq PR bir məsələ ilə əlaqəli olmalıdır, lakin bu məcburi deyil.
 
-5. The change should improve code quality (i.e. addressing a TODO) or should impact / improve a feature
+5. Dəyişiklik kod keyfiyyətini artırmalıdır (məs. TODO-nu həll etmək) və ya bir funksiyaya təsir etməli/onu təkmilləşdirməlidir.
 
-6. Micro optimizations will only be accepted if they are validated by an actual benchmark
+6. Mikro optimallaşdırmalar yalnız real benchmark ilə təsdiqləndikdə qəbul ediləcək.
 
-7. Do not open pull requests that are addressing feature requests that are not labeled as "help wanted" as they usually need additional design work before we could accept pull requests
+7. "help wanted" etiketlənməmiş funksiya tələblərini həll edən pull request-lər açmayın, çünki bunlar adətən pull request-ləri qəbul etməzdən əvvəl əlavə dizayn işi tələb edir.
 
-8. The change should be well tested
+8. Dəyişiklik yaxşı test edilmiş olmalıdır.
 
-If your pull request does not meet these minimum expectations, we may close your PR. Also, if your PR introduces a breaking change, it's possible the level of churn this breaking change causes may block our ability to move forward with it. We may close your PR in that situation, as well. Otherwise, we're excited to see your contributions and enthusiasm for Angular!
+Pull request-iniz bu minimum tələbləri ödəmirsə, PR-ı bağlaya bilərik. Həmçinin, PR-ınız kritik dəyişiklik gətirirsə, bu kritik dəyişikliyin yaratdığı çaxnaşma səviyyəsi irəliləmək imkanımızı blok edə bilər. Bu vəziyyətdə də PR-ı bağlaya bilərik. Əks halda, Angular-a olan töhfələrinizi və coşqunuzu görmək üçün həyəcanlıyıq!
 
-### <a name="submit-pr"></a> Submitting a Pull Request (PR)
+### <a name="submit-pr"></a> Pull Request (PR) Göndərmək
 
-Before you submit your Pull Request (PR) consider the following guidelines:
+Pull Request (PR) göndərməzdən əvvəl aşağıdakı qaydaları nəzərə alın:
 
-1. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
-   We cannot accept code without a signed CLA.
-   Make sure you author all contributed Git commits with email address associated with your CLA signature.
+1. PR göndərməzdən əvvəl [Töhfəçi Lisenziya Müqaviləmizi (CLA)](#cla) imzalayın.
+   İmzalanmış CLA olmadan kodu qəbul edə bilmərik.
+   CLA imzanızla əlaqəli e-poçt ünvanı ilə bütün töhfə edilmiş Git commit-lərini yazdığınızdan əmin olun.
 
-2. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the [angular/angular](https://github.com/angular/angular/fork) repo.
+2. [angular/angular](https://github.com/angular/angular/fork) repo-nu [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) edin.
 
-3. In your forked repository, make your changes in a new git branch:
+3. Fork edilmiş repozitoriyanızda dəyişikliklərinizi yeni bir git branch-ında edin:
 
    ```shell
    git checkout -b my-fix-branch main
    ```
 
-4. Create your patch, **including appropriate test cases**.
+4. Patch-inizi **müvafiq test halları daxil olmaqla** yaradın.
 
-5. Follow our [Coding Rules](#rules).
+5. [Kodlaşdırma Qaydalarımıza](#rules) əməl edin.
 
-6. Run the full Angular test suite, as described in the [developer documentation][dev-doc], and ensure that all tests pass.
+6. [developer sənədlərində][dev-doc] təsvir edildiyi kimi tam Angular test dəstini işlədin və bütün testlərin keçdiyindən əmin olun.
 
-7. Commit your changes using a descriptive commit message that follows our [commit message conventions][commit-message-guidelines].
-   Adherence to these conventions is necessary because release notes are automatically generated from these messages.
+7. [Commit mesajı konvensiyalarımıza][commit-message-guidelines] uyğun təsviri commit mesajı istifadə edərək dəyişikliklərinizi commit edin.
+   Bu konvensiyalara riayət etmək lazımdır, çünki buraxılış qeydləri avtomatik olaraq bu mesajlardan yaradılır.
 
    ```shell
    git commit --all
    ```
 
-   Note: the optional commit `--all` command line option will automatically "add" and "rm" edited files.
+   Qeyd: isteğe bağlı commit `--all` komanda xətti seçimi redaktə edilmiş faylları avtomatik olaraq "add" və "rm" edəcək.
 
-8. Push your branch to GitHub:
+8. Branch-ınızı GitHub-a push edin:
 
    ```shell
    git push origin my-fix-branch
    ```
 
-9. In GitHub, send a pull request to `angular:main`.
+9. GitHub-da `angular:main`-ə pull request göndərin.
 
-### Reviewing a Pull Request
+### Pull Request-i Nəzərdən Keçirmək
 
-The Angular team reserves the right not to accept pull requests from community members who haven't been good citizens of the community. Such behavior includes not following the [Angular code of conduct](https://github.com/angular/code-of-conduct) and applies within or outside of Angular managed channels.
+Angular komandası icmanın yaxşı vətəndaşları olmayan icma üzvlərinin pull request-lərini qəbul etməmək hüququnu saxlayır. Bu cür davranışa [Angular davranış qaydalarına](https://github.com/angular/code-of-conduct) əməl etməmək daxildir və Angular tərəfindən idarə edilən kanallar daxilində və ya xaricində tətbiq olunur.
 
-#### Addressing review feedback
+#### Baxış rəyinə cavab vermək
 
-If we ask for changes via code reviews then:
+Kod baxışları vasitəsilə dəyişikliklər tələb etsək:
 
-1. Make the required updates to the code.
+1. Kodda tələb olunan yeniləmələri edin.
 
-2. Re-run the Angular test suites to ensure tests are still passing.
+2. Testlərin hələ də keçdiyindən əmin olmaq üçün Angular test dəstlərini yenidən işlədin.
 
-3. Create a fixup commit and push to your GitHub repository (this will update your Pull Request):
+3. Fixup commit yaradın və GitHub repozitoriyanıza push edin (bu Pull Request-inizi yeniləyəcək):
 
    ```shell
    git commit --all --fixup HEAD
    git push
    ```
 
-   For more info on working with fixup commits see [here](./contributing-docs/using-fixup-commits.md).
+   Fixup commit-lərlə işləmək haqqında daha ətraflı məlumat üçün [bura](./contributing-docs/using-fixup-commits.md) baxın.
 
-That's it! Thank you for your contribution!
+Bu qədər! Töhfəniz üçün təşəkkür edirik!
 
-##### Updating the commit message
+##### Commit mesajını yeniləmək
 
-A reviewer might often suggest changes to a commit message (for example, to add more context for a change or adhere to our [commit message guidelines][commit-message-guidelines]).
-In order to update the commit message of the last commit on your branch:
+Reviewer çox vaxt commit mesajında dəyişikliklər təklif edə bilər (məsələn, dəyişiklik üçün daha çox kontekst əlavə etmək və ya [commit mesajı qaydalarımıza][commit-message-guidelines] əməl etmək üçün).
+Branch-ınızdakı son commit-in commit mesajını yeniləmək üçün:
 
-1. Check out your branch:
+1. Branch-ınızı yoxlayın:
 
    ```shell
    git checkout my-fix-branch
    ```
 
-2. Amend the last commit and modify the commit message:
+2. Son commit-i dəyişdirin və commit mesajını redaktə edin:
 
    ```shell
    git commit --amend
    ```
 
-3. Push to your GitHub repository:
+3. GitHub repozitoriyanıza push edin:
 
    ```shell
    git push --force-with-lease
    ```
 
-> NOTE:<br />
-> If you need to update the commit message of an earlier commit, you can use `git rebase` in interactive mode.
-> See the [git docs](https://git-scm.com/docs/git-rebase#_interactive_mode) for more details.
+> QEYD:<br />
+> Daha əvvəlki bir commit-in mesajını yeniləməlisinzsə, `git rebase`-i interaktiv rejimdə istifadə edə bilərsiniz.
+> Daha ətraflı məlumat üçün [git sənədlərinə](https://git-scm.com/docs/git-rebase#_interactive_mode) baxın.
 
-#### After your pull request is merged
+#### Pull request-iniz birləşdirildikdən sonra
 
-After your pull request is merged, you can safely delete your branch and pull the changes from the main (upstream) repository:
+Pull request-iniz birləşdirildikdən sonra branch-ınızı təhlükəsiz silə və dəyişiklikləri əsas (upstream) repozitoriyadan çəkə bilərsiniz:
 
-- Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
+- Uzaq branch-ı GitHub-da GitHub veb interfeysi vasitəsilə və ya aşağıdakı kimi yerli shell-dən silin:
 
   ```shell
   git push origin --delete my-fix-branch
   ```
 
-- Check out the main branch:
+- Əsas branch-ı yoxlayın:
 
   ```shell
   git checkout main -f
   ```
 
-- Delete the local branch:
+- Yerli branch-ı silin:
 
   ```shell
   git branch -D my-fix-branch
   ```
 
-- Update your local `main` with the latest upstream version:
+- Yerli `main`-inizi ən son upstream versiyası ilə yeniləyin:
 
   ```shell
   git pull --ff upstream main
   ```
 
-## <a name="rules"></a> Coding Rules
+## <a name="rules"></a> Kodlaşdırma Qaydaları
 
-To ensure consistency throughout the source code, keep these rules in mind as you are working:
+Mənbə kodu boyunca ardıcıllığı təmin etmək üçün işləyərkən bu qaydaları nəzərə alın:
 
-- All features or bug fixes **must be tested** by one or more specs (unit-tests).
-- All public API methods **must be documented**.
-- We follow [Google's TypeScript Style Guide][ts-style-guide], but wrap all code at **100 characters**.
+- Bütün funksiyalar və ya xəta düzəlişləri bir və ya daha çox spesifikasiya (unit-testlər) ilə **test edilməlidir**.
+- Bütün ictimai API metodları **sənədləşdirilməlidir**.
+- [Google-un TypeScript Stil Bələdçisinə][ts-style-guide] əməl edirik, lakin bütün kodu **100 simvolda** əhatə edirik.
 
-  An automated formatter is available, see [building-and-testing-angular.md](./contributing-docs/building-and-testing-angular.md#formatting-your-source-code).
+  Avtomatlaşdırılmış formatter mövcuddur, bax [building-and-testing-angular.md](./contributing-docs/building-and-testing-angular.md#formatting-your-source-code).
 
-## <a name="commit"></a> Commit Message Guidelines
+## <a name="commit"></a> Commit Mesajı Qaydaları
 
-We have very precise rules over how our Git commit messages must be formatted:
+Git commit mesajlarımızın necə formatlanması barədə çox dəqiq qaydalarımız var:
 
 ```
-<type>(<scope>): <short summary>
+<tip>(<əhatə>): <qısa xülasə>
 ```
 
-See [Commit Message Guidelines][commit-message-guidelines] for details.
+Ətraflı məlumat üçün [Commit Mesajı Qaydalarına][commit-message-guidelines] baxın.
 
-## <a name="cla"></a> Signing the CLA
+## <a name="cla"></a> CLA-nın İmzalanması
 
-Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code
-changes to be accepted, the CLA must be signed. It's a quick process, we promise!
+Zəhmət olmasa pull request göndərməzdən əvvəl Töhfəçi Lisenziya Müqaviləmizi (CLA) imzalayın. Hər hansı kod dəyişikliyinin qəbul edilməsi üçün CLA imzalanmalıdır. Tez bir prosesdir, söz veririk!
 
-- For individuals, we have a [simple click-through form][individual-cla].
-- For corporations, we'll need you to
-  [print, sign and one of scan+email, fax or mail the form][corporate-cla].
+- Fiziki şəxslər üçün [sadə klik formasımız var][individual-cla].
+- Korporasiyalar üçün [formanı çap etmək, imzalamaq və skan+e-poçt, faks və ya poçtla göndərməyiniz][corporate-cla] lazım olacaq.
 
-If you have more than one GitHub accounts, or multiple email addresses associated with a single GitHub account, you must sign the CLA using the primary email address of the GitHub account used to author Git commits and send pull requests.
+Birdən çox GitHub hesabınız varsa və ya tək bir GitHub hesabı ilə əlaqəli birdən çox e-poçt ünvanınız varsa, Git commit-lərini yazmaq və pull request-lər göndərmək üçün istifadə olunan GitHub hesabının əsas e-poçt ünvanından istifadə edərək CLA-nı imzalamalısınız.
 
-The following documents can help you sort out issues with GitHub accounts and multiple email addresses:
+Aşağıdakı sənədlər GitHub hesabları və çoxsaylı e-poçt ünvanları ilə bağlı problemləri həll etməyə kömək edə bilər:
 
 - https://help.github.com/articles/setting-your-commit-email-address-in-git/
 - https://stackoverflow.com/questions/37245303/what-does-usera-committed-with-userb-13-days-ago-on-github-mean
@@ -251,7 +249,7 @@ The following documents can help you sort out issues with GitHub accounts and mu
 [corporate-cla]: https://cla.developers.google.com/about/google-corporate
 [dev-doc]: ./contributing-docs/building-and-testing-angular.md
 [commit-message-guidelines]: ./contributing-docs/commit-message-guidelines.md
-[github]: https://github.com/angular/angular
+[github]: https://github.com/Tapdiq49/angular
 [discord]: https://discord.gg/angular
 [individual-cla]: https://cla.developers.google.com/about/google-individual
 [ts-style-guide]: https://google.github.io/styleguide/tsguide.html

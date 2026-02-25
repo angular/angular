@@ -99,4 +99,8 @@ API reference səhifələri Angular paketlərinin TypeScript kodundan avtomatik 
 
 ---
 
+**Kompüter donur / çox yavaşdır:** Az RAM və ya zəif prosessor olanda Bazel bütün resursları götürə bilər. Layihədə **`.bazelrc.user`** faylı var — paralel işlər azaldılıb (`--jobs=2`) və Bazel JVM yaddaşı məhdudlaşdırılıb (`-Xmx2g`). Yenə də donursa: `.bazelrc.user`-da `--jobs=1` və `-Xmx1536m` yazıb başqa proqramları bağlayıb yenidən cəhd edin.
+
+---
+
 **Qısa:** Kökdə `pnpm install`, sonra `pnpm adev` → http://localhost:4201. Tərcümə üçün `adev/src/content/` altındakı `.md` fayllarını redaktə edin.

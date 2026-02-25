@@ -1,27 +1,28 @@
-<docs-decorative-header title="Essentials" imgSrc="adev/src/assets/images/what_is_angular.svg"> <!-- markdownlint-disable-line -->
-A short introduction to some of Angular's main concepts.
+<docs-decorative-header title="Əsaslar (Essentials)" imgSrc="adev/src/assets/images/what_is_angular.svg"> 
+<!-- markdownlint-disable-line -->
+Angular-ın əsas konsepsiyalarına qısa giriş.
 </docs-decorative-header>
 
-## Interested in Angular?
+## Angular-a marağınız var?
 
-Welcome! This _Essentials_ guide explains some of Angular's main concepts, helping you understand what it's like to use the framework. This guide focuses on just a few building blocks as a short introduction. If you're looking for deep, comprehensive documentation, you can navigate to specific _In-depth Guides_ from the [documentation landing page](overview).
+Xoş gəlmisiniz! Bu _Əsaslar_ (_Essentials_) bələdçisi Angular-ın bəzi əsas konsepsiyalarını izah edir və framework-dən istifadənin necə olduğunu anlamağa kömək edir. Bu bələdçi qısa giriş kimi yalnız bir neçə əsas elementə diqqət yetirir. Ətraflı və hərtərəfli sənədləşdirmə axtarırsınızsa, [sənədləşdirmə ana səhifəsindən](overview) müvafiq _Ətraflı Bələdçilərə_ (_n-depth Guides_) keçid edə bilərsiniz.
 
-If you prefer to immediately start writing some code, you can [skip straight to the hands-on tutorial](tutorials/learn-angular).
+Dərhal kod yazmağa başlamağı üstün tutursunuzsa, [praktiki dərsliyə keçə bilərsiniz](tutorials/learn-angular).
 
-### Before you start
+### Başlamazdan əvvəl
 
-This site expects that you're familiar with HTML, CSS and TypeScript. If you are totally new to web development, you should seek out some more introductory content before coming back here.
+Bu sayt HTML, CSS və TypeScript ilə tanış olduğunuzu gözləyir. Veb tərtibatında tamamilə yenisinizsə, buraya qayıtmazdan əvvəl daha giriş səviyyəli materiallara müraciət etməlisiniz.
 
-In particular, you should be familiar with the following concepts:
+Xüsusilə aşağıdakı konsepsiyalarla tanış olmalısınız:
 
-- [JavaScript Classes](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Classes)
-- [TypeScript fundamentals](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html)
-- [TypeScript Decorators](https://www.typescriptlang.org/docs/handbook/decorators.html)
+- [JavaScript Sinifləri](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Classes)
+- [TypeScript Əsasları](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html)
+- [TypeScript Dekoratorları](https://www.typescriptlang.org/docs/handbook/decorators.html)
 
-## Next Step
+## Növbəti addım
 
-Ready to jump in? It's time to learn about components in Angular!
+Başlamağa hazırsınız? Angular-da komponentlər haqqında öyrənməyin vaxtı gəldi!
 
 <docs-pill-row>
-  <docs-pill title="Composing with Components" href="essentials/components" />
+  <docs-pill title="Komponentlərlə Kompozisiya" href="essentials/components" />
 </docs-pill-row>

@@ -23,11 +23,11 @@ export class ControlFlowExample {
 
 const example = `
 @if(meal() === 'burger') {
-  <p>You selected a burger!</p>
-} @else if(lang meal === 'pizza') {
-  <p>You selected a pizza!</p>
+  <p>Siz burger seçdiniz!</p>
+} @else if(meal() === 'pizza') {
+  <p>Siz pizza seçdiniz!</p>
 } @else {
-  <p>Please select a meal.</p>
+  <p>Zəhmət olmasa, bir yemək seçin.</p>
 }
 
 @for(item of ShoppingList; track $index) {
@@ -36,15 +36,15 @@ const example = `
 
 @switch(user.role) {
   @case('user') {
-    <p>Welcome, {{user.name}}</p>
+    <p>Xoş gəldiniz, {{user.name}}</p>
   }
   @case('moderator')
   @case('admin') {
-    <p>Welcome</p>
+    <p>Xoş gəldiniz</p>
   }
 
   @default {
-    <p>Welcome, guest!</p>
+    <p>Xoş gəldiniz, qonaq!</p>
   }
 }
 `.trim();

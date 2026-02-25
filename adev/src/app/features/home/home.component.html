@@ -9,17 +9,16 @@
         </a>
 
         <div class="search-field">
-          <docs-text-field placeholder="axtarış" (click)="openSearch()" />
+          <docs-text-field placeholder="Axtarış" (click)="openSearch()" />
         </div>
       </div>
 
       @if (!isUwu) {
         <div class="title">
-          <h2>Məhsuldarlıq<br />ölçəbilənliklə qarşılaşır</h2>
-          <h3>Etibarlı şəkildə ölçənə bilən veb tətbiqlər qurmaq üçün freymvork</h3>
+          <h2>Məhsuldarlıq<br />miqyaslanma ilə birləşir</h2>
+          <h3>Miqyaslana bilən veb tətbiqlərini inamla yaratmaq üçün platforma</h3>
         </div>
       } @else {
-        <!-- UwU logo -->
         <div class="uwu">
           <img src="assets/images/uwu.png" alt="Angular logo" />
         </div>
@@ -42,10 +41,10 @@
     <div ngTabs class="material-tabs">
       <div ngTabList selectionMode="follow" selectedTab="signals">
         <div class="tab-background"></div>
-        <div ngTab value="signals">Signallar</div>
-        <div ngTab value="control-flow">İdarəetmə axını</div>
-        <div ngTab value="deferrable-views">Təxirə salınan görünüşlər</div>
-        <div ngTab value="hydration">Hidratasiya</div>
+        <div ngTab value="signals">Signals (Siqnallar)</div>
+        <div ngTab value="control-flow">Control Flow (İdarəetmə axını)</div>
+        <div ngTab value="deferrable-views">Deferrable Views (Təxirə salınan görünüşlər)</div>
+        <div ngTab value="hydration">Hydration (Hidrasiya)</div>
       </div>
 
       <div class="sliding-window">
@@ -93,8 +92,8 @@
         </div>
         <div class="card-content">
           <h3>
-            <strong>AI əsaslı</strong> resurslar və inteqrasiyalar ilə inkişafınızı AI ilə
-            gücləndirin
+            <strong>AI əsaslı</strong> resurslar və inteqrasiyalar ilə inkişafınızı AI (Süni
+            İntellekt) ilə gücləndirin
           </h3>
         </div>
       </a>
@@ -105,8 +104,8 @@
         </div>
         <div class="card-content">
           <h3>
-            <strong>Rəyli və çoxüslublu:</strong> Angular komponentləri və asılılıq inyeksiyası
-            sayəsində nizamlı, eyni zamanda modullu
+            <strong>Opinionated (Rəyli):</strong> Angular komponentləri və Dependency Injection
+            (Asılılıq inyeksiyası) sayəsində nizamlı və modullu struktur
           </h3>
         </div>
       </a>
@@ -117,8 +116,8 @@
         </div>
         <div class="card-content">
           <h3>
-            <strong>Reaktiv</strong> və sürətli vəziyyət yeniləmələri — Angular Signalları əsasında
-            incə reaktivlik
+            <strong>Reaktiv:</strong> Sürətli vəziyyət yeniləmələri — Angular Signals (Siqnallar)
+            əsasında incə tənzimlənmiş reaktivlik
           </h3>
         </div>
       </a>
@@ -129,8 +128,8 @@
         </div>
         <div class="card-content">
           <h3>
-            <strong>Tam funksiyalı</strong> platforma — formalar, marşrutlaşdırma və daha çoxu üçün
-            Angular-ın birinci tərəf modulları ilə hər şey birlikdə işləyir
+            <strong>Tam funksiyalı</strong> platforma — Routing (Marşrutlaşdırma), Formlar və daha
+            çoxu üçün Angular-ın rəsmi kitabxanaları ilə hər şey uyum içində
           </h3>
         </div>
       </a>
@@ -141,13 +140,12 @@
     <div class="wrapper">
       <div class="pattern"></div>
       <div class="content">
-        <h2>Performans əhəmiyyət kəsdiyi yerdə</h2>
+        <h2>Performansın önəmli olduğu yerdə</h2>
         <h3>
-          Milyonlarca insan komandasının ölçüsü ilə ölçülə bilən sürətli və etibarlı tətbiqlər
-          qurmaq üçün bizə etibar edir
+          Milyonlarla istifadəçisi olan komandalar, genişlənə bilən və etibarlı tətbiqlər qurmaq
+          üçün bizə etibar edir
         </h3>
         <button class="docs-primary-btn" [attr.text]="'Başlayın'" routerLink="/guide/performance">
-          <!-- TODO: LINK -->
           Başlayın
         </button>
       </div>
@@ -161,59 +159,44 @@
     </div>
 
     <div class="cards-grid">
-      <!-- Card 1: Tutorials -->
       <a routerLink="/tutorials/learn-angular" class="explore-card">
         <div class="card-content">
           <p>
             <span class="emphasis">Angular-da yenisiniz?</span>
-            Brauzerdə tam keçirilən təlimat dərslərimizi sınayın — Angular ilə praktiki təcrübə əldə
-            edin.
+            Brauzerdə keçirilən praktiki dərslərimizi (Tutorials) sınayın və təcrübə qazanın.
           </p>
           <span class="fake-button">Kod yazmağa başlayın <docs-icon>arrow_forward</docs-icon></span>
           <div class="editor-background"></div>
         </div>
       </a>
 
-      <!-- Card 2: AI -->
       <a routerLink="/ai" class="explore-card">
         <div class="card-content">
           <p>
-            <span class="emphasis">LLM-siniz və ya Angular-da AI haqqında maraqlanırsınız?</span>
-            Promptlar, strategiyalar, ən yaxşı təcrübələr, nümunələr və daha çoxu üçün AI bölməmizə
-            keçin.
+            <span class="emphasis">Angular və AI ilə maraqlanırsınız?</span>
+            Promptlar, ən yaxşı təcrübələr və nümunələr üçün AI bölməmizə keçin.
           </p>
           <span class="fake-button">Angular + AI <docs-icon>arrow_forward</docs-icon></span>
-          <div class="angular-mcp-container">
-            <div class="mcp-content">
-              <div class="mcp-label">Angular MCP</div>
-              <div class="mcp-pills">
-                <span class="mcp-pill">get_best_practices</span>
-                <span class="mcp-pill">ai_tutor</span>
-                <span class="mcp-pill">find_examples</span>
-              </div>
-            </div>
-          </div>
         </div>
       </a>
 
-      <!-- Card 3: Overview -->
       <a routerLink="/overview" class="explore-card">
         <div class="card-content">
           <p>
             <span class="emphasis">Niyə Angular?</span>
-            Angular haqqında, üstünlükləri və sizin üçün uyğun olub-olmadığını öyrənin.
+            Angular-ın üstünlükləri və sizin layihəniz üçün uyğunluğu haqqında ümumi məlumat
+            (Overview) əldə edin.
           </p>
           <div class="logo-background"></div>
         </div>
       </a>
 
-      <!-- Card 4: Essentials -->
       <a routerLink="/essentials" class="explore-card">
         <div class="card-content">
           <p>
-            <span class="emphasis">Daha çox oxuyursunuz?</span>
-            Əsas bələdçilərimiz bir fincan qəhvə (və ya çay) bitirməyinizə qədər vaxtda Angular
-            əsaslarını başa düşməyinizə kömək etmək üçün hazırlanıb.
+            <span class="emphasis">Əsasları öyrənmək istəyirsiniz?</span>
+            Essentials (Əsaslar) bələdçimiz bir fincan qəhvə müddətində Angular-ı anlamağınız üçün
+            hazırlanıb.
           </p>
           <span class="fake-button">Angular anlayışları <docs-icon>arrow_forward</docs-icon></span>
         </div>
@@ -224,7 +207,7 @@
   <section class="learn-more-bottom-section" id="bottom">
     <div class="pattern"></div>
     <div class="content">
-      <h2>Angular haqqında daha çox öyrənmək istəyirsiniz?</h2>
+      <h2>Daha dərindən öyrənməyə hazırsınız?</h2>
       <button
         class="docs-primary-btn"
         [attr.text]="'Daha çox öyrənin'"

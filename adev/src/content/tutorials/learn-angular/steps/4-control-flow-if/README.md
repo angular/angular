@@ -1,18 +1,18 @@
-# Control Flow in Components - `@if`
+# Komponentlərdə Control Flow - `@if`
 
-Deciding what to display on the screen for a user is a common task in application development. Many times, the decision is made programmatically using conditions.
+İstifadəçi üçün ekranda nə göstəriləcəyinə qərar vermək tətbiq inkişafında geniş yayılmış tapşırıqdır. Çox vaxt bu qərar şərtlərdən istifadə edilərək proqram vasitəsilə verilir.
 
-To express conditional displays in templates, Angular uses the `@if` template syntax.
+Template-lərdə şərtli göstərimi ifadə etmək üçün Angular `@if` template sintaksisindən istifadə edir.
 
-NOTE: Learn more about [control flow in the essentials guide](/essentials/templates#control-flow-with-if-and-for).
+QEYD: Daha ətraflı məlumat üçün [control flow in the essentials guide](/essentials/templates#if-və-for-ilə-control-flow) bölməsinə baxın.
 
-In this activity, you'll learn how to use conditionals in templates.
+Bu fəaliyyətdə siz template-lərdə şərtlərdən necə istifadə etməyi öyrənəcəksiniz.
 
 <hr/>
 
-The syntax that enables the conditional display of elements in a template is `@if`.
+Template-də elementlərin şərtli göstərilməsini təmin edən sintaksis `@if`-dir.
 
-Here's an example of how to use the `@if` syntax in a component:
+Aşağıda komponent daxilində `@if` sintaksisinin istifadəsinə nümunə göstərilib:
 
 ```angular-ts
 @Component({
@@ -28,26 +28,25 @@ export class App {
 }
 ```
 
-Two things to take note of:
+Diqqət edilməli iki məqam:
 
-- There is an `@` prefix for the `if` because it is a special type of syntax called [Angular template syntax](guide/templates)
-- For applications using v16 and older please refer to the [Angular documentation for NgIf](guide/directives/structural-directives) for more information.
+- `if` ifadəsinin əvvəlində `@` prefiksi var, çünki bu, [Angular template syntax](guide/templates) adlanan xüsusi sintaksis növüdür.
+- v16 və daha köhnə versiyalardan istifadə edən tətbiqlər üçün ətraflı məlumatı [Angular documentation for NgIf](guide/directives/structural-directives) bölməsində tapa bilərsiniz.
 
 <docs-workflow>
 
-<docs-step title="Create a property called `isServerRunning`">
-In the `App` class, add a `boolean` property called `isServerRunning`, set the initial value to `true`.
+<docs-step title="`isServerRunning` adlı property yaradın">
+`App` class-ına `isServerRunning` adlı `boolean` tipli property əlavə edin və ilkin dəyərini `true` olaraq təyin edin.
 </docs-step>
 
-<docs-step title="Use `@if` in the template">
-Update the template to display the message `Yes, the server is running` if the value of `isServerRunning` is `true`.
-
+<docs-step title="Template-də `@if` istifadə edin">
+Template-i yeniləyərək `isServerRunning` dəyəri `true` olduqda `Yes, the server is running` mesajını göstərin.
 </docs-step>
 
-<docs-step title="Use `@else` in the template">
-Now Angular supports native template syntax for defining the else case with the `@else` syntax. Update the template to display the message `No, the server is not running` as the else case.
+<docs-step title="Template-də `@else` istifadə edin">
+Artıq Angular `@else` sintaksisi ilə else halını native şəkildə dəstəkləyir. Template-i yeniləyərək else halında `No, the server is not running` mesajını göstərin.
 
-Here's an example:
+Nümunə:
 
 ```angular-html
 template: `
@@ -59,10 +58,10 @@ template: `
 `;
 ```
 
-Add your code to fill in the missing markup.
+Buradakı boş hissələri uyğun markup ilə doldurun.
 
 </docs-step>
 
 </docs-workflow>
 
-This type of functionality is called conditional control flow. Next you'll learn how to repeat items in a template.
+Bu tip funksionallıq şərtli control flow adlanır. Növbəti mərhələdə template-də elementləri necə təkrarlamağı öyrənəcəksiniz.
