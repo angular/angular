@@ -29,7 +29,7 @@ import {performanceMarkFeature} from '../util/performance';
 import {invokeAllTriggerCleanupFns, storeTriggerCleanupFn} from './cleanup';
 import {onViewportWrapper, registerDomTrigger} from './dom_triggers';
 import {onHover, onInteraction} from '../../primitives/defer/src/triggers';
-import {onIdle} from './idle_scheduler';
+import {onIdleWrapper} from './idle_scheduler';
 import {
   DEFER_BLOCK_STATE,
   DeferBlockInternalState,
@@ -366,46 +366,48 @@ export function ɵɵdeferHydrateNever() {
  * Sets up logic to handle the `on idle` deferred trigger.
  * @codeGenApi
  */
-export function ɵɵdeferOnIdle() {
+export function ɵɵdeferOnIdle(timeout?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, 'on idle');
+    const expression = timeout ? `on idle(${timeout})` : 'on idle';
+    trackTriggerForDebugging(lView[TVIEW], tNode, expression);
   }
 
   if (!shouldAttachTrigger(TriggerType.Regular, lView, tNode)) return;
 
-  scheduleDelayedTrigger(onIdle);
+  scheduleDelayedTrigger(onIdleWrapper({timeout}));
 }
 
 /**
  * Sets up logic to handle the `prefetch on idle` deferred trigger.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchOnIdle() {
+export function ɵɵdeferPrefetchOnIdle(timeout?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, 'prefetch on idle');
+    const expression = timeout ? `prefetch on idle(${timeout})` : 'prefetch on idle';
+    trackTriggerForDebugging(lView[TVIEW], tNode, expression);
   }
 
   if (!shouldAttachTrigger(TriggerType.Prefetch, lView, tNode)) return;
 
-  scheduleDelayedPrefetching(onIdle);
+  scheduleDelayedPrefetching(onIdleWrapper({timeout}));
 }
 
 /**
  * Sets up logic to handle the `on idle` deferred trigger.
  * @codeGenApi
  */
-export function ɵɵdeferHydrateOnIdle() {
+export function ɵɵdeferHydrateOnIdle(timeout?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on idle');
+    const expression = timeout ? `hydrate on idle(${timeout})` : 'hydrate on idle';
+    trackTriggerForDebugging(lView[TVIEW], tNode, expression);
   }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
@@ -417,7 +419,7 @@ export function ɵɵdeferHydrateOnIdle() {
     // We are on the server and SSR for defer blocks is enabled.
     triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
   } else {
-    scheduleDelayedHydrating(onIdle, lView, tNode);
+    scheduleDelayedHydrating(onIdleWrapper({timeout}), lView, tNode);
   }
 }
 

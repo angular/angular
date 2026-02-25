@@ -1498,17 +1498,31 @@ describe('@defer', () => {
      * Sets up interceptors for when an idle callback is requested
      * and when it's cancelled. This is needed to keep track of calls
      * made to `requestIdleCallback` and `cancelIdleCallback` APIs.
+     *
+     * The mock enforces the per-bucket invariant: for a given timeout
+     * value, at most ONE `requestIdleCallback` should be active at a
+     * time. Different timeout values (buckets) may run concurrently.
      */
     let id = 0;
     let idleCallbacksRequested: number;
     let idleCallbacksInvoked: number;
     let idleCallbacksCancelled: number;
     const onIdleCallbackQueue: Map<number, IdleRequestCallback> = new Map();
+    let capturedOptions: IdleRequestOptions | undefined;
+
+    // Tracks active idle callback counts per serialized options key, enforcing
+    // that each bucket never has more than one concurrent request.
+    const activePerTimeout = new Map<string, number>();
+    // Reverse lookup: callback id → options key (for cleanup in cancel).
+    const idToTimeout = new Map<number, string>();
 
     function resetCounters() {
       idleCallbacksRequested = 0;
       idleCallbacksInvoked = 0;
       idleCallbacksCancelled = 0;
+      capturedOptions = undefined;
+      activePerTimeout.clear();
+      idToTimeout.clear();
     }
     resetCounters();
 
@@ -1522,15 +1536,38 @@ describe('@defer', () => {
       callback: IdleRequestCallback,
       options?: IdleRequestOptions,
     ): number => {
+      capturedOptions = options;
       onIdleCallbackQueue.set(id, callback);
-      expect(idleCallbacksRequested).toBe(0);
       expect(NgZone.isInAngularZone()).toBe(true);
+
+      // Enforce per-bucket invariant: a given options key must not
+      // already have an active requestIdleCallback.
+      const timeoutKey = options?.timeout != null ? `${options.timeout}` : '';
+      const activeCount = activePerTimeout.get(timeoutKey) ?? 0;
+      expect(activeCount)
+        .withContext(
+          `Expected 0 active idle callbacks for key='${timeoutKey}', ` +
+            `but found ${activeCount}. Each options bucket should have at most one.`,
+        )
+        .toBe(0);
+      activePerTimeout.set(timeoutKey, activeCount + 1);
+      idToTimeout.set(id, timeoutKey);
+
       idleCallbacksRequested++;
       return id++;
     };
 
     const mockCancelIdleCallback = (id: number) => {
       onIdleCallbackQueue.delete(id);
+
+      // Decrement per-bucket active count.
+      const timeoutKey = idToTimeout.get(id);
+      if (timeoutKey !== undefined) {
+        const count = activePerTimeout.get(timeoutKey) ?? 0;
+        activePerTimeout.set(timeoutKey, Math.max(0, count - 1));
+        idToTimeout.delete(id);
+      }
+
       idleCallbacksRequested--;
       idleCallbacksCancelled++;
     };
@@ -1819,7 +1856,10 @@ describe('@defer', () => {
       class CustomIdleService implements IdleService {
         private callbacks: Array<((deadline?: IdleDeadline) => void) | undefined> = [];
 
-        requestOnIdle(callback: (deadline?: IdleDeadline) => void): number {
+        requestOnIdle(
+          callback: (deadline?: IdleDeadline) => void,
+          options?: IdleRequestOptions,
+        ): number {
           return this.callbacks.push(callback) - 1;
         }
 
@@ -1958,6 +1998,180 @@ describe('@defer', () => {
       expect(loadingFnInvokedTimes).toBe(1);
     });
 
+    it('should trigger prefetching based on `on idle(<timeout>)` with timeout only once', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @for (item of items; track item) {
+            @defer (when deferCond; prefetch on idle(1500)) {
+              <nested-cmp [block]="'primary for \`' + item + '\` with timeout'" />
+            } @placeholder {
+              Placeholder with timeout \`{{ item }}\`
+            }
+          }
+        `,
+      })
+      class RootCmp {
+        deferCond = false;
+        items = ['x', 'y', 'z'];
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder with timeout `x`');
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder with timeout `y`');
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder with timeout `z`');
+
+      // Verify that requestIdleCallback was called with timeout for prefetch
+      expect(idleCallbacksRequested).toBe(1);
+      expect(capturedOptions).toBeDefined();
+      expect(capturedOptions!.timeout).toBe(1500);
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      triggerIdleCallbacks();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expect that the loading resources function was invoked once for prefetch.
+      expect(loadingFnInvokedTimes).toBe(1);
+
+      // Expect that placeholder content is still rendered after prefetch.
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder with timeout `x`');
+
+      // Trigger main content.
+      fixture.componentInstance.deferCond = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify primary blocks content with prefetched resources.
+      expect(fixture.nativeElement.outerHTML).toContain(
+        'Rendering primary for `x` with timeout block',
+      );
+      expect(fixture.nativeElement.outerHTML).toContain(
+        'Rendering primary for `y` with timeout block',
+      );
+      expect(fixture.nativeElement.outerHTML).toContain(
+        'Rendering primary for `z` with timeout block',
+      );
+
+      // Expect that the loading resources function was not invoked again (counter remains 1).
+      expect(loadingFnInvokedTimes).toBe(1);
+    });
+
+    it('should support mixed prefetch triggers with and without timeout', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when loadFirst; prefetch on idle) {
+            <nested-cmp [block]="'no-timeout'" />
+          } @placeholder {
+            No Timeout Placeholder
+          }
+
+          @defer (when loadSecond; prefetch on idle(3000)) {
+            <nested-cmp [block]="'with-timeout'" />
+          } @placeholder {
+            With Timeout Placeholder
+          }
+        `,
+      })
+      class RootCmp {
+        loadFirst = false;
+        loadSecond = false;
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('No Timeout Placeholder');
+      expect(fixture.nativeElement.outerHTML).toContain('With Timeout Placeholder');
+
+      // Verify that idle callbacks were requested (one bucket per distinct timeout)
+      expect(idleCallbacksRequested).toBe(2);
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      triggerIdleCallbacks();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expect that invoked onIdle trigger for prefetching both blocks
+      expect(loadingFnInvokedTimes).toBe(2);
+
+      // Both placeholders should still be visible after prefetch
+      expect(fixture.nativeElement.outerHTML).toContain('No Timeout Placeholder');
+      expect(fixture.nativeElement.outerHTML).toContain('With Timeout Placeholder');
+
+      // Trigger first block
+      fixture.componentInstance.loadFirst = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify first block is rendered
+      expect(fixture.nativeElement.outerHTML).toContain(
+        '<nested-cmp ng-reflect-block="no-timeout">Rendering no-timeout block.</nested-cmp>',
+      );
+      expect(fixture.nativeElement.outerHTML).toContain('With Timeout Placeholder');
+    });
+
     it('should trigger fetching based on `on idle` only once', async () => {
       @Component({
         selector: 'nested-cmp',
@@ -2021,6 +2235,85 @@ describe('@defer', () => {
       expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `a` block');
       expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `b` block');
       expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `c` block');
+
+      // Expect that the loading resources function was not invoked again (counter remains 1).
+      expect(loadingFnInvokedTimes).toBe(1);
+    });
+
+    it('should support `prefetch on idle(3000)` condition with timeout', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when deferCond; prefetch on idle(3000)) {
+            <nested-cmp [block]="'prefetched-with-timeout'" />
+          } @placeholder {
+            Placeholder for prefetch idle timeout test
+          }
+        `,
+      })
+      class RootCmp {
+        deferCond = false;
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain(
+        'Placeholder for prefetch idle timeout test',
+      );
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      triggerIdleCallbacks();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expect that the loading resources function was invoked once (prefetch).
+      expect(loadingFnInvokedTimes).toBe(1);
+
+      // Expect that placeholder content is still rendered after prefetch.
+      expect(fixture.nativeElement.outerHTML).toContain(
+        'Placeholder for prefetch idle timeout test',
+      );
+
+      // Trigger main content.
+      fixture.componentInstance.deferCond = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify primary block content with prefetched resources.
+      const primaryBlockHTML = fixture.nativeElement.outerHTML;
+      expect(primaryBlockHTML).toContain(
+        '<nested-cmp ng-reflect-block="prefetched-with-timeout">Rendering prefetched-with-timeout block.</nested-cmp>',
+      );
 
       // Expect that the loading resources function was not invoked again (counter remains 1).
       expect(loadingFnInvokedTimes).toBe(1);
@@ -4458,8 +4751,11 @@ describe('IdleScheduler', () => {
   class CustomIdleService implements IdleService {
     requestOnIdleSpy = jasmine.createSpy('requestOnIdleFn');
 
-    requestOnIdle(callback: (deadline?: IdleDeadline) => void): number {
-      return this.requestOnIdleSpy(callback);
+    requestOnIdle(
+      callback: (deadline?: IdleDeadline) => void,
+      options?: IdleRequestOptions,
+    ): number {
+      return this.requestOnIdleSpy(callback, options);
     }
 
     cancelOnIdle(id: number): void {}
@@ -4620,6 +4916,131 @@ describe('IdleScheduler', () => {
     let cb1 = jasmine.createSpy('cb1');
     scheduler.add(cb1);
     capturedCb!(undefined);
+    expect(cb1).toHaveBeenCalledTimes(1);
+  });
+
+  it('should pass timeout option to idleService.requestOnIdle', () => {
+    let capturedOptions: any = undefined;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any, options: any) => {
+      capturedOptions = options;
+      return 1;
+    });
+
+    scheduler.add(jasmine.createSpy('cb'), {timeout: 500});
+
+    expect(customIdleService.requestOnIdleSpy).toHaveBeenCalledTimes(1);
+    expect(capturedOptions).toEqual({timeout: 500});
+  });
+
+  it('should not pass timeout option when timeout is not specified', () => {
+    let capturedOptions: any = 'NOT_CALLED';
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any, options: any) => {
+      capturedOptions = options;
+      return 1;
+    });
+
+    scheduler.add(jasmine.createSpy('cb'));
+
+    expect(customIdleService.requestOnIdleSpy).toHaveBeenCalledTimes(1);
+    expect(capturedOptions).toBeUndefined();
+  });
+
+  it('should create independent buckets for different timeouts', () => {
+    let capturedCbs: Array<(deadline: any) => void> = [];
+    let capturedOptions: any[] = [];
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any, options: any) => {
+      ricCount++;
+      capturedCbs.push(cb);
+      capturedOptions.push(options);
+      return 100 + ricCount;
+    });
+
+    const cb1 = jasmine.createSpy('cb1');
+    const cb2 = jasmine.createSpy('cb2');
+
+    // First callback with 1000ms timeout
+    scheduler.add(cb1, {timeout: 1000});
+    expect(ricCount).toBe(1);
+    expect(capturedOptions[0]).toEqual({timeout: 1000});
+
+    // Second callback with 200ms timeout → separate bucket, separate requestIdleCallback
+    scheduler.add(cb2, {timeout: 200});
+    expect(ricCount).toBe(2);
+    expect(capturedOptions[1]).toEqual({timeout: 200});
+
+    // Fire the 200ms bucket first (browser would call this sooner)
+    capturedCbs[1]({didTimeout: true, timeRemaining: () => 0});
+    expect(cb2).toHaveBeenCalledTimes(1);
+    expect(cb1).toHaveBeenCalledTimes(0); // Not in this bucket
+
+    // Fire the 1000ms bucket
+    capturedCbs[0]({didTimeout: true, timeRemaining: () => 0});
+    expect(cb1).toHaveBeenCalledTimes(1);
+  });
+
+  it('should batch callbacks with the same timeout into one bucket', () => {
+    let capturedCb: ((deadline: any) => void) | null = null;
+    let capturedOptions: any[] = [];
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any, options: any) => {
+      ricCount++;
+      capturedCb = cb;
+      capturedOptions.push(options);
+      return 100 + ricCount;
+    });
+
+    const cb1 = jasmine.createSpy('cb1');
+    const cb2 = jasmine.createSpy('cb2');
+
+    // Both callbacks with the same 500ms timeout → same bucket
+    scheduler.add(cb1, {timeout: 500});
+    scheduler.add(cb2, {timeout: 500});
+    expect(ricCount).toBe(1); // Only one requestIdleCallback
+    expect(capturedOptions[0]).toEqual({timeout: 500});
+
+    // Fire the bucket — both should run
+    capturedCb!({didTimeout: true, timeRemaining: () => 0});
+    expect(cb1).toHaveBeenCalledTimes(1);
+    expect(cb2).toHaveBeenCalledTimes(1);
+  });
+
+  it('should keep no-timeout bucket independent from timeout buckets', () => {
+    let capturedCbs: Array<(deadline: any) => void> = [];
+    let capturedOptions: any[] = [];
+    let ricCount = 0;
+
+    customIdleService.requestOnIdleSpy.and.callFake((cb: any, options: any) => {
+      ricCount++;
+      capturedCbs.push(cb);
+      capturedOptions.push(options);
+      return 100 + ricCount;
+    });
+
+    const cb1 = jasmine.createSpy('cb1');
+    const cb2 = jasmine.createSpy('cb2');
+
+    // No timeout
+    scheduler.add(cb1);
+    expect(ricCount).toBe(1);
+    expect(capturedOptions[0]).toBeUndefined();
+
+    // With 300ms timeout → separate bucket
+    scheduler.add(cb2, {timeout: 300});
+    expect(ricCount).toBe(2);
+    expect(capturedOptions[1]).toEqual({timeout: 300});
+
+    // Fire the 300ms bucket
+    capturedCbs[1]({didTimeout: true, timeRemaining: () => 0});
+    expect(cb2).toHaveBeenCalledTimes(1);
+    expect(cb1).toHaveBeenCalledTimes(0);
+
+    // Fire the no-timeout bucket
+    capturedCbs[0]({didTimeout: false, timeRemaining: () => 10});
     expect(cb1).toHaveBeenCalledTimes(1);
   });
 });

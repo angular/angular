@@ -18,13 +18,13 @@ import {makeEnvironmentProviders} from '../di/provider_collection';
  * Note: we wrap the `requestIdleCallback` call into a function, so that it can be
  * overridden/mocked in test environment and picked up by the runtime code.
  */
-const _requestIdleCallback = (): ((
-  callback: (deadline?: IdleDeadline) => void,
-  options?: IdleRequestOptions,
-) => number) =>
-  typeof requestIdleCallback !== 'undefined'
-    ? requestIdleCallback.bind(globalThis)
-    : (callback) => setTimeout(callback) as unknown as number;
+type RequestIdle = typeof requestIdleCallback;
+
+const _requestIdleCallback = () =>
+  (typeof requestIdleCallback !== 'undefined'
+    ? requestIdleCallback
+    : (cb: VoidFunction) => setTimeout(cb) as unknown as number
+  ).bind(globalThis) as RequestIdle;
 
 const _cancelIdleCallback = () =>
   (typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout).bind(globalThis);
