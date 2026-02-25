@@ -106,7 +106,7 @@ runInEachFileSystem(() => {
       expect(extractMessage(diags[0])).toBe(`Type 'null' is not assignable to type 'string'.`);
     });
 
-    it('should infer an input without a `type` as a string field', () => {
+    it('should reject a numeric field without null on a bare input', () => {
       env.write(
         'test.ts',
         `
@@ -115,6 +115,120 @@ runInEachFileSystem(() => {
 
           @Component({
             template: '<input [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(0));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `is not assignable to type '{ (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; }'`,
+      );
+    });
+
+    it('should allow a string field on a bare input', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(''));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should allow a number|null field on a text input', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="text" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<number | null>(42));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should reject a string|null field on a text input', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="text" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal<string | null>(null));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `is not assignable to type '{ (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; }'`,
+      );
+    });
+
+    it('should reject a boolean field on a text input', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="text" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(true));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `is not assignable to type '{ (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; }'`,
+      );
+    });
+
+    it('should reject a number field on a textarea', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<textarea [formField]="f"></textarea>',
             imports: [FormField]
           })
           export class Comp {
