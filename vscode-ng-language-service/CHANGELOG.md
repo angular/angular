@@ -1,3 +1,9 @@
+## 21.2.1 (2026-02-25)
+
+- perf(language-service): use lightweight project warmup for Angular analysis ([d2137928e8](https://github.com/angular/angular/commit/d2137928e8f075527016a3c011dd8efc4d4e1ebd))
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 21.2.0 (2026-02-18)
 
 - fix(vscode-extension): Highlight function calls with optional chaining ([4f8d3995f0](https://github.com/angular/angular/commit/4f8d3995f082929d1ef4163dcb4373d3ef7a67cf))
