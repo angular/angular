@@ -123,8 +123,28 @@ export function tokenize(
 
 const _CR_OR_CRLF_REGEXP = /\r\n?/g;
 
-function _unexpectedCharacterErrorMsg(charCode: number): string {
-  const char = charCode === chars.$EOF ? 'EOF' : String.fromCharCode(charCode);
+function _unexpectedCharacterErrorMsg(charCode: number, input?: string, index?: number): string {
+  let char: string;
+  if (charCode === chars.$EOF) {
+    char = 'EOF';
+  } else if (
+    input !== undefined &&
+    index !== undefined &&
+    charCode >= 0xd800 &&
+    charCode <= 0xdbff &&
+    index + 1 < input.length
+  ) {
+    const next = input.charCodeAt(index + 1);
+    if (next >= 0xdc00 && next <= 0xdfff) {
+      char = String.fromCodePoint(((charCode - 0xd800) << 10) + (next - 0xdc00) + 0x10000);
+    } else {
+      char = `\\u${charCode.toString(16).toUpperCase().padStart(4, '0')}`;
+    }
+  } else if (charCode >= 0xd800 && charCode <= 0xdfff) {
+    char = `\\u${charCode.toString(16).toUpperCase().padStart(4, '0')}`;
+  } else {
+    char = String.fromCharCode(charCode);
+  }
   return `Unexpected character "${char}"`;
 }
 
@@ -159,6 +179,7 @@ const INTERPOLATION = {start: '{{', end: '}}'} as const;
 
 // See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
+  private readonly _input: string;
   private _cursor: CharacterCursor;
   private _tokenizeIcu: boolean;
   private _leadingTriviaCodePoints: number[] | undefined;
@@ -186,6 +207,7 @@ class _Tokenizer {
     private _getTagDefinition: (tagName: string) => TagDefinition,
     options: TokenizeOptions,
   ) {
+    this._input = _file.content;
     this._tokenizeIcu = options.tokenizeExpansionForms || false;
     this._leadingTriviaCodePoints =
       options.leadingTriviaChars && options.leadingTriviaChars.map((c) => c.codePointAt(0) || 0);
@@ -274,6 +296,11 @@ class _Tokenizer {
     }
     this._beginToken(TokenType.EOF);
     this._endToken([]);
+  }
+
+  private _unexpectedCharacterErrorMsg(charCode: number): string {
+    const index = this._cursor.getSpan().start.offset;
+    return _unexpectedCharacterErrorMsg(charCode, this._input, index);
   }
 
   private _getBlockName(): string {
@@ -577,7 +604,7 @@ class _Tokenizer {
     const location = this._cursor.clone();
     if (!this._attemptCharCode(charCode)) {
       throw this._createError(
-        _unexpectedCharacterErrorMsg(this._cursor.peek()),
+        this._unexpectedCharacterErrorMsg(this._cursor.peek()),
         this._cursor.getSpan(location),
       );
     }
@@ -613,7 +640,7 @@ class _Tokenizer {
     const location = this._cursor.clone();
     if (!this._attemptStr(chars)) {
       throw this._createError(
-        _unexpectedCharacterErrorMsg(this._cursor.peek()),
+        this._unexpectedCharacterErrorMsg(this._cursor.peek()),
         this._cursor.getSpan(location),
       );
     }
@@ -630,7 +657,7 @@ class _Tokenizer {
     this._attemptCharCodeUntilFn(predicate);
     if (this._cursor.diff(start) < len) {
       throw this._createError(
-        _unexpectedCharacterErrorMsg(this._cursor.peek()),
+        this._unexpectedCharacterErrorMsg(this._cursor.peek()),
         this._cursor.getSpan(start),
       );
     }
@@ -821,7 +848,7 @@ class _Tokenizer {
       } else {
         if (!chars.isAsciiLetter(this._cursor.peek())) {
           throw this._createError(
-            _unexpectedCharacterErrorMsg(this._cursor.peek()),
+            this._unexpectedCharacterErrorMsg(this._cursor.peek()),
             this._cursor.getSpan(start),
           );
         }
@@ -943,7 +970,10 @@ class _Tokenizer {
   private _consumeAttributeName() {
     const attrNameStart = this._cursor.peek();
     if (attrNameStart === chars.$SQ || attrNameStart === chars.$DQ) {
-      throw this._createError(_unexpectedCharacterErrorMsg(attrNameStart), this._cursor.getSpan());
+      throw this._createError(
+        this._unexpectedCharacterErrorMsg(attrNameStart),
+        this._cursor.getSpan(),
+      );
     }
     this._beginToken(TokenType.ATTR_NAME);
     let nameEndPredicate: (code: number) => boolean;
@@ -1288,7 +1318,7 @@ class _Tokenizer {
       }
 
       throw this._createError(
-        _unexpectedCharacterErrorMsg(this._cursor.peek()),
+        this._unexpectedCharacterErrorMsg(this._cursor.peek()),
         this._cursor.getSpan(start),
       );
     }
