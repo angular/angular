@@ -1,3 +1,25 @@
+<a name="21.1.6"></a>
+# 21.1.6 (2026-02-25)
+## Breaking Changes
+### core
+- Angular now only applies known attributes from HTML in translated ICU content. Unknown attributes are dropped and not rendered.
+  
+  (cherry picked from commit 306f367899dfc2e04238fecd3455547b5d54075d)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [31d3d56496](https://github.com/angular/angular/commit/31d3d564961b701bda96d94731fbed72c01975fa) | fix | fix LCP image detection with duplicate URLs |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [24b578ce90](https://github.com/angular/angular/commit/24b578ce90ed50022f62584671aef01d4c5dd7b2) | fix | detect uninvoked functions in defer trigger expressions |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b858309532](https://github.com/angular/angular/commit/b85830953281ff3a1a77bbfe69019d352d509c93) | fix | block creation of sensitive URI attributes from ICU messages |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.1.5"></a>
 # 21.1.5 (2026-02-18)
 No user facing changes in this release
