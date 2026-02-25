@@ -12,7 +12,7 @@
     "rxjs": "^7.0.0",
     "tslib": "^2.3.0",
     "typescript": "5.9.3",
-    "zone.js": "0.16.0"
+    "zone.js": "0.16.1"
   },
   "devDependencies": {
     "@babel/core": "7.29.0",
@@ -23,7 +23,7 @@
     "concurrently": "9.2.1",
     "lite-server": "2.6.1",
     "protractor": "^7.0.0",
-    "rollup": "4.57.1"
+    "rollup": "4.59.0"
   },
   "scripts": {
     "build": "pnpm ngc && pnpm rollup -c rollup.config.mjs",
