@@ -98,6 +98,11 @@ section {
   }
 }
 
+#features {
+  margin: 0;
+  padding: 2.5rem 1rem;
+}
+
 @property --gradient-angle {
   syntax: '<angle>';
   initial-value: 90deg;
