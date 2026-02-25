@@ -254,6 +254,18 @@ describe('lexer', () => {
       expect(tokens[0].toString()).toEqual('\u00a0');
     });
 
+    it('should tokenize braced unicode', () => {
+      const tokens: Token[] = lex('"\\u{4f60}"');
+      expect(tokens.length).toEqual(1);
+      expect(tokens[0].toString()).toEqual('你');
+    });
+
+    it('should tokenize braced unicode above BMP', () => {
+      const tokens: Token[] = lex('"\\u{1F680}"');
+      expect(tokens.length).toEqual(1);
+      expect(tokens[0].toString()).toEqual('🚀');
+    });
+
     it('should tokenize relation', () => {
       const tokens: Token[] = lex('! == != < > <= >= === !==');
       expectOperatorToken(tokens[0], 0, 1, '!');
@@ -367,10 +379,25 @@ describe('lexer', () => {
     it('should throw error on invalid unicode', () => {
       expectErrorToken(
         lex("'\\u1''bla'")[0],
-        2,
-        2,
-        "Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla']",
+        3,
+        3,
+        "Lexer Error: Invalid unicode escape [\\u1''b] at column 3 in expression ['\\u1''bla']",
       );
+    });
+
+    it('should throw error on unterminated braced unicode', () => {
+      expectErrorToken(
+        lex('"\\u{1F600"')[0],
+        10,
+        10,
+        'Lexer Error: Invalid unicode escape [\\u{1F600"}] at column 10 in expression ["\\u{1F600"]',
+      );
+    });
+
+    it('should throw error on out of range braced unicode', () => {
+      const token = lex('"\\u{110000}"')[0];
+      expect(token.isError()).toBe(true);
+      expect(token.toString()).toContain('Invalid unicode escape [\\u{110000}]');
     });
 
     it('should tokenize ?. as operator', () => {
@@ -489,6 +516,12 @@ describe('lexer', () => {
         const tokens: Token[] = lex('`\\u00A0`');
         expect(tokens.length).toBe(1);
         expect(tokens[0].toString()).toBe('\u00a0');
+      });
+
+      it('should tokenize braced unicode inside a template string', () => {
+        const tokens: Token[] = lex('`\\u{1F680}`');
+        expect(tokens.length).toBe(1);
+        expect(tokens[0].toString()).toBe('🚀');
       });
 
       it('should tokenize template literal with an interpolation in the end', () => {

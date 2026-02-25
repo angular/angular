@@ -1024,6 +1024,32 @@ describe('parser', () => {
       expect((map.keys[0] as LiteralMapPropertyKey).isShorthandInitialized).toBe(true);
     });
 
+    describe('unicode braced escapes', () => {
+      it('should parse braced unicode escape in strings', () => {
+        checkBinding('"\\u{4f60}"', '"你"');
+      });
+
+      it('should parse braced unicode escape for emoji', () => {
+        checkBinding('"\\u{1F600}"', '"😀"');
+      });
+
+      it('should still parse 4-digit unicode escapes', () => {
+        checkBinding('"\\u4f60"', '"你"');
+      });
+
+      it('should parse multiple braced unicode escapes in sequence', () => {
+        checkBinding('"\\u{48}\\u{65}\\u{6C}\\u{6C}\\u{6F}"', '"Hello"');
+      });
+
+      it('should error for unterminated braced unicode escape', () => {
+        expectBindingError('"\\u{1F600"', 'Invalid unicode escape [\\u{1F600');
+      });
+
+      it('should error for out of range braced unicode escape', () => {
+        expectBindingError('"\\u{110000}"', 'Invalid unicode escape [\\u{110000}]');
+      });
+    });
+
     describe('arrow functions', () => {
       it('should parse a single-parameter arrow function', () => {
         checkBinding('a => a');
