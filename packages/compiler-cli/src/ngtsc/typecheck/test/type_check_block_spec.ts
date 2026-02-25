@@ -2826,8 +2826,10 @@ describe('type check blocks', () => {
 
     it('should generate a string field for an input without a type', () => {
       const block = tcb('<input [formField]="f"/>', [FieldMock]);
-      expect(block).toContain('var _t1 = null! as string;');
-      expect(block).toContain('_t1 = ((this).f)().value();');
+      expect(block).toContain(
+        'var _t1 = null! as { (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; };',
+      );
+      expect(block).toContain('_t1 = ((this).f)().value;');
       expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
@@ -2849,7 +2851,6 @@ describe('type check blocks', () => {
     });
 
     [
-      {inputType: 'text', expectedType: 'string'},
       {inputType: 'radio', expectedType: 'string'},
       {inputType: 'checkbox', expectedType: 'boolean'},
       {inputType: 'number', expectedType: 'string | number | null'},
@@ -2868,6 +2869,16 @@ describe('type check blocks', () => {
         expect(block).toContain('var _t2 = null! as i0.FormField;');
         expect(block).toContain('_t2.field = (((this).f));');
       });
+    });
+
+    it(`should generate a structural union for an input with a 'text' type`, () => {
+      const block = tcb(`<input type="text" [formField]="f"/>`, [FieldMock]);
+      expect(block).toContain(
+        'var _t1 = null! as { (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; };',
+      );
+      expect(block).toContain('_t1 = ((this).f)().value;');
+      expect(block).toContain('var _t2 = null! as i0.FormField;');
+      expect(block).toContain('_t2.field = (((this).f));');
     });
 
     it('should generate expressions to check the field and value bindings of a radio input', () => {
