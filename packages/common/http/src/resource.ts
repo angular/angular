@@ -20,6 +20,8 @@ import {
   ɵRuntimeError,
   ɵRuntimeErrorCode,
   ɵencapsulateResourceError as encapsulateResourceError,
+  TransferState,
+  untracked,
 } from '@angular/core';
 import type {Subscription} from 'rxjs';
 
@@ -29,6 +31,11 @@ import {HttpErrorResponse, HttpEventType, HttpProgressEvent} from './response';
 import {HttpHeaders} from './headers';
 import {HttpParams} from './params';
 import {HttpResourceRef, HttpResourceOptions, HttpResourceRequest} from './resource_api';
+import {
+  CACHE_OPTIONS,
+  HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+  retrieveStateFromCache,
+} from './transfer_cache';
 
 /**
  * Type for the `httpRequest` top-level function, which includes the call signatures for the JSON-
@@ -234,13 +241,41 @@ function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
       assertInInjectionContext(httpResource);
     }
     const injector = options?.injector ?? inject(Injector);
+
+    const cacheOptions = injector.get(CACHE_OPTIONS, null, {optional: true});
+    const transferState = injector.get(TransferState, null, {optional: true});
+    const originMap = injector.get(HTTP_TRANSFER_CACHE_ORIGIN_MAP, null, {optional: true});
+
+    const getInitialStream = (req: HttpRequest<unknown> | undefined) => {
+      if (cacheOptions && transferState && req) {
+        const cachedResponse = retrieveStateFromCache(req, cacheOptions, transferState, originMap);
+        if (cachedResponse) {
+          try {
+            const body = cachedResponse.body as TRaw;
+            const parsed = options?.parse ? options.parse(body) : (body as unknown as TResult);
+            return signal({value: parsed});
+          } catch (e) {
+            if (typeof ngDevMode === 'undefined' || ngDevMode) {
+              console.warn(
+                `Angular detected an error while parsing the cached response for the httpResource at \`${req.url}\`. ` +
+                  `The resource will fall back to its default value and try again asynchronously.`,
+                e,
+              );
+            }
+          }
+        }
+      }
+      return undefined;
+    };
+
     return new HttpResourceImpl(
       injector,
       () => normalizeRequest(request, responseType),
-      options?.defaultValue,
+      options?.defaultValue as TResult,
       options?.debugName,
       options?.parse as (value: unknown) => TResult,
       options?.equal as ValueEqualityFn<unknown>,
+      getInitialStream,
     ) as HttpResourceRef<TResult>;
   };
 }
@@ -321,11 +356,14 @@ class HttpResourceImpl<T>
 
   constructor(
     injector: Injector,
-    request: () => HttpRequest<T> | undefined,
+    request: () => HttpRequest<unknown> | undefined,
     defaultValue: T,
     debugName?: string,
     parse?: (value: unknown) => T,
     equal?: ValueEqualityFn<unknown>,
+    getInitialStream?: (
+      request: HttpRequest<unknown> | undefined,
+    ) => Signal<ResourceStreamItem<T>> | undefined,
   ) {
     super(
       request,
@@ -393,6 +431,7 @@ class HttpResourceImpl<T>
       equal,
       debugName,
       injector,
+      getInitialStream,
     );
     this.client = injector.get(HttpClient);
   }
