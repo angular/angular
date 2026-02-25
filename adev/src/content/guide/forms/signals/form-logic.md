@@ -195,14 +195,14 @@ import {form, FormField, hidden} from '@angular/forms/signals';
   imports: [FormField],
   template: `
     <label>
-      <input type="checkbox" [FormField]="profileForm.isPublic" />
+      <input type="checkbox" [formField]="profileForm.isPublic" />
       Make profile public
     </label>
 
     @if (!profileForm.publicUrl().hidden()) {
       <label>
         Public URL
-        <input [FormField]="profileForm.publicUrl" />
+        <input [formField]="profileForm.publicUrl" />
       </label>
     }
   `,
@@ -239,12 +239,12 @@ import {form, FormField, readonly} from '@angular/forms/signals';
   template: `
     <label>
       Username (cannot be changed)
-      <input [FormField]="accountForm.username" />
+      <input [formField]="accountForm.username" />
     </label>
 
     <label>
       Email
-      <input [FormField]="accountForm.email" />
+      <input [formField]="accountForm.email" />
     </label>
   `,
 })
@@ -275,13 +275,13 @@ import {form, FormField, readonly} from '@angular/forms/signals';
   imports: [FormField],
   template: `
     <label>
-      <input type="checkbox" [FormField]="documentForm.isLocked" />
+      <input type="checkbox" [formField]="documentForm.isLocked" />
       Lock document
     </label>
 
     <label>
       Document Title
-      <input [FormField]="documentForm.title" />
+      <input [formField]="documentForm.title" />
     </label>
   `,
 })
@@ -359,7 +359,7 @@ import {form, FormField, debounce} from '@angular/forms/signals';
   template: `
     <label>
       Search
-      <input [FormField]="searchForm.query" />
+      <input [formField]="searchForm.query" />
     </label>
 
     <p>Searching for: {{ searchForm.query().value() }}</p>
@@ -406,7 +406,7 @@ import {form, FormField, debounce} from '@angular/forms/signals';
   template: `
     <label>
       Search
-      <input [FormField]="searchForm.query" />
+      <input [formField]="searchForm.query" />
     </label>
   `,
 })
@@ -483,7 +483,7 @@ import {form, FormField, required, min, max} from '@angular/forms/signals';
   template: `
     <label>
       Age (between {{ ageForm.age().min() }} and {{ ageForm.age().max() }})
-      <input type="number" [FormField]="ageForm.age" />
+      <input type="number" [formField]="ageForm.age" />
     </label>
 
     @if (ageForm.age().required()) {
