@@ -30,6 +30,9 @@ vscode-ng-language-service/syntaxes/test/data/*.html
 # Ignore goldens MD files
 goldens/**/*.api.md
 
+# Ignore golden symbol json files
+packages/**/*.golden_symbols.json
+
 # adev generated files
 adev/src/content/aria/**/*.json
 adev/src/content/cli/**/*.json
