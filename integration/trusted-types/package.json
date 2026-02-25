@@ -33,7 +33,7 @@
     "@types/jasmine": "^6.0.0",
     "@types/node": "^20.14.8",
     "concurrently": "9.2.1",
-    "jasmine-core": "6.0.1",
+    "jasmine-core": "6.1.0",
     "serve": "^14.2.5",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.4.0",
