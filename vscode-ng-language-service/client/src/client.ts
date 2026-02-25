@@ -7,6 +7,7 @@
  */
 
 import * as fs from 'node:fs';
+import * as crypto from 'node:crypto';
 import * as path from 'node:path';
 import * as vscode from 'vscode';
 import * as lsp from 'vscode-languageclient/node';
@@ -36,7 +37,7 @@ import {
   isInsideStringLiteral,
   isNotTypescriptOrSupportedDecoratorField,
 } from './embedded_support';
-import {InlineStylesDocCache, selectColorPresentations} from './inline_styles_support';
+import {selectColorPresentations} from './inline_styles_support';
 
 interface GetTcbResponse {
   uri: vscode.Uri;
@@ -52,9 +53,9 @@ export class AngularLanguageClient implements vscode.Disposable {
   private readonly clientOptions: lsp.LanguageClientOptions;
   private readonly name = 'Angular Language Service';
   private readonly virtualDocumentContents = new Map<string, string>();
+  private readonly fileBackedStyleUriToSourceUri = new Map<string, vscode.Uri>();
   private readonly untitledStyleUriToSourceUri = new Map<string, vscode.Uri>();
-  private readonly inlineStylesDocCache = new InlineStylesDocCache();
-  private readonly scopedInlineStylesDocCache = new Map<string, vscode.TextDocument>();
+  private readonly scopedUntitledStylesDocCache = new Map<string, vscode.TextDocument>();
   /** A map that indicates whether Angular could be found in the file's project. */
   private readonly fileToIsInAngularProjectMap = new Map<string, boolean>();
 
@@ -75,6 +76,13 @@ export class AngularLanguageClient implements vscode.Disposable {
     );
 
     this.disposables.push(
+      vscode.languages.registerDocumentHighlightProvider(
+        [{scheme: 'file', language: 'typescript'}],
+        this.createInlineStylesDocumentHighlightProvider(),
+      ),
+    );
+
+    this.disposables.push(
       vscode.workspace.onDidChangeConfiguration(() => {
         this.fileToIsInAngularProjectMap.clear();
         this.traceProjectGate('cleared cache on workspace configuration change');
@@ -83,15 +91,19 @@ export class AngularLanguageClient implements vscode.Disposable {
 
     this.disposables.push(
       vscode.workspace.onDidChangeTextDocument((event) => {
-        this.inlineStylesDocCache.invalidate(event.document.uri.toString());
-        this.invalidateScopedInlineStylesCache(event.document.uri.toString());
+        this.invalidateScopedUntitledStylesDocCache(event.document.uri.toString());
       }),
     );
 
     this.disposables.push(
       vscode.workspace.onDidCloseTextDocument((document) => {
-        this.inlineStylesDocCache.invalidate(document.uri.toString());
-        this.invalidateScopedInlineStylesCache(document.uri.toString());
+        this.invalidateScopedUntitledStylesDocCache(document.uri.toString());
+      }),
+    );
+
+    this.disposables.push(
+      vscode.window.onDidChangeVisibleTextEditors((editors) => {
+        void this.closeVisibleMappedUntitledEditors(editors);
       }),
     );
 
@@ -620,6 +632,80 @@ export class AngularLanguageClient implements vscode.Disposable {
     });
   }
 
+  private async openVirtualStylesDocument(
+    document: vscode.TextDocument,
+    suffix = 'styles',
+  ): Promise<vscode.TextDocument> {
+    const content = getInlineStylesVirtualContent(document.getText());
+    const uri = this.writeInlineStylesScratchFile(document.uri, suffix, content);
+    return vscode.workspace.openTextDocument(uri);
+  }
+
+  private async openVirtualStylesDocumentForPosition(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    suffix = 'styles-pos',
+  ): Promise<vscode.TextDocument> {
+    const offset = document.offsetAt(position);
+    const scopedContent = getInlineStylesVirtualContentAtOffset(document.getText(), offset);
+    const content = scopedContent ?? getInlineStylesVirtualContent(document.getText());
+    const uri = this.writeInlineStylesScratchFile(document.uri, suffix, content);
+    return vscode.workspace.openTextDocument(uri);
+  }
+
+  private writeInlineStylesScratchFile(
+    sourceUri: vscode.Uri,
+    suffix: string,
+    content: string,
+  ): vscode.Uri {
+    const sourceDir = path.dirname(sourceUri.fsPath);
+    const inlineStylesDir = path.join(sourceDir, '.ng-inline-styles');
+    fs.mkdirSync(inlineStylesDir, {recursive: true});
+
+    const key = `${sourceUri.toString()}|${suffix}`;
+    const hash = crypto.createHash('sha1').update(key).digest('hex').slice(0, 16);
+    const safeName = `${hash}.${suffix}.scss`;
+    const filePath = path.join(inlineStylesDir, safeName);
+    fs.writeFileSync(filePath, content, 'utf8');
+
+    const uri = vscode.Uri.file(filePath);
+    this.fileBackedStyleUriToSourceUri.set(uri.toString(), sourceUri);
+    return uri;
+  }
+
+  private async openScopedUntitledStylesDocumentForPosition(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+  ): Promise<vscode.TextDocument> {
+    const sourceUri = document.uri.toString();
+    const scoped = getInlineStylesVirtualContentWithKeyAtOffset(
+      document.getText(),
+      document.offsetAt(position),
+    );
+    const cacheKey = `${sourceUri}|${scoped?.key ?? 'all'}`;
+    const cached = this.scopedUntitledStylesDocCache.get(cacheKey);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    const content = scoped?.content ?? getInlineStylesVirtualContent(document.getText());
+    const vdoc = await vscode.workspace.openTextDocument({
+      language: 'scss',
+      content,
+    });
+    this.untitledStyleUriToSourceUri.set(vdoc.uri.toString(), document.uri);
+    this.scopedUntitledStylesDocCache.set(cacheKey, vdoc);
+    return vdoc;
+  }
+
+  private invalidateScopedUntitledStylesDocCache(sourceUri: string): void {
+    for (const key of [...this.scopedUntitledStylesDocCache.keys()]) {
+      if (key.startsWith(`${sourceUri}|`)) {
+        this.scopedUntitledStylesDocCache.delete(key);
+      }
+    }
+  }
+
   private createInlineStylesColorProvider(): vscode.DocumentColorProvider {
     return {
       provideDocumentColors: async (document: vscode.TextDocument) => {
@@ -658,6 +744,29 @@ export class AngularLanguageClient implements vscode.Disposable {
     };
   }
 
+  private createInlineStylesDocumentHighlightProvider(): vscode.DocumentHighlightProvider {
+    return {
+      provideDocumentHighlights: async (
+        document: vscode.TextDocument,
+        position: vscode.Position,
+      ): Promise<vscode.DocumentHighlight[]> => {
+        if (document.languageId !== 'typescript') {
+          return [];
+        }
+
+        if (!(await this.isInAngularProject(document))) {
+          return [];
+        }
+
+        if (!this.isPositionInsideStylesField(document, position)) {
+          return [];
+        }
+
+        return (await this.getInlineStylesDocumentHighlights(document, position)) ?? [];
+      },
+    };
+  }
+
   private isPositionInsideStylesField(
     document: vscode.TextDocument,
     position: vscode.Position,
@@ -669,10 +778,10 @@ export class AngularLanguageClient implements vscode.Disposable {
     document: vscode.TextDocument,
     position: vscode.Position,
   ): Promise<vscode.Definition | vscode.DefinitionLink[] | undefined> {
-    const vdocUri = this.createVirtualStylesDocForPosition(document, position, 'styles-def');
+    const vdoc = await this.openVirtualStylesDocumentForPosition(document, position, 'styles-def');
     const styleDefinition = await vscode.commands.executeCommand<
       vscode.Definition | vscode.DefinitionLink[]
-    >('vscode.executeDefinitionProvider', vdocUri, position);
+    >('vscode.executeDefinitionProvider', vdoc.uri, position);
     return this.remapDefinitionFromVirtualToSource(styleDefinition);
   }
 
@@ -681,7 +790,7 @@ export class AngularLanguageClient implements vscode.Disposable {
     position: vscode.Position,
     context: vscode.ReferenceContext,
   ): Promise<vscode.Location[] | undefined> {
-    const vdoc = await this.openInlineStylesDocumentForPosition(document, position);
+    const vdoc = await this.openVirtualStylesDocumentForPosition(document, position, 'styles-ref');
     const references = await vscode.commands.executeCommand<vscode.Location[]>(
       'vscode.executeReferenceProvider',
       vdoc.uri,
@@ -824,10 +933,14 @@ export class AngularLanguageClient implements vscode.Disposable {
     positions: readonly vscode.Position[],
   ): Promise<vscode.SelectionRange[] | undefined> {
     const basePosition = positions[0] ?? new vscode.Position(0, 0);
-    const vdocUri = this.createVirtualStylesDocForPosition(document, basePosition, 'styles-sel');
+    const vdoc = await this.openVirtualStylesDocumentForPosition(
+      document,
+      basePosition,
+      'styles-sel',
+    );
     const styleSelectionRanges = await vscode.commands.executeCommand<vscode.SelectionRange[]>(
       'vscode.executeSelectionRangeProvider',
-      vdocUri,
+      vdoc.uri,
       [...positions],
     );
     return styleSelectionRanges ?? undefined;
@@ -837,13 +950,50 @@ export class AngularLanguageClient implements vscode.Disposable {
     document: vscode.TextDocument,
     position: vscode.Position,
   ): Promise<vscode.DocumentHighlight[] | undefined> {
-    const vdoc = await this.openInlineStylesDocumentForPosition(document, position);
+    const vdoc = await this.openVirtualStylesDocumentForPosition(
+      document,
+      position,
+      'styles-highlight',
+    );
     const highlights = await vscode.commands.executeCommand<vscode.DocumentHighlight[]>(
       'vscode.executeDocumentHighlights',
       vdoc.uri,
       position,
     );
-    return highlights ?? undefined;
+
+    if (highlights !== undefined && highlights.length > 0) {
+      return highlights;
+    }
+
+    const scopedStylesDoc = await this.openVirtualStylesDocumentForPosition(
+      document,
+      position,
+      'styles-highlight-ref',
+    );
+
+    const references = await vscode.commands.executeCommand<vscode.Location[]>(
+      'vscode.executeReferenceProvider',
+      scopedStylesDoc.uri,
+      position,
+      {
+        includeDeclaration: true,
+      },
+    );
+    const remapped = this.remapLocationsFromVirtualToSource(references ?? undefined);
+    if (remapped === undefined || remapped.length === 0) {
+      return undefined;
+    }
+
+    const sourceUri = document.uri.toString();
+    const sourceRanges = remapped.filter((location) => location.uri.toString() === sourceUri);
+    if (sourceRanges.length === 0) {
+      return undefined;
+    }
+
+    return sourceRanges.map((location) => ({
+      range: location.range,
+      kind: vscode.DocumentHighlightKind.Read,
+    }));
   }
 
   private async getInlineStylesCodeActions(
@@ -851,21 +1001,55 @@ export class AngularLanguageClient implements vscode.Disposable {
     range: vscode.Range,
     context: vscode.CodeActionContext,
   ): Promise<Array<vscode.Command | vscode.CodeAction> | undefined> {
-    const vdoc = await this.openInlineStylesDocumentForPosition(document, range.start);
+    const vdoc = await this.openScopedUntitledStylesDocumentForPosition(document, range.start);
     const actions = await vscode.commands.executeCommand<Array<vscode.Command | vscode.CodeAction>>(
       'vscode.executeCodeActionProvider',
       vdoc.uri,
       range,
-      context.only,
+      context.only?.value,
     );
     return this.remapCodeActionsFromVirtualToSource(actions ?? undefined);
+  }
+
+  private async closeVisibleMappedUntitledEditors(
+    editors: readonly vscode.TextEditor[],
+  ): Promise<void> {
+    const targetUris = new Set(
+      editors
+        .map((editor) => editor.document.uri)
+        .filter((uri) => this.untitledStyleUriToSourceUri.has(uri.toString()))
+        .map((uri) => uri.toString()),
+    );
+
+    if (targetUris.size === 0) {
+      return;
+    }
+
+    const tabs = vscode.window.tabGroups.all.flatMap((group) => group.tabs);
+    for (const tab of tabs) {
+      const tabUri = this.getTabInputUri(tab.input);
+      if (tabUri !== null && targetUris.has(tabUri.toString())) {
+        await vscode.window.tabGroups.close(tab);
+      }
+    }
+  }
+
+  private getTabInputUri(input: unknown): vscode.Uri | null {
+    if (input instanceof vscode.TabInputText) {
+      return input.uri;
+    }
+    return null;
   }
 
   private async getInlineStylesPrepareRename(
     document: vscode.TextDocument,
     position: vscode.Position,
   ): Promise<vscode.Range | {range: vscode.Range; placeholder: string} | undefined> {
-    const vdoc = await this.openInlineStylesDocumentForPosition(document, position);
+    const vdoc = await this.openVirtualStylesDocumentForPosition(
+      document,
+      position,
+      'styles-prepare-rename',
+    );
     const prepareRename = await vscode.commands.executeCommand<
       vscode.Range | {range: vscode.Range; placeholder: string}
     >('vscode.prepareRename', vdoc.uri, position);
@@ -877,7 +1061,11 @@ export class AngularLanguageClient implements vscode.Disposable {
     position: vscode.Position,
     newName: string,
   ): Promise<vscode.WorkspaceEdit | undefined> {
-    const vdoc = await this.openInlineStylesDocumentForPosition(document, position);
+    const vdoc = await this.openVirtualStylesDocumentForPosition(
+      document,
+      position,
+      'styles-rename',
+    );
     const renameEdits = await vscode.commands.executeCommand<vscode.WorkspaceEdit>(
       'vscode.executeDocumentRenameProvider',
       vdoc.uri,
@@ -903,7 +1091,7 @@ export class AngularLanguageClient implements vscode.Disposable {
   private async getDocumentColorsForInlineStyles(
     document: vscode.TextDocument,
   ): Promise<vscode.ColorInformation[]> {
-    const inlineStylesDoc = await this.openInlineStylesDocument(document);
+    const inlineStylesDoc = await this.openVirtualStylesDocument(document, 'styles-colors');
     return this.getDocumentColorsForUri(inlineStylesDoc.uri);
   }
 
@@ -930,61 +1118,11 @@ export class AngularLanguageClient implements vscode.Disposable {
     color: vscode.Color,
     range: vscode.Range,
   ): Promise<vscode.ColorPresentation[]> {
-    const inlineStylesDoc = await this.openInlineStylesDocument(document);
-    return this.getColorPresentationsForDocument(inlineStylesDoc, color, range);
-  }
-
-  private async openInlineStylesDocument(
-    document: vscode.TextDocument,
-  ): Promise<vscode.TextDocument> {
-    const sourceUri = document.uri.toString();
-    const cached = this.inlineStylesDocCache.get(sourceUri, document.version);
-    if (cached !== null) {
-      return cached;
-    }
-
-    const virtualStyles = getInlineStylesVirtualContent(document.getText());
-    const inlineStylesDocument = await vscode.workspace.openTextDocument({
-      language: 'scss',
-      content: virtualStyles,
-    });
-    this.untitledStyleUriToSourceUri.set(inlineStylesDocument.uri.toString(), document.uri);
-    this.inlineStylesDocCache.set(sourceUri, document.version, inlineStylesDocument);
-    return inlineStylesDocument;
-  }
-
-  private async openInlineStylesDocumentForPosition(
-    document: vscode.TextDocument,
-    position: vscode.Position,
-  ): Promise<vscode.TextDocument> {
-    const sourceUri = document.uri.toString();
-    const scoped = getInlineStylesVirtualContentWithKeyAtOffset(
-      document.getText(),
-      document.offsetAt(position),
+    const inlineStylesDoc = await this.openVirtualStylesDocument(
+      document,
+      'styles-color-presentation',
     );
-    const cacheKey = `${sourceUri}|${document.version}|${scoped?.key ?? 'all'}`;
-    const cached = this.scopedInlineStylesDocCache.get(cacheKey);
-    if (cached !== undefined) {
-      return cached;
-    }
-
-    const scopedContent = scoped?.content ?? getInlineStylesVirtualContent(document.getText());
-    const inlineStylesDocument = await vscode.workspace.openTextDocument({
-      language: 'scss',
-      content: scopedContent,
-    });
-    this.untitledStyleUriToSourceUri.set(inlineStylesDocument.uri.toString(), document.uri);
-    this.scopedInlineStylesDocCache.set(cacheKey, inlineStylesDocument);
-    return inlineStylesDocument;
-  }
-
-  private invalidateScopedInlineStylesCache(sourceUri: string): void {
-    const keys = [...this.scopedInlineStylesDocCache.keys()];
-    for (const key of keys) {
-      if (key.startsWith(`${sourceUri}|`)) {
-        this.scopedInlineStylesDocCache.delete(key);
-      }
-    }
+    return this.getColorPresentationsForDocument(inlineStylesDoc, color, range);
   }
 
   private hasInlineStylesContent(document: vscode.TextDocument): boolean {
@@ -1079,7 +1217,15 @@ export class AngularLanguageClient implements vscode.Disposable {
     const remapped = new vscode.WorkspaceEdit();
     for (const [uri, edits] of workspaceEdit.entries()) {
       const sourceUri = this.getSourceUriFromVirtualUri(uri) ?? uri;
-      remapped.set(sourceUri, edits);
+      const existing = remapped.get(sourceUri) ?? [];
+      remapped.set(sourceUri, [
+        ...existing,
+        ...edits.map((edit) =>
+          edit instanceof vscode.SnippetTextEdit
+            ? vscode.SnippetTextEdit.replace(edit.range, edit.snippet)
+            : vscode.TextEdit.replace(edit.range, edit.newText),
+        ),
+      ]);
     }
     return remapped;
   }
@@ -1088,6 +1234,11 @@ export class AngularLanguageClient implements vscode.Disposable {
     const sourceFromUntitled = this.untitledStyleUriToSourceUri.get(uri.toString());
     if (sourceFromUntitled !== undefined) {
       return sourceFromUntitled;
+    }
+
+    const sourceFromFileBacked = this.fileBackedStyleUriToSourceUri.get(uri.toString());
+    if (sourceFromFileBacked !== undefined) {
+      return sourceFromFileBacked;
     }
 
     if (uri.scheme !== 'angular-embedded-content') {
