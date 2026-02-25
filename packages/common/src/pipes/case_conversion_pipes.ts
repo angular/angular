@@ -8,7 +8,7 @@
 
 import {Pipe, PipeTransform, Type} from '@angular/core';
 
-import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
+import {invalidPipeArgumentError} from './utils';
 
 /**
  * Transforms text to all lower case.

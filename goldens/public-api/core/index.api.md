@@ -844,6 +844,12 @@ export interface HostListenerDecorator {
 }
 
 // @public
+export interface IdleService {
+    cancelOnIdle(id: number): void;
+    requestOnIdle(callback: (deadline?: IdleDeadline) => void): number;
+}
+
+// @public
 export function importProvidersFrom(...sources: ImportProvidersSource[]): EnvironmentProviders;
 
 // @public
@@ -1488,6 +1494,9 @@ export function provideCheckNoChangesConfig(options: {
 
 // @public
 export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
+
+// @public
+export function provideIdleServiceWith(useExisting: AbstractType<IdleService> | InjectionToken<IdleService>): EnvironmentProviders;
 
 // @public
 export function provideNgReflectAttributes(): EnvironmentProviders;

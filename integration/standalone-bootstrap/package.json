@@ -20,7 +20,7 @@
     "@angular/ssr": "21.2.0-rc.2",
     "rxjs": "^7.0.0",
     "tslib": "^2.3.0",
-    "zone.js": "0.16.0"
+    "zone.js": "0.16.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "21.2.0-rc.2",
@@ -31,5 +31,5 @@
     "ts-node": "^10.9.1",
     "typescript": "5.9.3"
   },
-  "packageManager": "pnpm@10.30.1"
+  "packageManager": "pnpm@10.30.2"
 }
