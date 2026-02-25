@@ -25,8 +25,7 @@ export class MyComp {}
 
 #### After
 
-```angular-ts
-import {Component} from '@angular/core';
+nent} from '@angular/core';
 
 @Component({
   template: 'Hello',
