@@ -19,9 +19,9 @@ import {makeEnvironmentProviders} from '../di/provider_collection';
  * overridden/mocked in test environment and picked up by the runtime code.
  */
 const _requestIdleCallback = () =>
-  typeof requestIdleCallback !== 'undefined' ? requestIdleCallback.bind(globalThis) : setTimeout;
+  (typeof requestIdleCallback !== 'undefined' ? requestIdleCallback : setTimeout).bind(globalThis);
 const _cancelIdleCallback = () =>
-  typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback.bind(globalThis) : clearTimeout;
+  (typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout).bind(globalThis);
 
 /**
  * Service which configures custom 'on idle' behavior for Angular features like `@defer`.
