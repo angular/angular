@@ -612,23 +612,62 @@ class _Scanner {
   ): string | (Token & {type: TokenType.Error}) {
     buffer += this.input.substring(marker, this.index);
     let unescapedCode: number;
+    let unicodeEscapeForError: string | null = null;
     this.advance();
     if (this.peek === chars.$u) {
-      // 4 character hex code for unicode character.
-      const hex: string = this.input.substring(this.index + 1, this.index + 5);
-      if (/^[0-9a-f]+$/i.test(hex)) {
+      // Unicode escape: \uXXXX or \u{XXXX}
+      this.advance(); // skip 'u'
+      if (this.input.charCodeAt(this.index) === chars.$LBRACE) {
+        // Braced unicode escape: \u{X} to \u{XXXXXX}
+        this.advance(); // skip '{'
+        const hexStart = this.index;
+        while (
+          this.input.charCodeAt(this.index) !== chars.$RBRACE &&
+          this.input.charCodeAt(this.index) !== chars.$EOF &&
+          this.index < this.length
+        ) {
+          this.advance();
+        }
+
+        const hasClosingBrace = this.input.charCodeAt(this.index) === chars.$RBRACE;
+        const hex = this.input.substring(hexStart, this.index);
+        unicodeEscapeForError = `\\u{${hex}}`;
+
+        if (hasClosingBrace) {
+          this.advance(); // skip '}'
+        }
+
+        if (!hasClosingBrace || !/^[0-9a-f]{1,6}$/i.test(hex)) {
+          return this.error(`Invalid unicode escape [${unicodeEscapeForError}]`, 0);
+        }
+
         unescapedCode = parseInt(hex, 16);
+        if (unescapedCode > 0x10ffff) {
+          return this.error(`Invalid unicode escape [${unicodeEscapeForError}]`, 0);
+        }
       } else {
-        return this.error(`Invalid unicode escape [\\u${hex}]`, 0);
-      }
-      for (let i = 0; i < 5; i++) {
-        this.advance();
+        // 4 character hex code for unicode character: \uXXXX
+        const hex: string = this.input.substring(this.index, this.index + 4);
+        unicodeEscapeForError = `\\u${hex}`;
+        if (/^[0-9a-f]{4}$/i.test(hex)) {
+          unescapedCode = parseInt(hex, 16);
+        } else {
+          return this.error(`Invalid unicode escape [${unicodeEscapeForError}]`, 0);
+        }
+        for (let i = 0; i < 4; i++) {
+          this.advance();
+        }
       }
     } else {
       unescapedCode = unescape(this.peek);
       this.advance();
     }
-    buffer += String.fromCharCode(unescapedCode);
+    if (unescapedCode > 0xffff) {
+      // Encode as surrogate pair for code points above BMP.
+      buffer += String.fromCodePoint(unescapedCode);
+    } else {
+      buffer += String.fromCharCode(unescapedCode);
+    }
     return buffer;
   }
 
