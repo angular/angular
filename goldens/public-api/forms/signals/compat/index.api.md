@@ -30,7 +30,7 @@ export type CompatFormOptions<TModel> = Omit<FormOptions<TModel>, 'adapter'>;
 
 // @public
 export class CompatValidationError<T = unknown> implements ValidationError {
-    constructor({ context, kind, control }: {
+    constructor(input: {
         context: T;
         kind: string;
         control: AbstractControl;
