@@ -1,3 +1,23 @@
+<a name="19.2.19"></a>
+
+# 19.2.19 (2026-02-25)
+
+## Breaking Changes
+
+### core
+
+- Angular now only applies known attributes from HTML in translated ICU content. Unknown attributes are dropped and not rendered.
+
+  (cherry picked from commit 03da204b6daa5e4583e0d0968c2107390bbd8235)
+
+### core
+
+| Commit                                                                                           | Type | Description                                                  |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------ |
+| [747548721d](https://github.com/angular/angular/commit/747548721d051c21e388a302d20d53fb3ab16367) | fix  | block creation of sensitive URI attributes from ICU messages |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.18"></a>
 
 # 19.2.18 (2026-01-07)
