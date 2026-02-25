@@ -846,7 +846,7 @@ export interface HostListenerDecorator {
 // @public
 export interface IdleService {
     cancelOnIdle(id: number): void;
-    requestOnIdle(callback: (deadline?: IdleDeadline) => void): number;
+    requestOnIdle(callback: (deadline?: IdleDeadline) => void, options?: IdleRequestOptions): number;
 }
 
 // @public
