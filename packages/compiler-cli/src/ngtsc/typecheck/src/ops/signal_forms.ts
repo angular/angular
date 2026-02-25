@@ -112,21 +112,40 @@ export class TcbNativeFieldOp extends TcbOp {
 
     checkUnsupportedFieldBindings(this.node, this.unsupportedBindingFields, this.tcb);
 
-    const expectedType = new TcbExpr(this.getExpectedTypeFromDomNode(this.node));
-    const value = extractFieldValue(fieldBinding.value, this.tcb, this.scope);
+    const rawExpectedType = this.getExpectedTypeFromDomNode(this.node);
 
-    // Create a variable with the expected type and check that the field value is assignable, e.g.
-    // var t1 = null! as string | number; t1 = f().value()`.
-    const id = new TcbExpr(this.tcb.allocateId());
-    const assignment = new TcbExpr(`${id.print()} = ${value.print()}`);
-    assignment.addParseSpanInfo(fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
+    if (rawExpectedType === null) {
+      // For text-like <input> elements, use an invariant check on the value signal.
+      // WritableSignal<T> is invariant in T, so assigning it to a union of structural types
+      // gives us exact type matching: only Field<string> or Field<number|null> are accepted.
+      const signal = extractFieldValueSignal(fieldBinding.value, this.tcb, this.scope);
+      const id = new TcbExpr(this.tcb.allocateId());
+      const unionType = new TcbExpr(
+        '{ (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; }',
+      );
+      const assignment = new TcbExpr(`${id.print()} = ${signal.print()}`);
+      assignment.addParseSpanInfo(fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
 
-    this.scope.addStatement(declareVariable(id, expectedType));
-    this.scope.addStatement(assignment);
+      this.scope.addStatement(declareVariable(id, unionType));
+      this.scope.addStatement(assignment);
+    } else {
+      const expectedType = new TcbExpr(rawExpectedType);
+      const value = extractFieldValue(fieldBinding.value, this.tcb, this.scope);
+
+      // Create a variable with the expected type and check that the field value is assignable, e.g.
+      // var t1 = null! as string | number; t1 = f().value()`.
+      const id = new TcbExpr(this.tcb.allocateId());
+      const assignment = new TcbExpr(`${id.print()} = ${value.print()}`);
+      assignment.addParseSpanInfo(fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
+
+      this.scope.addStatement(declareVariable(id, expectedType));
+      this.scope.addStatement(assignment);
+    }
+
     return null;
   }
 
-  private getExpectedTypeFromDomNode(node: TmplAstElement): string {
+  private getExpectedTypeFromDomNode(node: TmplAstElement): string | null {
     if (node.name === 'textarea' || node.name === 'select') {
       // `<textarea>` and `<select>` are always strings.
       return 'string';
@@ -139,6 +158,9 @@ export class TcbNativeFieldOp extends TcbOp {
     switch (this.inputType) {
       case 'checkbox':
         return 'boolean';
+
+      case 'radio':
+        return 'string';
 
       case 'number':
       case 'range':
@@ -165,7 +187,11 @@ export class TcbNativeFieldOp extends TcbOp {
       return 'string | number | boolean | Date | null';
     }
 
-    // Fall back to string if we couldn't map the type.
+    if (this.inputType === 'text' || this.inputType === null) {
+      // Return null to signal the invariant check for text-like inputs.
+      return null;
+    }
+
     return 'string';
   }
 
@@ -414,6 +440,18 @@ function extractFieldValue(expression: AST, tcb: Context, scope: Scope): TcbExpr
 
   // Extract the value from the field, e.g. `f().value()`.
   return new TcbExpr(`${innerCall.print()}.value()`);
+}
+
+/**
+ * Gets an expression that extracts the value signal of a field binding (without calling it).
+ */
+function extractFieldValueSignal(expression: AST, tcb: Context, scope: Scope): TcbExpr {
+  // Unwraps the field, e.g. `[field]="f"` turns into `f()`.
+  const innerCall = new TcbExpr(tcbExpression(expression, tcb, scope).print() + '()');
+  innerCall.markIgnoreDiagnostics();
+
+  // Extract the value signal from the field, e.g. `f().value` (not called).
+  return new TcbExpr(`${innerCall.print()}.value`);
 }
 
 /** Checks whether a directive has a model-like input with a specific name. */
