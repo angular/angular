@@ -9,7 +9,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
       $color: #ff0000;
       .red {
         color: $color;
-        displai: block;
+        dispay: block;
       }
     `,
     `
