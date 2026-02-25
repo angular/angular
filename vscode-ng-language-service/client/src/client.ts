@@ -26,7 +26,17 @@ import {
 } from '../../common/requests';
 import {NodeModule, resolve, Version} from '../../common/resolver';
 
-import {isInsideStringLiteral, isNotTypescriptOrSupportedDecoratorField} from './embedded_support';
+import {
+  getInlineStylesVirtualContent,
+  getInlineStylesVirtualContentAtOffset,
+  getInlineStylesVirtualContentWithKeyAtOffset,
+  getInlineStylesVirtualContents,
+  getInlineTemplateVirtualContent,
+  getSupportedDecoratorFieldAtPosition,
+  isInsideStringLiteral,
+  isNotTypescriptOrSupportedDecoratorField,
+} from './embedded_support';
+import {InlineStylesDocCache, selectColorPresentations} from './inline_styles_support';
 
 interface GetTcbResponse {
   uri: vscode.Uri;
@@ -42,6 +52,9 @@ export class AngularLanguageClient implements vscode.Disposable {
   private readonly clientOptions: lsp.LanguageClientOptions;
   private readonly name = 'Angular Language Service';
   private readonly virtualDocumentContents = new Map<string, string>();
+  private readonly untitledStyleUriToSourceUri = new Map<string, vscode.Uri>();
+  private readonly inlineStylesDocCache = new InlineStylesDocCache();
+  private readonly scopedInlineStylesDocCache = new Map<string, vscode.TextDocument>();
   /** A map that indicates whether Angular could be found in the file's project. */
   private readonly fileToIsInAngularProjectMap = new Map<string, boolean>();
 
@@ -55,8 +68,30 @@ export class AngularLanguageClient implements vscode.Disposable {
     );
 
     this.disposables.push(
+      vscode.languages.registerColorProvider(
+        [{scheme: 'file', language: 'typescript'}],
+        this.createInlineStylesColorProvider(),
+      ),
+    );
+
+    this.disposables.push(
       vscode.workspace.onDidChangeConfiguration(() => {
         this.fileToIsInAngularProjectMap.clear();
+        this.traceProjectGate('cleared cache on workspace configuration change');
+      }),
+    );
+
+    this.disposables.push(
+      vscode.workspace.onDidChangeTextDocument((event) => {
+        this.inlineStylesDocCache.invalidate(event.document.uri.toString());
+        this.invalidateScopedInlineStylesCache(event.document.uri.toString());
+      }),
+    );
+
+    this.disposables.push(
+      vscode.workspace.onDidCloseTextDocument((document) => {
+        this.inlineStylesDocCache.invalidate(document.uri.toString());
+        this.invalidateScopedInlineStylesCache(document.uri.toString());
       }),
     );
 
@@ -103,6 +138,20 @@ export class AngularLanguageClient implements vscode.Disposable {
         ) => {
           // Code actions can trigger also outside of `@Component(<...>)` fields.
           if (await this.isInAngularProject(document)) {
+            if (this.isPositionInsideStylesField(document, range.start)) {
+              const [angularCodeActions, styleCodeActions] = await Promise.all([
+                next(document, range, context, token) as Promise<
+                  readonly (vscode.Command | vscode.CodeAction)[] | undefined
+                >,
+                this.getInlineStylesCodeActions(document, range, context),
+              ]);
+
+              const merged = [...(angularCodeActions ?? []), ...(styleCodeActions ?? [])] as Array<
+                vscode.Command | vscode.CodeAction
+              >;
+              return merged.length > 0 ? merged : undefined;
+            }
+
             return next(document, range, context, token);
           }
         },
@@ -124,8 +173,44 @@ export class AngularLanguageClient implements vscode.Disposable {
             (await this.isInAngularProject(document)) &&
             isInsideStringLiteral(document, position)
           ) {
+            if (this.isPositionInsideStylesField(document, position)) {
+              const [angularPrepareRename, stylePrepareRename] = await Promise.all([
+                next(document, position, token),
+                this.getInlineStylesPrepareRename(document, position),
+              ]);
+              return angularPrepareRename ?? stylePrepareRename;
+            }
+
             return next(document, position, token);
           }
+        },
+        provideRenameEdits: async (
+          document: vscode.TextDocument,
+          position: vscode.Position,
+          newName: string,
+          token: vscode.CancellationToken,
+          next,
+        ) => {
+          if (
+            !(await this.isInAngularProject(document)) ||
+            !isNotTypescriptOrSupportedDecoratorField(document, position)
+          ) {
+            return;
+          }
+
+          if (!this.isPositionInsideStylesField(document, position)) {
+            return next(document, position, newName, token);
+          }
+
+          const [angularEdits, styleEdits] = await Promise.all([
+            next(document, position, newName, token) as Promise<vscode.WorkspaceEdit | undefined>,
+            this.getInlineStylesRenameEdits(document, position, newName),
+          ]);
+
+          if (this.hasWorkspaceEditEntries(angularEdits)) {
+            return angularEdits;
+          }
+          return styleEdits;
         },
         provideDefinition: async (
           document: vscode.TextDocument,
@@ -137,7 +222,57 @@ export class AngularLanguageClient implements vscode.Disposable {
             (await this.isInAngularProject(document)) &&
             isNotTypescriptOrSupportedDecoratorField(document, position)
           ) {
-            return next(document, position, token);
+            const angularDefinitionPromise = next(document, position, token) as Promise<
+              vscode.Definition | vscode.DefinitionLink[] | undefined
+            >;
+
+            if (this.isPositionInsideStylesField(document, position)) {
+              const [angularDefinition, styleDefinition] = await Promise.all([
+                angularDefinitionPromise,
+                this.getInlineStylesDefinition(document, position),
+              ]);
+              return this.hasDefinitionResults(angularDefinition)
+                ? angularDefinition
+                : styleDefinition;
+            }
+
+            return angularDefinitionPromise;
+          }
+        },
+        provideReferences: async (
+          document: vscode.TextDocument,
+          position: vscode.Position,
+          context: vscode.ReferenceContext,
+          token: vscode.CancellationToken,
+          next: lsp.ProvideReferencesSignature,
+        ) => {
+          if (
+            (await this.isInAngularProject(document)) &&
+            isNotTypescriptOrSupportedDecoratorField(document, position)
+          ) {
+            const angularReferencesPromise = next(document, position, context, token) as Promise<
+              vscode.Location[] | undefined
+            >;
+
+            if (this.isPositionInsideStylesField(document, position)) {
+              const [angularReferences, styleReferences] = await Promise.all([
+                angularReferencesPromise,
+                this.getInlineStylesReferences(document, position, context),
+              ]);
+              const selectedReferences =
+                angularReferences !== undefined && angularReferences.length > 0
+                  ? angularReferences
+                  : styleReferences;
+
+              return this.filterDeclarationReferencesIfNeeded(
+                document,
+                position,
+                context.includeDeclaration,
+                selectedReferences,
+              );
+            }
+
+            return angularReferencesPromise;
           }
         },
         provideTypeDefinition: async (
@@ -168,20 +303,24 @@ export class AngularLanguageClient implements vscode.Disposable {
 
           const angularResultsPromise = next(document, position, token);
 
-          // Include results for inline HTML via virtual document and native html providers.
+          // Include results for inline HTML/CSS/SCSS/LESS via virtual documents and native providers.
           if (document.languageId === 'typescript') {
-            const vdocUri = this.createVirtualHtmlDoc(document);
-            const htmlProviderResultsPromise = vscode.commands.executeCommand<vscode.Hover[]>(
-              'vscode.executeHoverProvider',
-              vdocUri,
-              position,
-            );
+            const field = getSupportedDecoratorFieldAtPosition(document, position);
 
-            const [angularResults, htmlProviderResults] = await Promise.all([
-              angularResultsPromise,
-              htmlProviderResultsPromise,
-            ]);
-            return angularResults ?? htmlProviderResults?.[0];
+            if (field === 'template') {
+              const vdocUri = this.createVirtualHtmlDoc(document);
+              const htmlProviderResultsPromise = vscode.commands.executeCommand<vscode.Hover[]>(
+                'vscode.executeHoverProvider',
+                vdocUri,
+                position,
+              );
+
+              const [angularResults, htmlProviderResults] = await Promise.all([
+                angularResultsPromise,
+                htmlProviderResultsPromise,
+              ]);
+              return angularResults ?? htmlProviderResults?.[0];
+            }
           }
 
           return angularResultsPromise;
@@ -218,35 +357,76 @@ export class AngularLanguageClient implements vscode.Disposable {
             vscode.CompletionItem[] | null | undefined
           >;
 
-          // Include results for inline HTML via virtual document and native html providers.
+          // Include results for inline HTML/CSS/SCSS/LESS via virtual documents and native providers.
           if (document.languageId === 'typescript') {
-            const vdocUri = this.createVirtualHtmlDoc(document);
-            // This will not include angular stuff because the vdoc is not associated with an
-            // angular component
-            const htmlProviderCompletionsPromise =
-              vscode.commands.executeCommand<vscode.CompletionList>(
-                'vscode.executeCompletionItemProvider',
-                vdocUri,
-                position,
-                context.triggerCharacter,
-              );
-            const [angularCompletions, htmlProviderCompletions] = await Promise.all([
-              angularCompletionsPromise,
-              htmlProviderCompletionsPromise,
-            ]);
-            return [...(angularCompletions ?? []), ...(htmlProviderCompletions?.items ?? [])];
+            const field = getSupportedDecoratorFieldAtPosition(document, position);
+
+            if (field === 'template') {
+              const vdocUri = this.createVirtualHtmlDoc(document);
+              // This will not include Angular stuff because the vdoc is not associated with an
+              // angular component.
+              const htmlProviderCompletionsPromise =
+                vscode.commands.executeCommand<vscode.CompletionList>(
+                  'vscode.executeCompletionItemProvider',
+                  vdocUri,
+                  position,
+                  context.triggerCharacter,
+                );
+              const [angularCompletions, htmlProviderCompletions] = await Promise.all([
+                angularCompletionsPromise,
+                htmlProviderCompletionsPromise,
+              ]);
+              return this.normalizeCompletionItems([
+                ...(angularCompletions ?? []),
+                ...(htmlProviderCompletions?.items ?? []),
+              ]);
+            }
           }
 
-          return angularCompletionsPromise;
+          const angularCompletions = await angularCompletionsPromise;
+          return this.normalizeCompletionItems(angularCompletions);
+        },
+        resolveCompletionItem: async (
+          item: vscode.CompletionItem,
+          token: vscode.CancellationToken,
+          next,
+        ) => {
+          const resolved = await next(item, token);
+          return this.normalizeCompletionItem(resolved ?? item);
         },
         provideDocumentSymbols: async (
           document: vscode.TextDocument,
           token: vscode.CancellationToken,
           next: lsp.ProvideDocumentSymbolsSignature,
         ) => {
-          if (await this.isInAngularProject(document)) {
-            return next(document, token);
+          if (!(await this.isInAngularProject(document))) {
+            return;
           }
+
+          const angularSymbolsPromise = next(document, token) as Promise<
+            vscode.DocumentSymbol[] | vscode.SymbolInformation[] | null | undefined
+          >;
+
+          if (document.languageId !== 'typescript') {
+            return angularSymbolsPromise;
+          }
+
+          const styleVdocUris = this.createVirtualStylesDocs(document);
+          const styleSymbolsPromise = Promise.all(
+            styleVdocUris.map((uri) =>
+              vscode.commands.executeCommand<vscode.DocumentSymbol[] | vscode.SymbolInformation[]>(
+                'vscode.executeDocumentSymbolProvider',
+                uri,
+              ),
+            ),
+          );
+
+          const [angularSymbols, styleSymbols] = await Promise.all([
+            angularSymbolsPromise,
+            styleSymbolsPromise,
+          ]);
+
+          return this.mergeDocumentSymbolsWithInlineStyles(document, angularSymbols, styleSymbols);
         },
         provideFoldingRanges: async (
           document: vscode.TextDocument,
@@ -272,6 +452,67 @@ export class AngularLanguageClient implements vscode.Disposable {
             return next(document, position, token);
           }
         },
+        provideSelectionRanges: async (
+          document: vscode.TextDocument,
+          positions: readonly vscode.Position[],
+          token: vscode.CancellationToken,
+          next,
+        ) => {
+          if (!(await this.isInAngularProject(document))) {
+            return;
+          }
+
+          if (document.languageId === 'typescript') {
+            const allInStyles =
+              positions.length > 0 &&
+              positions.every((position) => {
+                return this.isPositionInsideStylesField(document, position);
+              });
+
+            if (allInStyles) {
+              const styleSelectionRanges = await this.getInlineStylesSelectionRanges(
+                document,
+                positions,
+              );
+
+              if (Array.isArray(styleSelectionRanges) && styleSelectionRanges.length > 0) {
+                return styleSelectionRanges;
+              }
+            }
+          }
+
+          return next(document, positions, token);
+        },
+        provideDocumentHighlights: async (
+          document: vscode.TextDocument,
+          position: vscode.Position,
+          token: vscode.CancellationToken,
+          next,
+        ) => {
+          if (
+            !(await this.isInAngularProject(document)) ||
+            !isNotTypescriptOrSupportedDecoratorField(document, position)
+          ) {
+            return;
+          }
+
+          const angularHighlightsPromise = next(document, position, token) as Promise<
+            vscode.DocumentHighlight[] | undefined
+          >;
+
+          if (!this.isPositionInsideStylesField(document, position)) {
+            return angularHighlightsPromise;
+          }
+
+          const [angularHighlights, styleHighlights] = await Promise.all([
+            angularHighlightsPromise,
+            this.getInlineStylesDocumentHighlights(document, position),
+          ]);
+
+          return angularHighlights && angularHighlights.length > 0
+            ? angularHighlights
+            : styleHighlights;
+        },
       },
     };
   }
@@ -292,6 +533,7 @@ export class AngularLanguageClient implements vscode.Disposable {
     }
     const uri = doc.uri.toString();
     if (this.fileToIsInAngularProjectMap.has(uri)) {
+      this.traceProjectGate(`cache hit=true: ${uri}`);
       return this.fileToIsInAngularProjectMap.get(uri)!;
     }
 
@@ -302,13 +544,20 @@ export class AngularLanguageClient implements vscode.Disposable {
       if (response == null) {
         // If the response indicates the answer can't be determined at the moment, return `false`
         // but do not cache the result so we can try to get the real answer on follow-up requests.
+        this.traceProjectGate(`response=null (transient false): ${uri}`);
         return false;
       }
+      // Cache only positive hits. A negative response can be transient while the
+      // project service is still loading, especially after server restarts.
       if (response) {
         this.fileToIsInAngularProjectMap.set(uri, true);
+        this.traceProjectGate(`response=true (cached): ${uri}`);
+      } else {
+        this.traceProjectGate(`response=false (not cached): ${uri}`);
       }
       return response;
     } catch {
+      this.traceProjectGate(`request failed: ${uri}`);
       return false;
     }
   }
@@ -319,8 +568,673 @@ export class AngularLanguageClient implements vscode.Disposable {
       scheme: 'angular-embedded-content',
       authority: 'html',
     });
-    this.virtualDocumentContents.set(vdocUri.toString(), document.getText());
+    this.virtualDocumentContents.set(
+      vdocUri.toString(),
+      getInlineTemplateVirtualContent(document.getText()),
+    );
     return vdocUri;
+  }
+
+  private createVirtualStylesDoc(document: vscode.TextDocument, suffix = 'styles'): vscode.Uri {
+    const originalUri = document.uri.toString();
+    const vdocUri = vscode.Uri.file(encodeURIComponent(originalUri) + `.${suffix}.scss`).with({
+      scheme: 'angular-embedded-content',
+      authority: 'scss',
+    });
+    this.virtualDocumentContents.set(
+      vdocUri.toString(),
+      getInlineStylesVirtualContent(document.getText()),
+    );
+    return vdocUri;
+  }
+
+  private createVirtualStylesDocForPosition(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    suffix = 'styles-pos',
+  ): vscode.Uri {
+    const originalUri = document.uri.toString();
+    const offset = document.offsetAt(position);
+    const scopedContent = getInlineStylesVirtualContentAtOffset(document.getText(), offset);
+    const content = scopedContent ?? getInlineStylesVirtualContent(document.getText());
+    const vdocUri = vscode.Uri.file(encodeURIComponent(originalUri) + `.${suffix}.scss`).with({
+      scheme: 'angular-embedded-content',
+      authority: 'scss',
+    });
+    this.virtualDocumentContents.set(vdocUri.toString(), content);
+    return vdocUri;
+  }
+
+  private createVirtualStylesDocs(document: vscode.TextDocument): vscode.Uri[] {
+    const originalUri = document.uri.toString();
+    const contents = getInlineStylesVirtualContents(document.getText());
+    return contents.map((content, index) => {
+      const vdocUri = vscode.Uri.file(
+        encodeURIComponent(originalUri) + `.styles-${index}.scss`,
+      ).with({
+        scheme: 'angular-embedded-content',
+        authority: 'scss',
+      });
+      this.virtualDocumentContents.set(vdocUri.toString(), content);
+      return vdocUri;
+    });
+  }
+
+  private createInlineStylesColorProvider(): vscode.DocumentColorProvider {
+    return {
+      provideDocumentColors: async (document: vscode.TextDocument) => {
+        if (document.languageId !== 'typescript') {
+          return [];
+        }
+
+        if (!this.hasInlineStylesContent(document)) {
+          return [];
+        }
+
+        const inlineColors = await this.getDocumentColorsForInlineStyles(document);
+        return inlineColors.filter((colorInfo) =>
+          this.isPositionInsideStylesField(document, colorInfo.range.start),
+        );
+      },
+      provideColorPresentations: async (
+        color: vscode.Color,
+        context: {document: vscode.TextDocument; range: vscode.Range},
+      ) => {
+        const document = context.document;
+        if (document.languageId !== 'typescript') {
+          return [];
+        }
+        if (!this.isPositionInsideStylesField(document, context.range.start)) {
+          return [];
+        }
+
+        const presentations = await this.getColorPresentationsForInlineStyles(
+          document,
+          color,
+          context.range,
+        );
+        return selectColorPresentations(presentations, color, context.range);
+      },
+    };
+  }
+
+  private isPositionInsideStylesField(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+  ): boolean {
+    return getSupportedDecoratorFieldAtPosition(document, position) === 'styles';
+  }
+
+  private async getInlineStylesDefinition(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+  ): Promise<vscode.Definition | vscode.DefinitionLink[] | undefined> {
+    const vdocUri = this.createVirtualStylesDocForPosition(document, position, 'styles-def');
+    const styleDefinition = await vscode.commands.executeCommand<
+      vscode.Definition | vscode.DefinitionLink[]
+    >('vscode.executeDefinitionProvider', vdocUri, position);
+    return this.remapDefinitionFromVirtualToSource(styleDefinition);
+  }
+
+  private async getInlineStylesReferences(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    context: vscode.ReferenceContext,
+  ): Promise<vscode.Location[] | undefined> {
+    const vdoc = await this.openInlineStylesDocumentForPosition(document, position);
+    const references = await vscode.commands.executeCommand<vscode.Location[]>(
+      'vscode.executeReferenceProvider',
+      vdoc.uri,
+      position,
+      context,
+    );
+    const remappedReferences = this.remapLocationsFromVirtualToSource(references ?? undefined);
+
+    if (
+      context.includeDeclaration ||
+      remappedReferences === undefined ||
+      remappedReferences.length === 0
+    ) {
+      return remappedReferences;
+    }
+
+    const definition = await this.getInlineStylesDefinition(document, position);
+    const declarationLocations = this.definitionToLocations(definition);
+    if (declarationLocations.length === 0) {
+      return remappedReferences;
+    }
+
+    return remappedReferences.filter(
+      (reference) =>
+        !declarationLocations.some((declaration) => this.locationsEqual(reference, declaration)),
+    );
+  }
+
+  private async filterDeclarationReferencesIfNeeded(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    includeDeclaration: boolean,
+    references: vscode.Location[] | undefined,
+  ): Promise<vscode.Location[] | undefined> {
+    if (includeDeclaration || references === undefined || references.length === 0) {
+      return references;
+    }
+
+    const definition = await this.getInlineStylesDefinition(document, position);
+    const declarationLocations = this.definitionToLocations(definition);
+    if (declarationLocations.length === 0) {
+      return references;
+    }
+
+    return references.filter(
+      (reference) =>
+        !declarationLocations.some((declaration) => this.locationsEqual(reference, declaration)),
+    );
+  }
+
+  private definitionToLocations(
+    definition: vscode.Definition | vscode.DefinitionLink[] | undefined,
+  ): vscode.Location[] {
+    if (definition === undefined) {
+      return [];
+    }
+
+    if (definition instanceof vscode.Location) {
+      return [definition];
+    }
+
+    if (!Array.isArray(definition)) {
+      return [];
+    }
+
+    if (definition.length === 0) {
+      return [];
+    }
+
+    if (this.isDefinitionLink(definition[0])) {
+      return (definition as vscode.DefinitionLink[]).map(
+        (link) => new vscode.Location(link.targetUri, link.targetRange),
+      );
+    }
+
+    return definition as vscode.Location[];
+  }
+
+  private locationsEqual(left: vscode.Location, right: vscode.Location): boolean {
+    return (
+      left.uri.toString() === right.uri.toString() && left.range.start.isEqual(right.range.start)
+    );
+  }
+
+  private hasDefinitionResults(
+    definition: vscode.Definition | vscode.DefinitionLink[] | undefined,
+  ): boolean {
+    if (definition === undefined) {
+      return false;
+    }
+    if (Array.isArray(definition)) {
+      return definition.length > 0;
+    }
+    return true;
+  }
+
+  private hasWorkspaceEditEntries(edit: vscode.WorkspaceEdit | undefined): boolean {
+    return edit !== undefined && edit.entries().length > 0;
+  }
+
+  private normalizeCompletionItems(
+    items: vscode.CompletionItem[] | null | undefined,
+  ): vscode.CompletionItem[] | null | undefined {
+    if (items === undefined || items === null) {
+      return items;
+    }
+
+    return items.map((item) => this.normalizeCompletionItem(item));
+  }
+
+  private normalizeCompletionItem(item: vscode.CompletionItem): vscode.CompletionItem {
+    const normalizedDocumentation = this.normalizeCompletionDocumentation(item.documentation);
+    if (normalizedDocumentation === item.documentation) {
+      return item;
+    }
+
+    return {
+      ...item,
+      documentation: normalizedDocumentation,
+    };
+  }
+
+  private normalizeCompletionDocumentation(
+    documentation: vscode.CompletionItem['documentation'],
+  ): vscode.CompletionItem['documentation'] {
+    if (
+      documentation === undefined ||
+      typeof documentation === 'string' ||
+      documentation instanceof vscode.MarkdownString
+    ) {
+      return documentation;
+    }
+
+    const value = (documentation as unknown as {value?: unknown}).value;
+    return typeof value === 'string' ? new vscode.MarkdownString(value) : undefined;
+  }
+
+  private async getInlineStylesSelectionRanges(
+    document: vscode.TextDocument,
+    positions: readonly vscode.Position[],
+  ): Promise<vscode.SelectionRange[] | undefined> {
+    const basePosition = positions[0] ?? new vscode.Position(0, 0);
+    const vdocUri = this.createVirtualStylesDocForPosition(document, basePosition, 'styles-sel');
+    const styleSelectionRanges = await vscode.commands.executeCommand<vscode.SelectionRange[]>(
+      'vscode.executeSelectionRangeProvider',
+      vdocUri,
+      [...positions],
+    );
+    return styleSelectionRanges ?? undefined;
+  }
+
+  private async getInlineStylesDocumentHighlights(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+  ): Promise<vscode.DocumentHighlight[] | undefined> {
+    const vdoc = await this.openInlineStylesDocumentForPosition(document, position);
+    const highlights = await vscode.commands.executeCommand<vscode.DocumentHighlight[]>(
+      'vscode.executeDocumentHighlights',
+      vdoc.uri,
+      position,
+    );
+    return highlights ?? undefined;
+  }
+
+  private async getInlineStylesCodeActions(
+    document: vscode.TextDocument,
+    range: vscode.Range,
+    context: vscode.CodeActionContext,
+  ): Promise<Array<vscode.Command | vscode.CodeAction> | undefined> {
+    const vdoc = await this.openInlineStylesDocumentForPosition(document, range.start);
+    const actions = await vscode.commands.executeCommand<Array<vscode.Command | vscode.CodeAction>>(
+      'vscode.executeCodeActionProvider',
+      vdoc.uri,
+      range,
+      context.only,
+    );
+    return this.remapCodeActionsFromVirtualToSource(actions ?? undefined);
+  }
+
+  private async getInlineStylesPrepareRename(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+  ): Promise<vscode.Range | {range: vscode.Range; placeholder: string} | undefined> {
+    const vdoc = await this.openInlineStylesDocumentForPosition(document, position);
+    const prepareRename = await vscode.commands.executeCommand<
+      vscode.Range | {range: vscode.Range; placeholder: string}
+    >('vscode.prepareRename', vdoc.uri, position);
+    return prepareRename ?? undefined;
+  }
+
+  private async getInlineStylesRenameEdits(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    newName: string,
+  ): Promise<vscode.WorkspaceEdit | undefined> {
+    const vdoc = await this.openInlineStylesDocumentForPosition(document, position);
+    const renameEdits = await vscode.commands.executeCommand<vscode.WorkspaceEdit>(
+      'vscode.executeDocumentRenameProvider',
+      vdoc.uri,
+      position,
+      newName,
+    );
+    return this.remapWorkspaceEditFromVirtualToSource(renameEdits ?? undefined);
+  }
+
+  private async getDocumentColorsForUri(uri: vscode.Uri): Promise<vscode.ColorInformation[]> {
+    try {
+      return (
+        (await vscode.commands.executeCommand<vscode.ColorInformation[]>(
+          'vscode.executeDocumentColorProvider',
+          uri,
+        )) ?? []
+      );
+    } catch {
+      return [];
+    }
+  }
+
+  private async getDocumentColorsForInlineStyles(
+    document: vscode.TextDocument,
+  ): Promise<vscode.ColorInformation[]> {
+    const inlineStylesDoc = await this.openInlineStylesDocument(document);
+    return this.getDocumentColorsForUri(inlineStylesDoc.uri);
+  }
+
+  private async getColorPresentationsForDocument(
+    document: vscode.TextDocument,
+    color: vscode.Color,
+    range: vscode.Range,
+  ): Promise<vscode.ColorPresentation[]> {
+    try {
+      return (
+        (await vscode.commands.executeCommand<vscode.ColorPresentation[]>(
+          'vscode.executeColorPresentationProvider',
+          color,
+          {document, range},
+        )) ?? []
+      );
+    } catch {
+      return [];
+    }
+  }
+
+  private async getColorPresentationsForInlineStyles(
+    document: vscode.TextDocument,
+    color: vscode.Color,
+    range: vscode.Range,
+  ): Promise<vscode.ColorPresentation[]> {
+    const inlineStylesDoc = await this.openInlineStylesDocument(document);
+    return this.getColorPresentationsForDocument(inlineStylesDoc, color, range);
+  }
+
+  private async openInlineStylesDocument(
+    document: vscode.TextDocument,
+  ): Promise<vscode.TextDocument> {
+    const sourceUri = document.uri.toString();
+    const cached = this.inlineStylesDocCache.get(sourceUri, document.version);
+    if (cached !== null) {
+      return cached;
+    }
+
+    const virtualStyles = getInlineStylesVirtualContent(document.getText());
+    const inlineStylesDocument = await vscode.workspace.openTextDocument({
+      language: 'scss',
+      content: virtualStyles,
+    });
+    this.untitledStyleUriToSourceUri.set(inlineStylesDocument.uri.toString(), document.uri);
+    this.inlineStylesDocCache.set(sourceUri, document.version, inlineStylesDocument);
+    return inlineStylesDocument;
+  }
+
+  private async openInlineStylesDocumentForPosition(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+  ): Promise<vscode.TextDocument> {
+    const sourceUri = document.uri.toString();
+    const scoped = getInlineStylesVirtualContentWithKeyAtOffset(
+      document.getText(),
+      document.offsetAt(position),
+    );
+    const cacheKey = `${sourceUri}|${document.version}|${scoped?.key ?? 'all'}`;
+    const cached = this.scopedInlineStylesDocCache.get(cacheKey);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    const scopedContent = scoped?.content ?? getInlineStylesVirtualContent(document.getText());
+    const inlineStylesDocument = await vscode.workspace.openTextDocument({
+      language: 'scss',
+      content: scopedContent,
+    });
+    this.untitledStyleUriToSourceUri.set(inlineStylesDocument.uri.toString(), document.uri);
+    this.scopedInlineStylesDocCache.set(cacheKey, inlineStylesDocument);
+    return inlineStylesDocument;
+  }
+
+  private invalidateScopedInlineStylesCache(sourceUri: string): void {
+    const keys = [...this.scopedInlineStylesDocCache.keys()];
+    for (const key of keys) {
+      if (key.startsWith(`${sourceUri}|`)) {
+        this.scopedInlineStylesDocCache.delete(key);
+      }
+    }
+  }
+
+  private hasInlineStylesContent(document: vscode.TextDocument): boolean {
+    return /\S/.test(getInlineStylesVirtualContent(document.getText()));
+  }
+
+  private traceProjectGate(message: string): void {
+    this.outputChannel.appendLine(`[project-gate] ${message}`);
+  }
+
+  private remapDefinitionFromVirtualToSource(
+    definition: vscode.Definition | vscode.DefinitionLink[] | undefined,
+  ): vscode.Definition | vscode.DefinitionLink[] | undefined {
+    if (definition === undefined) {
+      return undefined;
+    }
+
+    if (definition instanceof vscode.Location) {
+      const sourceUri = this.getSourceUriFromVirtualUri(definition.uri);
+      if (sourceUri === null) {
+        return definition;
+      }
+      return new vscode.Location(sourceUri, definition.range);
+    }
+
+    if (Array.isArray(definition)) {
+      if (definition.length === 0) {
+        return definition;
+      }
+
+      if (this.isDefinitionLink(definition[0])) {
+        const links = definition as vscode.DefinitionLink[];
+        return links.map((item) => {
+          const sourceUri = this.getSourceUriFromVirtualUri(item.targetUri);
+          return sourceUri === null ? item : {...item, targetUri: sourceUri};
+        });
+      }
+
+      const locations = definition as vscode.Location[];
+      return locations.map((item) => {
+        const sourceUri = this.getSourceUriFromVirtualUri(item.uri);
+        return sourceUri === null ? item : new vscode.Location(sourceUri, item.range);
+      });
+    }
+
+    return definition;
+  }
+
+  private remapLocationsFromVirtualToSource(
+    locations: vscode.Location[] | undefined,
+  ): vscode.Location[] | undefined {
+    if (locations === undefined) {
+      return undefined;
+    }
+    return locations.map((location) => {
+      const sourceUri = this.getSourceUriFromVirtualUri(location.uri);
+      return sourceUri === null ? location : new vscode.Location(sourceUri, location.range);
+    });
+  }
+
+  private remapCodeActionsFromVirtualToSource(
+    actions: Array<vscode.Command | vscode.CodeAction> | undefined,
+  ): Array<vscode.Command | vscode.CodeAction> | undefined {
+    if (actions === undefined) {
+      return undefined;
+    }
+
+    return actions.map((action) => {
+      if (!('edit' in action)) {
+        return action;
+      }
+
+      const remappedEdit = this.remapWorkspaceEditFromVirtualToSource(action.edit ?? undefined);
+      if (remappedEdit === action.edit) {
+        return action;
+      }
+
+      return {
+        ...action,
+        edit: remappedEdit,
+      };
+    });
+  }
+
+  private remapWorkspaceEditFromVirtualToSource(
+    workspaceEdit: vscode.WorkspaceEdit | undefined,
+  ): vscode.WorkspaceEdit | undefined {
+    if (workspaceEdit === undefined) {
+      return undefined;
+    }
+
+    const remapped = new vscode.WorkspaceEdit();
+    for (const [uri, edits] of workspaceEdit.entries()) {
+      const sourceUri = this.getSourceUriFromVirtualUri(uri) ?? uri;
+      remapped.set(sourceUri, edits);
+    }
+    return remapped;
+  }
+
+  private getSourceUriFromVirtualUri(uri: vscode.Uri): vscode.Uri | null {
+    const sourceFromUntitled = this.untitledStyleUriToSourceUri.get(uri.toString());
+    if (sourceFromUntitled !== undefined) {
+      return sourceFromUntitled;
+    }
+
+    if (uri.scheme !== 'angular-embedded-content') {
+      return null;
+    }
+
+    const fileName = uri.path.split('/').pop();
+    if (!fileName) {
+      return null;
+    }
+
+    const extension = path.extname(fileName);
+    let encodedSourceUri = extension ? fileName.slice(0, -extension.length) : fileName;
+    // Strip generated embedded-document suffixes to recover the original encoded source URI.
+    encodedSourceUri = encodedSourceUri.replace(/\.styles(?:-[^.]*)?$/, '');
+    encodedSourceUri = encodedSourceUri.replace(/\.html$/, '');
+    try {
+      return vscode.Uri.parse(decodeURIComponent(encodedSourceUri));
+    } catch {
+      return null;
+    }
+  }
+
+  private isDefinitionLink(
+    value: vscode.Location | vscode.DefinitionLink,
+  ): value is vscode.DefinitionLink {
+    return 'targetUri' in value;
+  }
+
+  private mergeDocumentSymbolsWithInlineStyles(
+    document: vscode.TextDocument,
+    angularSymbols: vscode.DocumentSymbol[] | vscode.SymbolInformation[] | null | undefined,
+    styleSymbolGroups:
+      | Array<vscode.DocumentSymbol[] | vscode.SymbolInformation[] | null | undefined>
+      | null
+      | undefined,
+  ): vscode.DocumentSymbol[] | vscode.SymbolInformation[] | undefined {
+    const documentSymbolGroups = (styleSymbolGroups ?? []).filter(
+      (group): group is vscode.DocumentSymbol[] =>
+        this.isDocumentSymbolArray(group) && group.length > 0,
+    );
+
+    if (documentSymbolGroups.length === 0) {
+      return angularSymbols ?? undefined;
+    }
+
+    if (this.isDocumentSymbolArray(angularSymbols)) {
+      this.attachStylesToOwningSymbols(angularSymbols, documentSymbolGroups);
+      return angularSymbols;
+    }
+
+    const fallbackRange = new vscode.Range(document.positionAt(0), document.positionAt(0));
+    return documentSymbolGroups.map((group) => {
+      const firstRange = group[0]?.range ?? fallbackRange;
+      const firstSelectionRange = group[0]?.selectionRange ?? fallbackRange;
+      return {
+        name: '(styles)',
+        detail: '',
+        kind: vscode.SymbolKind.Namespace,
+        range: firstRange,
+        selectionRange: firstSelectionRange,
+        children: group,
+        tags: [],
+      };
+    });
+  }
+
+  private isDocumentSymbolArray(
+    symbols: vscode.DocumentSymbol[] | vscode.SymbolInformation[] | null | undefined,
+  ): symbols is vscode.DocumentSymbol[] {
+    return Array.isArray(symbols) && (symbols.length === 0 || 'children' in symbols[0]);
+  }
+
+  private attachStylesToOwningSymbols(
+    angularSymbols: vscode.DocumentSymbol[],
+    styleSymbolGroups: vscode.DocumentSymbol[][],
+  ): void {
+    for (const styleSymbols of styleSymbolGroups) {
+      const firstStyleSymbol = styleSymbols[0];
+      const owner =
+        this.findOwningSymbol(angularSymbols, firstStyleSymbol.range) ??
+        this.findFirstClassSymbol(angularSymbols);
+      if (owner === null) {
+        continue;
+      }
+
+      if (!owner.children) {
+        owner.children = [];
+      }
+
+      const stylesContainer: vscode.DocumentSymbol = {
+        name: '(styles)',
+        detail: '',
+        kind: vscode.SymbolKind.Namespace,
+        range: firstStyleSymbol.range,
+        selectionRange: firstStyleSymbol.selectionRange,
+        children: styleSymbols,
+        tags: [],
+      };
+
+      owner.children.push(stylesContainer);
+    }
+  }
+
+  private findFirstClassSymbol(symbols: vscode.DocumentSymbol[]): vscode.DocumentSymbol | null {
+    const stack = [...symbols];
+
+    while (stack.length > 0) {
+      const symbol = stack.pop()!;
+      if (symbol.kind === vscode.SymbolKind.Class) {
+        return symbol;
+      }
+      stack.push(...(symbol.children ?? []));
+    }
+
+    return null;
+  }
+
+  private findOwningSymbol(
+    symbols: vscode.DocumentSymbol[],
+    range: vscode.Range,
+  ): vscode.DocumentSymbol | null {
+    let best: vscode.DocumentSymbol | null = null;
+
+    const visit = (symbol: vscode.DocumentSymbol): void => {
+      if (!this.rangeContains(symbol.range, range)) {
+        return;
+      }
+
+      if (best === null || this.rangeContains(best.range, symbol.range)) {
+        best = symbol;
+      }
+
+      for (const child of symbol.children ?? []) {
+        visit(child);
+      }
+    };
+
+    for (const symbol of symbols) {
+      visit(symbol);
+    }
+
+    return best;
+  }
+
+  private rangeContains(container: vscode.Range, content: vscode.Range): boolean {
+    return !container.start.isAfter(content.start) && !container.end.isBefore(content.end);
   }
 
   /**
@@ -386,11 +1300,13 @@ export class AngularLanguageClient implements vscode.Disposable {
       forceDebug,
     );
     await this.client.start();
+    this.outputChannel.appendLine('[project-gate] diagnostics marker: project-gate-v1');
     // Must wait for the client to be ready before registering notification
     // handlers.
     this.sessionDisposables.push(
       registerNotificationHandlers(this.client, () => {
         this.fileToIsInAngularProjectMap.clear();
+        this.traceProjectGate('cleared cache on project loading notification');
       }),
     );
   }
@@ -513,6 +1429,7 @@ export class AngularLanguageClient implements vscode.Disposable {
     this.disposeSessionDisposables();
     this.client = null;
     this.fileToIsInAngularProjectMap.clear();
+    this.traceProjectGate('cleared cache on client stop');
     this.virtualDocumentContents.clear();
   }
 
