@@ -20,7 +20,7 @@
     "@angular/router": "link:./in-existing-linked-by-bazel",
     "rxjs": "^7.0.0",
     "tslib": "^2.3.0",
-    "zone.js": "0.16.0"
+    "zone.js": "0.16.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "21.2.0-rc.2",
@@ -29,7 +29,7 @@
     "@types/jasmine": "^6.0.0",
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^20.14.8",
-    "jasmine-core": "6.0.1",
+    "jasmine-core": "6.1.0",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "^3.1.0",
