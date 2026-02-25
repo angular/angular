@@ -36,20 +36,20 @@
     </div>
   </section>
 
-  <section class="features-section">
+  <section class="features-section" #featuresSection>
     <h2 id="features">Features that actually <br />help you solve problems</h2>
 
     <div ngTabs class="material-tabs">
-      <div ngTabList selectionMode="follow" selectedTab="signals">
+      <div ngTabList selectionMode="follow" [(selectedTab)]="selectedFeatureTab">
         <div class="tab-background"></div>
-        <div ngTab value="signals">Signals</div>
-        <div ngTab value="control-flow">Control Flow</div>
-        <div ngTab value="deferrable-views">Deferrable Views</div>
-        <div ngTab value="hydration">Hydration</div>
+        <div ngTab [value]="FEATURE_TAB.signals">Signals</div>
+        <div ngTab [value]="FEATURE_TAB.controlFlow">Control Flow</div>
+        <div ngTab [value]="FEATURE_TAB.deferrableViews">Deferrable Views</div>
+        <div ngTab [value]="FEATURE_TAB.hydration">Hydration</div>
       </div>
 
       <div class="sliding-window">
-        <div ngTabPanel [preserveContent]="true" value="signals">
+        <div ngTabPanel [preserveContent]="true" [value]="FEATURE_TAB.signals">
           @defer (on idle) {
             <ng-template ngTabContent>
               <adev-signals-demo />
@@ -57,7 +57,7 @@
           }
         </div>
 
-        <div ngTabPanel [preserveContent]="true" value="control-flow">
+        <div ngTabPanel [preserveContent]="true" [value]="FEATURE_TAB.controlFlow">
           @defer (on idle) {
             <ng-template ngTabContent>
               <adev-control-flow-example />
@@ -65,7 +65,7 @@
           }
         </div>
 
-        <div ngTabPanel [preserveContent]="true" value="deferrable-views">
+        <div ngTabPanel [preserveContent]="true" [value]="FEATURE_TAB.deferrableViews">
           @defer (on idle) {
             <ng-template ngTabContent>
               <adev-defer-example />
@@ -73,7 +73,7 @@
           }
         </div>
 
-        <div ngTabPanel [preserveContent]="true" value="hydration">
+        <div ngTabPanel [preserveContent]="true" [value]="FEATURE_TAB.hydration">
           @defer (on idle) {
             <ng-template ngTabContent>
               <adev-hydration-example />
