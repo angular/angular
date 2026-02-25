@@ -232,9 +232,9 @@ export type FieldTree<
     ? CompatFieldState<TModel, TKey, TMode>
     : FieldStateByMode<TModel, TKey, TMode>) &
     // Children:
-    ([TModel] extends [AbstractControl]
+    (TModel extends AbstractControl
       ? object
-      : [TModel] extends [ReadonlyArray<infer U>]
+      : TModel extends ReadonlyArray<infer U>
         ? ReadonlyArrayLike<MaybeFieldTree<U, number, TMode>>
         : TModel extends Record<string, any>
           ? Subfields<TModel, TMode>
@@ -277,10 +277,11 @@ export type Subfields<TModel, TMode extends 'writable' | 'readonly' = 'writable'
  *
  * @experimental 21.0
  */
-export type ReadonlyArrayLike<T> = Pick<
-  ReadonlyArray<T>,
-  number | 'length' | typeof Symbol.iterator
->;
+export interface ReadonlyArrayLike<T> {
+  readonly [n: number]: T;
+  readonly length: number;
+  [Symbol.iterator](): IterableIterator<T>;
+}
 
 /**
  * Helper type for defining `FieldTree`. Given a type `TValue` that may include `undefined`,
@@ -697,10 +698,10 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
     ? CompatSchemaPath<TModel, TPathKind>
     : SchemaPath<TModel, SchemaPathRules.Supported, TPathKind>) &
     // Subpaths
-    (TModel extends AbstractControl
+    ([TModel] extends [AbstractControl]
       ? unknown
       : // Array paths have no subpaths
-        TModel extends ReadonlyArray<any>
+        [TModel] extends [ReadonlyArray<any>]
         ? unknown
         : // Object subfields
           TModel extends Record<string, any>
@@ -903,13 +904,24 @@ export interface RootFieldContext<TValue> {
   /** Gets the value of the field represented by the given path. */
   valueOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): PValue;
 
+  // Note: These methods use a tautological conditional type (`[P] extends [any] ? ... : never`).
+  // This is required because the `FieldNodeContext` implementation returns a deferred conditional
+  // type from `FieldTreeBase` (e.g. `[P] extends [AbstractControl] ? ...`).
+  // TypeScript is strictly invariant when matching generic method signatures and will throw an
+  // assignability error if the interface signature is fully resolved while the implementation
+  // signature is a deferred conditional. This tautological wrapper mimics the deferred
+  // structure so that TypeScript accepts the assignment gracefully.
   /** Gets the state of the field represented by the given path. */
   stateOf<PControl extends AbstractControl>(
     p: CompatSchemaPath<PControl>,
-  ): ReadonlyCompatFieldState<PControl>;
-  stateOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): ReadonlyFieldState<PValue>;
+  ): [PControl] extends [any] ? ReadonlyCompatFieldState<PControl> : never;
+  stateOf<PValue>(
+    p: SchemaPath<PValue, SchemaPathRules>,
+  ): [PValue] extends [any] ? ReadonlyFieldState<PValue> : never;
   /** Gets the field represented by the given path. */
-  fieldTreeOf<PModel>(p: SchemaPathTree<PModel>): ReadonlyFieldTree<PModel>;
+  fieldTreeOf<PModel>(
+    p: SchemaPathTree<PModel>,
+  ): [PModel] extends [any] ? ReadonlyFieldTree<PModel> : never;
   /** The list of keys that lead from the root field to the current field. */
   readonly pathKeys: Signal<readonly string[]>;
 }

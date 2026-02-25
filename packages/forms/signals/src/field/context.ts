@@ -16,7 +16,10 @@ import {
 import {RuntimeErrorCode} from '../errors';
 import {AbstractControl} from '@angular/forms';
 import {
+  CompatSchemaPath,
+  CompatFieldState,
   FieldContext,
+  ReadonlyCompatFieldState,
   ReadonlyFieldState,
   ReadonlyFieldTree,
   SchemaPath,
@@ -48,7 +51,13 @@ export class FieldNodeContext implements FieldContext<unknown> {
   constructor(
     /** The field node this context corresponds to. */
     private readonly node: FieldNode,
-  ) {}
+  ) {
+    // These methods are explicitly bound to the context instance so that they
+    // safely retain their `this` reference if destructured by consumers
+    // (e.g., during validation when `stateOf` or `fieldTreeOf` are extracted).
+    this.fieldTreeOf = this.fieldTreeOf.bind(this);
+    this.stateOf = this.stateOf.bind(this);
+  }
 
   /**
    * Resolves a target path relative to this context.
@@ -137,8 +146,25 @@ export class FieldNodeContext implements FieldContext<unknown> {
     return Number(key);
   });
 
-  readonly fieldTreeOf = <TModel>(p: SchemaPathTree<TModel>) => this.resolve<TModel>(p);
-  readonly stateOf = <TModel>(p: SchemaPath<TModel, SchemaPathRules>) => this.resolve<TModel>(p)();
+  // Note: `fieldTreeOf` and `stateOf` are purposefully defined as overloaded class
+  // methods rather than arrow-function properties. This allows their signatures
+  // to successfully satisfy the complex, deferred conditional generic typings
+  // required by the `RootFieldContext` interface.
+  fieldTreeOf<PModel>(
+    p: SchemaPathTree<PModel>,
+  ): [PModel] extends [any] ? ReadonlyFieldTree<PModel> : never {
+    return this.resolve<PModel>(p) as any;
+  }
+
+  stateOf<PControl extends AbstractControl>(
+    p: CompatSchemaPath<PControl>,
+  ): [PControl] extends [any] ? ReadonlyCompatFieldState<PControl> : never;
+  stateOf<PValue>(
+    p: SchemaPath<PValue, SchemaPathRules>,
+  ): [PValue] extends [any] ? ReadonlyFieldState<PValue> : never;
+  stateOf<TModel>(p: SchemaPath<TModel, SchemaPathRules> | CompatSchemaPath<any>): any {
+    return this.resolve<TModel>(p as any)();
+  }
   readonly valueOf = <TValue>(p: SchemaPath<TValue, SchemaPathRules>) => {
     const result = this.resolve(p)().value();
 
