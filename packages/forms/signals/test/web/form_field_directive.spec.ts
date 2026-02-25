@@ -112,6 +112,48 @@ describe('field directive', () => {
     });
   });
 
+  describe('host directive mapping', () => {
+    it('should bind to a host directive that maps state/stateChange to value/valueChange', () => {
+      @Directive()
+      class MyStateDir {
+        readonly state = model.required<string>();
+      }
+
+      @Component({
+        selector: 'custom-control',
+        template: '',
+        hostDirectives: [
+          {
+            directive: MyStateDir,
+            inputs: ['state: value'],
+            outputs: ['stateChange: valueChange'],
+          },
+        ],
+      })
+      class CustomControl {}
+
+      @Component({
+        imports: [FormField, CustomControl],
+        template: `<custom-control [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal('initial'));
+        readonly customControl = viewChild.required(MyStateDir);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const component = fixture.componentInstance;
+
+      expect(component.customControl().state()).toBe('initial');
+
+      act(() => component.customControl().state.set('updated'));
+      expect(component.f().value()).toBe('updated');
+
+      act(() => component.f().value.set('new'));
+      expect(component.customControl().state()).toBe('new');
+    });
+  });
+
   describe('properties', () => {
     describe('dirty', () => {
       it('should bind to custom control', () => {
@@ -267,6 +309,47 @@ describe('field directive', () => {
             disabled(p, this.disabled);
           });
           readonly customControl = viewChild.required(CustomControlDir);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().disabled()).toBe(false);
+
+        act(() => component.disabled.set(true));
+        expect(component.customControl().disabled()).toBe(true);
+      });
+
+      it('should bind to a custom control with transitive host directives', () => {
+        @Directive()
+        class BaseControlDir implements FormValueControl<boolean> {
+          readonly value = model(false);
+          readonly disabled = input(false);
+        }
+
+        @Directive({
+          hostDirectives: [
+            {directive: BaseControlDir, inputs: ['disabled', 'value'], outputs: ['valueChange']},
+          ],
+        })
+        class IntermediaryDir {}
+
+        @Component({
+          selector: 'custom-transitive-control',
+          template: '',
+          hostDirectives: [IntermediaryDir],
+        })
+        class CustomControl {}
+
+        @Component({
+          imports: [FormField, CustomControl],
+          template: `<custom-transitive-control [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly disabled = signal(false);
+          readonly f = form(signal(false), (p) => {
+            disabled(p, this.disabled);
+          });
+          readonly customControl = viewChild.required(BaseControlDir);
         }
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
