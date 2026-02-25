@@ -75,13 +75,13 @@ export interface TransformedValueSignal<TRaw> extends WritableSignal<TRaw> {
  * representation into an underlying model value. For example, a numeric input that displays and
  * accepts string values but stores a number.
  *
- * Parse errors are exposed via `rawValue.parseErrors()`. When `transformedValue` is used within a
- * Signal Forms field context, parse errors are also reported to the nearest field automatically.
- * When no field context is present, no automatic reporting occurs and `parseErrors` can be consumed
- * directly.
+ * Parse errors are exposed via the returned signal’s `parseErrors()` property.
+ * When `transformedValue` is used within a Signal Forms field context, parse errors are also
+ * reported to the nearest field automatically. When no field context is present, no automatic
+ * reporting occurs and `parseErrors` can be consumed directly.
  *
- * Note: `parse` may return both a `value` and an `error`. Returning `value` updates the model; omitting
- * it leaves the model unchanged.
+ * Note: `parse` may return both a `value` and an `error`. Returning `value` updates the model;
+ * omitting it leaves the model unchanged.
  *
  * @param value The model signal to synchronize with.
  * @param options Configuration including `parse` and `format` functions.
