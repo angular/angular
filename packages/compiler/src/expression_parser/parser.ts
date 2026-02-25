@@ -1815,9 +1815,12 @@ class _ParseAST {
    * `this.skip` for more details on token skipping.
    */
   private error(message: string, index = this.index) {
-    this.errors.push(
-      getParseError(message, this.input, this.getErrorLocationText(index), this.parseSourceSpan),
-    );
+    const duplicateOfLexerError = this.next.isError() && message.startsWith('Unexpected token ');
+    if (!duplicateOfLexerError) {
+      this.errors.push(
+        getParseError(message, this.input, this.getErrorLocationText(index), this.parseSourceSpan),
+      );
+    }
     this.skip();
   }
 
