@@ -264,6 +264,12 @@ export interface DirectiveDef<T> {
 
   controlDef: ControlDirectiveDef | null;
 
+  /**
+   * Cache of inputs that this custom control directive covers,
+   * used by the signal forms system.
+   */
+  signalFormsInputPresence: Record<string, boolean> | null;
+
   setInput:
     | (<U extends T>(
         this: DirectiveDef<U>,
