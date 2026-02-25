@@ -10,7 +10,7 @@
   "author": "Angular",
   "license": "MIT",
   "engines": {
-    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
+    "node": "^22.22.0 || >=24.13.1"
   },
   "main": "../../dist/bin/vscode-ng-language-service/server/src/server.js",
   "bin": {
