@@ -348,7 +348,7 @@ function animateLeaveClassRunner(
     cleanupFns.push(renderer.listen(el, 'animationend', handleOutAnimationEnd));
     cleanupFns.push(renderer.listen(el, 'transitionend', handleOutAnimationEnd));
   });
-  trackLeavingNodes(tNode, el);
+  trackLeavingNodes(tNode, el, lView);
   for (const item of classList) {
     renderer.addClass(el, item);
   }
@@ -467,7 +467,7 @@ function runLeaveAnimationFunction(
         clearTimeout(timeoutId);
       },
     };
-    trackLeavingNodes(tNode, nativeElement as HTMLElement);
+    trackLeavingNodes(tNode, nativeElement as HTMLElement, lView);
 
     ngZone.runOutsideAngular(() => {
       cleanupFns.push(

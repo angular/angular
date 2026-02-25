@@ -16,7 +16,7 @@ import {
   LeaveNodeAnimations,
   AnimationClassBindingFn,
 } from './interfaces';
-import {INJECTOR, LView, ANIMATIONS} from '../render3/interfaces/view';
+import {INJECTOR, ID, LView, ANIMATIONS} from '../render3/interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Renderer} from '../render3/interfaces/renderer';
 import {RElement} from '../render3/interfaces/renderer_dom';
@@ -113,7 +113,7 @@ export const longestAnimations = new WeakMap<HTMLElement, LongestAnimation>();
 // Tracks nodes that are animating away for the duration of the animation. This is
 // used to prevent duplicate nodes from showing up when nodes have been toggled quickly
 // from an `@if` or `@for`.
-export const leavingNodes = new WeakMap<TNode, HTMLElement[]>();
+export const leavingNodes = new WeakMap<TNode, {el: HTMLElement; lViewId: number}[]>();
 
 /**
  * This actually removes the leaving HTML Element in the TNode
@@ -121,7 +121,7 @@ export const leavingNodes = new WeakMap<TNode, HTMLElement[]>();
 export function clearLeavingNodes(tNode: TNode, el: HTMLElement): void {
   const nodes = leavingNodes.get(tNode);
   if (nodes && nodes.length > 0) {
-    const ix = nodes.findIndex((node) => node === el);
+    const ix = nodes.findIndex((node) => node.el === el);
     if (ix > -1) nodes.splice(ix, 1);
   }
   if (nodes?.length === 0) {
@@ -138,28 +138,50 @@ export function clearLeavingNodes(tNode: TNode, el: HTMLElement): void {
  * Leaving elements in the same parent are left alone — their leave
  * animation will complete naturally and remove them from the DOM.
  */
-export function cancelLeavingNodes(tNode: TNode, newElement: HTMLElement): void {
+export function cancelLeavingNodes(
+  tNode: TNode,
+  newElement: HTMLElement,
+  parentLView: LView | null,
+): void {
   const nodes = leavingNodes.get(tNode);
   if (!nodes || nodes.length === 0) return;
 
   const newParent = newElement.parentNode;
   const prevSibling = newElement.previousSibling;
+  const parentLViewId = parentLView ? parentLView[ID] : -1;
 
   for (let i = nodes.length - 1; i >= 0; i--) {
-    const leavingEl = nodes[i];
+    const leavingNode = nodes[i];
+    const leavingEl = leavingNode.el;
+
+    // If the element is just being moved around in the DOM, it's not actually leaving.
+    // For example, when moving an item in a @for loop, the element is detached and re-attached.
+    if (leavingEl === newElement) {
+      nodes.splice(i, 1);
+      leavingEl.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+      continue;
+    }
+
     const leavingParent = leavingEl.parentNode;
+
     // Cancel if the leaving element is:
     // - The direct previousSibling of the new element. This is reliable
     //   because Angular inserts new elements at the same position (before
     //   the container anchor) where the leaving element was, making them
     //   always adjacent. Covers @if toggling and same-VCR toggling.
     // - In a different DOM parent (overlay/portal case where each instance
-    //   renders in its own container, e.g. CDK Overlay).
+    //   renders in its own container, e.g. CDK Overlay). Note: we only do this
+    //   if the logic containers (LViews) are different. If they share the
+    //   same LView, it's an item being moved natively (e.g. drag & drop),
+    //   not a dynamic component duplication.
     // Leaving elements in the same parent that are NOT the previousSibling
     // are left alone (e.g. @for items animating out at different positions).
     if (
       (prevSibling && leavingEl === prevSibling) ||
-      (leavingParent && newParent && leavingParent !== newParent)
+      (leavingParent &&
+        newParent &&
+        leavingParent !== newParent &&
+        leavingNode.lViewId !== parentLViewId)
     ) {
       nodes.splice(i, 1);
       leavingEl.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
@@ -173,17 +195,17 @@ export function cancelLeavingNodes(tNode: TNode, newElement: HTMLElement): void 
  * and remove the node before adding a new entering instance of the DOM node. This prevents
  * duplicates from showing up on screen mid-animation.
  */
-export function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
+export function trackLeavingNodes(tNode: TNode, el: HTMLElement, lView: LView): void {
   // We need to track this tNode's element just to be sure we don't add
   // a new RNode for this TNode while this one is still animating away.
   // once the animation is complete, we remove this reference.
   const nodes = leavingNodes.get(tNode);
   if (nodes) {
-    if (!nodes.includes(el)) {
-      nodes.push(el);
+    if (!nodes.some((n) => n.el === el)) {
+      nodes.push({el, lViewId: lView[ID]});
     }
   } else {
-    leavingNodes.set(tNode, [el]);
+    leavingNodes.set(tNode, [{el, lViewId: lView[ID]}]);
   }
 }
 

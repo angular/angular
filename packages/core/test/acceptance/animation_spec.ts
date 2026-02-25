@@ -851,6 +851,54 @@ describe('Animation', () => {
         expect(logSpy).toHaveBeenCalled();
       }));
     });
+
+    it('should not remove an element when it is moved in a @for loop (simulated CDK drag)', fakeAsync(() => {
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <div>
+            @for (item of items(); track item) {
+              <p animate.leave="fade" class="item">{{ item }}</p>
+            }
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        items = signal([1, 2, 3]);
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      let paragraphs = fixture.debugElement.queryAll(By.css('p'));
+      expect(paragraphs.length).toBe(3);
+      expect(paragraphs[0].nativeElement.textContent).toBe('1');
+      expect(paragraphs[1].nativeElement.textContent).toBe('2');
+      expect(paragraphs[2].nativeElement.textContent).toBe('3');
+
+      // Simulate CDK Drag & Drop: the DOM node is natively moved to a different parent (e.g. CDK overlay)
+      // during drag! We mock the parentNode getter to simulate this without breaking the actual DOM structure
+      // that Angular's ListReconciler expects for nativeInsertBefore.
+      const p1 = paragraphs[0].nativeElement;
+      const originalParent = p1.parentNode;
+      Object.defineProperty(p1, 'parentNode', {get: () => document.body, configurable: true});
+
+      // Swap item 1 and 2
+      cmp.items.set([2, 1, 3]);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      // Restore the property so subsequent DOM operations or teardowns don't fail
+      Object.defineProperty(p1, 'parentNode', {get: () => originalParent, configurable: true});
+
+      fixture.detectChanges();
+
+      paragraphs = fixture.debugElement.queryAll(By.css('p'));
+      expect(paragraphs.length).toBe(3);
+    }));
   });
 
   describe('animate.enter', () => {
