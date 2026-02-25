@@ -2,6 +2,10 @@
 
 This interactive tutorial will teach you the fundamentals of Angular signals and how to use them to build reactive applications.
 
+## What are signals?
+
+A signal is a reactive value that Angular tracks for changes. Whan a signal's value updates, Angular automatically updates any UI that depends on it.
+
 ## How to use this tutorial
 
 This tutorial assumes you understand Angular's core concepts. If you're new to Angular, read our [essentials guide](/essentials).
