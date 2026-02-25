@@ -23,7 +23,7 @@
     "@angular/ssr": "21.2.0-rc.2",
     "rxjs": "^7.0.0",
     "tslib": "^2.3.0",
-    "zone.js": "0.16.0"
+    "zone.js": "0.16.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "21.2.0-rc.2",
@@ -33,7 +33,7 @@
     "@types/jasmine": "^6.0.0",
     "@types/node": "^20.14.8",
     "concurrently": "9.2.1",
-    "jasmine-core": "6.0.1",
+    "jasmine-core": "6.1.0",
     "serve": "^14.2.5",
     "jasmine-spec-reporter": "~7.0.0",
     "karma": "~6.4.0",

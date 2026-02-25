@@ -11,7 +11,7 @@
     "@angular/core": "link:./in-existing-linked-by-bazel",
     "@angular/service-worker": "link:./in-existing-linked-by-bazel",
     "rxjs": "^7.0.0",
-    "zone.js": "0.16.0"
+    "zone.js": "0.16.1"
   },
   "packageManager": "pnpm@10.30.1"
 }

@@ -12,7 +12,7 @@
     "rxjs": "^7.0.0",
     "terser": "^5.8.0",
     "typescript": "5.9.3",
-    "zone.js": "0.16.0"
+    "zone.js": "0.16.1"
   },
   "packageManager": "pnpm@10.30.1"
 }

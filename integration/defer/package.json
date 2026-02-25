@@ -20,7 +20,7 @@
     "@angular/router": "link:./in-existing-linked-by-bazel",
     "rxjs": "^7.0.0",
     "tslib": "^2.3.0",
-    "zone.js": "0.16.0"
+    "zone.js": "0.16.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "21.2.0-rc.2",
