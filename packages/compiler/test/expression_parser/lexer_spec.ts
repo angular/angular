@@ -390,7 +390,7 @@ describe('lexer', () => {
         lex('"\\u{1F600"')[0],
         10,
         10,
-        'Lexer Error: Invalid unicode escape [\\u{1F600"}] at column 10 in expression ["\\u{1F600"]',
+        'Lexer Error: Invalid unicode escape [\\u{1F600"] at column 10 in expression ["\\u{1F600"]',
       );
     });
 

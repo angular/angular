@@ -621,17 +621,15 @@ class _Scanner {
         // Braced unicode escape: \u{X} to \u{XXXXXX}
         this.advance(); // skip '{'
         const hexStart = this.index;
-        while (
-          this.input.charCodeAt(this.index) !== chars.$RBRACE &&
-          this.input.charCodeAt(this.index) !== chars.$EOF &&
-          this.index < this.length
-        ) {
+        while (this.index < this.length) {
+          const ch = this.input.charCodeAt(this.index);
+          if (ch === chars.$RBRACE) break;
           this.advance();
         }
 
         const hasClosingBrace = this.input.charCodeAt(this.index) === chars.$RBRACE;
         const hex = this.input.substring(hexStart, this.index);
-        unicodeEscapeForError = `\\u{${hex}}`;
+        unicodeEscapeForError = hasClosingBrace ? `\\u{${hex}}` : `\\u{${hex}`;
 
         if (hasClosingBrace) {
           this.advance(); // skip '}'
