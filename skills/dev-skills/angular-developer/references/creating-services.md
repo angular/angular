@@ -58,7 +58,7 @@ import {BasicDataStore} from './basic-data-store.service';
     </div>
   `,
 })
-export class ExampleComponent {
+export class Example {
   // Inject the service as a class field
   dataStore = inject(BasicDataStore);
 }

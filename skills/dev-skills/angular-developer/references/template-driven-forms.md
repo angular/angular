@@ -23,7 +23,7 @@ import {FormsModule} from '@angular/forms';
   imports: [FormsModule],
   templateUrl: './user-form.component.html',
 })
-export class UserFormComponent {
+export class UserForm {
   user = {name: '', role: 'Guest'};
 
   onSubmit() {
@@ -91,9 +91,13 @@ To display error messages conditionally, export the `ngModel` directive to a tem
 <input type="text" id="name" required [(ngModel)]="user.name" name="name" #nameCtrl="ngModel" />
 
 <!-- Show error only if the control is invalid AND (touched OR dirty) -->
-<div *ngIf="nameCtrl.invalid && (nameCtrl.dirty || nameCtrl.touched)" class="alert alert-danger">
-  <div *ngIf="nameCtrl.errors?.['required']">Name is required.</div>
+@if (nameCtrl.invalid && (nameCtrl.dirty || nameCtrl.touched)) {
+<div class="alert alert-danger">
+  @if (nameCtrl.errors?.['required']) {
+  <div>Name is required.</div>
+  }
 </div>
+}
 ```
 
 ## Submitting the Form

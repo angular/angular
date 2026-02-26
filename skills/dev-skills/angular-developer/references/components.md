@@ -19,7 +19,7 @@ Use the `@Component` decorator to define a component's metadata.
     }
   `,
 })
-export class ProfileComponent {
+export class Profile {
   save() {
     /* ... */
   }
@@ -42,10 +42,10 @@ To use a component, add it to the `imports` array of the consuming component and
 ```ts
 @Component({
   selector: 'app-root',
-  imports: [ProfileComponent],
+  imports: [Profile],
   template: `<app-profile />`,
 })
-export class AppComponent {}
+export class App {}
 ```
 
 ## Template Control Flow
@@ -114,3 +114,4 @@ state like 'standby' is added }
 - **View**: The DOM rendered by the component's template inside the host element.
 - **Standalone**: By default, components are standalone (since Angular 19, `standalone: true` is default). For older versions, `standalone: true` must be explicit or the component must be part of an `NgModule`.
 - **Component Tree**: Angular applications are structured as a tree of components, where each component can host child components.
+- **Component Naming**: Do not add suffixes the `Component` suffix for Component classes (e.g., AppComponent) unless the project has been configured to use that naming configuration.
