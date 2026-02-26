@@ -12,6 +12,8 @@ import {LView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getNativeByTNode} from '../render3/util/view_utils';
 
+import {registerSpecialProvider} from '../render3/debug/special_providers';
+
 /**
  * Creates an ElementRef from the most recent node.
  *
@@ -66,12 +68,15 @@ export class ElementRef<T = any> {
   constructor(nativeElement: T) {
     this.nativeElement = nativeElement;
   }
-
   /**
    * @internal
    * @nocollapse
    */
   static __NG_ELEMENT_ID__: () => ElementRef = injectElementRef;
+}
+
+if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+  registerSpecialProvider(ElementRef);
 }
 
 /**

@@ -15,6 +15,7 @@ import {InjectOptions} from './interface/injector';
 import {Provider, StaticProvider} from './interface/provider';
 import {NullInjector} from './null_injector';
 import {ProviderToken} from './provider_token';
+import {registerSpecialProvider} from '../render3/debug/special_providers';
 
 /**
  * Concrete injectors implement this interface. Injectors are configured
@@ -129,6 +130,10 @@ export abstract class Injector {
    * @nocollapse
    */
   static __NG_ELEMENT_ID__ = InjectorMarkers.Injector;
+}
+
+if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+  registerSpecialProvider(Injector);
 }
 
 /**

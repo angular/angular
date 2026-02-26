@@ -13,6 +13,7 @@ import {DECLARATION_COMPONENT_VIEW, LView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getComponentLViewByIndex} from '../render3/util/view_utils';
 import {ViewRef} from '../render3/view_ref';
+import {registerSpecialProvider} from '../render3/debug/special_providers';
 
 /**
  * Base class that provides change detection functionality.
@@ -124,6 +125,10 @@ export abstract class ChangeDetectorRef {
    */
   static __NG_ELEMENT_ID__: (flags: InternalInjectFlags) => ChangeDetectorRef =
     injectChangeDetectorRef;
+}
+
+if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+  registerSpecialProvider(ChangeDetectorRef);
 }
 
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */

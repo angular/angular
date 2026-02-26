@@ -11,6 +11,7 @@ import {isDestroyed} from '../render3/interfaces/type_checks';
 import {LView} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {removeLViewOnDestroy, storeLViewOnDestroy} from '../render3/util/view_utils';
+import {registerSpecialProvider} from '../render3/debug/special_providers';
 
 /**
  * `DestroyRef` lets you set callbacks to run for any cleanup or destruction behavior.
@@ -68,6 +69,10 @@ export abstract class DestroyRef {
    * @nocollapse
    */
   static __NG_ENV_ID__: (injector: EnvironmentInjector) => DestroyRef = (injector) => injector;
+}
+
+if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+  registerSpecialProvider(DestroyRef);
 }
 
 export class NodeInjectorDestroyRef extends DestroyRef {
