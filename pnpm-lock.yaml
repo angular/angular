@@ -337,8 +337,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#32f536bae2ff587a75b3ec6be9f730011ae91e18
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/32f536bae2ff587a75b3ec6be9f730011ae91e18(@modelcontextprotocol/sdk@1.26.0)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#5b8d523def45b81a2b068f187f52d55cbc2dc764
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5b8d523def45b81a2b068f187f52d55cbc2dc764(@modelcontextprotocol/sdk@1.26.0)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.29.0)
@@ -1789,9 +1789,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/32f536bae2ff587a75b3ec6be9f730011ae91e18':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/32f536bae2ff587a75b3ec6be9f730011ae91e18}
-    version: 0.0.0-16c5f6e199e3e1b67ae5a62385d36366bb9a429d
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5b8d523def45b81a2b068f187f52d55cbc2dc764':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5b8d523def45b81a2b068f187f52d55cbc2dc764}
+    version: 0.0.0-d6b8e7789d2b1a89dd398dab5388dc0ecdb32773
     hasBin: true
 
   '@angular/ssr@21.2.0-rc.2':
@@ -9908,6 +9908,10 @@ packages:
     resolution: {integrity: sha512-+G4CpNBxa5MprY+04MbgOw1v7So6n5JY166pFi9KfYwT78fxScCeSNQSNzp6dpPSW2rONOps6Ocam1wFhCgoVw==}
     engines: {node: 18 || 20 || >=22}
 
+  minimatch@10.2.3:
+    resolution: {integrity: sha512-Rwi3pnapEqirPSbWbrZaa6N3nmqq4Xer/2XooiOKyV3q12ML06f7MOuc5DVH8ONZIFhwIYQ3yzPH4nt7iWHaTg==}
+    engines: {node: 18 || 20 || >=22}
+
   minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
 
@@ -13855,7 +13859,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/32f536bae2ff587a75b3ec6be9f730011ae91e18(@modelcontextprotocol/sdk@1.26.0)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5b8d523def45b81a2b068f187f52d55cbc2dc764(@modelcontextprotocol/sdk@1.26.0)':
     dependencies:
       '@actions/core': 3.0.0
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
@@ -13899,7 +13903,7 @@ snapshots:
       jasmine-core: 6.1.0
       jasmine-reporters: 2.5.2
       jsonc-parser: 3.3.1
-      minimatch: 10.2.2
+      minimatch: 10.2.3
       multimatch: 8.0.0
       nock: 14.0.11
       semver: 7.7.4
@@ -24002,6 +24006,10 @@ snapshots:
     dependencies:
       brace-expansion: 5.0.3
 
+  minimatch@10.2.3:
+    dependencies:
+      brace-expansion: 5.0.3
+
   minimatch@3.1.2:
     dependencies:
       brace-expansion: 1.1.12
@@ -24150,7 +24158,7 @@ snapshots:
     dependencies:
       array-differ: 4.0.0
       array-union: 3.0.1
-      minimatch: 10.2.2
+      minimatch: 10.2.3
 
   mute-stdout@2.0.0: {}
 
