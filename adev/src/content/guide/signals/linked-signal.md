@@ -53,6 +53,8 @@ console.log(selectedOption()); // 'Sea'
 shippingOptions.set(['Email', 'Will Call', 'Postal service']);
 console.log(selectedOption()); // 'Email'
 ```
+While `computed` is commonly used to derive read-only state from other signals, `linkedSignal` is helpful when the derived value should remain writable or preserve user-driven updates as its source changes. This makes `linkedSignal` a good fit for state that depends on another signal but should not be fully recomputed or overwritten on every update.
+
 
 ## Accounting for previous state
 
