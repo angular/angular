@@ -41,15 +41,13 @@ import {
   ControlFlowBlockType,
   DeferBlockData,
   ForLoopBlockData,
-  RepeaterMetadataShape,
 } from './control_flow_types';
 import {TNode} from '../interfaces/node';
+import {RepeaterMetadata} from '../instructions/control_flow';
 
 /**
  * Gets all of the control flow blocks that are present inside the specified DOM node.
  * @param node Node in which to look for control flow blocks.
- *
- * @publicApi
  */
 export function getControlFlowBlocks(node: Node): ControlFlowBlock[] {
   const results: ControlFlowBlock[] = [];
@@ -91,8 +89,6 @@ const deferBlockFinder: ControlFlowBlockViewFinder = ({
     const tDetails = getTDeferBlockDetails(tView, tNode);
 
     if (isTDeferBlockDetails(tDetails)) {
-      // return {lContainer, lView, tNode, tDetails};
-
       const native = getNativeByTNode(tNode, lView);
       const lDetails = getLDeferBlockDetails(lView, tNode);
 
@@ -174,7 +170,7 @@ const forLoopFinder: ControlFlowBlockViewFinder = ({
 }: ControlFlowBlockViewFinderConfig) => {
   const slot = lView[slotIdx];
 
-  if (!isRepeaterMetadata(slot)) {
+  if (!(slot instanceof RepeaterMetadata)) {
     return null;
   }
 
@@ -319,26 +315,12 @@ function getRendererLView(lContainer: LContainer): LView | null {
 }
 
 /**
- * Checks if a value looks like RepeaterMetadata by duck-typing.
- * Can't use instanceof because that would require importing from control_flow.ts.
- */
-function isRepeaterMetadata(value: unknown): value is RepeaterMetadataShape {
-  return (
-    value !== null &&
-    typeof value === 'object' &&
-    'hasEmptyBlock' in value &&
-    'trackByFn' in value &&
-    typeof (value as RepeaterMetadataShape).trackByFn === 'function'
-  );
-}
-
-/**
  * Returns the string representation of the track expression.
  *
  * @param metadata Metadata containing the track function.
  * @returns
  */
-function getTrackExpression(metadata: RepeaterMetadataShape): string {
+function getTrackExpression(metadata: RepeaterMetadata): string {
   const trackByFn = metadata.trackByFn;
   if (trackByFn.name === 'ɵɵrepeaterTrackByIndex') {
     return '$index';
