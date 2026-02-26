@@ -13,7 +13,7 @@ import {Component, input, computed} from '@angular/core';
   selector: 'app-user',
   template: `<p>User: {{ name() }} ({{ age() }})</p>`,
 })
-export class UserComponent {
+export class User {
   // Optional input with default value
   name = input('Guest');
 
@@ -87,7 +87,7 @@ The legacy API remains supported but is not recommended for new code.
 import { Component, Input } from '@angular/core';
 
 @Component({...})
-export class LegacyComponent {
+export class Legacy {
   @Input({ required: true }) value = 0;
   @Input({ transform: trimString }) label = '';
 }

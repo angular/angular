@@ -26,7 +26,7 @@ You can alter how Angular searches for a dependency using the options object in 
 
 ```ts
 @Component({...})
-export class MyComponent {
+export class Example {
   // Returns null if not found instead of crashing
   optionalService = inject(MyService, { optional: true });
 

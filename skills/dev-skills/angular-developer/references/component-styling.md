@@ -18,7 +18,7 @@ Styles can be defined inline or in separate files.
   // OR external file
   styleUrl: 'photo.component.css',
 })
-export class PhotoComponent {}
+export class Photo {}
 ```
 
 ## View Encapsulation
@@ -41,7 +41,7 @@ import { ViewEncapsulation } from '@angular/core';
   ...,
   encapsulation: ViewEncapsulation.None,
 })
-export class GlobalStyledComponent {}
+export class GlobalStyled {}
 ```
 
 ## Special Selectors

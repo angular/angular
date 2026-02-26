@@ -7,7 +7,7 @@ Angular supports two main strategies for loading routes and components to balanc
 Components are bundled into the initial JavaScript payload and are available immediately.
 
 ```ts
-{ path: 'home', component: HomeComponent }
+{ path: 'home', component: Home }
 ```
 
 - **Pros**: Seamless transitions.
@@ -24,7 +24,7 @@ Use `loadComponent` to fetch the component on demand.
 ```ts
 {
   path: 'admin',
-  loadComponent: () => import('./admin/admin.component'),
+  loadComponent: () => import('./admin/admin.component').then(m => m.AdminComponent)`,
 }
 ```
 
