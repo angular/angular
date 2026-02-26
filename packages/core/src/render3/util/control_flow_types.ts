@@ -93,16 +93,16 @@ export interface ControlFlowBlockViewFinderConfig {
 /**
  * Describes a finder function that extracts `ControlFlowBlock`s from an LView.
  */
-export interface ControlFlowBlockViewFinder {
-  (config: ControlFlowBlockViewFinderConfig): ControlFlowBlock | null;
-}
+export type ControlFlowBlockViewFinder = (
+  config: ControlFlowBlockViewFinderConfig,
+) => ControlFlowBlock | null;
 
 /**
  * Represents `RepeaterMetadata` data mirror.
+ * Required due to a circular dependency.
  */
 export interface RepeaterMetadataShape {
   hasEmptyBlock: boolean;
   trackByFn: TrackByFunction<unknown>;
   liveCollection?: LiveCollection<unknown, unknown>;
-  originalTrackByFn?: TrackByFunction<unknown>;
 }

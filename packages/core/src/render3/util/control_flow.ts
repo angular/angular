@@ -48,18 +48,15 @@ import {TNode} from '../interfaces/node';
 /**
  * Gets all of the control flow blocks that are present inside the specified DOM node.
  * @param node Node in which to look for control flow blocks.
- *
- * @publicApi
  */
 export function getControlFlowBlocks(node: Node): ControlFlowBlock[] {
-  const results: ControlFlowBlock[] = [];
   const lView = getLContext(node)?.lView;
 
   if (lView) {
-    findControlFlowBlocks(node, lView, results);
+    return findControlFlowBlocks(node, lView);
   }
 
-  return results;
+  return [];
 }
 
 /**
@@ -91,8 +88,6 @@ const deferBlockFinder: ControlFlowBlockViewFinder = ({
     const tDetails = getTDeferBlockDetails(tView, tNode);
 
     if (isTDeferBlockDetails(tDetails)) {
-      // return {lContainer, lView, tNode, tDetails};
-
       const native = getNativeByTNode(tNode, lView);
       const lDetails = getLDeferBlockDetails(lView, tNode);
 
@@ -222,9 +217,14 @@ const CONTROL_FLOW_BLOCK_FINDERS: ControlFlowBlockViewFinder[] = [deferBlockFind
  *
  * @param node Node in which to search for blocks.
  * @param lView View within the node in which to search for blocks.
- * @param results Array to which to add blocks once they're found.
+ * @param results (Optional) Array to which to add blocks once they're found.
+ * @returns Found control flow blocks results array.
  */
-function findControlFlowBlocks(node: Node, lView: LView, results: ControlFlowBlock[]) {
+function findControlFlowBlocks(
+  node: Node,
+  lView: LView,
+  results: ControlFlowBlock[] = [],
+): ControlFlowBlock[] {
   const tView = lView[TVIEW];
 
   for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
@@ -255,6 +255,8 @@ function findControlFlowBlocks(node: Node, lView: LView, results: ControlFlowBlo
       findControlFlowBlocks(node, slot, results);
     }
   }
+
+  return results;
 }
 
 /**
