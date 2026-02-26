@@ -13,7 +13,7 @@ bazel_dep(name = "aspect_rules_jasmine", version = "2.0.3")
 bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
 bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
-bazel_dep(name = "tar.bzl", version = "0.8.1")
+bazel_dep(name = "tar.bzl", version = "0.9.0")
 bazel_dep(name = "yq.bzl", version = "0.3.5")
 bazel_dep(name = "rules_angular")
 git_override(
@@ -39,7 +39,7 @@ git_override(
 bazel_dep(name = "rules_browsers")
 git_override(
     module_name = "rules_browsers",
-    commit = "ceb52751831f3e6249aba83f688a612e57a8d14a",
+    commit = "8231142fc5516323b040883bf774ba8362645387",
     remote = "https://github.com/devversion/rules_browsers.git",
 )
 
