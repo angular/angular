@@ -43,6 +43,10 @@ ng_application(
     ng_config = ":ng_config",
     node_modules = ":node_modules",
     project_name = "dev-app",
+    serve_args = [
+        "--port",
+        "4201",
+    ],
     tags = [
         # Tagged as manual as both build and build.production use the same output directory.
         "manual",
