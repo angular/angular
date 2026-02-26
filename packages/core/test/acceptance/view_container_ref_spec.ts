@@ -703,6 +703,46 @@ describe('ViewContainerRef', () => {
     });
   });
 
+  describe('destroy', () => {
+    // NOTE: We may not necessarily _want_ this to be the case, but it does seem to be necessary
+    // for some amount of Angular code out there. We may want to consider lifting this constraint.
+    it('should not throw if the injector is destroyed before a view is removed', () => {
+      @Component({
+        template: 'View Content',
+        standalone: false,
+      })
+      class DynamicComponent {}
+
+      @Component({
+        template: '<ng-container #vcr></ng-container>',
+        standalone: false,
+      })
+      class App {
+        @ViewChild('vcr', {read: ViewContainerRef, static: true})
+        vcr!: ViewContainerRef;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, DynamicComponent]});
+
+      const envInjector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const componentRef = fixture.componentInstance.vcr.createComponent(DynamicComponent, {
+        environmentInjector: envInjector,
+      });
+      fixture.detectChanges();
+
+      // Destroy the environment injector first
+      envInjector.destroy();
+
+      // Should be able to destroy the component afterwards.
+      expect(() => {
+        componentRef.destroy();
+      }).not.toThrow();
+    });
+  });
+
   describe('length', () => {
     it('should return the number of embedded views', () => {
       TestBed.configureTestingModule({declarations: [EmbeddedViewInsertionComp, VCRefDirective]});
