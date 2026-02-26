@@ -28,6 +28,7 @@ export {
   HammerLoader,
   HammerModule,
 } from './dom/events/hammer_gestures';
+export {provideCssVarNamespacing} from './dom/dom_renderer';
 export {
   DomSanitizer,
   SafeHtml,
