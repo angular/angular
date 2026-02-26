@@ -12,7 +12,7 @@ export {
   // The following private symbols isn't used outside this package but has a usage in G3.
   HttpInterceptorHandler as ɵHttpInterceptingHandler,
 } from './src/backend';
-export {HttpClient} from './src/client';
+export {HttpClient, HttpClientCommonOptions} from './src/client';
 export {HttpContext, HttpContextToken} from './src/context';
 export {FetchBackend} from './src/fetch';
 export {HttpHeaders} from './src/headers';
@@ -35,15 +35,17 @@ export {
   HttpFeatureKind,
   provideHttpClient,
   withFetch,
-  withXhr,
   withInterceptors,
   withInterceptorsFromDi,
   withJsonpSupport,
   withNoXsrfProtection,
   withRequestsMadeViaParent,
+  withXhr,
   withXsrfConfiguration,
 } from './src/provider';
-export {HttpRequest} from './src/request';
+export {HttpRequest, HttpRequestOptions} from './src/request';
+export {httpResource, HttpResourceFn} from './src/resource';
+export {HttpResourceOptions, HttpResourceRef, HttpResourceRequest} from './src/resource_api';
 export {
   HttpDownloadProgressEvent,
   HttpErrorResponse,
@@ -58,12 +60,10 @@ export {
   HttpUploadProgressEvent,
   HttpUserEvent,
 } from './src/response';
-export {HttpResourceRef, HttpResourceOptions, HttpResourceRequest} from './src/resource_api';
-export {httpResource, HttpResourceFn} from './src/resource';
 export {
+  HTTP_TRANSFER_CACHE_ORIGIN_MAP,
   HttpTransferCacheOptions,
   withHttpTransferCache as ɵwithHttpTransferCache,
-  HTTP_TRANSFER_CACHE_ORIGIN_MAP,
 } from './src/transfer_cache';
 export {HttpXhrBackend} from './src/xhr';
 export {HttpXsrfTokenExtractor} from './src/xsrf';
