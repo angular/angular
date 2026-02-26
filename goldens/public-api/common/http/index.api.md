@@ -3353,7 +3353,7 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
 export function withXhr(): HttpFeature<HttpFeatureKind.Xhr>;
 
 // @public
-export function withXsrfConfiguration({ cookieName, headerName, }: {
+export function withXsrfConfiguration(input: {
     cookieName?: string;
     headerName?: string;
 }): HttpFeature<HttpFeatureKind.CustomXsrfConfiguration>;
