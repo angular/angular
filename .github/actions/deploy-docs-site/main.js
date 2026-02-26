@@ -33174,6 +33174,30 @@ var requiresLabels = createTypedObject(RequiresLabel)({
     description: "This PR requires a passing TGP before merging is allowed"
   }
 });
+var MiscLabel = class extends Label {
+};
+var miscLabels = createTypedObject(MiscLabel)({
+  FEATURE: {
+    name: "feature",
+    description: "Label used to distinguish feature request from other issues"
+  },
+  GOOD_FIRST_ISSUE: {
+    name: "good first issue",
+    description: "Label noting a good first issue to be worked on by a community member"
+  },
+  HELP_WANTED: {
+    name: "help wanted",
+    description: "Label noting an issue which the team is looking for contribution from the community to fix"
+  },
+  RENOVATE_MANAGED: {
+    name: "renovate managed",
+    description: "Label noting that a pull request will automatically be managed and rebased by renovate"
+  },
+  GEMINI_TRIAGED: {
+    name: "gemini-triaged",
+    description: "Label noting that an issue has been triaged by gemini"
+  }
+});
 var FeatureLabel = class extends Label {
 };
 var featureLabels = createTypedObject(FeatureLabel)({
@@ -33201,7 +33225,8 @@ var allLabels = {
   ...targetLabels,
   ...priorityLabels,
   ...featureLabels,
-  ...requiresLabels
+  ...requiresLabels,
+  ...miscLabels
 };
 var import_which = __toESM2(require_lib2());
 var import_yaml = __toESM2(require_dist());
@@ -33420,7 +33445,7 @@ tmp/lib/tmp.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-HWMRKQMP.mjs:
+@angular/ng-dev/bundles/chunk-B3FTBJHO.mjs:
   (*! Bundled license information:
   
   @octokit/request-error/dist-src/index.js:
