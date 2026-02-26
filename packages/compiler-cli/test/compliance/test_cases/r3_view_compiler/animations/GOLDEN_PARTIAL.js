@@ -187,7 +187,7 @@ export declare class MyComponent {
 import { Component, signal } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
-    enterClass = signal('slide', ...(ngDevMode ? [{ debugName: "enterClass" }] : []));
+    enterClass = signal('slide', ...(ngDevMode ? [{ debugName: "enterClass" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-component", ngImport: i0, template: `
     <div>
@@ -296,7 +296,7 @@ export declare class MyComponent {
 import { Component, signal } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
-    leaveClass = signal('fade', ...(ngDevMode ? [{ debugName: "leaveClass" }] : []));
+    leaveClass = signal('fade', ...(ngDevMode ? [{ debugName: "leaveClass" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-component", ngImport: i0, template: `
     <div>

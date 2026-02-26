@@ -4,7 +4,7 @@
 import { Component, Directive, input } from '@angular/core';
 import * as i0 from "@angular/core";
 export class FormField {
-    formField = input(...(ngDevMode ? [undefined, { debugName: "formField" }] : []));
+    formField = input(...(ngDevMode ? [undefined, { debugName: "formField" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FormField, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: FormField, isStandalone: true, selector: "[formField]", inputs: { formField: { classPropertyName: "formField", publicName: "formField", isSignal: true, isRequired: false, transformFunction: null } }, ngImport: i0 });
 }
@@ -54,7 +54,7 @@ export declare class MyComponent {
 import { Component, Directive, input } from '@angular/core';
 import * as i0 from "@angular/core";
 export class FormField {
-    formField = input(...(ngDevMode ? [undefined, { debugName: "formField" }] : []));
+    formField = input(...(ngDevMode ? [undefined, { debugName: "formField" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: FormField, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: FormField, isStandalone: true, selector: "[formField]", inputs: { formField: { classPropertyName: "formField", publicName: "formField", isSignal: true, isRequired: false, transformFunction: null } }, ngImport: i0 });
 }

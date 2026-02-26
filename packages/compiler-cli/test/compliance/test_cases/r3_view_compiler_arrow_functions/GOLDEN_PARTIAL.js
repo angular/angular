@@ -4,8 +4,8 @@
 import { Component, signal } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestComp {
-    sigA = signal(1, ...(ngDevMode ? [{ debugName: "sigA" }] : []));
-    sigB = signal(2, ...(ngDevMode ? [{ debugName: "sigB" }] : []));
+    sigA = signal(1, ...(ngDevMode ? [{ debugName: "sigA" }] : /* istanbul ignore next */ []));
+    sigB = signal(2, ...(ngDevMode ? [{ debugName: "sigB" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     <button (click)="sigA.update(value => value + 1)">Increment A</button>
@@ -144,7 +144,7 @@ export declare class TestComp {
 import { Component, signal } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestComp {
-    someSignal = signal('', ...(ngDevMode ? [{ debugName: "someSignal" }] : []));
+    someSignal = signal('', ...(ngDevMode ? [{ debugName: "someSignal" }] : /* istanbul ignore next */ []));
     componentProp = 0;
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
@@ -272,7 +272,7 @@ export declare class TestDir {
 import { Directive, signal } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestDir {
-    someSignal = signal(0, ...(ngDevMode ? [{ debugName: "someSignal" }] : []));
+    someSignal = signal(0, ...(ngDevMode ? [{ debugName: "someSignal" }] : /* istanbul ignore next */ []));
     componentProp = 1;
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, host: { listeners: { "click": "someSignal.update(prev => prev + 1)", "mousedown": "someSignal.update(() => componentProp + 1)" } }, ngImport: i0 });
@@ -611,7 +611,7 @@ import { Component, signal } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestComp {
     componentProp = 0;
-    result = signal('', ...(ngDevMode ? [{ debugName: "result" }] : []));
+    result = signal('', ...(ngDevMode ? [{ debugName: "result" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
     @let topLevelLet = 1;
