@@ -1130,11 +1130,34 @@ const _cssCommaInPlaceholderReGlobal = new RegExp(COMMA_IN_PLACEHOLDER, 'g');
 const _cssSemiInPlaceholderReGlobal = new RegExp(SEMI_IN_PLACEHOLDER, 'g');
 const _cssColonInPlaceholderReGlobal = new RegExp(COLON_IN_PLACEHOLDER, 'g');
 
+// Matches `/* DISABLE_NAMESPACING */` optionally followed by any characters
+// that are not a semicolon or closing brace (e.g. whitespace or a property name),
+// up until it hits a CSS variable `--some-name`.
+const _cssNamespaceRe = new RegExp(
+  String.raw`(?:(/\*\s*DISABLE_NAMESPACING\s*\*/)[^;{}]*?)?(--[a-zA-Z0-9_-]+)`,
+  'g',
+);
+
 export class CssRule {
   constructor(
     public selector: string,
     public content: string,
   ) {}
+}
+
+/**
+ * Transforms CSS variables within a stylesheet to include a namespace placeholder.
+ *
+ * E.g. `--foo: bar;` becomes `--%NS%foo: bar;`
+ * E.g. `color: var(--foo);` becomes `color: var(--%NS%foo);`
+ *
+ * If a declaration or usage is preceded by `/* DISABLE_NAMESPACING *\/`, it is NOT transformed.
+ */
+export function namespaceCssVariables(cssText: string): string {
+  return cssText.replace(_cssNamespaceRe, (match, disableComment, varName) => {
+    if (disableComment) return match;
+    return `--%NS%${varName.substring('--'.length)}`;
+  });
 }
 
 export function processRules(input: string, ruleCallback: (rule: CssRule) => CssRule): string {

@@ -199,6 +199,9 @@ export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef
 export function provideClientHydration(...features: HydrationFeature<HydrationFeatureKind>[]): EnvironmentProviders;
 
 // @public
+export function provideCssVarNamespacing(namespace: string): EnvironmentProviders;
+
+// @public
 export function provideProtractorTestingSupport(): Provider[];
 
 // @public
