@@ -523,6 +523,33 @@ describe('field directive', () => {
         act(() => component.field.set(component.f.y));
         expect(component.customControl().disabled()).toBe(false);
       });
+
+      it('should allow custom control inputs to have a transform', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model('');
+          readonly disabled = input(false, {transform: booleanAttribute});
+        }
+
+        @Component({
+          imports: [FormField, CustomControl],
+          template: `<custom-control [formField]="f" />`,
+        })
+        class TestCmp {
+          readonly disabled = signal(false);
+          readonly f = form(signal(''), (p) => {
+            disabled(p, this.disabled);
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().disabled()).toBe(false);
+
+        act(() => component.disabled.set(true));
+        expect(component.customControl().disabled()).toBe(true);
+      });
     });
 
     describe('disabledReasons', () => {
