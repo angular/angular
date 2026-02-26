@@ -39,14 +39,16 @@ Angular provides four types of route guards, each serving different purposes:
   <docs-pill href="#canmatch" title="CanMatch"/>
 </docs-pill-row>
 
+All the guards have access to [services provided at the route level](guide/di/defining-dependency-providers#route-providers) as well as route-specific information via the `route` argument.
+
 ### CanActivate
 
 The `CanActivate` guard determines whether a user can access a route. It is most commonly used for authentication and authorization.
 
 It has access to the following default arguments:
 
-- `route: ActivatedRouteSnapshot` - Contains information about the route being activated
-- `state: RouterStateSnapshot` - Contains the router's current state
+- `route`: `ActivatedRouteSnapshot` - Contains information about the route being activated
+- `state`: `RouterStateSnapshot` - Contains the router's current state
 
 It can return the [standard return guard types](#route-guard-return-types).
 
@@ -70,8 +72,8 @@ The `CanActivateChild` guard determines whether a user can access child routes o
 
 It has access to the following default arguments:
 
-- `childRoute: ActivatedRouteSnapshot` - Contains information about the "future" snapshot (i.e., state the router is attempting to navigate to) of the child route being activated
-- `state: RouterStateSnapshot` - Contains the router's current state
+- `childRoute`: `ActivatedRouteSnapshot` - Contains information about the "future" snapshot (i.e., state the router is attempting to navigate to) of the child route being activated
+- `state`: `RouterStateSnapshot` - Contains the router's current state
 
 It can return the [standard return guard types](#route-guard-return-types).
 
@@ -93,10 +95,10 @@ The `CanDeactivate` guard determines whether a user can leave a route. A common 
 
 It has access to the following default arguments:
 
-- `component: T` - The component instance being deactivated
-- `currentRoute: ActivatedRouteSnapshot` - Contains information about the current route
-- `currentState: RouterStateSnapshot` - Contains the current router state
-- `nextState: RouterStateSnapshot` - Contains the next router state being navigated to
+- `component`: `T` - The component instance being deactivated
+- `currentRoute`: `ActivatedRouteSnapshot` - Contains information about the current route
+- `currentState`: `RouterStateSnapshot` - Contains the current router state
+- `nextState`: `RouterStateSnapshot` - Contains the next router state being navigated to
 
 It can return the [standard return guard types](#route-guard-return-types).
 
@@ -121,8 +123,8 @@ The `CanMatch` guard determines whether a route can be matched during path match
 
 It has access to the following default arguments:
 
-- `route: Route` - The route configuration being evaluated
-- `segments: UrlSegment[]` - The URL segments that have not been consumed by previous parent route evaluations
+- `route`: `Route` - The route configuration being evaluated
+- `segments`: `UrlSegment[]` - The URL segments that have not been consumed by previous parent route evaluations
 
 It can return the [standard return guard types](#route-guard-return-types), but when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
 

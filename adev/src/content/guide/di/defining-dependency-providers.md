@@ -731,6 +731,10 @@ export const routes: Routes = [
 ];
 ```
 
+Services provided at the route level are available to all components and directives within that route, as well as to its guards and resolvers.
+
+Since these services are instantiated independently of the route’s components, they do not have direct access to route-specific information.
+
 ## Library author patterns
 
 When creating Angular libraries, you often need to provide flexible configuration options for consumers while maintaining clean APIs. Angular's own libraries demonstrate powerful patterns for achieving this.
