@@ -112,6 +112,11 @@ export abstract class AbstractLogic<TReturn, TValue = TReturn> {
       : other.fns;
     this.fns.push(...fns);
   }
+
+  /** Checks if any logic rules are registered in this instance. */
+  hasLogicRules(): boolean {
+    return this.fns.length > 0;
+  }
 }
 
 /** Logic that combines its individual logic function results with logical OR. */
@@ -279,6 +284,22 @@ export class LogicContainer {
       ArrayMergeIgnoreLogic.ignoreNull<ValidationError.WithFieldTree>(predicates);
     this.asyncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError.WithFieldTree | 'pending'>(
       predicates,
+    );
+  }
+
+  /**
+   * Checks whether this container has any logic rules registered in any of its categories.
+   * @returns True if at least one logic rule exists.
+   */
+  hasAnyLogic(): boolean {
+    return (
+      this.hidden.hasLogicRules() ||
+      this.disabledReasons.hasLogicRules() ||
+      this.readonly.hasLogicRules() ||
+      this.syncErrors.hasLogicRules() ||
+      this.syncTreeErrors.hasLogicRules() ||
+      this.asyncErrors.hasLogicRules() ||
+      this.metadata.size > 0
     );
   }
 
