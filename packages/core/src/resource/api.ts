@@ -10,6 +10,45 @@ import {Injector} from '../di/injector';
 import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
 import {WritableSignal} from '../render3/reactivity/signal';
 
+/** Error thrown when a `Resource` dependency of another resource errors. */
+export class ResourceDependencyError extends Error {
+  /** The dependency that errored. */
+  readonly dependency: Resource<unknown>;
+
+  constructor(dependency: Resource<unknown>) {
+    super('Dependency error', {cause: dependency.error()});
+    this.name = 'ResourceDependencyError';
+    this.dependency = dependency;
+  }
+}
+
+/**
+ * Special status codes that can be thrown from a resource's `params` or `request` function to
+ * indicate that the resource should transition to that status.
+ */
+export class ResourceParamsStatus extends Error {
+  private readonly _brand: undefined;
+  private constructor(msg: string) {
+    super(msg);
+  }
+
+  /** Status code that transitions the resource to `idle` status. */
+  static readonly IDLE = new ResourceParamsStatus('IDLE');
+
+  /** Status code that transitions the resource to `loading` status. */
+  static readonly LOADING = new ResourceParamsStatus('LOADING');
+}
+
+/** Context received by a resource's `params` or `request` function. */
+export interface ResourceParamsContext {
+  /**
+   * Chains the current params off of the value of another resource, returning the value
+   * of the other resource if it is available, or propagating the status to the current resource by
+   * throwing the appropriate status code if the value is not available.
+   */
+  chain: <T>(resource: Resource<T>) => T;
+}
+
 /**
  * String value capturing the status of a `Resource`.
  *
@@ -175,7 +214,7 @@ export interface BaseResourceOptions<T, R> {
    *
    * If a params function isn't provided, the loader won't rerun unless the resource is reloaded.
    */
-  params?: () => R;
+  params?: (ctx: ResourceParamsContext) => R;
 
   /**
    * The value which will be returned from the resource when a server value is unavailable, such as
@@ -258,3 +297,11 @@ export type ResourceSnapshot<T> =
   | {readonly status: 'loading' | 'reloading'; readonly value: T}
   | {readonly status: 'resolved' | 'local'; readonly value: T}
   | {readonly status: 'error'; readonly error: Error};
+
+/** Options for `debounced`. */
+export interface DebouncedOptions<T> {
+  /** The `Injector` to use for the debounced resource. */
+  injector?: Injector;
+  /** The equality function to use for comparing values. */
+  equal?: ValueEqualityFn<T>;
+}

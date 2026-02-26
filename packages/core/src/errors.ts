@@ -157,6 +157,7 @@ export const enum RuntimeErrorCode {
   // resource() API errors
   MUST_PROVIDE_STREAM_OPTION = 990,
   RESOURCE_COMPLETED_BEFORE_PRODUCING_VALUE = 991,
+  INVALID_RESOURCE_CREATION_IN_PARAMS = 992,
 
   // Upper bounds for core runtime errors is 999
 }
