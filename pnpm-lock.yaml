@@ -337,8 +337,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#5853f34e078f46777430088574777683efe2fc85
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5853f34e078f46777430088574777683efe2fc85(@modelcontextprotocol/sdk@1.26.0)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#6e2bde2a77912357868cdbaff1707282085d679b
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6e2bde2a77912357868cdbaff1707282085d679b(@modelcontextprotocol/sdk@1.26.0)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.29.0)
@@ -1789,9 +1789,9 @@ packages:
       '@angular/platform-browser': ^21.0.0 || ^22.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5853f34e078f46777430088574777683efe2fc85':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5853f34e078f46777430088574777683efe2fc85}
-    version: 0.0.0-4b8f9c22c9a8780d3f8162ffb6ffdedce37ae5e2
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6e2bde2a77912357868cdbaff1707282085d679b':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6e2bde2a77912357868cdbaff1707282085d679b}
+    version: 0.0.0-ecf3adcf1cb85a0ecd32a3b5a1712ce946aa798a
     hasBin: true
 
   '@angular/ssr@21.2.0':
@@ -6304,6 +6304,7 @@ packages:
   basic-ftp@5.1.0:
     resolution: {integrity: sha512-RkaJzeJKDbaDWTIPiJwubyljaEPwpVWkm9Rt5h9Nd6h7tEXTJ3VB4qxdZBioV7JO5yLUaOKwz7vDOzlncUsegw==}
     engines: {node: '>=10.0.0'}
+    deprecated: Security vulnerability fixed in 5.2.0, please upgrade
 
   batch@0.6.1:
     resolution: {integrity: sha512-x+VAiMRL6UPkx+kudNvxTl6hB2XNNCG2r+7wixVfIYwu/2HKRXimwQyaumLjMveWvT2Hkd/cAJw+QBMfJ/EKVw==}
@@ -13967,7 +13968,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5853f34e078f46777430088574777683efe2fc85(@modelcontextprotocol/sdk@1.26.0)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6e2bde2a77912357868cdbaff1707282085d679b(@modelcontextprotocol/sdk@1.26.0)':
     dependencies:
       '@actions/core': 3.0.0
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
