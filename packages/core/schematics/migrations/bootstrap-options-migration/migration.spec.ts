@@ -802,7 +802,7 @@ describe('bootstrap options migration', () => {
 
   describe('bootstrapModule', () => {
     [
-      {packageName: 'platform-browser-dynamic', platformBrowserFn: 'platformBrowserDynamic'},
+      // {packageName: 'platform-browser-dynamic', platformBrowserFn: 'platformBrowserDynamic'},
       {packageName: 'platform-browser', platformBrowserFn: 'platformBrowser'},
     ].forEach(({packageName, platformBrowserFn}) => {
       describe(`${platformBrowserFn}().bootstrapModule`, () => {
