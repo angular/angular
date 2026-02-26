@@ -70,7 +70,7 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          `signal('Hello World', ...(ngDevMode ? [{ debugName: "testSignal" }] : []))`,
+          `signal('Hello World', ...(ngDevMode ? [{ debugName: "testSignal" }] : /* istanbul ignore next */ []))`,
         );
       });
 
@@ -118,7 +118,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : {}), equal: () => true })`,
+            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
           );
         });
 
@@ -160,7 +160,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `signal('Hello World', ...(ngDevMode ? [{ debugName: "testSignal" }] : [])`,
+            `signal('Hello World', ...(ngDevMode ? [{ debugName: "testSignal" }] : /* istanbul ignore next */ [])`,
           );
         });
 
@@ -225,7 +225,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : {}), equal: () => true })`,
+            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
           );
         });
 
@@ -277,7 +277,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `signal('Hello World', ...(ngDevMode ? [{ debugName: "testSignal" }] : [])`,
+            `signal('Hello World', ...(ngDevMode ? [{ debugName: "testSignal" }] : /* istanbul ignore next */ [])`,
           );
         });
 
@@ -351,7 +351,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : {}), equal: () => true })`,
+            `signal('Hello World', { ...(ngDevMode ? { debugName: "testSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
           );
         });
 
@@ -411,7 +411,7 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          `computed(() => testSignal(), ...(ngDevMode ? [{ debugName: "testComputed" }] : []))`,
+          `computed(() => testSignal(), ...(ngDevMode ? [{ debugName: "testComputed" }] : /* istanbul ignore next */ []))`,
         );
       });
 
@@ -462,7 +462,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `computed(() => testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : {}), equal: () => true })`,
+            `computed(() => testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : /* istanbul ignore next */ {}), equal: () => true })`,
           );
         });
 
@@ -569,7 +569,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `computed(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : {}), equal: () => true })`,
+            `computed(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : /* istanbul ignore next */ {}), equal: () => true })`,
           );
         });
 
@@ -701,7 +701,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `computed(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : {}), equal: () => true })`,
+            `computed(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testComputed" } : /* istanbul ignore next */ {}), equal: () => true })`,
           );
         });
 
@@ -800,10 +800,10 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          `model('Hello World', ...(ngDevMode ? [{ debugName: "testModel" }] : [])`,
+          `model('Hello World', ...(ngDevMode ? [{ debugName: "testModel" }] : /* istanbul ignore next */ [])`,
         );
         expect(jsContents).toContain(
-          `model(...(ngDevMode ? [undefined, { debugName: "testModel2" }] : [])`,
+          `model(...(ngDevMode ? [undefined, { debugName: "testModel2" }] : /* istanbul ignore next */ [])`,
         );
       });
 
@@ -845,7 +845,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `model.required(...(ngDevMode ? [{ debugName: "testModel" }] : [])`,
+            `model.required(...(ngDevMode ? [{ debugName: "testModel" }] : /* istanbul ignore next */ [])`,
           );
         });
 
@@ -866,7 +866,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `model.required({ ...(ngDevMode ? { debugName: "testModel" } : {}), alias: 'testModelAlias' })`,
+            `model.required({ ...(ngDevMode ? { debugName: "testModel" } : /* istanbul ignore next */ {}), alias: 'testModelAlias' })`,
           );
         });
 
@@ -990,7 +990,7 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          `input(...(ngDevMode ? [undefined, { debugName: "testInput" }] : [])`,
+          `input(...(ngDevMode ? [undefined, { debugName: "testInput" }] : /* istanbul ignore next */ [])`,
         );
       });
 
@@ -1033,7 +1033,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `input.required(...(ngDevMode ? [{ debugName: "testInput" }] : []))`,
+            `input.required(...(ngDevMode ? [{ debugName: "testInput" }] : /* istanbul ignore next */ []))`,
           );
         });
 
@@ -1054,7 +1054,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `input.required({ ...(ngDevMode ? { debugName: "testInput" } : {}), alias: 'testInputAlias' })`,
+            `input.required({ ...(ngDevMode ? { debugName: "testInput" } : /* istanbul ignore next */ {}), alias: 'testInputAlias' })`,
           );
         });
 
@@ -1191,10 +1191,10 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          `viewChild('foo', ...(ngDevMode ? [{ debugName: "testViewChild" }] : [])`,
+          `viewChild('foo', ...(ngDevMode ? [{ debugName: "testViewChild" }] : /* istanbul ignore next */ [])`,
         );
         expect(jsContents).toContain(
-          `viewChild(ChildComponent, ...(ngDevMode ? [{ debugName: "testViewChildComponent" }] : [])`,
+          `viewChild(ChildComponent, ...(ngDevMode ? [{ debugName: "testViewChildComponent" }] : /* istanbul ignore next */ [])`,
         );
       });
 
@@ -1340,7 +1340,7 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          `viewChildren('foo', ...(ngDevMode ? [{ debugName: "testViewChildren" }] : [])`,
+          `viewChildren('foo', ...(ngDevMode ? [{ debugName: "testViewChildren" }] : /* istanbul ignore next */ [])`,
         );
       });
 
@@ -1466,7 +1466,7 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          `contentChild('foo', ...(ngDevMode ? [{ debugName: "testContentChild" }] : [])`,
+          `contentChild('foo', ...(ngDevMode ? [{ debugName: "testContentChild" }] : /* istanbul ignore next */ [])`,
         );
       });
 
@@ -1594,7 +1594,7 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          `contentChildren('foo', ...(ngDevMode ? [{ debugName: "testContentChildren" }] : [])`,
+          `contentChildren('foo', ...(ngDevMode ? [{ debugName: "testContentChildren" }] : /* istanbul ignore next */ [])`,
         );
       });
 
@@ -1724,7 +1724,7 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          `effect(() => this.testSignal(), ...(ngDevMode ? [{ debugName: "testEffect" }] : [])`,
+          `effect(() => this.testSignal(), ...(ngDevMode ? [{ debugName: "testEffect" }] : /* istanbul ignore next */ [])`,
         );
       });
 
@@ -1845,7 +1845,7 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain(
-          `linkedSignal(() => testSignal(), ...(ngDevMode ? [{ debugName: "testLinkedSignal" }] : [])`,
+          `linkedSignal(() => testSignal(), ...(ngDevMode ? [{ debugName: "testLinkedSignal" }] : /* istanbul ignore next */ [])`,
         );
       });
 
@@ -1896,7 +1896,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `linkedSignal(() => testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : {}), equal: () => true })`,
+            `linkedSignal(() => testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
           );
         });
 
@@ -1958,7 +1958,7 @@ runInEachFileSystem(() => {
 
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
-            'testLinkedSignal = linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : {}), ' +
+            'testLinkedSignal = linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
               'source: testSignal, ' +
               'computation: (src, prev) => src ' +
               '})',
@@ -2082,7 +2082,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `linkedSignal(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : {}), equal: () => true })`,
+            `linkedSignal(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
           );
         });
 
@@ -2157,7 +2157,7 @@ runInEachFileSystem(() => {
 
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
-            'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : {}), ' +
+            'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
               'source: this.testSignal, ' +
               'computation: (src, prev) => src ' +
               '})',
@@ -2304,7 +2304,7 @@ runInEachFileSystem(() => {
 
           const jsContents = env.getContents('test.js');
           expect(jsContents).toContain(
-            `linkedSignal(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : {}), equal: () => true })`,
+            `linkedSignal(() => this.testSignal(), { ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), equal: () => true })`,
           );
         });
 
@@ -2394,7 +2394,7 @@ runInEachFileSystem(() => {
 
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
-            'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : {}), ' +
+            'linkedSignal({ ...(ngDevMode ? { debugName: "testLinkedSignal" } : /* istanbul ignore next */ {}), ' +
               'source: this.testSignal, ' +
               'computation: (src, prev) => src ' +
               '})',
@@ -2509,7 +2509,7 @@ runInEachFileSystem(() => {
         const jsContents = cleanNewLines(env.getContents('test.js'));
         expect(jsContents).toContain(
           'resource({ ' +
-            '...(ngDevMode ? { debugName: "testResource" } : {}), ' +
+            '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ {}), ' +
             `defaultValue: 'foo', ` +
             `loader: async () => 'bar' ` +
             '})',
@@ -2587,7 +2587,7 @@ runInEachFileSystem(() => {
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
             'resource({ ' +
-              '...(ngDevMode ? { debugName: "testResource" } : {}), ' +
+              '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ {}), ' +
               `defaultValue: 'foo', ` +
               `loader: async () => 'bar' ` +
               '})',
@@ -2678,7 +2678,7 @@ runInEachFileSystem(() => {
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
             'resource({ ' +
-              '...(ngDevMode ? { debugName: "testResource" } : {}), ' +
+              '...(ngDevMode ? { debugName: "testResource" } : /* istanbul ignore next */ {}), ' +
               `defaultValue: 'foo', ` +
               `loader: async () => 'bar' ` +
               '})',
@@ -2777,7 +2777,7 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = cleanNewLines(env.getContents('test.js'));
         expect(jsContents).toContain(
-          `httpResource(() => '/api', ...(ngDevMode ? [{ debugName: "testHttpResource" }] : []))`,
+          `httpResource(() => '/api', ...(ngDevMode ? [{ debugName: "testHttpResource" }] : /* istanbul ignore next */ []))`,
         );
       });
 
@@ -2837,7 +2837,7 @@ runInEachFileSystem(() => {
           env.driveMain();
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
-            `httpResource(() => '/api', ...(ngDevMode ? [{ debugName: "testHttpResource" }] : []))`,
+            `httpResource(() => '/api', ...(ngDevMode ? [{ debugName: "testHttpResource" }] : /* istanbul ignore next */ []))`,
           );
         });
 
@@ -2909,7 +2909,7 @@ runInEachFileSystem(() => {
           env.driveMain();
           const jsContents = cleanNewLines(env.getContents('test.js'));
           expect(jsContents).toContain(
-            `httpResource(() => '/api', ...(ngDevMode ? [{ debugName: "testHttpResource" }] : []))`,
+            `httpResource(() => '/api', ...(ngDevMode ? [{ debugName: "testHttpResource" }] : /* istanbul ignore next */ []))`,
           );
         });
 

@@ -89,6 +89,12 @@ function createNgDevModeConditional(
   devModeExpression: ts.Expression,
   prodModeExpression: ts.Expression,
 ): ts.ParenthesizedExpression {
+  ts.addSyntheticLeadingComment(
+    prodModeExpression,
+    ts.SyntaxKind.MultiLineCommentTrivia,
+    ' istanbul ignore next ',
+    false,
+  );
   return ts.factory.createParenthesizedExpression(
     ts.factory.createConditionalExpression(
       ts.factory.createIdentifier('ngDevMode'),
