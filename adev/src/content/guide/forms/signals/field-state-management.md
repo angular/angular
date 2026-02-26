@@ -523,6 +523,29 @@ export class Order {
 
 Hidden fields don't participate in validation, allowing the form to be submitted even if the hidden field would otherwise be invalid.
 
+### Tracking values for array fields
+
+In signal forms, a `@for` block over a set of fields should be tracked by field identity.
+
+```angular-ts
+@Component({
+  imports: [FormField],
+  template: `
+    @for (field of form.emails; track field) {
+      <input [formField]="field" />
+    }
+  `,
+})
+export class App {
+  formModel = signal({emails: ['john.doe@mail.com', 'max.musterman@mail.com']});
+  form = form(this.formModel);
+}
+```
+
+The forms system is already tracking the model values within the array and maintaining a stable identity of the fields it creates automatically.
+
+When an item changes, it may represent a new logical entity even if some of its properties look the same. Tracking by identity ensures the framework treats it as a distinct item rather than reusing existing UI elements. This prevents stateful elements, like form inputs, from being incorrectly shared and keeps bindings aligned with the correct part of the model.
+
 ## Using field state in component logic
 
 Field state signals work with Angular's reactive primitives like `computed()` and `effect()` for advanced form logic.
