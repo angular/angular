@@ -18,8 +18,14 @@ import {makeEnvironmentProviders} from '../di/provider_collection';
  * Note: we wrap the `requestIdleCallback` call into a function, so that it can be
  * overridden/mocked in test environment and picked up by the runtime code.
  */
+type RequestIdle = typeof requestIdleCallback;
+
 const _requestIdleCallback = () =>
-  (typeof requestIdleCallback !== 'undefined' ? requestIdleCallback : setTimeout).bind(globalThis);
+  (typeof requestIdleCallback !== 'undefined'
+    ? requestIdleCallback
+    : (cb: VoidFunction) => setTimeout(cb) as unknown as number
+  ).bind(globalThis) as RequestIdle;
+
 const _cancelIdleCallback = () =>
   (typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout).bind(globalThis);
 
@@ -34,7 +40,7 @@ export interface IdleService {
    *
    * @returns an id which allows the scheduled callback to be cancelled before it executes.
    */
-  requestOnIdle(callback: (deadline?: IdleDeadline) => void): number;
+  requestOnIdle(callback: (deadline?: IdleDeadline) => void, options?: IdleRequestOptions): number;
 
   /**
    * Cancel a previously scheduled callback using the id associated with it.
@@ -74,8 +80,8 @@ class RequestIdleCallbackService implements IdleService {
   private readonly requestIdleCallback = _requestIdleCallback();
   private readonly cancelIdleCallback = _cancelIdleCallback();
 
-  requestOnIdle(callback: (deadline?: IdleDeadline) => void): number {
-    return this.requestIdleCallback(callback) as unknown as number;
+  requestOnIdle(callback: (deadline?: IdleDeadline) => void, options?: IdleRequestOptions): number {
+    return this.requestIdleCallback(callback, options);
   }
 
   cancelOnIdle(id: number): void {

@@ -170,7 +170,8 @@ const BUILT_IN_NAMES_TO_DOC_MAP: {
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
   'idle': {
-    docString: triggerDescriptionPreamble + `the browser reports idle state (default).`,
+    docString:
+      triggerDescriptionPreamble + `the browser reports idle state. Accepts an optional timeout.`,
     links: ['[Reference](https://angular.dev/guide/templates/defer#on-idle)'],
     displayInfoKind: DisplayInfoKind.TRIGGER,
   },

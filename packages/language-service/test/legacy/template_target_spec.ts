@@ -42,6 +42,7 @@ import {
   TmplAstSwitchExhaustiveCheck as SwitchExhaustiveCheck,
   TmplAstTemplate as Template,
   TmplAstTextAttribute as TextAttribute,
+  TmplAstIdleDeferredTrigger as IdleDeferredTrigger,
   TmplAstTimerDeferredTrigger as TimerDeferredTrigger,
   TmplAstVariable as Variable,
 } from '@angular/compiler';
@@ -1237,6 +1238,15 @@ describe('blocks', () => {
     expect(isTemplateNode(node!)).toBe(true);
     expect(node).toBeInstanceOf(TimerDeferredTrigger);
     expect((node as TimerDeferredTrigger).delay).toBe(2000);
+  });
+
+  it('should visit idle on conditions on defer blocks with timeout', () => {
+    const {nodes, position} = parse(` @defer (on idle(5¦00ms)) { } `);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isTemplateNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(IdleDeferredTrigger);
+    expect((node as IdleDeferredTrigger).timeout).toBe(500);
   });
 
   // TODO: Should the parser ingest a property read for `localRef`, instead of a string?
