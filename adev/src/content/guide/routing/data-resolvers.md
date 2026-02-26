@@ -6,6 +6,8 @@ Data resolvers allow you to fetch data before navigating to a route, ensuring th
 
 A data resolver is a service that implements the `ResolveFn` function. It runs before a route activates and can fetch data from APIs, databases, or other sources. The resolved data becomes available to the component through the `ActivatedRoute`.
 
+Data resolvers have access to [services provided at the route level](guide/di/defining-dependency-providers#route-providers) as well as route-specific information via the `route` argument.
+
 ## Why use data resolvers?
 
 Data resolvers solve common routing challenges:
