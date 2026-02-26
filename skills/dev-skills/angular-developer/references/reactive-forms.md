@@ -24,7 +24,7 @@ import {ReactiveFormsModule, FormGroup, FormControl, Validators, FormBuilder} fr
   imports: [ReactiveFormsModule],
   templateUrl: './profile-editor.component.html',
 })
-export class ProfileEditorComponent {
+export class ProfileEditor {
   private fb = inject(FormBuilder);
 
   // Using FormBuilder for concise definition

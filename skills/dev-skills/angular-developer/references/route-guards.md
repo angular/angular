@@ -34,7 +34,7 @@ Add them to the route configuration as an array. They execute in order.
 ```ts
 {
   path: 'admin',
-  component: AdminComponent,
+  component: Admin,
   canActivate: [authGuard],
   canActivateChild: [adminChildGuard],
   canDeactivate: [unsavedChangesGuard]

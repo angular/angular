@@ -52,7 +52,7 @@ You use the `providers` array when a service lacks `providedIn`, when you want a
     {provide: INTERCEPTOR_TOKEN, useClass: AuthInterceptor, multi: true},
   ],
 })
-export class MyComponent {}
+export class Example {}
 ```
 
 ## Scopes of Providers

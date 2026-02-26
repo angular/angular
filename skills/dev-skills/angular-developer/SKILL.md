@@ -1,6 +1,6 @@
 ---
 name: angular-developer
-description: Generates Angular code and provides architectural guidance. Trigger this skill when asked to create components, services, directives, pipes, interfaces, or when the user needs best practices for forms, dependency injection, reactivity/signals, routing, SSR, testing, or tooling.
+description: Generates Angular code and provides architectural guidance. Trigger when creating projects, components, or services, or for best practices on reactivity (signals, linkedSignal, resource), forms, dependency injection, routing, SSR, accessibility (ARIA), animations, styling (component styles, Tailwind CSS), testing, or CLI tooling.
 license: MIT
 metadata:
   author: Copyright 2026 Google LLC
@@ -9,11 +9,18 @@ metadata:
 
 # Angular Developer Guidelines
 
-Always analyze the project's Angular version before providing guidance, as best practices and available features can vary significantly between versions. If creating a new project with Angular CLI, do not specify a version unless prompted by the user.
+1. Always analyze the project's Angular version before providing guidance, as best practices and available features can vary significantly between versions. If creating a new project with Angular CLI, do not specify a version unless prompted by the user.
 
-When generating code, follow Angular's style guide and best practices for maintainability and performance. Use the Angular CLI for scaffolding components, services, directives, pipes, and routes to ensure consistency.
+2. When generating code, follow Angular's style guide and best practices for maintainability and performance. Use the Angular CLI for scaffolding components, services, directives, pipes, and routes to ensure consistency.
+
+3. Once you finish generating code, run `ng build` to ensure there are no build errors. If there are errors, analyze the error messages and fix them before proceeding. Do not skip this step, as it is critical for ensuring the generated code is correct and functional.
 
 ## Creating New Projects
+
+If no guidelines are provided by the user, here are same default rules to follow when creating a new Angular project:
+
+1. Use the latest stable version of Angular unless the user specifies otherwise.
+2. Use Signals Forms for form management in new projects (available in Angular v21 and newer) [Find out more](references/signal-forms.md).
 
 **Execution Rules for `ng new`:**
 When asked to create a new Angular project, you must determine the correct execution command by following these strict steps:
@@ -56,7 +63,10 @@ When managing state and data reactivity, use Angular Signals and consult the fol
 
 ## Forms
 
-When making a forms decision, analyze the project and consider the following guidelines: if the application is using v21 or newer and this is a new form, prefer signal forms. For older applications or when working with existing forms, use the appropriate form type that matches the applications current form strategy.
+In most cases for new apps, **prefer signal forms**. When making a forms decision, analyze the project and consider the following guidelines:
+
+- if the application is using v21 or newer and this is a new form, **prefer signal forms**.
+  -For older applications or when working with existing forms, use the appropriate form type that matches the applications current form strategy.
 
 - **Signal Forms**: Use signals for form state management. Read [signal-forms.md](references/signal-forms.md)
 - **Template-driven forms**: Use for simple forms. Read [template-driven-forms.md](references/template-driven-forms.md)
@@ -74,9 +84,9 @@ When implementing dependency injection in Angular, follow these guidelines:
 
 ## Angular Aria
 
-When building accessible custom components, consult the following reference:
+When building accessible custom components for any of the following patterns: Accordion, Listbox, Combobox, Menu, Tabs, Toolbar, Tree, Grid, consult the following reference:
 
-- **Angular Aria Components**: Building headless, accessible components (Accordion, Listbox, Combobox, Menu, Tabs, Toolbar, Tree) and styling ARIA attributes. Read [angular-aria.md](references/angular-aria.md)
+- **Angular Aria Components**: Building headless, accessible components (Accordion, Listbox, Combobox, Menu, Tabs, Toolbar, Tree, Grid) and styling ARIA attributes. Read [angular-aria.md](references/angular-aria.md)
 
 ## Routing
 
@@ -101,6 +111,15 @@ When implementing styling and animations in Angular, consult the following refer
 - **Using Tailwind CSS with Angular**: Integrating Tailwind CSS into Angular projects. Read [tailwind-css.md](references/tailwind-css.md)
 - **Angular Animations**: Using native CSS (recommended) or the legacy DSL for dynamic effects. Read [angular-animations.md](references/angular-animations.md)
 - **Styling components**: Best practices for component styles and encapsulation. Read [component-styling.md](references/component-styling.md)
+
+## Testing
+
+When writing or updating tests, consult the following references based on the task:
+
+- **Fundamentals**: Best practices for unit testing (Vitest), async patterns, and `TestBed`. Read [testing-fundamentals.md](references/testing-fundamentals.md)
+- **Component Harnesses**: Standard patterns for robust component interaction. Read [component-harnesses.md](references/component-harnesses.md)
+- **Router Testing**: Using `RouterTestingHarness` for reliable navigation tests. Read [router-testing.md](references/router-testing.md)
+- **End-to-End (E2E) Testing**: Best practices for E2E tests with Cypress. Read [e2e-testing.md](references/e2e-testing.md)
 
 ## Tooling
 

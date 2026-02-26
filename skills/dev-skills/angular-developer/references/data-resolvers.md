@@ -21,7 +21,7 @@ Add the resolver under the `resolve` key.
 ```ts
 {
   path: 'user/:id',
-  component: UserProfileComponent,
+  component: UserProfile,
   resolve: {
     user: userResolver
   }

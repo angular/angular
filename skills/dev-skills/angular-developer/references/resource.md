@@ -32,7 +32,13 @@ export class UserProfile {
   });
 
   // Use the resource value in computed signals
-  userName = computed(() => this.userResource.value()?.name ?? 'Loading...');
+  userName = computed(() => {
+    if (this.userResource.hasValue()) {
+      return this.userResource.value()?.name;
+    } else {
+      return 'Loading...';
+    }
+  });
 }
 ```
 
@@ -53,7 +59,7 @@ this.userResource.reload();
 The `Resource` object provides several signals to read its current state:
 
 - `value()`: The resolved data, or `undefined`.
-- `hasValue()`: Type-guard boolean. True if a value exists.
+- `hasValue()`: Type-guard boolean. `true` if a value exists.
 - `isLoading()`: Boolean indicating if the loader is currently running.
 - `error()`: The error thrown by the loader, or `undefined`.
 - `status()`: A string constant representing the exact state (`'idle'`, `'loading'`, `'resolved'`, `'error'`, `'reloading'`, `'local'`).

@@ -48,7 +48,7 @@ Use these directly on elements to apply CSS classes during the enter or leave ph
 }
 ```
 
-_Note: `animate.leave` must be on the element being removed, not on a descendant element._
+_Note: `animate.leave` may be added to child elements being removed._
 
 ### Event Bindings and Third-party Libraries
 
@@ -133,7 +133,7 @@ For older projects (pre v20.2 or where `@angular/animations` is already heavily 
 ### Setup
 
 ```ts
-bootstrapApplication(AppComponent, {
+bootstrapApplication(App, {
   providers: [provideAnimationsAsync()],
 });
 ```
@@ -141,6 +141,7 @@ bootstrapApplication(AppComponent, {
 ### Defining Transitions
 
 ```ts
+import {signal} from '@angular/core';
 import {trigger, state, style, animate, transition} from '@angular/animations';
 
 @Component({
@@ -151,9 +152,9 @@ import {trigger, state, style, animate, transition} from '@angular/animations';
       transition('open <=> closed', [animate('0.5s')]),
     ]),
   ],
-  template: `<div [@openClose]="isOpen ? 'open' : 'closed'">...</div>`,
+  template: `<div [@openClose]="isOpen() ? 'open' : 'closed'">...</div>`,
 })
-export class OpenCloseComponent {
-  isOpen = true;
+export class OpenClose {
+  isOpen = signal(true);
 }
 ```
