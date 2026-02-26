@@ -55,6 +55,15 @@ export class By {
 export function createApplication(options?: ApplicationConfig, context?: BootstrapContext): Promise<ApplicationRef>;
 
 // @public
+export class CssVarNamespacer {
+    namespace(name: string): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<CssVarNamespacer, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<CssVarNamespacer>;
+}
+
+// @public
 export function disableDebugTools(): void;
 
 // @public
