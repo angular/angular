@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: angular/dev-infra/github-actions/pull-request-labeling@16c5f6e199e3e1b67ae5a62385d36366bb9a429d
+      - uses: angular/dev-infra/github-actions/pull-request-labeling@d6b8e7789d2b1a89dd398dab5388dc0ecdb32773
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
           labels: '{"requires: TGP": ["packages/core/primitives/**/{*,.*}"]}'
@@ -21,6 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: angular/dev-infra/github-actions/post-approval-changes@16c5f6e199e3e1b67ae5a62385d36366bb9a429d
+      - uses: angular/dev-infra/github-actions/post-approval-changes@d6b8e7789d2b1a89dd398dab5388dc0ecdb32773
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
