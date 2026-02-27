@@ -247,6 +247,15 @@ export interface OutOfBandDiagnosticRecorder {
     id: TypeCheckId,
     node: TmplAstBoundAttribute | TmplAstTextAttribute,
   ): void;
+
+  /**
+   * Reports that multiple components in the compilation scope match a given element.
+   */
+  multipleMatchingComponents(
+    id: TypeCheckId,
+    element: TmplAstElement,
+    componentNames: string[],
+  ): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -893,6 +902,30 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.FORM_FIELD_UNSUPPORTED_BINDING),
         message,
+      ),
+    );
+  }
+
+  multipleMatchingComponents(
+    id: TypeCheckId,
+    element: TmplAstElement,
+    componentNames: string[],
+  ): void {
+    const start = element.startSourceSpan.start.moveBy(1);
+    const end = element.startSourceSpan.end.moveBy(
+      start.offset + element.name.length - element.startSourceSpan.end.offset,
+    );
+    const span = new ParseSourceSpan(start, end);
+    const names = componentNames.map((n: string) => `'${n}'`).join(', ');
+
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        span,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.MULTIPLE_MATCHING_COMPONENTS),
+        `Multiple components match node with tagname ${element.name}: ${names}.`,
       ),
     );
   }
