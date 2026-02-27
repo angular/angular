@@ -33,7 +33,7 @@ export type RawValue<T> =
  */
 export type DeepPartial<T> =
   | (T extends (infer U)[]
-      ? (DeepPartial<U> | undefined)[]
+      ? DeepPartial<U>[]
       : T extends object
         ? {[K in keyof T]?: DeepPartial<T[K]>}
         : T)
@@ -123,17 +123,14 @@ function extractChildren(
   filter?: ExtractFilter,
 ): unknown {
   if (isArray(value)) {
-    const record = field as unknown as Record<number, unknown>;
-    const arrayValue = value as readonly unknown[];
+    const record = field as unknown as Record<number, FieldTree<unknown>>;
+    const arrayValue = value as readonly FieldTree<unknown>[];
     const result: unknown[] = new Array(arrayValue.length);
     let hasMatch = false;
 
     for (let i = 0; i < arrayValue.length; i++) {
       const child = record[i];
-      if (!isFieldTreeNode(child)) {
-        result[i] = undefined;
-        continue;
-      }
+
       const childResult = visitFieldTree(child, filter);
       if (childResult !== undefined) {
         hasMatch = true;
@@ -157,7 +154,7 @@ function extractChildren(
         const childResult = visitFieldTree(child, filter);
         return childResult !== undefined ? ([key, childResult] as [string, unknown]) : undefined;
       })
-      .filter(isKeyedResult);
+      .filter((v) => v !== undefined);
 
     return entries.length ? Object.fromEntries(entries) : undefined;
   }
@@ -172,10 +169,6 @@ function isFieldTreeNode(value: unknown): value is FieldTree<unknown> {
 function isKeyedChild(
   value: [string, FieldTree<unknown>] | undefined,
 ): value is [string, FieldTree<unknown>] {
-  return value !== undefined;
-}
-
-function isKeyedResult(value: [string, unknown] | undefined): value is [string, unknown] {
   return value !== undefined;
 }
 
