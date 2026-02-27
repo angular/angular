@@ -85,7 +85,15 @@ export class $locationShim {
     this.$$state = this.browserState();
 
     this.removeOnUrlChangeFn = this.location.onUrlChange((newUrl, newState) => {
-      this.urlChanges.next({newUrl, newState});
+      let url = newUrl;
+      // When `Location` fires the `onUrlChange` event, it passes the external URL.
+      // If the application is configured with a base href, the external URL will
+      // include the base href. `Location.normalize` strips the base href and
+      // returns the internal URL that `$locationShim` expects.
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = this.location.normalize(url);
+      }
+      this.urlChanges.next({newUrl: url, newState});
     });
 
     if (isPromise($injector)) {
