@@ -115,6 +115,10 @@ export const longestAnimations = new WeakMap<HTMLElement, LongestAnimation>();
 // from an `@if` or `@for`.
 export const leavingNodes = new WeakMap<TNode, HTMLElement[]>();
 
+// Tracks nodes that have scheduled leave animations but were re-inserted into the DOM
+// before the animation completed, thus rescuing them from being physically removed.
+export const reusedNodes = new WeakSet<HTMLElement>();
+
 /**
  * This actually removes the leaving HTML Element in the TNode
  */
@@ -153,11 +157,14 @@ export function cancelLeavingNodes(tNode: TNode, newElement: HTMLElement): void 
     //   because Angular inserts new elements at the same position (before
     //   the container anchor) where the leaving element was, making them
     //   always adjacent. Covers @if toggling and same-VCR toggling.
-    // - In a different DOM parent (overlay/portal case where each instance
-    //   renders in its own container, e.g. CDK Overlay).
-    // Leaving elements in the same parent that are NOT the previousSibling
-    // are left alone (e.g. @for items animating out at different positions).
-    if (
+    // - The leaving element IS the new element. This happens when a node is moved
+    //   (e.g., drag-and-drop reordering). We must cancel its pending leave animation
+    //   and ensure it's not physically removed from the DOM by marking it as reused.
+    if (leavingEl === newElement) {
+      nodes.splice(i, 1);
+      reusedNodes.add(leavingEl);
+      leavingEl.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+    } else if (
       (prevSibling && leavingEl === prevSibling) ||
       (leavingParent && newParent && leavingParent !== newParent)
     ) {

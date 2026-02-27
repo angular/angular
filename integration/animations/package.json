@@ -1,0 +1,42 @@
+{
+  "name": "core-animations-e2e",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --configuration production",
+    "pretest": "ng version",
+    "test": "concurrently \"ng serve --port 4208\" \"jasmine --config=e2e/jasmine.json\" --kill-others --success first",
+    "lint": "ng lint"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/cdk": "21.2.0",
+    "@angular/common": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "@angular/forms": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-browser": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-browser-dynamic": "link:./in-existing-linked-by-bazel",
+    "@angular/router": "link:./in-existing-linked-by-bazel",
+    "@angular/ssr": "21.2.0-rc.2",
+    "rxjs": "^7.0.0",
+    "tslib": "^2.3.0",
+    "zone.js": "0.16.1"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "21.2.0-rc.2",
+    "@angular/build": "21.2.0-rc.2",
+    "@angular/cli": "21.2.0-rc.2",
+    "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
+    "@types/jasmine": "^6.0.0",
+    "@types/node": "^20.14.8",
+    "concurrently": "9.2.1",
+    "jasmine": "5.0.0",
+    "jasmine-core": "6.1.0",
+    "puppeteer": "24.37.5",
+    "ts-node": "^10.9.1",
+    "typescript": "5.9.3"
+  },
+  "packageManager": "pnpm@10.30.2"
+}
