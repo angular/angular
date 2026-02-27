@@ -170,6 +170,46 @@ router.navigateByUrl('/checkout', {
 });
 ```
 
+### Customizing the browser URL
+
+When you navigate programmatically, you can display a different URL in the browser's address bar than the one used for route matching by passing a `browserUrl` option to `navigateByUrl`.
+
+This is useful when you want to redirect a user to a different route—such as an error page—without changing the URL that the user originally tried to visit.
+
+```ts
+router.navigateByUrl('/not-found', {browserUrl: '/products/missing-item'});
+```
+
+Angular navigates to and renders the `/not-found` route, but the browser address bar shows `/products/missing-item`.
+
+NOTE: `browserUrl` only affects what appears in the browser's address bar.
+
+## Customizing the browser URL with RouterLink
+
+The `RouterLink` directive also supports a `browserUrl` input, which lets you control the URL displayed in the browser's address bar when a link is clicked, independently of the route Angular navigates to.
+
+```angular-html
+<!-- Navigates to /dashboard, but the address bar shows /home -->
+<a [routerLink]="['/dashboard']" [browserUrl]="'/home'">Go to Dashboard</a>
+```
+
+You can also bind a `UrlTree` for more dynamic use cases:
+
+```angular-ts
+@Component({
+  template: `
+    <a [routerLink]="['/products', product.id]" [browserUrl]="displayUrl">
+      {{ product.name }}
+    </a>
+  `,
+  imports: [RouterLink],
+})
+export class ProductList {
+  product = {id: 42, name: 'Widget'};
+  displayUrl = '/products/widget'; // shown in the browser address bar
+}
+```
+
 ## Next steps
 
 Learn how to [read route state](/guide/routing/read-route-state) to create responsive and context-aware components.
