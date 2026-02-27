@@ -619,6 +619,17 @@ export class Scope {
       }
     }
 
+    if (node instanceof TmplAstElement) {
+      const matchedComponents = directives.filter((dir) => dir.isComponent);
+      if (matchedComponents.length > 1) {
+        this.tcb.oobRecorder.multipleMatchingComponents(
+          this.tcb.id,
+          node,
+          matchedComponents.map((dir) => dir.name),
+        );
+      }
+    }
+
     const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
     for (const dir of directives) {
       this.appendDirectiveInputs(dir, node, dirMap, directives);
