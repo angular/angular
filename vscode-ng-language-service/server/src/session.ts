@@ -24,6 +24,7 @@ import {
   IsInAngularProject,
 } from '../../common/requests';
 
+import {clearWorkspaceConfigurationCache} from './config';
 import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {ServerHost} from './server_host';
 import {
@@ -42,6 +43,7 @@ import {onFoldingRanges} from './handlers/folding';
 import {onHover} from './handlers/hover';
 import {onInitialize} from './handlers/initialization';
 import {onLinkedEditingRange} from './handlers/linked_editing_range';
+import {onDocumentSymbol} from './handlers/document_symbols';
 import {onRenameRequest, onPrepareRename} from './handlers/rename';
 import {onSignatureHelp} from './handlers/signature';
 import {onGetTcb} from './handlers/tcb';
@@ -230,6 +232,9 @@ export class Session {
     conn.onDidCloseTextDocument((p) => this.onDidCloseTextDocument(p));
     conn.onDidChangeTextDocument((p) => this.onDidChangeTextDocument(p));
     conn.onDidSaveTextDocument((p) => this.onDidSaveTextDocument(p));
+    conn.onDidChangeConfiguration(() => {
+      clearWorkspaceConfigurationCache(this.connection);
+    });
     conn.onDefinition((p) => onDefinition(this, p));
     conn.onTypeDefinition((p) => onTypeDefinition(this, p));
     conn.onReferences((p) => onReferences(this, p));
@@ -238,6 +243,7 @@ export class Session {
     conn.onHover((p) => onHover(this, p));
     conn.onFoldingRanges((p) => onFoldingRanges(this, p));
     conn.languages.onLinkedEditingRange((p) => onLinkedEditingRange(this, p));
+    conn.onDocumentSymbol(async (p) => await onDocumentSymbol(this, p));
     conn.onCompletion((p) => onCompletion(this, p));
     conn.onCompletionResolve((p) => onCompletionResolve(this, p));
     conn.onRequest(GetComponentsWithTemplateFile, (p) => getComponentsWithTemplateFile(this, p));

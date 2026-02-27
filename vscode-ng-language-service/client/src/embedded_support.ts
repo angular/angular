@@ -6,15 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import * as ts from 'typescript';
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 
 const ANGULAR_PROPERTY_ASSIGNMENTS = new Set([
   'template',
   'templateUrl',
+  'styles',
   'styleUrls',
   'styleUrl',
   'host',
 ]);
+
+export type AngularDecoratorField =
+  | 'template'
+  | 'templateUrl'
+  | 'styles'
+  | 'styleUrls'
+  | 'styleUrl'
+  | 'host';
 
 /**
  * Determines if the position is inside a decorator
@@ -27,11 +36,91 @@ export function isNotTypescriptOrSupportedDecoratorField(
   if (document.languageId !== 'typescript') {
     return true;
   }
-  return isPropertyAssignmentToStringOrStringInArray(
+  return getSupportedDecoratorFieldAtPosition(document, position) !== null;
+}
+
+export function getSupportedDecoratorFieldAtPosition(
+  document: vscode.TextDocument,
+  position: vscode.Position,
+): AngularDecoratorField | null {
+  if (document.languageId !== 'typescript') {
+    return null;
+  }
+  return getPropertyAssignmentNameAtStringOffset(
     document.getText(),
     document.offsetAt(position),
     ANGULAR_PROPERTY_ASSIGNMENTS,
   );
+}
+
+/**
+ * Builds virtual HTML content for inline `template` strings by preserving text offsets.
+ */
+export function getInlineTemplateVirtualContent(documentText: string): string {
+  const sf = ts.createSourceFile('temp.ts', documentText, ts.ScriptTarget.ESNext, true);
+  return getVirtualContent(sf, isInlineTemplateNode);
+}
+
+/**
+ * Builds virtual style content for inline `styles` strings by preserving text offsets.
+ */
+export function getInlineStylesVirtualContent(documentText: string): string {
+  const sf = ts.createSourceFile('temp.ts', documentText, ts.ScriptTarget.ESNext, true);
+  return getVirtualContent(sf, isInlineStyleNode);
+}
+
+/**
+ * Builds virtual style contents per inline `styles` entry by preserving text offsets.
+ * Each returned entry contains exactly one inline style block while all other text is whitespace.
+ */
+export function getInlineStylesVirtualContents(documentText: string): string[] {
+  const sf = ts.createSourceFile('temp.ts', documentText, ts.ScriptTarget.ESNext, true);
+  const styleNodes = findAllMatchingNodes(sf, isInlineStyleNode).sort(
+    (a, b) => a.getStart(sf) - b.getStart(sf),
+  );
+  return styleNodes.map((node) => getVirtualContentFromNodes(sf, [node]));
+}
+
+/**
+ * Builds virtual style content for the inline style block containing the given offset.
+ * Returns null when the offset is not inside any inline `styles` string.
+ */
+export function getInlineStylesVirtualContentAtOffset(
+  documentText: string,
+  offset: number,
+): string | null {
+  const result = getInlineStylesVirtualContentWithKeyAtOffset(documentText, offset);
+  return result?.content ?? null;
+}
+
+export function getInlineStylesVirtualContentWithKeyAtOffset(
+  documentText: string,
+  offset: number,
+): {key: string; content: string} | null {
+  const sf = ts.createSourceFile('temp.ts', documentText, ts.ScriptTarget.ESNext, true);
+  const styleNodes = findAllMatchingNodes(sf, isInlineStyleNode).sort(
+    (a, b) => a.getStart(sf) - b.getStart(sf),
+  );
+  const containingNode = styleNodes.find(
+    (node) => node.getStart(sf) <= offset && offset < node.getEnd(),
+  );
+  if (!containingNode) {
+    return null;
+  }
+  return {
+    key: `${containingNode.getStart(sf)}:${containingNode.getEnd()}`,
+    content: getVirtualContentFromNodes(sf, [containingNode]),
+  };
+}
+
+/**
+ * Returns the inline style language guess for virtual style documents.
+ *
+ * We intentionally default to SCSS to mirror the current grammar injection
+ * (`inline-styles.json` -> `source.css.scss`).
+ */
+export function getInlineStyleLanguage(_fileName: string, _workspaceRoot: string | null): 'scss' {
+  return 'scss';
 }
 
 /**
@@ -50,13 +139,11 @@ export function isInsideStringLiteral(
   scanner.setText(document.getText());
 
   let token: ts.SyntaxKind = scanner.scan();
-  while (token !== ts.SyntaxKind.EndOfFileToken && scanner.getStartPos() < offset) {
+  while (token !== ts.SyntaxKind.EndOfFileToken && scanner.getTokenStart() < offset) {
     const isStringToken =
       token === ts.SyntaxKind.StringLiteral ||
       token === ts.SyntaxKind.NoSubstitutionTemplateLiteral;
-    const isCursorInToken =
-      scanner.getStartPos() <= offset &&
-      scanner.getStartPos() + scanner.getTokenText().length >= offset;
+    const isCursorInToken = scanner.getTokenStart() <= offset && scanner.getTokenEnd() > offset;
     if (isCursorInToken && isStringToken) {
       return true;
     }
@@ -66,25 +153,18 @@ export function isInsideStringLiteral(
 }
 
 /**
- * Basic scanner to determine if we're inside a string of a property with one of the given names.
+ * Scanner-based fast-path to detect whether an offset is inside a supported
+ * decorator property string/template literal.
  *
- * This scanner is not currently robust or perfect but provides us with an accurate answer _most_ of
- * the time.
- *
- * False positives are OK here. Though this will give some false positives for determining if a
- * position is within an Angular context, i.e. an object like `{template: ''}` that is not inside an
- * `@Component` or `{styleUrls: [someFunction('stringL¦iteral')]}`, the @angular/language-service
- * will always give us the correct answer. This helper gives us a quick win for optimizing the
- * number of requests we send to the server.
- *
- * TODO(atscott): tagged templates don't work: #1872 /
- * https://github.com/Microsoft/TypeScript/issues/20055
+ * This is intentionally heuristic and may produce false positives for objects
+ * that are not Angular component metadata. The language server remains the
+ * source of truth; this helper only reduces unnecessary requests.
  */
-function isPropertyAssignmentToStringOrStringInArray(
+function getPropertyAssignmentNameAtStringOffset(
   documentText: string,
   offset: number,
   propertyAssignmentNames: Set<string>,
-): boolean {
+): AngularDecoratorField | null {
   const scanner = ts.createScanner(ts.ScriptTarget.ESNext, true /* skipTrivia */);
   scanner.setText(documentText);
 
@@ -93,20 +173,20 @@ function isPropertyAssignmentToStringOrStringInArray(
   let lastTokenText: string | undefined;
   let unclosedBraces = 0;
   let unclosedBrackets = 0;
-  let propertyAssignmentContext = false;
-  while (token !== ts.SyntaxKind.EndOfFileToken && scanner.getStartPos() < offset) {
+  let propertyAssignmentContext: AngularDecoratorField | null = null;
+  while (token !== ts.SyntaxKind.EndOfFileToken && scanner.getTokenStart() < offset) {
     if (
       lastToken === ts.SyntaxKind.Identifier &&
       lastTokenText !== undefined &&
       token === ts.SyntaxKind.ColonToken &&
       propertyAssignmentNames.has(lastTokenText)
     ) {
-      propertyAssignmentContext = true;
+      propertyAssignmentContext = lastTokenText as AngularDecoratorField;
       token = scanner.scan();
       continue;
     }
     if (unclosedBraces === 0 && unclosedBrackets === 0 && isPropertyAssignmentTerminator(token)) {
-      propertyAssignmentContext = false;
+      propertyAssignmentContext = null;
     }
 
     if (token === ts.SyntaxKind.OpenBracketToken) {
@@ -122,11 +202,9 @@ function isPropertyAssignmentToStringOrStringInArray(
     const isStringToken =
       token === ts.SyntaxKind.StringLiteral ||
       token === ts.SyntaxKind.NoSubstitutionTemplateLiteral;
-    const isCursorInToken =
-      scanner.getStartPos() <= offset &&
-      scanner.getStartPos() + scanner.getTokenText().length >= offset;
+    const isCursorInToken = scanner.getTokenStart() <= offset && scanner.getTokenEnd() > offset;
     if (propertyAssignmentContext && isCursorInToken && isStringToken) {
-      return true;
+      return propertyAssignmentContext;
     }
 
     lastTokenText = scanner.getTokenText();
@@ -134,7 +212,112 @@ function isPropertyAssignmentToStringOrStringInArray(
     token = scanner.scan();
   }
 
+  return null;
+}
+
+function getVirtualContent(sf: ts.SourceFile, predicate: (node: ts.Node) => boolean): string {
+  const matches = findAllMatchingNodes(sf, predicate);
+  return getVirtualContentFromNodes(sf, matches);
+}
+
+function getVirtualContentFromNodes(sf: ts.SourceFile, matches: ts.Node[]): string {
+  const documentText = sf.text;
+
+  let content = documentText
+    .split('\n')
+    .map((line) => ' '.repeat(line.length))
+    .join('\n');
+
+  for (const region of matches) {
+    content =
+      content.slice(0, region.getStart(sf) + 1) +
+      documentText.slice(region.getStart(sf) + 1, region.getEnd() - 1) +
+      content.slice(region.getEnd() - 1);
+  }
+
+  return content;
+}
+
+function isInlineTemplateNode(node: ts.Node): boolean {
+  return ts.isStringLiteralLike(node) ? isAssignmentToPropertyWithName(node, 'template') : false;
+}
+
+function isInlineStyleNode(node: ts.Node): boolean {
+  if (!ts.isStringLiteralLike(node)) {
+    return false;
+  }
+
+  if (isAssignmentToPropertyWithName(node, 'styles')) {
+    return true;
+  }
+
+  if (
+    node.parent &&
+    ts.isArrayLiteralExpression(node.parent) &&
+    isAssignmentToPropertyWithName(node.parent, 'styles')
+  ) {
+    return true;
+  }
+
   return false;
+}
+
+function isAssignmentToPropertyWithName(
+  node: ts.Node,
+  propertyName: 'styles' | 'template',
+): boolean {
+  const assignment = getPropertyAssignmentFromValue(node, propertyName);
+  return assignment !== null && getClassDeclFromDecoratorProp(assignment) !== null;
+}
+
+function getPropertyAssignmentFromValue(value: ts.Node, key: string): ts.PropertyAssignment | null {
+  const propAssignment = value.parent;
+  if (
+    !propAssignment ||
+    !ts.isPropertyAssignment(propAssignment) ||
+    propAssignment.name.getText() !== key
+  ) {
+    return null;
+  }
+  return propAssignment;
+}
+
+function getClassDeclFromDecoratorProp(
+  propAsgnNode: ts.PropertyAssignment,
+): ts.ClassDeclaration | undefined {
+  if (!propAsgnNode.parent || !ts.isObjectLiteralExpression(propAsgnNode.parent)) {
+    return;
+  }
+  const objLitExprNode = propAsgnNode.parent;
+  if (!objLitExprNode.parent || !ts.isCallExpression(objLitExprNode.parent)) {
+    return;
+  }
+  const callExprNode = objLitExprNode.parent;
+  if (!callExprNode.parent || !ts.isDecorator(callExprNode.parent)) {
+    return;
+  }
+  const decorator = callExprNode.parent;
+  if (!decorator.parent || !ts.isClassDeclaration(decorator.parent)) {
+    return;
+  }
+  return decorator.parent;
+}
+
+function findAllMatchingNodes(sf: ts.SourceFile, filter: (node: ts.Node) => boolean): ts.Node[] {
+  const results: ts.Node[] = [];
+  const stack: ts.Node[] = [sf];
+
+  while (stack.length > 0) {
+    const node = stack.pop()!;
+
+    if (filter(node)) {
+      results.push(node);
+    } else {
+      stack.push(...node.getChildren());
+    }
+  }
+
+  return results;
 }
 
 function isPropertyAssignmentTerminator(token: ts.SyntaxKind) {

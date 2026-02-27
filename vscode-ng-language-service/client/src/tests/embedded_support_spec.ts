@@ -8,7 +8,12 @@
 import * as vscode from 'vscode';
 import {DocumentUri, TextDocument} from 'vscode-languageserver-textdocument';
 
-import {isNotTypescriptOrSupportedDecoratorField} from '../embedded_support';
+import {
+  getInlineStylesVirtualContent,
+  getInlineTemplateVirtualContent,
+  getSupportedDecoratorFieldAtPosition,
+  isNotTypescriptOrSupportedDecoratorField,
+} from '../embedded_support';
 
 describe('embedded language support', () => {
   describe('isInsideAngularContext', () => {
@@ -86,6 +91,80 @@ describe('embedded language support', () => {
         isNotTypescriptOrSupportedDecoratorField,
         false,
       );
+    });
+
+    it('inside template when file contains preceding string interpolation', () => {
+      test(
+        `const something = \`${'xyz'}\`;\nconst foo = {template: \`<div>¦</div>\`}`,
+        isNotTypescriptOrSupportedDecoratorField,
+        true,
+      );
+    });
+
+    it('inside tagged template in styles array', () => {
+      test(
+        `const foo = {styles: [scss\`.a { color: re¦d; }\`]}`,
+        isNotTypescriptOrSupportedDecoratorField,
+        true,
+      );
+    });
+
+    it('inside tagged template for template property', () => {
+      test(
+        `const foo = {template: html\`<div>¦</div>\`}`,
+        isNotTypescriptOrSupportedDecoratorField,
+        true,
+      );
+    });
+
+    it('inside direct styles assignment', () => {
+      test(
+        `@Component({styles: '.test¦Class { color: red; }'}) class Cmp {}`,
+        isNotTypescriptOrSupportedDecoratorField,
+        true,
+      );
+    });
+
+    it('inside styles array assignment', () => {
+      test(
+        `@Component({styles: ['.a { color: red; }', '.b { back¦ground: blue; }']}) class Cmp {}`,
+        isNotTypescriptOrSupportedDecoratorField,
+        true,
+      );
+    });
+  });
+
+  describe('virtual content helpers', () => {
+    it('extracts only template content', () => {
+      const content = getInlineTemplateVirtualContent(
+        `@Component({template: '<div>abc</div>', styles: ['.a { color: red; }']}) class Cmp {}`,
+      );
+      expect(content.includes('<div>abc</div>')).toBe(true);
+      expect(content.includes('.a { color: red; }')).toBe(false);
+    });
+
+    it('extracts only styles content', () => {
+      const content = getInlineStylesVirtualContent(
+        `@Component({template: '<div>abc</div>', styles: ['.a { color: red; }', '.b { color: blue; }']}) class Cmp {}`,
+      );
+      expect(content.includes('.a { color: red; }')).toBe(true);
+      expect(content.includes('.b { color: blue; }')).toBe(true);
+      expect(content.includes('<div>abc</div>')).toBe(false);
+    });
+
+    it('returns styles field at style cursor', () => {
+      const {cursor, text} = extractCursorInfo(
+        `@Component({styles: ['.a { color: ¦red; }']}) class Cmp {}`,
+      );
+      const vdoc = TextDocument.create(
+        'test.ts' as DocumentUri,
+        'typescript',
+        0,
+        text,
+      ) as {} as vscode.TextDocument;
+      (vdoc as any).fileName = 'test.ts';
+      const field = getSupportedDecoratorFieldAtPosition(vdoc, vdoc.positionAt(cursor));
+      expect(field).toBe('styles');
     });
   });
 });

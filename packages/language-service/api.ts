@@ -90,6 +90,59 @@ export interface ApplyRefactoringResult extends Omit<ts.RefactorEditInfo, 'notAp
 }
 
 /**
+ * Angular-specific LSP SymbolKind values for template symbols.
+ * These are used for symbols that don't have a direct TypeScript ScriptElementKind mapping.
+ * Values match LSP SymbolKind enum: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#symbolKind
+ */
+export enum AngularSymbolKind {
+  Namespace = 3,
+  Array = 18,
+  Object = 19,
+  Struct = 23,
+  Event = 24,
+}
+
+/**
+ * A document symbol representing an Angular template element.
+ * This uses TypeScript's NavigationTree structure so it can be merged with TS symbols.
+ */
+export interface TemplateDocumentSymbol {
+  /** Display name for the symbol */
+  text: string;
+  /** Kind of symbol (using TypeScript's ScriptElementKind for compatibility) */
+  kind: ts.ScriptElementKind;
+  /**
+   * Optional LSP SymbolKind override for Angular-specific symbol types.
+   * When set, this takes precedence over the default ScriptElementKind mapping.
+   */
+  lspKind?: AngularSymbolKind;
+  /** Span covering the entire symbol */
+  spans: ts.TextSpan[];
+  /** Span for just the name (used for selection) */
+  nameSpan?: ts.TextSpan;
+  /** Child symbols */
+  childItems?: TemplateDocumentSymbol[];
+  /**
+   * The name of the class this template belongs to.
+   * Only set for root-level symbols in TypeScript files with inline templates.
+   * Used to merge template symbols into the correct component class when
+   * multiple components exist in the same file.
+   */
+  className?: string;
+}
+
+/**
+ * Options for customizing document symbols behavior.
+ */
+export interface DocumentSymbolsOptions {
+  /**
+   * Show all implicit @for loop variables ($index, $count, $first, $last, $even, $odd).
+   * When false (default), only explicitly aliased variables like `let i = $index` are shown.
+   */
+  showImplicitForVariables?: boolean;
+}
+
+/**
  * Result for linked editing ranges containing the ranges and optional word pattern.
  */
 export interface LinkedEditingRanges {
@@ -135,6 +188,19 @@ export interface NgLanguageService extends ts.LanguageService {
     position: number,
   ): GetTemplateLocationForComponentResponse;
   getTypescriptLanguageService(): ts.LanguageService;
+
+  /**
+   * Gets document symbols for Angular templates, including control flow blocks,
+   * elements, components, template references, and @let declarations.
+   * Returns symbols in NavigationTree format for compatibility with TypeScript.
+   *
+   * @param fileName The file path to get template symbols for
+   * @param options Optional configuration for document symbols behavior
+   */
+  getTemplateDocumentSymbols(
+    fileName: string,
+    options?: DocumentSymbolsOptions,
+  ): TemplateDocumentSymbol[];
 
   applyRefactoring(
     fileName: string,

@@ -2,7 +2,22 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
   selector: 'my-app',
-  template: `<h1>Hello {{ name }}</h1>`,
+  template: `<h1>Hello {{ name }}</h1>
+    <div style="co"></div>`,
+  styles: [
+    `
+      $color: #ff0000;
+      .red {
+        color: $color;
+        dispay: block;
+      }
+    `,
+    `
+      .blue {
+        color: $color;
+      }
+    `,
+  ],
   standalone: false,
 })
 export class AppComponent {

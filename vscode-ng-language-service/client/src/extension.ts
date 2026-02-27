@@ -17,18 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
   // Push the disposable to the context's subscriptions so that the
   // client can be deactivated on extension deactivation
   registerCommands(client, context);
-
-  // Restart the server on configuration change.
-  const disposable = vscode.workspace.onDidChangeConfiguration(
-    async (e: vscode.ConfigurationChangeEvent) => {
-      if (!e.affectsConfiguration('angular')) {
-        return;
-      }
-      await client.stop();
-      await client.start();
-    },
-  );
-  context.subscriptions.push(client, disposable);
+  context.subscriptions.push(client);
 
   client.start();
 }
