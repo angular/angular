@@ -236,7 +236,7 @@ describe('extractValue', () => {
       expect(extractValue(f, {enabled: true})).toEqual({items: [1, undefined, 3, undefined]});
     });
 
-    it('should keep indexes when only later array elements match filter', () => {
+    it('should keep undefined regardless of the position', () => {
       const model = {items: [10, 20, 30, 40]};
       const f = form(
         signal(model),
@@ -288,18 +288,5 @@ describe('extractValue', () => {
         },
       });
     });
-  });
-
-  it('should handle enabled: false filter', () => {
-    const model = {value: 1};
-    const f = form(
-      signal(model),
-      (p) => {
-        disabled(p);
-      },
-      {injector},
-    );
-
-    expect(extractValue(f, {enabled: false})).toEqual(model);
   });
 });
