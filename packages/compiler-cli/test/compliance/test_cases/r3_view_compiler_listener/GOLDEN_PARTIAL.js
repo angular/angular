@@ -953,7 +953,7 @@ export declare class App {
 import { Component, Directive, model, signal } from '@angular/core';
 import * as i0 from "@angular/core";
 export class NgModelDirective {
-    ngModel = model.required(...(ngDevMode ? [{ debugName: "ngModel" }] : []));
+    ngModel = model.required(...(ngDevMode ? [{ debugName: "ngModel" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, isStandalone: true, selector: "[ngModel]", inputs: { ngModel: { classPropertyName: "ngModel", publicName: "ngModel", isSignal: true, isRequired: true, transformFunction: null } }, outputs: { ngModel: "ngModelChange" }, ngImport: i0 });
 }
@@ -1005,7 +1005,7 @@ export declare class TestCmp {
 import { Component, Directive, model } from '@angular/core';
 import * as i0 from "@angular/core";
 export class NgModelDirective {
-    ngModel = model('', ...(ngDevMode ? [{ debugName: "ngModel" }] : []));
+    ngModel = model('', ...(ngDevMode ? [{ debugName: "ngModel" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: NgModelDirective, isStandalone: true, selector: "[ngModel]", inputs: { ngModel: { classPropertyName: "ngModel", publicName: "ngModel", isSignal: true, isRequired: false, transformFunction: null } }, outputs: { ngModel: "ngModelChange" }, ngImport: i0 });
 }
