@@ -320,13 +320,28 @@ export function consumeQuotedText(
 
 function malformedStyleError(text: string, expecting: string, index: number): never {
   ngDevMode && assertEqual(typeof text === 'string', true, 'String expected here');
+  const charLength = getCodePointLengthAt(text, index);
   throw throwError(
     `Malformed style at location ${index} in string '` +
       text.substring(0, index) +
       '[>>' +
-      text.substring(index, index + 1) +
+      text.substring(index, index + charLength) +
       '<<]' +
-      text.slice(index + 1) +
+      text.slice(index + charLength) +
       `'. Expecting '${expecting}'.`,
   );
+}
+
+function getCodePointLengthAt(text: string, index: number): number {
+  if (index < 0 || index >= text.length) {
+    return 1;
+  }
+
+  const code = text.charCodeAt(index);
+  if (code < 0xd800 || code > 0xdbff || index + 1 >= text.length) {
+    return 1;
+  }
+
+  const next = text.charCodeAt(index + 1);
+  return next >= 0xdc00 && next <= 0xdfff ? 2 : 1;
 }

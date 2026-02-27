@@ -92,6 +92,20 @@ describe('lexer', () => {
       expectIdentifierToken(tokens[0], 0, 1, 'j');
     });
 
+    it('should tokenize a unicode identifier', () => {
+      const tokens: number[] = lex('变量');
+      expect(tokens.length).toEqual(1);
+      expectIdentifierToken(tokens[0], 0, 2, '变量');
+    });
+
+    it('should tokenize a dotted unicode identifier', () => {
+      const tokens: number[] = lex('我的.变量');
+      expect(tokens.length).toEqual(3);
+      expectIdentifierToken(tokens[0], 0, 2, '我的');
+      expectCharacterToken(tokens[1], 2, 3, '.');
+      expectIdentifierToken(tokens[2], 3, 5, '变量');
+    });
+
     it('should tokenize "this"', () => {
       const tokens: number[] = lex('this');
       expect(tokens.length).toEqual(1);
@@ -110,6 +124,86 @@ describe('lexer', () => {
       const tokens: number[] = lex('#a');
       expect(tokens.length).toEqual(1);
       expectPrivateIdentifierToken(tokens[0], 0, 2, '#a');
+    });
+
+    it('should tokenize a private unicode identifier', () => {
+      const tokens: number[] = lex('#变量');
+      expect(tokens.length).toEqual(1);
+      expectPrivateIdentifierToken(tokens[0], 0, 3, '#变量');
+    });
+
+    it('should tokenize an astral-plane unicode identifier', () => {
+      const tokens: number[] = lex('𐐷x');
+      expect(tokens.length).toEqual(1);
+      expectIdentifierToken(tokens[0], 0, 3, '𐐷x');
+    });
+
+    it('should tokenize an astral-plane private identifier', () => {
+      const tokens: number[] = lex('#𐐷');
+      expect(tokens.length).toEqual(1);
+      expectPrivateIdentifierToken(tokens[0], 0, 3, '#𐐷');
+    });
+
+    it('should allow unicode identifier-continue characters', () => {
+      const tokensWithCombiningMark: number[] = lex('a\u0301');
+      expect(tokensWithCombiningMark.length).toEqual(1);
+      expectIdentifierToken(tokensWithCombiningMark[0], 0, 2, 'a\u0301');
+
+      const tokensWithZwj: number[] = lex('a\u200Db');
+      expect(tokensWithZwj.length).toEqual(1);
+      expectIdentifierToken(tokensWithZwj[0], 0, 3, 'a\u200Db');
+
+      const tokensWithZwnj: number[] = lex('a\u200Cb');
+      expect(tokensWithZwnj.length).toEqual(1);
+      expectIdentifierToken(tokensWithZwnj[0], 0, 3, 'a\u200Cb');
+    });
+
+    it('should not allow invalid unicode identifier starts', () => {
+      const combiningMarkStart = lex('\u0301foo')[0];
+      expect(combiningMarkStart.isError()).toBe(true);
+      expect(combiningMarkStart.toString()).toContain('Unexpected character [\\u{301}]');
+
+      const zwjStart = lex('\u200Dfoo')[0];
+      expect(zwjStart.isError()).toBe(true);
+      expect(zwjStart.toString()).toContain('Unexpected character [\\u{200D}]');
+
+      const zwnjStart = lex('\u200Cfoo')[0];
+      expect(zwnjStart.isError()).toBe(true);
+      expect(zwnjStart.toString()).toContain('Unexpected character [\\u{200C}]');
+    });
+
+    it('should error on malformed unicode surrogates in identifiers', () => {
+      const highWithoutLow = lex('\uD800x')[0];
+      expect(highWithoutLow.isError()).toBe(true);
+      expect(highWithoutLow.toString()).toContain('Unexpected character');
+
+      const isolatedLow = lex('\uDC00x')[0];
+      expect(isolatedLow.isError()).toBe(true);
+      expect(isolatedLow.toString()).toContain('Unexpected character');
+
+      const highAtEof = lex('\uD800')[0];
+      expect(highAtEof.isError()).toBe(true);
+      expect(highAtEof.toString()).toContain('Unexpected character');
+    });
+
+    it('should reject unicode code points outside identifier ranges', () => {
+      const emojiStart = lex('😀x')[0];
+      expect(emojiStart.isError()).toBe(true);
+      expect(emojiStart.toString()).toContain('Unexpected character [\\u{1F600}]');
+
+      const emojiPart = lex('a😀');
+      expectIdentifierToken(emojiPart[0], 0, 1, 'a');
+      expect(emojiPart[1].isError()).toBe(true);
+      expect(emojiPart[1].toString()).toContain('Unexpected character [\\u{1F600}]');
+
+      const privateEmoji = lex('#😀')[0];
+      expect(privateEmoji.isError()).toBe(true);
+      expect(privateEmoji.toString()).toContain('Invalid character [#]');
+    });
+
+    it('should render escaped unicode format in unexpected-character diagnostics', () => {
+      const err = lex('\u200Cfoo')[0].toString();
+      expect(err).toMatch(/Unexpected character \[\\u\{[0-9A-F]+\}\]/);
     });
 
     it('should tokenize a property access with private identifier', () => {

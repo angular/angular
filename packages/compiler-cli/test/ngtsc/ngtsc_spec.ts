@@ -7374,6 +7374,59 @@ runInEachFileSystem((os: string) => {
       expect(trim(jsContents)).toContain(trim(inputsAndOutputs));
     });
 
+    it('should emit partial declarations for unicode input names', () => {
+      env.tsconfig({compilationMode: 'partial'});
+      env.write(
+        'test.ts',
+        `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            standalone: false,
+          })
+          export class TestDir {
+            @Input('我a的') 我a的!: string;
+          }
+        `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+      expect(jsContents).toContain('ɵɵngDeclareDirective');
+      expect(jsContents).toContain('inputs: { 我a的: "\\u6211a\\u7684" }');
+      expect(dtsContents).toContain(
+        'ɵɵDirectiveDeclaration<TestDir, "[dir]", never, { "\\u6211a\\u7684": { "alias": "\\u6211a\\u7684"; "required": false; }; }, {}, never, never, false, never>',
+      );
+    });
+
+    it('should emit full declarations for unicode input names', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            standalone: false,
+          })
+          export class TestDir {
+            @Input('我a的') 我a的!: string;
+          }
+        `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+      expect(jsContents).toContain('ɵɵdefineDirective');
+      expect(jsContents).toContain('\\u6211a\\u7684');
+      expect(dtsContents).toContain(
+        'ɵɵDirectiveDeclaration<TestDir, "[dir]", never, { "\\u6211a\\u7684": { "alias": "\\u6211a\\u7684"; "required": false; }; }, {}, never, never, false, never>',
+      );
+    });
+
     it('should generate the correct declaration for class members decorated with @Input', () => {
       env.write(
         'test.ts',
@@ -7671,6 +7724,53 @@ runInEachFileSystem((os: string) => {
     });
 
     describe('when processing external directives', () => {
+      it('should type-check unicode input aliases from external declarations', () => {
+        env.write(
+          'node_modules/external/index.d.ts',
+          `
+            import {ɵɵDirectiveDeclaration} from '@angular/core';
+
+            export declare class ExternalDir {
+              \u6211a\u7684: string;
+              static ɵdir: ɵɵDirectiveDeclaration<
+                ExternalDir,
+                '[test]',
+                never,
+                {"\u6211a\u7684": {"alias": "\u6211a\u7684"; "required": false;}},
+                {},
+                never,
+                never,
+                true,
+                never
+              >;
+            }
+          `,
+        );
+
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+            import {ExternalDir} from 'external';
+
+            @Component({
+              standalone: true,
+              imports: [ExternalDir],
+              template: '<div test [我a的]="1"></div>',
+            })
+            export class Cmp {}
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('dependencies: [ExternalDir]');
+        expect(jsContents).toContain('"\\u6211a\\u7684"');
+      });
+
       it('should not emit multiple references to the same directive', () => {
         env.write(
           'node_modules/external/index.d.ts',

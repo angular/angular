@@ -281,7 +281,7 @@ class _Scanner {
     }
 
     // Handle identifiers and numbers.
-    if (isIdentifierStart(peek)) {
+    if (isIdentifierStart(peek, index, input)) {
       return this.scanIdentifier();
     }
 
@@ -307,7 +307,7 @@ class _Scanner {
           this.advance();
           return newOperatorToken(start, this.index, '...');
         }
-        return this.error(`Unexpected character [${String.fromCharCode(peek)}]`, 0);
+        return this.error(`Unexpected character [${toCodePointString(peek, index, input)}]`, 0);
       case chars.$LPAREN:
       case chars.$RPAREN:
       case chars.$LBRACKET:
@@ -361,7 +361,7 @@ class _Scanner {
     }
 
     this.advance();
-    return this.error(`Unexpected character [${String.fromCharCode(peek)}]`, 0);
+    return this.error(`Unexpected character [${toCodePointString(peek, index, input)}]`, 0);
   }
 
   private scanCharacter(start: number, code: number): Token {
@@ -443,8 +443,13 @@ class _Scanner {
 
   private scanIdentifier(): Token {
     const start: number = this.index;
-    this.advance();
-    while (isIdentifierPart(this.peek)) this.advance();
+    while (isIdentifierPart(this.peek, this.index, this.input)) {
+      const step = identifierCodePointLength(this.peek, this.index, this.input);
+      this.advance();
+      if (step === 2) {
+        this.advance();
+      }
+    }
     const str: string = this.input.substring(start, this.index);
     return KEYWORDS.indexOf(str) > -1
       ? newKeywordToken(start, this.index, str)
@@ -455,10 +460,16 @@ class _Scanner {
   private scanPrivateIdentifier(): Token {
     const start: number = this.index;
     this.advance();
-    if (!isIdentifierStart(this.peek)) {
+    if (!isIdentifierStart(this.peek, this.index, this.input)) {
       return this.error('Invalid character [#]', -1);
     }
-    while (isIdentifierPart(this.peek)) this.advance();
+    while (isIdentifierPart(this.peek, this.index, this.input)) {
+      const step = identifierCodePointLength(this.peek, this.index, this.input);
+      this.advance();
+      if (step === 2) {
+        this.advance();
+      }
+    }
     const identifierName: string = this.input.substring(start, this.index);
     return newPrivateIdentifierToken(start, this.index, identifierName);
   }
@@ -744,17 +755,74 @@ class _Scanner {
   }
 }
 
-function isIdentifierStart(code: number): boolean {
+const UNICODE_ID_START = /^[$_\p{ID_Start}]$/u;
+const UNICODE_ID_PART = /^[$_\u200C\u200D\p{ID_Continue}]$/u;
+
+function isIdentifierStart(code: number, index?: number, input?: string): boolean {
+  const codePoint = getCodePointAt(code, index, input);
   return (
-    (chars.$a <= code && code <= chars.$z) ||
-    (chars.$A <= code && code <= chars.$Z) ||
-    code == chars.$_ ||
-    code == chars.$$
+    (chars.$a <= codePoint && codePoint <= chars.$z) ||
+    (chars.$A <= codePoint && codePoint <= chars.$Z) ||
+    codePoint === chars.$_ ||
+    codePoint === chars.$$ ||
+    isUnicodeIdentifierStart(codePoint)
   );
 }
 
-function isIdentifierPart(code: number): boolean {
-  return chars.isAsciiLetter(code) || chars.isDigit(code) || code == chars.$_ || code == chars.$$;
+function isIdentifierPart(code: number, index?: number, input?: string): boolean {
+  const codePoint = getCodePointAt(code, index, input);
+  return (
+    chars.isAsciiLetter(codePoint) ||
+    chars.isDigit(codePoint) ||
+    codePoint === chars.$_ ||
+    codePoint === chars.$$ ||
+    isUnicodeIdentifierPart(codePoint)
+  );
+}
+
+function getCodePointAt(code: number, index?: number, input?: string): number {
+  if (index === undefined || input === undefined) {
+    return code;
+  }
+
+  if (!isHighSurrogate(code) || index + 1 >= input.length) {
+    return code;
+  }
+
+  const next = input.charCodeAt(index + 1);
+  if (!isLowSurrogate(next)) {
+    return code;
+  }
+
+  return ((code - 0xd800) << 10) + (next - 0xdc00) + 0x10000;
+}
+
+function identifierCodePointLength(code: number, index: number, input: string): number {
+  return getCodePointAt(code, index, input) === code ? 1 : 2;
+}
+
+function toCodePointString(code: number, index: number, input: string): string {
+  const codePoint = getCodePointAt(code, index, input);
+  if (codePoint >= 0x20 && codePoint <= 0x7e) {
+    return String.fromCodePoint(codePoint);
+  }
+  return `\\u{${codePoint.toString(16).toUpperCase()}}`;
+}
+
+function isHighSurrogate(code: number): boolean {
+  return code >= 0xd800 && code <= 0xdbff;
+}
+
+function isLowSurrogate(code: number): boolean {
+  return code >= 0xdc00 && code <= 0xdfff;
+}
+
+function isUnicodeIdentifierStart(codePoint: number): boolean {
+  return codePoint > 0x7f && UNICODE_ID_START.test(String.fromCodePoint(codePoint));
+}
+
+function isUnicodeIdentifierPart(codePoint: number): boolean {
+  return codePoint > 0x7f && UNICODE_ID_PART.test(String.fromCodePoint(codePoint));
 }
 
 function isExponentStart(code: number): boolean {

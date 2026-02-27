@@ -115,6 +115,10 @@ describe('HtmlLexer', () => {
       expect(tokenizeAndHumanizeErrors('<!-a')).toEqual([['Unexpected character "a"', '0:3']]);
     });
 
+    it('should report non-BMP characters without replacement glyphs', () => {
+      expect(tokenizeAndHumanizeErrors('<!-😀')).toEqual([['Unexpected character "😀"', '0:3']]);
+    });
+
     it('should report missing end comment', () => {
       expect(tokenizeAndHumanizeErrors('<!--')).toEqual([['Unexpected character "EOF"', '0:4']]);
     });
