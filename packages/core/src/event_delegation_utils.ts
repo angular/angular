@@ -84,6 +84,15 @@ export function removeListenersFromBlocks(
   }
 }
 
+export function removeElementFromSharedMap(rEl: RElement, jsActionMap: Map<string, Set<Element>>) {
+  jsActionMap.forEach((elementSet: Set<Element>) => {
+    if (elementSet.has(rEl as unknown as Element)) {
+      elementSet.delete(rEl as unknown as Element);
+      removeListeners(rEl as unknown as Element);
+    }
+  });
+}
+
 export const removeListeners = (el: Element) => {
   el.removeAttribute(Attribute.JSACTION);
   el.removeAttribute(DEFER_BLOCK_SSR_ID_ATTRIBUTE);
@@ -123,7 +132,12 @@ export type WrappedEventCallback = EventCallback & {__wrapped: boolean};
  * an actual implementation when the event replay feature is enabled via
  * `withEventReplay()` call.
  */
-type StashEventListener = (el: RNode, eventName: string, listenerFn: EventCallback) => void;
+type StashEventListener = (
+  el: RNode,
+  eventName: string,
+  listenerFn: EventCallback,
+  lView: LView,
+) => void;
 
 const stashEventListeners = new Map<string, StashEventListener>();
 
@@ -190,7 +204,7 @@ export function enableStashEventListenerImpl(): void {
     ) => {
       const appId = lView[INJECTOR].get(APP_ID);
       const stashEventListener = stashEventListeners.get(appId);
-      stashEventListener?.(target as RElement, eventName, wrappedListener);
+      stashEventListener?.(target as RElement, eventName, wrappedListener, lView);
     };
 
     isStashEventListenerImplEnabled = true;
