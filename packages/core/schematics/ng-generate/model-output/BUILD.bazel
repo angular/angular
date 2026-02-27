@@ -13,7 +13,7 @@ copy_to_bin(
 )
 
 ts_project(
-    name = "ngclass-to-class-migration",
+    name = "model-output",
     srcs = glob(["**/*.ts"]),
     data = ["schema.json"],
     deps = [
