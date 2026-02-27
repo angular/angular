@@ -901,6 +901,7 @@
       "resolvedPromise",
       "resolvedPromise",
       "retrieveHydrationInfo",
+      "reusedNodes",
       "runAfterLeaveAnimations",
       "runEffectsInView",
       "runInInjectionContext",

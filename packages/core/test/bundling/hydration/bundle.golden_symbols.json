@@ -725,6 +725,7 @@
       "retrieveHydrationInfoImpl",
       "retrieveStateFromCache",
       "retrieveTransferredState",
+      "reusedNodes",
       "runAfterLeaveAnimations",
       "runEffectsInView",
       "runInInjectionContext",

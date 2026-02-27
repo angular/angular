@@ -82,7 +82,7 @@ import {assertTNodeType} from './node_assert';
 import {profiler} from './profiler';
 import {ProfilerEvent} from '../../primitives/devtools';
 import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
-import {cancelLeavingNodes, trackLeavingNodes} from '../animation/utils';
+import {cancelLeavingNodes, reusedNodes, trackLeavingNodes} from '../animation/utils';
 import {Injector} from '../di';
 import {maybeQueueEnterAnimation, runLeaveAnimationsWithCallback} from './node_animations';
 
@@ -155,6 +155,10 @@ function applyToElementOrContainer(
         tNode,
         injector,
         (nodeHasLeaveAnimations: boolean) => {
+          if (reusedNodes.has(rNode as HTMLElement)) {
+            reusedNodes.delete(rNode as HTMLElement);
+            return;
+          }
           // the nodeHasLeaveAnimations indicates to the renderer that the element needs to
           // be removed synchronously and sets the requireSynchronousElementRemoval flag in
           // the renderer.

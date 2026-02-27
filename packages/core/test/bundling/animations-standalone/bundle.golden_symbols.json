@@ -782,6 +782,7 @@
       "resolveTiming",
       "resolveTimingValue",
       "retrieveHydrationInfo",
+      "reusedNodes",
       "roundOffset",
       "runAfterLeaveAnimations",
       "runEffectsInView",
