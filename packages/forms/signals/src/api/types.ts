@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Signal, WritableSignal} from '@angular/core';
+import {Injector, Signal, WritableSignal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import type {FormField} from '../directive/form_field_directive';
 import type {MetadataKey, ValidationError} from './rules';
@@ -107,7 +107,7 @@ export declare namespace PathKind {
  */
 export interface DisabledReason {
   /** The field that is disabled. */
-  readonly fieldTree: FieldTree<unknown>;
+  readonly fieldTree: ReadonlyFieldTree<unknown>;
   /** A user-facing message describing the reason for the disablement. */
   readonly message?: string;
 }
@@ -188,17 +188,23 @@ export type Field<TValue, TKey extends string | number = string | number> = () =
 /**
  * An object that represents a tree of fields in a form. This includes both primitive value fields
  * (e.g. fields that contain a `string` or `number`), as well as "grouping fields" that contain
- * sub-fields. `FieldTree` objects are arranged in a tree whose structure mimics the structure of the
- * underlying data. For example a `FieldTree<{x: number}>` has a property `x` which contains a
+ * sub-fields. `FieldTree` objects are arranged in a tree whose structure mimics the structure of
+ * the underlying data. For example a `FieldTree<{x: number}>` has a property `x` which contains a
  * `FieldTree<number>`. To access the state associated with a field, call it as a function.
  *
  * @template TValue The type of the data which the field is wrapped around.
  * @template TKey The type of the property key which this field resides under in its parent.
+ * @template TMode Determines whether the field state is readonly or writable. Defaults to writable.
+ *   For readonly, use {@link ReadonlyFieldTree}.
  *
  * @category types
  * @experimental 21.0.0
  */
-export type FieldTree<TModel, TKey extends string | number = string | number> =
+export type FieldTree<
+  TModel,
+  TKey extends string | number = string | number,
+  TMode extends 'writable' | 'readonly' = 'writable',
+> =
   // Note: We use `[TModel]` in several places below to avoid the condition from being distributed
   // over a recursive union type, which seems to result in infinite type recursion. By adding the
   // tuple we're not testing a naked type parameter, and thus the condition is not distributed.
@@ -210,31 +216,45 @@ export type FieldTree<TModel, TKey extends string | number = string | number> =
   // type Test = FieldTree<RecursiveType> // Infinite type recursion if condition distributes.
   // ```
   (() => [TModel] extends [AbstractControl]
-    ? CompatFieldState<TModel, TKey>
-    : FieldState<TModel, TKey>) &
+    ? CompatFieldState<TModel, TKey, TMode>
+    : FieldStateByMode<TModel, TKey, TMode>) &
     // Children:
     ([TModel] extends [AbstractControl]
       ? object
       : [TModel] extends [ReadonlyArray<infer U>]
-        ? ReadonlyArrayLike<MaybeFieldTree<U, number>>
+        ? ReadonlyArrayLike<MaybeFieldTree<U, number, TMode>>
         : TModel extends Record<string, any>
-          ? Subfields<TModel>
+          ? Subfields<TModel, TMode>
           : object);
+
+/**
+ * A readonly {@link FieldTree}.
+ *
+ * @category types
+ * @experimental 21.3.0
+ */
+export type ReadonlyFieldTree<TModel, TKey extends string | number = string | number> = FieldTree<
+  TModel,
+  TKey,
+  'readonly'
+>;
 
 /**
  * The sub-fields that a user can navigate to from a `FieldTree<TModel>`.
  *
  * @template TModel The type of the data which the parent field is wrapped around.
+ * @template TMode Determines whether the field state is readonly or writable.
  *
  * @experimental 21.0.0
  */
-export type Subfields<TModel> = {
+export type Subfields<TModel, TMode extends 'writable' | 'readonly' = 'writable'> = {
   readonly [K in keyof TModel as TModel[K] extends Function ? never : K]: MaybeFieldTree<
     TModel[K],
-    string
+    string,
+    TMode
   >;
 } & {
-  [Symbol.iterator](): Iterator<[string, MaybeFieldTree<TModel[keyof TModel], string>]>;
+  [Symbol.iterator](): Iterator<[string, MaybeFieldTree<TModel[keyof TModel], string, TMode>]>;
 };
 
 /**
@@ -250,33 +270,38 @@ export type ReadonlyArrayLike<T> = Pick<
 >;
 
 /**
- * Helper type for defining `FieldTree`. Given a type `TValue` that may include `undefined`, it extracts
- * the `undefined` outside the `FieldTree` type.
+ * Helper type for defining `FieldTree`. Given a type `TValue` that may include `undefined`,
+ * it extracts the `undefined` outside the `FieldTree` type.
  *
- * For example `MaybeField<{a: number} | undefined, TKey>` would be equivalent to
+ * For example `MaybeFieldTree<{a: number} | undefined, TKey>` would be equivalent to
  * `undefined | FieldTree<{a: number}, TKey>`.
  *
  * @template TModel The type of the data which the field is wrapped around.
  * @template TKey The type of the property key which this field resides under in its parent.
+ * @template TMode Determines whether the field state is readonly or writable.
  *
- * @experimental 21.0.0
+ * @experimental 21.3.0
  */
-export type MaybeFieldTree<TModel, TKey extends string | number = string | number> =
-  | (TModel & undefined)
-  | FieldTree<Exclude<TModel, undefined>, TKey>;
+export type MaybeFieldTree<
+  TModel,
+  TKey extends string | number = string | number,
+  TMode extends 'writable' | 'readonly' = 'writable',
+> = (TModel & undefined) | FieldTree<Exclude<TModel, undefined>, TKey, TMode>;
 
 /**
- * Contains all of the state (e.g. value, statuses, etc.) associated with a `FieldTree`, exposed as
- * signals.
+ * A readonly view of a {@link FieldTree}'s state.
+ *
+ * @template TValue The type of the data which the field is wrapped around.
+ * @template TKey The type of the property key which this field resides under in its parent.
  *
  * @category structure
- * @experimental 21.0.0
+ * @experimental 21.3.0
  */
-export interface FieldState<TValue, TKey extends string | number = string | number> {
+export interface ReadonlyFieldState<TValue, TKey extends string | number = string | number> {
   /**
    * The {@link FieldTree} associated with this field state.
    */
-  readonly fieldTree: FieldTree<unknown, TKey>;
+  readonly fieldTree: ReadonlyFieldTree<unknown, TKey>;
 
   /**
    * A writable signal containing the value for this field.
@@ -286,7 +311,16 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * While updates from the UI control are eventually reflected here, they may be delayed if
    * debounced.
    */
-  readonly value: WritableSignal<TValue>;
+  readonly value: Signal<TValue>;
+
+  /**
+   * A signal containing the value of the control to which this field is bound.
+   *
+   * This differs from {@link value} in that it's not subject to debouncing, and thus is used to
+   * buffer debounced updates from the control to the field. This will also not take into account
+   * the {@link controlValue} of children.
+   */
+  readonly controlValue: Signal<TValue>;
 
   /**
    * A signal indicating whether the field is currently disabled.
@@ -384,6 +418,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * However `invalid()` is also `false` because there are no errors.
    */
   readonly valid: Signal<boolean>;
+
   /**
    * A signal indicating whether the field's value is currently invalid.
    *
@@ -396,10 +431,12 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * However `valid()` is also `false` because of the pending validator.
    */
   readonly invalid: Signal<boolean>;
+
   /**
    * Whether there are any validators still pending for this field.
    */
   readonly pending: Signal<boolean>;
+
   /**
    * A signal indicating whether the field is currently in the process of being submitted.
    */
@@ -410,10 +447,59 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * array-valued, for example, this is the index of this field in that array.
    */
   readonly keyInParent: Signal<TKey>;
+
   /**
    * The {@link FormField} directives that bind this field to a UI control.
    */
-  readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
+  readonly formFieldBindings: Signal<readonly FormFieldBinding[]>;
+
+  /**
+   * Reads a metadata value from the field.
+   * @param key The metadata key to read.
+   */
+  metadata<M>(key: MetadataKey<M, any, any>): M | undefined;
+
+  /**
+   * Checks whether a metadata value exists on the field.
+   * @param key The metadata key to check.
+   */
+  hasMetadata(key: MetadataKey<any, any, any>): boolean;
+
+  /**
+   * Focuses the first UI control in the DOM that is bound to this field state.
+   * If no UI control is bound, does nothing.
+   * @param options Optional focus options to pass to the native focus() method.
+   */
+  focusBoundControl(options?: FocusOptions): void;
+}
+
+/**
+ * A writable view of a {@link FieldTree}'s state.
+ *
+ * @template TValue The type of the data which the field is wrapped around.
+ * @template TKey The type of the property key which this field resides under in its parent.
+ *
+ * @category structure
+ * @experimental 21.0.0
+ */
+export interface FieldState<
+  TValue,
+  TKey extends string | number = string | number,
+> extends ReadonlyFieldState<TValue, TKey> {
+  /**
+   * The {@link FieldTree} associated with this field state.
+   */
+  readonly fieldTree: FieldTree<unknown, TKey>;
+
+  /**
+   * A writable signal containing the value for this field.
+   *
+   * Updating this signal will update the data model that the field is bound to.
+   *
+   * While updates from the UI control are eventually reflected here, they may be delayed if
+   * debounced.
+   */
+  readonly value: WritableSignal<TValue>;
 
   /**
    * A signal containing the value of the control to which this field is bound.
@@ -435,12 +521,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   markAsTouched(): void;
 
   /**
-   * Reads a metadata value from the field.
-   * @param key The metadata key to read.
-   */
-  metadata<M>(key: MetadataKey<M, any, any>): M | undefined;
-
-  /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
    *
    * Note this does not change the data model, which can be reset directly if desired.
@@ -448,13 +528,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * @param value Optional value to set to the form. If not passed, the value will not be changed.
    */
   reset(value?: TValue): void;
-
-  /**
-   * Focuses the first UI control in the DOM that is bound to this field state.
-   * If no UI control is bound, does nothing.
-   * @param options Optional focus options to pass to the native focus() method.
-   */
-  focusBoundControl(options?: FocusOptions): void;
 }
 
 /**
@@ -466,9 +539,69 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
 export type CompatFieldState<
   TControl extends AbstractControl,
   TKey extends string | number = string | number,
-> = FieldState<TControl extends AbstractControl<unknown, infer TValue> ? TValue : never, TKey> & {
+  TMode extends 'writable' | 'readonly' = 'writable',
+> = FieldStateByMode<
+  TControl extends AbstractControl<unknown, infer TValue> ? TValue : never,
+  TKey,
+  TMode
+> & {
   control: Signal<TControl>;
 };
+
+/**
+ * A readonly {@link CompatFieldState}.
+ *
+ * @category interop
+ * @experimental 21.3.0
+ */
+export type ReadonlyCompatFieldState<
+  TControl extends AbstractControl,
+  TKey extends string | number = string | number,
+> = CompatFieldState<TControl, TKey, 'readonly'>;
+
+/**
+ * Helper type that resolves to either a {@link FieldState} or {@link ReadonlyFieldState} based on
+ * the access mode.
+ *
+ * @template TValue The type of the value stored in the field.
+ * @template TKey The type of the property key.
+ * @template TMode The access mode ('readonly' or 'writable').
+ */
+export type FieldStateByMode<
+  TValue,
+  TKey extends string | number,
+  TMode extends 'writable' | 'readonly',
+> = TMode extends 'writable' ? FieldState<TValue, TKey> : ReadonlyFieldState<TValue, TKey>;
+
+/**
+ * Represents a binding between a field and a UI control through a {@link FormField} directive.
+ *
+ * @experimental 21.3.0
+ */
+export interface FormFieldBinding {
+  /**
+   * The HTML element on which the {@link FormField} directive is applied.
+   */
+  readonly element: HTMLElement;
+
+  /**
+   * The node injector for the element hosting this field binding.
+   */
+  readonly injector: Injector;
+
+  /**
+   * The {@link FieldState} of the field bound to the {@link FormField} directive.
+   */
+  readonly state: Signal<ReadonlyFieldState<unknown>>;
+
+  /**
+   * Focuses this field binding.
+   *
+   * By default, this will focus {@link element}. However, custom controls can implement their own
+   * focus behavior.
+   */
+  focus(options?: FocusOptions): void;
+}
 
 /**
  * Allows declaring whether the Rules are supported for a given path.
@@ -748,9 +881,9 @@ export interface RootFieldContext<TValue> {
   /** A signal containing the value of the current field. */
   readonly value: Signal<TValue>;
   /** The state of the current field. */
-  readonly state: FieldState<TValue>;
+  readonly state: ReadonlyFieldState<TValue>;
   /** The current field. */
-  readonly fieldTree: FieldTree<TValue>;
+  readonly fieldTree: ReadonlyFieldTree<TValue>;
 
   /** Gets the value of the field represented by the given path. */
   valueOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): PValue;
@@ -758,10 +891,10 @@ export interface RootFieldContext<TValue> {
   /** Gets the state of the field represented by the given path. */
   stateOf<PControl extends AbstractControl>(
     p: CompatSchemaPath<PControl>,
-  ): CompatFieldState<PControl>;
-  stateOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): FieldState<PValue>;
+  ): ReadonlyCompatFieldState<PControl>;
+  stateOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): ReadonlyFieldState<PValue>;
   /** Gets the field represented by the given path. */
-  fieldTreeOf<PModel>(p: SchemaPathTree<PModel>): FieldTree<PModel>;
+  fieldTreeOf<PModel>(p: SchemaPathTree<PModel>): ReadonlyFieldTree<PModel>;
   /** The list of keys that lead from the root field to the current field. */
   readonly pathKeys: Signal<readonly string[]>;
 }

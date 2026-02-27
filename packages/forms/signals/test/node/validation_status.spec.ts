@@ -9,10 +9,10 @@
 import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  FieldTree,
   form,
   NgValidationError,
   patternError,
+  ReadonlyFieldTree,
   requiredError,
   validate,
   validateAsync,
@@ -26,7 +26,7 @@ function validateValue(value: string): ValidationError[] {
 
 function validateValueForChild(
   value: string,
-  fieldTree: FieldTree<unknown> | undefined,
+  fieldTree: ReadonlyFieldTree<unknown> | undefined,
 ): ValidationError.WithOptionalFieldTree[] {
   return value === 'INVALID' ? [{kind: 'custom', fieldTree: fieldTree}] : [];
 }
