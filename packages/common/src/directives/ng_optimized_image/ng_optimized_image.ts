@@ -406,6 +406,13 @@ export class NgOptimizedImage implements OnInit, OnChanges {
         }
       });
     }
+
+    // Chromium may re-evaluate during DOM teardown when using `sizes="auto"`
+    // with `loading="lazy"`, potentially triggering an unnecessary image fetch based
+    // See: https://github.com/angular/angular/issues/67055#issuecomment-3898513831
+    this.destroyRef.onDestroy(() => {
+      this.renderer.removeAttribute(this.imgElement, 'loading');
+    });
   }
 
   /** @docs-private */
