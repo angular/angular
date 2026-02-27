@@ -132,6 +132,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     readonly fieldTree: FieldTree<unknown, TKey>;
     markAsDirty(): void;
     markAsTouched(options?: MarkAsTouchedOptions): void;
+    reloadValidation(): void;
     reset(value?: TValue): void;
     readonly value: WritableSignal<TValue>;
 }
@@ -268,6 +269,9 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
 export type IgnoreUnknownProperties<T> = T extends Record<PropertyKey, unknown> ? {
     [K in keyof T as RemoveStringIndexUnknownKey<K, T[K]>]: IgnoreUnknownProperties<T[K]>;
 } : T;
+
+// @public
+export const IS_ASYNC_VALIDATION_RESOURCE: unique symbol;
 
 // @public
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
