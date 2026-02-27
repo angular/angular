@@ -40,7 +40,6 @@ import type {NgModelGroup} from './ng_model_group';
 import {
   CALL_SET_DISABLED_STATE,
   SetDisabledStateOption,
-  setUpControl,
   setUpFormContainer,
   syncPendingControls,
 } from './shared';
@@ -231,7 +230,7 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
       (dir as Writable<NgModel>).control = <FormControl>(
         container.registerControl(dir.name, dir.control)
       );
-      setUpControl(dir.control, dir, this.callSetDisabledState);
+      dir._setupWithForm(this.callSetDisabledState);
       dir.control.updateValueAndValidity({emitEvent: false});
       this._directives.add(dir);
     });

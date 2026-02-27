@@ -31,6 +31,7 @@ import {
   hasValidator,
   removeValidators,
   toObservable,
+  Validators,
 } from '../validators';
 import type {FormArray} from './form_array';
 import type {FormGroup} from './form_group';
@@ -502,6 +503,9 @@ export abstract class AbstractControl<
   /** @internal */
   _updateOn?: FormHooks;
 
+  /** @internal */
+  _hasRequired = signal(false);
+
   private _parent: FormGroup | FormArray | null = null;
   private _asyncValidationSubscription: any;
 
@@ -581,6 +585,7 @@ export abstract class AbstractControl<
   }
   set validator(validatorFn: ValidatorFn | null) {
     this._rawValidators = this._composedValidatorFn = validatorFn;
+    this._updateHasRequiredValidator();
   }
 
   /**
@@ -1784,6 +1789,7 @@ export abstract class AbstractControl<
   private _assignValidators(validators: ValidatorFn | ValidatorFn[] | null): void {
     this._rawValidators = Array.isArray(validators) ? validators.slice() : validators;
     this._composedValidatorFn = coerceToValidator(this._rawValidators);
+    this._updateHasRequiredValidator();
   }
 
   /**
@@ -1794,5 +1800,9 @@ export abstract class AbstractControl<
   private _assignAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[] | null): void {
     this._rawAsyncValidators = Array.isArray(validators) ? validators.slice() : validators;
     this._composedAsyncValidatorFn = coerceToAsyncValidator(this._rawAsyncValidators);
+  }
+
+  private _updateHasRequiredValidator(): void {
+    untracked(() => this._hasRequired.set(this.hasValidator(Validators.required)));
   }
 }
