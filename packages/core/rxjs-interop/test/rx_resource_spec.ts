@@ -23,6 +23,45 @@ describe('rxResource()', () => {
     expect(res.value()).toBe(1);
   });
 
+  it('should synchronously resolve when the observable emits synchronously', () => {
+    const injector = TestBed.inject(Injector);
+    const res = rxResource({
+      stream: () => of(1),
+      injector,
+    });
+
+    // Value should be synchronously available without `await appRef.whenStable()`
+    expect(res.value()).toBe(1);
+    expect(res.status()).toBe('resolved');
+  });
+
+  it('should not subscribe twice if the observable does not emit synchronously', async () => {
+    const injector = TestBed.inject(Injector);
+    const appRef = TestBed.inject(ApplicationRef);
+    let subscriber: any;
+    let subscribeCount = 0;
+
+    const res = rxResource({
+      stream: () =>
+        new Observable((sub) => {
+          subscriber = sub;
+          subscribeCount++;
+        }),
+      injector,
+    });
+
+    // Initial state is loading
+    expect(res.status()).toBe('loading');
+
+    // Simulate async emission
+    subscriber.next(1);
+
+    // Status is still loading because loadEffect hasn't run to attach the stream yet.
+    await appRef.whenStable();
+    expect(res.value()).toBe(1);
+    expect(subscribeCount).toBe(1); // Ensure it didn't subscribe a second time
+  });
+
   it('should cancel the fetch when a new request comes in', async () => {
     const injector = TestBed.inject(Injector);
     const appRef = TestBed.inject(ApplicationRef);
@@ -86,6 +125,12 @@ describe('rxResource()', () => {
       },
       injector: appRef.injector,
     });
+
+    // Status is immediately resolved to error state because it threw synchronously in getInitialStream
+    expect(res.status()).toBe('error');
+    expect(res.error()).toEqual(jasmine.objectContaining({cause: 'oh no'}));
+    expect(res.error()!.message).toContain('Resource');
+
     await appRef.whenStable();
   });
 
