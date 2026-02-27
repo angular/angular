@@ -194,6 +194,32 @@ export interface InMemoryScrollingOptions {
 }
 
 /**
+ * Configuration options for the component input binding feature which can be used
+ * with `withComponentInputBinding` function or `RouterModule.forRoot`
+ *
+ * @publicApi
+ * @see withComponentInputBinding
+ * @see RouterModule#forRoot
+ */
+export interface ComponentInputBindingOptions {
+  /**
+   * When true (default), will configure query parameters to bind to component
+   * inputs.
+   */
+  queryParams?: boolean;
+  /**
+   * When true (default), will configure path and matrix parameters to bind to
+   * component inputs.
+   */
+  params?: boolean;
+  /**
+   * When true (default), will configure static route data and data from resolvers
+   * to bind to component inputs.
+   */
+  data?: boolean;
+}
+
+/**
  * A set of configuration options for a router module, provided in the
  * `forRoot()` method.
  *
@@ -231,9 +257,10 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
 
   /**
    * When true, enables binding information from the `Router` state directly to the inputs of the
-   * component in `Route` configurations.
+   * component in `Route` configurations. Can also accept an `ComponentInputBindingOptions` object
+   * to set which sources are allowed to bind.
    */
-  bindToComponentInputs?: boolean;
+  bindToComponentInputs?: boolean | ComponentInputBindingOptions;
 
   /**
    * When true, enables view transitions in the Router by running the route activation and

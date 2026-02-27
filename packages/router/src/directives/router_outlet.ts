@@ -27,14 +27,15 @@ import {
   SimpleChanges,
   ViewContainerRef,
 } from '@angular/core';
-import {combineLatest, of, Subscription} from 'rxjs';
+import {combineLatest, Observable, of, Subscription} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from '../errors';
 import {Data} from '../models';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute} from '../router_state';
-import {PRIMARY_OUTLET} from '../shared';
+import {Params, PRIMARY_OUTLET} from '../shared';
+import {ComponentInputBindingOptions} from '../router_config';
 
 /**
  * An `InjectionToken` provided by the `RouterOutlet` and can be set using the `routerOutletData`
@@ -457,6 +458,12 @@ export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>(
 export class RoutedComponentInputBinder {
   private outletDataSubscriptions = new Map<RouterOutlet, Subscription>();
 
+  constructor(private options: ComponentInputBindingOptions) {
+    this.options.queryParams ??= true;
+    this.options.params ??= true;
+    this.options.data ??= true;
+  }
+
   bindActivatedRouteToOutletComponent(outlet: RouterOutlet): void {
     this.unsubscribeFromRouteData(outlet);
     this.subscribeToRouteData(outlet);
@@ -469,23 +476,39 @@ export class RoutedComponentInputBinder {
 
   private subscribeToRouteData(outlet: RouterOutlet) {
     const {activatedRoute} = outlet;
-    const dataSubscription = combineLatest([
-      activatedRoute.queryParams,
-      activatedRoute.params,
-      activatedRoute.data,
-    ])
+
+    const dataObservables: Observable<Params | Data>[] = [];
+    if (this.options.queryParams) {
+      dataObservables.push(activatedRoute.queryParams);
+    }
+    if (this.options.params) {
+      dataObservables.push(activatedRoute.params);
+    }
+    if (this.options.data) {
+      dataObservables.push(activatedRoute.data);
+    }
+
+    if (dataObservables.length === 0) {
+      return;
+    }
+
+    const dataSubscription = combineLatest(dataObservables)
       .pipe(
-        switchMap(([queryParams, params, data], index) => {
-          data = {...queryParams, ...params, ...data};
+        switchMap((datasets, index) => {
+          let newData: Params & Data = {};
+          for (const data of datasets) {
+            newData = {...newData, ...data};
+          }
+
           // Get the first result from the data subscription synchronously so it's available to
           // the component as soon as possible (and doesn't require a second change detection).
           if (index === 0) {
-            return of(data);
+            return of(newData);
           }
           // Promise.resolve is used to avoid synchronously writing the wrong data when
           // two of the Observables in the `combineLatest` stream emit one after
           // another.
-          return Promise.resolve(data);
+          return Promise.resolve(newData);
         }),
       )
       .subscribe((data) => {

@@ -218,6 +218,29 @@ describe('component input binding', () => {
     expect(instance.language).toEqual(undefined);
   });
 
+  it('does not set component inputs from matching query params when queryParam inputs are disabled', async () => {
+    @Component({
+      template: '',
+      standalone: false,
+    })
+    class MyComponent {
+      @Input() language?: string;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [{path: '**', component: MyComponent}],
+          withComponentInputBinding({queryParams: false}),
+        ),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    const instance = await harness.navigateByUrl('/?language=french', MyComponent);
+    expect(instance.language).toEqual(undefined);
+  });
+
   it('sets component inputs from resolved and static data', async () => {
     @Component({
       template: '',
@@ -250,6 +273,38 @@ describe('component input binding', () => {
     expect(instance.dataA).toEqual('My static data');
   });
 
+  it('does not set component inputs from resolved and static data when data inputs are disabled', async () => {
+    @Component({
+      template: '',
+      standalone: false,
+    })
+    class MyComponent {
+      @Input() resolveA?: string;
+      @Input() dataA?: string;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: '**',
+              component: MyComponent,
+              data: {'dataA': 'My static data'},
+              resolve: {'resolveA': () => 'My resolved data'},
+            },
+          ],
+          withComponentInputBinding({data: false}),
+        ),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    const instance = await harness.navigateByUrl('/', MyComponent);
+    expect(instance.resolveA).toEqual(undefined);
+    expect(instance.dataA).toEqual(undefined);
+  });
+
   it('sets component inputs from path params', async () => {
     @Component({
       template: '',
@@ -268,6 +323,29 @@ describe('component input binding', () => {
 
     const instance = await harness.navigateByUrl('/x;language=english', MyComponent);
     expect(instance.language).toEqual('english');
+  });
+
+  it('does not set component inputs from path params when params are disabled', async () => {
+    @Component({
+      template: '',
+      standalone: false,
+    })
+    class MyComponent {
+      @Input() language?: string;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [{path: '**', component: MyComponent}],
+          withComponentInputBinding({params: false}),
+        ),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    const instance = await harness.navigateByUrl('/x;language=english', MyComponent);
+    expect(instance.language).toEqual(undefined);
   });
 
   it('when keys conflict, sets inputs based on priority: data > path params > query params', async () => {
@@ -304,6 +382,141 @@ describe('component input binding', () => {
       MyComponent,
     );
     expect(instance.result).toEqual('from data');
+
+    // Same component, different instance because it's a different route
+    instance = await harness.navigateByUrl(
+      '/withoutData;result=from path param?result=from query params',
+      MyComponent,
+    );
+    expect(instance.result).toEqual('from path param');
+    instance = await harness.navigateByUrl('/withoutData?result=from query params', MyComponent);
+    expect(instance.result).toEqual('from query params');
+  });
+
+  it('when keys conflict, sets inputs based on priority: data > path params > query params, with queryParams disabled', async () => {
+    @Component({
+      template: '',
+      standalone: false,
+    })
+    class MyComponent {
+      @Input() result?: string;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'withData',
+              component: MyComponent,
+              data: {'result': 'from data'},
+            },
+            {
+              path: 'withoutData',
+              component: MyComponent,
+            },
+          ],
+          withComponentInputBinding({queryParams: false}),
+        ),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    let instance = await harness.navigateByUrl(
+      '/withData;result=from path param?result=from query params',
+      MyComponent,
+    );
+    expect(instance.result).toEqual('from data');
+
+    // Same component, different instance because it's a different route
+    instance = await harness.navigateByUrl(
+      '/withoutData;result=from path param?result=from query params',
+      MyComponent,
+    );
+    expect(instance.result).toEqual('from path param');
+    instance = await harness.navigateByUrl('/withoutData?result=from query params', MyComponent);
+    expect(instance.result).toEqual(undefined);
+  });
+
+  it('when keys conflict, sets inputs based on priority: data > path params > query params, with params disabled', async () => {
+    @Component({
+      template: '',
+      standalone: false,
+    })
+    class MyComponent {
+      @Input() result?: string;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'withData',
+              component: MyComponent,
+              data: {'result': 'from data'},
+            },
+            {
+              path: 'withoutData',
+              component: MyComponent,
+            },
+          ],
+          withComponentInputBinding({params: false}),
+        ),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    let instance = await harness.navigateByUrl(
+      '/withData;result=from path param?result=from query params',
+      MyComponent,
+    );
+    expect(instance.result).toEqual('from data');
+
+    // Same component, different instance because it's a different route
+    instance = await harness.navigateByUrl(
+      '/withoutData;result=from path param?result=from query params',
+      MyComponent,
+    );
+    expect(instance.result).toEqual('from query params');
+    instance = await harness.navigateByUrl('/withoutData?result=from query params', MyComponent);
+    expect(instance.result).toEqual('from query params');
+  });
+
+  it('when keys conflict, sets inputs based on priority: data > path params > query params, with data disabled', async () => {
+    @Component({
+      template: '',
+      standalone: false,
+    })
+    class MyComponent {
+      @Input() result?: string;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'withData',
+              component: MyComponent,
+              data: {'result': 'from data'},
+            },
+            {
+              path: 'withoutData',
+              component: MyComponent,
+            },
+          ],
+          withComponentInputBinding({data: false}),
+        ),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    let instance = await harness.navigateByUrl(
+      '/withData;result=from path param?result=from query params',
+      MyComponent,
+    );
+    expect(instance.result).toEqual('from path param');
 
     // Same component, different instance because it's a different route
     instance = await harness.navigateByUrl(
