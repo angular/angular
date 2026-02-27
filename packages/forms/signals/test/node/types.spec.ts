@@ -88,6 +88,15 @@ function typeVerificationOnlyDoNotRunMe() {
       form(signal<RecursiveType>([5]));
     });
 
+    it('should allow property access on generic type unions', () => {
+      // Validates that uninstantiated generic unions can still access shared
+      // fields via naked conditional distribution in FieldTree
+      function testGeneric<T extends {a: 1} | {a: 1; b: 2}>(f: FieldTree<T>) {
+        const x: FieldTree<1> = f.a;
+        return x;
+      }
+    });
+
     it('should allow ReadonlyArray in model and be iterable', () => {
       interface Order {
         readonly products: readonly string[];
