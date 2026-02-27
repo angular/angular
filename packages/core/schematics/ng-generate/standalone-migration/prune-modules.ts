@@ -80,18 +80,16 @@ export function pruneNgModules(
   const testArrays = new UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>();
   const nodesToRemove = new Set<ts.Node>();
 
+  // Collect all NgModules and identify which ones can potentially be removed
+  const allNgModules = new Set<ts.ClassDeclaration>();
+  const candidateModules = new Set<ts.ClassDeclaration>();
+
   sourceFiles.forEach(function walk(node: ts.Node) {
-    if (ts.isClassDeclaration(node) && canRemoveClass(node, typeChecker)) {
-      collectChangeLocations(
-        node,
-        removalLocations,
-        componentImportArrays,
-        testArrays,
-        templateTypeChecker,
-        referenceResolver,
-        program,
-      );
-      classesToRemove.add(node);
+    if (ts.isClassDeclaration(node) && findNgModuleDecorator(node, typeChecker)) {
+      allNgModules.add(node);
+      if (canRemoveClass(node, typeChecker)) {
+        candidateModules.add(node);
+      }
     } else if (
       ts.isExportDeclaration(node) &&
       !node.exportClause &&
@@ -109,6 +107,35 @@ export function pruneNgModules(
     }
     node.forEachChild(walk);
   });
+
+  // Filter out modules that are exported by non-removable modules
+  for (const candidate of candidateModules) {
+    if (
+      isExportedByRetainedModule(
+        candidate,
+        allNgModules,
+        candidateModules,
+        templateTypeChecker,
+        typeChecker,
+      )
+    ) {
+      candidateModules.delete(candidate);
+    }
+  }
+
+  // Collect change locations for modules that can be safely removed
+  for (const module of candidateModules) {
+    collectChangeLocations(
+      module,
+      removalLocations,
+      componentImportArrays,
+      testArrays,
+      templateTypeChecker,
+      referenceResolver,
+      program,
+    );
+    classesToRemove.add(module);
+  }
 
   replaceInComponentImportsArray(
     componentImportArrays,
@@ -769,6 +796,97 @@ function findNgModuleDecorator(
 ): NgDecorator | null {
   const decorators = getAngularDecorators(typeChecker, ts.getDecorators(node) || []);
   return decorators.find((decorator) => decorator.name === 'NgModule') || null;
+}
+
+/**
+ * Checks if a module is exported by another module that is being retained for intrinsic reasons.
+ * This prevents removal of modules that are transitively required.
+ * A module is considered "intrinsically retained" if it has:
+ * - Non-identifier imports (ModuleWithProviders pattern)
+ * - Class members other than empty constructors
+ */
+function isExportedByRetainedModule(
+  targetModule: ts.ClassDeclaration,
+  allNgModules: Set<ts.ClassDeclaration>,
+  removableModules: Set<ts.ClassDeclaration>,
+  templateTypeChecker: TemplateTypeChecker,
+  typeChecker: ts.TypeChecker,
+): boolean {
+  // Check all NgModules to see if any intrinsically non-removable module exports our target module
+  for (const ngModule of allNgModules) {
+    // Skip the target module itself
+    if (ngModule === targetModule) {
+      continue;
+    }
+
+    // Skip modules that are also candidates for removal - we only care about retained modules
+    if (removableModules.has(ngModule)) {
+      continue;
+    }
+
+    const moduleMeta = templateTypeChecker.getNgModuleMetadata(ngModule);
+    if (!moduleMeta) {
+      continue;
+    }
+
+    // Check if this retained module exports our target module
+    const exportsTargetModule = moduleMeta.exports.some((exp) => exp.node === targetModule);
+
+    if (exportsTargetModule) {
+      // This non-removable module exports our target module
+      // But we should only retain the target if the exporting module is "intrinsically" non-removable
+      // (i.e., has ModuleWithProviders or class members)
+      // not just non-removable because it has declarations/providers/bootstrap.
+      return isIntrinsicallyNonRemovable(ngModule, typeChecker);
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Checks if a module is intrinsically non-removable due to ModuleWithProviders or class members.
+ * This specifically checks for patterns that create transitive export dependencies:
+ * - Non-identifier imports (ModuleWithProviders) - these create provider dependencies
+ * - Class members (methods, properties) - these indicate the module has logic/state
+ */
+function isIntrinsicallyNonRemovable(
+  ngModule: ts.ClassDeclaration,
+  typeChecker: ts.TypeChecker,
+): boolean {
+  // Check if module has class members
+  if (
+    ngModule.members.length > 0 &&
+    ngModule.members.some((member) => !isEmptyConstructor(member))
+  ) {
+    return true;
+  }
+
+  const decorator = findNgModuleDecorator(ngModule, typeChecker);
+  if (!decorator || !ts.isCallExpression(decorator.node.expression)) {
+    return false;
+  }
+
+  if (
+    decorator.node.expression.arguments.length === 0 ||
+    !ts.isObjectLiteralExpression(decorator.node.expression.arguments[0])
+  ) {
+    return false;
+  }
+
+  const literal = decorator.node.expression.arguments[0];
+
+  // Check for non-identifier imports (ModuleWithProviders)
+  const imports = findLiteralProperty(literal, 'imports');
+  if (imports && isNonEmptyNgModuleProperty(imports)) {
+    for (const dep of imports.initializer.elements) {
+      if (!ts.isIdentifier(dep)) {
+        return true; // Has ModuleWithProviders
+      }
+    }
+  }
+
+  return false;
 }
 
 /**

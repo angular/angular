@@ -3753,6 +3753,113 @@ describe('standalone migration', () => {
     );
   });
 
+  it('should not remove a module that is exported by a retained module (transitive dependency)', async () => {
+    writeFile(
+      'icon.component.ts',
+      `
+      import {Component} from '@angular/core';
+
+      @Component({
+        selector: 'app-icon',
+        template: '<p>icon</p>'
+      })
+      export class IconComponent {}
+    `,
+    );
+
+    writeFile(
+      'icons.module.ts',
+      `
+      import {NgModule} from '@angular/core';
+      import {IconComponent} from './icon.component';
+
+      @NgModule({
+        imports: [IconComponent],
+        exports: [IconComponent],
+      })
+      export class IconsModule {}
+    `,
+    );
+
+    writeFile(
+      'forms.module.ts',
+      `
+      import {NgModule, ModuleWithProviders} from '@angular/core';
+
+      export interface FormsConfig {
+        callSetDisabledState: string;
+      }
+
+      @NgModule()
+      export class FormsModule {
+        static withConfig(config: FormsConfig): ModuleWithProviders<FormsModule> {
+          return {
+            ngModule: FormsModule,
+            providers: [{provide: 'FORMS_CONFIG', useValue: config}]
+          };
+        }
+      }
+    `,
+    );
+    const sharedModule = `
+      import {NgModule} from '@angular/core';
+      import {IconsModule} from './icons.module';
+      import {FormsModule} from './forms.module';
+
+      @NgModule({
+        imports: [
+          // This import with config prevents SharedModule from being removed
+          FormsModule.withConfig({ callSetDisabledState: 'whenDisabledForLegacyCode' }),
+          IconsModule,
+        ],
+        exports: [IconsModule],
+      })
+      export class SharedModule {}
+    `;
+
+    writeFile('shared.module.ts', sharedModule);
+
+    writeFile(
+      'some.component.ts',
+      `
+      import {Component} from '@angular/core';
+      import {SharedModule} from './shared.module';
+
+      @Component({
+        selector: 'app-some',
+        template: 'inside some component: <app-icon />',
+        imports: [SharedModule]
+      })
+      export class SomeComponent {}
+    `,
+    );
+
+    await runMigration('prune-ng-modules');
+
+    // IconsModule should NOT be removed because it's exported by SharedModule
+    // which is retained due to the FormsModule.withConfig
+    expect(tree.exists('icons.module.ts')).toBe(true);
+
+    const someContent = tree.readContent('some.component.ts');
+    const sharedModuleContent = tree.readContent('shared.module.ts');
+
+    expect(sharedModuleContent).toBe(sharedModule);
+
+    expect(stripWhitespace(someContent)).toBe(
+      stripWhitespace(`
+      import {Component} from '@angular/core';
+      import {SharedModule} from './shared.module';
+
+      @Component({
+        selector: 'app-some',
+        template: 'inside some component: <app-icon />',
+        imports: [SharedModule]
+      })
+      export class SomeComponent {}
+    `),
+    );
+  });
+
   it('should switch a platformBrowser().bootstrapModule call to bootstrapApplication', async () => {
     writeFile(
       'main.ts',
