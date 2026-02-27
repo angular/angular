@@ -2785,8 +2785,10 @@ describe('type check blocks', () => {
 
     it('should generate a string field for an input without a type', () => {
       const block = tcb('<input [formField]="f"/>', [FieldMock]);
-      expect(block).toContain('var _t1 = null! as string;');
-      expect(block).toContain('_t1 = ((this).f)().value();');
+      expect(block).toContain(
+        'var _t1 = null! as { (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; };',
+      );
+      expect(block).toContain('_t1 = ((this).f)().value;');
       expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
     });
@@ -2808,7 +2810,6 @@ describe('type check blocks', () => {
     });
 
     [
-      {inputType: 'text', expectedType: 'string'},
       {inputType: 'radio', expectedType: 'string'},
       {inputType: 'checkbox', expectedType: 'boolean'},
       {inputType: 'number', expectedType: 'string | number | null'},
@@ -2818,12 +2819,23 @@ describe('type check blocks', () => {
       {inputType: 'month', expectedType: 'string | number | Date | null'},
       {inputType: 'time', expectedType: 'string | number | Date | null'},
       {inputType: 'week', expectedType: 'string | number | Date | null'},
-      {inputType: 'unknown', expectedType: 'string'},
     ].forEach(({inputType, expectedType}) => {
       it(`should generate a '${expectedType}' field for an input with a '${inputType}' type`, () => {
         const block = tcb(`<input type="${inputType}" [formField]="f"/>`, [FieldMock]);
         expect(block).toContain(`var _t1 = null! as ${expectedType};`);
         expect(block).toContain('_t1 = ((this).f)().value();');
+        expect(block).toContain('var _t2 = null! as i0.FormField;');
+        expect(block).toContain('_t2.field = (((this).f));');
+      });
+    });
+
+    ['text', 'unknown'].forEach((inputType) => {
+      it(`should generate a structural union for an input with a '${inputType}' type`, () => {
+        const block = tcb(`<input type="${inputType}" [formField]="f"/>`, [FieldMock]);
+        expect(block).toContain(
+          'var _t1 = null! as { (): string; set: (v: string) => void; } | { (): number | null; set: (v: number | null) => void; };',
+        );
+        expect(block).toContain('_t1 = ((this).f)().value;');
         expect(block).toContain('var _t2 = null! as i0.FormField;');
         expect(block).toContain('_t2.field = (((this).f));');
       });

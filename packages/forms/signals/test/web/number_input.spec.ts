@@ -162,6 +162,148 @@ describe('numeric inputs', () => {
   });
 });
 
+describe('text input with numeric model', () => {
+  it('should render numeric model value as string', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(42);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    expect(input.value).toBe('42');
+  });
+
+  it('should update model as a number when user types a valid number', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(0);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    act(() => {
+      input.value = '123';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    expect(fixture.componentInstance.f().value()).toBe(123);
+    expect(fixture.componentInstance.f().errors()).toEqual([]);
+  });
+
+  it('should produce a parse error when user types non-numeric text', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(42);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    act(() => {
+      input.value = 'abc';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    expect(fixture.componentInstance.f().value()).toBe(42);
+    expect(fixture.componentInstance.f().errors()).toEqual([
+      jasmine.objectContaining({kind: 'parse'}),
+    ]);
+  });
+
+  it('should set model to null when input is cleared', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(42);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    act(() => {
+      input.value = '';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    expect(fixture.componentInstance.f().value()).toBeNull();
+    expect(fixture.componentInstance.f().errors()).toEqual([]);
+  });
+
+  it('should render null model value as empty string', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(null);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    expect(input.value).toBe('');
+    expect(fixture.componentInstance.f().value()).toBeNull();
+  });
+
+  it('should render NaN model value as empty string', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(NaN);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    expect(input.value).toBe('');
+    expect(fixture.componentInstance.f().value()).toEqual(NaN);
+  });
+
+  it('should update input when model is set programmatically', () => {
+    @Component({
+      imports: [FormField],
+      template: `<input type="text" [formField]="f" />`,
+    })
+    class TestCmp {
+      readonly data = signal<number | null>(10);
+      readonly f = form(this.data);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+    expect(input.value).toBe('10');
+
+    act(() => {
+      fixture.componentInstance.data.set(99);
+    });
+
+    expect(input.value).toBe('99');
+  });
+});
+
 function act<T>(fn: () => T): T {
   try {
     return fn();

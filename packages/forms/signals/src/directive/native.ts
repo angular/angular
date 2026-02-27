@@ -103,6 +103,21 @@ export function getNativeControlValue(
       break;
   }
 
+  // For text-like <input> elements, parse numeric values if the model is numeric.
+  if (element.tagName === 'INPUT') {
+    modelValue ??= untracked(currentValue);
+    if (typeof modelValue === 'number' || modelValue === null) {
+      if (element.value === '') {
+        return {value: null};
+      }
+      const parsed = Number(element.value);
+      if (Number.isNaN(parsed)) {
+        return {error: new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>};
+      }
+      return {value: parsed};
+    }
+  }
+
   // Default to reading the value as a string.
   return {value: element.value};
 }
@@ -148,6 +163,16 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
         setNativeNumberControlValue(element, value);
         return;
       }
+  }
+
+  // For text-like <input> elements, handle numeric and null values.
+  if (typeof value === 'number') {
+    element.value = isNaN(value) ? '' : String(value);
+    return;
+  }
+  if (value === null) {
+    element.value = '';
+    return;
   }
 
   // Default to setting the value as a string.
