@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  effect,
+  EventEmitter,
+  type Injector,
+  untracked,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 import {RuntimeErrorCode} from '../errors';
 import {signalErrorsToValidationErrors} from '../compat/validation_errors';
 
@@ -17,6 +23,11 @@ import {
   type FormControlStatus,
   type ValidationErrors,
   type ValidatorFn,
+  ValueChangeEvent,
+  TouchedChangeEvent,
+  PristineChangeEvent,
+  ControlEvent,
+  StatusChangeEvent,
 } from '@angular/forms';
 import type {FieldState} from '../api/types';
 
@@ -47,6 +58,9 @@ interface CombinedControl {
   pristine: boolean;
   dirty: boolean;
   status: FormControlStatus;
+  events: AbstractControl['events'];
+  statusChanges: AbstractControl['statusChanges'];
+  valueChanges: AbstractControl['valueChanges'];
   control: AbstractControl<any, any>;
   valueAccessor: ControlValueAccessor | null;
   hasValidator(validator: ValidatorFn): boolean;
@@ -61,9 +75,60 @@ interface CombinedControl {
  * equivalent in signal forms.
  */
 export class InteropNgControl implements CombinedControl {
-  constructor(protected field: () => FieldState<unknown>) {}
+  /**
+   * @internal
+   */
+  readonly _events = new EventEmitter<ControlEvent>();
 
+  readonly valueChanges = new EventEmitter<any>();
+  readonly statusChanges = new EventEmitter<FormControlStatus>();
+  readonly events = this._events.asObservable();
   readonly control: AbstractControl<any, any> = this as unknown as AbstractControl<any, any>;
+
+  constructor(
+    protected field: () => FieldState<unknown>,
+    readonly injector: Injector,
+  ) {
+    const self = this as unknown as AbstractControl;
+
+    effect(
+      () => {
+        const value = this.value;
+        untracked(() => {
+          this.valueChanges.emit(value);
+          this._events.emit(new ValueChangeEvent(value, self));
+        });
+      },
+      {injector},
+    );
+
+    effect(
+      () => {
+        const status = this.status;
+        untracked(() => {
+          this.statusChanges.emit(status);
+          this._events.emit(new StatusChangeEvent(status, self));
+        });
+      },
+      {injector},
+    );
+
+    effect(
+      () => {
+        const isTouched = this.touched;
+        untracked(() => this._events.emit(new TouchedChangeEvent(isTouched, self)));
+      },
+      {injector},
+    );
+
+    effect(
+      () => {
+        const isDirty = this.dirty;
+        untracked(() => this._events.emit(new PristineChangeEvent(isDirty, self)));
+      },
+      {injector},
+    );
+  }
 
   get value(): any {
     return this.field().value();
