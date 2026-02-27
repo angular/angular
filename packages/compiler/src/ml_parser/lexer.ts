@@ -1431,7 +1431,12 @@ function isDigitEntityEnd(code: number): boolean {
 }
 
 function isNamedEntityEnd(code: number): boolean {
-  return code === chars.$SEMICOLON || code === chars.$EOF || !chars.isAsciiLetter(code);
+  // Named entities may contain digits (e.g. &sup1;, &frac12;, &blk34;).
+  return (
+    code === chars.$SEMICOLON ||
+    code === chars.$EOF ||
+    !(chars.isAsciiLetter(code) || chars.isDigit(code))
+  );
 }
 
 function isExpansionCaseStart(peek: number): boolean {
