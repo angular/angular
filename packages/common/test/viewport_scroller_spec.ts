@@ -112,6 +112,24 @@ describe('BrowserViewportScroller', () => {
       cleanup();
     });
 
+    it('should pass focusOptions to the focused element', () => {
+      const {anchorNode, cleanup} = createTallElement();
+      anchorNode.id = anchor;
+      const focusSpy = spyOn(anchorNode, 'focus');
+      scroller.scrollToAnchor(anchor, {focusOptions: {preventScroll: true}});
+      expect(focusSpy).toHaveBeenCalledWith({preventScroll: true});
+      cleanup();
+    });
+
+    it('should call focus without options when focusOptions is not provided', () => {
+      const {anchorNode, cleanup} = createTallElement();
+      anchorNode.id = anchor;
+      const focusSpy = spyOn(anchorNode, 'focus');
+      scroller.scrollToAnchor(anchor);
+      expect(focusSpy).toHaveBeenCalledWith(undefined);
+      cleanup();
+    });
+
     function createTallElement() {
       const tallItem = document.createElement('div');
       tallItem.style.height = '3000px';

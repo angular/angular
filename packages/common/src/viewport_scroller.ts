@@ -55,8 +55,12 @@ export abstract class ViewportScroller {
   /**
    * Scrolls to an anchor element.
    * @param anchor The ID of the anchor element.
+   * @param options Scroll options and optional focus options to configure the focus behavior.
    */
-  abstract scrollToAnchor(anchor: string, options?: ScrollOptions): void;
+  abstract scrollToAnchor(
+    anchor: string,
+    options?: ScrollOptions & {focusOptions?: FocusOptions},
+  ): void;
 
   /**
    * Disables automatic scroll restoration provided by the browser.
@@ -118,18 +122,19 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @see https://html.spec.whatwg.org/#the-indicated-part-of-the-document
    * @see https://html.spec.whatwg.org/#scroll-to-fragid
    */
-  scrollToAnchor(target: string, options?: ScrollOptions): void {
+  scrollToAnchor(target: string, options?: ScrollOptions & {focusOptions?: FocusOptions}): void {
     const elSelected = findAnchorFromDocument(this.document, target);
 
     if (elSelected) {
-      this.scrollToElement(elSelected, options);
+      const {focusOptions, ...scrollOptions} = options ?? {};
+      this.scrollToElement(elSelected, scrollOptions);
       // After scrolling to the element, the spec dictates that we follow the focus steps for the
       // target. Rather than following the robust steps, simply attempt focus.
       //
       // @see https://html.spec.whatwg.org/#get-the-focusable-area
       // @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/focus
       // @see https://html.spec.whatwg.org/#focusable-area
-      elSelected.focus();
+      elSelected.focus(focusOptions);
     }
   }
 
@@ -235,7 +240,7 @@ export class NullViewportScroller implements ViewportScroller {
   /**
    * Empty implementation
    */
-  scrollToAnchor(anchor: string): void {}
+  scrollToAnchor(anchor: string, options?: ScrollOptions & {focusOptions?: FocusOptions}): void {}
 
   /**
    * Empty implementation
