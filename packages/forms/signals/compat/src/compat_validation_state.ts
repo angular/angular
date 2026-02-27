@@ -33,10 +33,12 @@ export class CompatValidationState implements ValidationState {
   readonly pending: Signal<boolean>;
   readonly invalid: Signal<boolean>;
   readonly valid: Signal<boolean>;
+  private readonly control: Signal<AbstractControl>;
 
   readonly parseErrors: Signal<ValidationError.WithFormField[]> = computed(() => []);
 
   constructor(options: CompatFieldNodeOptions) {
+    this.control = options.control;
     this.syncValid = getControlStatusSignal(options, (c: AbstractControl) => c.status === 'VALID');
     this.errors = getControlStatusSignal(options, extractNestedReactiveErrors);
     this.pending = getControlStatusSignal(options, (c) => c.pending);
@@ -65,4 +67,8 @@ export class CompatValidationState implements ValidationState {
   readonly status: Signal<'valid' | 'invalid' | 'unknown'> = computed(() => {
     return calculateValidationSelfStatus(this);
   });
+
+  updateValueAndValidity(): void {
+    this.control().updateValueAndValidity();
+  }
 }
