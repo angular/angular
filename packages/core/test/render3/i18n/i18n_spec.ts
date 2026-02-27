@@ -15,6 +15,7 @@ import {
   icuContainerIteratorNext,
   IcuIteratorState,
 } from '../../../src/render3/i18n/i18n_icu_container_visitor';
+import {assertValidIcuAttribute} from '../../../src/render3/i18n/i18n_apply';
 import {getTIcu} from '../../../src/render3/i18n/i18n_util';
 import {TNodeType} from '../../../src/render3/interfaces/node';
 
@@ -999,6 +1000,34 @@ describe('Runtime i18n', () => {
           insertBeforeIndex: HEADER_OFFSET + 31,
         }),
       );
+    });
+  });
+
+  describe('assertValidIcuAttribute', () => {
+    it('should throw for binding-like attribute names', () => {
+      expect(() => assertValidIcuAttribute('[dir]')).toThrowError(
+        /ICU expressions cannot contain bindings or structural directives/,
+      );
+      expect(() => assertValidIcuAttribute('(click)')).toThrowError(
+        /ICU expressions cannot contain bindings or structural directives/,
+      );
+      expect(() => assertValidIcuAttribute('*ngIf')).toThrowError(
+        /ICU expressions cannot contain bindings or structural directives/,
+      );
+      expect(() => assertValidIcuAttribute('#ref')).toThrowError(
+        /ICU expressions cannot contain bindings or structural directives/,
+      );
+      expect(() => assertValidIcuAttribute('@trigger')).toThrowError(
+        /ICU expressions cannot contain bindings or structural directives/,
+      );
+    });
+
+    it('should not throw for valid static attribute names', () => {
+      expect(() => assertValidIcuAttribute('class')).not.toThrow();
+      expect(() => assertValidIcuAttribute('title')).not.toThrow();
+      expect(() => assertValidIcuAttribute('id')).not.toThrow();
+      expect(() => assertValidIcuAttribute('data-value')).not.toThrow();
+      expect(() => assertValidIcuAttribute('aria-label')).not.toThrow();
     });
   });
 });
