@@ -649,6 +649,25 @@ export enum ErrorCode {
   FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION = 8118,
 
   /**
+   * A template reference variable shadows a property or method of the component class.
+   *
+   * For example:
+   * ```typescript
+   * @Component({
+   *   template: '<div #name></div>'
+   * })
+   * export class MyComponent {
+   *   name = 'Angular';
+   * }
+   * ```
+   *
+   * In this case, inside the template `name` refers to the template reference, not the component
+   * property. This can lead to confusion when the developer expects `name` to resolve to the
+   * component class member.
+   */
+  TEMPLATE_REFERENCE_SHADOWS_CLASS_MEMBER = 8119,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
