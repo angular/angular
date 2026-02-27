@@ -59,7 +59,7 @@ describe('getSemanticDiagnostics', () => {
     expect(messageText).toBe(`Property 'nope' does not exist on type 'AppComponent'.`);
   });
 
-  it('produces diagnostic for duplicate docarated property rather than crashing', () => {
+  it('produces diagnostic for duplicate decorated property rather than crashing', () => {
     const files = {
       'app.ts': `
       import {Component, Input} from '@angular/core';
@@ -82,9 +82,7 @@ describe('getSemanticDiagnostics', () => {
     expect(diags[0].messageText).toBe(`Duplicate identifier 'test1'.`);
     expect(diags[1].category).toBe(ts.DiagnosticCategory.Error);
     expect(diags[1].file?.fileName).toBe('/test/app.ts');
-    expect(diags[1].messageText).toBe(
-      `Duplicate decorated properties found on class 'AppComponent': test1`,
-    );
+    expect(diags[1].messageText).toBe(`Input 'test1' is bound to both 'test1' and 'test1'.`);
   });
 
   it('should process external template', () => {

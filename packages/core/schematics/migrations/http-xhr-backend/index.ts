@@ -1,4 +1,4 @@
-/*!
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -7,14 +7,14 @@
  */
 
 import {Rule} from '@angular-devkit/schematics';
-import {ApplicationConfigCoreMigration} from './application-config-core-migration';
 import {runMigrationInDevkit} from '../../utils/tsurge/helpers/angular_devkit';
+import {XhrBackendMigration} from './migration';
 
 export function migrate(): Rule {
   return async (tree) => {
     await runMigrationInDevkit({
       tree,
-      getMigration: () => new ApplicationConfigCoreMigration(),
+      getMigration: () => new XhrBackendMigration(),
     });
   };
 }

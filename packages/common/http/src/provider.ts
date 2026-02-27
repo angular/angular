@@ -15,9 +15,8 @@ import {
 } from '@angular/core';
 
 import {HttpBackend, HttpHandler, HttpInterceptorHandler} from './backend';
-import {NG_DEFAULT_HTTP_BACKEND} from './backend-default-value';
 import {HttpClient} from './client';
-import {FETCH_BACKEND, FetchBackend} from './fetch';
+import {FetchBackend} from './fetch';
 import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, legacyInterceptorFnFactory} from './interceptor';
 import {
   jsonpCallbackContext,
@@ -112,13 +111,13 @@ export function provideHttpClient(
 
   const providers: Provider[] = [
     HttpClient,
-    NG_DEFAULT_HTTP_BACKEND,
+    FetchBackend,
     HttpInterceptorHandler,
     {provide: HttpHandler, useExisting: HttpInterceptorHandler},
     {
       provide: HttpBackend,
       useFactory: () => {
-        return inject(FETCH_BACKEND, {optional: true}) ?? inject(NG_DEFAULT_HTTP_BACKEND);
+        return inject(FetchBackend);
       },
     },
     {
@@ -292,11 +291,11 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
  * @see [Advanced fetch Options](guide/http/making-requests#advanced-fetch-options)
  *
  * @publicApi
+ * @deprecated `withFetch` is not required anymore. `FetchBackend` is the default `HttpBackend`.
  */
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
   return makeHttpFeature(HttpFeatureKind.Fetch, [
     FetchBackend,
-    {provide: FETCH_BACKEND, useExisting: FetchBackend},
     {provide: HttpBackend, useExisting: FetchBackend},
   ]);
 }
