@@ -152,7 +152,7 @@ function constructTypeCtorParameter(
   const coercedKeys: ts.PropertySignature[] = [];
   const signalInputKeys: ts.LiteralTypeNode[] = [];
 
-  for (const {classPropertyName, transform, isSignal} of meta.fields.inputs) {
+  for (const {classPropertyName, transformType, isSignal} of meta.fields.inputs) {
     if (isSignal) {
       signalInputKeys.push(
         ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(classPropertyName)),
@@ -163,8 +163,8 @@ function constructTypeCtorParameter(
       );
     } else {
       const coercionType =
-        transform != null
-          ? transform.type.node
+        transformType !== undefined
+          ? transformType
           : tsCreateTypeQueryForCoercedInput(rawType.typeName, classPropertyName);
 
       coercedKeys.push(

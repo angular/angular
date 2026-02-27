@@ -18,6 +18,18 @@ To understand and check the types of various operations and structures within te
 
 TCBs are not ever emitted, nor are they referenced from any other code (they're unused code as far as TypeScript is concerned). Their _runtime_ effect is therefore unimportant. What matters is that they express to TypeScript the type relationships of directives, bindings, and other entities in the template. Type errors within TCBs translate directly to type errors in the original template.
 
+### AST-Free Metadata & Preprocessor Integration
+
+As Angular evolves toward supporting alternative compilation pipelines (such as a native Rust compiler or a fast native TS parser like `ts-go`), the mechanism for providing information about components, directives, and pipes to the TCB generator has been abstracted.
+
+Instead of directly passing TypeScript AST nodes representing the original program (`ts.Node`, `ts.Declaration`, `ClassDeclaration`, etc.), the type checking system relies on "AST-free" metadata interfaces (e.g., `TcbDirectiveMetadata`, `TcbReferenceMetadata`).
+
+When operating in the traditional TypeScript compiler (`ngc`), a "TCB Adapter" translates the internal TS-bound metadata into these AST-free structures.
+
+When operating in an environment where the Angular application is analyzed by a separate preprocessor process (whether `ts-go` or Rust), the indexer performs the analysis and serializes this exact same AST-free metadata over an IPC boundary directly to the TS-based TCB generator. This enables the existing, robust TS-based template type checker (which heavily relies on TypeScript's inference engines) to continue functioning without needing to port the entire template type checking and `TcbOp` implementation to the native preprocessor.
+
+**Note on AST Generation:** While the metadata is "AST-free" in the sense that it is entirely disconnected from the original user's `ts.Program`, the TCB generation process is still fundamentally tied to TypeScript factory APIs. Because of this, certain metadata fields (such as `TcbInputMapping.transformType` and `TcbComponentMetadata.typeParameters`) still require synthetic `ts.TypeNode` and `ts.TypeParameterDeclaration` instances. In a hybrid architecture, the native preprocessor is expected to serialize these scopes and types as strings, and the TypeScript coordinator (Node.js) is responsible for parsing these strings back into detached TypeScript AST nodes before passing them to the TCB generator. This avoids unnecessary serialization costs when the TCB generator runs directly within the existing TypeScript codebase.
+
 ### Theory
 
 Given a component `SomeCmp`, its TCB takes the form of a function:

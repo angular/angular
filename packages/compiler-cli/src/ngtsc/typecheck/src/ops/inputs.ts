@@ -20,7 +20,7 @@ import {
 import ts from 'typescript';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 import {TcbOp} from './base';
 import {BindingPropertyName, ClassPropertyName} from '../../../metadata';
 import {addParseSpanInfo, wrapForDiagnostics} from '../diagnostics';
@@ -61,7 +61,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
     private tcb: Context,
     private scope: Scope,
     private node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
-    private dir: TypeCheckableDirectiveMeta,
+    private dir: TcbDirectiveMetadata,
     private isFormControl: boolean = false,
     private customFormControlType: CustomFormControlType | null,
   ) {
@@ -117,19 +117,17 @@ export class TcbDirectiveInputsOp extends TcbOp {
         if (this.dir.coercedInputFields.has(fieldName)) {
           let type: ts.TypeNode;
 
-          if (transformType !== null) {
-            type = this.tcb.env.referenceTransplantedType(new TransplantedType(transformType));
+          if (transformType) {
+            type = transformType;
           } else {
             // The input has a coercion declaration which should be used instead of assigning the
             // expression into the input field directly. To achieve this, a variable is declared
             // with a type of `typeof Directive.ngAcceptInputType_fieldName` which is then used as
             // target of the assignment.
-            const dirTypeRef: ts.TypeNode = this.tcb.env.referenceType(this.dir.ref);
+            const dirTypeRef: ts.TypeNode = this.tcb.env.referenceTcbType(this.dir.ref);
 
             if (!ts.isTypeReferenceNode(dirTypeRef)) {
-              throw new Error(
-                `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`,
-              );
+              throw new Error(`Expected TypeReferenceNode from reference to ${this.dir.ref.name}`);
             }
 
             type = tsCreateTypeQueryForCoercedInput(dirTypeRef.typeName, fieldName);
@@ -157,11 +155,9 @@ export class TcbDirectiveInputsOp extends TcbOp {
           }
 
           const id = this.tcb.allocateId();
-          const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
+          const dirTypeRef = this.tcb.env.referenceTcbType(this.dir.ref);
           if (!ts.isTypeReferenceNode(dirTypeRef)) {
-            throw new Error(
-              `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`,
-            );
+            throw new Error(`Expected TypeReferenceNode from reference to ${this.dir.ref.name}`);
           }
           const type = ts.factory.createIndexedAccessTypeNode(
             ts.factory.createTypeQueryNode(dirId as ts.Identifier),

@@ -22,7 +22,7 @@ import {
   TmplAstTemplate,
 } from '@angular/compiler';
 import ts from 'typescript';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 import {markIgnoreDiagnostics} from '../comments';
 import {addParseSpanInfo} from '../diagnostics';
 import {tsDeclareVariable} from '../ts_util';
@@ -224,7 +224,7 @@ export class TcbNativeRadioButtonFieldOp extends TcbNativeFieldOp {
 
 /** Expands the set of bound inputs with the ones from custom field directives. */
 export function expandBoundAttributesForField(
-  directive: TypeCheckableDirectiveMeta,
+  directive: TcbDirectiveMetadata,
   node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
   customFormControlType: CustomFormControlType | null,
 ): TcbBoundAttribute[] | null {
@@ -282,31 +282,22 @@ export function expandBoundAttributesForField(
   return boundInputs;
 }
 
-export function isFieldDirective(meta: TypeCheckableDirectiveMeta): boolean {
+export function isFieldDirective(meta: TcbDirectiveMetadata): boolean {
   if (meta.name !== 'FormField') {
     return false;
   }
 
   // Fast path, relevant for all external users.
-  if (meta.ref.bestGuessOwningModule?.specifier === '@angular/forms/signals') {
+  if (meta.ref.moduleName === '@angular/forms/signals') {
     return true;
   }
 
-  // Slightly slower, but more accurate path.
-  return (
-    ts.isClassDeclaration(meta.ref.node) &&
-    meta.ref.node.members.some(
-      (member) =>
-        ts.isPropertyDeclaration(member) &&
-        ts.isComputedPropertyName(member.name) &&
-        ts.isIdentifier(member.name.expression) &&
-        member.name.expression.text === 'ɵNgFieldDirective',
-    )
-  );
+  // Slightly slower, but more accurate path. Fallback for internal / local compilation where we don't have the exact module.
+  return meta.hasNgFieldDirective;
 }
 
 function getSyntheticFieldBoundInput(
-  dir: TypeCheckableDirectiveMeta,
+  dir: TcbDirectiveMetadata,
   inputName: string,
   fieldPropertyName: string,
   fieldBinding: TmplAstBoundAttribute,
@@ -343,7 +334,7 @@ function getSyntheticFieldBoundInput(
     inputs: inputs.map((input) => ({
       fieldName: input.classPropertyName,
       required: input.required,
-      transformType: input.transform?.type || null,
+      transformType: input.transformType,
       isSignal: input.isSignal,
       isTwoWayBinding,
     })),
@@ -352,7 +343,7 @@ function getSyntheticFieldBoundInput(
 
 /** Determines if a directive is a custom field and its type. */
 export function getCustomFieldDirectiveType(
-  meta: TypeCheckableDirectiveMeta,
+  meta: TcbDirectiveMetadata,
 ): CustomFormControlType | null {
   if (hasModelInput('value', meta)) {
     return 'value';
@@ -364,9 +355,9 @@ export function getCustomFieldDirectiveType(
 
 /** Determines if a directive usage is on a native field. */
 export function isNativeField(
-  dir: TypeCheckableDirectiveMeta,
+  dir: TcbDirectiveMetadata,
   node: TmplAstNode,
-  allDirectiveMatches: TypeCheckableDirectiveMeta[],
+  allDirectiveMatches: TcbDirectiveMetadata[],
 ): node is TmplAstElement & {name: 'input' | 'select' | 'textarea'} {
   // Only applies to the `FormField` directive.
   if (!isFieldDirective(dir)) {
@@ -391,7 +382,7 @@ export function isNativeField(
  * Determines if a directive is shaped like a `ControlValueAccessor`. Note that this isn't
  * 100% reliable, because we don't know if the directive was actually provided at runtime.
  */
-function isControlValueAccessorLike(meta: TypeCheckableDirectiveMeta): boolean {
+function isControlValueAccessorLike(meta: TcbDirectiveMetadata): boolean {
   return (
     meta.publicMethods.has('writeValue') &&
     meta.publicMethods.has('registerOnChange') &&
@@ -452,7 +443,7 @@ function extractFieldValue(expression: AST, tcb: Context, scope: Scope): ts.Expr
 }
 
 /** Checks whether a directive has a model-like input with a specific name. */
-function hasModelInput(name: string, meta: TypeCheckableDirectiveMeta): boolean {
+function hasModelInput(name: string, meta: TcbDirectiveMetadata): boolean {
   return (
     meta.inputs.hasBindingPropertyName(name) && meta.outputs.hasBindingPropertyName(name + 'Change')
   );
@@ -464,7 +455,7 @@ function hasModelInput(name: string, meta: TypeCheckableDirectiveMeta): boolean 
  * A node is a form control if it has a matching `FormField` directive, and no other directives match
  * the `field` input.
  */
-export function isFormControl(allDirectiveMatches: TypeCheckableDirectiveMeta[]): boolean {
+export function isFormControl(allDirectiveMatches: TcbDirectiveMetadata[]): boolean {
   let result = false;
   for (const match of allDirectiveMatches) {
     if (match.inputs.hasBindingPropertyName('formField')) {

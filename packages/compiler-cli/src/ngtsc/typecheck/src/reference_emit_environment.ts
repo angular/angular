@@ -15,6 +15,7 @@ import {
 } from '@angular/compiler';
 import ts from 'typescript';
 
+import {ErrorCode, FatalDiagnosticError, makeDiagnosticChain} from '../../diagnostics';
 import {
   assertSuccessfulReferenceEmit,
   ImportFlags,
@@ -24,6 +25,7 @@ import {
 } from '../../imports';
 import {ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateType} from '../../translator';
+import {TcbReferenceMetadata} from '../api';
 
 /**
  * An environment for a given source file that can be used to emit references.
@@ -34,7 +36,7 @@ import {ImportManager, translateExpression, translateType} from '../../translato
 export class ReferenceEmitEnvironment {
   constructor(
     readonly importManager: ImportManager,
-    protected refEmitter: ReferenceEmitter,
+    public refEmitter: ReferenceEmitter,
     readonly reflector: ReflectionHost,
     public contextFile: ts.SourceFile,
   ) {}
@@ -72,6 +74,45 @@ export class ReferenceEmitEnvironment {
       this.refEmitter,
       this.importManager,
     );
+  }
+
+  /**
+   * Generates a `ts.TypeNode` from a `TcbReferenceMetadata` object.
+   * This is used by the TCB operations which do not hold on to the original `ts.Declaration`.
+   */
+  referenceTcbType(ref: TcbReferenceMetadata): ts.TypeNode {
+    if (ref.unexportedDiagnostic !== null || ref.isLocal || ref.moduleName === null) {
+      if (ref.unexportedDiagnostic !== null) {
+        throw new FatalDiagnosticError(
+          ErrorCode.IMPORT_GENERATION_FAILURE,
+          this.contextFile, // Using context file as fallback origin for external file since we lack exact node
+          makeDiagnosticChain(`Unable to import symbol ${ref.name}.`, [
+            makeDiagnosticChain(ref.unexportedDiagnostic),
+          ]),
+        );
+      }
+      return ts.factory.createTypeReferenceNode(ref.name);
+    }
+    return this.referenceExternalType(ref.moduleName, ref.name);
+  }
+
+  /**
+   * Generates a `ts.Expression` from a `TcbReferenceMetadata` object.
+   */
+  referenceTcbValue(ref: TcbReferenceMetadata): ts.Expression {
+    if (ref.unexportedDiagnostic !== null || ref.isLocal || ref.moduleName === null) {
+      if (ref.unexportedDiagnostic !== null) {
+        throw new FatalDiagnosticError(
+          ErrorCode.IMPORT_GENERATION_FAILURE,
+          this.contextFile,
+          makeDiagnosticChain(`Unable to import symbol ${ref.name}.`, [
+            makeDiagnosticChain(ref.unexportedDiagnostic),
+          ]),
+        );
+      }
+      return ts.factory.createIdentifier(ref.name);
+    }
+    return this.referenceExternalSymbol(ref.moduleName, ref.name);
   }
 
   /**

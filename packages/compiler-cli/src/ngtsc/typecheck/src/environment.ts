@@ -8,20 +8,21 @@
 
 import ts from 'typescript';
 
+import {ReferenceEmitter} from '../../imports';
+import {ReflectionHost} from '../../reflection';
+import {ImportManager} from '../../translator';
 import {
-  assertSuccessfulReferenceEmit,
-  ImportFlags,
-  Reference,
-  ReferenceEmitter,
-} from '../../imports';
-import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {ImportManager, translateExpression} from '../../translator';
-import {TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from '../api';
+  TcbDirectiveMetadata,
+  TcbPipeMetadata,
+  TcbReferenceKey,
+  TcbReferenceMetadata,
+  TypeCheckingConfig,
+  TypeCtorMetadata,
+} from '../api';
 
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {tsDeclareVariable} from './ts_util';
-import {generateTypeCtorDeclarationFn, requiresInlineTypeCtor} from './type_constructor';
-import {TypeParameterEmitter} from './type_parameter_emitter';
+import {generateTypeCtorDeclarationFn} from './type_constructor';
 
 /**
  * A context which hosts one or more Type Check Blocks (TCBs).
@@ -40,10 +41,10 @@ export class Environment extends ReferenceEmitEnvironment {
     typeCtor: 1,
   };
 
-  private typeCtors = new Map<ClassDeclaration, ts.Expression>();
+  private typeCtors = new Map<TcbReferenceKey, ts.Expression>();
   protected typeCtorStatements: ts.Statement[] = [];
 
-  private pipeInsts = new Map<ClassDeclaration, ts.Expression>();
+  private pipeInsts = new Map<TcbReferenceKey, ts.Expression>();
   protected pipeInstStatements: ts.Statement[] = [];
 
   constructor(
@@ -62,25 +63,26 @@ export class Environment extends ReferenceEmitEnvironment {
    * Depending on the shape of the directive itself, this could be either a reference to a declared
    * type constructor, or to an inline type constructor.
    */
-  typeCtorFor(dir: TypeCheckableDirectiveMeta): ts.Expression {
-    const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
-    const node = dirRef.node;
-    if (this.typeCtors.has(node)) {
-      return this.typeCtors.get(node)!;
+  typeCtorFor(dir: TcbDirectiveMetadata): ts.Expression {
+    const key = getTcbReferenceKey(dir.ref);
+    if (this.typeCtors.has(key)) {
+      return this.typeCtors.get(key)!;
     }
 
-    if (requiresInlineTypeCtor(node, this.reflector, this)) {
+    if (dir.hasRequiresInlineTypeCtor) {
       // The constructor has already been created inline, we just need to construct a reference to
       // it.
-      const ref = this.reference(dirRef);
-      const typeCtorExpr = ts.factory.createPropertyAccessExpression(ref, 'ngTypeCtor');
-      this.typeCtors.set(node, typeCtorExpr);
+      const typeCtorExpr = ts.factory.createPropertyAccessExpression(
+        this.referenceTcbValue(dir.ref),
+        'ngTypeCtor',
+      );
+      this.typeCtors.set(key, typeCtorExpr);
       return typeCtorExpr;
     } else {
       const fnName = `_ctor${this.nextIds.typeCtor++}`;
-      const nodeTypeRef = this.referenceType(dirRef);
+      const nodeTypeRef = this.referenceTcbType(dir.ref);
       if (!ts.isTypeReferenceNode(nodeTypeRef)) {
-        throw new Error(`Expected TypeReferenceNode from reference to ${dirRef.debugName}`);
+        throw new Error(`Expected TypeReferenceNode from reference to ${dir.ref.name}`);
       }
       const meta: TypeCtorMetadata = {
         fnName,
@@ -88,15 +90,15 @@ export class Environment extends ReferenceEmitEnvironment {
         fields: {
           inputs: dir.inputs,
           // TODO: support queries
-          queries: dir.queries,
         },
         coercedInputFields: dir.coercedInputFields,
       };
-      const typeParams = this.emitTypeParameters(node);
+
+      const typeParams = dir.typeParameters || undefined;
       const typeCtor = generateTypeCtorDeclarationFn(this, meta, nodeTypeRef.typeName, typeParams);
       this.typeCtorStatements.push(typeCtor);
       const fnId = ts.factory.createIdentifier(fnName);
-      this.typeCtors.set(node, fnId);
+      this.typeCtors.set(key, fnId);
       return fnId;
     }
   }
@@ -104,45 +106,35 @@ export class Environment extends ReferenceEmitEnvironment {
   /*
    * Get an expression referring to an instance of the given pipe.
    */
-  pipeInst(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
-    if (this.pipeInsts.has(ref.node)) {
-      return this.pipeInsts.get(ref.node)!;
+  pipeInst(pipe: TcbPipeMetadata): ts.Expression {
+    const key = getTcbReferenceKey(pipe.ref);
+    if (this.pipeInsts.has(key)) {
+      return this.pipeInsts.get(key)!;
     }
 
-    const pipeType = this.referenceType(ref);
+    // Note: It's important that we do not try to evaluate the `pipe.typeParameters` here and pad them
+    // out with `any` type arguments.
+    // If we supply `any` to a generic pipe (e.g. `var _pipe1: MyPipe<any>;`), it destroys the generic
+    // constraints and degrades the `transform` signature. When they are omitted entirely, TypeScript
+    // implicitly flags an error, which the Angular compiler filters out, and crucially recovers by
+    // falling back to constraint inference (e.g. `var _pipe1: MyPipe;` infers bounds safely).
+    let pipeType = this.referenceTcbType(pipe.ref);
     const pipeInstId = ts.factory.createIdentifier(`_pipe${this.nextIds.pipeInst++}`);
 
     this.pipeInstStatements.push(tsDeclareVariable(pipeInstId, pipeType));
-    this.pipeInsts.set(ref.node, pipeInstId);
+    this.pipeInsts.set(key, pipeInstId);
 
     return pipeInstId;
-  }
-
-  /**
-   * Generate a `ts.Expression` that references the given node.
-   *
-   * This may involve importing the node into the file if it's not declared there already.
-   */
-  reference(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
-    // Disable aliasing for imports generated in a template type-checking context, as there is no
-    // guarantee that any alias re-exports exist in the .d.ts files. It's safe to use direct imports
-    // in these cases as there is no strict dependency checking during the template type-checking
-    // pass.
-    const ngExpr = this.refEmitter.emit(ref, this.contextFile, ImportFlags.NoAliasing);
-    assertSuccessfulReferenceEmit(ngExpr, this.contextFile, 'class');
-
-    // Use `translateExpression` to convert the `Expression` into a `ts.Expression`.
-    return translateExpression(this.contextFile, ngExpr.expression, this.importManager);
-  }
-
-  private emitTypeParameters(
-    declaration: ClassDeclaration<ts.ClassDeclaration>,
-  ): ts.TypeParameterDeclaration[] | undefined {
-    const emitter = new TypeParameterEmitter(declaration.typeParameters, this.reflector);
-    return emitter.emit((ref) => this.referenceType(ref));
   }
 
   getPreludeStatements(): ts.Statement[] {
     return [...this.pipeInstStatements, ...this.typeCtorStatements];
   }
+}
+
+export function getTcbReferenceKey(ref: TcbReferenceMetadata): TcbReferenceKey {
+  if (ref.nodeFilePath !== undefined && ref.nodeNameSpan !== undefined) {
+    return `${ref.nodeFilePath}#${ref.nodeNameSpan.start}` as TcbReferenceKey;
+  }
+  return (ref.moduleName ? `${ref.moduleName}#${ref.name}` : ref.name) as TcbReferenceKey;
 }

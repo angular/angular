@@ -163,7 +163,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     private config: TypeCheckingConfig,
     private refEmitter: ReferenceEmitter,
     private reflector: ReflectionHost,
-    private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
+    private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName' | 'getSourceFile'>,
     private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>,
     private readonly metaReader: MetadataReader,
     private readonly localMetaReader: MetadataReaderWithIndex,

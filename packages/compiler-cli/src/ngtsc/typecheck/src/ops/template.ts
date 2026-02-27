@@ -12,7 +12,7 @@ import {addParseSpanInfo} from '../diagnostics';
 import {TcbOp} from './base';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 import {Reference} from '../../../imports';
 import {ClassDeclaration} from '../../../reflection';
 import {markIgnoreDiagnostics} from '../comments';
@@ -142,7 +142,7 @@ export class TcbTemplateBodyOp extends TcbOp {
   private addDirectiveGuards(
     guards: ts.Expression[],
     hostNode: TmplAstTemplate | TmplAstDirective,
-    directives: TypeCheckableDirectiveMeta[] | null,
+    directives: TcbDirectiveMetadata[] | null,
   ) {
     if (directives === null || directives.length === 0) {
       return;
@@ -152,9 +152,7 @@ export class TcbTemplateBodyOp extends TcbOp {
 
     for (const dir of directives) {
       const dirInstId = this.scope.resolve(hostNode, dir);
-      const dirId = this.tcb.env.reference(
-        dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      );
+      const dirId = this.tcb.env.referenceTcbValue(dir.ref);
 
       // There are two kinds of guards. Template guards (ngTemplateGuards) allow type narrowing of
       // the expression passed to an @Input of the directive. Scan the directive to see if it has

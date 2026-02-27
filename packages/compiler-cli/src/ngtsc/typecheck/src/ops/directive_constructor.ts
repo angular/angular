@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {TcbOp} from './base';
 import {Context} from './context';
 import type {Scope} from './scope';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from '../comments';
 import {addParseSpanInfo, wrapForDiagnostics} from '../diagnostics';
 import {tsCreateVariable} from '../ts_util';
@@ -38,7 +38,7 @@ export class TcbDirectiveCtorOp extends TcbOp {
     private tcb: Context,
     private scope: Scope,
     private node: DirectiveOwner,
-    private dir: TypeCheckableDirectiveMeta,
+    private dir: TcbDirectiveMetadata,
     private customFormControlType: CustomFormControlType | null,
   ) {
     super();
@@ -142,7 +142,7 @@ export class TcbDirectiveCtorCircularFallbackOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private dir: TypeCheckableDirectiveMeta,
+    private dir: TcbDirectiveMetadata,
   ) {
     super();
   }
@@ -169,7 +169,7 @@ export class TcbDirectiveCtorCircularFallbackOp extends TcbOp {
  * the directive instance from any bound inputs.
  */
 function tcbCallTypeCtor(
-  dir: TypeCheckableDirectiveMeta,
+  dir: TcbDirectiveMetadata,
   tcb: Context,
   inputs: TcbDirectiveInput[],
 ): ts.Expression {

@@ -39,6 +39,7 @@ import {
 } from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
+import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
@@ -204,7 +205,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
   constructor(
     private config: TypeCheckingConfig,
-    private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
+    private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName' | 'getSourceFile'>,
     private refEmitter: ReferenceEmitter,
     private reflector: ReflectionHost,
     private host: TypeCheckingHost,
@@ -290,7 +291,6 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           fields: {
             inputs: dir.inputs,
             // TODO(alxhub): support queries
-            queries: dir.queries,
           },
           coercedInputFields: dir.coercedInputFields,
         });
@@ -568,7 +568,9 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     if (!fileData.shimData.has(shimPath)) {
       fileData.shimData.set(shimPath, {
         domSchemaChecker: new RegistryDomSchemaChecker(fileData.sourceManager),
-        oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager),
+        oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager, (name) =>
+          this.compilerHost.getSourceFile(name, ts.ScriptTarget.Latest),
+        ),
         file: new TypeCheckFile(
           shimPath,
           this.config,
@@ -679,13 +681,15 @@ class InlineTcbOp implements Op {
     const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
     const fnName = ts.factory.createIdentifier(`_tcb_${this.ref.node.pos}`);
 
+    const {tcbMeta, component} = adaptTypeCheckBlockMetadata(this.ref, this.meta, env);
+
     // Inline TCBs should copy any generic type parameter nodes directly, as the TCB code is
     // inlined into the class in a context where that will always be legal.
     const fn = generateTypeCheckBlock(
       env,
-      this.ref,
+      component,
       fnName,
-      this.meta,
+      tcbMeta,
       this.domSchemaChecker,
       this.oobRecorder,
       TcbGenericContextBehavior.CopyClassNodes,

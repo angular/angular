@@ -21,7 +21,7 @@ import ts from 'typescript';
 import {TcbOp} from './base';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 import {addParseSpanInfo} from '../diagnostics';
 import {tsCreateVariable} from '../ts_util';
 import {getAnyExpression} from '../expression';
@@ -63,7 +63,7 @@ export class TcbReferenceOp extends TcbOp {
     private readonly scope: Scope,
     private readonly node: TmplAstReference,
     private readonly host: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
-    private readonly target: TypeCheckableDirectiveMeta | TmplAstTemplate | TmplAstElement,
+    private readonly target: TcbDirectiveMetadata | TmplAstTemplate | TmplAstElement,
   ) {
     super();
   }

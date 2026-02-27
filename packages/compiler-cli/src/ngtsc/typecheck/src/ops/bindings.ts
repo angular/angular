@@ -19,7 +19,7 @@ import {
   TmplAstTextAttribute,
 } from '@angular/compiler';
 import ts from 'typescript';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 import {ClassPropertyName} from '../../../metadata';
 import {Reference} from '../../../imports';
 import {Context} from './context';
@@ -33,7 +33,7 @@ export interface TcbBoundAttribute {
     fieldName: ClassPropertyName;
     required: boolean;
     isSignal: boolean;
-    transformType: Reference<ts.TypeNode> | null;
+    transformType?: ts.TypeNode;
     isTwoWayBinding: boolean;
   }[];
 }
@@ -80,7 +80,7 @@ export interface TcbDirectiveUnsetInput {
 export type TcbDirectiveInput = TcbDirectiveBoundInput | TcbDirectiveUnsetInput;
 
 export function getBoundAttributes(
-  directive: TypeCheckableDirectiveMeta,
+  directive: TcbDirectiveMetadata,
   node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
 ): TcbBoundAttribute[] {
   const boundInputs: TcbBoundAttribute[] = [];
@@ -107,7 +107,7 @@ export function getBoundAttributes(
           return {
             fieldName: input.classPropertyName,
             required: input.required,
-            transformType: input.transform?.type || null,
+            transformType: input.transformType,
             isSignal: input.isSignal,
             isTwoWayBinding:
               attr instanceof TmplAstBoundAttribute && attr.type === BindingType.TwoWay,
@@ -143,7 +143,7 @@ export function checkSplitTwoWayBinding(
     return false;
   }
   // Input consumer should be a directive because it's claimed
-  const inputConsumer = tcb.boundTarget.getConsumerOfBinding(input) as TypeCheckableDirectiveMeta;
+  const inputConsumer = tcb.boundTarget.getConsumerOfBinding(input) as TcbDirectiveMetadata;
   const outputConsumer = tcb.boundTarget.getConsumerOfBinding(output);
   if (
     outputConsumer === null ||
@@ -153,22 +153,10 @@ export function checkSplitTwoWayBinding(
     return false;
   }
   if (outputConsumer instanceof TmplAstElement) {
-    tcb.oobRecorder.splitTwoWayBinding(
-      tcb.id,
-      input,
-      output,
-      inputConsumer.ref.node,
-      outputConsumer,
-    );
+    tcb.oobRecorder.splitTwoWayBinding(tcb.id, input, output, inputConsumer, outputConsumer);
     return true;
   } else if (outputConsumer.ref !== inputConsumer.ref) {
-    tcb.oobRecorder.splitTwoWayBinding(
-      tcb.id,
-      input,
-      output,
-      inputConsumer.ref.node,
-      outputConsumer.ref.node,
-    );
+    tcb.oobRecorder.splitTwoWayBinding(tcb.id, input, output, inputConsumer, outputConsumer);
     return true;
   }
   return false;

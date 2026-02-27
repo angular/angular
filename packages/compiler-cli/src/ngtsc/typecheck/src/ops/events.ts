@@ -21,7 +21,7 @@ import ts from 'typescript';
 import {TcbOp} from './base';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 import {addParseSpanInfo} from '../diagnostics';
 import {TcbExpressionTranslator, unwrapWritableSignal} from './expression';
 import {tsCreateVariable} from '../ts_util';
@@ -62,7 +62,7 @@ export class TcbDirectiveOutputsOp extends TcbOp {
     private node: DirectiveOwner,
     private inputs: TmplAstBoundAttribute[] | null,
     private outputs: TmplAstBoundEvent[],
-    private dir: TypeCheckableDirectiveMeta,
+    private dir: TcbDirectiveMetadata,
   ) {
     super();
   }
