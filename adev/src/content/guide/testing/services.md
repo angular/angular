@@ -92,20 +92,23 @@ To test `OrderTotal` without relying on the real `TaxCalculator`, you can provid
 
 ```ts { header: 'order-total.spec.ts' }
 import {TestBed} from '@angular/core/testing';
-import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {beforeEach, describe, expect, it, vi, type Mocked} from 'vitest';
 import {OrderTotal} from './order-total';
 import {TaxCalculator} from './tax-calculator';
 
-const taxCalculatorStub: Partial<TaxCalculator> = {
-  // Vitest's `vi.fn()` creates a function with a
-  // controlled return value via `mockReturnValue`
-  calculate: vi.fn().mockReturnValue(5),
+// Vitest's `Mocked` utility type ensures the stub is type-safe,
+// while `vi.fn()` creates a mock function for each method
+const taxCalculatorStub: Mocked<TaxCalculator> = {
+  calculate: vi.fn(),
 };
 
 describe('OrderTotal', () => {
   let service: OrderTotal;
 
   beforeEach(() => {
+    // `mockReturnValue` sets a controlled return value for the stub
+    taxCalculatorStub.calculate.mockReturnValue(5);
+
     TestBed.configureTestingModule({
       // The `providers` array accepts a provider object where `provide`
       // specifies the dependency to replace and `useValue` defines the stub
@@ -128,18 +131,20 @@ A stub controls what a dependency returns, but sometimes you also need to verify
 
 ```ts { header: 'order-total.spec.ts' }
 import {TestBed} from '@angular/core/testing';
-import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {beforeEach, describe, expect, it, vi, type Mocked} from 'vitest';
 import {OrderTotal} from './order-total';
 import {TaxCalculator} from './tax-calculator';
 
-const taxCalculatorStub: Partial<TaxCalculator> = {
-  calculate: vi.fn().mockReturnValue(5),
+const taxCalculatorStub: Mocked<TaxCalculator> = {
+  calculate: vi.fn(),
 };
 
 describe('OrderTotal', () => {
   let service: OrderTotal;
 
   beforeEach(() => {
+    taxCalculatorStub.calculate.mockReturnValue(5);
+
     TestBed.configureTestingModule({
       providers: [{provide: TaxCalculator, useValue: taxCalculatorStub}],
     });
