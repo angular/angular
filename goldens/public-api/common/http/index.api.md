@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 import { Provider } from '@angular/core';
 import { ResourceRef } from '@angular/core';
 import { Signal } from '@angular/core';
+import { Type } from '@angular/core';
 import { ValueEqualityFn } from '@angular/core';
 import { WritableResource } from '@angular/core';
 
@@ -29,6 +30,9 @@ export class FetchBackend implements HttpBackend {
 
 // @public
 export const HTTP_INTERCEPTORS: InjectionToken<readonly HttpInterceptor[]>;
+
+// @public
+export const HTTP_JSON_PARSER: InjectionToken<HttpJsonParser>;
 
 // @public
 export const HTTP_TRANSFER_CACHE_ORIGIN_MAP: InjectionToken<Record<string, string>>;
@@ -2674,6 +2678,8 @@ export enum HttpFeatureKind {
     // (undocumented)
     Interceptors = 0,
     // (undocumented)
+    JsonParser = 7,
+    // (undocumented)
     JsonpSupport = 4,
     // (undocumented)
     LegacyInterceptors = 1,
@@ -2682,7 +2688,7 @@ export enum HttpFeatureKind {
     // (undocumented)
     RequestsMadeViaParent = 5,
     // (undocumented)
-    Xhr = 7
+    Xhr = 8
 }
 
 // @public
@@ -2737,6 +2743,12 @@ export interface HttpInterceptor {
 
 // @public
 export type HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => Observable<HttpEvent<unknown>>;
+
+// @public
+export abstract class HttpJsonParser {
+    // (undocumented)
+    abstract parse(text: string): any;
+}
 
 // @public
 export interface HttpParameterCodec {
@@ -3339,6 +3351,9 @@ export function withInterceptors(interceptorFns: HttpInterceptorFn[]): HttpFeatu
 
 // @public
 export function withInterceptorsFromDi(): HttpFeature<HttpFeatureKind.LegacyInterceptors>;
+
+// @public
+export function withJsonParser(parser: Type<HttpJsonParser>): HttpFeature<HttpFeatureKind.JsonParser>;
 
 // @public
 export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport>;

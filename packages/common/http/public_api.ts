@@ -22,6 +22,7 @@ export {
   HttpInterceptor,
   HttpInterceptorFn,
 } from './src/interceptor';
+export {HttpJsonParser, HTTP_JSON_PARSER} from './src/json_parser';
 export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
 export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule} from './src/module';
 export {
@@ -39,6 +40,7 @@ export {
   withInterceptors,
   withInterceptorsFromDi,
   withJsonpSupport,
+  withJsonParser,
   withNoXsrfProtection,
   withRequestsMadeViaParent,
   withXsrfConfiguration,

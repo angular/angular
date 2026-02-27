@@ -12,12 +12,14 @@ import {
   InjectionToken,
   makeEnvironmentProviders,
   Provider,
+  Type,
 } from '@angular/core';
 
 import {HttpBackend, HttpHandler, HttpInterceptorHandler} from './backend';
 import {HttpClient} from './client';
 import {FetchBackend} from './fetch';
 import {HTTP_INTERCEPTOR_FNS, HttpInterceptorFn, legacyInterceptorFnFactory} from './interceptor';
+import {HTTP_JSON_PARSER, HttpJsonParser} from './json_parser';
 import {
   jsonpCallbackContext,
   JsonpCallbackContext,
@@ -40,6 +42,7 @@ export enum HttpFeatureKind {
   JsonpSupport,
   RequestsMadeViaParent,
   Fetch,
+  JsonParser,
   Xhr,
 }
 
@@ -297,6 +300,21 @@ export function withFetch(): HttpFeature<HttpFeatureKind.Fetch> {
   return makeHttpFeature(HttpFeatureKind.Fetch, [
     FetchBackend,
     {provide: HttpBackend, useExisting: FetchBackend},
+  ]);
+}
+
+/**
+ * Configures the current `HttpClient` instance to use a custom JSON parser.
+ *
+ * @param parser The class of the custom JSON parser.
+ * @see {@link provideHttpClient}
+ * @publicApi
+ */
+export function withJsonParser(
+  parser: Type<HttpJsonParser>,
+): HttpFeature<HttpFeatureKind.JsonParser> {
+  return makeHttpFeature(HttpFeatureKind.JsonParser, [
+    {provide: HTTP_JSON_PARSER, useClass: parser},
   ]);
 }
 

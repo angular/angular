@@ -18,6 +18,7 @@ import {RuntimeErrorCode} from './errors';
 
 import type {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
+import {HTTP_JSON_PARSER} from './json_parser';
 import {ACCEPT_HEADER, ACCEPT_HEADER_VALUE, CONTENT_TYPE_HEADER, HttpRequest} from './request';
 import {
   HTTP_STATUS_CODE_OK,
@@ -26,6 +27,7 @@ import {
   HttpEvent,
   HttpEventType,
   HttpHeaderResponse,
+  HttpJsonParseError,
   HttpResponse,
 } from './response';
 
@@ -54,6 +56,7 @@ export class FetchBackend implements HttpBackend {
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly jsonParser = inject(HTTP_JSON_PARSER);
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
@@ -280,21 +283,22 @@ export class FetchBackend implements HttpBackend {
     switch (request.responseType) {
       case 'json':
         // stripping the XSSI when present
-        const text = new TextDecoder().decode(binContent).replace(XSSI_PREFIX, '');
+        const originalText = new TextDecoder().decode(binContent);
+        const text = originalText.replace(XSSI_PREFIX, '');
         if (text === '') {
           return null;
         }
         try {
-          return JSON.parse(text) as object;
-        } catch (e: unknown) {
+          return this.jsonParser.parse(text) as object;
+        } catch (error: unknown) {
           // Allow handling non-JSON errors (!) as plain text, same as the XHR
           // backend. Without this special sauce, any non-JSON error would be
-          // completely inaccessible downstream as the `HttpErrorResponse.error`
-          // would be set to the `SyntaxError` from then failing `JSON.parse`.
-          if (status < 200 || status >= 300) {
-            return text;
+          // completely inaccessible downstream as the \`HttpErrorResponse.error\`
+          // would be set to the \`SyntaxError\` from then failing \`JSON.parse\`.
+          if (status >= 200 && status < 300) {
+            throw {error, text: originalText} as HttpJsonParseError;
           }
-          throw e;
+          return text;
         }
       case 'text':
         return new TextDecoder().decode(binContent);

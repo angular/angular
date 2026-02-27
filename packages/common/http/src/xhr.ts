@@ -21,6 +21,7 @@ import {switchMap} from 'rxjs/operators';
 import type {HttpBackend} from './backend';
 import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
+import {HTTP_JSON_PARSER} from './json_parser';
 import {ACCEPT_HEADER, ACCEPT_HEADER_VALUE, CONTENT_TYPE_HEADER, HttpRequest} from './request';
 import {
   HTTP_STATUS_CODE_NO_CONTENT,
@@ -109,6 +110,7 @@ export class HttpXhrBackend implements HttpBackend {
   private readonly tracingService: TracingService<TracingSnapshot> | null = inject(TracingService, {
     optional: true,
   });
+  private readonly jsonParser = inject(HTTP_JSON_PARSER);
 
   constructor(private xhrFactory: XhrFactory) {}
 
@@ -262,7 +264,7 @@ export class HttpXhrBackend implements HttpBackend {
               try {
                 // Attempt the parse. If it fails, a parse error should be delivered to the
                 // user.
-                body = body !== '' ? JSON.parse(body) : null;
+                body = body !== '' ? this.jsonParser.parse(body) : null;
               } catch (error) {
                 // Since the JSON.parse failed, it's reasonable to assume this might not have
                 // been a JSON response. Restore the original body (including any XSSI prefix)
