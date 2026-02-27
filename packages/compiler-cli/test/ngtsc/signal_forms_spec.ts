@@ -128,6 +128,120 @@ runInEachFileSystem(() => {
       expect(extractMessage(diags[0])).toBe(`Type 'number' is not assignable to type 'string'.`);
     });
 
+    it('should allow string or number for inputs with numeric inputmode', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input inputmode="numeric" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal(0));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should reject invalid types for inputs with numeric inputmode', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input inputmode="numeric" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            f = form(signal({}));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Type '{}' is not assignable to type 'string | number'.`,
+      );
+    });
+
+    it('should allow string or number for inputs with dynamically bound inputmode', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input [inputMode]="mode" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            mode = 'numeric';
+            f = form(signal(0));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should allow string or number for inputs with bound inputmode attribute', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input [attr.inputmode]="mode" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            mode = 'numeric';
+            f = form(signal(0));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should reject invalid types for inputs with dynamically bound inputmode', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {FormField, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input [inputMode]="mode" [formField]="f"/>',
+            imports: [FormField]
+          })
+          export class Comp {
+            mode = 'numeric';
+            f = form(signal({}));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Type '{}' is not assignable to type 'string | number'.`,
+      );
+    });
+
     it('should infer the type of the field from the input `type`', () => {
       env.write(
         'test.ts',
