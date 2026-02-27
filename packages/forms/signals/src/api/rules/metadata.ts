@@ -122,6 +122,14 @@ function override<T>(getInitial?: () => T): MetadataReducer<T | undefined, T> {
 }
 
 /**
+ * A symbol used to tag a `MetadataKey` as representing an asynchronous validation resource.
+ *
+ * @category validation
+ * @experimental 21.0.0
+ */
+export const IS_ASYNC_VALIDATION_RESOURCE: unique symbol = Symbol('IS_ASYNC_VALIDATION_RESOURCE');
+
+/**
  * Represents metadata that is aggregated from multiple parts according to the key's reducer
  * function. A value can be contributed to the aggregated value for a field using an
  * `metadata` rule in the schema. There may be multiple rules in a schema that contribute
@@ -135,6 +143,9 @@ function override<T>(getInitial?: () => T): MetadataReducer<T | undefined, T> {
  */
 export class MetadataKey<TRead, TWrite, TAcc> {
   private brand!: [TRead, TWrite, TAcc];
+
+  /** @internal */
+  [IS_ASYNC_VALIDATION_RESOURCE]?: true;
 
   /** Use {@link reducedMetadataKey}. */
   protected constructor(
