@@ -455,6 +455,11 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * @param options Optional focus options to pass to the native focus() method.
    */
   focusBoundControl(options?: FocusOptions): void;
+
+  /**
+   * Reloads all asynchronous validators for this field and its descendants.
+   */
+  reloadValidation(): void;
 }
 
 /**

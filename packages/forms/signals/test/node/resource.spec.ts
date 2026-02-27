@@ -396,4 +396,47 @@ describe('resources', () => {
 
     expect(f().metadata(RES)).toBe(undefined);
   });
+
+  describe('reloadValidation', () => {
+    it('should trigger a reload of async http validation', async () => {
+      const usernameForm = form(
+        signal('unique-user'),
+        (p) => {
+          validateHttp(p, {
+            request: ({value}) => `/api/check?username=${value()}`,
+            onSuccess: (available: boolean) => (available ? undefined : {kind: 'username-taken'}),
+            onError: () => null,
+          });
+        },
+        {injector},
+      );
+
+      TestBed.tick();
+      const req1 = backend.expectOne('/api/check?username=unique-user');
+
+      expect(usernameForm().pending()).toBe(true);
+
+      req1.flush(true);
+      await appRef.whenStable();
+
+      expect(usernameForm().valid()).toBe(true);
+      expect(usernameForm().pending()).toBe(false);
+
+      // Trigger reload
+      usernameForm().reloadValidation();
+
+      // Expect a new request to be made even though the value hasn't changed
+      TestBed.tick();
+      const req2 = backend.expectOne('/api/check?username=unique-user');
+
+      expect(usernameForm().pending()).toBe(true);
+      expect(usernameForm().valid()).toBe(false);
+
+      req2.flush(false);
+      await appRef.whenStable();
+
+      expect(usernameForm().invalid()).toBe(true);
+      expect(usernameForm().pending()).toBe(false);
+    });
+  });
 });

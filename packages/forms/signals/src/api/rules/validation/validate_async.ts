@@ -18,7 +18,7 @@ import {
   SchemaPathRules,
   TreeValidationResult,
 } from '../../types';
-import {createManagedMetadataKey, metadata} from '../metadata';
+import {IS_ASYNC_VALIDATION_RESOURCE, createManagedMetadataKey, metadata} from '../metadata';
 
 /**
  * A function that takes the result of an async operation and the current field context, and maps it
@@ -120,6 +120,8 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   const RESOURCE = createManagedMetadataKey<ReturnType<typeof opts.factory>, TParams | undefined>(
     opts.factory,
   );
+  RESOURCE[IS_ASYNC_VALIDATION_RESOURCE] = true;
+
   metadata(path, RESOURCE, (ctx) => {
     const node = ctx.stateOf(path) as FieldNode;
     const validationState = node.validationState;
