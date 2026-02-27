@@ -324,7 +324,7 @@ describe('completions', () => {
     `,
     };
 
-    it('should return property access completions', () => {
+    it('should return property access completions (method suggestions)', () => {
       const {templateFile} = setup(
         `<input dir [myInput]="'foo'.">`,
         '',
@@ -337,6 +337,18 @@ describe('completions', () => {
         `charAt`,
         'toLowerCase' /* etc. */,
       ]);
+    });
+
+    it('should return property access completions (name completion)', () => {
+      const {templateFile} = setup(
+        `<input dir [myInput]="foo">`,
+        'foobar: string = "";',
+        signalInputDirectiveWithUnionType,
+      );
+      templateFile.moveCursorToText(`dir [myInput]="foo¦">`);
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.memberVariableElement, [`foobar`]);
     });
 
     it(
@@ -414,7 +426,7 @@ describe('completions', () => {
       expectContain(completions, DisplayInfoKind.EVENT, ['(bla)']);
     });
 
-    it('should return property access completions', () => {
+    it('should return property access completions (method suggestions on listener)', () => {
       const {templateFile} = setup(
         `<input dir (bla)="'foo'.">`,
         '',
@@ -472,21 +484,6 @@ describe('completions', () => {
       templateFile.moveCursorToText(`<button dir ¦>`);
       const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, DisplayInfoKind.EVENT, ['(bla)']);
-    });
-
-    it('should return property access completions', () => {
-      const {templateFile} = setup(
-        `<input dir (bla)="'foo'.">`,
-        '',
-        initializerOutputDirectiveWithUnionType,
-      );
-      templateFile.moveCursorToText(`dir (bla)="'foo'.¦">`);
-
-      const completions = templateFile.getCompletionsAtPosition();
-      expectContain(completions, ts.ScriptElementKind.memberFunctionElement, [
-        `charAt`,
-        'toLowerCase' /* etc. */,
-      ]);
     });
 
     it(

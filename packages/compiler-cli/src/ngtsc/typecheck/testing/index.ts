@@ -30,9 +30,10 @@ import {
 } from '@angular/compiler';
 import {readFileSync} from 'fs';
 import path from 'path';
-import ts from 'typescript';
 import {globSync} from 'tinyglobby';
+import ts from 'typescript';
 
+import {freshCompilationTicket, NgCompiler, NgCompilerHost} from '../../core';
 import {
   absoluteFrom,
   AbsoluteFsPath,
@@ -81,6 +82,7 @@ import {
   ScopeData,
   TypeCheckScopeRegistry,
 } from '../../scope';
+import {sfExtensionData} from '../../shims';
 import {makeProgram, resolveFromRunfiles} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {
@@ -92,19 +94,17 @@ import {
   TypeCheckContext,
 } from '../api';
 import {
-  TypeCheckId,
   TypeCheckableDirectiveMeta,
   TypeCheckBlockMetadata,
+  TypeCheckId,
   TypeCheckingConfig,
 } from '../api/api';
 import {TemplateTypeCheckerImpl} from '../src/checker';
 import {DomSchemaChecker} from '../src/dom';
 import {OutOfBandDiagnosticRecorder} from '../src/oob';
+import {TcbGenericContextBehavior} from '../src/ops/context';
 import {TypeCheckShimGenerator} from '../src/shim';
 import {TypeCheckFile} from '../src/type_check_file';
-import {sfExtensionData} from '../../shims';
-import {freshCompilationTicket, NgCompiler, NgCompilerHost} from '../../core';
-import {TcbGenericContextBehavior} from '../src/ops/context';
 
 export function typescriptLibDts(): TestFile {
   return {
@@ -113,6 +113,7 @@ export function typescriptLibDts(): TestFile {
       type Partial<T> = { [P in keyof T]?: T[P]; };
       type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
       type NonNullable<T> = T extends null | undefined ? never : T;
+      type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never;
 
       // The following native type declarations are required for proper type inference
       declare interface Function {
@@ -297,24 +298,23 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
-export interface TestDirective
-  extends Partial<
-    Pick<
-      TypeCheckableDirectiveMeta,
-      Exclude<
-        keyof TypeCheckableDirectiveMeta,
-        | 'ref'
-        | 'coercedInputFields'
-        | 'restrictedInputFields'
-        | 'stringLiteralInputFields'
-        | 'undeclaredInputFields'
-        | 'publicMethods'
-        | 'inputs'
-        | 'outputs'
-        | 'hostDirectives'
-      >
+export interface TestDirective extends Partial<
+  Pick<
+    TypeCheckableDirectiveMeta,
+    Exclude<
+      keyof TypeCheckableDirectiveMeta,
+      | 'ref'
+      | 'coercedInputFields'
+      | 'restrictedInputFields'
+      | 'stringLiteralInputFields'
+      | 'undeclaredInputFields'
+      | 'publicMethods'
+      | 'inputs'
+      | 'outputs'
+      | 'hostDirectives'
     >
-  > {
+  >
+> {
   selector: string | null;
   name: string;
   file?: AbsoluteFsPath;
