@@ -1,0 +1,13 @@
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+  @for (movie of movies; track movie) {
+    <div
+      class="example-box"
+      cdkDrag
+      animate.enter="ease-in-animation"
+      animate.leave="ease-out-animation"
+    >
+      <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+      {{ movie }}
+    </div>
+  }
+</div>
