@@ -253,7 +253,7 @@ export function ɵɵrepeaterTrackByIdentity<T>(_: number, value: T) {
   return value;
 }
 
-class RepeaterMetadata {
+export class RepeaterMetadata {
   constructor(
     public hasEmptyBlock: boolean,
     public trackByFn: TrackByFunction<unknown>,

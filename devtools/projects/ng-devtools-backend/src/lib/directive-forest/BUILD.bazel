@@ -16,6 +16,7 @@ ts_project(
         "//devtools/projects/ng-devtools-backend/src/lib:utils",
         "//devtools/projects/ng-devtools-backend/src/lib:version",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
         "//devtools/projects/protocol",
     ],
 )

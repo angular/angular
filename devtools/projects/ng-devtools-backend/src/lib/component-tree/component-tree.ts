@@ -689,7 +689,7 @@ export const queryDirectiveForest = (
     }
     forest = node.children;
   }
-  if (node?.defer) {
+  if (node?.controlFlowBlock) {
     return null;
   }
   return node;

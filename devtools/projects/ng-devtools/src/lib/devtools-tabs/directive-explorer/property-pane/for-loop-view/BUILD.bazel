@@ -3,25 +3,26 @@ load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
 package(default_visibility = ["//visibility:public"])
 
 sass_binary(
-    name = "defer_view_styles",
-    src = "defer-view.component.scss",
-    deps = ["//devtools/projects/ng-devtools/src/styles:typography"],
+    name = "for_loop_view_component_styles",
+    src = "for-loop-view.component.scss",
 )
 
 ng_project(
-    name = "defer-view",
+    name = "for-loop-view",
     srcs = [
-        "defer-view.component.ts",
+        "for-loop-data-serializer.ts",
+        "for-loop-view.component.ts",
     ],
     angular_assets = [
-        "defer-view.component.html",
-        ":defer_view_styles",
+        "for-loop-view.component.html",
+        ":for_loop_view_component_styles",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/styles:view_tab_styles",
     ],
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
-        "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
         "//devtools/projects/protocol",
     ],
 )

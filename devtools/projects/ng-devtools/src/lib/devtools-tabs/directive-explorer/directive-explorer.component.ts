@@ -37,7 +37,7 @@ import {FrameManager} from '../../application-services/frame_manager';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {FlatNode} from './directive-forest/component-data-source';
 import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
-import {IndexedNode} from './directive-forest/index-forest';
+import {findNodeByPosition, IndexedNode, indexForest} from './directive-forest/index-forest';
 import {constructPathOfKeysToPropertyValue} from './property-resolver/directive-property-resolver';
 import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
 import {FlatNode as PropertyFlatNode} from '../../shared/object-tree-explorer/object-tree-types';
@@ -201,6 +201,7 @@ export class DirectiveExplorerComponent {
   subscribeToBackendEvents(): void {
     this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
       this.forest.set(view.forest);
+
       this.currentSelectedElement.set(this._clickedElement);
       if (view.properties && this._clickedElement) {
         this._propResolver.setProperties(this._clickedElement, view.properties);
