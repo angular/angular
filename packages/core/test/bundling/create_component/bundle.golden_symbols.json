@@ -553,6 +553,7 @@
       "leaveViewLight",
       "leavingNodes",
       "linkTNodeInTView",
+      "listenToDirectiveOutput",
       "listenToDomEvent",
       "listenToOutput",
       "locateDirectiveOrProvider",

@@ -729,6 +729,7 @@ export function setAllInputsForProperty(
   lView: LView,
   publicName: string,
   value: unknown,
+  excludeDirectiveIndex?: number,
 ): boolean {
   const inputs = tNode.inputs?.[publicName];
   const hostDirectiveInputs = tNode.hostDirectiveInputs?.[publicName];
@@ -737,6 +738,7 @@ export function setAllInputsForProperty(
   if (hostDirectiveInputs) {
     for (let i = 0; i < hostDirectiveInputs.length; i += 2) {
       const index = hostDirectiveInputs[i] as number;
+      if (index === excludeDirectiveIndex) continue;
       ngDevMode && assertIndexInRange(lView, index);
       const publicName = hostDirectiveInputs[i + 1] as string;
       const def = tView.data[index] as DirectiveDef<unknown>;
@@ -747,6 +749,7 @@ export function setAllInputsForProperty(
 
   if (inputs) {
     for (const index of inputs) {
+      if (index === excludeDirectiveIndex) continue;
       ngDevMode && assertIndexInRange(lView, index);
       const instance = lView[index];
       const def = tView.data[index] as DirectiveDef<any>;
