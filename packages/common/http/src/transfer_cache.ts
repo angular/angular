@@ -21,7 +21,7 @@ import {
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {concatMap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
@@ -29,6 +29,7 @@ import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
 import {HttpParams} from './params';
+import {fromBase64, toBase64} from './util';
 
 /**
  * Options to configure how TransferCache should be used to cache requests made via HttpClient.
@@ -222,14 +223,24 @@ export function transferCacheInterceptorFn(
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // Request not found in cache. Make the request and cache it if on the server.
     return event$.pipe(
-      tap((event: HttpEvent<unknown>) => {
+      concatMap(async (event: HttpEvent<unknown>) => {
         // Only cache successful HTTP responses.
         if (event instanceof HttpResponse) {
+          let body = event.body;
+          if (req.responseType === 'blob') {
+            // Note: Blob is converted to ArrayBuffer because Uint8Array constructor
+            // doesn't accept Blob directly, which would result in an empty array.
+            // Type assertion is safe here: when responseType is 'blob', the body is guaranteed to be a Blob
+            const arrayBuffer = await (event.body as Blob).arrayBuffer();
+            body = toBase64(arrayBuffer);
+          } else if (req.responseType === 'arraybuffer') {
+            // For arraybuffer, convert to base64; for other types (json, text), store as-is.
+            // Type assertion is safe here: when responseType is 'arraybuffer', the body is
+            // guaranteed to be an ArrayBuffer
+            body = toBase64(event.body as ArrayBufferLike);
+          }
           transferState.set<TransferHttpResponse>(storeKey, {
-            [BODY]:
-              req.responseType === 'arraybuffer' || req.responseType === 'blob'
-                ? toBase64(event.body)
-                : event.body,
+            [BODY]: body,
             [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
             [STATUS]: event.status,
             [STATUS_TEXT]: event.statusText,
@@ -237,6 +248,7 @@ export function transferCacheInterceptorFn(
             [RESPONSE_TYPE]: req.responseType,
           });
         }
+        return event;
       }),
     );
   }
@@ -314,28 +326,6 @@ function generateHash(value: string): string {
   hash += 2147483647 + 1;
 
   return hash.toString();
-}
-
-function toBase64(buffer: unknown): string {
-  //TODO: replace with when is Baseline widely available
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/toBase64
-  const bytes = new Uint8Array(buffer as ArrayBufferLike);
-
-  const CHUNK_SIZE = 0x8000; // 32,768 bytes (~32 KB) per chunk, to avoid stack overflow
-
-  let binaryString = '';
-
-  for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
-    const chunk = bytes.subarray(i, i + CHUNK_SIZE);
-    binaryString += String.fromCharCode.apply(null, chunk as unknown as number[]);
-  }
-  return btoa(binaryString);
-}
-
-function fromBase64(base64: string): ArrayBuffer {
-  const binary = atob(base64);
-  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
-  return bytes.buffer;
 }
 
 /**

@@ -530,6 +530,7 @@
       "hasApplyArgsData",
       "hasAuthHeaders",
       "hasDeps",
+      "hasFromBase64",
       "hasInSkipHydrationBlockFlag",
       "hasLift",
       "hasMatchingDehydratedView",
