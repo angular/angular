@@ -196,6 +196,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     private readonly equal: ValueEqualityFn<T> | undefined,
     private readonly debugName: string | undefined,
     injector: Injector,
+    getInitialStream?: (request: R) => Signal<ResourceStreamItem<T>> | undefined,
   ) {
     super(
       // Feed a computed signal for the value to `BaseWritableResource`, which will upgrade it to a
@@ -238,15 +239,20 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       source: this.extRequest,
       // Compute the state of the resource given a change in status.
       computation: (extRequest, previous) => {
-        const status = extRequest.request === undefined ? 'idle' : 'loading';
         if (!previous) {
+          const initialStream = getInitialStream?.(extRequest.request as R);
+          // Clear getInitialStream so it doesn't hold onto memory
+          getInitialStream = undefined;
+          const status =
+            extRequest.request === undefined ? 'idle' : initialStream ? 'resolved' : 'loading';
           return {
             extRequest,
             status,
             previousStatus: 'idle',
-            stream: undefined,
+            stream: initialStream,
           };
         } else {
+          const status = extRequest.request === undefined ? 'idle' : 'loading';
           return {
             extRequest,
             status,

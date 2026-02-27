@@ -18,6 +18,8 @@ import {
   HttpResourceRef,
 } from '../index';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
+import {withHttpTransferCache} from '../src/transfer_cache';
+import {HttpClient} from '../src/client';
 
 describe('httpResource', () => {
   beforeEach(() => {
@@ -398,6 +400,61 @@ describe('httpResource', () => {
         const _value: unknown = result.value();
       } else if (result.error()) {
       }
+    });
+  });
+
+  describe('TransferCache integration', () => {
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [provideHttpClient(), provideHttpClientTesting(), withHttpTransferCache({})],
+      });
+    });
+
+    it('should synchronously resolve with a cached value from TransferState', async () => {
+      globalThis['ngServerMode'] = true;
+      let requestResolved = false;
+      TestBed.inject(HttpClient)
+        .get('/data')
+        .subscribe(() => (requestResolved = true));
+      const req = TestBed.inject(HttpTestingController).expectOne('/data');
+      req.flush([1, 2, 3]);
+
+      expect(requestResolved).toBe(true);
+
+      // Now switch to client mode
+      globalThis['ngServerMode'] = false;
+
+      // Create httpResource. It should immediately read from TransferState.
+      const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
+
+      // It should immediately have the value synchronously and status should be resolved
+      expect(res.status()).toBe('resolved');
+      expect(res.hasValue()).toBe(true);
+      expect(res.value()).toEqual([1, 2, 3]);
+
+      // Also no new request should be made
+      TestBed.inject(HttpTestingController).expectNone('/data');
+    });
+
+    it('should not evaluate the request payload during resource initialization', () => {
+      let requestEvaluated = false;
+      const res = httpResource(
+        () => {
+          requestEvaluated = true;
+          return '/data';
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // Request function should NOT be evaluated during initialization
+      expect(requestEvaluated).toBe(false);
+
+      // Read to trigger it
+      res.status();
+
+      // The request should now have been evaluated
+      expect(requestEvaluated).toBe(true);
     });
   });
 });

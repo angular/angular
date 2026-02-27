@@ -29,7 +29,7 @@ describe('control flow migration (ng update)', () => {
   function runMigration(path: string | undefined = undefined, format: boolean = true) {
     return runner.runSchematic('control-flow-migration', {path, format}, tree);
   }
-  const migrationsJsonPath = resolve('../migrations.json');
+  const migrationsJsonPath = resolve('../collection.json');
   beforeEach(() => {
     runner = new SchematicTestRunner('test', migrationsJsonPath);
     host = new TempScopedNodeJsSyncHost();

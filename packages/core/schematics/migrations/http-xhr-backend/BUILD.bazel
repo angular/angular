@@ -8,7 +8,7 @@ package(
 )
 
 ts_project(
-    name = "bootstrap-options-migration",
+    name = "http-xhr-backend",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["*.spec.ts"],
@@ -28,7 +28,7 @@ ts_project(
     testonly = True,
     srcs = glob(["*.spec.ts"]),
     deps = [
-        ":bootstrap-options-migration",
+        ":http-xhr-backend",
         "//:node_modules/typescript",
         "//packages/compiler-cli",
         "//packages/core/schematics/utils/tsurge",
@@ -38,5 +38,4 @@ ts_project(
 jasmine_test(
     name = "test",
     data = [":test_lib"],
-    env = {"FORCE_COLOR": "3"},
 )

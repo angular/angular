@@ -163,7 +163,7 @@
   "devDependencies": {
     "@actions/core": "^3.0.0",
     "@actions/github": "^9.0.0",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#32f536bae2ff587a75b3ec6be9f730011ae91e18",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#c78d7a03ae1ca76d2946651d0dd7f476f09b4374",
     "@babel/plugin-proposal-async-generator-functions": "7.20.7",
     "@babel/plugin-transform-async-generator-functions": "^7.27.1",
     "@bazel/bazelisk": "^1.7.5",
@@ -182,7 +182,7 @@
     "cldr": "8.0.0",
     "cldrjs": "0.5.5",
     "conventional-changelog": "^7.0.0",
-    "cypress": "15.10.0",
+    "cypress": "15.11.0",
     "firebase-tools": "^15.0.0",
     "get-tsconfig": "^4.10.1",
     "gulp": "^5.0.0",

@@ -701,6 +701,86 @@ describe('@defer', () => {
       // Expect that the loading resources function was not invoked again (counter remains 1).
       expect(loadingFnInvokedTimes).toBe(1);
     });
+
+    it('should trigger change detection when `on idle` is fired without explicit fixture.detectChanges()', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (on idle) {
+            <nested-cmp [block]="'primary'" />
+          } @placeholder {
+            Placeholder
+          } @loading {
+            Loading
+          }
+        `,
+      })
+      class RootCmp {}
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        },
+      };
+
+      const idleCallbacks: IdleRequestCallback[] = [];
+      const mockRequestIdleCallback = (
+        callback: IdleRequestCallback,
+        options?: IdleRequestOptions,
+      ): number => {
+        idleCallbacks.push(callback);
+        return 1;
+      };
+
+      const nativeRequestIdleCallback = globalThis.requestIdleCallback;
+      const nativeCancelIdleCallback = globalThis.cancelIdleCallback;
+      globalThis.requestIdleCallback = mockRequestIdleCallback;
+      globalThis.cancelIdleCallback = (id: number) => {};
+
+      try {
+        TestBed.configureTestingModule({
+          providers: [
+            ...COMMON_PROVIDERS,
+            {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          ],
+        });
+
+        clearDirectiveDefs(RootCmp);
+
+        const fixture = TestBed.createComponent(RootCmp);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+        expect(loadingFnInvokedTimes).toBe(0);
+
+        // Trigger the idle callback
+        expect(idleCallbacks.length).toBe(1);
+        idleCallbacks[0]({timeRemaining: () => 50, didTimeout: false} as IdleDeadline);
+
+        // Ensure that loading function was called
+        expect(loadingFnInvokedTimes).toBe(1);
+
+        // The tick generated from the defer block state change inside the idle scheduler
+        // should have updated the view automatically, showing the loading block.
+        expect(fixture.nativeElement.outerHTML).toContain('Loading');
+      } finally {
+        globalThis.requestIdleCallback = nativeRequestIdleCallback;
+        globalThis.cancelIdleCallback = nativeCancelIdleCallback;
+      }
+    });
   });
 
   describe('directive matching', () => {
