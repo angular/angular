@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Directive, ElementRef, inject, input, DestroyRef, output} from '@angular/core';
+import {DestroyRef, Directive, ElementRef, inject, input, output} from '@angular/core';
 import {WINDOW} from '../../application-providers/window_provider';
 import {Debouncer} from '../utils/debouncer';
-import {SplitComponent} from './split.component';
 import {Direction} from './interface';
+import {SplitComponent} from './split.component';
 
 export const RESIZE_DEBOUNCE = 50; // in milliseconds
 
@@ -30,7 +30,7 @@ export type ResponsiveSplitConfig = {
 export class ResponsiveSplitDirective {
   private readonly host = inject(SplitComponent);
   private readonly elementRef = inject(ElementRef);
-  private readonly window = inject<typeof globalThis>(WINDOW);
+  private readonly window = inject(WINDOW);
 
   protected readonly config = input.required<ResponsiveSplitConfig>({
     alias: 'ngResponsiveSplit',
