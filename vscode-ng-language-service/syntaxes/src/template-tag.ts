@@ -12,6 +12,7 @@ export const TemplateTag: GrammarDefinition = {
   scopeName: 'template.tag.ng',
   injectionSelector: 'L:text.html#meta.tag -comment',
   patterns: [
+    {include: '#inlineComments'},
     {include: '#twoWayBinding'},
     {include: '#propertyBinding'},
     {include: '#eventBinding'},
@@ -116,6 +117,22 @@ export const TemplateTag: GrammarDefinition = {
             },
             3: {name: 'punctuation.definition.ng-binding-name.end.html'},
           },
+        },
+      ],
+    },
+    inlineComments: {
+      patterns: [
+        {
+          begin: /\/\*/,
+          captures: {0: {name: 'punctuation.definition.comment.ts'}},
+          name: 'comment.block.ts',
+          end: /\*\//,
+        },
+        {
+          begin: /\/\//,
+          beginCaptures: {0: {name: 'punctuation.definition.comment.ts'}},
+          name: 'comment.line.double-slash.ts',
+          end: /(?=$)/,
         },
       ],
     },

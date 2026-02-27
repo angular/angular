@@ -77,3 +77,15 @@
 <div *matHeaderCellDef></div>
 <!-- #613 -->
 <div *ngIf="x$ | async as a"></div>
+
+<!-- inline comments in the HTML element -->
+<div
+  // comment 0
+  /* comment 1 */
+  attr1="value1"
+  /*
+     comment 2
+     spanning multiple lines
+  */
+  attr2="value2"
+></div>
