@@ -62,6 +62,10 @@ export {
 } from './defer/interfaces';
 export {getDocument as ɵgetDocument} from './render3/interfaces/document';
 export {
+  SHARED_STYLES_HOST as ɵSHARED_STYLES_HOST,
+  SharedStylesHost as ɵSharedStylesHost,
+} from './render3/interfaces/shared_styles_host';
+export {
   convertToBitFlags as ɵconvertToBitFlags,
   setCurrentInjector as ɵsetCurrentInjector,
 } from './di/injector_compatibility';

@@ -15,6 +15,7 @@ import {
   OnDestroy,
   Optional,
   PLATFORM_ID,
+  ɵSharedStylesHost,
 } from '@angular/core';
 
 /** The style elements attribute name used to set value of `APP_ID` token. */
@@ -102,7 +103,7 @@ export function createLinkElement(url: string, doc: Document): HTMLLinkElement {
 }
 
 @Injectable()
-export class SharedStylesHost implements OnDestroy {
+export class SharedStylesHost implements ɵSharedStylesHost, OnDestroy {
   /**
    * Provides usage information for active inline style content and associated HTML <style> elements.
    * Embedded styles typically originate from the `styles` metadata of a rendered component.
@@ -116,9 +117,9 @@ export class SharedStylesHost implements OnDestroy {
   private readonly external = new Map<string /** URL */, UsageRecord<HTMLLinkElement>>();
 
   /**
-   * Set of host DOM nodes that will have styles attached.
+   * The set of DOM nodes with styles attached, tracked by usage count.
    */
-  private readonly hosts = new Set<Node>();
+  private readonly hosts = new Map<Node, number>();
 
   constructor(
     @Inject(DOCUMENT) private readonly doc: Document,
@@ -129,13 +130,8 @@ export class SharedStylesHost implements OnDestroy {
     @Inject(PLATFORM_ID) platformId: object = {},
   ) {
     addServerStyles(doc, appId, this.inline, this.external);
-    this.hosts.add(doc.head);
   }
 
-  /**
-   * Adds embedded styles to the DOM via HTML `style` elements.
-   * @param styles An array of style content strings.
-   */
   addStyles(styles: string[], urls?: string[]): void {
     for (const value of styles) {
       this.addUsage(value, this.inline, createStyleElement);
@@ -176,7 +172,9 @@ export class SharedStylesHost implements OnDestroy {
       // Otherwise, create an entry to track the elements and add element for each host
       usages.set(value, {
         usage: 1,
-        elements: [...this.hosts].map((host) => this.addElement(host, creator(value, this.doc))),
+        elements: [...this.hosts.keys()].map((host) =>
+          this.addElement(host, creator(value, this.doc)),
+        ),
       });
     }
   }
@@ -206,26 +204,32 @@ export class SharedStylesHost implements OnDestroy {
     this.hosts.clear();
   }
 
-  /**
-   * Adds a host node to the set of style hosts and adds all existing style usage to
-   * the newly added host node.
-   *
-   * This is currently only used for Shadow DOM encapsulation mode.
-   */
   addHost(hostNode: Node): void {
-    this.hosts.add(hostNode);
+    const existingUsage = this.hosts.get(hostNode) ?? 0;
+    if (existingUsage === 0) {
+      // Add existing styles to new host
+      for (const [style, {elements}] of this.inline) {
+        elements.push(this.addElement(hostNode, createStyleElement(style, this.doc)));
+      }
+      for (const [url, {elements}] of this.external) {
+        elements.push(this.addElement(hostNode, createLinkElement(url, this.doc)));
+      }
+    }
 
-    // Add existing styles to new host
-    for (const [style, {elements}] of this.inline) {
-      elements.push(this.addElement(hostNode, createStyleElement(style, this.doc)));
-    }
-    for (const [url, {elements}] of this.external) {
-      elements.push(this.addElement(hostNode, createLinkElement(url, this.doc)));
-    }
+    this.hosts.set(hostNode, existingUsage + 1);
   }
 
   removeHost(hostNode: Node): void {
-    this.hosts.delete(hostNode);
+    const usage = this.hosts.get(hostNode);
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && usage === undefined) {
+      throw new Error('Attempted to remove a host which was not added.');
+    }
+
+    if (usage! === 1) {
+      this.hosts.delete(hostNode);
+    } else {
+      this.hosts.set(hostNode, usage! - 1);
+    }
   }
 
   private addElement<T extends HTMLElement>(host: Node, element: T): T {

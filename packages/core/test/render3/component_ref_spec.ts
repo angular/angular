@@ -9,12 +9,14 @@
 import {ComponentFactoryResolver} from '../../src/render3/component_ref';
 import {Renderer} from '../../src/render3/interfaces/renderer';
 import {RElement} from '../../src/render3/interfaces/renderer_dom';
+import {SHARED_STYLES_HOST} from '../../src/render3/interfaces/shared_styles_host';
 import {TestBed} from '../../testing';
 
 import {
   ComponentRef,
   ChangeDetectionStrategy,
   Component,
+  DOCUMENT,
   Injector,
   Input,
   NgModuleRef,
@@ -31,6 +33,8 @@ import {RendererFactory2} from '../../src/render/api';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 
 import {MockRendererFactory} from './instructions/mock_renderer_factory';
+import {MockSharedStylesHost} from '../../testing/src/mock_shared_styles_host';
+import {isNode} from '@angular/private/testing';
 
 const THROWING_RENDERER_FACTOR2_PROVIDER = {
   provide: RendererFactory2,
@@ -124,7 +128,11 @@ describe('ComponentFactory', () => {
     describe('(when `ngModuleRef` is not provided)', () => {
       it('should retrieve `RendererFactory2` from the specified injector', () => {
         const injector = Injector.create({
-          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
+          providers: [
+            {provide: RendererFactory2, useValue: rendererFactorySpy},
+            {provide: SHARED_STYLES_HOST, useClass: MockSharedStylesHost},
+            {provide: DOCUMENT, useValue: document},
+          ],
         });
 
         cf.create(injector);
@@ -138,6 +146,8 @@ describe('ComponentFactory', () => {
           providers: [
             {provide: RendererFactory2, useValue: rendererFactorySpy},
             {provide: Sanitizer, useFactory: sanitizerFactorySpy, deps: []},
+            {provide: SHARED_STYLES_HOST, useClass: MockSharedStylesHost},
+            {provide: DOCUMENT, useValue: document},
           ],
         });
 
@@ -150,7 +160,11 @@ describe('ComponentFactory', () => {
     describe('(when `ngModuleRef` is provided)', () => {
       it('should retrieve `RendererFactory2` from the specified injector first', () => {
         const injector = Injector.create({
-          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
+          providers: [
+            {provide: RendererFactory2, useValue: rendererFactorySpy},
+            {provide: SHARED_STYLES_HOST, useClass: MockSharedStylesHost},
+            {provide: DOCUMENT, useValue: document},
+          ],
         });
         const mInjector = Injector.create({providers: [THROWING_RENDERER_FACTOR2_PROVIDER]});
 
@@ -162,7 +176,11 @@ describe('ComponentFactory', () => {
       it('should retrieve `RendererFactory2` from the `ngModuleRef` if not provided by the injector', () => {
         const injector = Injector.create({providers: []});
         const mInjector = Injector.create({
-          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
+          providers: [
+            {provide: RendererFactory2, useValue: rendererFactorySpy},
+            {provide: SHARED_STYLES_HOST, useClass: MockSharedStylesHost},
+            {provide: DOCUMENT, useValue: document},
+          ],
         });
 
         cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
@@ -185,6 +203,8 @@ describe('ComponentFactory', () => {
           providers: [
             {provide: RendererFactory2, useValue: rendererFactorySpy},
             {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
+            {provide: SHARED_STYLES_HOST, useClass: MockSharedStylesHost},
+            {provide: DOCUMENT, useValue: document},
           ],
         });
 
@@ -204,6 +224,8 @@ describe('ComponentFactory', () => {
           providers: [
             {provide: RendererFactory2, useValue: rendererFactorySpy},
             {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
+            {provide: SHARED_STYLES_HOST, useClass: MockSharedStylesHost},
+            {provide: DOCUMENT, useValue: document},
           ],
         });
 
@@ -216,7 +238,11 @@ describe('ComponentFactory', () => {
     describe('(when the factory is bound to a `ngModuleRef`)', () => {
       it('should retrieve `RendererFactory2` from the specified injector first', () => {
         const injector = Injector.create({
-          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
+          providers: [
+            {provide: RendererFactory2, useValue: rendererFactorySpy},
+            {provide: SHARED_STYLES_HOST, useClass: MockSharedStylesHost},
+            {provide: DOCUMENT, useValue: document},
+          ],
         });
         (cf as any).ngModule = {
           injector: Injector.create({providers: [THROWING_RENDERER_FACTOR2_PROVIDER]}),
@@ -231,7 +257,11 @@ describe('ComponentFactory', () => {
         const injector = Injector.create({providers: []});
         (cf as any).ngModule = {
           injector: Injector.create({
-            providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
+            providers: [
+              {provide: RendererFactory2, useValue: rendererFactorySpy},
+              {provide: SHARED_STYLES_HOST, useClass: MockSharedStylesHost},
+              {provide: DOCUMENT, useValue: document},
+            ],
           }),
         };
 
@@ -248,6 +278,8 @@ describe('ComponentFactory', () => {
           providers: [
             {provide: RendererFactory2, useValue: rendererFactorySpy},
             {provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []},
+            {provide: SHARED_STYLES_HOST, useClass: MockSharedStylesHost},
+            {provide: DOCUMENT, useValue: document},
           ],
         });
 
@@ -277,6 +309,8 @@ describe('ComponentFactory', () => {
             providers: [
               {provide: RendererFactory2, useValue: rendererFactorySpy},
               {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
+              {provide: SHARED_STYLES_HOST, useClass: MockSharedStylesHost},
+              {provide: DOCUMENT, useValue: document},
             ],
           }),
         };
@@ -303,12 +337,61 @@ describe('ComponentFactory', () => {
       const injector = Injector.create({
         providers: [
           {provide: RendererFactory2, useFactory: () => new TestMockRendererFactory(), deps: []},
+          {provide: SHARED_STYLES_HOST, useClass: MockSharedStylesHost},
+          {provide: DOCUMENT, useValue: document},
         ],
       });
 
       const hostNode = document.createElement('div');
       const componentRef = cf.create(injector, undefined, hostNode);
       expect(hostNode.className).toEqual('HOST_COMPONENT HOST_RENDERER');
+    });
+
+    it('should add styles to / remove styles from document.head when the host is not in a shadow root', () => {
+      const sharedStylesHost = new MockSharedStylesHost();
+      const injector = Injector.create({
+        providers: [
+          {provide: RendererFactory2, useValue: rendererFactorySpy},
+          {provide: SHARED_STYLES_HOST, useValue: sharedStylesHost},
+          {provide: DOCUMENT, useValue: document},
+        ],
+      });
+
+      const hostNode = document.createElement('div');
+      const componentRef = cf.create(injector, /* projectableNodes */ undefined, hostNode);
+
+      expect(sharedStylesHost.getActiveHosts()).toEqual([document.head]);
+
+      componentRef.destroy();
+
+      expect(sharedStylesHost.getActiveHosts()).toEqual([]);
+    });
+
+    it('should add styles to / remove styles from the shadow root when the host is in a shadow root', () => {
+      if (isNode) return;
+
+      const sharedStylesHost = new MockSharedStylesHost();
+
+      const injector = Injector.create({
+        providers: [
+          {provide: RendererFactory2, useValue: rendererFactorySpy},
+          {provide: SHARED_STYLES_HOST, useValue: sharedStylesHost},
+          {provide: DOCUMENT, useValue: document},
+        ],
+      });
+
+      const parentNode = document.createElement('div');
+      const shadowRoot = parentNode.attachShadow({mode: 'open'});
+      const hostNode = document.createElement('div');
+      shadowRoot.appendChild(hostNode);
+
+      const componentRef = cf.create(injector, /* projectableNodes */ undefined, hostNode);
+
+      expect(sharedStylesHost.getActiveHosts()).toEqual([shadowRoot]);
+
+      componentRef.destroy();
+
+      expect(sharedStylesHost.getActiveHosts()).toEqual([]);
     });
   });
 

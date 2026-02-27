@@ -34,6 +34,7 @@ import {TConstants, TNode} from './node';
 import type {LQueries, TQueries} from './query';
 import {Renderer, RendererFactory} from './renderer';
 import {RElement} from './renderer_dom';
+import {SharedStylesHost} from './shared_styles_host';
 import {TStylingKey, TStylingRange} from './styling';
 
 // Below are constants for LView indices to help us look up LView members
@@ -392,6 +393,15 @@ export interface LViewEnvironment {
    * (always disabled in prod mode).
    */
   ngReflect: boolean;
+
+  /**
+   * `SharedStylesHost` for managing shared styles within the application.
+   *
+   * This property is optional because Angular's core rendering engine is platform-agnostic.
+   * Custom platforms (e.g., rendering to a terminal or canvas) that do not integrate with
+   * HTML stylesheets may choose not to provide a `SharedStylesHost`.
+   */
+  sharedStylesHost: SharedStylesHost | null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */

@@ -19,6 +19,7 @@ import {
 import {MockRendererFactory} from './mock_renderer_factory';
 import {createTNode} from '../../../src/render3/tnode_manipulation';
 import {createLView, createTView} from '../../../src/render3/view/construction';
+import {ɵMockSharedStylesHost as MockSharedStylesHost} from '@angular/core/testing';
 
 /**
  * Setups a simple `LView` so that it is possible to do unit tests on instructions.
@@ -70,6 +71,7 @@ export function enterViewWithOneDiv() {
       sanitizer: null,
       changeDetectionScheduler: null,
       ngReflect: false,
+      sharedStylesHost: new MockSharedStylesHost(),
     },
     renderer,
     null,

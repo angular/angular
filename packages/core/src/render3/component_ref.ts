@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DOCUMENT} from '../document';
 import {setActiveConsumer} from '../../primitives/signals';
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
@@ -17,6 +18,7 @@ import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
+import {ViewEncapsulation} from '../metadata/view';
 import {
   ComponentFactory as AbstractComponentFactory,
   ComponentRef as AbstractComponentRef,
@@ -59,7 +61,11 @@ import {
   TView,
   TVIEW,
   TViewType,
+  ENVIRONMENT,
+  ON_DESTROY_HOOKS,
 } from './interfaces/view';
+import {SHARED_STYLES_HOST} from './interfaces/shared_styles_host';
+import {getDocument} from './interfaces/document';
 import {MATH_ML_NAMESPACE, SVG_NAMESPACE} from './namespaces';
 
 import {retrieveHydrationInfo} from '../hydration/utils';
@@ -175,11 +181,14 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
     ngReflect = rootLViewInjector.get(NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT);
   }
 
+  const sharedStylesHost = rootLViewInjector.get(SHARED_STYLES_HOST, null);
+
   return {
     rendererFactory,
     sanitizer,
     changeDetectionScheduler,
     ngReflect,
+    sharedStylesHost,
   };
 }
 
@@ -302,6 +311,30 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       );
 
       rootLView[HEADER_OFFSET] = hostElement;
+
+      // Determine if the component itself uses Shadow DOM, as these components will track their own
+      // shadow roots when they are created.
+      const usesShadowDom =
+        (cmpDef.encapsulation === ViewEncapsulation.ShadowDom ||
+          cmpDef.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom) &&
+        !(typeof ngServerMode !== 'undefined' && ngServerMode);
+      if (!usesShadowDom) {
+        const sharedStylesHost = rootLView[ENVIRONMENT].sharedStylesHost;
+        if (sharedStylesHost) {
+          // Check the root node (containing shadow root or document) and provide stylesheets there.
+          // If the created component is detached from the document, this will be `null` and stylesheets
+          // will be tracked once the component is attached to the document.
+          const rootNode = hostElement.getRootNode?.();
+          const isShadowRoot =
+            rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot;
+          const styleHost = isShadowRoot ? rootNode : getDocument().head;
+
+          sharedStylesHost.addHost(styleHost);
+          (rootLView[ON_DESTROY_HOOKS] ??= []).push(
+            () => void sharedStylesHost.removeHost(styleHost),
+          );
+        }
+      }
 
       // rootView is the parent when bootstrapping
       // TODO(misko): it looks like we are entering view here but we don't really need to as

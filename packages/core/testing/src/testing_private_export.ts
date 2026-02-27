@@ -7,4 +7,5 @@
  */
 
 export {FakeNavigation as ɵFakeNavigation} from '../../primitives/dom-navigation/testing';
+export {MockSharedStylesHost as ɵMockSharedStylesHost} from './mock_shared_styles_host';
 export {getCleanupHook as ɵgetCleanupHook} from './test_hooks';

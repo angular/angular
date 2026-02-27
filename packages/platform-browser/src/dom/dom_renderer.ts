@@ -26,6 +26,7 @@ import {
   ɵTracingSnapshot as TracingSnapshot,
   Optional,
   ɵallLeavingAnimations as allLeavingAnimations,
+  ɵSHARED_STYLES_HOST as SHARED_STYLES_HOST,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -137,7 +138,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
 
   constructor(
     private readonly eventManager: EventManager,
-    private readonly sharedStylesHost: SharedStylesHost,
+    @Inject(SHARED_STYLES_HOST) private readonly sharedStylesHost: SharedStylesHost,
     @Inject(APP_ID) private readonly appId: string,
     @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestroy: boolean,
     @Inject(DOCUMENT) private readonly doc: Document,

@@ -33,7 +33,10 @@ import {
   T_HOST,
   TView,
   TVIEW,
+  HOST,
+  ENVIRONMENT,
 } from '../interfaces/view';
+import {getDocument} from '../interfaces/document';
 import {
   addViewToDOM,
   destroyLView,
@@ -116,6 +119,16 @@ export function addLViewToLContainer(
     }
   }
 
+  // To ensure styles are placed on a parent shadow root, we need to register it as a host.
+  const sharedStylesHost = lView[ENVIRONMENT].sharedStylesHost;
+  if (sharedStylesHost) {
+    const host = lView[HOST] ?? lContainer[NATIVE];
+    const rootNode = host.getRootNode?.();
+    const isShadowRoot =
+      rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot;
+    sharedStylesHost.addHost(isShadowRoot ? rootNode : getDocument().head);
+  }
+
   // When in hydration mode, reset the pointer to the first child in
   // the dehydrated view. This indicates that the view was hydrated and
   // further attaching/detaching should work with this view as normal.
@@ -153,6 +166,16 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView |
   const viewToDetach = lContainer[indexInContainer];
 
   if (viewToDetach) {
+    // Undo the `SharedStylesHost` registration.
+    const sharedStylesHost = viewToDetach[ENVIRONMENT].sharedStylesHost;
+    if (sharedStylesHost) {
+      const host = viewToDetach[HOST] ?? lContainer[NATIVE];
+      const rootNode = host?.getRootNode?.();
+      const isShadowRoot =
+        rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot;
+      sharedStylesHost.removeHost(isShadowRoot ? rootNode : getDocument().head);
+    }
+
     const declarationLContainer = viewToDetach[DECLARATION_LCONTAINER];
     if (declarationLContainer !== null && declarationLContainer !== lContainer) {
       detachMovedView(declarationLContainer, viewToDetach);
