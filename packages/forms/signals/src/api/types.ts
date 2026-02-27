@@ -544,6 +544,10 @@ export interface FieldState<
    * @param value Optional value to set to the form. If not passed, the value will not be changed.
    */
   reset(value?: TValue): void;
+  /**
+   * Reloads all asynchronous validators for this field and its descendants.
+   */
+  reloadValidation(): void;
 }
 
 /**
