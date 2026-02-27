@@ -7,7 +7,7 @@ This schematic helps developers to convert ngClass directive usages to class bin
 The migration can be run using the following command:
 
 ```bash
-ng generate @angular/core:ngclass-to-class
+ng generate @angular/core:model-output
 ```
 
 By default, the migration will go over the entire application. If you want to apply this migration to a subset of the files, you can pass the path argument as shown below:
@@ -24,8 +24,16 @@ Example:
 
 ```html
 <!-- Before -->
-<div [ngClass]="{admin: isAdmin, dense: density === 'high'}">
-  <!-- After -->
-  <div [class]="{admin: isAdmin, dense: density === 'high'}"></div>
-</div>
+foo = model<string
+  >; fooChange = output<string
+    >(); // or `@Output()`
+
+    <!-- After -->
+    fooInput = input<string
+      >({alias: 'foo') foo = linkedSignal(this.fooInput); fooChange = output<string
+        >();
+      </string></string
+    ></string
+  ></string
+>
 ```
