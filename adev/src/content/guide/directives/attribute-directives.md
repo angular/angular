@@ -14,7 +14,14 @@ This section walks you through creating a highlight directive that sets the back
 
    The CLI creates `src/app/highlight.directive.ts`, a corresponding test file `src/app/highlight.directive.spec.ts`.
 
-   <docs-code header="highlight.directive.ts" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.0.ts"/>
+   ```angular-ts
+   import {Directive} from '@angular/core';
+
+   @Directive({
+     selector: '[appHighlight]',
+   })
+   export class HighlightDirective {}
+   ```
 
    The `@Directive()` decorator's configuration property specifies the directive's CSS attribute selector, `[appHighlight]`.
 
@@ -25,11 +32,13 @@ This section walks you through creating a highlight directive that sets the back
 
 1. Add logic to the `HighlightDirective` class that sets the background to yellow.
 
-<docs-code header="highlight.directive.ts" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.1.ts"/>
+   <docs-code header="highlight.directive.ts" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.1.ts"/>
 
-HELPFUL: Directives _do not_ support namespaces.
+IMPORTANT: Directives _do not_ support namespaces.
 
-<docs-code header="app.component.avoid.html (unsupported)" path="adev/src/content/examples/attribute-directives/src/app/app.component.avoid.html" region="unsupported"/>
+```angular-html {avoid}
+<p app:Highlight>This is invalid</p>
+```
 
 ## Applying an attribute directive
 
