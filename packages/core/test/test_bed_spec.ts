@@ -1730,6 +1730,95 @@ describe('TestBed', () => {
       return ComponentClass;
     };
 
+    it('should not require prepareAsyncComponents if the component with a defer-block is not overridden', async () => {
+      const RootAotComponent = getAOTCompiledComponent('root', [], []);
+
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      // If we had overriden the component, we would need to compile it
+      // but since we didn't, we can create the component synchronously
+      const fixture = TestBed.createComponent(RootAotComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('root cmp!');
+
+      // Here we're just confirming that the same component would throw on override.
+      TestBed.resetTestingModule()
+        .configureTestingModule({imports: [RootAotComponent]})
+        .overrideComponent(RootAotComponent, {
+          set: {template: `Override of a root template!`},
+        });
+      expect(() => TestBed.createComponent(RootAotComponent)).toThrow();
+    });
+
+    it('should throw an error if a deferred component is not compiled', () => {
+      @Component({
+        selector: 'cmp-a',
+        template: 'CmpA!',
+      })
+      class CmpA {}
+
+      const NestedAotComponent = getAOTCompiledComponent('nested-cmp', [], [CmpA]);
+      const RootAotComponent = getAOTCompiledComponent('root', [], [NestedAotComponent]);
+
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      TestBed.overrideComponent(RootAotComponent, {
+        set: {template: `Override of a root template! <nested-cmp />`},
+      });
+      TestBed.overrideComponent(NestedAotComponent, {
+        set: {template: `Override of a nested template! <cmp-a />`},
+      });
+
+      // We did override but not compile, therefore we expect to throw on createComponent
+      expect(() => TestBed.createComponent(RootAotComponent)).toThrowError(
+        `Component 'ComponentClass' has unresolved metadata. Please call \`await TestBed.prepareAsyncComponents()\` before running this test.`,
+      );
+    });
+
+    it('should not throw if component is created after override+reset', async () => {
+      @Component({
+        selector: 'cmp-a',
+        template: 'CmpA!',
+      })
+      class CmpA {}
+
+      const NestedAotComponent = getAOTCompiledComponent('nested-cmp', [], [CmpA]);
+      const RootAotComponent = getAOTCompiledComponent('root', [], [NestedAotComponent]);
+
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      TestBed.overrideComponent(RootAotComponent, {
+        set: {template: `Override of a root template! <nested-cmp />`},
+      });
+      TestBed.overrideComponent(NestedAotComponent, {
+        set: {template: `Override of a nested template! <cmp-a />`},
+      });
+
+      // Not compiled yet, so we expect to throw
+      expect(() => TestBed.createComponent(RootAotComponent)).toThrowError();
+
+      await TestBed.prepareAsyncComponents();
+
+      // We're compiled now, so we can create the component
+      const fixture = TestBed.createComponent(RootAotComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe(
+        'Override of a root template! Override of a nested template! CmpA!',
+      );
+
+      // We reset the override
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      // We're back to the nominal behavior
+      const fixture2 = TestBed.createComponent(RootAotComponent);
+      fixture2.detectChanges();
+
+      expect(fixture2.nativeElement.textContent).toBe('root cmp!');
+    });
+
     it('should handle async metadata on root and nested components', async () => {
       @Component({
         selector: 'cmp-a',
@@ -1749,8 +1838,8 @@ describe('TestBed', () => {
         set: {template: `Override of a nested template! <cmp-a />`},
       });
 
-      // This is only required because the components are AOT compiled and thus include setClassMetadataAsync
-      await TestBed.compileComponents();
+      // We need to compile the component because it has async metadata + overrides
+      await TestBed.prepareAsyncComponents();
 
       const fixture = TestBed.createComponent(RootAotComponent);
       fixture.detectChanges();
@@ -1836,8 +1925,8 @@ describe('TestBed', () => {
       TestBed.configureTestingModule({imports: [ParentCmp], providers: [COMMON_PROVIDERS]});
       TestBed.overrideProvider(ImportantService, {useValue: {value: 'overridden'}});
 
-      // This is only required because the component has setClassMetadataAsync
-      await TestBed.compileComponents();
+      // We need to compile the component because it has async metadata + overrides
+      await TestBed.prepareAsyncComponents();
 
       const fixture = TestBed.createComponent(ParentCmp);
       fixture.detectChanges();
@@ -1862,8 +1951,8 @@ describe('TestBed', () => {
         },
       });
 
-      // This is only required because the components are AOT compiled and thus include setClassMetadataAsync
-      await TestBed.compileComponents();
+      // We need to compile the component because it has async metadata + overrides
+      await TestBed.prepareAsyncComponents();
 
       const fixture = TestBed.createComponent(RootAotComponent);
       fixture.detectChanges();
@@ -1871,6 +1960,41 @@ describe('TestBed', () => {
       expect(fixture.nativeElement.textContent).toBe(
         'Override of a root template! nested-cmp cmp!',
       );
+    });
+
+    describe('ensure AsyncMetadata loading is side-effect free', () => {
+      let Component: any;
+      let run = 1;
+      beforeEach(() => {
+        Component = getAOTCompiledComponent('root', [], []);
+        TestBed.overrideComponent(Component, {set: {template: 'bar'}});
+      });
+
+      it('should throw if creating an overridden component', async () => {
+        if (run === 1) {
+          await TestBed.prepareAsyncComponents();
+          const fixture = TestBed.createComponent(Component);
+          expect(fixture.nativeElement.textContent).toBe('bar');
+        } else {
+          // Component was compiled in the previous test
+          // but we still require prepareAsyncComponents because of the override
+          expect(() => TestBed.createComponent(Component)).toThrowError();
+        }
+        run++;
+      });
+
+      it('should throw if creating an overridden component (run 2)', async () => {
+        if (run === 1) {
+          await TestBed.prepareAsyncComponents();
+          const fixture = TestBed.createComponent(Component);
+          expect(fixture.nativeElement.textContent).toBe('bar');
+        } else {
+          // Component was compiled in the previous test
+          // but we still require prepareAsyncComponents because of the override
+          expect(() => TestBed.createComponent(Component)).toThrowError();
+        }
+        run++;
+      });
     });
   });
 

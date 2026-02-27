@@ -53,7 +53,7 @@ describe('DevtoolsTabsComponent', () => {
         remove: {imports: [DirectiveExplorerComponent]},
         add: {imports: [MockDirectiveExplorerComponent]},
       })
-      .compileComponents();
+      .prepareAsyncComponents();
 
     const fixture = TestBed.createComponent(DevToolsTabsComponent);
     comp = fixture.componentInstance;
