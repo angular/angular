@@ -55,6 +55,7 @@
       "CONTENT_ATTR",
       "CONTEXT",
       "CSP_NONCE",
+      "CSS_VAR_NAMESPACE",
       "ChainedInjector",
       "ChangeDetectionScheduler",
       "ChangeDetectionSchedulerImpl",

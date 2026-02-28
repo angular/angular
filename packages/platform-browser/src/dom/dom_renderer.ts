@@ -26,12 +26,38 @@ import {
   ɵTracingSnapshot as TracingSnapshot,
   Optional,
   ɵallLeavingAnimations as allLeavingAnimations,
+  makeEnvironmentProviders,
+  type EnvironmentProviders,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
 import {EventManager} from './events/event_manager';
 import {createLinkElement, SharedStylesHost} from './shared_styles_host';
+
+/**
+ * An injection token that allows an application to configure a prefix to be used for all
+ * CSS variables generated compiled with CSS namespacing enabled.
+ *
+ * Typically set via {@link provideCssVarNamespacing}.
+ */
+export const CSS_VAR_NAMESPACE = new InjectionToken<string>('CSS_VAR_NAMESPACE');
+
+/**
+ * Configures the application to use the given namespace for all CSS variables.
+ *
+ * @param namespace The prefix string to use as a namespace. This is typically the `APP_ID`
+ *     followed by a separator, such as 'my-app_'.
+ * @publicApi
+ */
+export function provideCssVarNamespacing(namespace: string): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: CSS_VAR_NAMESPACE,
+      useValue: namespace,
+    },
+  ]);
+}
 
 export const NAMESPACE_URIS: {[ns: string]: string} = {
   'svg': 'http://www.w3.org/2000/svg',
@@ -134,6 +160,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     EmulatedEncapsulationDomRenderer2 | NoneEncapsulationDomRenderer
   >();
   private readonly defaultRenderer: Renderer2;
+  private readonly cssVarNamespace: string;
 
   constructor(
     private readonly eventManager: EventManager,
@@ -146,7 +173,9 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Inject(TracingService)
     @Optional()
     private readonly tracingService: TracingService<TracingSnapshot> | null = null,
+    @Inject(CSS_VAR_NAMESPACE) @Optional() cssVarNamespace: string | null = null,
   ) {
+    this.cssVarNamespace = cssVarNamespace ?? '';
     this.defaultRenderer = new DefaultDomRenderer2(eventManager, doc, ngZone, this.tracingService);
   }
 
@@ -200,6 +229,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             doc,
             ngZone,
             tracingService,
+            this.cssVarNamespace,
           );
           break;
         case ViewEncapsulation.ShadowDom:
@@ -211,6 +241,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             this.nonce,
             tracingService,
+            this.cssVarNamespace,
             sharedStylesHost,
           );
         case ViewEncapsulation.ExperimentalIsolatedShadowDom:
@@ -222,6 +253,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             this.nonce,
             tracingService,
+            this.cssVarNamespace,
           );
 
         default:
@@ -233,6 +265,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             doc,
             ngZone,
             tracingService,
+            this.cssVarNamespace,
           );
           break;
       }
@@ -501,6 +534,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     ngZone: NgZone,
     nonce: string | null,
     tracingService: TracingService<TracingSnapshot> | null,
+    cssVarNamespace: string,
     private sharedStylesHost?: SharedStylesHost,
   ) {
     super(eventManager, doc, ngZone, tracingService);
@@ -518,7 +552,9 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       styles = addBaseHrefToCssSourceMap(baseHref, styles);
     }
 
-    styles = shimStylesContent(component.id, styles);
+    styles = shimStylesContent(component.id, styles).map((s) =>
+      s.replace(/%NS%/g, cssVarNamespace),
+    );
 
     for (const style of styles) {
       const styleEl = document.createElement('style');
@@ -588,6 +624,7 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     doc: Document,
     ngZone: NgZone,
     tracingService: TracingService<TracingSnapshot> | null,
+    cssVarNamespace: string,
     compId?: string,
   ) {
     super(eventManager, doc, ngZone, tracingService);
@@ -598,7 +635,8 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
       styles = addBaseHrefToCssSourceMap(baseHref, styles);
     }
 
-    this.styles = compId ? shimStylesContent(compId, styles) : styles;
+    const shimmed = compId ? shimStylesContent(compId, styles) : styles;
+    this.styles = shimmed.map((s) => s.replace(/%NS%/g, cssVarNamespace));
     this.styleUrls = component.getExternalStyles?.(compId);
   }
 
@@ -629,6 +667,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     doc: Document,
     ngZone: NgZone,
     tracingService: TracingService<TracingSnapshot> | null,
+    cssVarNamespace: string,
   ) {
     const compId = appId + '-' + component.id;
     super(
@@ -639,6 +678,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
       doc,
       ngZone,
       tracingService,
+      cssVarNamespace,
       compId,
     );
     this.contentAttr = shimContentAttribute(compId);
