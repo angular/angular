@@ -68,6 +68,15 @@ export function getNativeControlValue(
 ): ParseResult<unknown> {
   let modelValue: unknown;
 
+  // Clearing a date input should always read as "no value", even if `badInput` is stale.
+  if (element.type === 'date' && element.value === '') {
+    modelValue = untracked(currentValue);
+    if (modelValue === null || modelValue instanceof Date) {
+      return {value: null};
+    }
+    return {value: ''};
+  }
+
   if (element.validity.badInput) {
     return {
       error: new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>,

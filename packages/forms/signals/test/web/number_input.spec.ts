@@ -8,7 +8,7 @@
 
 import {Component, signal, viewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {FormField, form} from '../../public_api';
+import {FormField, form, required, requiredError} from '../../public_api';
 
 describe('numeric inputs', () => {
   describe('parsing logic', () => {
@@ -158,6 +158,70 @@ describe('numeric inputs', () => {
       });
 
       expect(fixture.componentInstance.f().value()).toBeNull();
+    });
+
+    it('optional date should clear to null without parse errors', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="date" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<Date | null>(null);
+        readonly f = form(this.data);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+      act(() => {
+        input.value = '2026-03-03';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(fixture.componentInstance.f().value()).toEqual(new Date('2026-03-03T00:00:00.000Z'));
+      expect(fixture.componentInstance.f().errors()).toEqual([]);
+      expect(fixture.componentInstance.f().invalid()).toBe(false);
+
+      act(() => {
+        input.value = '';
+        input.dispatchEvent(new Event('input'));
+      });
+
+      expect(fixture.componentInstance.f().value()).toBeNull();
+      expect(fixture.componentInstance.f().errors()).toEqual([]);
+      expect(fixture.componentInstance.f().invalid()).toBe(false);
+    });
+
+    it('required date should return required error when cleared, not parse error', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="date" [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly data = signal<Date | null>(null);
+        readonly f = form(this.data, (p) => required(p));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+
+      act(() => {
+        input.value = '2026-03-03';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(fixture.componentInstance.f().value()).toEqual(new Date('2026-03-03T00:00:00.000Z'));
+      expect(fixture.componentInstance.f().errors()).toEqual([]);
+      expect(fixture.componentInstance.f().invalid()).toBe(false);
+
+      act(() => {
+        input.value = '';
+        input.dispatchEvent(new Event('input'));
+      });
+
+      expect(fixture.componentInstance.f().value()).toBeNull();
+      expect(fixture.componentInstance.f().errors()).toEqual([
+        requiredError({fieldTree: fixture.componentInstance.f}),
+      ]);
+      expect(fixture.componentInstance.f().invalid()).toBe(true);
     });
   });
 });
