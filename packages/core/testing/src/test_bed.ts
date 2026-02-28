@@ -577,14 +577,28 @@ export class TestBedImpl implements TestBed {
     // description for additional info.
     this.checkGlobalCompilationFinished();
 
-    // Always re-assign the options, even if they're undefined.
-    // This ensures that we don't carry them between tests.
-    this._instanceTeardownOptions = moduleDef.teardown;
-    this._instanceErrorOnUnknownElementsOption = moduleDef.errorOnUnknownElements;
-    this._instanceErrorOnUnknownPropertiesOption = moduleDef.errorOnUnknownProperties;
-    this._instanceInferTagName = moduleDef.inferTagName;
-    this._instanceDeferBlockBehavior = moduleDef.deferBlockBehavior ?? DEFER_BLOCK_DEFAULT_BEHAVIOR;
-    this._instanceAnimationsEnabled = moduleDef.animationsEnabled ?? ANIMATIONS_ENABLED_DEFAULT;
+    // Do not re-assign the options if they're already defined.
+    // The cleanup hook will call `TestBed.resetTestingModule` to reset them
+    // and make sure we don't carry them between tests.
+    if (moduleDef.teardown !== undefined) {
+      this._instanceTeardownOptions = moduleDef.teardown;
+    }
+    if (moduleDef.errorOnUnknownElements !== undefined) {
+      this._instanceErrorOnUnknownElementsOption = moduleDef.errorOnUnknownElements;
+    }
+    if (moduleDef.errorOnUnknownProperties !== undefined) {
+      this._instanceErrorOnUnknownPropertiesOption = moduleDef.errorOnUnknownProperties;
+    }
+    if (moduleDef.inferTagName !== undefined) {
+      this._instanceInferTagName = moduleDef.inferTagName;
+    }
+    if (moduleDef.deferBlockBehavior !== undefined) {
+      this._instanceDeferBlockBehavior = moduleDef.deferBlockBehavior;
+    }
+    if (moduleDef.animationsEnabled !== undefined) {
+      this._instanceAnimationsEnabled = moduleDef.animationsEnabled;
+    }
+
     // Store the current value of the strict mode option,
     // so we can restore it later
     this._previousErrorOnUnknownElementsOption = getUnknownElementStrictMode();
