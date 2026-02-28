@@ -8,7 +8,6 @@
 
 import {isNgLanguageService, NgLanguageService, PluginConfig} from '@angular/language-service/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {promisify} from 'util';
 import * as lsp from 'vscode-languageserver/node';
 
 import {
@@ -24,7 +23,6 @@ import {
   IsInAngularProject,
 } from '../../common/requests';
 
-import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {ServerHost} from './server_host';
 import {
   filePathToUri,
@@ -38,6 +36,15 @@ import {onCodeAction, onCodeActionResolve} from './handlers/code_actions';
 import {getComponentsWithTemplateFile, onCodeLens, onCodeLensResolve} from './handlers/code_lens';
 import {onCompletion, onCompletionResolve} from './handlers/completions';
 import {onDefinition, onTypeDefinition, onReferences} from './handlers/definitions';
+import {
+  onDocumentDiagnostic,
+  onWorkspaceDiagnostic,
+  clearDiagnosticCache,
+  forEachDiagnosticsFile,
+  getLspDiagnosticsForFile,
+  invalidateAllProjectDiagnostics,
+  invalidateProjectDiagnostics,
+} from './handlers/diagnostics';
 import {onFoldingRanges} from './handlers/folding';
 import {onHover} from './handlers/hover';
 import {onInitialize} from './handlers/initialization';
@@ -69,8 +76,6 @@ enum LanguageId {
   HTML = 'html',
 }
 
-const setImmediateP = promisify(setImmediate);
-
 const alwaysSuppressDiagnostics: number[] = [
   // Diagnostics codes whose errors should always be suppressed, regardless of the options
   // configuration.
@@ -93,6 +98,12 @@ export class Session {
   snippetSupport: boolean | undefined;
   private diagnosticsTimeout: NodeJS.Timeout | null = null;
   isProjectLoading = false;
+  /**
+   * Whether the client supports pull-based diagnostics (LSP 3.17).
+   * If true, we use workspace/diagnostic/refresh to notify the client
+   * instead of pushing diagnostics via textDocument/publishDiagnostics.
+   */
+  private usePullDiagnostics = false;
   /**
    * Tracks which `ts.server.Project`s have the renaming capability disabled.
    *
@@ -251,6 +262,12 @@ export class Session {
     conn.onSignatureHelp((p) => onSignatureHelp(this, p));
     conn.onCodeAction((p) => onCodeAction(this, p));
     conn.onCodeActionResolve(async (p) => await onCodeActionResolve(this, p));
+
+    // Pull-based diagnostics handlers (LSP 3.17)
+    conn.languages.diagnostics.on((p, token) => onDocumentDiagnostic(this, p, token));
+    conn.languages.diagnostics.onWorkspace((p, token, _workDoneProgress, resultProgress) =>
+      onWorkspaceDiagnostic(this, p, token, resultProgress),
+    );
   }
 
   private enableLanguageServiceForProject(project: ts.server.Project): void {
@@ -273,7 +290,13 @@ export class Session {
     // Send diagnostics since we skipped this step when opening the file.
     // First, make sure the Angular project is complete.
     this.runGlobalAnalysisForNewlyLoadedProject(project);
-    project.refreshDiagnostics();
+    if (this.usePullDiagnostics) {
+      // In pull mode, ask the client to refresh and then pull diagnostics.
+      // Avoid triggering push-oriented diagnostics work via project.refreshDiagnostics().
+      this.refreshDiagnostics(true);
+    } else {
+      project.refreshDiagnostics();
+    }
   }
 
   private disableLanguageServiceForProject(project: ts.server.Project, reason: string): void {
@@ -431,61 +454,89 @@ export class Session {
     // Set a new timeout
     this.diagnosticsTimeout = setTimeout(() => {
       this.diagnosticsTimeout = null; // clear the timeout
-      this.sendPendingDiagnostics(files, reason);
+
+      // If using pull-based diagnostics (LSP 3.17), ask the client to refresh
+      // instead of pushing diagnostics from the server
+      if (this.usePullDiagnostics) {
+        // For background project updates we do not have a precise changed-file set,
+        // so invalidate broadly for correctness across project references.
+        if (reason === ts.server.ProjectsUpdatedInBackgroundEvent) {
+          this.refreshDiagnostics(true);
+          return;
+        }
+
+        // For open/change triggers, use lightweight tiered invalidation:
+        // - external template edits: invalidate template + owning component files
+        // - TS edits: invalidate project diagnostics epoch
+        this.invalidatePullDiagnosticsForImpactedFiles(files);
+        this.logger.info(`${reason} - Requesting client to refresh diagnostics (pull-based)`);
+        this.refreshDiagnostics(false);
+      } else {
+        this.sendPendingDiagnostics(files, reason);
+      }
       // Default delay is 200ms, consistent with TypeScript. See
       // https://github.com/microsoft/vscode/blob/7b944a16f52843b44cede123dd43ae36c0405dfd/extensions/typescript-language-features/src/features/bufferSyncSupport.ts#L493)
     }, delay);
   }
 
+  private invalidatePullDiagnosticsForImpactedFiles(files: string[]): void {
+    const impactedFiles = new Set<string>();
+    const impactedProjects = new Set<string>();
+
+    for (const changedFile of files) {
+      impactedFiles.add(changedFile);
+      const scriptInfo = this.projectService.getScriptInfo(changedFile);
+      if (!scriptInfo) {
+        continue;
+      }
+
+      const project = this.getDefaultProjectForScriptInfo(scriptInfo);
+      if (!project || project.isClosed()) {
+        continue;
+      }
+      impactedProjects.add(project.getProjectName());
+
+      const languageService = project.getLanguageService();
+      if (isExternalTemplate(changedFile) && isNgLanguageService(languageService)) {
+        for (const component of languageService.getComponentLocationsForTemplate(changedFile)) {
+          impactedFiles.add(component.fileName);
+        }
+      }
+    }
+
+    for (const fileName of impactedFiles) {
+      clearDiagnosticCache(filePathToUri(fileName));
+    }
+
+    for (const projectName of impactedProjects) {
+      invalidateProjectDiagnostics(projectName);
+    }
+  }
+
   /**
    * Execute diagnostics request for each of the specified `files`.
+   * Used for push-based diagnostics (fallback when client doesn't support pull).
    * @param files files to be checked
    * @param reason Trace to explain why diagnostics is triggered
    */
   private async sendPendingDiagnostics(files: string[], reason: string) {
-    for (let i = 0; i < files.length; ++i) {
-      const fileName = files[i];
+    await forEachDiagnosticsFile(files, {
+      shouldStop: () => this.diagnosticsTimeout !== null,
+      onFile: async (fileName) => {
       const result = this.getLSAndScriptInfo(fileName);
       if (!result) {
-        continue;
+        return;
       }
-      const label = `${reason} - getSemanticDiagnostics for ${fileName}`;
-      if (isDebugMode) {
-        console.time(label);
-      }
-      const diagnostics = result.languageService.getSemanticDiagnostics(fileName);
-      if (isDebugMode) {
-        console.timeEnd(label);
-      }
-
-      const suggestionLabel = `${reason} - getSuggestionDiagnostics for ${fileName}`;
-      if (isDebugMode) {
-        console.time(suggestionLabel);
-      }
-      diagnostics.push(...result.languageService.getSuggestionDiagnostics(fileName));
-      if (isDebugMode) {
-        console.timeEnd(suggestionLabel);
-      }
+      const diagnostics = getLspDiagnosticsForFile(this, result.languageService, fileName, reason);
 
       // Need to send diagnostics even if it's empty otherwise editor state will
       // not be updated.
       this.connection.sendDiagnostics({
         uri: filePathToUri(fileName),
-        diagnostics: diagnostics.map((d) => tsDiagnosticToLspDiagnostic(d, this.projectService)),
+        diagnostics,
       });
-      if (this.diagnosticsTimeout) {
-        // There is a pending request to check diagnostics for all open files,
-        // so stop this one immediately.
-        return;
-      }
-      if (i < files.length - 1) {
-        // If this is not the last file, yield so that pending I/O events get a
-        // chance to run. This will open an opportunity for the server to process
-        // incoming requests. The next file will be checked in the next iteration
-        // of the event loop.
-        await setImmediateP();
-      }
-    }
+      },
+    });
   }
 
   /**
@@ -602,6 +653,8 @@ export class Session {
     this.logger.info(`Closing file: ${filePath}`);
     this.openFiles.delete(filePath);
     this.projectService.closeClientFile(filePath);
+    // Clear the diagnostic cache for this file
+    clearDiagnosticCache(textDocument.uri);
   }
 
   private onDidChangeTextDocument(params: lsp.DidChangeTextDocumentParams): void {
@@ -754,6 +807,69 @@ export class Session {
       );
     }
     return angularCore ?? null;
+  }
+
+  /**
+   * Get all source files across all configured Angular projects.
+   * Returns user source files (excluding library .d.ts files and config files)
+   * that are either TypeScript files or external templates (HTML).
+   * Open files are returned first for priority processing.
+   */
+  getProjectFileNames(): string[] {
+    const allFiles = new Set<string>();
+    const openFileSet = new Set(this.openFiles.getAll());
+
+    for (const [, project] of this.projectService.configuredProjects) {
+      if (!project.languageServiceEnabled || project.isClosed()) {
+        continue;
+      }
+      // getFileNames(true, true) excludes external library .d.ts files and config files
+      for (const fileName of project.getFileNames(true, true)) {
+        allFiles.add(fileName);
+      }
+    }
+
+    // Return open files first (they are the user's current focus),
+    // followed by the remaining project files
+    const openFirst: string[] = [];
+    const rest: string[] = [];
+    for (const fileName of allFiles) {
+      if (openFileSet.has(fileName)) {
+        openFirst.push(fileName);
+      } else {
+        rest.push(fileName);
+      }
+    }
+    return [...openFirst, ...rest];
+  }
+
+  /**
+   * Set whether to use pull-based diagnostics (LSP 3.17).
+   * When enabled, the server will ask the client to refresh diagnostics
+   * via workspace/diagnostic/refresh instead of pushing them.
+   */
+  setPullDiagnosticsMode(enabled: boolean): void {
+    this.usePullDiagnostics = enabled;
+    this.logger.info(`Pull-based diagnostics: ${enabled ? 'enabled' : 'disabled'}`);
+  }
+
+  /**
+   * Request the client to refresh all diagnostics.
+   * This is useful when the server detects a project-wide change.
+   */
+  refreshDiagnostics(invalidateAll: boolean = true): void {
+    if (!this.usePullDiagnostics) {
+      this.logger.info(
+        'Skipping workspace/diagnostic/refresh because pull diagnostics is disabled.',
+      );
+      return;
+    }
+    if (invalidateAll) {
+      // Project-wide refresh means diagnostics may change for files whose text version did not.
+      // Bump global invalidation epoch so pull requests recompute at least once.
+      invalidateAllProjectDiagnostics();
+    }
+    this.connection.languages.diagnostics.refresh();
   }
 }
 

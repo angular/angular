@@ -16,6 +16,17 @@ export function onInitialize(session: Session, params: lsp.InitializeParams): ls
     logFile: session.logger.getLogFileName(),
   };
   session.clientCapabilities = params.capabilities;
+
+  // Check if client supports pull-based diagnostics (LSP 3.17)
+  const supportsPullDiagnostics = params.capabilities.textDocument?.diagnostic !== undefined;
+  // Also check if client supports workspace diagnostic refresh
+  const supportsWorkspaceRefresh =
+    params.capabilities.workspace?.diagnostics?.refreshSupport === true;
+  const usePullDiagnostics = supportsPullDiagnostics && supportsWorkspaceRefresh;
+
+  // Store whether we should use pull diagnostics
+  session.setPullDiagnosticsMode(usePullDiagnostics);
+
   return {
     capabilities: {
       foldingRangeProvider: true,
@@ -52,6 +63,18 @@ export function onInitialize(session: Session, params: lsp.InitializeParams): ls
         // [here](https://github.com/angular/vscode-ng-language-service/issues/1828)
         codeActionKinds: [lsp.CodeActionKind.QuickFix],
       },
+      // Pull-based diagnostics (LSP 3.17)
+      // Only enabled if client supports document diagnostics and refresh
+      ...(usePullDiagnostics && {
+        diagnosticProvider: {
+          identifier: 'angular',
+          // Angular has inter-file dependencies - editing code in one file
+          // can result in diagnostics changes in another file
+          interFileDependencies: true,
+          // Enable workspace diagnostics for full project diagnostic support
+          workspaceDiagnostics: true,
+        },
+      }),
     },
     serverOptions,
   };
