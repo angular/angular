@@ -572,6 +572,7 @@
       "resolveDirectives",
       "resolveForwardRef",
       "retrieveHydrationInfo",
+      "reusedNodes",
       "runAfterLeaveAnimations",
       "runEffectsInView",
       "runInInjectionContext",
