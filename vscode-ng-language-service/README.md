@@ -67,3 +67,57 @@ code --install-extension /path/to/ngls.vsix
 - [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#angularls) for [Neovim](https://neovim.io)
 - [Wild Web Developer](https://github.com/eclipse/wildwebdeveloper) for Eclipse
 - [lsp-mode](https://github.com/emacs-lsp/lsp-mode) for Emacs
+
+## Inlay Hints
+
+The Angular Language Service provides inlay hints for templates, showing inline type annotations directly in your code. This feature helps you understand types without hovering over variables.
+
+### Examples
+
+```html
+<!-- @for loop variables -->
+@for (user /* : User */ of users; track user.id) { {{ user.name }} }
+
+<!-- @if aliases (simple and complex) -->
+@if (currentUser; as user) { {{ user.name }} }
+@if (currentUser.profile; as profile /* : Profile */) { {{ profile.name }} }
+
+<!-- @let declarations -->
+@let count /* : number */ = items.length;
+
+<!-- Template references -->
+<input #emailInput /* : HTMLInputElement */ />
+
+<!-- Event bindings -->
+<button (click)="handleClick($event /* : MouseEvent */)">
+  <!-- Property bindings -->
+  <app-child [data /* : Data */]="myData"></app-child>
+</button>
+```
+
+### Configuration
+
+All inlay hints settings are under `angular.inlayHints.*`:
+
+| Setting                           | Default  | Description                                                                   |
+| --------------------------------- | -------- | ----------------------------------------------------------------------------- |
+| `eventParameterTypes`             | `false`  | Show `$event` types for event bindings                                        |
+| `forLoopVariableTypes`            | `false`  | Show types for `@for` loop variables                                          |
+| `ifAliasTypes`                    | `false`  | Show types for `@if` aliases. Set to `'complex'` for complex expressions only |
+| `letDeclarationTypes`             | `false`  | Show types for `@let` declarations                                            |
+| `referenceVariableTypes`          | `false`  | Show types for template reference variables                                   |
+| `suppressWhenTypeMatchesName`     | `false`  | Suppress variable type hints when variable name matches type                  |
+| `arrowFunctionParameterTypes`     | `false`  | Show parameter types for arrow functions                                      |
+| `arrowFunctionReturnTypes`        | `false`  | Show return types for arrow functions                                         |
+| `parameterNameHints`              | `'all'`  | Show parameter names: `'none'`, `'literals'`, or `'all'`                      |
+| `suppressWhenArgumentMatchesName` | `true`   | Suppress parameter hints when argument matches parameter name                 |
+| `propertyBindingTypes`            | `false`  | Show types for property/input bindings                                        |
+| `pipeOutputTypes`                 | `false`  | Show pipe output types                                                        |
+| `twoWayBindingSignalTypes`        | `false`  | Show signal types for two-way bindings                                        |
+| `requiredInputIndicator`          | `'none'` | Required input indicator: `'none'`, `'asterisk'`, `'exclamation'`             |
+| `interactiveInlayHints`           | `false`  | Enable click-to-navigate type definitions                                     |
+| `hostListenerArgumentTypes`       | `false`  | Show `@HostListener` argument types                                           |
+| `switchExpressionTypes`           | `false`  | Show `@switch` expression types                                               |
+| `deferTriggerTypes`               | `false`  | Show `@defer` trigger types                                                   |
+
+To disable all Angular inlay hints, you can set `editor.inlayHints.enabled` to `"off"` in your VS Code settings.

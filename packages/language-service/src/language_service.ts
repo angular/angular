@@ -57,6 +57,8 @@ import {getTypeCheckInfoAtPosition, isTypeScriptFile, TypeCheckInfo} from './uti
 import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {getInlayHintsForTemplate} from './inlay_hints';
+import type {AngularInlayHint, InlayHintsConfig} from '../api';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 
@@ -214,6 +216,85 @@ export class LanguageService {
     return this.withCompilerAndPerfTracing(PerfPhase.LsQuickInfo, (compiler) => {
       return this.getQuickInfoAtPositionImpl(fileName, position, compiler);
     });
+  }
+
+  /**
+   * Provide Angular-specific inlay hints for templates.
+   *
+   * This returns hints for:
+   * - @for loop variable types: `@for (user: User of users)`
+   * - @if alias types: `@if (data; as result: ApiResult)`
+   * - Event parameter types: `(click)="onClick($event: MouseEvent)"`
+   * - Pipe output types: `{{ value | async: Observable<T> }}`
+   * - @let declaration types
+   *
+   * @param fileName The file to get inlay hints for
+   * @param span The text span to get hints within
+   * @param config Optional configuration for which hints to show
+   */
+  provideInlayHints(
+    fileName: string,
+    span: ts.TextSpan,
+    config?: InlayHintsConfig,
+  ): AngularInlayHint[] {
+    // Use LsQuickInfo phase since inlay hints are similar in cost
+    return (
+      this.withCompilerAndPerfTracing(PerfPhase.LsQuickInfo, (compiler) => {
+        const hints: AngularInlayHint[] = [];
+
+        if (isTypeScriptFile(fileName)) {
+          // For TypeScript files, find all components and process their templates
+          const program = compiler.getCurrentProgram();
+          const sourceFile = program.getSourceFile(fileName);
+          if (!sourceFile) {
+            return hints;
+          }
+
+          const ttc = compiler.getTemplateTypeChecker();
+
+          // Walk the source file to find component/directive classes
+          const visit = (node: ts.Node): void => {
+            if (ts.isClassDeclaration(node) && node.name) {
+              // Try to get the template for this class (component) or host element (directive)
+              try {
+                const template = ttc.getTemplate(node);
+                const hostElement = ttc.getHostElement(node);
+
+                // Process if we have either a template or host element
+                if (template || hostElement) {
+                  // This is a component with a template or a directive with host bindings
+                  const typeCheckInfo: TypeCheckInfo = {
+                    declaration: node,
+                    nodes: template ?? [],
+                  };
+                  const templateHints = getInlayHintsForTemplate(
+                    compiler,
+                    typeCheckInfo,
+                    span,
+                    config,
+                  );
+                  hints.push(...templateHints);
+                }
+              } catch {
+                // Not a component/directive or error getting template, skip
+              }
+            }
+            ts.forEachChild(node, visit);
+          };
+
+          visit(sourceFile);
+        } else {
+          // For external template files (HTML), find the associated component
+          const typeCheckInfo = getTypeCheckInfoAtPosition(fileName, span.start, compiler);
+          if (typeCheckInfo) {
+            const templateHints = getInlayHintsForTemplate(compiler, typeCheckInfo, span, config);
+            hints.push(...templateHints);
+          }
+        }
+
+        return hints;
+      }) ?? []
+    );
   }
 
   private getQuickInfoAtPositionImpl(

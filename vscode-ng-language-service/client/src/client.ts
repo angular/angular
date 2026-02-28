@@ -26,7 +26,11 @@ import {
 } from '../../common/requests';
 import {NodeModule, resolve, Version} from '../../common/resolver';
 
-import {isInsideStringLiteral, isNotTypescriptOrSupportedDecoratorField} from './embedded_support';
+import {
+  isInsideStringLiteral,
+  isNotTypescriptOrSupportedDecoratorField,
+  isNotTypescriptOrSupportedDecoratorRange,
+} from './embedded_support';
 
 interface GetTcbResponse {
   uri: vscode.Uri;
@@ -37,6 +41,7 @@ interface GetTcbResponse {
 export class AngularLanguageClient implements vscode.Disposable {
   private client: lsp.LanguageClient | null = null;
   private readonly disposables: vscode.Disposable[] = [];
+  private readonly sessionDisposables: vscode.Disposable[] = [];
   private readonly outputChannel: vscode.OutputChannel;
   private readonly clientOptions: lsp.LanguageClientOptions;
   private readonly name = 'Angular Language Service';
@@ -45,11 +50,19 @@ export class AngularLanguageClient implements vscode.Disposable {
   private readonly fileToIsInAngularProjectMap = new Map<string, boolean>();
 
   constructor(private readonly context: vscode.ExtensionContext) {
-    vscode.workspace.registerTextDocumentContentProvider('angular-embedded-content', {
-      provideTextDocumentContent: (uri) => {
-        return this.virtualDocumentContents.get(uri.toString());
-      },
-    });
+    this.disposables.push(
+      vscode.workspace.registerTextDocumentContentProvider('angular-embedded-content', {
+        provideTextDocumentContent: (uri) => {
+          return this.virtualDocumentContents.get(uri.toString());
+        },
+      }),
+    );
+
+    this.disposables.push(
+      vscode.workspace.onDidChangeConfiguration(() => {
+        this.fileToIsInAngularProjectMap.clear();
+      }),
+    );
 
     const config = vscode.workspace.getConfiguration();
     const useClientSideWatching = config.get('angular.server.useClientSideFileWatcher');
@@ -76,6 +89,7 @@ export class AngularLanguageClient implements vscode.Disposable {
         {scheme: 'file', language: 'typescript'},
       ],
       synchronize: {
+        configurationSection: ['angular', 'typescript', 'editor.inlayHints'],
         fileEvents,
       },
       // Don't let our output console pop open
@@ -254,6 +268,26 @@ export class AngularLanguageClient implements vscode.Disposable {
             return next(document, position, token);
           }
         },
+        provideInlayHints: async (
+          document: vscode.TextDocument,
+          range: vscode.Range,
+          token: vscode.CancellationToken,
+          next,
+        ) => {
+          if (!(await this.isInAngularProject(document))) {
+            return null;
+          }
+
+          // For TypeScript files, only request Angular inlay hints when the
+          // visible range intersects supported decorator fields (e.g. inline
+          // template/style metadata). This matches the guarding strategy used
+          // by other Angular LSP features and avoids work on unsupported TS regions.
+          if (!isNotTypescriptOrSupportedDecoratorRange(document, range)) {
+            return null;
+          }
+
+          return next(document, range, token);
+        },
       },
     };
   }
@@ -286,7 +320,9 @@ export class AngularLanguageClient implements vscode.Disposable {
         // but do not cache the result so we can try to get the real answer on follow-up requests.
         return false;
       }
-      this.fileToIsInAngularProjectMap.set(uri, response);
+      if (response) {
+        this.fileToIsInAngularProjectMap.set(uri, true);
+      }
       return response;
     } catch {
       return false;
@@ -368,7 +404,11 @@ export class AngularLanguageClient implements vscode.Disposable {
     await this.client.start();
     // Must wait for the client to be ready before registering notification
     // handlers.
-    this.disposables.push(registerNotificationHandlers(this.client));
+    this.sessionDisposables.push(
+      registerNotificationHandlers(this.client, () => {
+        this.fileToIsInAngularProjectMap.clear();
+      }),
+    );
   }
 
   /**
@@ -481,7 +521,7 @@ export class AngularLanguageClient implements vscode.Disposable {
     }
     await this.client.stop();
     this.outputChannel.clear();
-    this.dispose();
+    this.disposeSessionDisposables();
     this.client = null;
     this.fileToIsInAngularProjectMap.clear();
     this.virtualDocumentContents.clear();
@@ -563,17 +603,32 @@ export class AngularLanguageClient implements vscode.Disposable {
     );
   }
 
+  private disposeSessionDisposables(): void {
+    for (
+      let disposable = this.sessionDisposables.pop();
+      disposable !== undefined;
+      disposable = this.sessionDisposables.pop()
+    ) {
+      disposable.dispose();
+    }
+  }
+
   dispose() {
+    this.disposeSessionDisposables();
     for (let d = this.disposables.pop(); d !== undefined; d = this.disposables.pop()) {
       d.dispose();
     }
   }
 }
 
-function registerNotificationHandlers(client: lsp.LanguageClient): vscode.Disposable {
+function registerNotificationHandlers(
+  client: lsp.LanguageClient,
+  onProjectStateChange: () => void,
+): vscode.Disposable {
   const disposables: vscode.Disposable[] = [];
   disposables.push(
     client.onNotification(ProjectLoadingStart, () => {
+      onProjectStateChange();
       vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Window,
@@ -581,7 +636,10 @@ function registerNotificationHandlers(client: lsp.LanguageClient): vscode.Dispos
         },
         () =>
           new Promise<void>((resolve) => {
-            client.onNotification(ProjectLoadingFinish, resolve);
+            client.onNotification(ProjectLoadingFinish, () => {
+              onProjectStateChange();
+              resolve();
+            });
           }),
       );
     }),

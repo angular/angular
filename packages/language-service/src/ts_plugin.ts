@@ -17,6 +17,8 @@ import {
   isNgLanguageService,
   LinkedEditingRanges,
   NgLanguageService,
+  AngularInlayHint,
+  InlayHintsConfig,
 } from '../api';
 
 import {LanguageService} from './language_service';
@@ -350,6 +352,14 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     ngLS.ensureProjectAnalyzed();
   }
 
+  function getAngularInlayHints(
+    fileName: string,
+    span: ts.TextSpan,
+    config?: InlayHintsConfig,
+  ): AngularInlayHint[] {
+    return ngLS.provideInlayHints(fileName, span, config);
+  }
+
   return {
     ...tsLS,
     ensureProjectAnalyzed,
@@ -382,6 +392,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getApplicableRefactors,
     applyRefactoring,
     getLinkedEditingRangeAtPosition,
+    getAngularInlayHints,
   };
 }
 
