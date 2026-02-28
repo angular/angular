@@ -28,6 +28,8 @@ import {
   STATUS,
   STATUS_TEXT,
   REQ_URL,
+  REDIRECTED,
+  EVENT_RESPONSE_TYPE,
   withHttpTransferCache,
 } from '../src/transfer_cache';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
@@ -39,6 +41,14 @@ interface RequestParams {
   transferCache?: {includeHeaders: string[]} | boolean;
   headers?: {[key: string]: string};
   body?: RequestBody;
+}
+
+/**
+ * Options for Response Fetch Options
+ */
+interface ResponseOptions {
+  redirected?: boolean;
+  responseType?: ResponseType;
 }
 
 type RequestBody =
@@ -67,18 +77,27 @@ describe('TransferCache', () => {
       url: string,
       body: RequestBody,
       params?: RequestParams,
+      responseOptions?: ResponseOptions,
     ): string;
     function makeRequestAndExpectOne(
       url: string,
       body: RequestBody,
       params?: RequestParams & {observe: 'response'},
+      responseOptions?: ResponseOptions,
     ): HttpResponse<string>;
-    function makeRequestAndExpectOne(url: string, body: RequestBody, params?: RequestParams): any {
+    function makeRequestAndExpectOne(
+      url: string,
+      body: RequestBody,
+      params?: RequestParams,
+      responseOptions?: ResponseOptions,
+    ): any {
       let response!: any;
       TestBed.inject(HttpClient)
         .request(params?.method ?? 'GET', url, params)
         .subscribe((r) => (response = r));
-      TestBed.inject(HttpTestingController).expectOne(url).flush(body, {headers: params?.headers});
+      TestBed.inject(HttpTestingController)
+        .expectOne(url)
+        .flush(body, {headers: params?.headers, ...responseOptions});
       return response;
     }
 
@@ -171,8 +190,24 @@ describe('TransferCache', () => {
     });
 
     it('should stop storing HTTP calls in `TransferState` after application becomes stable', async () => {
-      makeRequestAndExpectOne('/test-1', 'foo');
-      makeRequestAndExpectOne('/test-2', 'buzz');
+      makeRequestAndExpectOne(
+        '/test-1',
+        'foo',
+        {},
+        {
+          responseType: 'default',
+          redirected: true,
+        },
+      );
+      makeRequestAndExpectOne(
+        '/test-2',
+        'buzz',
+        {},
+        {
+          responseType: 'cors',
+          redirected: false,
+        },
+      );
 
       isStable.next(true);
 
@@ -189,6 +224,8 @@ describe('TransferCache', () => {
           [STATUS_TEXT]: 'OK',
           [REQ_URL]: '/test-1',
           [RESPONSE_TYPE]: 'json',
+          [REDIRECTED]: true,
+          [EVENT_RESPONSE_TYPE]: 'default',
         },
         '2400572440': {
           [BODY]: 'buzz',
@@ -196,6 +233,31 @@ describe('TransferCache', () => {
           [STATUS]: 200,
           [STATUS_TEXT]: 'OK',
           [REQ_URL]: '/test-2',
+          [RESPONSE_TYPE]: 'json',
+          [REDIRECTED]: false,
+          [EVENT_RESPONSE_TYPE]: 'cors',
+        },
+      });
+    });
+
+    it('should NOT store redirect and responseType in transfer state when using XHR', async () => {
+      // XHR-based requests do not populate `redirected` or `responseType` on the HttpResponse,
+      // so those fields should be omitted from the cached entry to avoid bloating TransferState.
+      makeRequestAndExpectOne('/test-xhr', 'foo');
+
+      isStable.next(true);
+      await timeout();
+
+      const transferState = TestBed.inject(TransferState);
+      const stateJson = JSON.parse(transferState.toJson()) as Record<string, unknown>;
+
+      expect(stateJson).toEqual({
+        '616721896': {
+          [BODY]: 'foo',
+          [HEADERS]: {},
+          [STATUS]: 200,
+          [STATUS_TEXT]: 'OK',
+          [REQ_URL]: '/test-xhr',
           [RESPONSE_TYPE]: 'json',
         },
       });
