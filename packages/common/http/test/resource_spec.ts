@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isNode} from '@angular/private/testing';
-import {ApplicationRef, Injector, signal} from '@angular/core';
+import {ApplicationRef, Injector, resourceFromSnapshots, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {isNode} from '@angular/private/testing';
 import {
-  HttpEventType,
-  provideHttpClient,
-  httpResource,
   HttpContext,
   HttpContextToken,
+  HttpEventType,
+  httpResource,
   HttpResourceRef,
+  provideHttpClient,
 } from '../index';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
 import {withHttpTransferCache} from '../src/transfer_cache';
@@ -356,6 +356,17 @@ describe('httpResource', () => {
     expect(res.headers()).toBe(undefined);
     expect(res.progress()).toBe(undefined);
     expect(res.statusCode()).toBe(undefined);
+  });
+
+  it('should support chain', async () => {
+    const backend = TestBed.inject(HttpTestingController);
+    const endpoint = resourceFromSnapshots(signal({status: 'resolved', value: '/data'}));
+    const res = httpResource(({chain}) => chain(endpoint), {injector: TestBed.inject(Injector)});
+    TestBed.tick();
+    const req = backend.expectOne('/data');
+    req.flush([]);
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(res.value()).toEqual([]);
   });
 
   describe('types', () => {
