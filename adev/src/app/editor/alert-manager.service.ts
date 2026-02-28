@@ -94,12 +94,22 @@ export class AlertManager {
         break;
     }
 
-    this.snackBar.openFromComponent(ErrorSnackBar, {
+    const snackBarRef = this.snackBar.openFromComponent(ErrorSnackBar, {
       panelClass: 'docs-invert-mode',
       data: {
         message,
         actionText: 'I understand',
       } satisfies ErrorSnackBarData,
     });
+
+    // Reset the counter when the user dismisses the warning to handle OOM crash scenarios
+    // where beforeunload event is not fired (e.g., Safari auto-reload on OOM)
+    snackBarRef.afterDismissed().subscribe(() => {
+      this.resetWebcontainerCounter();
+    });
+  }
+
+  private resetWebcontainerCounter(): void {
+    this.localStorage?.setItem(WEBCONTAINERS_COUNTER_KEY, '0');
   }
 }
