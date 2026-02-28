@@ -133,6 +133,57 @@ export class SymbolBuilder {
     return symbol;
   }
 
+  /**
+   * Gets the TCB location for a template node at its usage site.
+   * This is useful for getting flow-narrowed types for variables.
+   */
+  getTcbLocation(node: AST | TmplAstNode): TcbLocation | null {
+    if (node instanceof AST) {
+      let expression = node;
+      if (expression instanceof ASTWithSource) {
+        expression = expression.ast;
+      }
+
+      let withSpan = expression.sourceSpan;
+      if (
+        expression instanceof Binary &&
+        Binary.isAssignmentOperation(expression.operation) &&
+        expression.left instanceof PropertyRead
+      ) {
+        withSpan = expression.left.nameSpan;
+      } else if (expression instanceof ASTWithName) {
+        withSpan = expression.nameSpan;
+      }
+
+      let tcbNode: ts.Node | null = null;
+
+      // Property reads in templates usually map to a `PropertyAccessExpression`
+      if (expression instanceof PropertyRead) {
+        tcbNode = findFirstMatchingNode(this.typeCheckBlock, {
+          withSpan,
+          filter: ts.isPropertyAccessExpression,
+        });
+      }
+
+      // Fall back to any matching node
+      if (tcbNode === null) {
+        tcbNode = findFirstMatchingNode(this.typeCheckBlock, {withSpan, filter: anyNodeFilter});
+      }
+
+      if (tcbNode === null) {
+        return null;
+      }
+
+      return {
+        tcbPath: this.tcbPath,
+        isShimFile: this.tcbIsShim,
+        positionInFile: this.getTcbPositionForNode(tcbNode),
+      };
+    }
+
+    return null;
+  }
+
   private getSymbolOfAstTemplate(template: TmplAstTemplate): TemplateSymbol | null {
     const directives = this.getDirectivesOfNode(template);
     return {kind: SymbolKind.Template, directives, templateNode: template};
