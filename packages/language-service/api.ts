@@ -147,6 +147,8 @@ export interface NgLanguageService extends ts.LanguageService {
 
   getTokenTypeFromClassification(classification: number): number | undefined;
   getTokenModifierFromClassification(classification: number): number;
+
+  getSelectionRangeAtPosition(fileName: string, position: number): ts.SelectionRange | undefined;
 }
 
 export function isNgLanguageService(

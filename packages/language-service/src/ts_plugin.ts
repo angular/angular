@@ -118,6 +118,49 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return ngLS.getRenameInfo(fileName, position);
   }
 
+  /**
+   * Get selection range for the Angular Language Service API.
+   *
+   * This method is called by the LSP server handler for `textDocument/selectionRange`.
+   * It handles both HTML templates and TypeScript files with inline templates.
+   *
+   * For HTML files / angularOnly mode: Uses Angular LS only
+   * For TS files: Tries Angular first (for inline templates), falls back to TypeScript
+   */
+  function getSelectionRangeAtPosition(
+    fileName: string,
+    position: number,
+  ): ts.SelectionRange | undefined {
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getSelectionRangeAtPosition(fileName, position);
+    }
+    // For TypeScript files, try Angular first (handles inline templates),
+    // fall back to TypeScript for pure TS code
+    return (
+      ngLS.getSelectionRangeAtPosition(fileName, position) ??
+      tsLS.getSmartSelectionRange(fileName, position)
+    );
+  }
+
+  /**
+   * Get smart selection range for the TypeScript Plugin API.
+   *
+   * This method is required by the `ts.LanguageService` interface and is called
+   * by TypeScript when the plugin is loaded. TypeScript only calls this for TS/JS
+   * files, not HTML files.
+   *
+   * Tries Angular first (for inline templates), falls back to TypeScript for
+   * pure TypeScript code.
+   */
+  function getSmartSelectionRange(fileName: string, position: number): ts.SelectionRange {
+    // TypeScript only calls this for TS/JS files, not HTML
+    // Try Angular first (handles inline templates), fall back to TypeScript
+    return (
+      ngLS.getSelectionRangeAtPosition(fileName, position) ??
+      tsLS.getSmartSelectionRange(fileName, position)
+    );
+  }
+
   function getEncodedSemanticClassifications(
     fileName: string,
     span: ts.TextSpan,
@@ -363,6 +406,8 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getReferencesAtPosition,
     findRenameLocations,
     getRenameInfo,
+    getSelectionRangeAtPosition,
+    getSmartSelectionRange,
     getEncodedSemanticClassifications,
     getTokenTypeFromClassification,
     getTokenModifierFromClassification,

@@ -254,6 +254,28 @@ export class AngularLanguageClient implements vscode.Disposable {
             return next(document, position, token);
           }
         },
+        provideSelectionRanges: async (
+          document: vscode.TextDocument,
+          positions: readonly vscode.Position[],
+          token: vscode.CancellationToken,
+          next: lsp.ProvideSelectionRangeSignature,
+        ) => {
+          if (!(await this.isInAngularProject(document))) {
+            return;
+          }
+          // For TypeScript files, only provide selection ranges when cursor is
+          // inside an Angular decorator field (e.g., inline template).
+          // For HTML files, always provide selection ranges.
+          if (document.languageId === 'typescript') {
+            const anyPositionInTemplate = positions.some((pos) =>
+              isNotTypescriptOrSupportedDecoratorField(document, pos),
+            );
+            if (!anyPositionInTemplate) {
+              return;
+            }
+          }
+          return next(document, positions, token);
+        },
       },
     };
   }
