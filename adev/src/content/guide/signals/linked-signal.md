@@ -40,6 +40,14 @@ export class ShippingMethodPicker {
 
 `linkedSignal` works similarly to `signal` with one key difference— instead of passing a default value, you pass a _computation function_, just like `computed`. When the value of the computation changes, the value of the `linkedSignal` changes to the computation result. This helps ensure that the `linkedSignal` always has a valid value.
 
+
+### When to prefer `linkedSignal` over `computed`
+
+While `computed` is typically used to derive read-only state from other signals, `linkedSignal` is useful when the derived state should remain writable or preserve user-driven updates as its source changes.
+
+In other words, use `linkedSignal` when the value depends on another signal but must still be explicitly set or updated in response to user interaction.
+
+
 The following example shows how the value of a `linkedSignal` can change based on its linked state:
 
 ```ts
