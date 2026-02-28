@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
+import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {join, relative} from 'path';
 
 import {normalizePath} from '../../utils/change_tracker';
@@ -21,16 +21,15 @@ interface Options extends MigrationOptions {
 }
 
 export function migrate(options: Options): Rule {
-  return async (tree: Tree) => {
+  return async (tree: Tree, context: SchematicContext) => {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const allPaths = [...buildPaths, ...testPaths];
     const pathToMigrate = normalizePath(join(basePath, options.path));
 
     if (!allPaths.length) {
-      throw new SchematicsException(
-        'Could not find any tsconfig file. Cannot run the inject migration.',
-      );
+      context.logger.warn('Could not find any tsconfig file. Cannot run the inject migration.');
+      return;
     }
 
     for (const tsconfigPath of allPaths) {
