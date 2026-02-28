@@ -11,6 +11,7 @@ and external templates including:
 - AOT Diagnostic messages
 - Quick info
 - Go to definition
+- Document Symbols for Outline panel, breadcrumbs, and "Go to Symbol"
 
 ## Download
 
@@ -29,6 +30,35 @@ as shown in the following example:
 ```
 
 For more information, see the [Angular compiler options](https://angular.io/guide/angular-compiler-options) guide.
+
+## Extension Settings
+
+### Document Symbols
+
+Document Symbols enable the Outline panel, breadcrumbs navigation, and "Go to Symbol" (Cmd+Shift+O / Ctrl+Shift+O) to show Angular template elements like `@if`, `@for`, structural directives, and template references.
+
+| Setting                                            | Default | Description                                                                                  |
+| -------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------- |
+| `angular.documentSymbols.enabled`                  | `true`  | Enable Angular-specific document symbols                                                     |
+| `angular.documentSymbols.showImplicitForVariables` | `false` | Show implicit `@for` loop variables (`$index`, `$count`, `$first`, `$last`, `$even`, `$odd`) |
+
+For TypeScript files with inline templates, the Outline shows only the component class with template symbols nested inside:
+
+```
+MyComponent (class)
+└── (template)
+    ├── @if (condition)
+    └── <button>
+```
+
+Example configuration:
+
+```json
+{
+  "angular.documentSymbols.enabled": true,
+  "angular.documentSymbols.showImplicitForVariables": false
+}
+```
 
 ## Versioning
 
