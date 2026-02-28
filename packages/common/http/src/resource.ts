@@ -7,30 +7,30 @@
  */
 
 import {
-  Injector,
-  Signal,
-  ɵResourceImpl as ResourceImpl,
-  inject,
-  linkedSignal,
   assertInInjectionContext,
-  signal,
   computed,
+  ɵencapsulateResourceError as encapsulateResourceError,
+  inject,
+  Injector,
+  linkedSignal,
+  ɵResourceImpl as ResourceImpl,
+  type ResourceParamsContext,
   ResourceStreamItem,
+  Signal,
+  signal,
+  TransferState,
   type ValueEqualityFn,
   ɵRuntimeError,
   ɵRuntimeErrorCode,
-  ɵencapsulateResourceError as encapsulateResourceError,
-  TransferState,
-  untracked,
 } from '@angular/core';
 import type {Subscription} from 'rxjs';
 
-import {HttpRequest} from './request';
 import {HttpClient} from './client';
-import {HttpErrorResponse, HttpEventType, HttpProgressEvent} from './response';
 import {HttpHeaders} from './headers';
 import {HttpParams} from './params';
-import {HttpResourceRef, HttpResourceOptions, HttpResourceRequest} from './resource_api';
+import {HttpRequest} from './request';
+import {HttpResourceOptions, HttpResourceRef, HttpResourceRequest} from './resource_api';
+import {HttpErrorResponse, HttpEventType, HttpProgressEvent} from './response';
 import {
   CACHE_OPTIONS,
   HTTP_TRANSFER_CACHE_ORIGIN_MAP,
@@ -57,7 +57,7 @@ export interface HttpResourceFn {
    * @experimental 19.2
    */
   <TResult = unknown>(
-    url: () => string | undefined,
+    url: (ctx: ResourceParamsContext) => string | undefined,
     options: HttpResourceOptions<TResult, unknown> & {defaultValue: NoInfer<TResult>},
   ): HttpResourceRef<TResult>;
 
@@ -73,7 +73,7 @@ export interface HttpResourceFn {
    * @experimental 19.2
    */
   <TResult = unknown>(
-    url: () => string | undefined,
+    url: (ctx: ResourceParamsContext) => string | undefined,
     options?: HttpResourceOptions<TResult, unknown>,
   ): HttpResourceRef<TResult | undefined>;
 
@@ -89,7 +89,7 @@ export interface HttpResourceFn {
    * @experimental 19.2
    */
   <TResult = unknown>(
-    request: () => HttpResourceRequest | undefined,
+    request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
     options: HttpResourceOptions<TResult, unknown> & {defaultValue: NoInfer<TResult>},
   ): HttpResourceRef<TResult>;
 
@@ -105,7 +105,7 @@ export interface HttpResourceFn {
    * @experimental 19.2
    */
   <TResult = unknown>(
-    request: () => HttpResourceRequest | undefined,
+    request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
     options?: HttpResourceOptions<TResult, unknown>,
   ): HttpResourceRef<TResult | undefined>;
 
@@ -121,22 +121,22 @@ export interface HttpResourceFn {
    */
   arrayBuffer: {
     <TResult = ArrayBuffer>(
-      url: () => string | undefined,
+      url: (ctx: ResourceParamsContext) => string | undefined,
       options: HttpResourceOptions<TResult, ArrayBuffer> & {defaultValue: NoInfer<TResult>},
     ): HttpResourceRef<TResult>;
 
     <TResult = ArrayBuffer>(
-      url: () => string | undefined,
+      url: (ctx: ResourceParamsContext) => string | undefined,
       options?: HttpResourceOptions<TResult, ArrayBuffer>,
     ): HttpResourceRef<TResult | undefined>;
 
     <TResult = ArrayBuffer>(
-      request: () => HttpResourceRequest | undefined,
+      request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
       options: HttpResourceOptions<TResult, ArrayBuffer> & {defaultValue: NoInfer<TResult>},
     ): HttpResourceRef<TResult>;
 
     <TResult = ArrayBuffer>(
-      request: () => HttpResourceRequest | undefined,
+      request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
       options?: HttpResourceOptions<TResult, ArrayBuffer>,
     ): HttpResourceRef<TResult | undefined>;
   };
@@ -153,22 +153,22 @@ export interface HttpResourceFn {
    */
   blob: {
     <TResult = Blob>(
-      url: () => string | undefined,
+      url: (ctx: ResourceParamsContext) => string | undefined,
       options: HttpResourceOptions<TResult, Blob> & {defaultValue: NoInfer<TResult>},
     ): HttpResourceRef<TResult>;
 
     <TResult = Blob>(
-      url: () => string | undefined,
+      url: (ctx: ResourceParamsContext) => string | undefined,
       options?: HttpResourceOptions<TResult, Blob>,
     ): HttpResourceRef<TResult | undefined>;
 
     <TResult = Blob>(
-      request: () => HttpResourceRequest | undefined,
+      request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
       options: HttpResourceOptions<TResult, Blob> & {defaultValue: NoInfer<TResult>},
     ): HttpResourceRef<TResult>;
 
     <TResult = Blob>(
-      request: () => HttpResourceRequest | undefined,
+      request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
       options?: HttpResourceOptions<TResult, Blob>,
     ): HttpResourceRef<TResult | undefined>;
   };
@@ -185,22 +185,22 @@ export interface HttpResourceFn {
    */
   text: {
     <TResult = string>(
-      url: () => string | undefined,
+      url: (ctx: ResourceParamsContext) => string | undefined,
       options: HttpResourceOptions<TResult, string> & {defaultValue: NoInfer<TResult>},
     ): HttpResourceRef<TResult>;
 
     <TResult = string>(
-      url: () => string | undefined,
+      url: (ctx: ResourceParamsContext) => string | undefined,
       options?: HttpResourceOptions<TResult, string>,
     ): HttpResourceRef<TResult | undefined>;
 
     <TResult = string>(
-      request: () => HttpResourceRequest | undefined,
+      request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
       options: HttpResourceOptions<TResult, string> & {defaultValue: NoInfer<TResult>},
     ): HttpResourceRef<TResult>;
 
     <TResult = string>(
-      request: () => HttpResourceRequest | undefined,
+      request: (ctx: ResourceParamsContext) => HttpResourceRequest | undefined,
       options?: HttpResourceOptions<TResult, string>,
     ): HttpResourceRef<TResult | undefined>;
   };
@@ -230,7 +230,9 @@ export const httpResource: HttpResourceFn = (() => {
  * the requestee.
  */
 type ResponseType = 'arraybuffer' | 'blob' | 'json' | 'text';
-type RawRequestType = (() => string | undefined) | (() => HttpResourceRequest | undefined);
+type RawRequestType =
+  | ((ctx: ResourceParamsContext) => string | undefined)
+  | ((ctx: ResourceParamsContext) => HttpResourceRequest | undefined);
 
 function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
   return function httpResource<TResult = TRaw>(
@@ -270,8 +272,8 @@ function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
 
     return new HttpResourceImpl(
       injector,
-      () => normalizeRequest(request, responseType),
-      options?.defaultValue as TResult,
+      (ctx: ResourceParamsContext) => normalizeRequest(ctx, request, responseType),
+      options?.defaultValue,
       options?.debugName,
       options?.parse as (value: unknown) => TResult,
       options?.equal as ValueEqualityFn<unknown>,
@@ -281,10 +283,11 @@ function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
 }
 
 function normalizeRequest(
+  ctx: ResourceParamsContext,
   request: RawRequestType,
   responseType: ResponseType,
 ): HttpRequest<unknown> | undefined {
-  let unwrappedRequest = typeof request === 'function' ? request() : request;
+  let unwrappedRequest = typeof request === 'function' ? request(ctx) : request;
   if (unwrappedRequest === undefined) {
     return undefined;
   } else if (typeof unwrappedRequest === 'string') {
@@ -356,7 +359,7 @@ class HttpResourceImpl<T>
 
   constructor(
     injector: Injector,
-    request: () => HttpRequest<unknown> | undefined,
+    request: (ctx: ResourceParamsContext) => HttpRequest<T> | undefined,
     defaultValue: T,
     debugName?: string,
     parse?: (value: unknown) => T,
