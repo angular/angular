@@ -833,16 +833,28 @@ function assertNotBase64Image(dir: NgOptimizedImage) {
 }
 
 /**
- * Verifies that the 'sizes' only includes responsive values.
+ * Verifies that the `sizes` attribute is not purely pixel-based. If the `sizes` string
+ * contains pixel values but also includes responsive values (e.g. `vw`), the mix is allowed
+ * because the user is intentionally using responsive mode with a pixel fallback. Pure pixel
+ * values (e.g. `sizes="500px"` or `sizes="(min-width: 768px) 500px, 300px"`) trigger an
+ * error because they would cause the responsive `srcset` generator to select images far
+ * larger than needed.
  */
 function assertNoComplexSizes(dir: NgOptimizedImage) {
   let sizes = dir.sizes;
-  if (sizes?.match(/((\)|,)\s|^)\d+px/)) {
+  if (sizes === undefined) return;
+
+  const hasPixelValues = sizes.match(/((\)|,)\s|^)\d+px/);
+  const hasResponsiveValues = sizes.match(/\d+(vw|vh|vmin|vmax|%)/);
+
+  if (hasPixelValues && !hasResponsiveValues) {
     throw new RuntimeError(
       RuntimeErrorCode.INVALID_INPUT,
-      `${imgDirectiveDetails(dir.ngSrc, false)} \`sizes\` was set to a string including ` +
-        `pixel values. For automatic \`srcset\` generation, \`sizes\` must only include responsive ` +
-        `values, such as \`sizes="50vw"\` or \`sizes="(min-width: 768px) 50vw, 100vw"\`. ` +
+      `${imgDirectiveDetails(dir.ngSrc, false)} \`sizes\` was set to a string that only ` +
+        `includes pixel values. For automatic \`srcset\` generation, \`sizes\` must include ` +
+        `responsive values, such as \`sizes="50vw"\` or \`sizes="(min-width: 768px) 50vw, 100vw"\`. ` +
+        `Pixel values can be mixed with responsive values, for example ` +
+        `\`sizes="(max-width: 768px) 100vw, 370px"\`. ` +
         `To fix this, modify the \`sizes\` attribute, or provide your own \`ngSrcset\` value directly.`,
     );
   }
