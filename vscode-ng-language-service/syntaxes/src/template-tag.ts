@@ -10,7 +10,8 @@ import {GrammarDefinition} from './types';
 
 export const TemplateTag: GrammarDefinition = {
   scopeName: 'template.tag.ng',
-  injectionSelector: 'L:text.html#meta.tag -comment',
+  injectionSelector:
+    'L:meta.tag -comment -text.html.markdown, L:meta.embedded.block.angular-ts meta.tag -comment, L:meta.embedded.block.angular-html meta.tag -comment',
   patterns: [
     {include: '#twoWayBinding'},
     {include: '#propertyBinding'},

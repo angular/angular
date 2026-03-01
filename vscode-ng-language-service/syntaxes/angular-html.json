@@ -1,0 +1,8 @@
+{
+  "scopeName": "text.angular-html",
+  "patterns": [
+    {
+      "include": "text.html.derivative"
+    }
+  ]
+}
