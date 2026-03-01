@@ -10,6 +10,9 @@ import {GrammarDefinition} from './types';
 
 export const InlineStyles: GrammarDefinition = {
   scopeName: 'inline-styles.ng',
+  // The second alternative is needed because `source.ts#` anchors to the document
+  // root scope. In markdown fences the root is `text.html.markdown`, not `source.ts`,
+  // so the first selector never matches inside fenced blocks.
   injectionSelector:
     'L:source.ts#meta.decorator.ts -comment, L:meta.embedded.block.angular-ts meta.decorator.ts -comment',
   patterns: [{include: '#inlineStyles'}],

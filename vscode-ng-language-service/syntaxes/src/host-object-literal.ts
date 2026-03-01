@@ -11,6 +11,9 @@ import {GrammarDefinition} from './types';
 /** Highlighting definition for the `host` object of a directive or component. */
 export const HostObjectLiteral: GrammarDefinition = {
   scopeName: 'host-object-literal.ng',
+  // The second alternative is needed because `-text.html` in the first selector
+  // prefix-matches `text.html.markdown`, blocking this injection inside markdown
+  // fenced blocks (TextMate scope exclusions use prefix matching).
   injectionSelector:
     'L:meta.decorator.ts -comment -text.html -expression.ng, L:meta.embedded.block.angular-ts meta.decorator.ts -comment -expression.ng',
   patterns: [{include: '#hostObjectLiteral'}],

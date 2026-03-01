@@ -38,3 +38,30 @@ export async function activate(uri: vscode.Uri): Promise<void> {
   // The timeout gives the language server time to warm up.
   await setTimeout(3_000);
 }
+
+export function positionOf(
+  document: vscode.TextDocument,
+  needle: string,
+  offset = 0,
+): vscode.Position {
+  const index = document.getText().indexOf(needle);
+  expect(index).withContext(`Missing marker: ${needle}`).toBeGreaterThanOrEqual(0);
+  return document.positionAt(index + offset);
+}
+
+export function positionOfAfter(
+  document: vscode.TextDocument,
+  anchor: string,
+  needle: string,
+  offset = 0,
+): vscode.Position {
+  const anchorIndex = document.getText().indexOf(anchor);
+  expect(anchorIndex).withContext(`Missing anchor: ${anchor}`).toBeGreaterThanOrEqual(0);
+
+  const index = document.getText().indexOf(needle, anchorIndex);
+  expect(index)
+    .withContext(`Missing marker after anchor '${anchor}': ${needle}`)
+    .toBeGreaterThanOrEqual(0);
+
+  return document.positionAt(index + offset);
+}
