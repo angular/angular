@@ -765,7 +765,7 @@ class UrlParser {
 
       const next = this.remaining[path.length];
 
-      // if is is not one of these characters, then the segment was unescaped
+      // if is not one of these characters, then the segment was unescaped
       // or the group was not closed
       if (next !== '/' && next !== ')' && next !== ';') {
         throw new RuntimeError(
