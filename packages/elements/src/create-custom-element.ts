@@ -136,7 +136,7 @@ export function createCustomElement<P>(
   const inputs = getComponentInputs(component, config.injector);
 
   const strategyFactory =
-    config.strategyFactory || new ComponentNgElementStrategyFactory(component, config.injector);
+    config.strategyFactory || new ComponentNgElementStrategyFactory(component);
 
   const attributeToPropertyInputs = getDefaultAttributeToPropertyInputs(inputs);
 
