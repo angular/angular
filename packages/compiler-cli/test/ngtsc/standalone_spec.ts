@@ -528,6 +528,63 @@ runInEachFileSystem(() => {
         );
       });
 
+      it('should produce a specific error when a non-exported Angular class is used in imports with compileNonExportedClasses disabled', () => {
+        env.tsconfig({compileNonExportedClasses: false});
+        env.write(
+          'test.ts',
+          `
+            import {Component, Directive} from '@angular/core';
+
+            @Directive({
+              selector: '[dir]',
+            })
+            class TestDir {}
+
+            @Component({
+              selector: 'test-cmp',
+              template: '',
+              imports: [TestDir],
+            })
+            export class TestCmp {}
+          `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.COMPONENT_UNKNOWN_IMPORT));
+        expect(diags[0].messageText).toContain(
+          `'TestDir' is used in 'imports' but is not exported from its file.`,
+        );
+        expect(diags[0].relatedInformation).not.toBeUndefined();
+        expect(diags[0].relatedInformation![0].messageText).toContain(
+          `Consider adding the 'export' keyword to 'TestDir'.`,
+        );
+      });
+
+      it('should not error when both importing and imported components are non-exported with compileNonExportedClasses disabled', () => {
+        // Simulates the common test-file pattern where both the component under test
+        env.tsconfig({compileNonExportedClasses: false});
+        env.write(
+          'test.ts',
+          `
+            import {Component, Directive} from '@angular/core';
+
+            @Directive({
+              selector: '[dir]',
+            })
+            class TestDir {}
+
+            @Component({
+              selector: 'test-cmp',
+              template: '',
+              imports: [TestDir],
+            })
+            class TestCmp {}
+          `,
+        );
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
       it('should type-check standalone component templates', () => {
         env.write(
           'test.ts',
