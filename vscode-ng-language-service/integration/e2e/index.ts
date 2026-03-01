@@ -3,6 +3,7 @@ import {mkdtemp} from 'node:fs/promises';
 import {join} from 'node:path';
 import {promisify} from 'node:util';
 import {runTests} from '@vscode/test-electron';
+import {existsSync} from 'node:fs';
 
 import {PACKAGE_ROOT, PROJECT_PATH} from '../test_constants';
 
@@ -10,6 +11,11 @@ import {PACKAGE_ROOT, PROJECT_PATH} from '../test_constants';
 import Xvfb from 'xvfb';
 
 async function main() {
+  const xQuartzXvfb = '/opt/X11/bin/Xvfb';
+  if (process.platform === 'darwin' && existsSync(xQuartzXvfb)) {
+    process.env['PATH'] = `/opt/X11/bin:${process.env['PATH'] ?? ''}`;
+  }
+
   const EXT_DEVELOPMENT_PATH = join(PACKAGE_ROOT, 'development_package');
   const EXT_TESTS_PATH = join(PACKAGE_ROOT, 'integration', 'e2e', 'jasmine');
   const xvfb = new Xvfb();
@@ -38,6 +44,8 @@ async function main() {
         PROJECT_PATH,
         // This disables all extensions except the one being tested
         '--disable-extensions',
+        '--password-store=basic',
+        '--use-mock-keychain',
         '--disable-gpu',
         '--no-sandbox',
         '--disable-dev-shm-usage',
