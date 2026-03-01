@@ -6,7 +6,6 @@ export async function run(
   cb: (error: any, exitCode?: number) => void,
 ): Promise<void> {
   const jasmine = new Jasmine({projectBaseDir: __dirname});
-  (globalThis.jasmine as {DEFAULT_TIMEOUT_INTERVAL: number}).DEFAULT_TIMEOUT_INTERVAL = 60_000;
   jasmine.loadConfig({
     spec_files: ['*_spec.js'],
   });
