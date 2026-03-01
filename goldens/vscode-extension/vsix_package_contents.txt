@@ -17,11 +17,13 @@ server/README.md
 server/bin/ngserver
 server/index.js
 server/package.json
+syntaxes/angular-ts.json
 syntaxes/expression.json
 syntaxes/host-object-literal.json
 syntaxes/inline-styles.json
 syntaxes/inline-template.json
 syntaxes/let-declaration.json
+syntaxes/markdown-fence.json
 syntaxes/template-blocks.json
 syntaxes/template-tag.json
 syntaxes/template.json

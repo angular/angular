@@ -1,6 +1,6 @@
 {
   "scopeName": "inline-template.ng",
-  "injectionSelector": "L:meta.decorator.ts -comment -text.html",
+  "injectionSelector": "L:meta.decorator.ts -comment -text.html, L:meta.embedded.block.angular-ts meta.decorator.ts -comment",
   "patterns": [
     {
       "include": "#inlineTemplate"
@@ -65,10 +65,19 @@
       "contentName": "text.html.derivative",
       "patterns": [
         {
-          "include": "text.html.derivative"
+          "include": "template.blocks.ng"
+        },
+        {
+          "include": "template.let.ng"
+        },
+        {
+          "include": "template.tag.ng"
         },
         {
           "include": "template.ng"
+        },
+        {
+          "include": "text.html.derivative"
         }
       ]
     }
