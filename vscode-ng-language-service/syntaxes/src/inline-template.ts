@@ -10,6 +10,8 @@ import {GrammarDefinition} from './types';
 
 export const InlineTemplate: GrammarDefinition = {
   scopeName: 'inline-template.ng',
+  // Inline templates can appear in normal TS decorators and inside markdown
+  // `angular-ts` fenced blocks where decorator scope is still `meta.decorator.ts`.
   injectionSelector:
     'L:meta.decorator.ts -comment -text.html, L:meta.embedded.block.angular-ts meta.decorator.ts -comment',
   patterns: [{include: '#inlineTemplate'}],
@@ -39,6 +41,8 @@ export const InlineTemplate: GrammarDefinition = {
       end: /\1/,
       endCaptures: {0: {name: 'string'}},
       contentName: 'text.html.derivative',
+      // Include Angular template grammars before base HTML so bindings/control-flow
+      // are highlighted in inline templates, including markdown fenced `angular-ts`.
       patterns: [
         {include: 'template.blocks.ng'},
         {include: 'template.let.ng'},

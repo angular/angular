@@ -10,6 +10,8 @@ import {GrammarDefinition} from './types';
 
 export const TemplateTag: GrammarDefinition = {
   scopeName: 'template.tag.ng',
+  // Tag binding parsing needs to run for normal HTML templates and for Angular
+  // HTML/TS content embedded via markdown fenced blocks.
   injectionSelector:
     'L:meta.tag -comment -text.html.markdown, L:meta.embedded.block.angular-ts meta.tag -comment, L:meta.embedded.block.angular-html meta.tag -comment',
   patterns: [
