@@ -65,7 +65,23 @@ export function makeNotStandaloneDiagnostic(
 export function makeUnknownComponentImportDiagnostic(
   ref: Reference<ClassDeclaration>,
   rawExpr: ts.Expression,
+  isNonExportedAngularClass?: boolean,
 ) {
+  if (isNonExportedAngularClass) {
+    return makeDiagnostic(
+      ErrorCode.COMPONENT_UNKNOWN_IMPORT,
+      getDiagnosticNode(ref, rawExpr),
+      `'${ref.node.name.text}' is used in 'imports' but is not exported from its file. ` +
+        `Component imports must be exported to be resolved by the Angular compiler.`,
+      [
+        makeRelatedInformation(
+          ref.node.name,
+          `Consider adding the 'export' keyword to '${ref.node.name.text}'.`,
+        ),
+      ],
+    );
+  }
+
   return makeDiagnostic(
     ErrorCode.COMPONENT_UNKNOWN_IMPORT,
     getDiagnosticNode(ref, rawExpr),

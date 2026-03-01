@@ -231,10 +231,12 @@ const isUsedPipe = (decl: AnyUsedType): decl is UsedPipe =>
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
-export class ComponentDecoratorHandler
-  implements
-    DecoratorHandler<Decorator, ComponentAnalysisData, ComponentSymbol, ComponentResolutionData>
-{
+export class ComponentDecoratorHandler implements DecoratorHandler<
+  Decorator,
+  ComponentAnalysisData,
+  ComponentSymbol,
+  ComponentResolutionData
+> {
   constructor(
     private reflector: ReflectionHost,
     private evaluator: PartialEvaluator,
@@ -2077,6 +2079,7 @@ export class ComponentDecoratorHandler
         this.metaReader,
         this.scopeReader,
         false /* isDeferredImport */,
+        this.reflector,
       );
       diagnostics ??= [];
       diagnostics.push(...importDiagnostics);
@@ -2088,6 +2091,7 @@ export class ComponentDecoratorHandler
         this.metaReader,
         this.scopeReader,
         true /* isDeferredImport */,
+        this.reflector,
       );
       diagnostics ??= [];
       diagnostics.push(...importDiagnostics);
@@ -2589,6 +2593,7 @@ function validateStandaloneImports(
   metaReader: MetadataReader,
   scopeReader: ComponentScopeReader,
   isDeferredImport: boolean,
+  reflector: ReflectionHost,
 ): ts.Diagnostic[] {
   const diagnostics: ts.Diagnostic[] = [];
   for (const ref of importRefs) {
@@ -2624,9 +2629,14 @@ function validateStandaloneImports(
     }
 
     // Make an error?
+
+    // Check if this is a non-exported class with Angular decorators.
+    const isNonExportedAngularClass =
+      !reflector.isStaticallyExported(ref.node) && hasAngularCoreDecorator(ref.node, reflector);
+
     const error = isDeferredImport
       ? makeUnknownComponentDeferredImportDiagnostic(ref, importExpr)
-      : makeUnknownComponentImportDiagnostic(ref, importExpr);
+      : makeUnknownComponentImportDiagnostic(ref, importExpr, isNonExportedAngularClass);
     diagnostics.push(error);
   }
 
@@ -2636,4 +2646,14 @@ function validateStandaloneImports(
 /** Returns whether an ImportDeclaration is a default import. */
 function isDefaultImport(node: ts.ImportDeclaration): boolean {
   return node.importClause !== undefined && node.importClause.namedBindings === undefined;
+}
+
+/** Checks whether a class declaration has at least one decorator imported from `@angular/core`.*/
+function hasAngularCoreDecorator(node: ClassDeclaration, reflector: ReflectionHost): boolean {
+  const decorators = reflector.getDecoratorsOfDeclaration(node);
+
+  return (
+    decorators !== null &&
+    decorators.some((d) => d.import !== null && d.import.from === '@angular/core')
+  );
 }
