@@ -8,10 +8,13 @@
 
 import * as fs from 'fs';
 
+import {AngularHtml} from './angular-html';
+import {AngularTs} from './angular-ts';
 import {Expression} from './expression';
 import {HostObjectLiteral} from './host-object-literal';
 import {InlineStyles} from './inline-styles';
 import {InlineTemplate} from './inline-template';
+import {MarkdownFence} from './markdown-fence';
 import {Template} from './template';
 import {TemplateBlocks} from './template-blocks';
 import {LetDeclaration} from './template-let-declaration';
@@ -60,3 +63,6 @@ build(TemplateBlocks, 'template-blocks');
 build(TemplateTag, 'template-tag');
 build(LetDeclaration, 'let-declaration');
 build(HostObjectLiteral, 'host-object-literal');
+build(AngularTs, 'angular-ts');
+build(AngularHtml, 'angular-html');
+build(MarkdownFence, 'markdown-fence');

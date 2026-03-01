@@ -11,7 +11,8 @@ import {GrammarDefinition} from './types';
 /** Highlighting definition for the `host` object of a directive or component. */
 export const HostObjectLiteral: GrammarDefinition = {
   scopeName: 'host-object-literal.ng',
-  injectionSelector: 'L:meta.decorator.ts -comment -text.html -expression.ng',
+  injectionSelector:
+    'L:meta.decorator.ts -comment -text.html -expression.ng, L:meta.embedded.block.angular-ts meta.decorator.ts -comment -expression.ng',
   patterns: [{include: '#hostObjectLiteral'}],
   repository: {
     hostObjectLiteral: {

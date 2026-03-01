@@ -1,0 +1,14 @@
+{
+  "scopeName": "source.angular-ts",
+  "patterns": [
+    {
+      "include": "inline-template.ng"
+    },
+    {
+      "include": "inline-styles.ng"
+    },
+    {
+      "include": "source.ts"
+    }
+  ]
+}

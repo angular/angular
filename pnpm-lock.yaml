@@ -1420,6 +1420,9 @@ importers:
       vscode-languageserver-textdocument:
         specifier: 1.0.12
         version: 1.0.12
+      vscode-textmate-languageservice:
+        specifier: ^5.0.0
+        version: 5.0.0
       vscode-tmgrammar-test:
         specifier: 0.1.3
         version: 0.1.3
@@ -12300,6 +12303,10 @@ packages:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
 
+  type-fest@1.0.0:
+    resolution: {integrity: sha512-Q75/Kan//7GSHmyXvG5kQdLSuF+PJzOv2sc6XyhAYCvR4xoAF5qHI2mKmhkpMOtvrfn9FSh376dGaZbdWL/vgQ==}
+    engines: {node: '>=10'}
+
   type-fest@4.41.0:
     resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
     engines: {node: '>=16'}
@@ -12737,8 +12744,15 @@ packages:
   vscode-oniguruma@1.7.0:
     resolution: {integrity: sha512-L9WMGRfrjOhgHSdOYgCt/yRMsXzLDJSL7BPrOZt73gU0iWO4mpqzqQzOz5srxqTvMBaR0XZTSrVWo4j55Rc6cA==}
 
+  vscode-textmate-languageservice@5.0.0:
+    resolution: {integrity: sha512-nbjswU6s8k2nipWKHH9qhxURsaLjSPd1Ec66EkUmjFvYWtTktna1Lq+7n6qvIjm2KKA9YnMlkBaUhAdj1VaxnA==}
+    engines: {vscode: ^1.100.0}
+
   vscode-textmate@7.0.4:
     resolution: {integrity: sha512-9hJp0xL7HW1Q5OgGe03NACo7yiCTMEk3WU/rtKXUbncLtdg6rVVNJnHwD88UhbIYU2KoxY0Dih0x+kIsmUKn2A==}
+
+  vscode-textmate@9.3.2:
+    resolution: {integrity: sha512-n2uGbUcrjhUEBH16uGA0TvUfhWwliFZ1e3+pTjrkim1Mt7ydB41lV08aUvsi70OlzDWp6X7Bx3w/x3fAXIsN0Q==}
 
   vscode-tmgrammar-test@0.1.3:
     resolution: {integrity: sha512-Wg6Pz+ePAT1O+F/A1Fc4wS5vY2X+HNtgN4qMdL+65NLQYd1/zdDWH4fhwsLjX8wTzeXkMy49Cr4ZqWTJ7VnVxg==}
@@ -26857,6 +26871,8 @@ snapshots:
 
   type-fest@0.8.1: {}
 
+  type-fest@1.0.0: {}
+
   type-fest@4.41.0: {}
 
   type-is@1.6.18:
@@ -27509,7 +27525,15 @@ snapshots:
 
   vscode-oniguruma@1.7.0: {}
 
+  vscode-textmate-languageservice@5.0.0:
+    dependencies:
+      '@types/vscode': 1.108.1
+      type-fest: 1.0.0
+      vscode-textmate: 9.3.2
+
   vscode-textmate@7.0.4: {}
+
+  vscode-textmate@9.3.2: {}
 
   vscode-tmgrammar-test@0.1.3:
     dependencies:
