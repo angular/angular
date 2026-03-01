@@ -27,6 +27,22 @@
     "Programming Languages"
   ],
   "contributes": {
+    "languages": [
+      {
+        "id": "angular-ts",
+        "aliases": [
+          "Angular TypeScript",
+          "angular-ts"
+        ]
+      },
+      {
+        "id": "angular-html",
+        "aliases": [
+          "Angular HTML",
+          "angular-html"
+        ]
+      }
+    ],
     "commands": [
       {
         "command": "angular.restartNgServer",
@@ -166,7 +182,9 @@
         "path": "./syntaxes/inline-template.json",
         "scopeName": "inline-template.ng",
         "injectTo": [
-          "source.ts"
+          "source.ts",
+          "source.angular-ts",
+          "text.html.markdown"
         ],
         "embeddedLanguages": {
           "text.html.derivative": "html",
@@ -178,7 +196,9 @@
         "path": "./syntaxes/inline-styles.json",
         "scopeName": "inline-styles.ng",
         "injectTo": [
-          "source.ts"
+          "source.ts",
+          "source.angular-ts",
+          "text.html.markdown"
         ],
         "embeddedLanguages": {
           "source.css.scss": "scss"
@@ -222,7 +242,9 @@
         "path": "./syntaxes/host-object-literal.json",
         "scopeName": "host-object-literal.ng",
         "injectTo": [
-          "source.ts"
+          "source.ts",
+          "source.angular-ts",
+          "text.html.markdown"
         ],
         "embeddedLanguages": {
           "text.html.derivative": "html",
@@ -235,12 +257,26 @@
         "scopeName": "template.tag.ng",
         "injectTo": [
           "text.html.derivative",
-          "source.ts"
+          "source.ts",
+          "text.angular-html",
+          "text.html.markdown"
         ]
       },
       {
         "path": "./syntaxes/expression.json",
         "scopeName": "expression.ng"
+      },
+      {
+        "language": "angular-ts",
+        "path": "./syntaxes/angular-ts.json",
+        "scopeName": "source.angular-ts"
+      },
+      {
+        "path": "./syntaxes/markdown-fence.json",
+        "scopeName": "markdown.fence.ng",
+        "injectTo": [
+          "text.html.markdown"
+        ]
       }
     ],
     "jsonValidation": [
@@ -290,6 +326,7 @@
     "vscode-languageserver": "9.0.1",
     "vscode-languageserver-protocol": "3.17.5",
     "vscode-languageserver-textdocument": "1.0.12",
+    "vscode-textmate-languageservice": "^5.0.0",
     "vscode-tmgrammar-test": "0.1.3",
     "vscode-uri": "3.1.0",
     "xvfb": "^0.4.0"
