@@ -16,7 +16,6 @@ js_run_binary(
         "_let-declaration.json",
         "_host-object-literal.json",
         "_angular-ts.json",
-        "_angular-html.json",
         "_markdown-fence.json",
     ],
     tool = "//vscode-ng-language-service/syntaxes/src:build",
@@ -34,7 +33,6 @@ write_source_files(
         "let-declaration.json": "_let-declaration.json",
         "host-object-literal.json": "_host-object-literal.json",
         "angular-ts.json": "_angular-ts.json",
-        "angular-html.json": "_angular-html.json",
         "markdown-fence.json": "_markdown-fence.json",
     },
 )

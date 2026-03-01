@@ -36,11 +36,10 @@ export const MarkdownFence: GrammarDefinition = {
         2: {name: 'punctuation.definition.fenced.markdown'},
       },
       contentName: 'text.angular-html meta.embedded.block.angular-html text.html.derivative',
-      // Directly include Angular template grammars so they fire even when the
-      // injection mechanism is unavailable (e.g. root grammar is text.html.markdown
-      // but the grammar's injectTo doesn't match). Template grammars are also
-      // registered as injections (see injectTo in package.json), so these direct
-      // includes act as belt-and-suspenders for content between tags.
+      // Direct includes required: inside markdown fences, the root document scope
+      // is `text.html.markdown` so injections targeting `text.html.derivative` or
+      // `source.ts` (via injectTo) don't fire. These ensure Angular template grammars
+      // tokenize content inside `angular-html` fenced blocks.
       patterns: [
         {include: 'template.blocks.ng'},
         {include: 'template.let.ng'},

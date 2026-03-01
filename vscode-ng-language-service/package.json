@@ -298,7 +298,6 @@
         "scopeName": "inline-template.ng",
         "injectTo": [
           "source.ts",
-          "source.angular-ts",
           "text.html.markdown"
         ],
         "embeddedLanguages": {
@@ -312,7 +311,6 @@
         "scopeName": "inline-styles.ng",
         "injectTo": [
           "source.ts",
-          "source.angular-ts",
           "text.html.markdown"
         ],
         "embeddedLanguages": {
@@ -358,7 +356,6 @@
         "scopeName": "host-object-literal.ng",
         "injectTo": [
           "source.ts",
-          "source.angular-ts",
           "text.html.markdown"
         ],
         "embeddedLanguages": {
