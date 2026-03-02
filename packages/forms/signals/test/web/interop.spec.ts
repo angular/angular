@@ -37,6 +37,7 @@ import {
   ValidationError,
   WithOptionalFieldTree,
 } from '@angular/forms/signals';
+import {act} from '../utils/util';
 
 describe('ControlValueAccessor', () => {
   beforeEach(() => {
@@ -131,7 +132,7 @@ describe('ControlValueAccessor', () => {
   });
 
   it('should support debounce', async () => {
-    const {promise, resolve} = promiseWithResolvers<void>();
+    const {promise, resolve} = Promise.withResolvers<void>();
 
     @Component({
       imports: [CustomControl, FormField],
@@ -608,7 +609,7 @@ describe('ControlValueAccessor', () => {
 
     describe('pending', () => {
       it('should bind to directive input', async () => {
-        const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+        const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
 
         @Directive({selector: '[testDir]'})
         class TestDir {
@@ -976,33 +977,3 @@ describe('ControlValueAccessor', () => {
     });
   });
 });
-
-function act<T>(fn: () => T): T {
-  try {
-    return fn();
-  } finally {
-    TestBed.tick();
-  }
-}
-
-/**
- * Replace with `Promise.withResolvers()` once it's available.
- *
- * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
- */
-// TODO: share this with submit.spec.ts
-function promiseWithResolvers<T = void>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {promise, resolve, reject};
-}

@@ -11,6 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {form, FormRoot} from '../../public_api';
+import {act} from '../utils/util';
 
 @Component({
   template: `
@@ -118,11 +119,3 @@ describe('FormRoot', () => {
     expect(component.submitted).toBeTrue();
   });
 });
-
-function act<T>(fn: () => T): T {
-  try {
-    return fn();
-  } finally {
-    TestBed.tick();
-  }
-}

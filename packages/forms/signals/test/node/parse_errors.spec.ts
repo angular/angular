@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Component, input, model, signal} from '@angular/core';
+import {Component, input, model, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   form,
@@ -17,6 +17,7 @@ import {
   type FormValueControl,
   type ValidationError,
 } from '../../public_api';
+import {act} from '../utils/util';
 
 describe('parse errors', () => {
   it('should only pass parse errors through to the originating custom control', async () => {
@@ -357,10 +358,4 @@ class TestNumberInput implements FormValueControl<number | null> {
       return value.toString();
     },
   });
-}
-
-async function act<T>(fn: () => T): Promise<T> {
-  const result = fn();
-  await TestBed.inject(ApplicationRef).whenStable();
-  return result;
 }

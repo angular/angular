@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {form, type FieldTree} from '../../public_api';
+import {act} from '../utils/util';
 
 describe('field proxy', () => {
   beforeEach(() => {
@@ -59,11 +60,3 @@ describe('field proxy', () => {
     expect(fix.nativeElement.querySelectorAll('p').length).toBe(2);
   });
 });
-
-function act<T>(fn: () => T): T {
-  try {
-    return fn();
-  } finally {
-    TestBed.tick();
-  }
-}

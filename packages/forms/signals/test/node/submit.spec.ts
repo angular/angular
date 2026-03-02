@@ -51,7 +51,7 @@ describe('submit', () => {
   describe('while pending', () => {
     it('should not block', async () => {
       const data = signal('');
-      const {promise} = promiseWithResolvers();
+      const {promise} = Promise.withResolvers();
       const f = form(
         data,
         (p) => {
@@ -81,7 +81,7 @@ describe('submit', () => {
     it('should retain submit errors after pending validation resolves', async () => {
       const appRef = TestBed.inject(ApplicationRef);
       const data = signal('foo');
-      const {promise, resolve} = promiseWithResolvers<boolean>();
+      const {promise, resolve} = Promise.withResolvers<boolean>();
       const f = form(
         data,
         (p) => {
@@ -110,7 +110,7 @@ describe('submit', () => {
     it('should resolve pending validation on subfield', async () => {
       const appRef = TestBed.inject(ApplicationRef);
       const data = signal({first: 'foo', last: 'bar'});
-      const {promise, resolve} = promiseWithResolvers<boolean>();
+      const {promise, resolve} = Promise.withResolvers<boolean>();
       const f = form(
         data,
         (p) => {
@@ -142,7 +142,7 @@ describe('submit', () => {
     it('should resolve pending validation after successful submit', async () => {
       const appRef = TestBed.inject(ApplicationRef);
       const data = signal('foo');
-      const {promise, resolve} = promiseWithResolvers();
+      const {promise, resolve} = Promise.withResolvers<boolean>();
       const f = form(
         data,
         (p) => {
@@ -287,7 +287,7 @@ describe('submit', () => {
     );
     expect(f().submitting()).toBe(false);
 
-    const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+    const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
     const result = submit(f, {action: () => promise});
     expect(f().submitting()).toBe(true);
 
@@ -301,7 +301,7 @@ describe('submit', () => {
     const f = form(data, {injector});
     expect(f.a.b().submitting()).toBe(false);
 
-    const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+    const {promise, resolve} = Promise.withResolvers<ValidationError[]>();
     const result = submit(f, {action: () => promise});
     expect(f.a.b().submitting()).toBe(true);
 
@@ -365,7 +365,7 @@ describe('submit', () => {
     const f = form(signal(0), {injector});
     expect(f().submitting()).toBe(false);
 
-    const {promise, reject} = promiseWithResolvers<ValidationError[]>();
+    const {promise, reject} = Promise.withResolvers<ValidationError[]>();
     const submitPromise = submit(f, {action: () => promise});
     expect(f().submitting()).toBe(true);
 
@@ -522,7 +522,7 @@ describe('submit', () => {
 
   it('fails with pending validators with ignoreValidators: none', async () => {
     const data = signal('');
-    const resolvers = promiseWithResolvers();
+    const resolvers = Promise.withResolvers();
     const f = form(
       data,
       (p) => {
@@ -624,24 +624,3 @@ describe('submit', () => {
     expect(submitSpy).toHaveBeenCalledWith({name: 'Alice'}, {name: 'Alice'}, 'Alice');
   });
 });
-
-/**
- * Replace with `Promise.withResolvers()` once it's available.
- *
- * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
- */
-function promiseWithResolvers<T>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {promise, resolve, reject};
-}
