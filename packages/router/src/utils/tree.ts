@@ -95,7 +95,10 @@ export class TreeNode<T> {
   ) {}
 
   toString(): string {
-    return `TreeNode(${this.value})`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return `TreeNode(${this.value})`;
+    }
+    return '';
   }
 }
 

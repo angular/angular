@@ -36,7 +36,7 @@ export function getOrCreateRouteInjectorIfNeeded(
     route._injector = createEnvironmentInjector(
       route.providers,
       currentInjector,
-      `Route: ${route.path}`,
+      typeof ngDevMode === 'undefined' || ngDevMode ? `Route: ${route.path}` : '',
     );
   }
   return route._injector ?? currentInjector;

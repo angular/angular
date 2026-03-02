@@ -234,7 +234,10 @@ export class ActivatedRoute {
   }
 
   toString(): string {
-    return this.snapshot ? this.snapshot.toString() : `Future(${this._futureSnapshot})`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return this.snapshot ? this.snapshot.toString() : `Future(${this._futureSnapshot})`;
+    }
+    return '';
   }
 }
 
@@ -428,9 +431,12 @@ export class ActivatedRouteSnapshot {
   }
 
   toString(): string {
-    const url = this.url.map((segment) => segment.toString()).join('/');
-    const matched = this.routeConfig ? this.routeConfig.path : '';
-    return `Route(url:'${url}', path:'${matched}')`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      const url = this.url.map((segment) => segment.toString()).join('/');
+      const matched = this.routeConfig ? this.routeConfig.path : '';
+      return `Route(url:'${url}', path:'${matched}')`;
+    }
+    return '';
   }
 }
 
@@ -473,18 +479,22 @@ export class RouterStateSnapshot extends Tree<ActivatedRouteSnapshot> {
   }
 
   override toString(): string {
-    return serializeNode(this._root);
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      const serializeNode = (node: TreeNode<ActivatedRouteSnapshot>): string => {
+        const c =
+          node.children.length > 0 ? ` { ${node.children.map(serializeNode).join(', ')} } ` : '';
+        return `${node.value}${c}`;
+      };
+
+      return serializeNode(this._root);
+    }
+    return '';
   }
 }
 
 function setRouterState<U, T extends {_routerState: U}>(state: U, node: TreeNode<T>): void {
   node.value._routerState = state;
   node.children.forEach((c) => setRouterState(state, c));
-}
-
-function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {
-  const c = node.children.length > 0 ? ` { ${node.children.map(serializeNode).join(', ')} } ` : '';
-  return `${node.value}${c}`;
 }
 
 /**
