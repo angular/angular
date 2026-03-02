@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import ts from 'typescript';
 import {TcbOp} from './base';
+import {TcbExpr} from './codegen';
 import type {Scope} from './scope';
-import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from '../comments';
+import {ExpressionIdentifier} from '../comments';
 
 /**
  * A `TcbOp` which generates a completion point for the component context.
@@ -26,11 +26,10 @@ export class TcbComponentContextCompletionOp extends TcbOp {
   override readonly optional = false;
 
   override execute(): null {
-    const ctx = ts.factory.createThis();
-    const ctxDot = ts.factory.createPropertyAccessExpression(ctx, '');
-    markIgnoreDiagnostics(ctxDot);
-    addExpressionIdentifier(ctxDot, ExpressionIdentifier.COMPONENT_COMPLETION);
-    this.scope.addStatement(ts.factory.createExpressionStatement(ctxDot));
+    const ctx = new TcbExpr('this.');
+    ctx.markIgnoreDiagnostics();
+    ctx.addExpressionIdentifier(ExpressionIdentifier.COMPONENT_COMPLETION);
+    this.scope.addStatement(ctx);
     return null;
   }
 }

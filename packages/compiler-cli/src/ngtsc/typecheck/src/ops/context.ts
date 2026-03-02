@@ -7,7 +7,6 @@
  */
 
 import {BoundTarget, SchemaMetadata} from '@angular/compiler';
-import ts from 'typescript';
 import {DomSchemaChecker} from '../dom';
 import {OutOfBandDiagnosticRecorder} from '../oob';
 import {TypeCheckableDirectiveMeta, TypeCheckId} from '../../api';
@@ -70,8 +69,8 @@ export class Context {
    * Currently this uses a monotonically increasing counter, but in the future the variable name
    * might change depending on the type of data being stored.
    */
-  allocateId(): ts.Identifier {
-    return ts.factory.createIdentifier(`_t${this.nextId++}`);
+  allocateId(): string {
+    return `_t${this.nextId++}`;
   }
 
   getPipeByName(name: string): PipeMeta | null {

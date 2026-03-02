@@ -23,7 +23,8 @@ import {
   ReferenceEmitter,
 } from '../../imports';
 import {ReflectionHost} from '../../reflection';
-import {ImportManager, translateExpression, translateType} from '../../translator';
+import {ImportManager, translateType} from '../../translator';
+import {TcbExpr} from './ops/codegen';
 
 /**
  * An environment for a given source file that can be used to emit references.
@@ -74,13 +75,20 @@ export class ReferenceEmitEnvironment {
     );
   }
 
-  /**
-   * Generate a `ts.Expression` that refers to the external symbol. This
-   * may result in new imports being generated.
-   */
-  referenceExternalSymbol(moduleName: string, name: string): ts.Expression {
-    const external = new ExternalExpr({moduleName, name});
-    return translateExpression(this.contextFile, external, this.importManager);
+  referenceExternalSymbol(moduleName: string, name: string): TcbExpr {
+    const importResult = this.importManager.addImport({
+      exportModuleSpecifier: moduleName,
+      exportSymbolName: name,
+      requestedFile: this.contextFile,
+    });
+
+    if (ts.isIdentifier(importResult)) {
+      return new TcbExpr(importResult.text);
+    } else if (ts.isIdentifier(importResult.expression)) {
+      return new TcbExpr(`${importResult.expression.text}.${importResult.name.text}`);
+    }
+
+    throw new Error('Unexpected value returned by import manager');
   }
 
   /**
