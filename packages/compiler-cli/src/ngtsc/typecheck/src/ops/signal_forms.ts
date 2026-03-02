@@ -115,19 +115,43 @@ export class TcbNativeFieldOp extends TcbOp {
     checkUnsupportedFieldBindings(this.node, this.unsupportedBindingFields, this.tcb);
 
     const expectedType = this.getExpectedTypeFromDomNode(this.node);
-    const value = extractFieldValue(fieldBinding.value, this.tcb, this.scope);
 
-    // Create a variable with the expected type and check that the field value is assignable, e.g.
-    // var t1 = null! as string | number; t1 = f().value()`.
-    const id = this.tcb.allocateId();
-    const assignment = ts.factory.createBinaryExpression(id, ts.SyntaxKind.EqualsToken, value);
-    addParseSpanInfo(assignment, fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
-    this.scope.addStatement(tsDeclareVariable(id, expectedType));
-    this.scope.addStatement(ts.factory.createExpressionStatement(assignment));
+    if (expectedType === null) {
+      // For text-like <input> elements, use an invariant check on the value signal.
+      // WritableSignal<T> is invariant in T, so assigning it to a union of structural types
+      // gives us exact type matching: only Field<string> or Field<number|null> are accepted.
+      const signal = extractFieldValueSignal(fieldBinding.value, this.tcb, this.scope);
+      const id = this.tcb.allocateId();
+      const unionType = ts.factory.createUnionTypeNode([
+        createWritableSignalStructuralType(
+          ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+        ),
+        createWritableSignalStructuralType(
+          ts.factory.createUnionTypeNode([
+            ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+            ts.factory.createLiteralTypeNode(ts.factory.createNull()),
+          ]),
+        ),
+      ]);
+      const assignment = ts.factory.createBinaryExpression(id, ts.SyntaxKind.EqualsToken, signal);
+      addParseSpanInfo(assignment, fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
+      this.scope.addStatement(tsDeclareVariable(id, unionType));
+      this.scope.addStatement(ts.factory.createExpressionStatement(assignment));
+    } else {
+      // Create a variable with the expected type and check that the field value is assignable, e.g.
+      // var t1 = null! as string | number; t1 = f().value()`.
+      const value = extractFieldValue(fieldBinding.value, this.tcb, this.scope);
+      const id = this.tcb.allocateId();
+      const assignment = ts.factory.createBinaryExpression(id, ts.SyntaxKind.EqualsToken, value);
+      addParseSpanInfo(assignment, fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
+      this.scope.addStatement(tsDeclareVariable(id, expectedType));
+      this.scope.addStatement(ts.factory.createExpressionStatement(assignment));
+    }
+
     return null;
   }
 
-  private getExpectedTypeFromDomNode(node: TmplAstElement): ts.TypeNode {
+  private getExpectedTypeFromDomNode(node: TmplAstElement): ts.TypeNode | null {
     if (node.name === 'textarea' || node.name === 'select') {
       // `<textarea>` and `<select>` are always strings.
       return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
@@ -140,6 +164,9 @@ export class TcbNativeFieldOp extends TcbOp {
     switch (this.inputType) {
       case 'checkbox':
         return ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword);
+
+      case 'radio':
+        return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
 
       case 'number':
       case 'range':
@@ -181,8 +208,8 @@ export class TcbNativeFieldOp extends TcbOp {
       ]);
     }
 
-    // Fall back to string if we couldn't map the type.
-    return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
+    // Return null to signal the invariant check for text-like inputs.
+    return null;
   }
 
   private getUnsupportedType(): ts.TypeNode {
@@ -449,6 +476,44 @@ function extractFieldValue(expression: AST, tcb: Context, scope: Scope): ts.Expr
     undefined,
     undefined,
   );
+}
+
+/**
+ * Gets an expression that extracts the value signal of a field binding (without calling it).
+ */
+function extractFieldValueSignal(expression: AST, tcb: Context, scope: Scope): ts.Expression {
+  // Unwraps the field, e.g. `[field]="f"` turns into `f()`.
+  const innerCall = ts.factory.createCallExpression(
+    tcbExpression(expression, tcb, scope),
+    undefined,
+    undefined,
+  );
+  markIgnoreDiagnostics(innerCall);
+
+  // Extract the value signal from the field, e.g. `f().value` (not called).
+  return ts.factory.createPropertyAccessExpression(innerCall, 'value');
+}
+
+/**
+ * Creates a structural type representing `WritableSignal<T>`: `{(): T; set(v: T): void}`.
+ * Used for invariant type checking of text-like input fields.
+ */
+function createWritableSignalStructuralType(valueType: ts.TypeNode): ts.TypeLiteralNode {
+  return ts.factory.createTypeLiteralNode([
+    ts.factory.createCallSignature(undefined, [], valueType),
+    // Use a property with function type (`set: (v: T) => void`) instead of a method signature
+    // (`set(v: T): void`) so that `strictFunctionTypes` applies contravariant parameter checking.
+    ts.factory.createPropertySignature(
+      undefined,
+      'set',
+      undefined,
+      ts.factory.createFunctionTypeNode(
+        undefined,
+        [ts.factory.createParameterDeclaration(undefined, undefined, 'v', undefined, valueType)],
+        ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
+      ),
+    ),
+  ]);
 }
 
 /** Checks whether a directive has a model-like input with a specific name. */
