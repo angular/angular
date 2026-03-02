@@ -140,6 +140,9 @@ export class UserDetail {
 }
 ```
 
+NOTE: When using `router.navigate()` with a command array and `relativeTo`, Angular resolves the commands as a single navigation path. Splitting relative traversal across multiple array entries (for example `['..', 'child']`) may not behave as expected.
+
+
 ### `router.navigateByUrl()`
 
 The `router.navigateByUrl()` method provides a direct way to programmatically navigate using URL path strings rather than array segments. This method is ideal when you have a full URL path and need to perform absolute navigation, especially when working with externally provided URLs or deep linking scenarios.
