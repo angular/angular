@@ -26,20 +26,6 @@ function createSignalFormControl<T>(initialValue: T, schema?: SchemaFn<T>) {
   return new SignalFormControl(initialValue, schema, {injector});
 }
 
-function promiseWithResolvers<T = void>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  return {promise, resolve, reject};
-}
-
 describe('SignalFormControl', () => {
   describe('value and state access', () => {
     it('should have the same value as the signal', () => {
@@ -93,11 +79,11 @@ describe('SignalFormControl', () => {
     });
 
     it('should expose pending status for async validators', async () => {
-      let deferred = promiseWithResolvers<ValidationError[]>();
+      let deferred = Promise.withResolvers<ValidationError[]>();
       const resolveNext = (errors: ValidationError[]) => {
         TestBed.tick();
         deferred.resolve(errors);
-        deferred = promiseWithResolvers<ValidationError[]>();
+        deferred = Promise.withResolvers<ValidationError[]>();
       };
 
       const form = createSignalFormControl('initial', (p) => {

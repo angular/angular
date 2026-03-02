@@ -1,0 +1,12 @@
+load("//tools:defaults.bzl", "ts_project")
+
+ts_project(
+    name = "utils",
+    testonly = True,
+    srcs = ["util.ts"],
+    tsconfig = "//packages/forms/signals/test:tsconfig_test",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//packages/core/testing",
+    ],
+)

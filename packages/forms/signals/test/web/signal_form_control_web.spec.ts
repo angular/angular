@@ -13,6 +13,7 @@ import {disabled} from '@angular/forms/signals';
 
 import {SignalFormControl} from '../../compat';
 import {FormField} from '../../src/directive/form_field_directive';
+import {act} from '../utils/util';
 
 describe('SignalFormControl (web)', () => {
   beforeEach(() => {
@@ -24,7 +25,6 @@ describe('SignalFormControl (web)', () => {
 
   it('binds to formField directive', () => {
     @Component({
-      standalone: true,
       imports: [ReactiveFormsModule, FormField],
       template: `<input [formField]="signalControl.fieldTree" />`,
     })
@@ -51,7 +51,6 @@ describe('SignalFormControl (web)', () => {
 
   it('binds inside nested FormGroup via formGroupName', () => {
     @Component({
-      standalone: true,
       imports: [ReactiveFormsModule, FormField],
       template: `
         <div [formGroup]="group">
@@ -90,7 +89,6 @@ describe('SignalFormControl (web)', () => {
 
   it('should unregister disabled callback when directive is destroyed', () => {
     @Component({
-      standalone: true,
       imports: [ReactiveFormsModule],
       template: `
         @if (showInput()) {
@@ -123,11 +121,3 @@ describe('SignalFormControl (web)', () => {
     }).not.toThrow();
   });
 });
-
-function act<T>(fn: () => T): T {
-  try {
-    return fn();
-  } finally {
-    TestBed.tick();
-  }
-}

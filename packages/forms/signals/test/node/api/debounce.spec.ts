@@ -9,6 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {applyWhenValue, debounce, form} from '@angular/forms/signals';
+import {timeout} from '@angular/private/testing';
 
 describe('debounce', () => {
   describe('by duration', () => {
@@ -104,7 +105,7 @@ describe('debounce', () => {
     });
 
     it('should synchronize value after promise resolves', async () => {
-      const {promise, resolve} = promiseWithResolvers<void>();
+      const {promise, resolve} = Promise.withResolvers<void>();
       const address = signal({street: ''});
       const addressForm = form(
         address,
@@ -126,8 +127,8 @@ describe('debounce', () => {
     });
 
     it('should synchronize value after most recently returned promise resolves', async () => {
-      const first = promiseWithResolvers();
-      const second = promiseWithResolvers();
+      const first = Promise.withResolvers<void>();
+      const second = Promise.withResolvers<void>();
       const debounceFn = jasmine
         .createSpy('debounceFn')
         .and.returnValues(first.promise, second.promise);
@@ -158,7 +159,7 @@ describe('debounce', () => {
     });
 
     it('should be ignored if value is directly set before it resolves', async () => {
-      const debounceResult = promiseWithResolvers();
+      const debounceResult = Promise.withResolvers<void>();
       const debounceFn = jasmine.createSpy('debounceFn').and.returnValues(debounceResult.promise);
 
       const address = signal({street: ''});
@@ -188,7 +189,7 @@ describe('debounce', () => {
 
     describe('abort signal', () => {
       it('should be aborted if control value is set again', async () => {
-        const {promise, resolve} = promiseWithResolvers();
+        const {promise, resolve} = Promise.withResolvers<void>();
         const abortSpy = jasmine.createSpy('abort');
 
         const address = signal({street: ''});
@@ -467,34 +468,7 @@ function options() {
   return {injector: TestBed.inject(Injector)};
 }
 
-/** Returns a promise that will resolve after {@link durationInMilliseconds}.  */
-function timeout(durationInMilliseconds: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, durationInMilliseconds));
-}
-
 /** Returns a promise that will never resolve. */
 function forever(): Promise<never> {
   return new Promise(() => {});
-}
-
-/**
- * Replace with `Promise.withResolvers()` once it's available.
- *
- * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
- */
-// TODO: share this with submit.spec.ts
-function promiseWithResolvers<T = void>(): {
-  promise: Promise<T>;
-  resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason?: any) => void;
-} {
-  let resolve!: (value: T | PromiseLike<T>) => void;
-  let reject!: (reason?: any) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return {promise, resolve, reject};
 }
