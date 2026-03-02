@@ -182,6 +182,15 @@ export class SharedStylesHost implements OnDestroy {
     urls?.forEach((value) => this.disableUsage(value, this.external));
   }
 
+  /**
+   * Alias to disableStyles to preserve backward compatibility for internal Google usage of this method
+   * TODO - cleanup after internal usage has been migrated to use disableStyles instead
+   * @param styles An array of style content strings.
+   */
+  removeStyles(styles: string[], urls?: string[]): void {
+    this.disableStyles(styles, urls);
+  }
+
   protected addUsage<T extends HTMLLinkElement | HTMLStyleElement>(
     value: string,
     usages: Map<string, UsageRecord<T>>,
