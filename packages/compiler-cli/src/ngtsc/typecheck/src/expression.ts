@@ -39,7 +39,7 @@ import {
   Unary,
   VoidExpression,
 } from '@angular/compiler';
-import {TcbExpr} from './ops/codegen';
+import {quoteAndEscape, TcbExpr} from './ops/codegen';
 import {TypeCheckingConfig} from '../api';
 
 /**
@@ -165,7 +165,8 @@ class TcbExprTranslator implements AstVisitor {
       const value = this.translate(ast.values[idx]);
 
       if (key.kind === 'property') {
-        const keyNode = new TcbExpr(`"${key.key}"`).addParseSpanInfo(key.sourceSpan);
+        const keyNode = new TcbExpr(quoteAndEscape(key.key));
+        keyNode.addParseSpanInfo(key.sourceSpan);
         return `${keyNode.print()}: ${value.print()}`;
       } else {
         return `...${value.print()}`;
@@ -185,7 +186,7 @@ class TcbExprTranslator implements AstVisitor {
     } else if (ast.value === null) {
       node = new TcbExpr('null');
     } else if (typeof ast.value === 'string') {
-      node = new TcbExpr(JSON.stringify(ast.value));
+      node = new TcbExpr(quoteAndEscape(ast.value));
     } else if (typeof ast.value === 'number') {
       if (Number.isNaN(ast.value)) {
         node = new TcbExpr('NaN');
