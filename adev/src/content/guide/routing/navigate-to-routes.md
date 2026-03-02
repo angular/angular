@@ -140,9 +140,7 @@ export class UserDetail {
 }
 ```
 
-**Note on command array interpretation**
-
-When using `router.navigate()` with a command array and `relativeTo`, Angular resolves the commands as a single navigation path. Splitting relative traversal across multiple array entries (for example ['..', '..', 'child']) may not behave as expected.
+NOTE: When using `router.navigate()` with a command array and `relativeTo`, Angular resolves the commands as a single navigation path. Splitting relative traversal across multiple array entries (for example `['..', 'child']`) may not behave as expected.
 
 Prefer combining the traversal into one segment such as ['../../child'] to ensure correct navigation.
 
