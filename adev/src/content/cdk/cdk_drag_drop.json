@@ -3290,7 +3290,7 @@
                 {
                   "name": "changes",
                   "description": "",
-                  "type": "SimpleChanges",
+                  "type": "SimpleChanges<this>",
                   "isOptional": false,
                   "isRestParam": false
                 }
@@ -3304,7 +3304,7 @@
               {
                 "name": "changes",
                 "description": "",
-                "type": "SimpleChanges",
+                "type": "SimpleChanges<this>",
                 "isOptional": false,
                 "isRestParam": false
               }
