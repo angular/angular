@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Type} from '../core';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {
   assertDefined,
@@ -18,7 +19,7 @@ import {
 
 import {getComponentDef, getNgModuleDef} from './def_getters';
 import {LContainer} from './interfaces/container';
-import {DirectiveDef} from './interfaces/definition';
+import {DirectiveDef, HostDirectiveDef} from './interfaces/definition';
 import {TIcu} from './interfaces/i18n';
 import {NodeInjectorOffset} from './interfaces/injector';
 import {TNode} from './interfaces/node';
@@ -191,6 +192,26 @@ export function assertNoDuplicateDirectives(directives: DirectiveDef<unknown>[])
       );
     }
     seenDirectives.add(current);
+  }
+}
+
+export function assertNoDuplicateHostDirectives(hostDirectiveDefs: HostDirectiveDef[]): void {
+  // The array needs at least two elements in order to have duplicates.
+  if (hostDirectiveDefs.length < 2) {
+    return;
+  }
+
+  const seenDirectives = new Set<Type<unknown>>();
+
+  for (const current of hostDirectiveDefs) {
+    if (seenDirectives.has(current.directive)) {
+      throw new RuntimeError(
+        RuntimeErrorCode.DUPLICATE_DIRECTIVE,
+        `Directive ${current.directive.name} matches multiple times on the same element. ` +
+          `Directives can only match an element once.`,
+      );
+    }
+    seenDirectives.add(current.directive);
   }
 }
 
