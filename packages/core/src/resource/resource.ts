@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
+import {isSignal, Signal, ValueEqualityFn} from '../render3/reactivity/api';
 import {computed} from '../render3/reactivity/computed';
 import {effect, EffectRef} from '../render3/reactivity/effect';
 import {signal, signalAsReadonlyFn, WritableSignal} from '../render3/reactivity/signal';
@@ -14,7 +14,6 @@ import {untracked} from '../render3/reactivity/untracked';
 import {
   Resource,
   ResourceDependencyError,
-  ResourceLoaderParams,
   ResourceOptions,
   ResourceParamsStatus,
   ResourceSnapshot,
@@ -422,28 +421,44 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       // The actual loading is run through `untracked` - only the request side of `resource` is
       // reactive. This avoids any confusion with signals tracking or not tracking depending on
       // which side of the `await` they are.
-      const stream = await untracked(() => {
+      const stream = untracked(() => {
         return this.loaderFn({
           params: extRequest.request as Exclude<R, undefined>,
           abortSignal,
           previous: {
             status: previousStatus,
           },
-        } as ResourceLoaderParams<R>);
+        });
       });
 
       // If this request has been aborted, or the current request no longer
       // matches this load, then we should ignore this resolution.
-      if (abortSignal.aborted || untracked(this.extRequest) !== extRequest) {
-        return;
-      }
+      const shouldDiscard = () => abortSignal.aborted || untracked(this.extRequest) !== extRequest;
 
-      this.state.set({
-        extRequest,
-        status: 'resolved',
-        previousStatus: 'resolved',
-        stream,
-      });
+      if (isSignal(stream)) {
+        if (shouldDiscard()) {
+          return;
+        }
+
+        this.state.set({
+          extRequest,
+          status: 'resolved',
+          previousStatus: 'resolved',
+          stream,
+        });
+      } else {
+        const resolvedStream = await stream;
+        if (shouldDiscard()) {
+          return;
+        }
+
+        this.state.set({
+          extRequest,
+          status: 'resolved',
+          previousStatus: 'resolved',
+          stream: resolvedStream,
+        });
+      }
     } catch (err) {
       rethrowFatalErrors(err);
       if (abortSignal.aborted || untracked(this.extRequest) !== extRequest) {

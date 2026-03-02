@@ -200,7 +200,7 @@ export type ResourceLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLi
  */
 export type ResourceStreamingLoader<T, R> = (
   param: ResourceLoaderParams<R>,
-) => PromiseLike<Signal<ResourceStreamItem<T>>>;
+) => Signal<ResourceStreamItem<T>> | PromiseLike<Signal<ResourceStreamItem<T>>> | undefined;
 
 /**
  * Options to the `resource` function, for creating a resource.
