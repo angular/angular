@@ -7,15 +7,13 @@
  */
 import {TmplAstBoundAttribute, TmplAstDirective, TmplAstTemplate} from '@angular/compiler';
 import ts from 'typescript';
-import {tsCallMethod, tsDeclareVariable} from '../ts_util';
-import {addParseSpanInfo} from '../diagnostics';
 import {TcbOp} from './base';
+import {declareVariable, getStatementsBlock, TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TypeCheckableDirectiveMeta} from '../../api';
 import {Reference} from '../../../imports';
 import {ClassDeclaration} from '../../../reflection';
-import {markIgnoreDiagnostics} from '../comments';
 import {tcbExpression} from './expression';
 
 /**
@@ -34,12 +32,11 @@ export class TcbTemplateContextOp extends TcbOp {
   // The declaration of the context variable is only needed when the context is actually referenced.
   override readonly optional = true;
 
-  override execute(): ts.Identifier {
+  override execute(): TcbExpr {
     // Allocate a template ctx variable and declare it with an 'any' type. The type of this variable
     // may be narrowed as a result of template guard conditions.
-    const ctx = this.tcb.allocateId();
-    const type = ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
-    this.scope.addStatement(tsDeclareVariable(ctx, type));
+    const ctx = new TcbExpr(this.tcb.allocateId());
+    this.scope.addStatement(declareVariable(ctx, new TcbExpr('any')));
     return ctx;
   }
 }
@@ -76,8 +73,8 @@ export class TcbTemplateBodyOp extends TcbOp {
     // Collect these into `guards` by processing the directives.
 
     // By default the guard is simply `true`.
-    let guard: ts.Expression | null = null;
-    const directiveGuards: ts.Expression[] = [];
+    let guard: TcbExpr | null = null;
+    const directiveGuards: TcbExpr[] = [];
 
     this.addDirectiveGuards(
       directiveGuards,
@@ -98,8 +95,7 @@ export class TcbTemplateBodyOp extends TcbOp {
       // Pop the first value and use it as the initializer to reduce(). This way, a single guard
       // will be used on its own, but two or more will be combined into binary AND expressions.
       guard = directiveGuards.reduce(
-        (expr, dirGuard) =>
-          ts.factory.createBinaryExpression(expr, ts.SyntaxKind.AmpersandAmpersandToken, dirGuard),
+        (expr, dirGuard) => new TcbExpr(`${expr.print()} && ${dirGuard.print()}`),
         directiveGuards.pop()!,
       );
     }
@@ -125,22 +121,19 @@ export class TcbTemplateBodyOp extends TcbOp {
       return null;
     }
 
-    let tmplBlock: ts.Statement = ts.factory.createBlock(statements);
+    let tmplBlock = `{\n${getStatementsBlock(statements)}}`;
     if (guard !== null) {
       // The scope has a guard that needs to be applied, so wrap the template block into an `if`
       // statement containing the guard expression.
-      tmplBlock = ts.factory.createIfStatement(
-        /* expression */ guard,
-        /* thenStatement */ tmplBlock,
-      );
+      tmplBlock = `if (${guard.print()}) ${tmplBlock}`;
     }
-    this.scope.addStatement(tmplBlock);
+    this.scope.addStatement(new TcbExpr(tmplBlock));
 
     return null;
   }
 
   private addDirectiveGuards(
-    guards: ts.Expression[],
+    guards: TcbExpr[],
     hostNode: TmplAstTemplate | TmplAstDirective,
     directives: TypeCheckableDirectiveMeta[] | null,
   ) {
@@ -174,7 +167,7 @@ export class TcbTemplateBodyOp extends TcbOp {
 
           // The expression has already been checked in the type constructor invocation, so
           // it should be ignored when used within a template guard.
-          markIgnoreDiagnostics(expr);
+          expr.markIgnoreDiagnostics();
 
           if (guard.type === 'binding') {
             // Use the binding expression itself as guard.
@@ -182,11 +175,11 @@ export class TcbTemplateBodyOp extends TcbOp {
           } else {
             // Call the guard function on the directive with the directive instance and that
             // expression.
-            const guardInvoke = tsCallMethod(dirId, `ngTemplateGuard_${guard.inputName}`, [
-              dirInstId,
-              expr,
-            ]);
-            addParseSpanInfo(guardInvoke, boundInput.value.sourceSpan);
+            const guardInvoke = new TcbExpr(
+              `${dirId.print()}.ngTemplateGuard_${guard.inputName}(${dirInstId.print()}, ${expr.print()})`,
+            );
+
+            guardInvoke.addParseSpanInfo(boundInput.value.sourceSpan);
             guards.push(guardInvoke);
           }
         }
@@ -197,9 +190,12 @@ export class TcbTemplateBodyOp extends TcbOp {
       if (dir.hasNgTemplateContextGuard) {
         if (this.tcb.env.config.applyTemplateContextGuards) {
           const ctx = this.scope.resolve(hostNode);
-          const guardInvoke = tsCallMethod(dirId, 'ngTemplateContextGuard', [dirInstId, ctx]);
-          markIgnoreDiagnostics(guardInvoke);
-          addParseSpanInfo(guardInvoke, hostNode.sourceSpan);
+          const guardInvoke = new TcbExpr(
+            `${dirId.print()}.ngTemplateContextGuard(${dirInstId.print()}, ${ctx.print()})`,
+          );
+
+          guardInvoke.markIgnoreDiagnostics();
+          guardInvoke.addParseSpanInfo(hostNode.sourceSpan);
           guards.push(guardInvoke);
         } else if (
           isTemplate &&

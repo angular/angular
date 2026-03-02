@@ -14,12 +14,11 @@ import {
   TmplAstForLoopBlock,
   TmplAstVariable,
 } from '@angular/compiler';
-import ts from 'typescript';
 import {tcbExpression, TcbExpressionTranslator} from './expression';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TcbOp} from './base';
-import {addParseSpanInfo} from '../diagnostics';
+import {getStatementsBlock, TcbExpr} from './codegen';
 
 /**
  * A `TcbOp` which renders a `for` block as a TypeScript `for...of` loop.
@@ -47,37 +46,20 @@ export class TcbForOfOp extends TcbOp {
       null,
     );
     const initializerId = loopScope.resolve(this.block.item);
-    if (!ts.isIdentifier(initializerId)) {
-      throw new Error(
-        `Could not resolve for loop variable ${this.block.item.name} to an identifier`,
-      );
-    }
-    const initializer = ts.factory.createVariableDeclarationList(
-      [ts.factory.createVariableDeclaration(initializerId)],
-      ts.NodeFlags.Const,
-    );
-    addParseSpanInfo(initializer, this.block.item.keySpan);
+    const initializer = new TcbExpr(`const ${initializerId.print()}`);
+    initializer.addParseSpanInfo(this.block.item.keySpan);
+
     // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
     // Add a non-null expression to allow such values to be assigned.
-    const expression = ts.factory.createNonNullExpression(
-      tcbExpression(this.block.expression, this.tcb, this.scope),
+    const expression = new TcbExpr(
+      `${tcbExpression(this.block.expression, this.tcb, this.scope).print()}!`,
     );
     const trackTranslator = new TcbForLoopTrackTranslator(this.tcb, loopScope, this.block);
     const trackExpression = trackTranslator.translate(this.block.trackBy);
-    const statements = [
-      ...loopScope.render(),
-      ts.factory.createExpressionStatement(trackExpression),
-    ];
-
+    const block = getStatementsBlock([...loopScope.render(), trackExpression]);
     this.scope.addStatement(
-      ts.factory.createForOfStatement(
-        undefined,
-        initializer,
-        expression,
-        ts.factory.createBlock(statements),
-      ),
+      new TcbExpr(`for (${initializer.print()} of ${expression.print()}) {\n${block} }`),
     );
-
     return null;
   }
 }
@@ -102,7 +84,7 @@ export class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
     }
   }
 
-  protected override resolve(ast: AST): ts.Expression | null {
+  protected override resolve(ast: AST): TcbExpr | null {
     if (
       ast instanceof PropertyRead &&
       (ast.receiver instanceof ImplicitReceiver || ast.receiver instanceof ThisReceiver)

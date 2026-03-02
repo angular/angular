@@ -64,7 +64,7 @@ runInEachFileSystem(() => {
         /* reflector */ null!,
         host,
       );
-      const sf = file.render(false /* removeComments */);
+      const sf = file.render();
       expect(sf).toContain('export const IS_A_MODULE = true;');
     });
 
