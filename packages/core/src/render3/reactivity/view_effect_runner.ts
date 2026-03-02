@@ -18,6 +18,10 @@ export function runEffectsInView(view: LView): void {
   let tryFlushEffects = true;
 
   while (tryFlushEffects) {
+    // If view was destroyed during effect execution, stop processing immediately.
+    if (view[EFFECTS] === null) {
+      break;
+    }
     let foundDirtyEffect = false;
     for (const effect of view[EFFECTS]) {
       if (!effect.dirty) {
