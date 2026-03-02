@@ -2493,4 +2493,84 @@ describe('Animation', () => {
       document.querySelectorAll('.overlay-pane').forEach((p) => p.remove());
     }));
   });
+
+  describe('infinite animations', () => {
+    const styles = `
+      .infinite-anim {
+        animation: infinite-anim 1s infinite;
+      }
+      @keyframes infinite-anim {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+    `;
+
+    it('should ignore infinite animations during animate.leave and remove element immediately', fakeAsync(() => {
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        template:
+          '<div>@if (show()) {<p animate.leave="infinite-anim" #el>I should leave</p>}</div>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      const paragraph = fixture.debugElement.query(By.css('p'));
+      expect(paragraph).toBeTruthy();
+
+      cmp.show.set(false);
+      fixture.detectChanges();
+
+      // Simulate a frame. If the animation is ignored, it should be removed already.
+      // If it's NOT ignored, it will wait for the animation (forever).
+      tickAnimationFrames(1);
+      fixture.detectChanges();
+
+      // The element should be removed if infinite animations are ignored.
+      expect(cmp.show()).toBeFalsy();
+      expect(fixture.debugElement.query(By.css('p'))).toBeNull();
+    }));
+
+    it('should ignore infinite animations during animate.enter and remove classes immediately', fakeAsync(() => {
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        template:
+          '<div>@if (show()) {<p animate.enter="infinite-anim" #el>I should enter</p>}</div>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(false);
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      cmp.show.set(true);
+      fixture.detectChanges();
+
+      // Check that class is added initially (maybe?)
+      let paragraph = fixture.debugElement.query(By.css('p'));
+      expect(paragraph.nativeElement.classList.contains('infinite-anim')).toBe(true);
+
+      // Simulate a frame. If ignored, class should be removed immediately.
+      tickAnimationFrames(1);
+      fixture.detectChanges();
+
+      paragraph = fixture.debugElement.query(By.css('p'));
+      expect(paragraph.nativeElement.classList.contains('infinite-anim')).toBe(false);
+    }));
+  });
 });
