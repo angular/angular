@@ -76,7 +76,6 @@
     background-color 0.3s ease,
     border-color 0.3s ease;
   height: 100dvh;
-  padding-block-start: 1rem;
   padding-block-end: 2rem;
   box-sizing: border-box;
   // Add a subtle border for the home page
@@ -101,6 +100,7 @@
   &.adev-nav-primary--next,
   &.adev-nav-primary--rc {
     // change nav background to indicate this is the rc docs
+    position: relative;
     background: linear-gradient(
       140deg,
       color-mix(in srgb, var(--orange-red), transparent 60%) 0%,
@@ -108,6 +108,18 @@
       color-mix(in srgb, var(--electric-violet), transparent 70%) 25%,
       color-mix(in srgb, var(--bright-blue), transparent 60%) 90%
     );
+
+    &::before {
+      content: '';
+      position: absolute;
+      opacity: 0.8;
+      width: 100%;
+      height: 100%;
+      background-color: var(--octonary-contrast);
+    }
+    .adev-version-button {
+      border: 1px solid var(--quinary-contrast);
+    }
   }
 
   &.adev-nav-primary--deprecated {
@@ -153,6 +165,7 @@
     list-style: none;
     display: flex;
     flex-direction: column;
+    padding-block-start: 1rem;
 
     @include mq.for-tablet {
       flex-direction: row;
