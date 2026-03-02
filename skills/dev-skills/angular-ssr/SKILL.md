@@ -1,6 +1,11 @@
 ---
 name: angular-ssr
 description: Implement server-side rendering and hydration in Angular v20+ using @angular/ssr. Use for SSR setup, hydration strategies, prerendering static pages, and handling browser-only APIs. Triggers on SSR configuration, fixing hydration mismatches, prerendering routes, or making code SSR-compatible.
+license: MIT
+compatibility: Requires node, npm, and access to the internet
+metadata:
+  author: Brandon Roberts
+  version: '1.0'
 ---
 
 # Angular SSR

@@ -1,6 +1,11 @@
 ---
 name: angular-signals
 description: Implement signal-based reactive state management in Angular v20+. Use for creating reactive state with signal(), derived state with computed(), dependent state with linkedSignal(), and side effects with effect(). Triggers on state management questions, converting from BehaviorSubject/Observable patterns to signals, or implementing reactive data flows.
+license: MIT
+compatibility: Requires node, npm, and access to the internet
+metadata:
+  author: Brandon Roberts
+  version: '1.0'
 ---
 
 # Angular Signals

@@ -1,6 +1,11 @@
 ---
 name: angular-directives
 description: Create custom directives in Angular v20+ for DOM manipulation and behavior extension. Use for attribute directives that modify element behavior/appearance, structural directives for portals/overlays, and host directives for composition. Triggers on creating reusable DOM behaviors, extending element functionality, or composing behaviors across components. Note - use native @if/@for/@switch for control flow, not custom structural directives.
+license: MIT
+compatibility: Requires node, npm, and access to the internet
+metadata:
+  author: Brandon Roberts
+  version: '1.0'
 ---
 
 # Angular Directives
