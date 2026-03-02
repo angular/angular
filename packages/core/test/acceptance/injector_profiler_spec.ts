@@ -11,8 +11,10 @@ import {BrowserModule} from '@angular/platform-browser';
 import {Router, RouterModule, RouterOutlet} from '@angular/router';
 import {
   afterEveryRender,
+  ChangeDetectorRef,
   ClassProvider,
   Component,
+  DestroyRef,
   Directive,
   ElementRef,
   inject,
@@ -22,8 +24,10 @@ import {
   NgModule,
   NgModuleRef,
   QueryList,
+  Renderer2,
   ViewChild,
   ViewChildren,
+  ViewContainerRef,
 } from '../../src/core';
 import {InternalInjectFlags} from '../../src/di/interface/injector';
 import {NullInjector} from '../../src/di/null_injector';
@@ -579,10 +583,11 @@ describe('getInjectorProviders', () => {
     const fixture = TestBed.createComponent(MyComponent);
 
     const providers = getInjectorProviders(fixture.debugElement.injector);
-    expect(providers.length).toBe(1);
-    expect(providers[0].token).toBe(MyService);
-    expect(providers[0].provider).toBe(MyService);
-    expect(providers[0].isViewProvider).toBe(false);
+    const myServiceProvider = providers.find((p) => p.token === MyService)!;
+    expect(myServiceProvider).toBeDefined();
+    expect(myServiceProvider.token).toBe(MyService);
+    expect(myServiceProvider.provider).toBe(MyService);
+    expect(myServiceProvider.isViewProvider).toBe(false);
   });
 
   it('should be able to get determine if a provider is a view provider', () => {
@@ -600,10 +605,11 @@ describe('getInjectorProviders', () => {
     const fixture = TestBed.createComponent(MyComponent);
 
     const providers = getInjectorProviders(fixture.debugElement.injector);
-    expect(providers.length).toBe(1);
-    expect(providers[0].token).toBe(MyService);
-    expect(providers[0].provider).toBe(MyService);
-    expect(providers[0].isViewProvider).toBe(true);
+    const myServiceProvider = providers.find((p) => p.token === MyService)!;
+    expect(myServiceProvider).toBeDefined();
+    expect(myServiceProvider.token).toBe(MyService);
+    expect(myServiceProvider.provider).toBe(MyService);
+    expect(myServiceProvider.isViewProvider).toBe(true);
   });
 
   it('should be able to determine import paths after module provider flattening in the NgModule bootstrap case', () => {
@@ -968,11 +974,12 @@ describe('getInjectorProviders', () => {
     expect(itemComponents?.length).toBe(3);
     itemComponents!.forEach((item) => {
       const itemProviders = getInjectorProviders(item.injector);
+      const myServiceProvider = itemProviders.find((p) => p.token === MyService)!;
       expect(itemProviders).toBeInstanceOf(Array);
-      expect(itemProviders.length).toBe(1);
-      expect(itemProviders[0].token).toBe(MyService);
-      expect(itemProviders[0].provider).toBe(MyService);
-      expect(itemProviders[0].isViewProvider).toBe(false);
+      expect(myServiceProvider).toBeDefined();
+      expect(myServiceProvider.token).toBe(MyService);
+      expect(myServiceProvider.provider).toBe(MyService);
+      expect(myServiceProvider.isViewProvider).toBe(false);
     });
   });
 
@@ -1009,12 +1016,34 @@ describe('getInjectorProviders', () => {
     expect(itemComponents?.length).toBe(3);
     itemComponents!.forEach((item) => {
       const itemProviders = getInjectorProviders(item.injector);
+      const myServiceProvider = itemProviders.find((p) => p.token === MyService)!;
       expect(itemProviders).toBeInstanceOf(Array);
-      expect(itemProviders.length).toBe(1);
-      expect(itemProviders[0].token).toBe(MyService);
-      expect(itemProviders[0].provider).toBe(MyService);
-      expect(itemProviders[0].isViewProvider).toBe(false);
+      expect(myServiceProvider).toBeDefined();
+      expect(myServiceProvider.token).toBe(MyService);
+      expect(myServiceProvider.provider).toBe(MyService);
+      expect(myServiceProvider.isViewProvider).toBe(false);
     });
+  });
+
+  it('should include special providers in NodeInjector', () => {
+    @Component({
+      selector: 'my-comp',
+      template: 'hello',
+      standalone: false,
+    })
+    class MyComponent {}
+    TestBed.configureTestingModule({declarations: [MyComponent]});
+    const fixture = TestBed.createComponent(MyComponent);
+
+    const providers = getInjectorProviders(fixture.debugElement.injector);
+    const tokens = providers.map((p) => p.token);
+
+    expect(tokens).toContain(ElementRef);
+    expect(tokens).toContain(Renderer2);
+    expect(tokens).toContain(ViewContainerRef);
+    expect(tokens).toContain(DestroyRef);
+    expect(tokens).toContain(ChangeDetectorRef);
+    expect(tokens).toContain(Injector);
   });
 });
 
