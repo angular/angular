@@ -1385,6 +1385,30 @@ import {envIsSupported} from '../testing/utils';
       server.assertSawRequestFor('/some/url');
     });
 
+    it('bypasses the ServiceWorker for requests with a `Range` header', async () => {
+      // NOTE:
+      // Range requests (e.g. for seeking in video/audio) bypass the SW entirely.
+      // Requests that bypass the SW are not handled at all in the mock implementation of `scope`,
+      // therefore no requests reach the server.
+
+      // Range requests should be bypassed regardless of value.
+      await makeRequest(scope, '/some/url', undefined, {headers: {'range': 'bytes=0-'}});
+      server.assertNoRequestFor('/some/url');
+
+      await makeRequest(scope, '/some/url', undefined, {headers: {'range': 'bytes=100-200'}});
+      server.assertNoRequestFor('/some/url');
+
+      // Case-insensitive header check: `Range` and `RANGE` should also be bypassed.
+      await makeRequest(scope, '/some/url', undefined, {headers: {'Range': 'bytes=0-'}});
+      server.assertNoRequestFor('/some/url');
+
+      server.clearRequests();
+
+      // Without a Range header, normal requests are still served by the SW.
+      await makeRequest(scope, '/some/url');
+      server.assertSawRequestFor('/some/url');
+    });
+
     it('unregisters when manifest 404s', async () => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
