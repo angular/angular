@@ -13,6 +13,7 @@ import {DECLARATION_COMPONENT_VIEW, LView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getComponentLViewByIndex} from '../render3/util/view_utils';
 import {ViewRef} from '../render3/view_ref';
+import {patchSpecialProvider} from '../render3/debug/special_providers';
 
 /**
  * Base class that provides change detection functionality.
@@ -117,14 +118,8 @@ export abstract class ChangeDetectorRef {
    *
    */
   abstract reattach(): void;
-
-  /**
-   * @internal
-   * @nocollapse
-   */
-  static __NG_ELEMENT_ID__: (flags: InternalInjectFlags) => ChangeDetectorRef =
-    injectChangeDetectorRef;
 }
+patchSpecialProvider(ChangeDetectorRef, injectChangeDetectorRef);
 
 /** Returns a ChangeDetectorRef (a.k.a. a ViewRef) */
 export function injectChangeDetectorRef(flags: InternalInjectFlags): ChangeDetectorRef {
