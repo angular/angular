@@ -92,6 +92,11 @@ export class $locationShim {
       // returns the internal URL that `$locationShim` expects.
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = this.location.normalize(url);
+        // Location.normalize might return an empty string or a path that does not start with a slash
+        // $locationShim expects the path to start with a slash
+        if (!url.startsWith('/')) {
+          url = '/' + url;
+        }
       }
       this.urlChanges.next({newUrl: url, newState});
     });

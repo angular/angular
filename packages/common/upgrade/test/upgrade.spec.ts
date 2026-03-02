@@ -514,6 +514,19 @@ describe('New URL Parsing with appBaseHref', () => {
       expect($location.absUrl()).toBe('http://server/base/test');
     },
   ));
+
+  it('should not throw error when Location triggers onUrlChange with /', inject(
+    [Location],
+    (location: Location) => {
+      location.go('/');
+      expect($location.path()).toBe('/');
+      expect($location.absUrl()).toBe('http://server/base/');
+
+      location.go('/?test=1');
+      expect($location.path()).toBe('/');
+      expect($location.search()).toEqual({test: '1'});
+    },
+  ));
 });
 
 describe('New URL Parsing', () => {
