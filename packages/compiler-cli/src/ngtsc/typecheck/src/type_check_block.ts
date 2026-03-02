@@ -12,7 +12,6 @@ import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 import {TypeCheckBlockMetadata} from '../api';
 
-import {addTypeCheckId} from './diagnostics';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
@@ -20,6 +19,7 @@ import {TypeParameterEmitter} from './type_parameter_emitter';
 import {createHostBindingsBlockGuard} from './host_bindings';
 import {Context, TcbGenericContextBehavior} from './ops/context';
 import {Scope} from './ops/scope';
+import {getStatementsBlock, tempPrint} from './ops/codegen';
 
 /**
  * Given a `ts.ClassDeclaration` for a component, and metadata regarding that component, compose a
@@ -53,7 +53,7 @@ export function generateTypeCheckBlock(
   domSchemaChecker: DomSchemaChecker,
   oobRecorder: OutOfBandDiagnosticRecorder,
   genericContextBehavior: TcbGenericContextBehavior,
-): ts.FunctionDeclaration {
+): string {
   const tcb = new Context(
     env,
     domSchemaChecker,
@@ -104,8 +104,21 @@ export function generateTypeCheckBlock(
     }
   }
 
-  const paramList = [tcbThisParam(ctxRawType.typeName, typeArguments)];
-  const statements: ts.Statement[] = [];
+  const sourceFile = env.contextFile;
+  const typeParamsStr =
+    typeParameters === undefined || typeParameters.length === 0
+      ? ''
+      : `<${typeParameters.map((p) => tempPrint(p, sourceFile)).join(', ')}>`;
+  const typeArgsStr =
+    typeArguments === undefined || typeArguments.length === 0
+      ? ''
+      : `<${typeArguments.map((p) => tempPrint(p, sourceFile)).join(', ')}>`;
+  const typeRef = ts.isIdentifier(ctxRawType.typeName)
+    ? ctxRawType.typeName.text
+    : tempPrint(ctxRawType.typeName, sourceFile);
+
+  const thisParamStr = `this: ${typeRef}${typeArgsStr}`;
+  const statements: string[] = [];
 
   // Add the template type checking code.
   if (tcb.boundTarget.target.template !== undefined) {
@@ -117,7 +130,7 @@ export function generateTypeCheckBlock(
       /* guard */ null,
     );
 
-    statements.push(renderBlockStatements(env, templateScope, ts.factory.createTrue()));
+    statements.push(renderBlockStatements(env, templateScope, 'true'));
   }
 
   // Add the host bindings type checking code.
@@ -126,48 +139,19 @@ export function generateTypeCheckBlock(
     statements.push(renderBlockStatements(env, hostScope, createHostBindingsBlockGuard()));
   }
 
-  const body = ts.factory.createBlock(statements);
-  const fnDecl = ts.factory.createFunctionDeclaration(
-    /* modifiers */ undefined,
-    /* asteriskToken */ undefined,
-    /* name */ name,
-    /* typeParameters */ env.config.useContextGenericType ? typeParameters : undefined,
-    /* parameters */ paramList,
-    /* type */ undefined,
-    /* body */ body,
-  );
-  addTypeCheckId(fnDecl, meta.id);
-  return fnDecl;
+  const bodyStr = `{\n${statements.join('\n')}\n}`;
+  const funcDeclStr = `function ${name.text}${typeParamsStr}(${thisParamStr}) ${bodyStr}`;
+
+  return `/*${meta.id}*/\n${funcDeclStr}`;
 }
 
-function renderBlockStatements(
-  env: Environment,
-  scope: Scope,
-  wrapperExpression: ts.Expression,
-): ts.Statement {
+function renderBlockStatements(env: Environment, scope: Scope, wrapperExpression: string): string {
+  // Note: this needs to be called first so that it can populate the prelude statements.
   const scopeStatements = scope.render();
-  const innerBody = ts.factory.createBlock([...env.getPreludeStatements(), ...scopeStatements]);
+  const statements = getStatementsBlock([...env.getPreludeStatements(), ...scopeStatements]);
 
   // Wrap the body in an if statement. This serves two purposes:
   // 1. It allows us to distinguish between the sections of the block (e.g. host or template).
   // 2. It allows the `ts.Printer` to produce better-looking output.
-  return ts.factory.createIfStatement(wrapperExpression, innerBody);
-}
-
-/**
- * Create the `this` parameter to the top-level TCB function, with the given generic type
- * arguments.
- */
-function tcbThisParam(
-  name: ts.EntityName,
-  typeArguments: ts.TypeNode[] | undefined,
-): ts.ParameterDeclaration {
-  return ts.factory.createParameterDeclaration(
-    /* modifiers */ undefined,
-    /* dotDotDotToken */ undefined,
-    /* name */ 'this',
-    /* questionToken */ undefined,
-    /* type */ ts.factory.createTypeReferenceNode(name, typeArguments),
-    /* initializer */ undefined,
-  );
+  return `if (${wrapperExpression}) {\n${statements}\n}`;
 }

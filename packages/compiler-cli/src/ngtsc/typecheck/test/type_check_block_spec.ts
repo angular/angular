@@ -201,19 +201,19 @@ describe('type check blocks', () => {
 
   it('should handle template literals', () => {
     expect(tcb('{{ `hello world` }}')).toContain('"" + (`hello world`);');
-    expect(tcb('{{ `hello \\${name}!!!` }}')).toContain('"" + (`hello \\${name}!!!`);');
+    expect(tcb('{{ `hello ${name}!!!` }}')).toContain('"" + (`hello ${((this).name)}!!!`);');
     expect(tcb('{{ `${a} - ${b} - ${c}` }}')).toContain(
       '"" + (`${((this).a)} - ${((this).b)} - ${((this).c)}`);',
     );
   });
 
   it('should handle tagged template literals', () => {
-    expect(tcb('{{ tag`hello world` }}')).toContain('"" + (((this).tag) `hello world`);');
-    expect(tcb('{{ tag`hello \\${name}!!!` }}')).toContain(
-      '"" + (((this).tag) `hello \\${name}!!!`);',
+    expect(tcb('{{ tag`hello world` }}')).toContain('"" + (((this).tag)`hello world`);');
+    expect(tcb('{{ tag`hello ${name}!!!` }}')).toContain(
+      '"" + (((this).tag)`hello ${((this).name)}!!!`);',
     );
     expect(tcb('{{ tag`${a} - ${b} - ${c}` }}')).toContain(
-      '"" + (((this).tag) `${((this).a)} - ${((this).b)} - ${((this).c)}`);',
+      '"" + (((this).tag)`${((this).a)} - ${((this).b)} - ${((this).c)}`);',
     );
   });
 
@@ -306,7 +306,7 @@ describe('type check blocks', () => {
       );
     });
 
-    it('should generate circular references between two directives correctly', () => {
+    it('should generate circular references between two generic directives correctly', () => {
       const TEMPLATE = `
     <div #a="dirA" dir-a [inputA]="b">A</div>
     <div #b="dirB" dir-b [inputB]="a">B</div>
@@ -339,7 +339,7 @@ describe('type check blocks', () => {
           'var _t2 = _ctor2({ "inputB": (_t3) }); ' +
           'var _t1 = _t2; ' +
           '_t4.inputA = (_t1); ' +
-          '_t2.inputB = (_t3);',
+          '_t2.inputB = ((_t3));',
       );
     });
 
@@ -1226,7 +1226,7 @@ describe('type check blocks', () => {
           checkTypeOfInputBindings: false,
         };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('_t1.dirInput = ((((((this).a)) === (((this).b))) as any));');
+        expect(block).toContain('_t1.dirInput = (((((this).a)) === (((this).b)) as any));');
       });
     });
 
@@ -1843,7 +1843,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(tcb(TEMPLATE)).toContain('if (((this).shouldShow()) && (((this).isVisible))) { }');
+      expect(tcb(TEMPLATE)).toContain('if (((this).shouldShow()) && (((this).isVisible))) {}');
     });
 
     it('should generate `prefetch when` trigger', () => {
@@ -1853,7 +1853,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(tcb(TEMPLATE)).toContain('if (((this).shouldShow()) && (((this).isVisible))) { }');
+      expect(tcb(TEMPLATE)).toContain('if (((this).shouldShow()) && (((this).isVisible))) {}');
     });
 
     it('should generate `hydrate when` trigger', () => {
@@ -1863,7 +1863,7 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(tcb(TEMPLATE)).toContain('if (((this).shouldShow()) && (((this).isVisible))) { }');
+      expect(tcb(TEMPLATE)).toContain('if (((this).shouldShow()) && (((this).isVisible))) {}');
     });
 
     it('should generate options for `viewport` trigger', () => {
@@ -1936,7 +1936,7 @@ describe('type check blocks', () => {
       }`;
 
       expect(tcb(TEMPLATE)).toContain(
-        'var _t1 = ((((this).expr)) === (1)); if (((((this).expr)) === (1)) && _t1) { "" + (_t1); } } }',
+        'var _t1 = ((((this).expr)) === (1)); if (((((this).expr)) === (1)) && _t1) { "" + (_t1); }; } }',
       );
     });
 
@@ -2114,12 +2114,12 @@ describe('type check blocks', () => {
         'var _t1 = null! as any; { var _t2 = (_t1.exp); switch (_t2()) { ' +
           'case "one": "" + ((this).one()); break; ' +
           'case "two": "" + ((this).two()); break; ' +
-          'default: "" + ((this).default()); break; } }',
+          'default: "" + ((this).default()); break; }; }',
       );
     });
 
     it('should handle an empty switch block', () => {
-      expect(tcb('@switch (expr) {}')).toContain('if (true) { switch (((this).expr)) { } }');
+      expect(tcb('@switch (expr) {}')).toContain('if (true) { switch (((this).expr)) { }; }');
     });
 
     it('should not generate the body of a switch block if checkControlFlowBodies is disabled', () => {
@@ -2159,7 +2159,7 @@ describe('type check blocks', () => {
         'switch (((this).expr)) { ' +
           'case 1: "" + ((this).one()); break; ' +
           'case 2: "" + ((this).two()); break; ' +
-          'default: const tcbExhaustive_1: never = ((this).expr);',
+          'default: const tcbExhaustive_t1: never = ((this).expr);',
       );
     });
 
@@ -2172,7 +2172,7 @@ describe('type check blocks', () => {
       `;
       const SOURCE = `
         export class TestComponent {
-          expr!: 1|2; 
+          expr!: 1|2;
         }
       `;
       expect(diagnose(TEMPLATE, SOURCE, undefined, [], undefined, {noUnusedLocals: true})).toEqual([
@@ -2305,7 +2305,7 @@ describe('type check blocks', () => {
       expect(result).toContain('for (const _t1 of ((this).items)!) { var _t2 = null! as number;');
       expect(result).toContain('"" + (_t1) + (_t2)');
       expect(result).toContain('for (const _t3 of ((_t1).items)!) { var _t4 = null! as number;');
-      expect(result).toContain('"" + (_t1) + (_t2) + (_t3) + (_t4)');
+      expect(result).toContain('"" + (_t1) + ((_t2)) + (_t3) + (_t4)');
     });
 
     it('should generate the tracking expression of a for loop', () => {
@@ -2543,7 +2543,7 @@ describe('type check blocks', () => {
       const block = selectorlessTcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('var _t1 = null! as i0.Dir;');
       expect(block).toContain('_t1.someInput = (((this).value));');
-      expect(block).toContain('if (((this).value)) { "" + (((this).value)); } }');
+      expect(block).toContain('if (((this).value)) { "" + (((this).value)); }; }');
     });
 
     it('should generate bindings for unclaimed component inputs', () => {

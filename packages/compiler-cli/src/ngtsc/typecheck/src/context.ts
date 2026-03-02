@@ -461,7 +461,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       .map((op) => {
         return {
           pos: op.splitPoint,
-          text: op.execute(importManager, sf, this.refEmitter, printer),
+          text: op.execute(importManager, sf, this.refEmitter),
         };
       });
 
@@ -525,7 +525,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           path: pendingShimData.file.fileName,
           data: pendingShimData.data,
         });
-        const sfText = pendingShimData.file.render(false /* removeComments */);
+        const sfText = pendingShimData.file.render();
         updates.set(pendingShimData.file.fileName, {
           newText: sfText,
 
@@ -642,12 +642,7 @@ interface Op {
   /**
    * Execute the operation and return the generated code as text.
    */
-  execute(
-    im: ImportManager,
-    sf: ts.SourceFile,
-    refEmitter: ReferenceEmitter,
-    printer: ts.Printer,
-  ): string;
+  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter): string;
 }
 
 /**
@@ -670,12 +665,7 @@ class InlineTcbOp implements Op {
     return this.ref.node.end + 1;
   }
 
-  execute(
-    im: ImportManager,
-    sf: ts.SourceFile,
-    refEmitter: ReferenceEmitter,
-    printer: ts.Printer,
-  ): string {
+  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
     const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
     const fnName = ts.factory.createIdentifier(`_tcb_${this.ref.node.pos}`);
 
@@ -691,7 +681,7 @@ class InlineTcbOp implements Op {
       TcbGenericContextBehavior.CopyClassNodes,
     );
 
-    return printer.printNode(ts.EmitHint.Unspecified, fn, sf);
+    return fn;
   }
 }
 
@@ -712,36 +702,8 @@ class TypeCtorOp implements Op {
     return this.ref.node.end - 1;
   }
 
-  execute(
-    im: ImportManager,
-    sf: ts.SourceFile,
-    refEmitter: ReferenceEmitter,
-    printer: ts.Printer,
-  ): string {
+  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
     const emitEnv = new ReferenceEmitEnvironment(im, refEmitter, this.reflector, sf);
-    const tcb = generateInlineTypeCtor(emitEnv, this.ref.node, this.meta);
-    return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);
+    return generateInlineTypeCtor(emitEnv, this.ref.node, this.meta);
   }
-}
-
-/**
- * Compare two operations and return their split point ordering.
- */
-function orderOps(op1: Op, op2: Op): number {
-  return op1.splitPoint - op2.splitPoint;
-}
-
-/**
- * Split a string into chunks at any number of split points.
- */
-function splitStringAtPoints(str: string, points: number[]): string[] {
-  const splits: string[] = [];
-  let start = 0;
-  for (let i = 0; i < points.length; i++) {
-    const point = points[i];
-    splits.push(str.substring(start, point));
-    start = point;
-  }
-  splits.push(str.substring(start));
-  return splits;
 }
