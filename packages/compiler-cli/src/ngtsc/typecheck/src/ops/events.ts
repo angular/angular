@@ -17,7 +17,7 @@ import {
   TmplAstElement,
 } from '@angular/compiler';
 import {TcbOp} from './base';
-import {getStatementsBlock, TcbExpr} from './codegen';
+import {quoteAndEscape, getStatementsBlock, TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TypeCheckableDirectiveMeta} from '../../api';
@@ -94,9 +94,8 @@ export class TcbDirectiveOutputsOp extends TcbOp {
       if (dirId === null) {
         dirId = this.scope.resolve(this.node, this.dir);
       }
-      const outputField = new TcbExpr(`${dirId.print()}["${field}"]`).addParseSpanInfo(
-        output.keySpan,
-      );
+      const outputField = new TcbExpr(`${dirId.print()}[${quoteAndEscape(field)}]`);
+      outputField.addParseSpanInfo(output.keySpan);
 
       if (this.tcb.env.config.checkTypeOfOutputEvents) {
         // For strict checking of directive events, generate a call to the `subscribe` method
@@ -239,7 +238,9 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
           EventParamType.Infer,
           domEventAssertion,
         );
-        const call = new TcbExpr(`${propertyAccess.print()}("${output.name}", ${handler.print()})`);
+        const call = new TcbExpr(
+          `${propertyAccess.print()}(${quoteAndEscape(output.name)}, ${handler.print()})`,
+        );
         call.addParseSpanInfo(output.sourceSpan);
         this.scope.addStatement(call);
       } else {

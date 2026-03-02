@@ -14,7 +14,7 @@ import {TypeCtorMetadata} from '../api';
 
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {checkIfGenericTypeBoundsCanBeEmitted} from './tcb_util';
-import {TcbExpr, tempPrint} from './ops/codegen';
+import {quoteAndEscape, TcbExpr, tempPrint} from './ops/codegen';
 
 export function generateTypeCtorDeclarationFn(
   env: ReferenceEmitEnvironment,
@@ -134,9 +134,9 @@ function constructTypeCtorParameter(
 
   for (const {classPropertyName, transform, isSignal} of meta.fields.inputs) {
     if (isSignal) {
-      signalInputKeys.push(`"${classPropertyName}"`);
+      signalInputKeys.push(quoteAndEscape(classPropertyName));
     } else if (!meta.coercedInputFields.has(classPropertyName)) {
-      plainKeys.push(`"${classPropertyName}"`);
+      plainKeys.push(quoteAndEscape(classPropertyName));
     } else {
       const coercionType =
         transform != null
