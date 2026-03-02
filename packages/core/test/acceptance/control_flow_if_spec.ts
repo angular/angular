@@ -7,7 +7,7 @@
  */
 
 import {NgFor} from '@angular/common';
-import {expectScreenText, waitFor} from '@angular/private/testing';
+import {expectText, waitFor} from '@angular/private/testing';
 
 import {
   ChangeDetectorRef,
@@ -40,10 +40,10 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('Something', {container: fixture.nativeElement});
+    await expectText('Something');
 
     fixture.componentInstance.show.set(false);
-    await expectScreenText('Nothing', {container: fixture.nativeElement});
+    await expectText('Nothing');
   });
 
   it('should expose expression value in context', async () => {
@@ -55,10 +55,10 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('true aliased to true', {container: fixture.nativeElement});
+    await expectText('true aliased to true');
 
     fixture.componentInstance.show.set(1);
-    await expectScreenText('1 aliased to 1', {container: fixture.nativeElement});
+    await expectText('1 aliased to 1');
   });
 
   it('should not expose the aliased expression to `if` and `else if` blocks', async () => {
@@ -78,13 +78,13 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('If: 1 as true', {container: fixture.nativeElement});
+    await expectText('If: 1 as true');
 
     fixture.componentInstance.value.set(2);
-    await expectScreenText('ElseIf: 2 as unavailable', {container: fixture.nativeElement});
+    await expectText('ElseIf: 2 as unavailable');
 
     fixture.componentInstance.value.set(3);
-    await expectScreenText('Else: 3 as unavailable', {container: fixture.nativeElement});
+    await expectText('Else: 3 as unavailable');
   });
 
   it('should expose the context to nested conditional blocks', async () => {
@@ -109,14 +109,14 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('Root: 1/2', {container: fixture.nativeElement});
-    await expectScreenText('Inner: 1/2/3', {container: fixture.nativeElement});
-    await expectScreenText('Innermost: 1/2/3/4', {container: fixture.nativeElement});
+    await expectText('Root: 1/2');
+    await expectText('Inner: 1/2/3');
+    await expectText('Innermost: 1/2/3/4');
 
     fixture.componentInstance.value.set(2);
-    await expectScreenText('Root: 2/4', {container: fixture.nativeElement});
-    await expectScreenText('Inner: 2/4/6', {container: fixture.nativeElement});
-    await expectScreenText('Innermost: 2/4/6/8', {container: fixture.nativeElement});
+    await expectText('Root: 2/4');
+    await expectText('Inner: 2/4/6');
+    await expectText('Innermost: 2/4/6/8');
   });
 
   it('should expose the context to listeners inside nested conditional blocks', async () => {
@@ -149,7 +149,7 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('Root 1', {container: fixture.nativeElement});
+    await expectText('Root 1');
 
     let buttons = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'));
     buttons.forEach((button) => button.click());
@@ -164,7 +164,7 @@ describe('control flow - if', () => {
 
     logs = [];
     fixture.componentInstance.value.set(2);
-    await expectScreenText('Root 2', {container: fixture.nativeElement});
+    await expectText('Root 2');
 
     buttons = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'));
     buttons.forEach((button) => button.click());
@@ -188,10 +188,10 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('1 aliased to 2', {container: fixture.nativeElement});
+    await expectText('1 aliased to 2');
 
     fixture.componentInstance.value.set(4);
-    await expectScreenText('4 aliased to 8', {container: fixture.nativeElement});
+    await expectText('4 aliased to 8');
   });
 
   it('should destroy all views if there is nothing to display', async () => {
@@ -203,7 +203,7 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('Something', {container: fixture.nativeElement});
+    await expectText('Something');
 
     fixture.componentInstance.show.set(false);
     await waitFor(() => throwUnless(fixture.nativeElement.textContent).toBe(''));
@@ -227,13 +227,13 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('nothing', {container: fixture.nativeElement});
+    await expectText('nothing');
 
     fixture.componentInstance.value.set(2);
-    await expectScreenText('two', {container: fixture.nativeElement});
+    await expectText('two');
 
     fixture.componentInstance.value.set(1);
-    await expectScreenText('one', {container: fixture.nativeElement});
+    await expectText('one');
   });
 
   it('should be able to use pipes injecting ChangeDetectorRef in if blocks', async () => {
@@ -255,7 +255,7 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('Something', {container: fixture.nativeElement});
+    await expectText('Something');
   });
 
   it('should support a condition with the a typeof expression', async () => {
@@ -273,10 +273,10 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('6', {container: fixture.nativeElement});
+    await expectText('6');
 
     fixture.componentInstance.value.set(42);
-    await expectScreenText('42', {container: fixture.nativeElement});
+    await expectText('42');
   });
 
   it('should support a condition with the a binary expression with the in keyword', async () => {
@@ -294,10 +294,10 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('has foo', {container: fixture.nativeElement});
+    await expectText('has foo');
 
     fixture.componentInstance.key.set(42);
-    await expectScreenText('no 42', {container: fixture.nativeElement});
+    await expectText('no 42');
   });
 
   it('should support a condition with the instanceof keyword', async () => {
@@ -319,10 +319,10 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('is Foo', {container: fixture.nativeElement});
+    await expectText('is Foo');
 
     fixture.componentInstance.value.set('not a Foo');
-    await expectScreenText('is not Foo', {container: fixture.nativeElement});
+    await expectText('is not Foo');
   });
 
   it('should expose expression value through alias on @else if', async () => {
@@ -341,10 +341,10 @@ describe('control flow - if', () => {
     }
 
     const fixture = TestBed.createComponent(TestComponent);
-    await expectScreenText('Zero evaluates to true', {container: fixture.nativeElement});
+    await expectText('Zero evaluates to true');
 
     fixture.componentInstance.value.set(4);
-    await expectScreenText('4 aliased to 8', {container: fixture.nativeElement});
+    await expectText('4 aliased to 8');
   });
 
   describe('content projection', () => {
@@ -370,7 +370,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before  After Slot: foo', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: foo');
     });
 
     it('should project an @if with a single root node with a data binding', async () => {
@@ -408,7 +408,7 @@ describe('control flow - if', () => {
       }
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before  After Slot: foo', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: foo');
       await waitFor(() => throwUnless(directiveCount).toBe(1));
     });
 
@@ -435,9 +435,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before onetwo After Slot: ', {
-        container: fixture.nativeElement,
-      });
+      await expectText('Main: Before onetwo After Slot: ');
     });
 
     it('should project an @if with an ng-container root node', async () => {
@@ -465,9 +463,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before  After Slot: foobar', {
-        container: fixture.nativeElement,
-      });
+      await expectText('Main: Before  After Slot: foobar');
     });
 
     it('should project an @if with a single root node and comments into the root node slot', async () => {
@@ -494,7 +490,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before  After Slot: foo', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: foo');
     });
 
     it('should project @if an @else content into separate slots', async () => {
@@ -522,13 +518,13 @@ describe('control flow - if', () => {
       }
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('if: (if content), else: ()', {container: fixture.nativeElement});
+      await expectText('if: (if content), else: ()');
 
       fixture.componentInstance.value.set(false);
-      await expectScreenText('if: (), else: (else content)', {container: fixture.nativeElement});
+      await expectText('if: (), else: (else content)');
 
       fixture.componentInstance.value.set(true);
-      await expectScreenText('if: (if content), else: ()', {container: fixture.nativeElement});
+      await expectText('if: (if content), else: ()');
     });
 
     it('should project @if an @else content into separate slots when if has default content', async () => {
@@ -555,13 +551,13 @@ describe('control flow - if', () => {
       }
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('if: (if content), else: ()', {container: fixture.nativeElement});
+      await expectText('if: (if content), else: ()');
 
       fixture.componentInstance.value.set(false);
-      await expectScreenText('if: (), else: (else content)', {container: fixture.nativeElement});
+      await expectText('if: (), else: (else content)');
 
       fixture.componentInstance.value.set(true);
-      await expectScreenText('if: (if content), else: ()', {container: fixture.nativeElement});
+      await expectText('if: (if content), else: ()');
     });
 
     it('should project @if an @else content into separate slots when else has default content', async () => {
@@ -588,13 +584,13 @@ describe('control flow - if', () => {
       }
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('if: (if content), else: ()', {container: fixture.nativeElement});
+      await expectText('if: (if content), else: ()');
 
       fixture.componentInstance.value.set(false);
-      await expectScreenText('if: (), else: (else content)', {container: fixture.nativeElement});
+      await expectText('if: (), else: (else content)');
 
       fixture.componentInstance.value.set(true);
-      await expectScreenText('if: (if content), else: ()', {container: fixture.nativeElement});
+      await expectText('if: (if content), else: ()');
     });
 
     it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes', async () => {
@@ -612,7 +608,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before  After Slot: one', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: one');
     });
 
     it('should not project the root node when preserveWhitespaces is enabled and there are whitespace nodes', async () => {
@@ -639,9 +635,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText(/Main: Before\s+one\s+After Slot:/, {
-        container: fixture.nativeElement,
-      });
+      await expectText(/Main: Before\s+one\s+After Slot:/);
     });
 
     it('should not project the root node across multiple layers of @if', async () => {
@@ -668,9 +662,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText(/Main: Before\s+one\s+After Slot:/, {
-        container: fixture.nativeElement,
-      });
+      await expectText(/Main: Before\s+one\s+After Slot:/);
     });
 
     it('should project an @if with a single root template node into the root node slot', async () => {
@@ -695,10 +687,10 @@ describe('control flow - if', () => {
       }
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before  After Slot: 12', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: 12');
 
       fixture.componentInstance.items.update((items) => [...items, 3]);
-      await expectScreenText('Main: Before  After Slot: 123', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: 123');
     });
 
     it('should invoke a projected attribute directive at the root of an @if once', async () => {
@@ -732,7 +724,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before  After Slot: foo', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: foo');
       await waitFor(() => throwUnless(directiveCount).toBe(1));
     });
 
@@ -775,7 +767,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before  After Slot: foo', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: foo');
       await waitFor(() => throwUnless(directiveCount).toBe(1));
     });
 
@@ -818,7 +810,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before  After Slot: foo', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: foo');
       await waitFor(() => throwUnless(directiveCount).toBe(1));
     });
 
@@ -855,11 +847,11 @@ describe('control flow - if', () => {
       }
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before  After Slot: ', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: ');
       await waitFor(() => throwUnless(directiveCount).toBe(0));
 
       fixture.componentInstance.condition.set(true);
-      await expectScreenText('Main: Before  After Slot: foo', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: foo');
       await waitFor(() => throwUnless(directiveCount).toBe(1));
     });
 
@@ -883,7 +875,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main:  Hello world Slot: ', {container: fixture.nativeElement});
+      await expectText('Main:  Hello world Slot: ');
     });
 
     it('should project an @if with a single root node and @let declarations into the root node slot', async () => {
@@ -910,7 +902,7 @@ describe('control flow - if', () => {
       class App {}
 
       const fixture = TestBed.createComponent(App);
-      await expectScreenText('Main: Before  After Slot: 2', {container: fixture.nativeElement});
+      await expectText('Main: Before  After Slot: 2');
     });
   });
 });

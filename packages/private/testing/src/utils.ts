@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {TestBed} from '../../../core/testing';
 import {ɵresetJitOptions as resetJitOptions} from '@angular/core';
 
 /**
@@ -214,7 +215,7 @@ export interface WaitForOptions {
   interval?: number;
 }
 
-export interface ExpectScreenTextOptions extends WaitForOptions {
+export interface ExpectTextOptions extends WaitForOptions {
   container?: HTMLElement;
 }
 
@@ -226,7 +227,7 @@ export interface ExpectScreenTextOptions extends WaitForOptions {
  *
  * @example
  * ```ts
- * await expectText(fixture, 'Hello');
+ * await (fixture, 'Hello');
  * ```
  */
 /**
@@ -236,15 +237,15 @@ export interface ExpectScreenTextOptions extends WaitForOptions {
  *
  * @example
  * ```ts
- * await expectScreenText('Hello');
- * await expectScreenText(/Hello/);
+ * await expectText('Hello');
+ * await expectText(/Hello/);
  * ```
  */
-export async function expectScreenText(
+export async function expectText(
   text: string | RegExp,
-  options: ExpectScreenTextOptions = {},
+  options: ExpectTextOptions = {},
 ): Promise<void> {
-  const container = options.container || document.body;
+  const container = options.container || TestBed.getFixture().nativeElement;
   await waitFor(() => {
     const content = container.textContent || '';
     if (typeof text === 'string') {
