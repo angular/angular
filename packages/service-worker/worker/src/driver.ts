@@ -288,6 +288,15 @@ export class Driver implements Debuggable, UpdateSource {
       return;
     }
 
+    // Range requests (e.g. for seeking in video/audio elements) cannot be served from the
+    // ServiceWorker cache, since the SW cache does not support partial content (206) responses.
+    // Returning without calling `event.respondWith()` lets the browser handle the request
+    // directly from the network.
+    // See https://github.com/angular/angular/issues/25865
+    if (req.headers.has('range')) {
+      return;
+    }
+
     // Past this point, the SW commits to handling the request itself. This could still
     // fail (and result in `state` being set to `SAFE_MODE`), but even in that case the
     // SW will still deliver a response.
