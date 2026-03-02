@@ -8,7 +8,7 @@
 
 import {DirectiveOwner, ParseSourceSpan, TmplAstHostElement} from '@angular/compiler';
 import {TcbOp} from './base';
-import {TcbExpr} from './codegen';
+import {quoteAndEscape, TcbExpr} from './codegen';
 import {Context} from './context';
 import type {Scope} from './scope';
 import {TypeCheckableDirectiveMeta} from '../../api';
@@ -171,7 +171,7 @@ function tcbCallTypeCtor(
   // Construct an object literal containing each directive input.
   for (let i = 0; i < inputs.length; i++) {
     const input = inputs[i];
-    const propertyName = input.field;
+    const propertyName = quoteAndEscape(input.field);
     const isLast = i === inputs.length - 1;
 
     if (input.type === 'binding') {
@@ -182,13 +182,13 @@ function tcbCallTypeCtor(
         expr = unwrapWritableSignal(expr, tcb);
       }
 
-      const assignment = new TcbExpr(`"${propertyName}": ${expr.wrapForTypeChecker().print()}`);
+      const assignment = new TcbExpr(`${propertyName}: ${expr.wrapForTypeChecker().print()}`);
       assignment.addParseSpanInfo(input.sourceSpan);
       literal += assignment.print();
     } else {
       // A type constructor is required to be called with all input properties, so any unset
       // inputs are simply assigned a value of type `any` to ignore them.
-      literal += `"${propertyName}": 0 as any`;
+      literal += `${propertyName}: 0 as any`;
     }
 
     literal += `${isLast ? '' : ','} `;

@@ -129,6 +129,13 @@ export function getStatementsBlock(expressions: TcbExpr[], singleLine = false): 
   return result;
 }
 
+/** Wraps a string value in quotes and escapes relevant characters. */
+export function quoteAndEscape(value: string): string {
+  // Passing the value through `JSON.stringify` automatically
+  // escapes quotes and allows us to handle line breaks.
+  return JSON.stringify(value);
+}
+
 let tempPrinter: ts.Printer | null = null;
 
 /**
