@@ -102,6 +102,10 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
         },
       });
 
+      if (resolve === undefined) {
+        return stream;
+      }
+
       return promise;
     },
   });

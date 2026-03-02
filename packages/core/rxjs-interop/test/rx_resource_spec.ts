@@ -6,22 +6,25 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {of, Observable, BehaviorSubject, throwError} from 'rxjs';
-import {TestBed} from '../../testing';
 import {timeout} from '@angular/private/testing';
+import {BehaviorSubject, EMPTY, Observable, of, Subscriber, throwError} from 'rxjs';
 import {ApplicationRef, Injector, signal} from '../../src/core';
+import {TestBed} from '../../testing';
 import {rxResource} from '../src';
 
 describe('rxResource()', () => {
   it('should fetch data using an observable loader', async () => {
     const injector = TestBed.inject(Injector);
-    const appRef = TestBed.inject(ApplicationRef);
     const res = rxResource({
       stream: () => of(1),
       injector,
     });
-    await appRef.whenStable();
+
+    TestBed.tick();
+
+    // Value should be available synchronously (because the observable emits synchronously)
     expect(res.value()).toBe(1);
+    expect(res.status()).toBe('resolved');
   });
 
   it('should cancel the fetch when a new request comes in', async () => {
@@ -30,7 +33,7 @@ describe('rxResource()', () => {
     const request = signal(1);
     let unsub = false;
     let lastSeenRequest: number = 0;
-    rxResource({
+    const res = rxResource({
       params: request,
       stream: ({params: request}) => {
         lastSeenRequest = request;
@@ -48,12 +51,23 @@ describe('rxResource()', () => {
       injector,
     });
 
+    // The stream isn't evaluated eagerly. We have to wait for the effect to run to see the first request.
+    expect(lastSeenRequest).toBe(0);
+
+    TestBed.tick();
+
+    expect(res.status()).toBe('loading');
+    expect(lastSeenRequest).toBe(1);
+
     // Wait for the resource to reach loading state.
     await waitFor(() => lastSeenRequest === 1);
 
     // Setting request = 2 should cancel request = 1
     request.set(2);
+    // The stream is updated asynchronously because we're waiting for the effect to fire.
+    expect(lastSeenRequest).toBe(1);
     await appRef.whenStable();
+    expect(lastSeenRequest).toBe(2);
     expect(unsub).toBe(true);
   });
 
@@ -113,6 +127,54 @@ describe('rxResource()', () => {
     expect(rxRes.error()).toBeInstanceOf(FooError);
 
     expect(() => rxRes.value()).toThrowError(/This is a FooError/);
+  });
+
+  it('should reuse observable', async () => {
+    let count = 0;
+    let sub!: Subscriber<number>;
+    const obs = new Observable<number>((s) => {
+      sub = s;
+      count++;
+    });
+
+    const res = rxResource({
+      stream: () => obs,
+      injector: TestBed.inject(Injector),
+    });
+    // Hasn't subscribed to the observable yet
+    expect(count).toBe(0);
+
+    TestBed.tick();
+    expect(count).toBe(1);
+    expect(res.status()).toBe('loading');
+    sub.next(1);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(count).toBe(1);
+  });
+
+  it('should report error synchronously (after tick)', () => {
+    const injector = TestBed.inject(Injector);
+    const res = rxResource({
+      stream: () => EMPTY,
+      injector,
+    });
+    TestBed.tick();
+    expect(res.status()).toBe('error');
+    expect(res.error()).toBeInstanceOf(Error);
+    expect(() => res.value()).toThrowError(/Resource completed before producing a value/);
+  });
+
+  it('should report sync error synchronously (after tick) ', () => {
+    const injector = TestBed.inject(Injector);
+    const res = rxResource({
+      stream: () => throwError(() => new Error('bad news')),
+      injector,
+    });
+    TestBed.tick();
+    expect(res.status()).toBe('error');
+    expect(res.error()).toBeInstanceOf(Error);
+    expect(() => res.value()).toThrowError(/bad news/);
   });
 });
 
