@@ -22,7 +22,7 @@ import type {Context} from './context';
 import type {Scope} from './scope';
 import {TypeCheckableDirectiveMeta} from '../../api';
 import {TcbOp} from './base';
-import {declareVariable, TcbExpr, tempPrint} from './codegen';
+import {declareVariable, quoteAndEscape, TcbExpr, tempPrint} from './codegen';
 import {BindingPropertyName, ClassPropertyName} from '../../../metadata';
 import {REGISTRY} from '../dom';
 import {tcbExpression, unwrapWritableSignal} from './expression';
@@ -41,7 +41,7 @@ import {LocalSymbol} from './references';
 export function translateInput(value: AST | string, tcb: Context, scope: Scope): TcbExpr {
   if (typeof value === 'string') {
     // For regular attributes with a static string value, use the represented string literal.
-    return new TcbExpr(`"${value}"`);
+    return new TcbExpr(quoteAndEscape(value));
   } else {
     // Produce an expression representing the value of the binding.
     return tcbExpression(value, tcb, scope);
@@ -171,7 +171,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
               `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`,
             );
           }
-          const type = new TcbExpr(`(typeof ${dirId.print()})["${fieldName}"]`);
+          const type = new TcbExpr(`(typeof ${dirId.print()})[${quoteAndEscape(fieldName)}]`);
           const temp = declareVariable(id, type);
           this.scope.addStatement(temp);
           target = id;
@@ -184,7 +184,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
           // when possible. String literal fields may not be valid JS identifiers so we use
           // literal element access instead for those cases.
           target = this.dir.stringLiteralInputFields.has(fieldName)
-            ? new TcbExpr(`${dirId.print()}["${fieldName}"]`)
+            ? new TcbExpr(`${dirId.print()}[${quoteAndEscape(fieldName)}]`)
             : new TcbExpr(`${dirId.print()}.${fieldName}`);
         }
 
@@ -305,7 +305,7 @@ export class TcbUnclaimedInputsOp extends TcbOp {
           // A direct binding to a property.
           const propertyName = REGISTRY.getMappedPropName(binding.name);
           const stmt = new TcbExpr(
-            `${elId.print()}["${propertyName}"] = ${expr.wrapForTypeChecker().print()}`,
+            `${elId.print()}[${quoteAndEscape(propertyName)}] = ${expr.wrapForTypeChecker().print()}`,
           ).addParseSpanInfo(binding.sourceSpan);
           this.scope.addStatement(stmt);
         } else {
