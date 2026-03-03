@@ -86,7 +86,10 @@ class TcbExprTranslator implements AstVisitor {
     const rhs = this.translate(ast.right);
     lhs.wrapForTypeChecker();
     rhs.wrapForTypeChecker();
-    const node = new TcbExpr(`${lhs.print()} ${ast.operation} ${rhs.print()}`);
+    const expression = `${lhs.print()} ${ast.operation} ${rhs.print()}`;
+    const node = new TcbExpr(
+      ast.operation === '??' || ast.operation === '**' ? `(${expression})` : expression,
+    );
     node.addParseSpanInfo(ast.sourceSpan);
     return node;
   }
@@ -150,14 +153,14 @@ class TcbExprTranslator implements AstVisitor {
 
   visitLiteralArray(ast: LiteralArray): TcbExpr {
     const elements = ast.expressions.map((expr) => this.translate(expr));
-    let content = `[${elements.map((el) => el.print()).join(', ')}]`;
+    let literal = `[${elements.map((el) => el.print()).join(', ')}]`;
 
     // If strictLiteralTypes is disabled, array literals are cast to `any`.
     if (!this.config.strictLiteralTypes) {
-      content += ' as any';
+      literal = `(${literal} as any)`;
     }
 
-    return new TcbExpr(content).addParseSpanInfo(ast.sourceSpan);
+    return new TcbExpr(literal).addParseSpanInfo(ast.sourceSpan);
   }
 
   visitLiteralMap(ast: LiteralMap): TcbExpr {
@@ -173,10 +176,14 @@ class TcbExprTranslator implements AstVisitor {
       }
     });
 
-    // If strictLiteralTypes is disabled, object literals are cast to `any`.
-    return new TcbExpr(
-      `{ ${properties.join(', ')} }${this.config.strictLiteralTypes ? '' : ' as any'}`,
-    ).addParseSpanInfo(ast.sourceSpan);
+    let literal = `{ ${properties.join(', ')} }`;
+
+    // If strictLiteralTypes is disabled, array literals are cast to `any`.
+    if (!this.config.strictLiteralTypes) {
+      literal = `(${literal} as any)`;
+    }
+
+    return new TcbExpr(literal).addParseSpanInfo(ast.sourceSpan);
   }
 
   visitLiteralPrimitive(ast: LiteralPrimitive): TcbExpr {

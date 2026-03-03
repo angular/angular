@@ -355,7 +355,7 @@ export class Scope {
       // It is important that the parent guard is used as left operand, given that it may provide
       // narrowing that is required for this scope's guard to be valid.
       const guard = typeof this.guard === 'string' ? this.guard : this.guard.print();
-      return new TcbExpr(`${parentGuards.print()} && ${guard}`);
+      return new TcbExpr(`(${parentGuards.print()}) && (${guard})`);
     }
   }
 

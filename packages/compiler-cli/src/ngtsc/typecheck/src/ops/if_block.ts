@@ -129,7 +129,7 @@ export class TcbIfOp extends TcbOp {
       guard =
         guard === null
           ? comparisonExpression
-          : new TcbExpr(`${guard.print()} && ${comparisonExpression.print()}`);
+          : new TcbExpr(`(${guard.print()}) && (${comparisonExpression.print()})`);
     }
 
     return guard;
