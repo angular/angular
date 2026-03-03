@@ -14237,6 +14237,9 @@ function stripAnsi(string) {
   if (typeof string !== "string") {
     throw new TypeError(`Expected a \`string\`, got \`${typeof string}\``);
   }
+  if (!string.includes("\x1B") && !string.includes("\x9B")) {
+    return string;
+  }
   return string.replace(regex, "");
 }
 var ambiguousRanges = [161, 161, 164, 164, 167, 168, 170, 170, 173, 174, 176, 180, 182, 186, 188, 191, 198, 198, 208, 208, 215, 216, 222, 225, 230, 230, 232, 234, 236, 237, 240, 240, 242, 243, 247, 250, 252, 252, 254, 254, 257, 257, 273, 273, 275, 275, 283, 283, 294, 295, 299, 299, 305, 307, 312, 312, 319, 322, 324, 324, 328, 331, 333, 333, 338, 339, 358, 359, 363, 363, 462, 462, 464, 464, 466, 466, 468, 468, 470, 470, 472, 472, 474, 474, 476, 476, 593, 593, 609, 609, 708, 708, 711, 711, 713, 715, 717, 717, 720, 720, 728, 731, 733, 733, 735, 735, 768, 879, 913, 929, 931, 937, 945, 961, 963, 969, 1025, 1025, 1040, 1103, 1105, 1105, 8208, 8208, 8211, 8214, 8216, 8217, 8220, 8221, 8224, 8226, 8228, 8231, 8240, 8240, 8242, 8243, 8245, 8245, 8251, 8251, 8254, 8254, 8308, 8308, 8319, 8319, 8321, 8324, 8364, 8364, 8451, 8451, 8453, 8453, 8457, 8457, 8467, 8467, 8470, 8470, 8481, 8482, 8486, 8486, 8491, 8491, 8531, 8532, 8539, 8542, 8544, 8555, 8560, 8569, 8585, 8585, 8592, 8601, 8632, 8633, 8658, 8658, 8660, 8660, 8679, 8679, 8704, 8704, 8706, 8707, 8711, 8712, 8715, 8715, 8719, 8719, 8721, 8721, 8725, 8725, 8730, 8730, 8733, 8736, 8739, 8739, 8741, 8741, 8743, 8748, 8750, 8750, 8756, 8759, 8764, 8765, 8776, 8776, 8780, 8780, 8786, 8786, 8800, 8801, 8804, 8807, 8810, 8811, 8814, 8815, 8834, 8835, 8838, 8839, 8853, 8853, 8857, 8857, 8869, 8869, 8895, 8895, 8978, 8978, 9312, 9449, 9451, 9547, 9552, 9587, 9600, 9615, 9618, 9621, 9632, 9633, 9635, 9641, 9650, 9651, 9654, 9655, 9660, 9661, 9664, 9665, 9670, 9672, 9675, 9675, 9678, 9681, 9698, 9701, 9711, 9711, 9733, 9734, 9737, 9737, 9742, 9743, 9756, 9756, 9758, 9758, 9792, 9792, 9794, 9794, 9824, 9825, 9827, 9829, 9831, 9834, 9836, 9837, 9839, 9839, 9886, 9887, 9919, 9919, 9926, 9933, 9935, 9939, 9941, 9953, 9955, 9955, 9960, 9961, 9963, 9969, 9972, 9972, 9974, 9977, 9979, 9980, 9982, 9983, 10045, 10045, 10102, 10111, 11094, 11097, 12872, 12879, 57344, 63743, 65024, 65039, 65533, 65533, 127232, 127242, 127248, 127277, 127280, 127337, 127344, 127373, 127375, 127376, 127387, 127404, 917760, 917999, 983040, 1048573, 1048576, 1114109];
@@ -29145,9 +29148,13 @@ function withDefaults4(oldDefaults, newDefaults) {
 }
 var endpoint2 = withDefaults4(null, DEFAULTS2);
 var import_fast_content_type_parse2 = __toESM2(require_fast_content_type_parse2());
+var intRegex2 = /^-?\d+$/;
 var noiseValue2 = /^-?\d+n+$/;
 var originalStringify2 = JSON.stringify;
 var originalParse2 = JSON.parse;
+var customFormat2 = /^-?\d+n$/;
+var bigIntsStringify2 = /([\[:])?"(-?\d+)n"($|([\\n]|\s)*(\s|[\\n])*[,\}\]])/g;
+var noiseStringify2 = /([\[:])?("-?\d+n+)n("$|"([\\n]|\s)*(\s|[\\n])*[,\}\]])/g;
 var JSONStringify2 = (value, replacer, space) => {
   if ("rawJSON" in JSON) {
     return originalStringify2(
@@ -29166,8 +29173,6 @@ var JSONStringify2 = (value, replacer, space) => {
   }
   if (!value)
     return originalStringify2(value, replacer, space);
-  const bigInts = /([\[:])?"(-?\d+)n"($|([\\n]|\s)*(\s|[\\n])*[,\}\]])/g;
-  const noise = /([\[:])?("-?\d+n+)n("$|"([\\n]|\s)*(\s|[\\n])*[,\}\]])/g;
   const convertedToCustomJSON = originalStringify2(
     value,
     (key, value2) => {
@@ -29184,16 +29189,29 @@ var JSONStringify2 = (value, replacer, space) => {
     },
     space
   );
-  const processedJSON = convertedToCustomJSON.replace(bigInts, "$1$2$3");
-  const denoisedJSON = processedJSON.replace(noise, "$1$2$3");
+  const processedJSON = convertedToCustomJSON.replace(
+    bigIntsStringify2,
+    "$1$2$3"
+  );
+  const denoisedJSON = processedJSON.replace(noiseStringify2, "$1$2$3");
   return denoisedJSON;
 };
 var isContextSourceSupported2 = () => JSON.parse("1", (_, __, context3) => !!context3 && context3.source === "1");
+var convertMarkedBigIntsReviver2 = (key, value, context3, userReviver) => {
+  const isCustomFormatBigInt = typeof value === "string" && value.match(customFormat2);
+  if (isCustomFormatBigInt)
+    return BigInt(value.slice(0, -1));
+  const isNoiseValue = typeof value === "string" && value.match(noiseValue2);
+  if (isNoiseValue)
+    return value.slice(0, -1);
+  if (typeof userReviver !== "function")
+    return value;
+  return userReviver(key, value, context3);
+};
 var JSONParseV22 = (text, reviver) => {
-  const intRegex2 = /^-?\d+$/;
   return JSON.parse(text, (key, value, context3) => {
     const isBigNumber = typeof value === "number" && (value > Number.MAX_SAFE_INTEGER || value < Number.MIN_SAFE_INTEGER);
-    const isInt = intRegex2.test(context3.source);
+    const isInt = context3 && intRegex2.test(context3.source);
     const isBigInt = isBigNumber && isInt;
     if (isBigInt)
       return BigInt(context3.source);
@@ -29202,16 +29220,15 @@ var JSONParseV22 = (text, reviver) => {
     return reviver(key, value, context3);
   });
 };
+var MAX_INT2 = Number.MAX_SAFE_INTEGER.toString();
+var MAX_DIGITS2 = MAX_INT2.length;
+var stringsOrLargeNumbers2 = /"(?:\\.|[^"])*"|-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?/g;
+var noiseValueWithQuotes2 = /^"-?\d+n+"$/;
 var JSONParse2 = (text, reviver) => {
   if (!text)
     return originalParse2(text, reviver);
   if (isContextSourceSupported2())
     return JSONParseV22(text, reviver);
-  const MAX_INT2 = Number.MAX_SAFE_INTEGER.toString();
-  const MAX_DIGITS2 = MAX_INT2.length;
-  const stringsOrLargeNumbers2 = /"(?:\\.|[^"])*"|-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?/g;
-  const noiseValueWithQuotes2 = /^"-?\d+n+"$/;
-  const customFormat2 = /^-?\d+n$/;
   const serializedData = text.replace(
     stringsOrLargeNumbers2,
     (text2, digits, fractional, exponential) => {
@@ -29226,17 +29243,10 @@ var JSONParse2 = (text, reviver) => {
       return '"' + text2 + 'n"';
     }
   );
-  return originalParse2(serializedData, (key, value, context3) => {
-    const isCustomFormatBigInt = typeof value === "string" && Boolean(value.match(customFormat2));
-    if (isCustomFormatBigInt)
-      return BigInt(value.substring(0, value.length - 1));
-    const isNoiseValue = typeof value === "string" && Boolean(value.match(noiseValue2));
-    if (isNoiseValue)
-      return value.substring(0, value.length - 1);
-    if (typeof reviver !== "function")
-      return value;
-    return reviver(key, value, context3);
-  });
+  return originalParse2(
+    serializedData,
+    (key, value, context3) => convertMarkedBigIntsReviver2(key, value, context3, reviver)
+  );
 };
 var RequestError2 = class extends Error {
   name;
@@ -33506,7 +33516,7 @@ tmp/lib/tmp.js:
   (* v8 ignore next -- @preserve *)
   (* v8 ignore else -- @preserve *)
 
-@angular/ng-dev/bundles/chunk-WPUQDYAV.mjs:
+@angular/ng-dev/bundles/chunk-F5VM5PF4.mjs:
   (*! Bundled license information:
   
   yargs-parser/build/lib/string-utils.js:
@@ -33547,7 +33557,7 @@ tmp/lib/tmp.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-B3FTBJHO.mjs:
+@angular/ng-dev/bundles/chunk-Q2ALSLOT.mjs:
   (*! Bundled license information:
   
   @octokit/request-error/dist-src/index.js:
