@@ -3031,6 +3031,32 @@ describe('field directive', () => {
       expect(fixture.componentInstance).toBeDefined();
     });
 
+    it('should accept InputSignalWithTransform for boolean properties with stricter pre-transform types', () => {
+      @Component({selector: 'custom-control', template: ``})
+      class CustomControl implements FormValueControl<string> {
+        readonly value = model('');
+        readonly disabled = input<boolean, boolean | string>(false, {transform: booleanAttribute});
+        readonly readonly = input<boolean, boolean | string>(false, {transform: booleanAttribute});
+        readonly required = input<boolean, boolean | string>(false, {transform: booleanAttribute});
+        readonly hidden = input<boolean, boolean | string>(false, {transform: booleanAttribute});
+        readonly invalid = input<boolean, boolean | string>(false, {transform: booleanAttribute});
+        readonly pending = input<boolean, boolean | string>(false, {transform: booleanAttribute});
+        readonly dirty = input<boolean, boolean | string>(false, {transform: booleanAttribute});
+        readonly touched = input<boolean, boolean | string>(false, {transform: booleanAttribute});
+      }
+
+      @Component({
+        imports: [FormField, CustomControl],
+        template: `<custom-control [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      expect(fixture.componentInstance).toBeDefined();
+    });
+
     it('should accept InputSignalWithTransform for number properties', () => {
       @Component({selector: 'custom-control', template: ``})
       class CustomControl implements FormValueControl<number> {
@@ -3041,6 +3067,36 @@ describe('field directive', () => {
           transform: numberAttribute,
         });
         readonly maxLength = input<number | undefined, unknown>(undefined, {
+          transform: numberAttribute,
+        });
+      }
+
+      @Component({
+        imports: [FormField, CustomControl],
+        template: `<custom-control [formField]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(0));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      expect(fixture.componentInstance).toBeDefined();
+    });
+
+    it('should accept InputSignalWithTransform for number properties with stricter pre-transform types', () => {
+      @Component({selector: 'custom-control', template: ``})
+      class CustomControl implements FormValueControl<number> {
+        readonly value = model(0);
+        readonly min = input<number | undefined, number | string | undefined>(undefined, {
+          transform: numberAttribute,
+        });
+        readonly max = input<number | undefined, number | string | undefined>(undefined, {
+          transform: numberAttribute,
+        });
+        readonly minLength = input<number | undefined, number | string | undefined>(undefined, {
+          transform: numberAttribute,
+        });
+        readonly maxLength = input<number | undefined, number | string | undefined>(undefined, {
           transform: numberAttribute,
         });
       }

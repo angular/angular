@@ -58,6 +58,7 @@ import {
   VariableSymbol,
 } from '../api';
 
+import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_driver';
 import {
   ExpressionIdentifier,
   findAllMatchingNodes,
@@ -66,7 +67,6 @@ import {
 } from './comments';
 import {TypeCheckData} from './context';
 import {isAccessExpression, isDirectiveDeclaration} from './ts_util';
-import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_driver';
 
 /**
  * Generates and caches `Symbol`s for various template structures for a given component.
@@ -502,63 +502,63 @@ export class SymbolBuilder {
 
     const nodes = findAllMatchingNodes(this.typeCheckBlock, {
       withSpan: binding.sourceSpan,
-      filter: isAssignment,
+      // Input are regular assignments in the TCB.
+      // Signal inputs are variable declarations with a typed LHS.
+      filter: (n): n is ts.BinaryExpression | ts.VariableDeclaration =>
+        isAssignment(n) || ts.isVariableDeclaration(n),
     });
+
     const bindings: BindingSymbol[] = [];
     for (const node of nodes) {
-      if (!isAccessExpression(node.left)) {
-        continue;
-      }
+      // Signal inputs need special treatment because they are generated as a typed variable declaration
+      // E.g. `const _t2: i2.ɵInputSignalWriteType<(typeof _t1)["prop"]> = bindedValue`.
+      // Observations:
+      //   - The write type needs to be resolved for the "input type".
+      //   - The definition symbol of the input should `.
 
-      const signalInputAssignment = unwrapSignalInputWriteTAccessor(node.left);
-      let fieldAccessExpr: ts.PropertyAccessExpression | ts.ElementAccessExpression;
-      let symbolInfo: TsNodeSymbolInfo | null = null;
+      if (ts.isVariableDeclaration(node)) {
+        // signal Input
+        const signalInputDecl = unwrapSignalInputVariableDeclaration(node);
+        const {receiver, fieldName, checkNode} = signalInputDecl;
+        const target = this.getDirectiveSymbolForInstance(receiver, consumer)!;
 
-      // Signal inputs need special treatment because they are generated with an extra keyed
-      // access. E.g. `_t1.prop[WriteT_ACCESSOR_SYMBOL]`. Observations:
-      //   - The keyed access for the write type needs to be resolved for the "input type".
-      //   - The definition symbol of the input should be the input class member, and not the
-      //     internal write accessor. Symbol should resolve `_t1.prop`.
-      if (signalInputAssignment !== null) {
-        // Note: If the field expression for the input binding refers to just an identifier,
-        // then we are handling the case of a temporary variable being used for the input field.
-        // This is the case with `honorAccessModifiersForInputBindings = false` and in those cases
-        // we cannot resolve the owning directive, similar to how we guard above with `isAccessExpression`.
-        if (ts.isIdentifier(signalInputAssignment.fieldExpr)) {
+        const receiverType = this.getTypeChecker().getTypeAtLocation(receiver);
+        const inputSymbol = receiverType.getProperty(fieldName)!;
+
+        const tsType = this.getTypeChecker().getTypeOfSymbolAtLocation(inputSymbol, receiver);
+        const tcbLocation: TcbLocation = {
+          tcbPath: this.tcbPath,
+          isShimFile: this.tcbIsShim,
+          positionInFile: this.getTcbPositionForNode(checkNode),
+        };
+
+        bindings.push({
+          kind: SymbolKind.Binding,
+          tsSymbol: inputSymbol,
+          tsType,
+          target,
+          tcbLocation,
+        });
+      } else if (isAssignment(node) && isAccessExpression(node.left)) {
+        // Regular input binding
+        const fieldAccessExpr = node.left;
+        const symbolInfo = this.getSymbolOfTsNode(node.left);
+
+        if (symbolInfo === null || symbolInfo.tsSymbol === null) {
           continue;
         }
 
-        const fieldSymbol = this.getSymbolOfTsNode(signalInputAssignment.fieldExpr);
-        const typeSymbol = this.getSymbolOfTsNode(signalInputAssignment.typeExpr);
-
-        fieldAccessExpr = signalInputAssignment.fieldExpr;
-        symbolInfo =
-          fieldSymbol === null || typeSymbol === null
-            ? null
-            : {
-                tcbLocation: fieldSymbol.tcbLocation,
-                tsSymbol: fieldSymbol.tsSymbol,
-                tsType: typeSymbol.tsType,
-              };
-      } else {
-        fieldAccessExpr = node.left;
-        symbolInfo = this.getSymbolOfTsNode(node.left);
+        const target = this.getDirectiveSymbolForAccessExpression(fieldAccessExpr, consumer);
+        if (target === null) {
+          continue;
+        }
+        bindings.push({
+          ...symbolInfo,
+          tsSymbol: symbolInfo.tsSymbol,
+          kind: SymbolKind.Binding,
+          target,
+        });
       }
-
-      if (symbolInfo === null || symbolInfo.tsSymbol === null) {
-        continue;
-      }
-
-      const target = this.getDirectiveSymbolForAccessExpression(fieldAccessExpr, consumer);
-      if (target === null) {
-        continue;
-      }
-      bindings.push({
-        ...symbolInfo,
-        tsSymbol: symbolInfo.tsSymbol,
-        kind: SymbolKind.Binding,
-        target,
-      });
     }
     if (bindings.length === 0) {
       return null;
@@ -569,10 +569,16 @@ export class SymbolBuilder {
 
   private getDirectiveSymbolForAccessExpression(
     fieldAccessExpr: ts.ElementAccessExpression | ts.PropertyAccessExpression,
+    meta: TypeCheckableDirectiveMeta,
+  ): DirectiveSymbol | null {
+    return this.getDirectiveSymbolForInstance(fieldAccessExpr.expression, meta);
+  }
+
+  private getDirectiveSymbolForInstance(
+    instanceNode: ts.Node,
     {isComponent, selector, isStructural}: TypeCheckableDirectiveMeta,
   ): DirectiveSymbol | null {
-    // In all cases, `_t1["index"]` or `_t1.index`, `node.expression` is _t1.
-    const tsSymbol = this.getTypeChecker().getSymbolAtLocation(fieldAccessExpr.expression);
+    const tsSymbol = this.getTypeChecker().getSymbolAtLocation(instanceNode);
     if (tsSymbol?.declarations === undefined || tsSymbol.declarations.length === 0) {
       return null;
     }
@@ -909,48 +915,6 @@ function sourceSpanEqual(a: ParseSourceSpan, b: ParseSourceSpan) {
   return a.start.offset === b.start.offset && a.end.offset === b.end.offset;
 }
 
-function unwrapSignalInputWriteTAccessor(expr: ts.LeftHandSideExpression): null | {
-  fieldExpr: ts.ElementAccessExpression | ts.PropertyAccessExpression | ts.Identifier;
-  typeExpr: ts.ElementAccessExpression;
-} {
-  // e.g. `_t2.inputA[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]`
-  // 1. Assert that we are dealing with an element access expression.
-  // 2. Assert that we are dealing with a signal brand symbol access in the argument expression.
-  if (
-    !ts.isElementAccessExpression(expr) ||
-    !ts.isPropertyAccessExpression(expr.argumentExpression)
-  ) {
-    return null;
-  }
-
-  // Assert that the property access in the element access is a simple identifier and
-  // refers to `ɵINPUT_SIGNAL_BRAND_WRITE_TYPE`.
-  if (
-    !ts.isIdentifier(expr.argumentExpression.name) ||
-    expr.argumentExpression.name.text !== R3Identifiers.InputSignalBrandWriteType.name
-  ) {
-    return null;
-  }
-
-  // Assert that the expression is either:
-  //   - `_t2.inputA[ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]` or (common case)
-  //   - or `_t2['input-A'][ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]` (non-identifier input field names)
-  //   - or `_dirInput[ɵINPUT_SIGNAL_BRAND_WRITE_TYPE` (honorAccessModifiersForInputBindings=false)
-  // This is checked for type safety and to catch unexpected cases.
-  if (
-    !ts.isPropertyAccessExpression(expr.expression) &&
-    !ts.isElementAccessExpression(expr.expression) &&
-    !ts.isIdentifier(expr.expression)
-  ) {
-    throw new Error('Unexpected expression for signal input write type.');
-  }
-
-  return {
-    fieldExpr: expr.expression,
-    typeExpr: expr,
-  };
-}
-
 /**
  * Looks for a class declaration in the original source file that matches a given directive
  * from the type check source file.
@@ -993,4 +957,80 @@ function collectClassesWithName(
   sourceFile.forEachChild(visit);
 
   return classes;
+}
+
+/**
+ * Extracts the receiver, field name, and type check nodes from a signal input variable declaration.
+ * Expected structure is:
+ * `const t2 = Parameters<(typeof _t4)["inputA"][typeof i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]>[0] = ...;`
+ *
+ *
+ */
+function unwrapSignalInputVariableDeclaration(node: ts.VariableDeclaration): {
+  receiver: ts.EntityName;
+  checkTypeNode: ts.TypeNode;
+  fieldName: string;
+  checkNode: ts.Node;
+} {
+  if (!node.type || !ts.isTypeReferenceNode(node.type)) {
+    throw new Error(
+      'Unexpected structure for signal input variable declaration: Missing type reference.',
+    );
+  }
+
+  const typeName = node.type.typeName;
+  let matches = false;
+  if (ts.isIdentifier(typeName)) {
+    matches = typeName.text === R3Identifiers.InputSignalWriteType.name;
+  } else if (ts.isQualifiedName(typeName)) {
+    matches = typeName.right.text === R3Identifiers.InputSignalWriteType.name;
+  }
+
+  if (!matches) {
+    throw new Error('Unexpected structure for signal input variable declaration: Name mismatch.');
+  }
+
+  const typeArgs = node.type.typeArguments;
+  if (!typeArgs || typeArgs.length !== 1) {
+    throw new Error(
+      'Unexpected structure for signal input variable declaration: Missing type arg.',
+    );
+  }
+
+  const inputAccess = typeArgs[0];
+  // inputAccess: (typeof _t4)["inputA"] -> IndexedAccessTypeNode
+
+  if (!ts.isIndexedAccessTypeNode(inputAccess)) {
+    throw new Error(
+      'Unexpected structure for signal input variable declaration: Missing indexed access for input type.',
+    );
+  }
+
+  const fieldNameType = inputAccess.indexType;
+  if (!ts.isLiteralTypeNode(fieldNameType) || !ts.isStringLiteral(fieldNameType.literal)) {
+    throw new Error(
+      'Unexpected structure for signal input variable declaration: Unexpected field name type.',
+    );
+  }
+  const fieldName = fieldNameType.literal.text;
+
+  let receiverType = inputAccess.objectType;
+  // receiverType could be ParenthesizedTypeNode wrapping TypeQueryNode (typeof ...)
+  // Code generation does not add parenthesis around the type query, check for both.
+  if (ts.isParenthesizedTypeNode(receiverType)) {
+    receiverType = receiverType.type;
+  }
+
+  if (!ts.isTypeQueryNode(receiverType)) {
+    throw new Error(
+      'Unexpected structure for signal input variable declaration: Missing receiver type query.',
+    );
+  }
+
+  return {
+    receiver: receiverType.exprName,
+    checkTypeNode: node.type,
+    fieldName: fieldName,
+    checkNode: fieldNameType.literal,
+  };
 }

@@ -242,24 +242,24 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
 
 // @public
 export interface FormUiControl {
-    readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly disabledReasons?: InputSignal<readonly WithOptionalFieldTree<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalFieldTree<DisabledReason>[], unknown>;
-    readonly errors?: InputSignal<readonly ValidationError.WithOptionalFieldTree[]> | InputSignalWithTransform<readonly ValidationError.WithOptionalFieldTree[], unknown>;
+    readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<unknown, boolean>;
+    readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<unknown, boolean>;
+    readonly disabledReasons?: InputSignal<readonly WithOptionalFieldTree<DisabledReason>[]> | InputSignalWithTransform<unknown, readonly WithOptionalFieldTree<DisabledReason>[]>;
+    readonly errors?: InputSignal<readonly ValidationError.WithOptionalFieldTree[]> | InputSignalWithTransform<unknown, readonly ValidationError.WithOptionalFieldTree[]>;
     focus?(options?: FocusOptions): void;
-    readonly hidden?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly invalid?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly max?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly maxLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly min?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly minLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
-    readonly name?: InputSignal<string> | InputSignalWithTransform<string, unknown>;
-    readonly pattern?: InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], unknown>;
-    readonly pending?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly readonly?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
-    readonly required?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    readonly hidden?: InputSignal<boolean> | InputSignalWithTransform<unknown, boolean>;
+    readonly invalid?: InputSignal<boolean> | InputSignalWithTransform<unknown, boolean>;
+    readonly max?: InputSignal<number | undefined> | InputSignalWithTransform<unknown, number | undefined>;
+    readonly maxLength?: InputSignal<number | undefined> | InputSignalWithTransform<unknown, number | undefined>;
+    readonly min?: InputSignal<number | undefined> | InputSignalWithTransform<unknown, number | undefined>;
+    readonly minLength?: InputSignal<number | undefined> | InputSignalWithTransform<unknown, number | undefined>;
+    readonly name?: InputSignal<string> | InputSignalWithTransform<unknown, string>;
+    readonly pattern?: InputSignal<readonly RegExp[]> | InputSignalWithTransform<unknown, readonly RegExp[]>;
+    readonly pending?: InputSignal<boolean> | InputSignalWithTransform<unknown, boolean>;
+    readonly readonly?: InputSignal<boolean> | InputSignalWithTransform<unknown, boolean>;
+    readonly required?: InputSignal<boolean> | InputSignalWithTransform<unknown, boolean>;
     readonly touch?: OutputRef<void>;
-    readonly touched?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    readonly touched?: InputSignal<boolean> | InputSignalWithTransform<unknown, boolean>;
 }
 
 // @public
