@@ -30,4 +30,14 @@ export const FOO_TEMPLATE = join(PROJECT_PATH, 'app', 'foo.component.html');
 export const FOO_TEMPLATE_URI = pathToFileURL(FOO_TEMPLATE).href;
 export const FOO_COMPONENT = join(PROJECT_PATH, 'app', 'foo.component.ts');
 export const FOO_COMPONENT_URI = pathToFileURL(FOO_COMPONENT).href;
+export const DIAGNOSTICS_TEST_COMPONENT = join(
+  PROJECT_PATH,
+  'app',
+  'diagnostics-test.component.ts',
+);
+export const DIAGNOSTICS_TEST_TEMPLATE = join(
+  PROJECT_PATH,
+  'app',
+  'diagnostics-test.component.html',
+);
 export const TSCONFIG = join(PROJECT_PATH, 'tsconfig.json');

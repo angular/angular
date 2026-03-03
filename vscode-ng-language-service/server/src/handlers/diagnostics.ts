@@ -281,6 +281,16 @@ export async function onWorkspaceDiagnostic(
     return {items};
   }
 
+  // Evict stale cache entries for files no longer in any project.
+  // This prevents memory leaks from renamed/deleted/excluded files
+  // whose cache entries would otherwise persist indefinitely.
+  const activeUris = new Set(projectFiles.map(filePathToUri));
+  for (const cachedUri of diagnosticResultCache.keys()) {
+    if (!activeUris.has(cachedUri)) {
+      diagnosticResultCache.delete(cachedUri);
+    }
+  }
+
   return {items};
 }
 

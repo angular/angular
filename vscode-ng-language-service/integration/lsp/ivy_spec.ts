@@ -1606,6 +1606,118 @@ export class BComponent {
     const fullReport = fooTemplateDiag as lsp.WorkspaceFullDocumentDiagnosticReport;
     expect(fullReport.items.length).toBe(1);
   });
+
+  it('should evict cache entries for files removed from project via deletion', async () => {
+    const tmpDir = makeTempDir();
+    const newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+    const fooTemplatePathTmp = join(newProjectRoot, 'app/foo.component.html');
+    const fooTemplateUriTmp = pathToFileURL(fooTemplatePathTmp).href;
+
+    await cp(PROJECT_PATH, newProjectRoot, {
+      recursive: true,
+      mode: fs.constants.COPYFILE_FICLONE,
+    });
+
+    // Open the file so it gets cached
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: fooTemplateUriTmp,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    await waitForDiagnosticRefresh();
+
+    // Get initial diagnostics to populate the cache
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: fooTemplateUriTmp},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Delete the file and notify via DidChangeWatchedFiles
+    fs.unlinkSync(fooTemplatePathTmp);
+    client.sendNotification(lsp.DidChangeWatchedFilesNotification.type, {
+      changes: [
+        {
+          uri: fooTemplateUriTmp,
+          type: lsp.FileChangeType.Deleted,
+        },
+      ],
+    });
+
+    await waitForDiagnosticRefresh();
+
+    // Request workspace diagnostics with the previous resultId.
+    // The deleted file should NOT appear as Unchanged (stale cache hit).
+    const workspaceResponse = await client.sendRequest(lsp.WorkspaceDiagnosticRequest.type, {
+      previousResultIds: [{uri: fooTemplateUriTmp, value: previousResultId!}],
+    });
+
+    const deletedEntry = workspaceResponse.items.find(
+      (item) => item.uri === fooTemplateUriTmp,
+    );
+    // Either the entry should be absent (file not in project anymore)
+    // or it should be Full (cache was evicted, not an Unchanged stale hit)
+    if (deletedEntry) {
+      expect(deletedEntry.kind).not.toBe(lsp.DocumentDiagnosticReportKind.Unchanged);
+    }
+  });
+
+  it('should not return stale diagnostics for a deleted file via textDocument/diagnostic', async () => {
+    const tmpDir = makeTempDir();
+    const newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+    const fooTemplatePathTmp = join(newProjectRoot, 'app/foo.component.html');
+    const fooTemplateUriTmp = pathToFileURL(fooTemplatePathTmp).href;
+
+    await cp(PROJECT_PATH, newProjectRoot, {
+      recursive: true,
+      mode: fs.constants.COPYFILE_FICLONE,
+    });
+
+    // Open and cache
+    client.sendNotification(lsp.DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: fooTemplateUriTmp,
+        languageId: 'html',
+        version: 1,
+        text: `{{ doesnotexist }}`,
+      },
+    });
+
+    await waitForDiagnosticRefresh();
+
+    const firstResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: fooTemplateUriTmp},
+    });
+    expect(firstResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+    const previousResultId = (firstResponse as lsp.FullDocumentDiagnosticReport).resultId;
+
+    // Delete file and notify
+    fs.unlinkSync(fooTemplatePathTmp);
+    client.sendNotification(lsp.DidChangeWatchedFilesNotification.type, {
+      changes: [
+        {
+          uri: fooTemplateUriTmp,
+          type: lsp.FileChangeType.Deleted,
+        },
+      ],
+    });
+
+    await waitForDiagnosticRefresh();
+
+    // Request document diagnostics with the old resultId.
+    // Should NOT return Unchanged (that would mean stale cache).
+    const secondResponse = await client.sendRequest(lsp.DocumentDiagnosticRequest.type, {
+      textDocument: {uri: fooTemplateUriTmp},
+      previousResultId,
+    });
+
+    // Should be Full (cache was cleared by clearDiagnosticCache on deletion)
+    expect(secondResponse.kind).toBe(lsp.DocumentDiagnosticReportKind.Full);
+  });
 });
 
 function onSuggestStrictMode(client: MessageConnection): Promise<string> {
