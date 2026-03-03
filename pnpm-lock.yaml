@@ -703,8 +703,8 @@ importers:
         specifier: 10.28.3
         version: 10.28.3
       preact-render-to-string:
-        specifier: 6.6.5
-        version: 6.6.5(preact@10.28.3)
+        specifier: 6.6.6
+        version: 6.6.6(preact@10.28.3)
       prettier:
         specifier: 3.8.1
         version: 3.8.1
@@ -10883,8 +10883,8 @@ packages:
     resolution: {integrity: sha512-dM0jVuXJPsDN6DvRpea484tCUaMiXWjuCn++HGTqUWzGDjv5tZkEZldAJ/UMlqRYGFrD/etByo4/xOuC/snX2A==}
     engines: {node: '>=20'}
 
-  preact-render-to-string@6.6.5:
-    resolution: {integrity: sha512-O6MHzYNIKYaiSX3bOw0gGZfEbOmlIDtDfWwN1JJdc/T3ihzRT6tGGSEWE088dWrEDGa1u7101q+6fzQnO9XCPA==}
+  preact-render-to-string@6.6.6:
+    resolution: {integrity: sha512-EfqZJytnjJldV+YaaqhthU2oXsEf5e+6rDv957p+zxAvNfFLQOPfvBOTncscQ+akzu6Wrl7s3Pa0LjUQmWJsGQ==}
     peerDependencies:
       preact: '>=10 || >= 11.0.0-0'
 
@@ -25364,7 +25364,7 @@ snapshots:
 
   powershell-utils@0.1.0: {}
 
-  preact-render-to-string@6.6.5(preact@10.28.3):
+  preact-render-to-string@6.6.6(preact@10.28.3):
     dependencies:
       preact: 10.28.3
 
