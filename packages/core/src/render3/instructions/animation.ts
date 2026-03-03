@@ -35,6 +35,7 @@ import {
   clearLViewNodeAnimationResolvers,
   enterClassMap,
   getClassListFromValue,
+  getEventTarget,
   getLViewEnterAnimations,
   getLViewLeaveAnimations,
   isLongestAnimation,
@@ -114,7 +115,7 @@ export function runEnterAnimation(
   // gets removed early.
   const handleEnterAnimationStart = (event: AnimationEvent | TransitionEvent) => {
     // this early exit case is to prevent issues with bubbling events that are from child element animations
-    if (event.target !== nativeElement) return;
+    if (getEventTarget(event) !== nativeElement) return;
 
     const eventName = event instanceof AnimationEvent ? 'animationend' : 'transitionend';
     ngZone.runOutsideAngular(() => {
@@ -125,7 +126,7 @@ export function runEnterAnimation(
   // When the longest animation ends, we can remove all the classes
   const handleEnterAnimationEnd = (event: AnimationEvent | TransitionEvent) => {
     // this early exit case is to prevent issues with bubbling events that are from child element animations
-    if (event.target !== nativeElement) return;
+    if (getEventTarget(event) !== nativeElement) return;
 
     if (isLongestAnimation(event, nativeElement)) {
       hasCompleted = true;
@@ -171,7 +172,7 @@ function enterAnimationEnd(
 ) {
   const elementData = enterClassMap.get(nativeElement);
   // this event.target check is to prevent issues with bubbling events that are from child element animations
-  if (event.target !== nativeElement || !elementData) return;
+  if (getEventTarget(event) !== nativeElement || !elementData) return;
   if (isLongestAnimation(event, nativeElement)) {
     // Now that we've found the longest animation, there's no need
     // to keep bubbling up this event as it's not going to apply to
@@ -327,8 +328,9 @@ function animateLeaveClassRunner(
   let hasCompleted = false;
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent | CustomEvent) => {
+    const target = getEventTarget(event as Event);
     // Custom fallback events don't have a target, so we bypass this check for them.
-    if (event.target !== el && event.type !== 'animation-fallback') return;
+    if (target !== el && event.type !== 'animation-fallback') return;
 
     if (
       event.type === 'animation-fallback' ||
