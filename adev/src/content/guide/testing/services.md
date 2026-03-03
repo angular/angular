@@ -1,117 +1,172 @@
 # Testing services
 
-To check that your services are working as you intend, you can write tests specifically for them.
+Services typically contain your application's business logic that components rely on. Testing services verifies that the logic works correctly in isolation, independent of any component or template.
 
-Services are often the smoothest files to unit test.
-Here are some synchronous and asynchronous unit tests of the `ValueService` written without assistance from Angular testing utilities.
+This guide uses [Vitest](https://vitest.dev/), which Angular CLI projects include by default. For more on testing setup, see the [testing overview guide](guide/testing#set-up-for-testing).
 
-```ts
-describe('ValueService', () => {
-  let service: ValueService;
+## Testing a service
+
+Consider a `Calculator` service that performs basic arithmetic:
+
+```ts { header: 'calculator.ts' }
+import {Injectable} from '@angular/core';
+
+@Injectable({providedIn: 'root'})
+export class Calculator {
+  add(a: number, b: number): number {
+    return a + b;
+  }
+
+  subtract(a: number, b: number): number {
+    return a - b;
+  }
+}
+```
+
+To test this service, configure a `TestBed`, which is Angular's testing utility for creating an isolated testing environment for each test. It sets up dependency injection and lets you retrieve service instances — simulating how Angular wires things together in a real application.
+
+```ts { header: 'calculator.spec.ts' }
+import {TestBed} from '@angular/core/testing';
+import {beforeEach, describe, expect, it} from 'vitest';
+import {Calculator} from './calculator';
+
+describe('Calculator', () => {
+  let service: Calculator;
 
   beforeEach(() => {
-    // Only works if the service doesn't rely on Angular inject()
-    service = new ValueService();
+    // Injects the Calculator service which is available to Angular
+    // because the service uses `providedIn: 'root'`
+    service = TestBed.inject(Calculator);
   });
 
-  it('getValue should return real value', () => {
-    expect(service.getValue()).toBe('real value');
+  it('adds two numbers', () => {
+    expect(service.add(1, 2)).toBe(3);
   });
 
-  it('getObservableValue should return value from observable', async () => {
-    const value = await new Promise<string>((resolve) => {
-      service.getObservableValue().subscribe(resolve);
+  it('subtracts two numbers', () => {
+    expect(service.subtract(5, 3)).toBe(2);
+  });
+});
+```
+
+In the example above, the `beforeEach` block injects a fresh instance of the service before every test. This ensures each test runs in isolation with no leaked state from previous tests.
+
+## Testing services with dependencies
+
+Most services depend on other services to run properly. By default, `TestBed` provides the real implementations of these dependencies, which means your tests exercise the actual code paths your application uses. Sometimes, however, a dependency may be complex, slow, or unpredictable. In those cases, you can substitute it with a controlled replacement.
+
+Consider an `OrderTotal` service that relies on a `TaxCalculator` to compute the final price of an order:
+
+```ts { header: 'tax-calculator.ts' }
+import {Injectable} from '@angular/core';
+
+@Injectable({providedIn: 'root'})
+export class TaxCalculator {
+  calculate(subtotal: number): number {
+    return subtotal * 0.05;
+  }
+}
+```
+
+```ts { header: 'order-total.ts' }
+import {inject, Injectable} from '@angular/core';
+import {TaxCalculator} from './tax-calculator';
+
+@Injectable({providedIn: 'root'})
+export class OrderTotal {
+  private taxCalculator = inject(TaxCalculator);
+
+  total(subtotal: number): number {
+    return subtotal + this.taxCalculator.calculate(subtotal);
+  }
+}
+```
+
+In this example, `OrderTotal` uses `inject()` to request `TaxCalculator` from Angular's dependency injection system. By default, `TestBed` provides the real `TaxCalculator` which is perfect for simple calculations like this. However, if `TaxCalculator` involved complex logic, network requests, or unpredictable results, you might want to substitute it with a controlled replacement.
+
+### Replacing a dependency with a stub
+
+A stub is a way to replace a dependency or method with one that returns predictable values, which can make test results easier to verify.
+
+To test `OrderTotal` without relying on the real `TaxCalculator`, you can provide a stub in the `TestBed` configuration.
+
+```ts { header: 'order-total.spec.ts' }
+import {TestBed} from '@angular/core/testing';
+import {beforeEach, describe, expect, it, vi, type Mocked} from 'vitest';
+import {OrderTotal} from './order-total';
+import {TaxCalculator} from './tax-calculator';
+
+// Vitest's `Mocked` utility type ensures the stub is type-safe,
+// while `vi.fn()` creates a mock function for each method
+const taxCalculatorStub: Mocked<TaxCalculator> = {
+  calculate: vi.fn(),
+};
+
+describe('OrderTotal', () => {
+  let service: OrderTotal;
+
+  beforeEach(() => {
+    // `mockReturnValue` sets a controlled return value for the stub
+    taxCalculatorStub.calculate.mockReturnValue(5);
+
+    TestBed.configureTestingModule({
+      // The `providers` array accepts a provider object where `provide`
+      // specifies the dependency to replace and `useValue` defines the stub
+      providers: [{provide: TaxCalculator, useValue: taxCalculatorStub}],
     });
-
-    expect(value).toBe('observable value');
+    service = TestBed.inject(OrderTotal);
   });
 
-  it('getPromiseValue should return value from a promise', async () => {
-    const value = await service.getPromiseValue();
-    expect(value).toBe('promise value');
+  it('adds tax to the subtotal', () => {
+    expect(service.total(100)).toBe(105);
   });
 });
 ```
 
-## Testing services with the `TestBed`
+With this stub, whenever `OrderTotal` requests `TaxCalculator`, the `TestBed` knows to use the `taxCalculatorStub` instead. Because the stub always returns 5, the test verifies that `OrderTotal` correctly adds the tax value to the subtotal regardless of whether the tax rate changes in `TaxCalculator`.
 
-Your application relies on Angular [dependency injection (DI)](guide/di) to create services.
-When a service has a dependent service, DI finds or creates that dependent service.
-And if that dependent service has its own dependencies, DI finds-or-creates them as well.
+### Verifying interactions with spies
 
-As a service _consumer_, you don't worry about any of this.
-You don't worry about the order of constructor arguments or how they're created.
+A stub controls what a dependency returns, but sometimes you also need to verify that a service called its dependency with the correct arguments. This can be accomplished with spies, which track how a function is called. With Vitest, this functionality is built into `vi.fn()` and lets you assert on interactions between services.
 
-As a service _tester_, you must at least think about the first level of service dependencies but you _can_ let Angular DI do the service creation and deal with constructor argument order when you use the `TestBed` testing utility to provide and create services.
+```ts { header: 'order-total.spec.ts' }
+import {TestBed} from '@angular/core/testing';
+import {beforeEach, describe, expect, it, vi, type Mocked} from 'vitest';
+import {OrderTotal} from './order-total';
+import {TaxCalculator} from './tax-calculator';
 
-## Angular `TestBed`
+const taxCalculatorStub: Mocked<TaxCalculator> = {
+  calculate: vi.fn(),
+};
 
-The `TestBed` is the most important of the Angular testing utilities.
-The `TestBed` creates a dynamically-constructed Angular _test_ module that emulates an Angular [@NgModule](guide/ngmodules/overview).
+describe('OrderTotal', () => {
+  let service: OrderTotal;
 
-The `TestBed.configureTestingModule()` method takes a metadata object that can have most of the properties of an [@NgModule](guide/ngmodules/overview).
+  beforeEach(() => {
+    taxCalculatorStub.calculate.mockReturnValue(5);
 
-To test a service, you set the `providers` metadata property with an array of the services that you'll test or mock.
-
-```ts
-let service: ValueService;
-beforeEach(() => {
-  TestBed.configureTestingModule({providers: [ValueService]});
-});
-```
-
-Then inject it inside a test by calling `TestBed.inject()` with the service class as the argument.
-
-```ts
-it('should use ValueService', () => {
-  service = TestBed.inject(ValueService);
-  expect(service.getValue()).toBe('real value');
-});
-```
-
-Or inside the `beforeEach()` if you prefer to inject the service as part of your setup.
-
-```ts
-beforeEach(() => {
-  TestBed.configureTestingModule({providers: [ValueService]});
-  service = TestBed.inject(ValueService);
-});
-```
-
-When testing a service with a dependency, provide the mock in the `providers` array.
-
-In the following example, the mock is a spy object.
-
-```ts
-let masterService: MainService;
-let valueServiceSpy: Mocked<ValueService>;
-
-beforeEach(() => {
-  const spy: Mocked<ValueService> = {getValue: vi.fn()};
-
-  TestBed.configureTestingModule({
-    providers: [MainService, {provide: ValueService, useValue: spy}],
+    TestBed.configureTestingModule({
+      providers: [{provide: TaxCalculator, useValue: taxCalculatorStub}],
+    });
+    service = TestBed.inject(OrderTotal);
   });
 
-  masterService = TestBed.inject(MainService);
-  valueServiceSpy = TestBed.inject(ValueService) as Mocked<ValueService>;
+  it('adds tax to the subtotal', () => {
+    expect(service.total(100)).toBe(105);
+  });
+
+  // Verify the interaction with a spy
+  it('calls the tax calculator', () => {
+    service.total(100);
+    expect(taxCalculatorStub.calculate).toHaveBeenCalledExactlyOnce();
+  });
 });
 ```
 
-The test consumes that spy in the same way it did earlier.
-
-```ts
-it('getValue should return stubbed value from a spy', () => {
-  const stubValue = 'stub value';
-
-  valueServiceSpy.getValue.mockReturnValue(stubValue);
-
-  expect(masterService.getValue(), 'service returned stub value').toBe(stubValue);
-  expect(valueServiceSpy.getValue, 'spy method was called once').toHaveBeenCalledTimes(1);
-  expect(valueServiceSpy.getValue.mock.results.at(-1)?.value).toBe(stubValue);
-});
-```
+The new test verifies that `OrderTotal` called `TaxCalculator.calculate` when computing the total. This is useful when verifying that the interaction between services happened correctly.
 
 ## Testing HTTP services
 
-For testing services that rely on the `HttpClient`, refer to the [dedicated guide](/guide/http/testing).
+Many services use Angular's `HttpClient` to fetch data from a server. Angular provides dedicated testing utilities for `HttpClient` that let you control HTTP responses without making real network requests.
+
+For details on testing services that use `HttpClient`, see the [HTTP testing guide](guide/http/testing).
