@@ -1,6 +1,6 @@
-## Effects
+## Эффекты {#effects}
 
-Signals are useful because they notify interested consumers when they change. An **effect** is an operation that runs whenever one or more signal values change. You can create an effect with the `effect` function:
+Сигналы полезны тем, что они уведомляют заинтересованных потребителей при изменении. **Эффект** — это операция, которая выполняется при изменении одного или нескольких значений сигналов. Вы можете создать эффект с помощью функции `effect`:
 
 ```ts
 effect(() => {
@@ -8,30 +8,30 @@ effect(() => {
 });
 ```
 
-Effects always run **at least once.** When an effect runs, it tracks any signal value reads. Whenever any of these signal values change, the effect runs again. Similar to computed signals, effects keep track of their dependencies dynamically, and only track signals which were read in the most recent execution.
+Эффекты всегда выполняются **как минимум один раз.** При выполнении эффект отслеживает все прочитанные значения сигналов. Когда любое из этих значений изменяется, эффект запускается снова. Подобно вычисляемым сигналам, эффекты динамически отслеживают свои зависимости и отслеживают только те сигналы, которые были прочитаны при последнем выполнении.
 
-Effects always execute **asynchronously**, during the change detection process.
+Эффекты всегда выполняются **асинхронно**, в процессе обнаружения изменений.
 
-### Use cases for effects
+### Случаи использования эффектов {#use-cases-for-effects}
 
-Effects should be the last API you reach for. Always prefer `computed()` for derived values and `linkedSignal()` for values that can be both derived and manually set. If you find yourself copying data from one signal to another with an effect, it's a sign you should move your source-of-truth higher up and use `computed()` or `linkedSignal()` instead. Effects are best for syncing signal state to imperative, non-signal APIs.
+Эффекты должны быть последним API, к которому вы обращаетесь. Всегда предпочитайте `computed()` для производных значений и `linkedSignal()` для значений, которые могут быть как производными, так и задаваемыми вручную. Если вы обнаружите, что копируете данные из одного сигнала в другой с помощью эффекта, это признак того, что следует перенести источник истины выше и использовать `computed()` или `linkedSignal()` вместо этого. Эффекты лучше всего подходят для синхронизации состояния сигналов с императивными нереактивными API.
 
-TIP: There are no situations where effect is good, only situations where it is appropriate.
+TIP: Не бывает ситуаций, когда effect хорош, бывают лишь ситуации, когда он уместен.
 
-- Logging signal values, either for analytics or as a debugging tool.
-- Keeping data in sync with different kind of storages: `window.localStorage`, session storage, cookies etc.
-- Adding custom DOM behavior that can't be expressed with template syntax.
-- Performing custom rendering to a `<canvas>` element, charting library, or other third party UI library.
+- Логирование значений сигналов — для аналитики или как инструмент отладки.
+- Синхронизация данных с различными видами хранилищ: `window.localStorage`, session storage, cookies и т.д.
+- Добавление пользовательского поведения DOM, которое невозможно выразить с помощью синтаксиса шаблона.
+- Выполнение пользовательского рендеринга в элемент `<canvas>`, библиотеку графиков или другую стороннюю UI-библиотеку.
 
-<docs-callout critical title="When not to use effects">
-Avoid using effects for propagation of state changes. This can result in `ExpressionChangedAfterItHasBeenChecked` errors, infinite circular updates, or unnecessary change detection cycles.
+<docs-callout critical title="Когда не следует использовать эффекты">
+Избегайте использования эффектов для распространения изменений состояния. Это может привести к ошибкам `ExpressionChangedAfterItHasBeenChecked`, бесконечным циклическим обновлениям или ненужным циклам обнаружения изменений.
 
-Instead, use `computed` signals to model state that depends on other state.
+Вместо этого используйте сигналы `computed` для моделирования состояния, зависящего от другого состояния.
 </docs-callout>
 
-### Injection context
+### Контекст внедрения зависимостей {#injection-context}
 
-By default, you can only create an `effect()` within an [injection context](guide/di/dependency-injection-context) (where you have access to the `inject` function). The easiest way to satisfy this requirement is to call `effect` within a component, directive, or service `constructor`:
+По умолчанию вы можете создать `effect()` только в [контексте внедрения зависимостей](guide/di/dependency-injection-context) (где у вас есть доступ к функции `inject`). Самый простой способ выполнить это требование — вызвать `effect` в `constructor` компонента, директивы или сервиса:
 
 ```ts
 @Component({
@@ -49,7 +49,7 @@ export class EffectiveCounter {
 }
 ```
 
-To create an effect outside the constructor, you can pass an `Injector` to `effect` via its options:
+Чтобы создать эффект вне конструктора, вы можете передать `Injector` в `effect` через его параметры:
 
 ```ts
 @Component({
@@ -70,35 +70,35 @@ export class EffectiveCounter {
 }
 ```
 
-### Execution of effects
+### Выполнение эффектов {#execution-of-effects}
 
-Angular implicitly defines two implicit behaviors for its effects depending on the context they were created in.
+Angular неявно определяет два типа поведения для эффектов в зависимости от контекста, в котором они были созданы.
 
-A "View Effect" is an `effect` created in the context of a component instantiation. This includes effects created by services that are tied to component injectors.<br>
-A "Root Effect" is created in the context of a root provided service instantiation.
+"View Effect" — это `effect`, созданный в контексте создания экземпляра компонента. Сюда входят эффекты, созданные сервисами, привязанными к инжекторам компонентов.<br>
+"Root Effect" — создаётся в контексте создания экземпляра сервиса, предоставленного на корневом уровне.
 
-The execution of both kinds of `effect` are tied to the change detection process.
+Выполнение обоих типов `effect` привязано к процессу обнаружения изменений.
 
-- "View effects" are executed _before_ their corresponding component is checked by the change detection process.
-- "Root effects" are executed prior to all components being checked by the change detection process.
+- "View effects" выполняются _до_ проверки соответствующего компонента в процессе обнаружения изменений.
+- "Root effects" выполняются до проверки всех компонентов в процессе обнаружения изменений.
 
-In both cases, if at least one of the effect dependencies changed during the effect execution, the effect will re-run before moving ahead on the change detection process.
+В обоих случаях, если хотя бы одна из зависимостей эффекта изменилась во время его выполнения, эффект будет запущен повторно перед продолжением процесса обнаружения изменений.
 
-### Destroying effects
+### Уничтожение эффектов {#destroying-effects}
 
-When a component or directive is destroyed, Angular automatically cleans up any associated effects.
+Когда компонент или директива уничтожается, Angular автоматически очищает все связанные эффекты.
 
-An `effect` can be created in two different contexts that will affect when it's destroyed:
+`effect` может быть создан в двух разных контекстах, которые влияют на момент его уничтожения:
 
-- A "View effect" is destroyed when the component is destroyed.
-- A "Root effect" is destroyed when the application is destroyed.
+- "View effect" уничтожается при уничтожении компонента.
+- "Root effect" уничтожается при уничтожении приложения.
 
-Effects return an `EffectRef`. You can use the ref's `destroy` method to manually dispose of an effect. You can combine this with the `manualCleanup` option when creating an effect to disable automatic cleanup. Be careful to actually destroy such effects when they're no longer required.
+Эффекты возвращают `EffectRef`. Вы можете использовать метод `destroy` этой ссылки для ручного удаления эффекта. Вы можете комбинировать это с опцией `manualCleanup` при создании эффекта для отключения автоматической очистки. Будьте внимательны и уничтожайте такие эффекты, когда они больше не нужны.
 
-### Effect cleanup functions
+### Функции очистки эффектов {#effect-cleanup-functions}
 
-When a component or directive is destroyed, Angular automatically cleans up any associated effects.
-Effects might start long-running operations, which you should cancel if the effect is destroyed or runs again before the first operation finished. When you create an effect, your function can optionally accept an `onCleanup` function as its first parameter. This `onCleanup` function lets you register a callback that is invoked before the next run of the effect begins, or when the effect is destroyed.
+Когда компонент или директива уничтожается, Angular автоматически очищает все связанные эффекты.
+Эффекты могут запускать длительные операции, которые следует отменить, если эффект уничтожен или запускается снова до завершения первой операции. Когда вы создаёте эффект, ваша функция может опционально принимать функцию `onCleanup` в качестве первого параметра. Эта функция `onCleanup` позволяет зарегистрировать колбэк, который вызывается перед следующим запуском эффекта или при его уничтожении.
 
 ```ts
 effect((onCleanup) => {
@@ -114,11 +114,11 @@ effect((onCleanup) => {
 });
 ```
 
-## Side effects on DOM elements
+## Побочные эффекты на DOM-элементах {#side-effects-on-dom-elements}
 
-The `effect` function is a general-purpose tool for running code in reaction to signal changes. However, it runs _before_ the Angular updates the DOM. In some situations, you may need to manually inspect or modify the DOM, or integrate a 3rd-party library that requires direct DOM access.
+Функция `effect` — это универсальный инструмент для выполнения кода в реакции на изменения сигналов. Однако она выполняется _до_ обновления DOM фреймворком Angular. В некоторых ситуациях вам может потребоваться вручную инспектировать или модифицировать DOM, или интегрировать стороннюю библиотеку, требующую прямого доступа к DOM.
 
-For these situations, you can use `afterRenderEffect`. It functions like `effect`, but runs after Angular has finished rendering and committed its changes to the DOM.
+Для таких ситуаций можно использовать `afterRenderEffect`. Он работает аналогично `effect`, но выполняется после того, как Angular завершил рендеринг и зафиксировал изменения в DOM.
 
 ```ts
 @Component({
@@ -145,28 +145,28 @@ export class MyFancyChart {
 }
 ```
 
-In this example `afterRenderEffect` is used to update a chart created by a 3rd party library.
+В этом примере `afterRenderEffect` используется для обновления графика, созданного сторонней библиотекой.
 
-TIP: You often don't need `afterRenderEffect` to check for DOM changes. APIs like `ResizeObserver`, `MutationObserver` and `IntersectionObserver` are preferred to `effect` or `afterRenderEffect` when possible.
+TIP: Часто вам не нужен `afterRenderEffect` для отслеживания изменений DOM. API вроде `ResizeObserver`, `MutationObserver` и `IntersectionObserver` предпочтительнее `effect` или `afterRenderEffect`, когда это возможно.
 
-### Render phases
+### Фазы рендеринга {#render-phases}
 
-Accessing the DOM and mutating it can impact the performance of your application, for example by triggering too many unnecessary [reflows](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
+Доступ к DOM и его модификация могут повлиять на производительность приложения, например, вызывая слишком много ненужных [перекомпоновок (reflow)](https://developer.mozilla.org/en-US/docs/Glossary/Reflow).
 
-To optimize those operations, `afterRenderEffect` offers four phases to group the callbacks and execute them in an optimized order.
+Для оптимизации этих операций `afterRenderEffect` предлагает четыре фазы для группировки колбэков и их выполнения в оптимизированном порядке.
 
-The phases are:
+Фазы:
 
-| Phase            | Description                                                                                                                                                                                        |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `earlyRead`      | Use this phase to read from the DOM before a subsequent write callback, for example to perform custom layout that the browser doesn't natively support. Prefer the read phase if reading can wait. |
-| `write`          | Use this phase to write to the DOM. **Never** read from the DOM in this phase.                                                                                                                     |
-| `mixedReadWrite` | Use this phase to read from and write to the DOM simultaneously. Never use this phase if it is possible to divide the work among the other phases instead.                                         |
-| `read`           | Use this phase to read from the DOM. **Never** write to the DOM in this phase.                                                                                                                     |
+| Фаза             | Описание                                                                                                                                                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `earlyRead`      | Используйте эту фазу для чтения из DOM перед последующим колбэком записи, например, для выполнения пользовательской компоновки, которую браузер не поддерживает нативно. Предпочитайте фазу read, если чтение может подождать. |
+| `write`          | Используйте эту фазу для записи в DOM. **Никогда** не читайте из DOM на этой фазе.                                                                                                                        |
+| `mixedReadWrite` | Используйте эту фазу для одновременного чтения и записи в DOM. Никогда не используйте эту фазу, если можно разделить работу между другими фазами.                                                          |
+| `read`           | Используйте эту фазу для чтения из DOM. **Никогда** не записывайте в DOM на этой фазе.                                                                                                                    |
 
-Using these phases helps prevent layout thrashing and ensures that your DOM operations are performed in a safe and efficient manner.
+Использование этих фаз помогает предотвратить перекомпоновку и обеспечивает безопасное и эффективное выполнение операций с DOM.
 
-You can specify the phase by passing an object with a `phase` property to `afterRender` or `afterNextRender`:
+Вы можете указать фазу, передав объект со свойством `phase` в `afterRender` или `afterNextRender`:
 
 ```ts
 afterRenderEffect({
@@ -185,27 +185,27 @@ afterRenderEffect({
 });
 ```
 
-CRITICAL: If you don't specify the phase, `afterRenderEffect` runs callbacks during the `mixedReadWrite` phase. This may worsen application performance by causing additional DOM reflows.
+CRITICAL: Если вы не укажете фазу, `afterRenderEffect` выполняет колбэки во время фазы `mixedReadWrite`. Это может ухудшить производительность приложения, вызывая дополнительные перекомпоновки DOM.
 
-#### Phase executions
+#### Выполнение фаз {#phase-executions}
 
-The `earlyRead` phase callback receives no parameters. Each subsequent phase receives the return value of the previous phase's callback as a Signal. You can use this to coordinate work across phases.
+Колбэк фазы `earlyRead` не получает параметров. Каждая последующая фаза получает возвращаемое значение колбэка предыдущей фазы в виде сигнала. Вы можете использовать это для координации работы между фазами.
 
-Effects run in the following phase order:
+Эффекты выполняются в следующем порядке фаз:
 
 1. `earlyRead`
 2. `write`
 3. `mixedReadWrite`
 4. `read`
 
-If one of the phases modifies a signal value tracked by `afterRenderEffect`, the affected phases execute again.
+Если одна из фаз изменяет значение сигнала, отслеживаемого `afterRenderEffect`, затронутые фазы выполняются повторно.
 
-#### Cleanup
+#### Очистка {#cleanup}
 
-Each phase provides a cleanup callback function as argument. The cleanup callbacks are executed when the `afterRenderEffect` is destroyed or before re-running phase effects.
+Каждая фаза предоставляет функцию колбэка очистки в качестве аргумента. Колбэки очистки выполняются при уничтожении `afterRenderEffect` или перед повторным выполнением эффектов фазы.
 
-### Server-side rendering caveats
+### Особенности серверного рендеринга {#server-side-rendering-caveats}
 
-`afterRenderEffect`, similarly to `afterNextRender`/`afterEveryRender`, only runs on the client.
+`afterRenderEffect`, как и `afterNextRender`/`afterEveryRender`, выполняется только на клиенте.
 
-NOTE: Components are not guaranteed to be [hydrated](/guide/hydration) before the callback runs. You must use caution when directly reading or writing the DOM and layout.
+NOTE: Не гарантируется, что компоненты будут [гидратированы](guide/hydration) до выполнения колбэка. Следует соблюдать осторожность при непосредственном чтении или записи в DOM и работе с компоновкой.
