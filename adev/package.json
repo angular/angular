@@ -81,7 +81,7 @@
     "open-in-idx": "0.1.1",
     "playwright-core": "1.58.1",
     "preact": "10.28.3",
-    "preact-render-to-string": "6.6.5",
+    "preact-render-to-string": "6.6.6",
     "prettier": "3.8.1",
     "property-information": "^7.1.0",
     "rxjs": "7.8.2",
