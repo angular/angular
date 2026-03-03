@@ -1,33 +1,33 @@
-<docs-decorative-header title="Next Steps" imgSrc="adev/src/assets/images/roadmap.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Следующие шаги" imgSrc="adev/src/assets/images/roadmap.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
-Now that you have been introduced to the main concepts of Angular - you're ready to put what you learned into practice with our interactive tutorials and learn more with our in-depth guides.
+Теперь, когда вы познакомились с основными концепциями Angular, вы готовы применить полученные знания на практике с нашими интерактивными туториалами и узнать больше из наших углубленных руководств.
 
-## Playground
+## Песочница {#playground}
 
-Try out Angular in an interactive code editor to further explore the concepts you've learned.
-
-<docs-pill-row>
-  <docs-pill title="Play with Angular!" href="playground" />
-</docs-pill-row>
-
-## Tutorials
-
-Put these main concepts into practice with our in-browser tutorial or build your first app locally with the Angular CLI.
+Попробуйте Angular в интерактивном редакторе кода, чтобы глубже изучить концепции, которые вы освоили.
 
 <docs-pill-row>
-  <docs-pill title="Learn Angular's fundamentals" href="tutorials/learn-angular" />
-  <docs-pill title="Build your first Angular app" href="tutorials/first-app" />
+  <docs-pill title="Поиграть с Angular!" href="playground" />
 </docs-pill-row>
 
-## In-depth Guides
+## Туториалы {#tutorials}
 
-Here are some in-depth guides you might be interested in reading:
+Примените основные концепции на практике с нашим туториалом в браузере или создайте свое первое приложение локально с помощью Angular CLI.
 
 <docs-pill-row>
-  <docs-pill title="Components In-depth Guide" href="guide/components" />
-  <docs-pill title="Template In-depth Guide" href="guide/templates" />
-  <docs-pill title="Forms In-depth Guide" href="/guide/forms" />
+  <docs-pill title="Изучить основы Angular" href="tutorials/learn-angular" />
+  <docs-pill title="Создать первое приложение Angular" href="tutorials/first-app" />
 </docs-pill-row>
 
-To see the rest of our in-depth guides, check out the main navigation.
+## Углубленные руководства {#in-depth-guides}
+
+Вот некоторые углубленные руководства, которые могут быть вам интересны:
+
+<docs-pill-row>
+  <docs-pill title="Углубленное руководство по компонентам" href="guide/components" />
+  <docs-pill title="Углубленное руководство по шаблонам" href="guide/templates" />
+  <docs-pill title="Углубленное руководство по формам" href="guide/forms" />
+</docs-pill-row>
+
+Чтобы увидеть остальные углубленные руководства, воспользуйтесь главной навигацией.
