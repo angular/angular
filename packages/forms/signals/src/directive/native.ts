@@ -101,6 +101,17 @@ export function getNativeControlValue(
         return {value: element.valueAsNumber};
       }
       break;
+    case 'text':
+      if (element.inputMode === 'numeric' && typeof untracked(currentValue) === 'number') {
+        // For text-based inputs with `inputmode="numeric"`, parse the value as a number.
+        // This supports `<input type="text" inputmode="numeric">
+        if (element.value === '') {
+          return NaN;
+        }
+
+        return Number(element.value);
+      }
+      break;
   }
 
   // Default to reading the value as a string.
@@ -148,6 +159,13 @@ export function setNativeControlValue(element: NativeFormControl, value: unknown
         setNativeNumberControlValue(element, value);
         return;
       }
+      break;
+    case 'text':
+      if (element.inputMode === 'numeric' && typeof value === 'number') {
+        element.value = isNaN(value) ? '' : String(value);
+        return;
+      }
+      break;
   }
 
   // Default to setting the value as a string.
