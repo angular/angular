@@ -1,19 +1,18 @@
-# Referencing component children with queries
+# Ссылки на дочерние элементы компонента с помощью запросов {#referencing-component-children-with-queries}
 
-TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: В этом руководстве предполагается, что вы уже ознакомились с [Руководством по основам](essentials). Прочитайте его в первую очередь, если вы новичок в Angular.
 
-A component can define **queries** that find child elements and read values from their injectors.
+Компонент может определять **запросы**, которые находят дочерние элементы и читают значения из их инжекторов.
 
-Developers most commonly use queries to retrieve references to child components, directives, DOM elements, and more.
+Разработчики чаще всего используют запросы для получения ссылок на дочерние компоненты, директивы, DOM-элементы и другие объекты.
 
-All query functions return signals that reflect the most up-to-date results. You can read the
-result by calling the signal function, including in [reactive contexts](guide/signals#reactive-contexts) like `computed` and `effect`.
+Все функции запросов возвращают сигналы, отражающие наиболее актуальные результаты. Вы можете прочитать результат, вызвав сигнальную функцию, в том числе в [реактивных контекстах](guide/signals#reactive-contexts), таких как `computed` и `effect`.
 
-There are two categories of query: **view queries** and **content queries.**
+Существует две категории запросов: **запросы представления** и **запросы контента**.
 
-## View queries
+## Запросы представления {#view-queries}
 
-View queries retrieve results from the elements in the component's _view_ — the elements defined in the component's own template. You can query for a single result with the `viewChild` function.
+Запросы представления извлекают результаты из элементов _представления_ компонента — элементов, определённых в собственном шаблоне компонента. Вы можете запросить один результат с помощью функции `viewChild`.
 
 ```angular-ts {highlight: [14, 15]}
 @Component({
@@ -34,11 +33,11 @@ export class CustomCard {
 }
 ```
 
-In this example, the `CustomCard` component queries for a child `CustomCardHeader` and uses the result in a `computed`.
+В этом примере компонент `CustomCard` запрашивает дочерний `CustomCardHeader` и использует результат в `computed`.
 
-If the query does not find a result, its value is `undefined`. This may occur if the target element is hidden by `@if`. Angular keeps the result of `viewChild` up to date as your application state changes.
+Если запрос не находит результат, его значение будет `undefined`. Это может произойти, если целевой элемент скрыт с помощью `@if`. Angular поддерживает результат `viewChild` в актуальном состоянии по мере изменения состояния приложения.
 
-You can also query for multiple results with the `viewChildren` function.
+Вы также можете запросить несколько результатов с помощью функции `viewChildren`.
 
 ```angular-ts {highlight: [17]}
 @Component({
@@ -62,13 +61,13 @@ export class CustomCard {
 }
 ```
 
-`viewChildren` creates a signal with an `Array` of the query results.
+`viewChildren` создаёт сигнал с массивом (`Array`) результатов запроса.
 
-**Queries never pierce through component boundaries.** View queries can only retrieve results from the component's template.
+**Запросы никогда не проникают через границы компонентов.** Запросы представления могут извлекать результаты только из шаблона компонента.
 
-## Content queries
+## Запросы контента {#content-queries}
 
-Content queries retrieve results from the elements in the component's _content_— the elements nested inside the component in the template where it's used. You can query for a single result with the `contentChild` function.
+Запросы контента извлекают результаты из элементов _контента_ компонента — элементов, вложенных в компонент в шаблоне, где он используется. Вы можете запросить один результат с помощью функции `contentChild`.
 
 ```angular-ts {highlight: [14, 15]}
 @Component({
@@ -100,11 +99,11 @@ export class CustomExpando {
 export class UserProfile {}
 ```
 
-If the query does not find a result, its value is `undefined`. This may occur if the target element is absent or hidden by `@if`. Angular keeps the result of `contentChild` up to date as your application state changes.
+Если запрос не находит результат, его значение будет `undefined`. Это может произойти, если целевой элемент отсутствует или скрыт с помощью `@if`. Angular поддерживает результат `contentChild` в актуальном состоянии по мере изменения состояния приложения.
 
-By default, content queries find only _direct_ children of the component and do not traverse into descendants.
+По умолчанию запросы контента находят только _непосредственных_ потомков компонента и не обходят вложенные элементы.
 
-You can also query for multiple results with the `contentChildren` function.
+Вы также можете запросить несколько результатов с помощью функции `contentChildren`.
 
 ```angular-ts {highlight: [14, 15]}
 @Component({
@@ -136,15 +135,15 @@ export class CustomMenu {
 export class UserProfile {}
 ```
 
-`contentChildren` creates a signal with an `Array` of the query results.
+`contentChildren` создаёт сигнал с массивом (`Array`) результатов запроса.
 
-**Queries never pierce through component boundaries.** Content queries can only retrieve results from the same template as the component itself.
+**Запросы никогда не проникают через границы компонентов.** Запросы контента могут извлекать результаты только из того же шаблона, в котором находится сам компонент.
 
-## Required queries
+## Обязательные запросы {#required-queries}
 
-If a child query (`viewChild` or `contentChild`) does not find a result, its value is `undefined`. This may occur if the target element is hidden by a control flow statement like `@if` or `@for`. Because of this, the child queries return a signal that include `undefined` in their value type.
+Если дочерний запрос (`viewChild` или `contentChild`) не находит результат, его значение будет `undefined`. Это может произойти, если целевой элемент скрыт с помощью управляющей конструкции, такой как `@if` или `@for`. Из-за этого дочерние запросы возвращают сигнал, который включает `undefined` в свой тип значения.
 
-In some cases, especially with `viewChild`, you know with certainty that a specific child is always available. In other cases, you may want to strictly enforce that a specific child is present. For these cases, you can use a _required query_.
+В некоторых случаях, особенно с `viewChild`, вы точно знаете, что определённый дочерний элемент всегда присутствует. В других случаях вы можете захотеть строго обеспечить наличие определённого дочернего элемента. Для этих случаев используется _обязательный запрос_.
 
 ```ts
 @Component({
@@ -156,16 +155,15 @@ export class CustomCard {
 }
 ```
 
-If a required query does not find a matching result, Angular reports an error. Because this guarantees that a result is available, required queries do not automatically include `undefined` in the signal's value type.
+Если обязательный запрос не находит соответствующий результат, Angular сообщает об ошибке. Поскольку это гарантирует наличие результата, обязательные запросы автоматически не включают `undefined` в тип значения сигнала.
 
-## Query locators
+## Локаторы запросов {#query-locators}
 
-This first parameter for each query decorator is its **locator**.
+Первый параметр каждого декоратора запроса — это его **локатор**.
 
-Most of the time, you want to use a component or directive as your locator.
+В большинстве случаев в качестве локатора используется компонент или директива.
 
-You can alternatively specify a string locator corresponding to
-a [template reference variable](guide/templates/variables#template-reference-variables).
+Вы также можете указать строковый локатор, соответствующий [переменной ссылки на шаблон](guide/templates/variables#template-reference-variables).
 
 ```angular-ts
 @Component({
@@ -180,15 +178,15 @@ export class ActionBar {
 }
 ```
 
-If more than one element defines the same template reference variable, the query retrieves the first matching element.
+Если несколько элементов определяют одну и ту же переменную ссылки на шаблон, запрос извлекает первый соответствующий элемент.
 
-Angular does not support CSS selectors as query locators.
+Angular не поддерживает CSS-селекторы в качестве локаторов запросов.
 
-### Queries and the injector tree
+### Запросы и дерево инжекторов {#queries-and-the-injector-tree}
 
-TIP: See [Dependency Injection](guide/di) for background on providers and Angular's injection tree.
+TIP: Для получения фоновой информации о провайдерах и дереве внедрения Angular см. [Внедрение зависимостей](guide/di).
 
-For more advanced cases, you can use any `ProviderToken` as a locator. This lets you locate elements based on component and directive providers.
+Для более сложных случаев вы можете использовать любой `ProviderToken` в качестве локатора. Это позволяет находить элементы на основе провайдеров компонентов и директив.
 
 ```angular-ts
 const SUB_ITEM = new InjectionToken<string>('sub-item');
@@ -207,15 +205,15 @@ export class CustomList {
 }
 ```
 
-The above example uses an `InjectionToken` as a locator, but you can use any `ProviderToken` to locate specific elements.
+В примере выше используется `InjectionToken` в качестве локатора, но вы можете использовать любой `ProviderToken` для поиска конкретных элементов.
 
-## Query options
+## Параметры запросов {#query-options}
 
-All query functions accept an options object as a second parameter. These options control how the query finds its results.
+Все функции запросов принимают объект параметров в качестве второго аргумента. Эти параметры определяют, как запрос находит результаты.
 
-### Reading specific values from an element's injector
+### Чтение конкретных значений из инжектора элемента {#reading-specific-values-from-an-elements-injector}
 
-By default, the query locator indicates both the element you're searching for and the value retrieved. You can alternatively specify the `read` option to retrieve a different value from the element matched by the locator.
+По умолчанию локатор запроса указывает как на искомый элемент, так и на извлекаемое значение. Вы можете дополнительно указать параметр `read`, чтобы получить другое значение из элемента, найденного по локатору.
 
 ```ts
 @Component({
@@ -226,15 +224,13 @@ export class CustomExpando {
 }
 ```
 
-The above example, locates an element with the directive `ExpandoContent` and retrieves
-the `TemplateRef` associated with that element.
+В примере выше находится элемент с директивой `ExpandoContent` и извлекается `TemplateRef`, связанный с этим элементом.
 
-Developers most commonly use `read` to retrieve `ElementRef` and `TemplateRef`.
+Разработчики чаще всего используют `read` для получения `ElementRef` и `TemplateRef`.
 
-### Content descendants
+### Обход вложенных элементов контента {#content-descendants}
 
-By default, `contentChildren` queries find only _direct_ children of the component and do not traverse into descendants.
-`contentChild` queries do traverse into descendants by default.
+По умолчанию `contentChildren` находит только _непосредственных_ потомков компонента и не обходит вложенные элементы. `contentChild` по умолчанию обходит вложенные элементы.
 
 ```angular-ts {highlight: [13, 14, 15, 16, 17]}
 @Component({
@@ -259,20 +255,19 @@ export class CustomExpando {
 export class UserProfile {}
 ```
 
-In the example above, `CustomExpando` cannot find `<custom-toggle>` with `contentChildren` because it is not a direct child of `<custom-expando>`. By setting `descendants: true`, you configure the query to traverse all descendants in the same template. Queries, however, _never_ pierce into components to traverse elements in other templates.
+В примере выше `CustomExpando` не может найти `<custom-toggle>` с помощью `contentChildren`, потому что он не является непосредственным потомком `<custom-expando>`. Установив `descendants: true`, вы настраиваете запрос на обход всех вложенных элементов в том же шаблоне. Однако запросы _никогда_ не проникают внутрь компонентов для обхода элементов в других шаблонах.
 
-View queries do not have this option because they _always_ traverse into descendants.
+Запросы представления не имеют этого параметра, поскольку они _всегда_ обходят вложенные элементы.
 
-## Decorator-based queries
+## Запросы на основе декораторов {#decorator-based-queries}
 
-TIP: While the Angular team recommends using the signal-based query function for new projects, the
-original decorator-based query APIs remain fully supported.
+TIP: Хотя команда Angular рекомендует использовать сигнальные функции запросов для новых проектов, оригинальные API запросов на основе декораторов по-прежнему полностью поддерживаются.
 
-You can alternatively declare queries by adding the corresponding decorator to a property. Decorator-based queries behave the same way as signal-based queries except as described below.
+Вы также можете объявлять запросы, добавив соответствующий декоратор к свойству. Запросы на основе декораторов работают так же, как сигнальные запросы, за исключением описанных ниже особенностей.
 
-### View queries {#decorator-view-queries}
+### Запросы представления {#decorator-view-queries}
 
-You can query for a single result with the `@ViewChild` decorator.
+Вы можете запросить один результат с помощью декоратора `@ViewChild`.
 
 ```angular-ts {highlight: [14, 16, 17, 18]}
 @Component({
@@ -296,13 +291,13 @@ export class CustomCard implements AfterViewInit {
 }
 ```
 
-In this example, the `CustomCard` component queries for a child `CustomCardHeader` and accesses the result in `ngAfterViewInit`.
+В этом примере компонент `CustomCard` запрашивает дочерний `CustomCardHeader` и обращается к результату в `ngAfterViewInit`.
 
-Angular keeps the result of `@ViewChild` up to date as your application state changes.
+Angular поддерживает результат `@ViewChild` в актуальном состоянии по мере изменения состояния приложения.
 
-**View query results become available in the `ngAfterViewInit` lifecycle method**. Before this point, the value is `undefined`. See the [Lifecycle](guide/components/lifecycle) section for details on the component lifecycle.
+**Результаты запроса представления становятся доступными в методе жизненного цикла `ngAfterViewInit`**. До этого момента значение будет `undefined`. Подробнее о жизненном цикле компонента см. в разделе [Жизненный цикл](guide/components/lifecycle).
 
-You can also query for multiple results with the `@ViewChildren` decorator.
+Вы также можете запросить несколько результатов с помощью декоратора `@ViewChildren`.
 
 ```angular-ts {highlight: [17, 19, 20, 21, 22, 23]}
 @Component({
@@ -331,11 +326,11 @@ export class CustomCard implements AfterViewInit {
 }
 ```
 
-`@ViewChildren` creates a `QueryList` object that contains the query results. You can subscribe to changes to the query results over time via the `changes` property.
+`@ViewChildren` создаёт объект `QueryList`, содержащий результаты запроса. Вы можете подписаться на изменения результатов запроса через свойство `changes`.
 
-### Content queries {#decorator-content-queries}
+### Запросы контента {#decorator-content-queries}
 
-You can query for a single result with the `@ContentChild` decorator.
+Вы можете запросить один результат с помощью декоратора `@ContentChild`.
 
 ```angular-ts {highlight: [14, 16, 17, 18]}
 @Component({
@@ -369,13 +364,13 @@ export class CustomExpando implements AfterContentInit {
 export class UserProfile {}
 ```
 
-In this example, the `CustomExpando` component queries for a child `CustomToggle` and accesses the result in `ngAfterContentInit`.
+В этом примере компонент `CustomExpando` запрашивает дочерний `CustomToggle` и обращается к результату в `ngAfterContentInit`.
 
-Angular keeps the result of `@ContentChild` up to date as your application state changes.
+Angular поддерживает результат `@ContentChild` в актуальном состоянии по мере изменения состояния приложения.
 
-**Content query results become available in the `ngAfterContentInit` lifecycle method**. Before this point, the value is `undefined`. See the [Lifecycle](guide/components/lifecycle) section for details on the component lifecycle.
+**Результаты запроса контента становятся доступными в методе жизненного цикла `ngAfterContentInit`**. До этого момента значение будет `undefined`. Подробнее о жизненном цикле компонента см. в разделе [Жизненный цикл](guide/components/lifecycle).
 
-You can also query for multiple results with the `@ContentChildren` decorator.
+Вы также можете запросить несколько результатов с помощью декоратора `@ContentChildren`.
 
 ```angular-ts {highlight: [14, 16, 17, 18, 19, 20]}
 @Component({
@@ -412,15 +407,15 @@ export class CustomMenu implements AfterContentInit {
 export class UserProfile {}
 ```
 
-`@ContentChildren` creates a `QueryList` object that contains the query results. You can subscribe to changes to the query results over time via the `changes` property.
+`@ContentChildren` создаёт объект `QueryList`, содержащий результаты запроса. Вы можете подписаться на изменения результатов запроса через свойство `changes`.
 
-### Decorator-based query options
+### Параметры запросов на основе декораторов {#decorator-based-query-options}
 
-All query decorators accept an options object as a second parameter. These options work the same way as signal-based queries except where described below.
+Все декораторы запросов принимают объект параметров в качестве второго аргумента. Эти параметры работают так же, как для сигнальных запросов, за исключением описанных ниже особенностей.
 
-### Static queries
+### Статические запросы {#static-queries}
 
-`@ViewChild` and `@ContentChild` decorators accept the `static` option.
+Декораторы `@ViewChild` и `@ContentChild` принимают параметр `static`.
 
 ```angular-ts
 @Component({
@@ -436,26 +431,26 @@ export class CustomCard implements OnInit {
 }
 ```
 
-By setting `static: true`, you guarantee to Angular that the target of this query is _always_ present and is not conditionally rendered. This makes the result available earlier, in the `ngOnInit` lifecycle method.
+Установив `static: true`, вы гарантируете Angular, что цель этого запроса _всегда_ присутствует и не отображается условно. Это позволяет получить результат раньше, в методе жизненного цикла `ngOnInit`.
 
-Static query results do not update after initialization.
+Результаты статических запросов не обновляются после инициализации.
 
-The `static` option is not available for `@ViewChildren` and `@ContentChildren` queries.
+Параметр `static` недоступен для запросов `@ViewChildren` и `@ContentChildren`.
 
-### Using QueryList
+### Использование QueryList {#using-querylist}
 
-`@ViewChildren` and `@ContentChildren` both provide a `QueryList` object that contains a list of results.
+`@ViewChildren` и `@ContentChildren` возвращают объект `QueryList`, содержащий список результатов.
 
-`QueryList` offers a number of convenience APIs for working with results in an array-like manner, such as `map`, `reduce`, and `forEach`. You can get an array of the current results by calling `toArray`.
+`QueryList` предоставляет множество удобных API для работы с результатами в стиле массива, таких как `map`, `reduce` и `forEach`. Вы можете получить массив текущих результатов, вызвав `toArray`.
 
-You can subscribe to the `changes` property to do something any time the results change.
+Вы можете подписаться на свойство `changes`, чтобы выполнять действия при каждом изменении результатов.
 
-## Common query pitfalls
+## Типичные ошибки при использовании запросов {#common-query-pitfalls}
 
-When using queries, common pitfalls can make your code harder to understand and maintain.
+При использовании запросов распространённые ошибки могут сделать ваш код сложнее для понимания и поддержки.
 
-Always maintain a single source of truth for state shared between multiple components. This avoids scenarios where repeated state in different components becomes out of sync.
+Всегда поддерживайте единый источник истины для состояния, общего между несколькими компонентами. Это позволяет избежать ситуаций, когда дублированное состояние в разных компонентах становится рассинхронизированным.
 
-Avoid directly writing state to child components. This pattern can lead to brittle code that is hard to understand and is prone to [ExpressionChangedAfterItHasBeenChecked](errors/NG0100) errors.
+Избегайте прямой записи состояния в дочерние компоненты. Такой паттерн может привести к хрупкому коду, который сложно понять и который подвержен ошибкам [ExpressionChangedAfterItHasBeenChecked](errors/NG0100).
 
-Never directly write state to parent or ancestor components. This pattern can lead to brittle code that is hard to understand and is prone to [ExpressionChangedAfterItHasBeenChecked](errors/NG0100) errors.
+Никогда не записывайте состояние напрямую в родительские или предковые компоненты. Такой паттерн может привести к хрупкому коду, который сложно понять и который подвержен ошибкам [ExpressionChangedAfterItHasBeenChecked](errors/NG0100).

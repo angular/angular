@@ -1,11 +1,10 @@
-# Accepting data with input properties
+# Приём данных через свойства Input {#accepting-data-with-input-properties}
 
-TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: В этом руководстве предполагается, что вы уже ознакомились с [Руководством по основам](essentials). Прочитайте его в первую очередь, если вы новичок в Angular.
 
-TIP: If you're familiar with other web frameworks, input properties are similar to _props_.
+TIP: Если вы знакомы с другими веб-фреймворками, Input-свойства аналогичны _props_.
 
-When you use a component, you commonly want to pass some data to it. A component specifies the data that it accepts by declaring
-**inputs**:
+Когда вы используете компонент, часто необходимо передавать ему данные. Компонент указывает, какие данные он принимает, объявляя **Input-свойства**:
 
 ```ts {highlight:[8]}
 import {Component, input} from '@angular/core';
@@ -19,13 +18,13 @@ export class CustomSlider {
 }
 ```
 
-This lets you bind to the property in a template:
+Это позволяет привязать свойство в шаблоне:
 
 ```angular-html
 <custom-slider [value]="50" />
 ```
 
-If an input has a default value, TypeScript infers the type from the default value:
+Если Input имеет значение по умолчанию, TypeScript определяет тип из значения по умолчанию:
 
 ```ts
 @Component({
@@ -37,9 +36,9 @@ export class CustomSlider {
 }
 ```
 
-You can explicitly declare a type for the input by specifying a generic parameter to the function.
+Вы можете явно указать тип Input, передав обобщённый (generic) параметр в функцию.
 
-If an input without a default value is not set, its value is `undefined`:
+Если Input без значения по умолчанию не установлен, его значение будет `undefined`:
 
 ```ts
 @Component({
@@ -51,17 +50,17 @@ export class CustomSlider {
 }
 ```
 
-**Angular records inputs statically at compile-time**. Inputs cannot be added or removed at run-time.
+**Angular записывает Input-свойства статически во время компиляции**. Input-свойства нельзя добавлять или удалять во время выполнения.
 
-The `input` function has special meaning to the Angular compiler. **You can exclusively call `input` in component and directive property initializers.**
+Функция `input` имеет особое значение для компилятора Angular. **Вызывать `input` можно исключительно в инициализаторах свойств компонентов и директив.**
 
-When extending a component class, **inputs are inherited by the child class.**
+При расширении класса компонента **Input-свойства наследуются дочерним классом.**
 
-**Input names are case-sensitive.**
+**Имена Input-свойств чувствительны к регистру.**
 
-## Reading inputs
+## Чтение Input-свойств {#reading-inputs}
 
-The `input` function returns an `InputSignal`. You can read the value by calling the signal:
+Функция `input` возвращает `InputSignal`. Вы можете прочитать значение, вызвав сигнал:
 
 ```ts {highlight:[11]}
 import {Component, input, computed} from '@angular/core';
@@ -78,11 +77,11 @@ export class CustomSlider {
 }
 ```
 
-Signals created by the `input` function are read-only.
+Сигналы, созданные функцией `input`, доступны только для чтения.
 
-## Required inputs
+## Обязательные Input-свойства {#required-inputs}
 
-You can declare that an input is `required` by calling `input.required` instead of `input`:
+Вы можете объявить Input как `required`, вызвав `input.required` вместо `input`:
 
 ```ts {highlight:[6]}
 @Component({
@@ -94,17 +93,17 @@ export class CustomSlider {
 }
 ```
 
-Angular enforces that required inputs _must_ be set when the component is used in a template. If you try to use a component without specifying all of its required inputs, Angular reports an error at build-time.
+Angular требует, чтобы обязательные Input-свойства были _обязательно_ установлены при использовании компонента в шаблоне. Если вы попытаетесь использовать компонент без указания всех его обязательных Input-свойств, Angular сообщит об ошибке во время сборки.
 
-Required inputs do not automatically include `undefined` in the generic parameter of the returned `InputSignal`.
+Обязательные Input-свойства автоматически не включают `undefined` в generic-параметр возвращаемого `InputSignal`.
 
-## Configuring inputs
+## Настройка Input-свойств {#configuring-inputs}
 
-The `input` function accepts a config object as a second parameter that lets you change the way that input works.
+Функция `input` принимает объект конфигурации в качестве второго параметра, позволяющего изменять поведение Input.
 
-### Input transforms
+### Трансформации Input {#input-transforms}
 
-You can specify a `transform` function to change the value of an input when it's set by Angular.
+Вы можете указать функцию `transform` для изменения значения Input при его установке Angular.
 
 ```ts {highlight:[6]}
 @Component({
@@ -124,17 +123,17 @@ function trimString(value: string | undefined): string {
 <custom-slider [label]="systemVolume" />
 ```
 
-In the example above, whenever the value of `systemVolume` changes, Angular runs `trimString` and sets `label` to the result.
+В примере выше всякий раз, когда значение `systemVolume` изменяется, Angular вызывает `trimString` и устанавливает `label` равным результату.
 
-The most common use-case for input transforms is to accept a wider range of value types in templates, often including `null` and `undefined`.
+Наиболее распространённый сценарий использования трансформаций Input — расширение диапазона принимаемых типов значений в шаблонах, часто включая `null` и `undefined`.
 
-**Input transform function must be statically analyzable at build-time.** You cannot set transform functions conditionally or as the result of an expression evaluation.
+**Функция трансформации Input должна быть статически анализируемой во время сборки.** Нельзя устанавливать функции трансформации условно или как результат вычисления выражения.
 
-**Input transform functions should always be [pure functions](https://en.wikipedia.org/wiki/Pure_function).** Relying on state outside the transform function can lead to unpredictable behavior.
+**Функции трансформации Input должны быть [чистыми функциями](https://en.wikipedia.org/wiki/Pure_function).** Зависимость от состояния вне функции трансформации может привести к непредсказуемому поведению.
 
-#### Type checking
+#### Проверка типов {#type-checking}
 
-When you specify an input transform, the type of the transform function's parameter determines the types of values that can be set to the input in a template.
+Когда вы указываете трансформацию Input, тип параметра функции трансформации определяет типы значений, которые можно задать для Input в шаблоне.
 
 ```ts
 @Component({
@@ -149,11 +148,11 @@ function appendPx(value: number): string {
 }
 ```
 
-In the example above, the `widthPx` input accepts a `number` while the `InputSignal` property returns a `string`.
+В примере выше Input `widthPx` принимает `number`, тогда как свойство `InputSignal` возвращает `string`.
 
-#### Built-in transformations
+#### Встроенные трансформации {#built-in-transformations}
 
-Angular includes two built-in transform functions for the two most common scenarios: coercing values to boolean and numbers.
+Angular включает две встроенные функции трансформации для двух наиболее распространённых сценариев: приведение значений к boolean и числам.
 
 ```ts
 import {Component, input, booleanAttribute, numberAttribute} from '@angular/core';
@@ -167,14 +166,13 @@ export class CustomSlider {
 }
 ```
 
-`booleanAttribute` imitates the behavior of standard HTML [boolean attributes](https://developer.mozilla.org/docs/Glossary/Boolean/HTML), where the
-_presence_ of the attribute indicates a "true" value. However, Angular's `booleanAttribute` treats the literal string `"false"` as the boolean `false`.
+`booleanAttribute` имитирует поведение стандартных HTML [булевых атрибутов](https://developer.mozilla.org/docs/Glossary/Boolean/HTML), где _наличие_ атрибута указывает на значение «true». Однако `booleanAttribute` в Angular интерпретирует строковый литерал `"false"` как булево `false`.
 
-`numberAttribute` attempts to parse the given value to a number, producing `NaN` if parsing fails.
+`numberAttribute` пытается разобрать заданное значение в число, возвращая `NaN`, если разбор не удался.
 
-### Input aliases
+### Псевдонимы Input {#input-aliases}
 
-You can specify the `alias` option to change the name of an input in templates.
+Вы можете указать параметр `alias`, чтобы изменить имя Input в шаблонах.
 
 ```ts {highlight:[5]}
 @Component({
@@ -189,17 +187,17 @@ export class CustomSlider {
 <custom-slider [sliderValue]="50" />
 ```
 
-This alias does not affect usage of the property in TypeScript code.
+Этот псевдоним не влияет на использование свойства в TypeScript-коде.
 
-While you should generally avoid aliasing inputs for components, this feature can be useful for renaming properties while preserving an alias for the original name or for avoiding collisions with the name of native DOM element properties.
+Хотя, как правило, следует избегать использования псевдонимов для Input-свойств компонентов, эта возможность может быть полезна для переименования свойств с сохранением псевдонима для исходного имени или для предотвращения конфликтов с именами нативных свойств DOM-элемента.
 
-## Model inputs
+## Модельные Input-свойства {#model-inputs}
 
-**Model inputs** are a special type of input that enable a component to propagate new values back to its parent component.
+**Модельные Input-свойства** — это особый тип Input, который позволяет компоненту передавать новые значения обратно в родительский компонент.
 
-When creating a component, you can define a model input similarly to how you create a standard input.
+При создании компонента вы можете определить модельный Input аналогично стандартному Input.
 
-Both types of input allow someone to bind a value into the property. However, **model inputs allow the component author to write values into the property**. If the property is bound with a two-way binding, the new value propagates to that binding.
+Оба типа Input позволяют привязать значение к свойству. Однако **модельные Input позволяют автору компонента записывать значения в свойство**. Если свойство привязано с помощью двусторонней привязки, новое значение передаётся в эту привязку.
 
 ```ts
 @Component({
@@ -228,15 +226,15 @@ export class MediaControls {
 }
 ```
 
-In the above example, the `CustomSlider` can write values into its `value` model input, which then propagates those values back to the `volume` signal in `MediaControls`. This binding keeps the values of `value` and `volume` in sync. Notice that the binding passes the `volume` signal instance, not the _value_ of the signal.
+В примере выше `CustomSlider` может записывать значения в свой модельный Input `value`, который затем передаёт эти значения обратно в сигнал `volume` компонента `MediaControls`. Эта привязка синхронизирует значения `value` и `volume`. Обратите внимание, что привязка передаёт _экземпляр_ сигнала `volume`, а не _значение_ сигнала.
 
-In other respects, model inputs work similarly to standard inputs. You can read the value by calling the signal function, including in [reactive contexts](guide/signals#reactive-contexts) like `computed` and `effect`.
+Во всех остальных аспектах модельные Input работают аналогично стандартным Input. Вы можете прочитать значение, вызвав сигнальную функцию, в том числе в [реактивных контекстах](guide/signals#reactive-contexts), таких как `computed` и `effect`.
 
-See [Two-way binding](guide/templates/two-way-binding) for more details on two-way binding in templates.
+Подробнее о двусторонней привязке в шаблонах см. в разделе [Двусторонняя привязка](guide/templates/two-way-binding).
 
-### Two-way binding with plain properties
+### Двусторонняя привязка с обычными свойствами {#two-way-binding-with-plain-properties}
 
-You can bind a plain JavaScript property to a model input.
+Вы можете привязать обычное JavaScript-свойство к модельному Input.
 
 ```angular-ts
 @Component({
@@ -250,11 +248,11 @@ export class MediaControls {
 }
 ```
 
-In the example above, the `CustomSlider` can write values into its `value` model input, which then propagates those values back to the `volume` property in `MediaControls`. This binding keeps the values of `value` and `volume` in sync.
+В примере выше `CustomSlider` может записывать значения в свой модельный Input `value`, который затем передаёт эти значения обратно в свойство `volume` компонента `MediaControls`. Эта привязка синхронизирует значения `value` и `volume`.
 
-### Implicit `change` events
+### Неявные события `change` {#implicit-change-events}
 
-When you declare a model input in a component or directive, Angular automatically creates a corresponding [output](guide/components/outputs) for that model. The output's name is the model input's name suffixed with "Change".
+Когда вы объявляете модельный Input в компоненте или директиве, Angular автоматически создаёт соответствующий [Output](guide/components/outputs) для этой модели. Имя Output формируется из имени модельного Input с суффиксом «Change».
 
 ```ts
 @Directive({
@@ -267,31 +265,31 @@ export class CustomCheckbox {
 }
 ```
 
-Angular emits this change event whenever you write a new value into the model input by calling its `set` or `update` methods.
+Angular генерирует это событие изменения при каждой записи нового значения в модельный Input через методы `set` или `update`.
 
-See [Custom events with outputs](guide/components/outputs) for more details on outputs.
+Подробнее см. в разделе [Пользовательские события и outputs](guide/components/outputs).
 
-### Customizing model inputs
+### Настройка модельных Input {#customizing-model-inputs}
 
-You can mark a model input as required or provide an alias in the same way as a [standard input](guide/components/inputs).
+Вы можете пометить модельный Input как обязательный или задать ему псевдоним так же, как и для [стандартного Input](guide/components/inputs).
 
-Model inputs do not support input transforms.
+Модельные Input не поддерживают трансформации Input.
 
-### When to use model inputs
+### Когда использовать модельные Input {#when-to-use-model-inputs}
 
-Use model inputs when you want a component to support two-way binding. This is typically appropriate when a component exists to modify a value based on user interaction. Most commonly, custom form controls, such as a date picker or combobox, should use model inputs for their primary value.
+Используйте модельные Input, когда хотите, чтобы компонент поддерживал двустороннюю привязку. Это обычно уместно, когда компонент предназначен для модификации значения на основе пользовательского взаимодействия. Чаще всего пользовательские элементы управления формами, такие как выбор даты (date picker) или выпадающий список (combobox), должны использовать модельные Input для своего основного значения.
 
-## Choosing input names
+## Выбор имён Input {#choosing-input-names}
 
-Avoid choosing input names that collide with properties on DOM elements like HTMLElement. Name collisions introduce confusion about whether the bound property belongs to the component or the DOM element.
+Избегайте выбора имён Input, которые конфликтуют со свойствами DOM-элементов, таких как HTMLElement. Конфликты имён создают путаницу относительно того, принадлежит ли привязанное свойство компоненту или DOM-элементу.
 
-Avoid adding prefixes for component inputs like you would with component selectors. Since a given element can only host one component, any custom properties can be assumed to belong to the component.
+Не добавляйте префиксы к Input-свойствам компонентов, как это делается с селекторами компонентов. Поскольку один элемент может содержать только один компонент, можно считать, что любые пользовательские свойства принадлежат компоненту.
 
-## Declaring inputs with the `@Input` decorator
+## Объявление Input с помощью декоратора `@Input` {#declaring-inputs-with-the-input-decorator}
 
-TIP: While the Angular team recommends using the signal-based `input` function for new projects, the original decorator-based `@Input` API remains fully supported.
+TIP: Хотя команда Angular рекомендует использовать сигнальную функцию `input` для новых проектов, оригинальный API на основе декоратора `@Input` по-прежнему полностью поддерживается.
 
-You can alternatively declare component inputs by adding the `@Input` decorator to a property:
+Вы можете альтернативно объявить Input компонента, добавив декоратор `@Input` к свойству:
 
 ```ts {highlight:[5]}
 @Component({
@@ -302,19 +300,19 @@ export class CustomSlider {
 }
 ```
 
-Binding to an input is the same in both signal-based and decorator-based inputs:
+Привязка к Input работает одинаково как для сигнальных, так и для декораторных Input:
 
 ```angular-html
 <custom-slider [value]="50" />
 ```
 
-### Customizing decorator-based inputs
+### Настройка декораторных Input {#customizing-decorator-based-inputs}
 
-The `@Input` decorator accepts a config object that lets you change the way that input works.
+Декоратор `@Input` принимает объект конфигурации, позволяющий изменять поведение Input.
 
-#### Required inputs
+#### Обязательные Input {#required-inputs-1}
 
-You can specify the `required` option to enforce that a given input must always have a value.
+Вы можете указать параметр `required` для обеспечения обязательного наличия значения у данного Input.
 
 ```ts {highlight:[5]}
 @Component({
@@ -325,11 +323,11 @@ export class CustomSlider {
 }
 ```
 
-If you try to use a component without specifying all of its required inputs, Angular reports an error at build-time.
+Если вы попытаетесь использовать компонент без указания всех его обязательных Input, Angular сообщит об ошибке во время сборки.
 
-#### Input transforms
+#### Трансформации Input {#input-transforms-1}
 
-You can specify a `transform` function to change the value of an input when it's set by Angular. This transform function works identically to transform functions for signal-based inputs described above.
+Вы можете указать функцию `transform` для изменения значения Input при его установке Angular. Эта функция трансформации работает идентично функциям трансформации для сигнальных Input, описанным выше.
 
 ```ts {highlight:[6]}
 @Component({
@@ -345,9 +343,9 @@ function trimString(value: string | undefined) {
 }
 ```
 
-#### Input aliases
+#### Псевдонимы Input {#input-aliases-1}
 
-You can specify the `alias` option to change the name of an input in templates.
+Вы можете указать параметр `alias`, чтобы изменить имя Input в шаблонах.
 
 ```ts {highlight:[5]}
 @Component({
@@ -362,13 +360,13 @@ export class CustomSlider {
 <custom-slider [sliderValue]="50" />
 ```
 
-The `@Input` decorator also accepts the alias as its first parameter in place of the config object.
+Декоратор `@Input` также принимает псевдоним в качестве первого параметра вместо объекта конфигурации.
 
-Input aliases work the same way as for signal-based inputs described above.
+Псевдонимы Input работают так же, как и для сигнальных Input, описанных выше.
 
-### Inputs with getters and setters
+### Input с геттерами и сеттерами {#inputs-with-getters-and-setters}
 
-When using decorator-based inputs, a property implemented with a getter and setter can be an input:
+При использовании декораторных Input свойство, реализованное с помощью геттера и сеттера, может быть Input:
 
 ```ts
 export class CustomSlider {
@@ -385,7 +383,7 @@ export class CustomSlider {
 }
 ```
 
-You can even create a _write-only_ input by only defining a public setter:
+Вы можете даже создать Input _только для записи_, определив только публичный сеттер:
 
 ```ts
 export class CustomSlider {
@@ -398,13 +396,13 @@ export class CustomSlider {
 }
 ```
 
-**Prefer using input transforms instead of getters and setters** if possible.
+**По возможности отдавайте предпочтение трансформациям Input вместо геттеров и сеттеров.**
 
-Avoid complex or costly getters and setters. Angular may invoke an input's setter multiple times, which may negatively impact application performance if the setter performs any costly behaviors, such as DOM manipulation.
+Избегайте сложных или ресурсоёмких геттеров и сеттеров. Angular может вызывать сеттер Input несколько раз, что может негативно повлиять на производительность приложения, если сеттер выполняет ресурсоёмкие операции, такие как манипуляции с DOM.
 
-## Specify inputs in the `@Component` decorator
+## Указание Input в декораторе `@Component` {#specify-inputs-in-the-component-decorator}
 
-In addition to the `@Input` decorator, you can also specify a component's inputs with the `inputs` property in the `@Component` decorator. This can be useful when a component inherits a property from a base class:
+Помимо декоратора `@Input`, вы также можете указать Input компонента с помощью свойства `inputs` в декораторе `@Component`. Это может быть полезно, когда компонент наследует свойство от базового класса:
 
 ```ts {highlight:[4]}
 // `CustomSlider` inherits the `disabled` property from `BaseSlider`.
@@ -415,7 +413,7 @@ In addition to the `@Input` decorator, you can also specify a component's inputs
 export class CustomSlider extends BaseSlider { }
 ```
 
-You can additionally specify an input alias in the `inputs` list by putting the alias after a colon in the string:
+Вы также можете указать псевдоним Input в списке `inputs`, поместив псевдоним после двоеточия в строке:
 
 ```ts {highlight:[4]}
 // `CustomSlider` inherits the `disabled` property from `BaseSlider`.

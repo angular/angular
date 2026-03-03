@@ -1,38 +1,28 @@
-# Advanced component configuration
+# Расширенная конфигурация компонентов {#advanced-component-configuration}
 
-TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: В этом руководстве предполагается, что вы уже ознакомились с [Руководством по основам](essentials). Прочитайте его в первую очередь, если вы новичок в Angular.
 
-## ChangeDetectionStrategy
+## ChangeDetectionStrategy {#changedetectionstrategy}
 
-The `@Component` decorator accepts a `changeDetection` option that controls the component's **change
-detection mode**. There are two change detection mode options.
+Декоратор `@Component` принимает параметр `changeDetection`, который управляет **режимом обнаружения изменений** компонента. Существует два варианта режима обнаружения изменений.
 
-**`ChangeDetectionStrategy.Eager`/`Default`** is, unsurprisingly, the default strategy. In this mode,
-Angular checks whether the component's DOM needs an update whenever any activity may have occurred
-application-wide. Activities that trigger this checking include user interaction, network response,
-timers, and more.
+**`ChangeDetectionStrategy.Eager`/`Default`** — это, как нетрудно догадаться, стратегия по умолчанию. В этом режиме Angular проверяет, нуждается ли DOM компонента в обновлении, при каждом действии, которое могло произойти в масштабе всего приложения. К таким действиям относятся пользовательское взаимодействие, сетевые ответы, таймеры и другие.
 
-**`ChangeDetectionStrategy.OnPush`** is an optional mode that reduces the amount of checking Angular
-needs to perform. In this mode, the framework only checks if a component's DOM needs an update when:
+**`ChangeDetectionStrategy.OnPush`** — это опциональный режим, который сокращает объём проверок, выполняемых Angular. В этом режиме фреймворк проверяет, нуждается ли DOM компонента в обновлении, только когда:
 
-- A component input has changes as a result of a binding in a template, or
-- An event listener in this component runs
-- The component is explicitly marked for check, via `ChangeDetectorRef.markForCheck` or something which wraps it, like `AsyncPipe`.
+- Input компонента изменился в результате привязки в шаблоне, или
+- Обработчик события в этом компоненте был выполнен
+- Компонент явно помечен для проверки через `ChangeDetectorRef.markForCheck` или что-то, что его оборачивает, например `AsyncPipe`.
 
-Additionally, when an OnPush component is checked, Angular _also_ checks all of its ancestor
-components, traversing upwards through the application tree.
+Кроме того, когда проверяется компонент с OnPush, Angular _также_ проверяет все его предковые компоненты, проходя вверх по дереву приложения.
 
-## PreserveWhitespaces
+## PreserveWhitespaces {#preservewhitespaces}
 
-By default, Angular removes and collapses superfluous whitespace in templates, most commonly from
-newlines and indentation. You can change this setting by explicitly setting `preserveWhitespaces` to
-`true` in a component's metadata.
+По умолчанию Angular удаляет и сворачивает лишние пробелы в шаблонах, чаще всего из переводов строк и отступов. Вы можете изменить это поведение, явно установив `preserveWhitespaces` в `true` в метаданных компонента.
 
-## Custom element schemas
+## Схемы пользовательских элементов {#custom-element-schemas}
 
-By default, Angular throws an error when it encounters an unknown HTML element. You can
-disable this behavior for a component by including `CUSTOM_ELEMENTS_SCHEMA` in the `schemas`
-property in your component metadata.
+По умолчанию Angular выбрасывает ошибку при обнаружении неизвестного HTML-элемента. Вы можете отключить это поведение для компонента, включив `CUSTOM_ELEMENTS_SCHEMA` в свойство `schemas` в метаданных компонента.
 
 ```angular-ts
 import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
@@ -45,4 +35,4 @@ import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 export class ComponentWithCustomElements { }
 ```
 
-Angular does not support any other schemas at this time.
+Angular не поддерживает другие схемы в настоящее время.

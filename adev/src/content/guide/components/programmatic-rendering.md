@@ -1,23 +1,16 @@
-# Programmatically rendering components
+# Программный рендеринг компонентов {#programmatically-rendering-components}
 
-TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: В этом руководстве предполагается, что вы уже ознакомились с [Руководством по основам](essentials). Прочитайте его в первую очередь, если вы новичок в Angular.
 
-In addition to using a component directly in a template, you can also dynamically render components
-programmatically. This is helpful for situations when a component is unknown initially (thus can not
-be referenced in a template directly) and it depends on some conditions.
+Помимо использования компонента непосредственно в шаблоне, вы также можете динамически отображать компоненты программно. Это полезно в ситуациях, когда компонент заранее неизвестен (и поэтому не может быть указан в шаблоне напрямую) и зависит от каких-либо условий.
 
-There are two main ways to render a component programmatically: in a template using `NgComponentOutlet`,
-or in your TypeScript code using `ViewContainerRef`.
+Существует два основных способа программного рендеринга компонента: в шаблоне с использованием `NgComponentOutlet` или в TypeScript-коде с использованием `ViewContainerRef`.
 
-HELPFUL: for lazy-loading use-cases (for example if you want to delay loading of a heavy component), consider
-using the built-in [`@defer` feature](/guide/templates/defer) instead. The `@defer` feature allows the code
-of any components, directives, and pipes inside the `@defer` block to be extracted into separate JavaScript
-chunks automatically and loaded only when necessary, based on the configured triggers.
+HELPFUL: Для сценариев ленивой загрузки (например, если вы хотите отложить загрузку тяжёлого компонента) рассмотрите использование встроенной [функции `@defer`](guide/templates/defer). Функция `@defer` позволяет автоматически выделить код всех компонентов, директив и pipe внутри блока `@defer` в отдельные JavaScript-чанки и загружать их только при необходимости, в зависимости от настроенных триггеров.
 
-## Using NgComponentOutlet
+## Использование NgComponentOutlet {#using-ngcomponentoutlet}
 
-`NgComponentOutlet` is a structural directive that dynamically renders a given component in a
-template.
+`NgComponentOutlet` — это структурная директива, которая динамически отображает заданный компонент в шаблоне.
 
 ```angular-ts
 @Component({/*...*/})
@@ -41,9 +34,9 @@ export class CustomDialog {
 }
 ```
 
-### Passing inputs to dynamically rendered components
+### Передача Input-свойств динамически отображаемым компонентам {#passing-inputs-to-dynamically-rendered-components}
 
-You can pass inputs to the dynamically rendered component using the `ngComponentOutletInputs` property. This property accepts an object where keys are input names and values are the input values.
+Вы можете передавать Input-свойства динамически отображаемому компоненту с помощью свойства `ngComponentOutletInputs`. Это свойство принимает объект, где ключи — имена Input-свойств, а значения — соответствующие значения.
 
 ```angular-ts
 @Component({
@@ -71,11 +64,11 @@ export class ProfileView {
 }
 ```
 
-The inputs are updated whenever the `greetingInputs` signal changes, keeping the dynamic component in sync with the parent's state.
+Input-свойства обновляются при каждом изменении сигнала `greetingInputs`, поддерживая динамический компонент в синхронизации с состоянием родительского компонента.
 
-### Providing content projection
+### Проекция контента {#providing-content-projection}
 
-Use `ngComponentOutletContent` to pass projected content to the dynamically rendered component. This is useful when the dynamic component uses `<ng-content>` to display content.
+Используйте `ngComponentOutletContent` для передачи проецируемого контента динамически отображаемому компоненту. Это полезно, когда динамический компонент использует `<ng-content>` для отображения контента.
 
 ```angular-ts
 @Component({
@@ -115,11 +108,11 @@ export class DynamicCard {
 }
 ```
 
-NOTE: Hydration does not support projecting DOM nodes created with native DOM APIs. This causes an [NG0503 error](/errors/NG0503). Use Angular APIs to create projected content or add `ngSkipHydration` to the component.
+NOTE: Гидратация не поддерживает проецирование DOM-узлов, созданных с помощью нативных DOM API. Это вызывает [ошибку NG0503](errors/NG0503). Используйте Angular API для создания проецируемого контента или добавьте `ngSkipHydration` к компоненту.
 
-### Providing injectors
+### Предоставление инжекторов {#providing-injectors}
 
-You can provide a custom injector to the dynamically created component using `ngComponentOutletInjector`. This is useful for providing component-specific services or configuration.
+Вы можете предоставить пользовательский инжектор динамически создаваемому компоненту с помощью `ngComponentOutletInjector`. Это полезно для предоставления специфичных для компонента сервисов или конфигурации.
 
 ```angular-ts
 export const THEME_DATA = new InjectionToken<string>('THEME_DATA', {
@@ -148,9 +141,9 @@ export class DynamicPanel {
 }
 ```
 
-### Accessing the component instance
+### Доступ к экземпляру компонента {#accessing-the-component-instance}
 
-You can access the dynamically created component's instance using the directive's `exportAs` feature:
+Вы можете получить доступ к экземпляру динамически созданного компонента с помощью функции `exportAs` директивы:
 
 ```angular-ts
 @Component({
@@ -177,20 +170,15 @@ export class CounterHost {
 }
 ```
 
-NOTE: The `componentInstance` property is `null` before the component is rendered.
+NOTE: Свойство `componentInstance` равно `null` до тех пор, пока компонент не будет отрисован.
 
-See the [NgComponentOutlet API reference](api/common/NgComponentOutlet) for more information on the
-directive's capabilities.
+Подробнее о возможностях директивы см. в [справочнике API NgComponentOutlet](api/common/NgComponentOutlet).
 
-## Using ViewContainerRef
+## Использование ViewContainerRef {#using-viewcontainerref}
 
-A **view container** is a node in Angular's component tree that can contain content. Any component
-or directive can inject `ViewContainerRef` to get a reference to a view container corresponding to
-that component or directive's location in the DOM.
+**Контейнер представления** — это узел в дереве компонентов Angular, который может содержать контент. Любой компонент или директива может внедрить `ViewContainerRef` для получения ссылки на контейнер представления, соответствующий расположению этого компонента или директивы в DOM.
 
-You can use the `createComponent`method on `ViewContainerRef` to dynamically create and render a
-component. When you create a new component with a `ViewContainerRef`, Angular appends it into the
-DOM as the next sibling of the component or directive that injected the `ViewContainerRef`.
+Вы можете использовать метод `createComponent` у `ViewContainerRef` для динамического создания и отображения компонента. Когда вы создаёте новый компонент с помощью `ViewContainerRef`, Angular добавляет его в DOM как следующий соседний элемент (sibling) того компонента или директивы, которая внедрила `ViewContainerRef`.
 
 ```angular-ts
 @Component({
@@ -222,7 +210,7 @@ export class InnerItem {
 }
 ```
 
-In the example above, clicking the "Load content" button results in the following DOM structure
+В примере выше нажатие кнопки «Load content» приводит к следующей DOM-структуре:
 
 ```angular-html
 <outer-container>
@@ -235,13 +223,11 @@ In the example above, clicking the "Load content" button results in the followin
 </outer-container>
 ```
 
-## Lazy-loading components
+## Ленивая загрузка компонентов {#lazy-loading-components}
 
-HELPFUL: if you want to lazy-load some components, you may consider using the built-in [`@defer` feature](/guide/templates/defer)
-instead.
+HELPFUL: Если вы хотите использовать ленивую загрузку компонентов, рассмотрите использование встроенной [функции `@defer`](guide/templates/defer).
 
-If your use-case is not covered by the `@defer` feature, you can use either `NgComponentOutlet` or
-`ViewContainerRef` with a standard JavaScript [dynamic import](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/import).
+Если ваш сценарий не покрывается функцией `@defer`, вы можете использовать `NgComponentOutlet` или `ViewContainerRef` со стандартным JavaScript [динамическим импортом](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/import).
 
 ```angular-ts
 @Component({
@@ -272,19 +258,19 @@ export class AdminSettings {
 }
 ```
 
-The example above loads and displays the `AdvancedSettings` upon receiving a button click.
+В примере выше `AdvancedSettings` загружается и отображается по нажатию кнопки.
 
-## Binding inputs, outputs and setting host directives at creation
+## Привязка Input, Output и установка хост-директив при создании {#binding-inputs-outputs-and-setting-host-directives-at-creation}
 
-When dynamically creating components, manually setting inputs and subscribing to outputs can be error-prone. You often need to write extra code just to wire up bindings after the component is instantiated.
+При динамическом создании компонентов ручная установка Input-свойств и подписка на Output-события может быть подвержена ошибкам. Часто приходится писать дополнительный код для настройки привязок после создания экземпляра компонента.
 
-To simplify this, both `createComponent` and `ViewContainerRef.createComponent` support passing a `bindings` array with helpers like `inputBinding()`, `outputBinding()`, and `twoWayBinding()` to configure inputs and outputs up front. You can also specify a `directives` array to apply any host directives. This enables creating components programmatically with template-like bindings in a single, declarative call.
+Для упрощения этого процесса как `createComponent`, так и `ViewContainerRef.createComponent` поддерживают передачу массива `bindings` с вспомогательными функциями `inputBinding()`, `outputBinding()` и `twoWayBinding()` для предварительной настройки Input и Output. Вы также можете указать массив `directives` для применения хост-директив. Это позволяет создавать компоненты программно с привязками, аналогичными шаблонным, в одном декларативном вызове.
 
-### Host view using `ViewContainerRef.createComponent`
+### Представление хоста с помощью `ViewContainerRef.createComponent` {#host-view-using-viewcontainerrefcreatecomponent}
 
-`ViewContainerRef.createComponent` creates a component and automatically inserts its host view and host element into the container’s view hierarchy at the container’s location. Use this when the dynamic component should become part of the container’s logical and visual structure (for example, adding list items or inline UI).
+`ViewContainerRef.createComponent` создаёт компонент и автоматически вставляет его хост-представление и хост-элемент в иерархию представлений контейнера в месте расположения контейнера. Используйте этот подход, когда динамический компонент должен стать частью логической и визуальной структуры контейнера (например, добавление элементов списка или встроенного UI).
 
-By contrast, the standalone `createComponent` API does not attach the new component to any existing view or DOM location — it returns a `ComponentRef` and gives you explicit control over where to place the component’s host element.
+В отличие от этого, автономный API `createComponent` не присоединяет новый компонент к какому-либо существующему представлению или месту в DOM — он возвращает `ComponentRef` и предоставляет вам полный контроль над размещением хост-элемента компонента.
 
 ```angular-ts
 import {Component, input, model, output} from '@angular/core';
@@ -346,11 +332,11 @@ export class Host {
 }
 ```
 
-In the example above, the dynamic **AppWarning** is created with its `canClose` input bound to a reactive signal, a two-way binding on its `isExpanded` state, and an output listener for `close`. The `FocusTrap` and `ThemeDirective` are attached to the host element via `directives`.
+В примере выше динамический **AppWarning** создаётся с Input `canClose`, привязанным к реактивному сигналу, двусторонней привязкой состояния `isExpanded` и слушателем Output для `close`. `FocusTrap` и `ThemeDirective` присоединяются к хост-элементу через `directives`.
 
-### Popup attached to `document.body` with `createComponent` + `hostElement`
+### Всплывающее окно, присоединённое к `document.body`, с помощью `createComponent` + `hostElement` {#popup-attached-to-documentbody-with-createcomponent--hostelement}
 
-Use this when rendering outside the current view hierarchy (e.g., overlays). The provided `hostElement` becomes the component’s host in the DOM, so Angular doesn’t create a new element matching the selector. Lets you configure **bindings** directly.
+Используйте этот подход при рендеринге вне текущей иерархии представлений (например, оверлеи). Предоставленный `hostElement` становится хост-элементом компонента в DOM, поэтому Angular не создаёт новый элемент, соответствующий селектору. Позволяет настраивать **привязки** напрямую.
 
 ```ts
 import {
@@ -387,7 +373,7 @@ export class PopupService {
       ],
     });
 
-    // Registers the component’s view so it participates in change detection cycle.
+    // Registers the component's view so it participates in change detection cycle.
     this.appRef.attachView(ref.hostView);
     // Inserts the provided host element into the DOM (outside the normal Angular view hierarchy).
     // This is what makes the popup visible on screen, typically used for overlays or modals.

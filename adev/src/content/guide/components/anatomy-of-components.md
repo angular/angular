@@ -1,15 +1,15 @@
-<docs-decorative-header title="Anatomy of a component" imgSrc="adev/src/assets/images/components.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Анатомия компонента" imgSrc="adev/src/assets/images/components.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
-TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: В этом руководстве предполагается, что вы уже ознакомились с [Руководством по основам](essentials). Прочитайте его в первую очередь, если вы новичок в Angular.
 
-Every component must have:
+Каждый компонент должен содержать:
 
-- A TypeScript class with _behaviors_ such as handling user input and fetching data from a server
-- An HTML template that controls what renders into the DOM
-- A [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors) that defines how the component is used in HTML
+- TypeScript-класс с _поведением_, таким как обработка пользовательского ввода и получение данных с сервера
+- HTML-шаблон, который управляет отображением в DOM
+- [CSS-селектор](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors), определяющий, как компонент используется в HTML
 
-You provide Angular-specific information for a component by adding a `@Component` [decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) on top of the TypeScript class:
+Специфичная для Angular информация о компоненте задается с помощью [декоратора](https://www.typescriptlang.org/docs/handbook/decorators.html) `@Component`, размещаемого над TypeScript-классом:
 
 ```angular-ts {highlight: [1, 2, 3, 4]}
 @Component({
@@ -19,11 +19,11 @@ You provide Angular-specific information for a component by adding a `@Component
 export class ProfilePhoto {}
 ```
 
-For full details on writing Angular templates, including data binding, event handling, and control flow, see the [Templates guide](guide/templates).
+Подробную информацию о написании шаблонов Angular, включая привязку данных, обработку событий и поток управления, см. в [Руководстве по шаблонам](guide/templates).
 
-The object passed to the `@Component` decorator is called the component's **metadata**. This includes the `selector`, `template`, and other properties described throughout this guide.
+Объект, передаваемый в декоратор `@Component`, называется **метаданными** компонента. Он включает свойства `selector`, `template` и другие, описанные в данном руководстве.
 
-Components can optionally include a list of CSS styles that apply to that component's DOM:
+Компоненты могут дополнительно включать список CSS-стилей, применяемых к DOM этого компонента:
 
 ```angular-ts {highlight: [4]}
 @Component({
@@ -38,9 +38,9 @@ Components can optionally include a list of CSS styles that apply to that compon
 export class ProfilePhoto {}
 ```
 
-By default, a component's styles only affect elements defined in that component's template. See [Styling Components](guide/components/styling) for details on Angular's approach to styling.
+По умолчанию стили компонента применяются только к элементам, определённым в его шаблоне. Подробнее об подходе Angular к стилизации см. в разделе [Стилизация компонентов](guide/components/styling).
 
-You can alternatively choose to write your template and styles in separate files:
+Вы также можете вынести шаблон и стили в отдельные файлы:
 
 ```ts {highlight: [3,4]}
 @Component({
@@ -51,16 +51,16 @@ You can alternatively choose to write your template and styles in separate files
 export class ProfilePhoto {}
 ```
 
-This can help separate the concerns of _presentation_ from _behavior_ in your project. You can choose one approach for your entire project, or you decide which to use for each component.
+Это помогает разделить задачи _представления_ и _поведения_ в вашем проекте. Вы можете выбрать один подход для всего проекта или решать для каждого компонента отдельно.
 
-Both `templateUrl` and `styleUrl` are relative to the directory in which the component resides.
+Пути `templateUrl` и `styleUrl` указываются относительно директории, в которой находится компонент.
 
-## Using components
+## Использование компонентов {#using-components}
 
-### Imports in the `@Component` decorator
+### Импорты в декораторе `@Component` {#imports-in-the-component-decorator}
 
-To use a component, [directive](guide/directives), or [pipe](guide/templates/pipes), you must add
-it to the `imports` array in the `@Component` decorator:
+Чтобы использовать компонент, [директиву](guide/directives) или [pipe](guide/templates/pipes), необходимо добавить
+их в массив `imports` в декораторе `@Component`:
 
 ```ts
 import {ProfilePhoto} from './profile-photo';
@@ -74,13 +74,13 @@ import {ProfilePhoto} from './profile-photo';
 export class UserProfile {}
 ```
 
-By default, Angular components are _standalone_, meaning that you can directly add them to the `imports` array of other components. Components created with an earlier version of Angular may instead specify `standalone: false` in their `@Component` decorator. For these components, you instead import the `NgModule` in which the component is defined. See the full [`NgModule` guide](guide/ngmodules/overview) for details.
+По умолчанию компоненты Angular являются _standalone_, что означает, что вы можете напрямую добавлять их в массив `imports` других компонентов. Компоненты, созданные в более ранних версиях Angular, могут вместо этого указывать `standalone: false` в декораторе `@Component`. Для таких компонентов следует импортировать `NgModule`, в котором они определены. Подробнее см. в [руководстве по NgModule](guide/ngmodules/overview).
 
-Important: In Angular versions before 19.0.0, the `standalone` option defaults to `false`.
+Important: В версиях Angular до 19.0.0 параметр `standalone` по умолчанию имеет значение `false`.
 
-### Showing components in a template
+### Отображение компонентов в шаблоне {#showing-components-in-a-template}
 
-Every component defines a [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors):
+Каждый компонент определяет [CSS-селектор](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors):
 
 ```angular-ts {highlight: [2]}
 @Component({
@@ -90,9 +90,9 @@ Every component defines a [CSS selector](https://developer.mozilla.org/docs/Lear
 export class ProfilePhoto { }
 ```
 
-See [Component Selectors](guide/components/selectors) for details about which types of selectors Angular supports and guidance on choosing a selector.
+Подробнее о поддерживаемых типах селекторов и рекомендациях по их выбору см. в разделе [Селекторы компонентов](guide/components/selectors).
 
-You show a component by creating a matching HTML element in the template of _other_ components:
+Для отображения компонента создайте соответствующий HTML-элемент в шаблоне _другого_ компонента:
 
 ```angular-ts {highlight: [8]}
 @Component({
@@ -107,12 +107,11 @@ export class ProfilePhoto {}
 export class UserProfile {}
 ```
 
-Angular creates an instance of the component for every matching HTML element it encounters. The DOM element that matches a component's selector is referred to as that component's **host element**. The contents of a component's template are rendered inside its host element.
+Angular создает экземпляр компонента для каждого соответствующего HTML-элемента, который он встречает. DOM-элемент, соответствующий селектору компонента, называется **хост-элементом** этого компонента. Содержимое шаблона компонента отображается внутри его хост-элемента.
 
-The DOM rendered by a component, corresponding to that component's template, is called that
-component's **view**.
+DOM, отрисованный компонентом (соответствующий его шаблону), называется **представлением** (view) этого компонента.
 
-In composing components in this way, **you can think of your Angular application as a tree of components**.
+Компонуя компоненты таким образом, **вы можете представить ваше Angular-приложение как дерево компонентов**.
 
 ```mermaid
 flowchart TD
@@ -125,4 +124,4 @@ flowchart TD
     E[UserBio]
 ```
 
-This tree structure is important to understanding several other Angular concepts, including [dependency injection](guide/di) and [child queries](guide/components/queries).
+Эта древовидная структура важна для понимания ряда других концепций Angular, включая [внедрение зависимостей](guide/di) и [дочерние запросы](guide/components/queries).
