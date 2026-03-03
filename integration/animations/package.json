@@ -32,7 +32,7 @@
     "@types/jasmine": "^6.0.0",
     "@types/node": "^20.14.8",
     "concurrently": "9.2.1",
-    "jasmine": "5.0.0",
+    "jasmine": "6.1.0",
     "jasmine-core": "6.1.0",
     "puppeteer": "24.37.5",
     "ts-node": "^10.9.1",
