@@ -16,10 +16,12 @@ import {
   Injector,
   Input,
   inputBinding,
+  makeStateKey,
   resource,
   ResourceRef,
   ResourceStatus,
   signal,
+  TransferState,
 } from '../../src/core';
 import {promiseWithResolvers} from '../../src/util/promise_with_resolvers';
 import {TestBed} from '../../testing';
@@ -1117,3 +1119,67 @@ function extractError(fn: () => unknown): Error | undefined {
     return err as Error;
   }
 }
+
+describe('with TransferState', () => {
+  let transferState: TransferState;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({providers: [TransferState]});
+    transferState = TestBed.inject(TransferState);
+  });
+
+  it('should read from TransferState if a key is present', async () => {
+    const key = makeStateKey<number>('test-key');
+    transferState.set(key, 123);
+
+    const testResource = resource({
+      loader: async () => 456,
+      transferCacheKey: () => key,
+      injector: TestBed.inject(Injector),
+    });
+
+    // Should be synchronously resolved from cache
+    expect(testResource.status()).toBe('resolved');
+    expect(testResource.value()).toBe(123);
+
+    // Should prevent loader from running
+    await flushMicrotasks();
+    expect(testResource.value()).toBe(123);
+  });
+
+  it('should write to TransferState on server when resolved', async () => {
+    (globalThis as any).ngServerMode = true;
+    const key = makeStateKey<number>('server-key');
+
+    const testResource = resource({
+      loader: async () => 789,
+      transferCacheKey: () => key,
+      injector: TestBed.inject(Injector),
+    });
+
+    expect(testResource.status()).toBe('loading');
+
+    await flushMicrotasks();
+
+    expect(testResource.status()).toBe('resolved');
+    expect(testResource.value()).toBe(789);
+    expect(transferState.get(key, null!)).toBe(789);
+    (globalThis as any).ngServerMode = undefined;
+  });
+
+  it('should not write to TransferState on client when resolved', async () => {
+    const key = makeStateKey<number>('client-key');
+
+    const testResource = resource({
+      loader: async () => 101112,
+      transferCacheKey: () => key,
+      injector: TestBed.inject(Injector),
+    });
+
+    await flushMicrotasks();
+
+    expect(testResource.status()).toBe('resolved');
+    expect(testResource.value()).toBe(101112);
+    expect(transferState.hasKey(key)).toBeFalse();
+  });
+});
