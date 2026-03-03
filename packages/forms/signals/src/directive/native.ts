@@ -9,6 +9,7 @@
 import {untracked} from '@angular/core';
 import {NativeInputParseError, WithoutFieldTree} from '../api/rules';
 import type {ParseResult} from '../api/transformed_value';
+import type {InputValidityMonitor} from './input_validity_monitor';
 
 // Re-export shared native utilities from main forms package
 export {
@@ -36,10 +37,11 @@ import type {ɵNativeFormControl as NativeFormControl} from '@angular/forms';
 export function getNativeControlValue(
   element: NativeFormControl,
   currentValue: () => unknown,
+  validityMonitor: InputValidityMonitor,
 ): ParseResult<unknown> {
   let modelValue: unknown;
 
-  if (element.validity.badInput) {
+  if (isInput(element) && validityMonitor.isBadInput(element)) {
     return {
       error: new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>,
     };
@@ -161,4 +163,17 @@ export function setNativeNumberControlValue(element: HTMLInputElement, value: nu
   } else {
     element.valueAsNumber = value;
   }
+}
+export function isInput(element: HTMLElement): element is HTMLInputElement {
+  return element.tagName === 'INPUT';
+}
+
+export function inputRequiresValidityTracking(input: HTMLInputElement): boolean {
+  return (
+    input.type === 'date' ||
+    input.type === 'datetime-local' ||
+    input.type === 'month' ||
+    input.type === 'time' ||
+    input.type === 'week'
+  );
 }

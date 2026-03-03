@@ -6,11 +6,25 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, signal, viewChildren} from '@angular/core';
+import {Component, signal, viewChildren, Injectable} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormField, form} from '../../public_api';
+import {InputValidityMonitor} from '../../src/directive/input_validity_monitor';
+import {TestInputValidityMonitor} from './test_input_validity_monitor';
 
 describe('numeric inputs', () => {
+  let validityMonitor: TestInputValidityMonitor;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        TestInputValidityMonitor,
+        {provide: InputValidityMonitor, useExisting: TestInputValidityMonitor},
+      ],
+    });
+    validityMonitor = TestBed.inject(TestInputValidityMonitor);
+  });
+
   describe('parsing logic', () => {
     it('should not change the model when user enters un-parsable input', () => {
       @Component({
@@ -24,13 +38,11 @@ describe('numeric inputs', () => {
 
       const fixture = act(() => TestBed.createComponent(TestCmp));
       const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
-      patchNumberInput(input);
 
       expect(input.value).toBe('42');
 
       act(() => {
-        input.value = '42e';
-        input.dispatchEvent(new Event('input'));
+        validityMonitor.setInputState(input, '42e', true);
       });
 
       expect(fixture.componentInstance.f().value()).toBe(42);
@@ -39,8 +51,7 @@ describe('numeric inputs', () => {
       ]);
 
       act(() => {
-        input.value = '42e1';
-        input.dispatchEvent(new Event('input'));
+        validityMonitor.setInputState(input, '42e1', false);
       });
 
       expect(fixture.componentInstance.f().value()).toBe(420);
@@ -64,16 +75,13 @@ describe('numeric inputs', () => {
       const fixture = act(() => TestBed.createComponent(TestCmp));
       const input1 = fixture.nativeElement.querySelector('#input1') as HTMLInputElement;
       const input2 = fixture.nativeElement.querySelector('#input2') as HTMLInputElement;
-      patchNumberInput(input1);
-      patchNumberInput(input2);
 
       expect(input1.value).toBe('5');
       expect(input2.value).toBe('5');
 
       // Trigger parse error on input1
       act(() => {
-        input1.value = '5e';
-        input1.dispatchEvent(new Event('input'));
+        validityMonitor.setInputState(input1, '5e', true);
       });
 
       expect(fixture.componentInstance.bindings()[0].errors()).toEqual([
@@ -82,8 +90,7 @@ describe('numeric inputs', () => {
 
       // Update model via input2
       act(() => {
-        input2.value = '42';
-        input2.dispatchEvent(new Event('input'));
+        validityMonitor.setInputState(input2, '42', false);
       });
 
       expect(fixture.componentInstance.bindings()[0].errors()).toEqual([]);
@@ -143,18 +150,15 @@ describe('numeric inputs', () => {
 
       const fixture = act(() => TestBed.createComponent(TestCmp));
       const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
-      patchNumberInput(input);
 
       act(() => {
-        input.value = '4';
-        input.dispatchEvent(new Event('input'));
+        validityMonitor.setInputState(input, '4', false);
       });
 
       expect(fixture.componentInstance.f().value()).toBe(4);
 
       act(() => {
-        input.value = '';
-        input.dispatchEvent(new Event('input'));
+        validityMonitor.setInputState(input, '', false);
       });
 
       expect(fixture.componentInstance.f().value()).toBeNull();
@@ -310,35 +314,4 @@ function act<T>(fn: () => T): T {
   } finally {
     TestBed.tick();
   }
-}
-
-/**
- * Patch a number input to make its validity work as it would if the user was actually typing.
- *
- * `validity.badInput` is updated when the user types in the `<input>`, but when we simulate it
- * by setting the value and dispatching an event, that flag is not updated. To work around this
- * we patch the input.
- */
-function patchNumberInput(input: HTMLInputElement) {
-  let value = input.value;
-  Object.defineProperties(input, {
-    value: {
-      set: (v) => {
-        value = v;
-      },
-      get: () => {
-        const num = Number(value);
-        return Number.isNaN(num) ? '' : value;
-      },
-    },
-    valueAsNumber: {
-      get: () => Number(value),
-      set: (v) => {
-        value = String(v);
-      },
-    },
-  });
-  Object.defineProperties(input.validity, {
-    badInput: {get: () => Number.isNaN(Number(value))},
-  });
 }
