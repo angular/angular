@@ -95,7 +95,7 @@ export class TcbSwitchOp extends TcbOp {
           if (guard === null) {
             guard = comparison;
           } else {
-            guard = new TcbExpr(`${guard.print()} || ${comparison.print()}`);
+            guard = new TcbExpr(`(${guard.print()}) || (${comparison.print()})`);
           }
         }
       }
@@ -132,7 +132,7 @@ export class TcbSwitchOp extends TcbOp {
         if (guard === null) {
           guard = comparison;
         } else {
-          guard = new TcbExpr(`${guard.print()} && ${comparison.print()}`);
+          guard = new TcbExpr(`(${guard.print()}) && (${comparison.print()})`);
         }
       }
     }

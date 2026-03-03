@@ -69,9 +69,11 @@ describe('type check blocks', () => {
 
   it('should handle nullish coalescing operator', () => {
     expect(tcb('{{ a ?? b }}')).toContain('((((this).a)) ?? (((this).b)))');
-    expect(tcb('{{ a ?? b ?? c }}')).toContain('(((((this).a)) ?? (((this).b))) ?? (((this).c)))');
+    expect(tcb('{{ a ?? b ?? c }}')).toContain(
+      '((((((this).a)) ?? (((this).b)))) ?? (((this).c)))',
+    );
     expect(tcb('{{ (a ?? b) + (c ?? e) }}')).toContain(
-      '((((((this).a)) ?? (((this).b)))) + (((((this).c)) ?? (((this).e)))))',
+      '(((((((this).a)) ?? (((this).b))))) + ((((((this).c)) ?? (((this).e))))))',
     );
   });
 
@@ -104,9 +106,9 @@ describe('type check blocks', () => {
 
   it('should handle exponentiation expressions', () => {
     expect(tcb('{{a * b ** c + d}}')).toContain(
-      '(((((this).a)) * ((((this).b)) ** (((this).c)))) + (((this).d)))',
+      '(((((this).a)) * (((((this).b)) ** (((this).c))))) + (((this).d)))',
     );
-    expect(tcb('{{a ** b ** c}}')).toContain('((((this).a)) ** ((((this).b)) ** (((this).c))))');
+    expect(tcb('{{a ** b ** c}}')).toContain('((((this).a)) ** (((((this).b)) ** (((this).c)))))');
   });
 
   it('should handle "in" expressions', () => {
@@ -1195,8 +1197,8 @@ describe('type check blocks', () => {
           strictNullInputBindings: false,
         };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('_t1.dirInput = (((this).a)!);');
-        expect(block).toContain('((this).b)!;');
+        expect(block).toContain('_t1.dirInput = ((((this).a))!);');
+        expect(block).toContain('(((this).b))!;');
       });
     });
 
@@ -1215,8 +1217,8 @@ describe('type check blocks', () => {
           checkTypeOfInputBindings: false,
         };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('_t1.dirInput = ((((this).a) as any));');
-        expect(block).toContain('(((this).b) as any);');
+        expect(block).toContain('_t1.dirInput = (((((this).a)) as any));');
+        expect(block).toContain('((((this).b)) as any);');
       });
 
       it('should wrap the cast to any in parentheses when required', () => {
@@ -1226,7 +1228,7 @@ describe('type check blocks', () => {
           checkTypeOfInputBindings: false,
         };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain('_t1.dirInput = (((((this).a)) === (((this).b)) as any));');
+        expect(block).toContain('_t1.dirInput = ((((((this).a)) === (((this).b))) as any));');
       });
     });
 
@@ -1920,13 +1922,13 @@ describe('type check blocks', () => {
 
       expect(result).toContain(`if ((((this).expr)) === (0)) { (this).zero(); }`);
       expect(result).toContain(
-        `if (!((((this).expr)) === (0)) && (((this).expr)) === (1)) { (this).one(); }`,
+        `if ((!((((this).expr)) === (0))) && ((((this).expr)) === (1))) { (this).one(); }`,
       );
       expect(result).toContain(
-        `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && (((this).expr)) === (2)) { (this).two(); }`,
+        `if (((!((((this).expr)) === (0))) && (!((((this).expr)) === (1)))) && ((((this).expr)) === (2))) { (this).two(); }`,
       );
       expect(result).toContain(
-        `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && !((((this).expr)) === (2))) { (this).otherwise(); }`,
+        `if (((!((((this).expr)) === (0))) && (!((((this).expr)) === (1)))) && (!((((this).expr)) === (2)))) { (this).otherwise(); }`,
       );
     });
 
@@ -2089,7 +2091,7 @@ describe('type check blocks', () => {
       expect(result).toContain(`if (((this).expr) === 1) { (this).one(); }`);
       expect(result).toContain(`if (((this).expr) === 2) { (this).two(); }`);
       expect(result).toContain(
-        `if (((this).expr) !== 1 && ((this).expr) !== 2) { (this).default(); }`,
+        `if ((((this).expr) !== 1) && (((this).expr) !== 2)) { (this).default(); }`,
       );
     });
 

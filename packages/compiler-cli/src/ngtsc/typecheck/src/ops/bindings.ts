@@ -188,7 +188,7 @@ export function widenBinding(expr: TcbExpr, tcb: Context, originalValue: string 
   if (!tcb.env.config.checkTypeOfInputBindings) {
     // If checking the type of bindings is disabled, cast the resulting expression to 'any'
     // before the assignment.
-    return new TcbExpr(`(${expr.print()} as any)`);
+    return new TcbExpr(`((${expr.print()}) as any)`);
   } else if (!tcb.env.config.strictNullInputBindings) {
     if (originalValue instanceof LiteralMap || originalValue instanceof LiteralArray) {
       // Object literals and array literals should not be wrapped in non-null assertions as that
@@ -198,7 +198,7 @@ export function widenBinding(expr: TcbExpr, tcb: Context, originalValue: string 
     } else {
       // If strict null checks are disabled, erase `null` and `undefined` from the type by
       // wrapping the expression in a non-null assertion.
-      return new TcbExpr(`${expr.print()}!`);
+      return new TcbExpr(`(${expr.print()})!`);
     }
   } else {
     // No widening is requested, use the expression as is.
