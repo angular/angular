@@ -14,6 +14,7 @@ import {
   ElementRef,
   EventEmitter,
   inject,
+  Injectable,
   Injector,
   input,
   Input,
@@ -24,11 +25,22 @@ import {
   Output,
   resource,
   signal,
+  Type,
   viewChild,
   viewChildren,
   ViewContainerRef,
+  ViewEncapsulation,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+
+function isFirefox() {
+  const userAgent = navigator.userAgent.toLowerCase();
+  if (userAgent.indexOf('firefox') != -1) {
+    return true;
+  }
+  return false;
+}
+
 import {NG_STATUS_CLASSES} from '../../compat/public_api';
 import {
   debounce,
@@ -53,6 +65,18 @@ import {
   type ValidationError,
   type WithOptionalFieldTree,
 } from '../../public_api';
+import {InputValidityMonitor} from '../../src/directive/input_validity_monitor';
+import {TestInputValidityMonitor} from './test_input_validity_monitor';
+
+function configureTestValidityMonitor() {
+  TestBed.configureTestingModule({
+    providers: [
+      TestInputValidityMonitor,
+      {provide: InputValidityMonitor, useExisting: TestInputValidityMonitor},
+    ],
+  });
+  return TestBed.inject(TestInputValidityMonitor);
+}
 
 @Component({
   selector: 'string-control',
@@ -4347,6 +4371,223 @@ describe('field directive', () => {
         input.dispatchEvent(new Event('input'));
       });
       expect(cmp.f().value()).toBe(newDateTimestamp);
+    });
+
+    it('should work inside a Shadow DOM component', () => {
+      @Component({
+        imports: [FormField],
+        selector: 'shadow-cmp',
+        encapsulation: ViewEncapsulation.ShadowDom,
+        template: `<input type="date" [formField]="f" />`,
+      })
+      class ShadowCmp {
+        f = form(signal('2024-01-01'));
+      }
+
+      const fix = act(() => TestBed.createComponent(ShadowCmp));
+      const input = fix.nativeElement.shadowRoot.querySelector('input') as HTMLInputElement;
+      const cmp = fix.componentInstance as ShadowCmp;
+
+      act(() => {
+        input.value = '';
+        input.dispatchEvent(
+          new AnimationEvent('animationstart', {animationName: 'ng-invalid', bubbles: true}),
+        );
+      });
+      expect(cmp.f().value()).toBe('');
+    });
+
+    it('should re-evaluate validity and value when native UI clears date input without input event', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="date" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal('2024-01-01'));
+      }
+
+      const validityMonitor = configureTestValidityMonitor();
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // 1. Start in valid input state
+      expect(input.value).toBe('2024-01-01');
+      // 2. Field should be valid
+      expect(cmp.f().errors()).toEqual([]);
+
+      // 3. Transition to bad input state (invalid input from the user keyboard)
+      act(() => {
+        validityMonitor.setInputState(input, '', true);
+      });
+
+      // 4. Field should be invalid (parse error)
+      expect(cmp.f().errors()).toEqual([jasmine.objectContaining({kind: 'parse'})]);
+
+      // 5. Transition to empty input state (native UI clears date input without input event)
+      act(() => {
+        validityMonitor.setInputState(input, '', false);
+      });
+
+      // 6. Field should be valid again (parse error gone)
+      expect(cmp.f().errors()).toEqual([]);
+      expect(cmp.f().value()).toBe('');
+    });
+
+    it('should re-evaluate validity and value when native UI clears time input without input event', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="time" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal('12:00'));
+      }
+
+      const validityMonitor = configureTestValidityMonitor();
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // 1. Start in valid input state
+      expect(input.value).toBe('12:00');
+      // 2. Field should be valid
+      expect(cmp.f().errors()).toEqual([]);
+
+      // 3. Transition to bad input state (invalid input from the user keyboard)
+      act(() => {
+        validityMonitor.setInputState(input, '', true);
+      });
+
+      // 4. Field should be invalid (parse error)
+      expect(cmp.f().errors()).toEqual([jasmine.objectContaining({kind: 'parse'})]);
+
+      // 5. Transition to empty input state (native UI clears time input without input event)
+      act(() => {
+        validityMonitor.setInputState(input, '', false);
+      });
+
+      // 6. Field should be valid again (parse error gone)
+      expect(cmp.f().errors()).toEqual([]);
+      expect(cmp.f().value()).toBe('');
+    });
+
+    // Firefox doesn't support <input type="month">
+    (!isFirefox() ? it : xit)(
+      'should re-evaluate validity and value when native UI clears month input without input event',
+      () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="month" [formField]="f" />`,
+        })
+        class TestCmp {
+          f = form(signal('2024-01'));
+        }
+
+        const validityMonitor = configureTestValidityMonitor();
+        const fix = act(() => TestBed.createComponent(TestCmp));
+        const input = fix.nativeElement.firstChild as HTMLInputElement;
+        const cmp = fix.componentInstance as TestCmp;
+
+        // 1. Start in valid input state
+        expect(input.value).toBe('2024-01');
+        // 2. Field should be valid
+        expect(cmp.f().errors()).toEqual([]);
+
+        // 3. Transition to bad input state (invalid input from the user keyboard)
+        act(() => {
+          validityMonitor.setInputState(input, '', true);
+        });
+
+        // 4. Field should be invalid (parse error)
+        expect(cmp.f().errors()).toEqual([jasmine.objectContaining({kind: 'parse'})]);
+
+        // 5. Transition to empty input state (native UI clears month input without input event)
+        act(() => {
+          validityMonitor.setInputState(input, '', false);
+        });
+
+        // 6. Field should be valid again (parse error gone)
+        expect(cmp.f().errors()).toEqual([]);
+        expect(cmp.f().value()).toBe('');
+      },
+    );
+
+    // Firefox doesn't support <input type="week">
+    (!isFirefox() ? it : xit)(
+      'should re-evaluate validity and value when native UI clears week input without input event',
+      () => {
+        @Component({
+          imports: [FormField],
+          template: `<input type="week" [formField]="f" />`,
+        })
+        class TestCmp {
+          f = form(signal('2024-W01'));
+        }
+
+        const validityMonitor = configureTestValidityMonitor();
+        const fix = act(() => TestBed.createComponent(TestCmp));
+        const input = fix.nativeElement.firstChild as HTMLInputElement;
+        const cmp = fix.componentInstance as TestCmp;
+
+        // 1. Start in valid input state
+        expect(input.value).toBe('2024-W01');
+        // 2. Field should be valid
+        expect(cmp.f().errors()).toEqual([]);
+
+        // 3. Transition to bad input state (invalid input from the user keyboard)
+        act(() => {
+          validityMonitor.setInputState(input, '', true);
+        });
+
+        // 4. Field should be invalid (parse error)
+        expect(cmp.f().errors()).toEqual([jasmine.objectContaining({kind: 'parse'})]);
+
+        // 5. Transition to empty input state (native UI clears week input without input event)
+        act(() => {
+          validityMonitor.setInputState(input, '', false);
+        });
+
+        // 6. Field should be valid again (parse error gone)
+        expect(cmp.f().errors()).toEqual([]);
+        expect(cmp.f().value()).toBe('');
+      },
+    );
+
+    it('should re-evaluate validity and value when native UI clears datetime-local input without input event', () => {
+      @Component({
+        imports: [FormField],
+        template: `<input type="datetime-local" [formField]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal('2024-01-01T12:00'));
+      }
+
+      const validityMonitor = configureTestValidityMonitor();
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // 1. Start in valid input state
+      expect(input.value).toBe('2024-01-01T12:00');
+      // 2. Field should be valid
+      expect(cmp.f().errors()).toEqual([]);
+
+      // 3. Transition to bad input state (invalid input from the user keyboard)
+      act(() => {
+        validityMonitor.setInputState(input, '', true);
+      });
+
+      // 4. Field should be invalid (parse error)
+      expect(cmp.f().errors()).toEqual([jasmine.objectContaining({kind: 'parse'})]);
+
+      // 5. Transition to empty input state (native UI clears datetime-local input without input event)
+      act(() => {
+        validityMonitor.setInputState(input, '', false);
+      });
+
+      // 6. Field should be valid again (parse error gone)
+      expect(cmp.f().errors()).toEqual([]);
+      expect(cmp.f().value()).toBe('');
     });
 
     it('should sync string field with color type input', () => {

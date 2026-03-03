@@ -47,6 +47,7 @@ import {
   isTextualFormElement,
   type NativeFormControl,
 } from './native';
+import {InputValidityMonitor} from './input_validity_monitor';
 
 export const ɵNgFieldDirective: unique symbol = Symbol();
 
@@ -152,6 +153,7 @@ export class FormField<T> {
   private readonly controlValueAccessors = inject(NG_VALUE_ACCESSOR, {optional: true, self: true});
 
   private readonly config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
+  private readonly validityMonitor = inject(InputValidityMonitor);
 
   private readonly parseErrorsSource = signal<
     Signal<readonly ValidationError.WithoutFieldTree[]> | undefined
@@ -329,6 +331,7 @@ export class FormField<T> {
         host,
         this as FormField<unknown>,
         this.parseErrorsSource,
+        this.validityMonitor,
       );
     } else {
       throw new RuntimeError(
