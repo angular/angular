@@ -716,6 +716,35 @@ const userForm = form(signal({email: '', password: ''}), (schemaPath) => {
 });
 ```
 
+### Dynamic schemas
+
+You can pass a signal instead of a static schema so the validation schema updates automatically when its dependencies change.
+
+```angular-ts
+import {Component, computed, signal} from '@angular/core';
+import {form, FormField, validateStandardSchema} from '@angular/forms/signals';
+import z from 'zod';
+
+@Component({
+  /* ... */
+})
+export class DynamicSchema {
+  model = signal({document: '', type: 'dni'});
+
+  // Schema reacts automatically to type changes
+  schema = computed(() =>
+    z.object({
+      document:
+        this.model().type === 'dni'
+          ? z.string().length(8, 'DNI must be 8 digits')
+          : z.string().min(12, 'Passport must be at least 12 characters'),
+    }),
+  );
+
+  f = form(this.model, (p) => validateStandardSchema(p, () => this.schema()));
+}
+```
+
 ## Next steps
 
 This guide covered creating and applying validation rules. Related guides explore other aspects of Signal Forms:
