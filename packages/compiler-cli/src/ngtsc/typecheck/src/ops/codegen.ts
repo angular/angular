@@ -28,7 +28,7 @@ export class TcbExpr {
 
   /**
    * Converts the node's current state to a string.
-   * @param ignoreComments Whether the comments associated with the expresion should be skipped.
+   * @param ignoreComments Whether the comments associated with the expression should be skipped.
    */
   print(ignoreComments = false): string {
     if (ignoreComments) {
