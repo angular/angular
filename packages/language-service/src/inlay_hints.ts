@@ -1652,11 +1652,10 @@ export function getInlayHintsForTemplate(
       const isDirectiveOrComponentOutput = outputSymbol.bindings.some(
         (binding) => binding.target.kind === SymbolKind.Directive,
       );
-      if (outputSymbol.bindings.length > 0) {
+
+      if (isDirectiveOrComponentOutput && outputSymbol.bindings.length > 0) {
         const bindingType = outputSymbol.bindings[0].tsType;
-        const resolvedType = isDirectiveOrComponentOutput
-          ? unwrapAngularType(bindingType)
-          : bindingType;
+        const resolvedType = unwrapAngularType(bindingType);
         return {
           typeStr: typeChecker.typeToString(resolvedType),
           tsType: resolvedType,

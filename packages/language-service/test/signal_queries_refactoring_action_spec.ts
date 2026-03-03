@@ -6,14 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-
-import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../../testing';
+import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
 
 describe('Signal queries refactoring action', () => {
   let env: LanguageServiceTestEnv;
   beforeEach(() => {
-    initMockFileSystem('Native');
     env = LanguageServiceTestEnv.setup();
   });
 
@@ -112,9 +109,10 @@ describe('Signal queries refactoring action', () => {
         () => {},
       );
       expect(edits?.errorMessage).toBeUndefined();
+      expect(edits?.edits[0].fileName).toBe(project.getAbsFileName('app.ts'));
       expect(edits?.edits).toEqual([
         {
-          fileName: '/test/app.ts',
+          fileName: project.getAbsFileName('app.ts'),
           textChanges: [
             // Query declaration.
             {
@@ -266,7 +264,7 @@ describe('Signal queries refactoring action', () => {
     expect(edits?.errorMessage).toBeUndefined();
     expect(edits?.edits).toEqual([
       {
-        fileName: '/test/app.ts',
+        fileName: project.getAbsFileName('app.ts'),
         textChanges: [
           // Query declaration.
           {
@@ -361,7 +359,7 @@ describe('Signal queries refactoring action', () => {
       expect(result?.warningMessage).toBe(undefined);
       expect(result?.edits).toEqual([
         {
-          fileName: '/test/app.ts',
+          fileName: project.getAbsFileName('app.ts'),
           textChanges: [
             // Query declarations.
             {
@@ -424,7 +422,7 @@ describe('Signal queries refactoring action', () => {
       expect(result?.errorMessage).toBe(undefined);
       expect(result?.edits).toEqual([
         {
-          fileName: '/test/app.ts',
+          fileName: project.getAbsFileName('app.ts'),
           textChanges: [
             // Query declarations.
             {

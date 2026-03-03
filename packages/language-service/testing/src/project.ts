@@ -36,8 +36,23 @@ function writeTsconfig(
   tsConfigPath: AbsoluteFsPath,
   entryFiles: AbsoluteFsPath[],
   angularCompilerOptions: TestableOptions,
-  tsCompilerOptions: {},
+  tsCompilerOptions: any = {},
 ): void {
+  const basePaths = {
+    '@angular/core': ['./node_modules/@angular/core'],
+    '@angular/core/rxjs-interop': ['./node_modules/@angular/core/rxjs-interop'],
+    '@angular/forms': ['./node_modules/@angular/forms'],
+    '@angular/animations': ['./node_modules/@angular/animations'],
+    '@angular/common': ['./node_modules/@angular/common'],
+    rxjs: ['./node_modules/rxjs'],
+    'rxjs/operators': ['./node_modules/rxjs/operators'],
+  };
+
+  const mergedPaths = {
+    ...basePaths,
+    ...(tsCompilerOptions.paths || {}),
+  };
+
   fs.writeFile(
     tsConfigPath,
     JSON.stringify(
@@ -50,6 +65,7 @@ function writeTsconfig(
           rootDir: '.',
           lib: ['dom', 'es2015'],
           ...tsCompilerOptions,
+          paths: mergedPaths,
         },
         files: entryFiles,
         angularCompilerOptions: {
@@ -96,14 +112,30 @@ export class Project {
       if (projectFilePath.endsWith('.ts') && !projectFilePath.endsWith('.d.ts')) {
         entryFiles.push(filePath);
       }
+
+      // Force TypeScript to load the new file content immediately
+      const scriptInfo = projectService.getOrCreateScriptInfoForNormalizedPath(
+        ts.server.toNormalizedPath(filePath),
+        true, // openedByClient
+        contents,
+        ts.ScriptKind.Unknown, // infer
+        false, // hasMixedContent
+        projectService.host,
+      );
+      if (scriptInfo) {
+        scriptInfo.reloadFromFile();
+      }
     }
 
     writeTsconfig(fs, tsConfigPath, entryFiles, angularCompilerOptions, tsCompilerOptions);
 
+    const tsConfigInfo = projectService.getScriptInfo(tsConfigPath);
+    if (tsConfigInfo) {
+      tsConfigInfo.reloadFromFile();
+    }
+
     patchLanguageServiceProjectsWithTestHost();
 
-    // Ensure the project is live in the ProjectService.
-    // This creates the `ts.Program` by configuring the project and loading it!
     projectService.openClientFile(entryFiles[0]);
     projectService.closeClientFile(entryFiles[0]);
 
@@ -115,17 +147,18 @@ export class Project {
     private projectService: ts.server.ProjectService,
     private tsConfigPath: AbsoluteFsPath,
   ) {
-    // LS for project
     const tsProject = projectService.findProject(tsConfigPath);
     if (tsProject === undefined) {
       throw new Error(`Failed to create project for ${tsConfigPath}`);
     }
 
     this.tsProject = tsProject;
-
-    // The following operation forces a ts.Program to be created.
     this.tsLS = tsProject.getLanguageService();
     this.ngLS = new LanguageService(tsProject, this.tsLS, {});
+  }
+
+  getAbsFileName(projectFileName: string): string {
+    return absoluteFrom(`/${this.name}/${projectFileName}`);
   }
 
   openFile(projectFileName: string): OpenBuffer {

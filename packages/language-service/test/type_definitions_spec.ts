@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-
 import {
   assertFileNames,
   assertFilePaths,
@@ -15,13 +13,12 @@ import {
   humanizeDocumentSpanLike,
   LanguageServiceTestEnv,
   Project,
-} from '../../testing';
+} from '../testing';
 
 describe('type definitions', () => {
   let env: LanguageServiceTestEnv;
 
   it('returns the pipe class as definition when checkTypeOfPipes is false', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.ts': `
         import {Component, NgModule} from '@angular/core';
@@ -52,7 +49,6 @@ describe('type definitions', () => {
 
   describe('inputs', () => {
     it('return the definition for a signal input', () => {
-      initMockFileSystem('Native');
       const files = {
         'app.ts': `
           import {Component, Directive, input} from '@angular/core';
@@ -86,7 +82,6 @@ describe('type definitions', () => {
 
   describe('initializer-based output() API', () => {
     it('return the definition for an output', () => {
-      initMockFileSystem('Native');
       const files = {
         'app.ts': `
           import {Component, Directive, output} from '@angular/core';
@@ -122,7 +117,6 @@ describe('type definitions', () => {
 
   describe('initializer-based outputFromObservable() API', () => {
     it('return the definition for an output', () => {
-      initMockFileSystem('Native');
       const files = {
         'app.ts': `
           import {Component, Directive, EventEmitter} from '@angular/core';
@@ -180,7 +174,6 @@ describe('type definitions', () => {
     };
 
     it('should return the definition for the property side of a two-way binding', () => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       const project = env.addProject('test', files);
       const definitions = getTypeDefinitionsAndAssertBoundSpan(project, {
@@ -193,7 +186,6 @@ describe('type definitions', () => {
     });
 
     it('should return the definition for the event side of a two-way binding', () => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       const project = env.addProject('test', files);
       const definitions = getTypeDefinitionsAndAssertBoundSpan(project, {
@@ -206,7 +198,6 @@ describe('type definitions', () => {
     });
 
     it('should return the definition of a two-way binding', () => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       const project = env.addProject('test', files);
       const definitions = getTypeDefinitionsAndAssertBoundSpan(project, {
