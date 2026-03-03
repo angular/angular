@@ -672,7 +672,7 @@ export class NgCompiler {
   }
 
   /**
-   * Add Angular.io error guide links to diagnostics for this compilation.
+   * Add https://angular.dev/errors error guide links to diagnostics for this compilation.
    */
   private addMessageTextDetails(diagnostics: ts.Diagnostic[]): ts.Diagnostic[] {
     return diagnostics.map((diag) => {
