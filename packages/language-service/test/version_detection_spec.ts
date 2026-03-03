@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {LanguageServiceTestEnv} from '../../testing';
+import {LanguageServiceTestEnv} from '../testing';
 
 describe('Angular version detection', () => {
   let env: LanguageServiceTestEnv;
 
   beforeEach(() => {
-    initMockFileSystem('Native');
     env = LanguageServiceTestEnv.setup();
   });
 

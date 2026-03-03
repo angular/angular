@@ -8,7 +8,7 @@
 /// <reference types="jasmine"/>
 import ts from 'typescript';
 
-import {absoluteFrom, setFileSystem} from '../../src/helpers';
+import {absoluteFrom, setFileSystem, getFileSystem} from '../../src/helpers';
 import {InvalidFileSystem} from '../../src/invalid_file_system';
 import {AbsoluteFsPath} from '../../src/types';
 
@@ -70,7 +70,15 @@ runInEachFileSystem.unix = (callback: (os: string) => void) =>
 runInEachFileSystem.windows = (callback: (os: string) => void) =>
   runInFileSystem(FS_WINDOWS, callback, true);
 
+let mockFileSystemLocked = false;
+export function lockMockFileSystem() {
+  mockFileSystemLocked = true;
+}
+
 export function initMockFileSystem(os: string, cwd?: AbsoluteFsPath): MockFileSystem {
+  if (mockFileSystemLocked) {
+    return getFileSystem() as MockFileSystem;
+  }
   const fs = createMockFileSystem(os, cwd);
   setFileSystem(fs);
   monkeyPatchTypeScript(fs);

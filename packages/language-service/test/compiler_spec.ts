@@ -6,15 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-
-import {isNgSpecificDiagnostic, LanguageServiceTestEnv} from '../../testing';
+import {isNgSpecificDiagnostic, LanguageServiceTestEnv} from '../testing';
 
 describe('language-service/compiler integration', () => {
-  beforeEach(() => {
-    initMockFileSystem('Native');
-  });
-
   it('should react to a change in an external template', () => {
     const env = LanguageServiceTestEnv.setup();
     const project = env.addProject('test', {
