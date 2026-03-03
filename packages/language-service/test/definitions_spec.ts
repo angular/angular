@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
 import {
@@ -18,11 +17,10 @@ import {
   LanguageServiceTestEnv,
   OpenBuffer,
   Project,
-} from '../../testing';
+} from '../testing';
 
 describe('definitions', () => {
   it('gets definition for template reference in overridden template', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'app.ts': `
@@ -49,7 +47,6 @@ describe('definitions', () => {
   });
 
   it('returns the pipe definitions when checkTypeOfPipes is false', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.ts': `
          import {Component, NgModule} from '@angular/core';
@@ -82,7 +79,6 @@ describe('definitions', () => {
   });
 
   it('gets definitions for all inputs when attribute matches more than one', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.ts': `
          import {Component, NgModule} from '@angular/core';
@@ -136,7 +132,6 @@ describe('definitions', () => {
   });
 
   it('gets definitions for all signal-inputs when attribute matches more than one', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.ts': `
          import {Component, NgModule} from '@angular/core';
@@ -190,7 +185,6 @@ describe('definitions', () => {
   });
 
   it('gets definitions for all outputs when attribute matches more than one', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '<div dir (someEvent)="doSomething()"></div>',
       'dir.ts': `
@@ -272,7 +266,6 @@ describe('definitions', () => {
   });
 
   it('gets definitions for all model inputs when attribute matches more than one in a static attribute', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.ts': `
           import {Component, NgModule} from '@angular/core';
@@ -326,7 +319,6 @@ describe('definitions', () => {
   });
 
   it('gets definitions for all model inputs when attribute matches more than one in a two-way binding', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.ts': `
             import {Component, NgModule} from '@angular/core';
@@ -385,7 +377,6 @@ describe('definitions', () => {
   });
 
   it('should go to the pre-compiled style sheet', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.ts': `
        import {Component} from '@angular/core';
@@ -413,7 +404,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for property of variable declared in template', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': `
          <ng-container *ngIf="{prop: myVal} as myVar">
@@ -445,7 +435,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for component property access in an arrow function', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'app.ts': `
@@ -473,7 +462,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for parameter access in an arrow function', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'app.ts': `
@@ -499,7 +487,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for a let declaration', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'app.ts': `
@@ -528,7 +515,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for selectorless component', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'dep.ts': `
@@ -565,7 +551,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for selectorless directive', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'dep.ts': `
@@ -602,7 +587,6 @@ describe('definitions', () => {
   });
 
   it('gets definition of selectorless component input', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'dep.ts': `
@@ -644,7 +628,6 @@ describe('definitions', () => {
   });
 
   it('gets definition of selectorless directive input', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'dep.ts': `
@@ -686,7 +669,6 @@ describe('definitions', () => {
   });
 
   it('gets definition of selectorless component output', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'dep.ts': `
@@ -730,7 +712,6 @@ describe('definitions', () => {
   });
 
   it('gets definition of selectorless directive output', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'dep.ts': `
@@ -774,7 +755,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for a method in a void expression', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'app.ts': `
@@ -805,7 +785,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for a tagged template literal expression', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'app.ts': `
@@ -837,7 +816,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for a tagged template literal tag', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'app.ts': `
@@ -869,7 +847,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for a host binding value of a component', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'app.ts': `
@@ -901,7 +878,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for a host listener of a component', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': '',
       'app.ts': `
@@ -933,7 +909,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for a host binding value of a directive', () => {
-    initMockFileSystem('Native');
     const files = {
       'dir.ts': `
         import {Directive} from '@angular/core';
@@ -964,7 +939,6 @@ describe('definitions', () => {
   });
 
   it('gets definition for a property in a "in" expression', () => {
-    initMockFileSystem('Native');
     const files = {
       'app.html': `<div>{{'foo' in myObj}}</div>`,
       'app.ts': `
@@ -1033,7 +1007,6 @@ describe('definitions', () => {
     };
 
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
     });
 
@@ -1069,7 +1042,6 @@ describe('definitions', () => {
   describe('when a selector and input of a directive have a dollar sign', () => {
     let env: LanguageServiceTestEnv;
     it('can get definitions', () => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       const files = {
         'app.ts': `

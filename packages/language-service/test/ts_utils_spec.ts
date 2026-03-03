@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
 import {
@@ -19,15 +18,11 @@ import {
   objectPropertyAssignmentForKey,
   updateImport,
   updateObjectValueForKey,
-} from '../../src/utils/ts_utils';
-import {LanguageServiceTestEnv, OpenBuffer, Project} from '../../testing';
+} from '../src/utils/ts_utils';
+import {LanguageServiceTestEnv, OpenBuffer, Project} from '../testing';
 
 describe('TS util', () => {
   describe('collectMemberMethods', () => {
-    beforeEach(() => {
-      initMockFileSystem('Native');
-    });
-
     it('gets only methods in class, not getters, setters, or properties', () => {
       const files = {
         'app.ts': `
