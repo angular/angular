@@ -11,3 +11,9 @@
     </div>
   }
 </div>
+
+@if (showFallback) {
+  <div class="fallback-el" animate.leave="short-animation">Fallback Element</div>
+}
+
+<button id="hide-and-intercept" (click)="hideAndIntercept()">Hide and Intercept</button>

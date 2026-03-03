@@ -276,7 +276,8 @@ export function isLongestAnimation(
     ((longestAnimation.animationName !== undefined &&
       (event as AnimationEvent).animationName === longestAnimation.animationName) ||
       (longestAnimation.propertyName !== undefined &&
-        (event as TransitionEvent).propertyName === longestAnimation.propertyName))
+        (longestAnimation.propertyName === 'all' ||
+          (event as TransitionEvent).propertyName === longestAnimation.propertyName)))
   );
 }
 
