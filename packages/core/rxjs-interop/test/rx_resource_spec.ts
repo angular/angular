@@ -7,7 +7,7 @@
  */
 
 import {BehaviorSubject, EMPTY, Observable, of, Subscriber, throwError} from 'rxjs';
-import {ApplicationRef, Injector, signal} from '../../src/core';
+import {ApplicationRef, Injector, makeStateKey, signal, TransferState} from '../../src/core';
 import {TestBed} from '../../testing';
 import {rxResource} from '../src';
 
@@ -175,10 +175,110 @@ describe('rxResource()', () => {
     expect(res.error()).toBeInstanceOf(Error);
     expect(() => res.value()).toThrowError(/bad news/);
   });
+
+  describe('with TransferState', () => {
+    let transferState: TransferState;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({providers: [TransferState]});
+      transferState = TestBed.inject(TransferState);
+    });
+
+    afterEach(() => {
+      (globalThis as any).ngServerMode = undefined;
+    });
+
+    it('should read from TransferState if a key is present', async () => {
+      const key = makeStateKey<number>('test-key');
+      transferState.set(key, 123);
+
+      const injector = TestBed.inject(Injector);
+      const testResource = rxResource({
+        stream: () => of(456),
+        transferCacheKey: () => key,
+        injector,
+      });
+
+      // Should be synchronously resolved from cache
+      expect(testResource.status()).toBe('resolved');
+      expect(testResource.value()).toBe(123);
+
+      // Should prevent loader from running
+      await flushMicrotasks();
+      expect(testResource.value()).toBe(123);
+    });
+
+    it('should write to TransferState on server when resolved (sync)', async () => {
+      (globalThis as any).ngServerMode = true;
+      const key = makeStateKey<number>('server-key');
+
+      const injector = TestBed.inject(Injector);
+      const testResource = rxResource({
+        stream: () => of(789),
+        transferCacheKey: () => key,
+        injector,
+      });
+
+      expect(testResource.status()).toBe('loading');
+
+      await flushMicrotasks();
+
+      expect(testResource.status()).toBe('resolved');
+      expect(testResource.value()).toBe(789);
+      expect(transferState.get(key, null!)).toBe(789);
+    });
+
+    it('should write to TransferState on server when resolved (async)', async () => {
+      (globalThis as any).ngServerMode = true;
+      const key = makeStateKey<number>('server-async-key');
+
+      const injector = TestBed.inject(Injector);
+      const testResource = rxResource({
+        stream: () =>
+          new Observable<number>((sub) => {
+            Promise.resolve().then(() => {
+              sub.next(101112);
+              sub.complete();
+            });
+          }),
+        transferCacheKey: () => key,
+        injector,
+      });
+
+      expect(testResource.status()).toBe('loading');
+
+      await waitFor(() => testResource.status() === 'resolved');
+
+      expect(testResource.value()).toBe(101112);
+      expect(transferState.get(key, null!)).toBe(101112);
+    });
+
+    it('should not write to TransferState on client when resolved', async () => {
+      (globalThis as any).ngServerMode = false;
+      const key = makeStateKey<number>('client-key');
+
+      const injector = TestBed.inject(Injector);
+      const testResource = rxResource({
+        stream: () => of(131415),
+        transferCacheKey: () => key,
+        injector,
+      });
+
+      await flushMicrotasks();
+
+      expect(testResource.status()).toBe('resolved');
+      expect(testResource.value()).toBe(131415);
+      expect(transferState.hasKey(key)).toBeFalse();
+    });
+  });
 });
 
 async function waitFor(fn: () => boolean): Promise<void> {
   while (!fn()) {
     await new Promise((resolve) => setTimeout(resolve, 1));
   }
+}
+
+function flushMicrotasks(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
 }

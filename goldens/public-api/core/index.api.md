@@ -186,6 +186,7 @@ export interface BaseResourceOptions<T, R> {
     equal?: ValueEqualityFn<T>;
     injector?: Injector;
     params?: (ctx: ResourceParamsContext) => R;
+    transferCacheKey?: (params: R) => StateKey<T>;
 }
 
 // @public

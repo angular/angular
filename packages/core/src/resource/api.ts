@@ -9,6 +9,7 @@
 import {Injector} from '../di/injector';
 import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
 import {WritableSignal} from '../render3/reactivity/signal';
+import {StateKey} from '../transfer_state';
 
 /** Error thrown when a `Resource` dependency of another resource errors. */
 export class ResourceDependencyError extends Error {
@@ -231,6 +232,11 @@ export interface BaseResourceOptions<T, R> {
    * Overrides the `Injector` used by `resource`.
    */
   injector?: Injector;
+
+  /**
+   * The transfer cache key used to cache the resource data in the `TransferState` during server-side rendering and to retrieve it on the client side.
+   */
+  transferCacheKey?: (params: R) => StateKey<T>;
 }
 
 /**

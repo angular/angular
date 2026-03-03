@@ -434,6 +434,7 @@ class HttpResourceImpl<T>
       equal,
       debugName,
       injector,
+      undefined,
       getInitialStream,
     );
     this.client = injector.get(HttpClient);
