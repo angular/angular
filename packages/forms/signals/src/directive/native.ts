@@ -9,6 +9,7 @@
 import {type Renderer2, untracked} from '@angular/core';
 import {NativeInputParseError, WithoutFieldTree} from '../api/rules';
 import type {ParseResult} from '../api/transformed_value';
+import type {InputValidityMonitor} from './input_validity_monitor';
 
 /**
  * Supported native control element types.
@@ -30,11 +31,11 @@ export function isNativeFormElement(element: HTMLElement): element is NativeForm
 }
 
 export function isNumericFormElement(element: HTMLElement): boolean {
-  if (element.tagName !== 'INPUT') {
+  if (!isInput(element)) {
     return false;
   }
 
-  const type = (element as HTMLInputElement).type;
+  const type = element.type;
   return (
     type === 'date' ||
     type === 'datetime-local' ||
@@ -65,10 +66,11 @@ export function isTextualFormElement(element: HTMLElement): boolean {
 export function getNativeControlValue(
   element: NativeFormControl,
   currentValue: () => unknown,
+  validityMonitor: InputValidityMonitor,
 ): ParseResult<unknown> {
   let modelValue: unknown;
 
-  if (element.validity.badInput) {
+  if (isInput(element) && validityMonitor.isBadInput(element)) {
     return {
       error: new NativeInputParseError() as WithoutFieldTree<NativeInputParseError>,
     };
@@ -202,4 +204,18 @@ export function setNativeDomProperty(
       }
       break;
   }
+}
+
+export function isInput(element: HTMLElement): element is HTMLInputElement {
+  return element.tagName === 'INPUT';
+}
+
+export function inputRequiresValidityTracking(input: HTMLInputElement): boolean {
+  return (
+    input.type === 'date' ||
+    input.type === 'datetime-local' ||
+    input.type === 'month' ||
+    input.type === 'time' ||
+    input.type === 'week'
+  );
 }

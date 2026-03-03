@@ -20,7 +20,14 @@ import {
   type ControlBindingKey,
 } from './bindings';
 import type {FormField} from './form_field_directive';
-import {getNativeControlValue, setNativeControlValue, setNativeDomProperty} from './native';
+import {InputValidityMonitor} from './input_validity_monitor';
+import {
+  getNativeControlValue,
+  isInput,
+  inputRequiresValidityTracking,
+  setNativeControlValue,
+  setNativeDomProperty,
+} from './native';
 import {observeSelectMutations} from './select';
 
 export function nativeControlCreate(
@@ -29,6 +36,7 @@ export function nativeControlCreate(
   parseErrorsSource: WritableSignal<
     Signal<readonly ValidationError.WithoutFieldTree[]> | undefined
   >,
+  validityMonitor: InputValidityMonitor,
 ): () => void {
   let updateMode = false;
   const input = parent.nativeFormElement;
@@ -41,13 +49,18 @@ export function nativeControlCreate(
     (rawValue: unknown) => parent.state().controlValue.set(rawValue),
     // Our parse function doesn't care about the raw value that gets passed in,
     // It just reads the newly parsed value directly off the input element.
-    () => getNativeControlValue(input, parent.state().value),
+    (_rawValue: unknown) => getNativeControlValue(input, parent.state().value, validityMonitor),
   );
 
   parseErrorsSource.set(parser.errors);
   // Pass undefined as the raw value since the parse function doesn't care about it.
   host.listenToDom('input', () => parser.setRawValue(undefined));
   host.listenToDom('blur', () => parent.state().markAsTouched());
+
+  // TODO: move extraction to first update pass?
+  if (isInput(input) && inputRequiresValidityTracking(input)) {
+    validityMonitor.watchValidity(input, () => parser.setRawValue(undefined));
+  }
 
   parent.registerAsBinding();
 

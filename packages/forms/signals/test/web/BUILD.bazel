@@ -3,7 +3,10 @@ load("//tools:defaults.bzl", "ng_project", "zoneless_web_test_suite")
 ng_project(
     name = "test_lib",
     testonly = True,
-    srcs = glob(["**/*.spec.ts"]),
+    srcs = glob([
+        "**/*.spec.ts",
+        "**/*.ts",
+    ]),
     deps = [
         "//:node_modules/zod",
         "//packages/core",
