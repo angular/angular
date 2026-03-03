@@ -257,7 +257,10 @@
           "source.ts",
           "text.angular-html",
           "text.html.markdown"
-        ]
+        ],
+        "embeddedLanguages": {
+          "source.css": "css"
+        }
       },
       {
         "path": "./syntaxes/expression.json",
@@ -266,7 +269,13 @@
       {
         "language": "angular-ts",
         "path": "./syntaxes/angular-ts.json",
-        "scopeName": "source.angular-ts"
+        "scopeName": "source.angular-ts",
+        "embeddedLanguages": {
+          "text.html.derivative": "html",
+          "source.css": "css",
+          "source.css.scss": "scss",
+          "expression.ng": "javascript"
+        }
       },
       {
         "path": "./syntaxes/markdown-fence.json",

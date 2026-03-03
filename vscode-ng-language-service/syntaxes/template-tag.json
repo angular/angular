@@ -6,6 +6,15 @@
       "include": "#twoWayBinding"
     },
     {
+      "include": "#styleDeclarationBinding"
+    },
+    {
+      "include": "#stylePropertyBinding"
+    },
+    {
+      "include": "#plainStyleAttribute"
+    },
+    {
       "include": "#propertyBinding"
     },
     {
@@ -16,6 +25,423 @@
     }
   ],
   "repository": {
+    "styleDeclarationBinding": {
+      "begin": "(\\[\\s*(?:style|attr\\.style)\\s*])(=)([\"'])",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.other.attribute-name.html entity.other.ng-binding-name.property.html",
+          "patterns": [
+            {
+              "include": "#bindingKey"
+            }
+          ]
+        },
+        "2": {
+          "name": "punctuation.separator.key-value.html"
+        },
+        "3": {
+          "name": "string.quoted.html punctuation.definition.string.begin.html"
+        }
+      },
+      "end": "\\3",
+      "endCaptures": {
+        "0": {
+          "name": "string.quoted.html punctuation.definition.string.end.html"
+        }
+      },
+      "name": "meta.ng-binding.property.html",
+      "contentName": "expression.ng",
+      "patterns": [
+        {
+          "include": "#embeddedCssDeclarationInTsString"
+        },
+        {
+          "include": "#embeddedCssStyleObject"
+        },
+        {
+          "include": "expression.ng"
+        }
+      ]
+    },
+    "stylePropertyBinding": {
+      "begin": "(\\[\\s*style(?:\\.[-_a-zA-Z0-9%]+)+\\s*])(=)([\"'])",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.other.attribute-name.html entity.other.ng-binding-name.property.html",
+          "patterns": [
+            {
+              "include": "#styleBindingKey"
+            }
+          ]
+        },
+        "2": {
+          "name": "punctuation.separator.key-value.html"
+        },
+        "3": {
+          "name": "string.quoted.html punctuation.definition.string.begin.html"
+        }
+      },
+      "end": "\\3",
+      "endCaptures": {
+        "0": {
+          "name": "string.quoted.html punctuation.definition.string.end.html"
+        }
+      },
+      "name": "meta.ng-binding.property.html",
+      "contentName": "expression.ng",
+      "patterns": [
+        {
+          "include": "#embeddedCssInTsString"
+        },
+        {
+          "include": "expression.ng"
+        }
+      ]
+    },
+    "plainStyleAttribute": {
+      "begin": "(style)(=)([\"'])",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.other.attribute-name.style.html"
+        },
+        "2": {
+          "name": "punctuation.separator.key-value.html"
+        },
+        "3": {
+          "name": "string.quoted.html punctuation.definition.string.begin.html"
+        }
+      },
+      "contentName": "source.css meta.property-list.css",
+      "patterns": [
+        {
+          "include": "#cssDeclarationPatterns"
+        }
+      ],
+      "end": "\\3",
+      "endCaptures": {
+        "0": {
+          "name": "string.quoted.html punctuation.definition.string.end.html"
+        }
+      },
+      "name": "meta.attribute.style.html"
+    },
+    "embeddedCssStyleObject": {
+      "begin": "\\G\\s*\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.ts"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.ts"
+        }
+      },
+      "contentName": "expression.ng",
+      "patterns": [
+        {
+          "include": "#cssStyleObjectEntry"
+        }
+      ]
+    },
+    "cssStyleObjectEntry": {
+      "patterns": [
+        {
+          "match": "(')(--(?:[-a-zA-Z_\\u0080-\\uFFFF])(?:[-a-zA-Z0-9_\\u0080-\\uFFFF])*)(')\\s*(:)",
+          "captures": {
+            "1": {
+              "name": "string.quoted.ts punctuation.definition.string.begin.ts"
+            },
+            "2": {
+              "name": "variable.css"
+            },
+            "3": {
+              "name": "string.quoted.ts punctuation.definition.string.end.ts"
+            },
+            "4": {
+              "name": "punctuation.separator.key-value.css"
+            }
+          }
+        },
+        {
+          "match": "(')([-a-zA-Z]+)(')\\s*(:)",
+          "captures": {
+            "1": {
+              "name": "string.quoted.ts punctuation.definition.string.begin.ts"
+            },
+            "2": {
+              "name": "support.type.property-name.css"
+            },
+            "3": {
+              "name": "string.quoted.ts punctuation.definition.string.end.ts"
+            },
+            "4": {
+              "name": "punctuation.separator.key-value.css"
+            }
+          }
+        },
+        {
+          "match": "([-_a-zA-Z][-_a-zA-Z0-9]*)\\s*(:)",
+          "captures": {
+            "1": {
+              "name": "support.type.property-name.css"
+            },
+            "2": {
+              "name": "punctuation.separator.key-value.css"
+            }
+          }
+        },
+        {
+          "begin": "(')",
+          "beginCaptures": {
+            "1": {
+              "name": "string.quoted.single.ts punctuation.definition.string.begin.ts"
+            }
+          },
+          "end": "(')",
+          "endCaptures": {
+            "1": {
+              "name": "string.quoted.single.ts punctuation.definition.string.end.ts"
+            }
+          },
+          "contentName": "source.css meta.property-value.css",
+          "patterns": [
+            {
+              "include": "source.css#property-values"
+            }
+          ]
+        },
+        {
+          "begin": "(`)",
+          "beginCaptures": {
+            "1": {
+              "name": "string.template.ts punctuation.definition.string.begin.ts"
+            }
+          },
+          "end": "(`)",
+          "endCaptures": {
+            "1": {
+              "name": "string.template.ts punctuation.definition.string.end.ts"
+            }
+          },
+          "contentName": "source.css meta.property-value.css",
+          "patterns": [
+            {
+              "include": "#embeddedCssInTsTemplateSubstitution"
+            },
+            {
+              "include": "source.css#property-values"
+            }
+          ]
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.comma.ts"
+        }
+      ]
+    },
+    "embeddedCssDeclarationInTsString": {
+      "patterns": [
+        {
+          "include": "#embeddedCssDeclarationInSingleTsString"
+        },
+        {
+          "include": "#embeddedCssDeclarationInDoubleTsString"
+        },
+        {
+          "include": "#embeddedCssDeclarationInTsTemplateString"
+        }
+      ]
+    },
+    "cssDeclarationPatterns": {
+      "patterns": [
+        {
+          "match": "(?<![\\w-])--(?:[-a-zA-Z_\\u0080-\\uFFFF])(?:[-a-zA-Z0-9_\\u0080-\\uFFFF]|\\\\(?:[0-9a-fA-F]{1,6}|.))*",
+          "name": "variable.css"
+        },
+        {
+          "match": "(?<![-a-zA-Z])(?:[-a-zA-Z]+)(?=\\s*:)",
+          "name": "meta.property-name.css support.type.property-name.css"
+        },
+        {
+          "match": ":",
+          "name": "punctuation.separator.key-value.css"
+        },
+        {
+          "match": ";",
+          "name": "punctuation.terminator.rule.css"
+        },
+        {
+          "include": "source.css#property-values"
+        }
+      ]
+    },
+    "embeddedCssDeclarationInSingleTsString": {
+      "begin": "\\G\\s*'",
+      "beginCaptures": {
+        "0": {
+          "name": "string.quoted.single.ts punctuation.definition.string.begin.ts"
+        }
+      },
+      "end": "'",
+      "endCaptures": {
+        "0": {
+          "name": "string.quoted.single.ts punctuation.definition.string.end.ts"
+        }
+      },
+      "name": "meta.property-list.css",
+      "contentName": "source.css",
+      "patterns": [
+        {
+          "include": "#cssDeclarationPatterns"
+        }
+      ]
+    },
+    "embeddedCssDeclarationInDoubleTsString": {
+      "begin": "\\G\\s*\"",
+      "beginCaptures": {
+        "0": {
+          "name": "string.quoted.double.ts punctuation.definition.string.begin.ts"
+        }
+      },
+      "end": "\"",
+      "endCaptures": {
+        "0": {
+          "name": "string.quoted.double.ts punctuation.definition.string.end.ts"
+        }
+      },
+      "name": "meta.property-list.css",
+      "contentName": "source.css",
+      "patterns": [
+        {
+          "include": "#cssDeclarationPatterns"
+        }
+      ]
+    },
+    "embeddedCssDeclarationInTsTemplateString": {
+      "begin": "\\G\\s*`",
+      "beginCaptures": {
+        "0": {
+          "name": "string.template.ts punctuation.definition.string.begin.ts"
+        }
+      },
+      "end": "`",
+      "endCaptures": {
+        "0": {
+          "name": "string.template.ts punctuation.definition.string.end.ts"
+        }
+      },
+      "name": "meta.property-list.css",
+      "contentName": "source.css",
+      "patterns": [
+        {
+          "include": "#embeddedCssInTsTemplateSubstitution"
+        },
+        {
+          "include": "#cssDeclarationPatterns"
+        }
+      ]
+    },
+    "embeddedCssInTsString": {
+      "patterns": [
+        {
+          "include": "#embeddedCssInSingleTsString"
+        },
+        {
+          "include": "#embeddedCssInDoubleTsString"
+        },
+        {
+          "include": "#embeddedCssInTsTemplateString"
+        }
+      ]
+    },
+    "embeddedCssInSingleTsString": {
+      "begin": "\\G\\s*'",
+      "beginCaptures": {
+        "0": {
+          "name": "string.quoted.single.ts punctuation.definition.string.begin.ts"
+        }
+      },
+      "end": "'",
+      "endCaptures": {
+        "0": {
+          "name": "string.quoted.single.ts punctuation.definition.string.end.ts"
+        }
+      },
+      "name": "meta.property-list.css",
+      "contentName": "meta.property-value.css source.css",
+      "patterns": [
+        {
+          "include": "source.css#property-values"
+        }
+      ]
+    },
+    "embeddedCssInDoubleTsString": {
+      "begin": "\\G\\s*\"",
+      "beginCaptures": {
+        "0": {
+          "name": "string.quoted.double.ts punctuation.definition.string.begin.ts"
+        }
+      },
+      "end": "\"",
+      "endCaptures": {
+        "0": {
+          "name": "string.quoted.double.ts punctuation.definition.string.end.ts"
+        }
+      },
+      "name": "meta.property-list.css",
+      "contentName": "meta.property-value.css source.css",
+      "patterns": [
+        {
+          "include": "source.css#property-values"
+        }
+      ]
+    },
+    "embeddedCssInTsTemplateString": {
+      "begin": "\\G\\s*`",
+      "beginCaptures": {
+        "0": {
+          "name": "string.template.ts punctuation.definition.string.begin.ts"
+        }
+      },
+      "end": "`",
+      "endCaptures": {
+        "0": {
+          "name": "string.template.ts punctuation.definition.string.end.ts"
+        }
+      },
+      "name": "meta.property-list.css",
+      "contentName": "meta.property-value.css source.css",
+      "patterns": [
+        {
+          "include": "#embeddedCssInTsTemplateSubstitution"
+        },
+        {
+          "include": "source.css#property-values"
+        }
+      ]
+    },
+    "embeddedCssInTsTemplateSubstitution": {
+      "begin": "\\$\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "meta.template.expression.ts punctuation.definition.template-expression.begin.ts"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "meta.template.expression.ts punctuation.definition.template-expression.end.ts"
+        }
+      },
+      "contentName": "expression.ng",
+      "patterns": [
+        {
+          "include": "expression.ng"
+        }
+      ]
+    },
     "propertyBinding": {
       "begin": "(\\[\\s*@?(?:[-_a-zA-Z0-9.$]+|\\[[^\\[\\]]*]|\\([^()]*\\))*%?\\s*])(=)([\"'])",
       "beginCaptures": {
@@ -158,6 +584,34 @@
                 {
                   "match": "\\.",
                   "name": "punctuation.accessor.html"
+                }
+              ]
+            },
+            "3": {
+              "name": "punctuation.definition.ng-binding-name.end.html"
+            }
+          }
+        }
+      ]
+    },
+    "styleBindingKey": {
+      "patterns": [
+        {
+          "match": "([\\[\\(]{1,2}|\\*)(?:\\s*)(@?(?:[-_a-zA-Z0-9.$]+|\\[[^\\[\\]]*]|\\([^()]*\\))*%?)(?:\\s*)([\\]\\)]{1,2})?",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.ng-binding-name.begin.html"
+            },
+            "2": {
+              "name": "entity.other.ng-binding-name.$2.html",
+              "patterns": [
+                {
+                  "match": "\\.",
+                  "name": "punctuation.accessor.html"
+                },
+                {
+                  "match": "(?<=\\.)(px|em|rem|vh|vw|vmin|vmax|pt|pc|cm|mm|in|ch|ex|s|ms|deg|rad|turn|grad|dpi|dpcm|dppx|fr|%)$",
+                  "name": "keyword.other.unit.css"
                 }
               ]
             },
