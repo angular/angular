@@ -35,89 +35,89 @@ interface SubNavigationData {
 
 export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   {
-    label: 'Introduction',
+    label: 'Введение',
     children: [
       {
-        label: 'What is Angular?',
+        label: 'Что такое Angular?',
         path: 'overview',
         contentPath: 'introduction/what-is-angular',
       },
       {
-        label: 'Installation',
+        label: 'Установка',
         path: 'installation',
         contentPath: 'introduction/installation',
       },
       {
-        label: 'Essentials',
+        label: 'Основы',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'essentials',
             contentPath: 'introduction/essentials/overview',
           },
           {
-            label: 'Composition with components',
+            label: 'Композиция с компонентами',
             path: 'essentials/components',
             contentPath: 'introduction/essentials/components',
           },
           {
-            label: 'Reactivity with signals',
+            label: 'Реактивность с сигналами',
             path: 'essentials/signals',
             contentPath: 'introduction/essentials/signals',
           },
           {
-            label: 'Dynamic interfaces with templates',
+            label: 'Динамические интерфейсы с шаблонами',
             path: 'essentials/templates',
             contentPath: 'introduction/essentials/templates',
           },
           {
-            label: 'Forms with signals',
+            label: 'Формы с сигналами',
             path: 'essentials/signal-forms',
             contentPath: 'introduction/essentials/signal-forms',
             status: 'new',
           },
           {
-            label: 'Modular design with dependency injection',
+            label: 'Модульный дизайн с внедрением зависимостей',
             path: 'essentials/dependency-injection',
             contentPath: 'introduction/essentials/dependency-injection',
           },
           {
-            label: 'Next Steps',
+            label: 'Следующие шаги',
             path: 'essentials/next-steps',
             contentPath: 'introduction/essentials/next-steps',
           },
         ],
       },
       {
-        label: 'Start coding! 🚀',
+        label: 'Начать кодить! 🚀',
         path: 'tutorials/learn-angular',
       },
     ],
   },
   {
-    label: 'In-depth Guides',
+    label: 'Подробные руководства',
     children: [
       {
-        label: 'Signals',
+        label: 'Сигналы',
         status: 'updated',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/signals',
             contentPath: 'guide/signals/overview',
           },
           {
-            label: 'Dependent state with linkedSignal',
+            label: 'Зависимое состояние с linkedSignal',
             path: 'guide/signals/linked-signal',
             contentPath: 'guide/signals/linked-signal',
           },
           {
-            label: 'Async reactivity with resources',
+            label: 'Асинхронная реактивность с ресурсами',
             path: 'guide/signals/resource',
             contentPath: 'guide/signals/resource',
           },
           {
-            label: 'Side effects for non-reactives APIs',
+            label: 'Побочные эффекты для нереактивных API',
             path: 'guide/signals/effect',
             contentPath: 'guide/signals/effect',
             status: 'new',
@@ -125,224 +125,224 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ],
       },
       {
-        label: 'Components',
+        label: 'Компоненты',
         children: [
           {
-            label: 'Anatomy of components',
+            label: 'Анатомия компонентов',
             path: 'guide/components',
             contentPath: 'guide/components/anatomy-of-components',
           },
           {
-            label: 'Selectors',
+            label: 'Селекторы',
             path: 'guide/components/selectors',
             contentPath: 'guide/components/selectors',
           },
           {
-            label: 'Styling',
+            label: 'Стилизация',
             path: 'guide/components/styling',
             contentPath: 'guide/components/styling',
           },
           {
-            label: 'Accepting data with input properties',
+            label: 'Получение данных через input-свойства',
             path: 'guide/components/inputs',
             contentPath: 'guide/components/inputs',
           },
           {
-            label: 'Custom events with outputs',
+            label: 'Пользовательские события с output',
             path: 'guide/components/outputs',
             contentPath: 'guide/components/outputs',
           },
           {
-            label: 'Content projection with ng-content',
+            label: 'Проекция контента с ng-content',
             path: 'guide/components/content-projection',
             contentPath: 'guide/components/content-projection',
           },
           {
-            label: 'Host elements',
+            label: 'Host-элементы',
             path: 'guide/components/host-elements',
             contentPath: 'guide/components/host-elements',
           },
           {
-            label: 'Lifecycle',
+            label: 'Жизненный цикл',
             path: 'guide/components/lifecycle',
             contentPath: 'guide/components/lifecycle',
           },
           {
-            label: 'Referencing component children with queries',
+            label: 'Обращение к дочерним компонентам через запросы',
             path: 'guide/components/queries',
             contentPath: 'guide/components/queries',
           },
           {
-            label: 'Using DOM APIs',
+            label: 'Использование DOM API',
             path: 'guide/components/dom-apis',
             contentPath: 'guide/components/dom-apis',
           },
           {
-            label: 'Inheritance',
+            label: 'Наследование',
             path: 'guide/components/inheritance',
             contentPath: 'guide/components/inheritance',
           },
           {
-            label: 'Programmatically rendering components',
+            label: 'Программный рендеринг компонентов',
             path: 'guide/components/programmatic-rendering',
             contentPath: 'guide/components/programmatic-rendering',
           },
           {
-            label: 'Advanced configuration',
+            label: 'Расширенная конфигурация',
             path: 'guide/components/advanced-configuration',
             contentPath: 'guide/components/advanced-configuration',
           },
           {
-            label: 'Custom Elements',
+            label: 'Пользовательские элементы',
             path: 'guide/elements',
             contentPath: 'guide/elements',
           },
         ],
       },
       {
-        label: 'Templates',
+        label: 'Шаблоны',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/templates',
             contentPath: 'guide/templates/overview',
           },
           {
-            label: 'Binding dynamic text, properties and attributes',
+            label: 'Привязка динамического текста, свойств и атрибутов',
             path: 'guide/templates/binding',
             contentPath: 'guide/templates/binding',
           },
           {
-            label: 'Adding event listeners',
+            label: 'Добавление обработчиков событий',
             path: 'guide/templates/event-listeners',
             contentPath: 'guide/templates/event-listeners',
           },
           {
-            label: 'Two-way binding',
+            label: 'Двусторонняя привязка',
             path: 'guide/templates/two-way-binding',
             contentPath: 'guide/templates/two-way-binding',
           },
           {
-            label: 'Control flow',
+            label: 'Поток управления',
             path: 'guide/templates/control-flow',
             contentPath: 'guide/templates/control-flow',
           },
           {
-            label: 'Pipes',
+            label: 'Pipe',
             path: 'guide/templates/pipes',
             contentPath: 'guide/templates/pipes',
           },
           {
-            label: 'Slotting child content with ng-content',
+            label: 'Вставка дочернего контента с ng-content',
             path: 'guide/templates/ng-content',
             contentPath: 'guide/templates/ng-content',
           },
           {
-            label: 'Create template fragments with ng-template',
+            label: 'Создание фрагментов шаблона с ng-template',
             path: 'guide/templates/ng-template',
             contentPath: 'guide/templates/ng-template',
           },
           {
-            label: 'Grouping elements with ng-container',
+            label: 'Группировка элементов с ng-container',
             path: 'guide/templates/ng-container',
             contentPath: 'guide/templates/ng-container',
           },
           {
-            label: 'Variables in templates',
+            label: 'Переменные в шаблонах',
             path: 'guide/templates/variables',
             contentPath: 'guide/templates/variables',
           },
           {
-            label: 'Deferred loading with @defer',
+            label: 'Отложенная загрузка с @defer',
             path: 'guide/templates/defer',
             contentPath: 'guide/templates/defer',
           },
           {
-            label: 'Expression syntax',
+            label: 'Синтаксис выражений',
             path: 'guide/templates/expression-syntax',
             contentPath: 'guide/templates/expression-syntax',
           },
           {
-            label: 'Whitespace in templates',
+            label: 'Пробелы в шаблонах',
             path: 'guide/templates/whitespace',
             contentPath: 'guide/templates/whitespace',
           },
         ],
       },
       {
-        label: 'Directives',
+        label: 'Директивы',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/directives',
             contentPath: 'guide/directives/overview',
           },
           {
-            label: 'Attribute directives',
+            label: 'Директивы атрибутов',
             path: 'guide/directives/attribute-directives',
             contentPath: 'guide/directives/attribute-directives',
           },
           {
-            label: 'Structural directives',
+            label: 'Структурные директивы',
             path: 'guide/directives/structural-directives',
             contentPath: 'guide/directives/structural-directives',
           },
           {
-            label: 'Directive composition API',
+            label: 'API композиции директив',
             path: 'guide/directives/directive-composition-api',
             contentPath: 'guide/directives/directive-composition-api',
           },
           {
-            label: 'Optimizing images with NgOptimizedImage',
+            label: 'Оптимизация изображений с NgOptimizedImage',
             path: 'guide/image-optimization',
             contentPath: 'guide/image-optimization',
           },
         ],
       },
       {
-        label: 'Dependency Injection',
+        label: 'Внедрение зависимостей',
         status: 'updated',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/di',
             contentPath: 'guide/di/overview',
             status: 'updated',
           },
           {
-            label: 'Creating and using services',
+            label: 'Создание и использование сервисов',
             path: 'guide/di/creating-and-using-services',
             contentPath: 'guide/di/creating-and-using-services',
             status: 'updated',
           },
           {
-            label: 'Defining dependency providers',
+            label: 'Определение провайдеров зависимостей',
             path: 'guide/di/defining-dependency-providers',
             contentPath: 'guide/di/defining-dependency-providers',
             status: 'updated',
           },
           {
-            label: 'Injection context',
+            label: 'Контекст внедрения',
             path: 'guide/di/dependency-injection-context',
             contentPath: 'guide/di/dependency-injection-context',
           },
           {
-            label: 'Hierarchical injectors',
+            label: 'Иерархические инжекторы',
             path: 'guide/di/hierarchical-dependency-injection',
             contentPath: 'guide/di/hierarchical-dependency-injection',
           },
           {
-            label: 'Optimizing injection tokens',
+            label: 'Оптимизация токенов внедрения',
             path: 'guide/di/lightweight-injection-tokens',
             contentPath: 'guide/di/lightweight-injection-tokens',
           },
           {
-            label: 'DI in action',
+            label: 'DI в действии',
             path: 'guide/di/di-in-action',
             contentPath: 'guide/di/di-in-action',
           },
           {
-            label: 'Debugging and troubleshooting DI',
+            label: 'Отладка и устранение проблем DI',
             path: 'guide/di/debugging-and-troubleshooting-di',
             contentPath: 'guide/di/debugging-and-troubleshooting-di',
             status: 'new',
@@ -350,212 +350,212 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ],
       },
       {
-        label: 'Routing',
+        label: 'Маршрутизация',
         status: 'updated',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/routing',
             contentPath: 'guide/routing/overview',
           },
           {
-            label: 'Define routes',
+            label: 'Определение маршрутов',
             path: 'guide/routing/define-routes',
             contentPath: 'guide/routing/define-routes',
           },
           {
-            label: 'Route Loading Strategies',
+            label: 'Стратегии загрузки маршрутов',
             path: 'guide/routing/loading-strategies',
             contentPath: 'guide/routing/loading-strategies',
           },
           {
-            label: 'Show routes with Outlets',
+            label: 'Отображение маршрутов с Outlet',
             path: 'guide/routing/show-routes-with-outlets',
             contentPath: 'guide/routing/show-routes-with-outlets',
           },
           {
-            label: 'Navigate to routes',
+            label: 'Навигация по маршрутам',
             path: 'guide/routing/navigate-to-routes',
             contentPath: 'guide/routing/navigate-to-routes',
           },
           {
-            label: 'Read route state',
+            label: 'Чтение состояния маршрута',
             path: 'guide/routing/read-route-state',
             contentPath: 'guide/routing/read-route-state',
           },
           {
-            label: 'Redirecting routes',
+            label: 'Перенаправление маршрутов',
             path: 'guide/routing/redirecting-routes',
             contentPath: 'guide/routing/redirecting-routes',
           },
           {
-            label: 'Control route access with guards',
+            label: 'Управление доступом к маршрутам с guard',
             path: 'guide/routing/route-guards',
             contentPath: 'guide/routing/route-guards',
           },
           {
-            label: 'Route data resolvers',
+            label: 'Resolver данных маршрута',
             path: 'guide/routing/data-resolvers',
             contentPath: 'guide/routing/data-resolvers',
           },
           {
-            label: 'Lifecycle and events',
+            label: 'Жизненный цикл и события',
             path: 'guide/routing/lifecycle-and-events',
             contentPath: 'guide/routing/lifecycle-and-events',
           },
           {
-            label: 'Testing routing and navigation',
+            label: 'Тестирование маршрутизации и навигации',
             path: 'guide/routing/testing',
             contentPath: 'guide/routing/testing',
             status: 'new',
           },
           {
-            label: 'Other routing tasks',
+            label: 'Другие задачи маршрутизации',
             path: 'guide/routing/common-router-tasks',
             contentPath: 'guide/routing/common-router-tasks',
           },
           {
-            label: 'Creating custom route matches',
+            label: 'Создание пользовательских сопоставлений маршрутов',
             path: 'guide/routing/routing-with-urlmatcher',
             contentPath: 'guide/routing/routing-with-urlmatcher',
           },
           {
-            label: 'Rendering strategies',
+            label: 'Стратегии рендеринга',
             path: 'guide/routing/rendering-strategies',
             contentPath: 'guide/routing/rendering-strategies',
             status: 'new',
           },
           {
-            label: 'Customizing route behavior',
+            label: 'Настройка поведения маршрутов',
             path: 'guide/routing/customizing-route-behavior',
             contentPath: 'guide/routing/customizing-route-behavior',
             status: 'new',
           },
           {
-            label: 'Router reference',
+            label: 'Справочник по роутеру',
             path: 'guide/routing/router-reference',
             contentPath: 'guide/routing/router-reference',
           },
           {
-            label: 'Route transition animations',
+            label: 'Анимации переходов между маршрутами',
             path: 'guide/routing/route-transition-animations',
             contentPath: 'guide/routing/route-transition-animations',
           },
         ],
       },
       {
-        label: 'Forms',
+        label: 'Формы',
         status: 'updated',
         preserveOtherCategoryOrder: true,
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/forms',
             contentPath: 'guide/forms/overview',
           },
 
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/forms/signals/overview',
             contentPath: 'guide/forms/signals/overview',
             category: 'Signal Forms',
             status: 'new',
           },
           {
-            label: 'Form models',
+            label: 'Модели форм',
             path: 'guide/forms/signals/models',
             contentPath: 'guide/forms/signals/models',
             category: 'Signal Forms',
             status: 'new',
           },
           {
-            label: 'Form model design',
+            label: 'Проектирование модели формы',
             path: 'guide/forms/signals/model-design',
             contentPath: 'guide/forms/signals/designing-your-form-model',
             category: 'Signal Forms',
             status: 'new',
           },
           {
-            label: 'Field state management',
+            label: 'Управление состоянием полей',
             path: 'guide/forms/signals/field-state-management',
             contentPath: 'guide/forms/signals/field-state-management',
             category: 'Signal Forms',
             status: 'new',
           },
           {
-            label: 'Validation',
+            label: 'Валидация',
             path: 'guide/forms/signals/validation',
             contentPath: 'guide/forms/signals/validation',
             category: 'Signal Forms',
             status: 'new',
           },
           {
-            label: 'Form logic',
+            label: 'Логика формы',
             path: 'guide/forms/signals/form-logic',
             contentPath: 'guide/forms/signals/form-logic',
             category: 'Signal Forms',
             status: 'new',
           },
           {
-            label: 'Async operations',
+            label: 'Асинхронные операции',
             path: 'guide/forms/signals/async-operations',
             contentPath: 'guide/forms/signals/async-operations',
             category: 'Signal Forms',
             status: 'new',
           },
           {
-            label: 'Custom controls',
+            label: 'Пользовательские элементы управления',
             path: 'guide/forms/signals/custom-controls',
             contentPath: 'guide/forms/signals/custom-controls',
             category: 'Signal Forms',
             status: 'new',
           },
           {
-            label: 'Comparison with other form systems',
+            label: 'Сравнение с другими системами форм',
             path: 'guide/forms/signals/comparison',
             contentPath: 'guide/forms/signals/comparison',
             category: 'Signal Forms',
             status: 'new',
           },
           {
-            label: 'Migrating from Reactive Forms',
+            label: 'Миграция с Reactive Forms',
             path: 'guide/forms/signals/migration',
             contentPath: 'guide/forms/signals/migration',
             category: 'Signal Forms',
             status: 'new',
           },
           {
-            label: 'Reactive forms',
+            label: 'Реактивные формы',
             path: 'guide/forms/reactive-forms',
             contentPath: 'guide/forms/reactive-forms',
             category: 'Reactive Forms',
           },
           {
-            label: 'Strictly typed reactive forms',
+            label: 'Строго типизированные реактивные формы',
             path: 'guide/forms/typed-forms',
             contentPath: 'guide/forms/typed-forms',
             category: 'Reactive Forms',
           },
           {
-            label: 'Template-driven forms',
+            label: 'Формы на основе шаблонов',
             path: 'guide/forms/template-driven-forms',
             contentPath: 'guide/forms/template-driven-forms',
             category: 'Template driven Forms',
           },
           {
-            label: 'Validate form input',
+            label: 'Валидация ввода формы',
             path: 'guide/forms/form-validation',
             contentPath: 'guide/forms/form-validation',
             category: 'Reactive Forms',
           },
           {
-            label: 'Validate form input',
+            label: 'Валидация ввода формы',
             path: 'guide/forms/form-validation',
             contentPath: 'guide/forms/form-validation',
             category: 'Template driven Forms',
           },
           {
-            label: 'Building dynamic forms',
+            label: 'Создание динамических форм',
             path: 'guide/forms/dynamic-forms',
             contentPath: 'guide/forms/dynamic-forms',
             category: 'Reactive Forms',
@@ -563,151 +563,151 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ],
       },
       {
-        label: 'HTTP Client',
+        label: 'HTTP-клиент',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/http',
             contentPath: 'guide/http/overview',
           },
           {
-            label: 'Setting up HttpClient',
+            label: 'Настройка HttpClient',
             path: 'guide/http/setup',
             contentPath: 'guide/http/setup',
           },
           {
-            label: 'Making requests',
+            label: 'Выполнение запросов',
             path: 'guide/http/making-requests',
             contentPath: 'guide/http/making-requests',
           },
           {
-            label: 'Reactive data fetching with httpResource',
+            label: 'Реактивная загрузка данных с httpResource',
             path: 'guide/http/http-resource',
             contentPath: 'guide/http/http-resource',
           },
           {
-            label: 'Intercepting requests and responses',
+            label: 'Перехват запросов и ответов',
             path: 'guide/http/interceptors',
             contentPath: 'guide/http/interceptors',
           },
           {
-            label: 'Testing',
+            label: 'Тестирование',
             path: 'guide/http/testing',
             contentPath: 'guide/http/testing',
           },
         ],
       },
       {
-        label: 'Server-side & hybrid-rendering',
+        label: 'Серверный и гибридный рендеринг',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/performance',
             contentPath: 'guide/performance/overview',
           },
           {
-            label: 'Server-side and hybrid-rendering',
+            label: 'Серверный и гибридный рендеринг',
             path: 'guide/ssr',
             contentPath: 'guide/ssr',
           },
           {
-            label: 'Hydration',
+            label: 'Гидратация',
             path: 'guide/hydration',
             contentPath: 'guide/hydration',
           },
           {
-            label: 'Incremental Hydration',
+            label: 'Инкрементальная гидратация',
             path: 'guide/incremental-hydration',
             contentPath: 'guide/incremental-hydration',
           },
         ],
       },
       {
-        label: 'Testing',
+        label: 'Тестирование',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/testing',
             contentPath: 'guide/testing/overview',
           },
           {
-            label: 'Basics of testing components',
+            label: 'Основы тестирования компонентов',
             path: 'guide/testing/components-basics',
             contentPath: 'guide/testing/components-basics',
           },
           {
-            label: 'Component testing scenarios',
+            label: 'Сценарии тестирования компонентов',
             path: 'guide/testing/components-scenarios',
             contentPath: 'guide/testing/components-scenarios',
           },
           {
-            label: 'Testing services',
+            label: 'Тестирование сервисов',
             path: 'guide/testing/services',
             contentPath: 'guide/testing/services',
           },
           {
-            label: 'Testing attribute directives',
+            label: 'Тестирование директив атрибутов',
             path: 'guide/testing/attribute-directives',
             contentPath: 'guide/testing/attribute-directives',
           },
           {
-            label: 'Testing pipes',
+            label: 'Тестирование pipe',
             path: 'guide/testing/pipes',
             contentPath: 'guide/testing/pipes',
           },
           {
-            label: 'Testing routing and navigation',
+            label: 'Тестирование маршрутизации и навигации',
             path: 'guide/routing/testing',
             contentPath: 'guide/routing/testing',
             status: 'new',
           },
           {
-            label: 'Debugging tests',
+            label: 'Отладка тестов',
             path: 'guide/testing/debugging',
             contentPath: 'guide/testing/debugging',
           },
           {
-            label: 'Code coverage',
+            label: 'Покрытие кода',
             path: 'guide/testing/code-coverage',
             contentPath: 'guide/testing/code-coverage',
           },
           {
-            label: 'Testing utility APIs',
+            label: 'Утилиты для тестирования API',
             path: 'guide/testing/utility-apis',
             contentPath: 'guide/testing/utility-apis',
           },
           {
-            label: 'Component harnesses overview',
+            label: 'Обзор harness компонентов',
             path: 'guide/testing/component-harnesses-overview',
             contentPath: 'guide/testing/component-harnesses-overview',
           },
           {
-            label: 'Using component harnesses in tests',
+            label: 'Использование harness компонентов в тестах',
             path: 'guide/testing/using-component-harnesses',
             contentPath: 'guide/testing/using-component-harnesses',
           },
           {
-            label: 'Creating harnesses for your components',
+            label: 'Создание harness для ваших компонентов',
             path: 'guide/testing/creating-component-harnesses',
             contentPath: 'guide/testing/creating-component-harnesses',
           },
           {
-            label: 'Adding harness support for additional testing environments',
+            label: 'Добавление поддержки harness для дополнительных сред тестирования',
             path: 'guide/testing/component-harnesses-testing-environments',
             contentPath: 'guide/testing/component-harnesses-testing-environments',
           },
           {
-            label: 'Migrating from Karma to Vitest',
+            label: 'Миграция с Karma на Vitest',
             path: 'guide/testing/migrating-to-vitest',
             contentPath: 'guide/testing/migrating-to-vitest',
           },
           {
-            label: 'Testing with Karma and Jasmine',
+            label: 'Тестирование с Karma и Jasmine',
             path: 'guide/testing/karma',
             contentPath: 'guide/testing/karma',
           },
           {
-            label: 'Zone.js Testing Utilities',
+            label: 'Утилиты тестирования Zone.js',
             path: 'guide/testing/zone-js-testing-utilities',
             contentPath: 'guide/testing/zone-js-testing-utilities',
           },
@@ -718,149 +718,149 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         status: 'new',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/aria/overview',
             contentPath: 'guide/aria/overview',
           },
           {
-            label: 'Accordion',
+            label: 'Аккордеон',
             path: 'guide/aria/accordion',
             contentPath: 'guide/aria/accordion',
           },
           {
-            label: 'Autocomplete',
+            label: 'Автодополнение',
             path: 'guide/aria/autocomplete',
             contentPath: 'guide/aria/autocomplete',
           },
           {
-            label: 'Combobox',
+            label: 'Комбинированный список',
             path: 'guide/aria/combobox',
             contentPath: 'guide/aria/combobox',
           },
           {
-            label: 'Grid',
+            label: 'Таблица',
             path: 'guide/aria/grid',
             contentPath: 'guide/aria/grid',
           },
           {
-            label: 'Listbox',
+            label: 'Список',
             path: 'guide/aria/listbox',
             contentPath: 'guide/aria/listbox',
           },
           {
-            label: 'Menu',
+            label: 'Меню',
             path: 'guide/aria/menu',
             contentPath: 'guide/aria/menu',
           },
           {
-            label: 'Menubar',
+            label: 'Панель меню',
             path: 'guide/aria/menubar',
             contentPath: 'guide/aria/menubar',
           },
           {
-            label: 'Multiselect',
+            label: 'Множественный выбор',
             path: 'guide/aria/multiselect',
             contentPath: 'guide/aria/multiselect',
           },
           {
-            label: 'Select',
+            label: 'Выбор',
             path: 'guide/aria/select',
             contentPath: 'guide/aria/select',
           },
           {
-            label: 'Tabs',
+            label: 'Вкладки',
             path: 'guide/aria/tabs',
             contentPath: 'guide/aria/tabs',
           },
           {
-            label: 'Toolbar',
+            label: 'Панель инструментов',
             path: 'guide/aria/toolbar',
             contentPath: 'guide/aria/toolbar',
           },
           {
-            label: 'Tree',
+            label: 'Дерево',
             path: 'guide/aria/tree',
             contentPath: 'guide/aria/tree',
           },
         ],
       },
       {
-        label: 'Internationalization',
+        label: 'Интернационализация',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/i18n',
             contentPath: 'guide/i18n/overview',
           },
           {
-            label: 'Add the localize package',
+            label: 'Добавление пакета локализации',
             path: 'guide/i18n/add-package',
             contentPath: 'guide/i18n/add-package',
           },
           {
-            label: 'Refer to locales by ID',
+            label: 'Ссылка на локали по ID',
             path: 'guide/i18n/locale-id',
             contentPath: 'guide/i18n/locale-id',
           },
           {
-            label: 'Format data based on locale',
+            label: 'Форматирование данных на основе локали',
             path: 'guide/i18n/format-data-locale',
             contentPath: 'guide/i18n/format-data-locale',
           },
           {
-            label: 'Prepare component for translation',
+            label: 'Подготовка компонента к переводу',
             path: 'guide/i18n/prepare',
             contentPath: 'guide/i18n/prepare',
           },
           {
-            label: 'Work with translation files',
+            label: 'Работа с файлами переводов',
             path: 'guide/i18n/translation-files',
             contentPath: 'guide/i18n/translation-files',
           },
           {
-            label: 'Merge translations into the app',
+            label: 'Объединение переводов в приложение',
             path: 'guide/i18n/merge',
             contentPath: 'guide/i18n/merge',
           },
           {
-            label: 'Deploy multiple locales',
+            label: 'Развёртывание нескольких локалей',
             path: 'guide/i18n/deploy',
             contentPath: 'guide/i18n/deploy',
           },
           {
-            label: 'Import global variants of the locale data',
+            label: 'Импорт глобальных вариантов данных локали',
             path: 'guide/i18n/import-global-variants',
             contentPath: 'guide/i18n/import-global-variants',
           },
           {
-            label: 'Manage marked text with custom IDs',
+            label: 'Управление размеченным текстом с пользовательскими ID',
             path: 'guide/i18n/manage-marked-text',
             contentPath: 'guide/i18n/manage-marked-text',
           },
           {
-            label: 'Example Angular application',
+            label: 'Пример приложения Angular',
             path: 'guide/i18n/example',
             contentPath: 'guide/i18n/example',
           },
         ],
       },
       {
-        label: 'Animations',
+        label: 'Анимации',
         status: 'updated',
         children: [
           {
-            label: 'Enter and Leave animations',
+            label: 'Анимации появления и исчезновения',
             path: 'guide/animations',
             contentPath: 'guide/animations/enter-and-leave',
             status: 'new',
           },
           {
-            label: 'Complex Animations with CSS',
+            label: 'Сложные анимации с CSS',
             path: 'guide/animations/css',
             contentPath: 'guide/animations/css',
           },
           {
-            label: 'Route transition animations',
+            label: 'Анимации переходов между маршрутами',
             path: 'guide/routing/route-transition-animations',
             contentPath: 'guide/routing/route-transition-animations',
           },
@@ -874,26 +874,26 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
     ],
   },
   {
-    label: 'Build with AI',
+    label: 'Разработка с ИИ',
     status: 'new',
     children: [
       {
-        label: 'Get Started',
+        label: 'Начало работы',
         path: 'ai',
         contentPath: 'ai/overview',
       },
       {
-        label: 'LLM prompts and AI IDE setup',
+        label: 'Промпты для LLM и настройка AI IDE',
         path: 'ai/develop-with-ai',
         contentPath: 'ai/develop-with-ai',
       },
       {
-        label: 'Design Patterns',
+        label: 'Паттерны проектирования',
         path: 'ai/design-patterns',
         contentPath: 'ai/design-patterns',
       },
       {
-        label: 'Angular CLI MCP Server setup',
+        label: 'Настройка MCP-сервера Angular CLI',
         path: 'ai/mcp',
         contentPath: 'ai/mcp-server-setup',
       },
@@ -905,108 +905,108 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
     ],
   },
   {
-    label: 'Developer Tools',
+    label: 'Инструменты разработчика',
     children: [
       {
         label: 'Angular CLI',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'tools/cli',
             contentPath: 'tools/cli/overview',
           },
           {
-            label: 'Local set-up',
+            label: 'Локальная настройка',
             path: 'tools/cli/setup-local',
             contentPath: 'tools/cli/setup-local',
           },
           {
-            label: 'Building Angular apps',
+            label: 'Сборка приложений Angular',
             path: 'tools/cli/build',
             contentPath: 'tools/cli/build',
           },
           {
-            label: 'Serving Angular apps for development',
+            label: 'Запуск приложений Angular для разработки',
             path: 'tools/cli/serve',
             contentPath: 'tools/cli/serve',
           },
           {
-            label: 'Deployment',
+            label: 'Развёртывание',
             path: 'tools/cli/deployment',
             contentPath: 'tools/cli/deployment',
           },
           {
-            label: 'End-to-End Testing',
+            label: 'Сквозное тестирование',
             path: 'tools/cli/end-to-end',
             contentPath: 'tools/cli/end-to-end',
           },
           {
-            label: 'Migrating to new build system',
+            label: 'Миграция на новую систему сборки',
             path: 'tools/cli/build-system-migration',
             contentPath: 'tools/cli/build-system-migration',
           },
           {
-            label: 'Build environments',
+            label: 'Окружения сборки',
             path: 'tools/cli/environments',
             contentPath: 'tools/cli/environments',
           },
           {
-            label: 'Angular CLI builders',
+            label: 'Сборщики Angular CLI',
             path: 'tools/cli/cli-builder',
             contentPath: 'tools/cli/cli-builder',
           },
           {
-            label: 'Generating code using schematics',
+            label: 'Генерация кода с помощью schematic',
             path: 'tools/cli/schematics',
             contentPath: 'tools/cli/schematics',
           },
           {
-            label: 'Authoring schematics',
+            label: 'Создание schematic',
             path: 'tools/cli/schematics-authoring',
             contentPath: 'tools/cli/schematics-authoring',
           },
           {
-            label: 'Schematics for libraries',
+            label: 'Schematic для библиотек',
             path: 'tools/cli/schematics-for-libraries',
             contentPath: 'tools/cli/schematics-for-libraries',
           },
           {
-            label: 'Template type checking',
+            label: 'Проверка типов шаблонов',
             path: 'tools/cli/template-typecheck',
             contentPath: 'tools/cli/template-typecheck',
           },
           {
-            label: 'Ahead-of-time (AOT) compilation',
+            label: 'Ahead-of-time (AOT) компиляция',
             path: 'tools/cli/aot-compiler',
             contentPath: 'tools/cli/aot-compiler',
           },
           {
-            label: 'AOT metadata errors',
+            label: 'Ошибки метаданных AOT',
             path: 'tools/cli/aot-metadata-errors',
             contentPath: 'tools/cli/aot-metadata-errors',
           },
         ],
       },
       {
-        label: 'Libraries',
+        label: 'Библиотеки',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'tools/libraries',
             contentPath: 'tools/libraries/overview',
           },
           {
-            label: 'Creating Libraries',
+            label: 'Создание библиотек',
             path: 'tools/libraries/creating-libraries',
             contentPath: 'tools/libraries/creating-libraries',
           },
           {
-            label: 'Using Libraries',
+            label: 'Использование библиотек',
             path: 'tools/libraries/using-libraries',
             contentPath: 'tools/libraries/using-libraries',
           },
           {
-            label: 'Angular Package Format',
+            label: 'Формат пакетов Angular',
             path: 'tools/libraries/angular-package-format',
             contentPath: 'tools/libraries/angular-package-format',
           },
@@ -1016,22 +1016,22 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'DevTools',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'tools/devtools',
             contentPath: 'tools/devtools/overview',
           },
           {
-            label: 'Components',
+            label: 'Компоненты',
             path: 'tools/devtools/component',
             contentPath: 'tools/devtools/component',
           },
           {
-            label: 'Profiler',
+            label: 'Профилировщик',
             path: 'tools/devtools/profiler',
             contentPath: 'tools/devtools/profiler',
           },
           {
-            label: 'Injectors',
+            label: 'Инжекторы',
             path: 'tools/devtools/injectors',
             contentPath: 'tools/devtools/injectors',
           },
@@ -1050,67 +1050,67 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ],
       },
       {
-        label: 'Language Service',
+        label: 'Языковой сервис',
         path: 'tools/language-service',
         contentPath: 'tools/language-service',
       },
     ],
   },
   {
-    label: 'Best Practices',
+    label: 'Лучшие практики',
     children: [
       {
-        label: 'Style Guide',
+        label: 'Руководство по стилю',
         path: 'style-guide',
         contentPath: 'best-practices/style-guide',
         status: 'updated',
       },
       {
-        label: 'Security',
+        label: 'Безопасность',
         path: 'best-practices/security',
         contentPath: 'guide/security', // Have not refactored due to build issues
       },
       {
-        label: 'Accessibility',
+        label: 'Доступность',
         path: 'best-practices/a11y',
         contentPath: 'best-practices/a11y',
       },
       {
-        label: 'Unhandled errors in Angular',
+        label: 'Необработанные ошибки в Angular',
         path: 'best-practices/error-handling',
         contentPath: 'best-practices/error-handling',
       },
       {
-        label: 'Performance',
+        label: 'Производительность',
         preserveOtherCategoryOrder: true,
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'best-practices/performance',
             contentPath: 'best-practices/performance/overview',
           },
 
           // Loading Performance
           {
-            label: 'Lazy-loaded routes',
+            label: 'Маршруты с ленивой загрузкой',
             path: 'best-practices/performance/lazy-loaded-routes',
             contentPath: 'guide/routing/loading-strategies',
             category: 'Loading Performance',
           },
           {
-            label: 'Deferred loading with @defer',
+            label: 'Отложенная загрузка с @defer',
             path: 'best-practices/performance/defer',
             contentPath: 'guide/templates/defer',
             category: 'Loading Performance',
           },
           {
-            label: 'Image optimization',
+            label: 'Оптимизация изображений',
             path: 'best-practices/performance/image-optimization',
             contentPath: 'guide/image-optimization',
             category: 'Loading Performance',
           },
           {
-            label: 'Server-side rendering',
+            label: 'Рендеринг на стороне сервера',
             path: 'best-practices/performance/ssr',
             contentPath: 'guide/ssr',
             category: 'Loading Performance',
@@ -1118,7 +1118,7 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
 
           // Runtime Performance
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'best-practices/runtime-performance',
             contentPath: 'best-practices/runtime-performance/overview',
             category: 'Runtime Performance',
@@ -1130,26 +1130,26 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             category: 'Runtime Performance',
           },
           {
-            label: 'Slow computations',
+            label: 'Медленные вычисления',
             path: 'best-practices/slow-computations',
             contentPath: 'best-practices/runtime-performance/slow-computations',
             category: 'Runtime Performance',
           },
           {
-            label: 'Skipping component subtrees',
+            label: 'Пропуск поддеревьев компонентов',
             path: 'best-practices/skipping-subtrees',
             contentPath: 'best-practices/runtime-performance/skipping-subtrees',
             category: 'Runtime Performance',
           },
           {
-            label: 'Zone pollution',
+            label: 'Загрязнение Zone',
             path: 'best-practices/zone-pollution',
             contentPath: 'best-practices/runtime-performance/zone-pollution',
             category: 'Runtime Performance',
           },
 
           {
-            label: 'Chrome DevTools profiling',
+            label: 'Профилирование с Chrome DevTools',
             path: 'best-practices/profiling-with-chrome-devtools',
             contentPath: 'best-practices/runtime-performance/profiling-with-chrome-devtools',
             category: 'Runtime Performance',
@@ -1157,17 +1157,17 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ],
       },
       {
-        label: 'Keeping up-to-date',
+        label: 'Обновление',
         path: 'update',
         contentPath: 'best-practices/update',
       },
     ],
   },
   {
-    label: 'Developer Events',
+    label: 'Мероприятия для разработчиков',
     children: [
       {
-        label: 'Angular v21 Release',
+        label: 'Релиз Angular v21',
         path: 'events/v21',
         contentPath: 'events/v21',
         status: 'new',
@@ -1175,7 +1175,7 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
     ],
   },
   {
-    label: 'Extended Ecosystem',
+    label: 'Расширенная экосистема',
     children: [
       {
         label: 'NgModules',
@@ -1183,107 +1183,107 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'guide/ngmodules/overview',
       },
       {
-        label: 'Legacy Animations',
+        label: 'Устаревшие анимации',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'guide/legacy-animations',
             contentPath: 'guide/animations/overview',
           },
           {
-            label: 'Transition and Triggers',
+            label: 'Переходы и триггеры',
             path: 'guide/legacy-animations/transition-and-triggers',
             contentPath: 'guide/animations/transition-and-triggers',
           },
           {
-            label: 'Complex Sequences',
+            label: 'Сложные последовательности',
             path: 'guide/legacy-animations/complex-sequences',
             contentPath: 'guide/animations/complex-sequences',
           },
           {
-            label: 'Reusable Animations',
+            label: 'Переиспользуемые анимации',
             path: 'guide/legacy-animations/reusable-animations',
             contentPath: 'guide/animations/reusable-animations',
           },
           {
-            label: 'Migrating to Native CSS Animations',
+            label: 'Миграция на нативные CSS-анимации',
             path: 'guide/animations/migration',
             contentPath: 'guide/animations/migration',
           },
         ],
       },
       {
-        label: 'Using RxJS with Angular',
+        label: 'Использование RxJS с Angular',
         children: [
           {
-            label: 'Signals interop',
+            label: 'Взаимодействие с сигналами',
             path: 'ecosystem/rxjs-interop',
             contentPath: 'ecosystem/rxjs-interop/signals-interop',
           },
           {
-            label: 'Component output interop',
+            label: 'Взаимодействие с output компонентов',
             path: 'ecosystem/rxjs-interop/output-interop',
             contentPath: 'ecosystem/rxjs-interop/output-interop',
           },
           {
-            label: 'Unsubscribing with takeUntilDestroyed',
+            label: 'Отписка с takeUntilDestroyed',
             path: 'ecosystem/rxjs-interop/take-until-destroyed',
             contentPath: 'ecosystem/rxjs-interop/take-until-destroyed',
           },
         ],
       },
       {
-        label: 'Service Workers & PWAs',
+        label: 'Service Workers и PWA',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'ecosystem/service-workers',
             contentPath: 'ecosystem/service-workers/overview',
           },
           {
-            label: 'Getting started',
+            label: 'Начало работы',
             path: 'ecosystem/service-workers/getting-started',
             contentPath: 'ecosystem/service-workers/getting-started',
           },
           {
-            label: 'Custom service worker scripts',
+            label: 'Пользовательские скрипты service worker',
             path: 'ecosystem/service-workers/custom-service-worker-scripts',
             contentPath: 'ecosystem/service-workers/custom-service-worker-scripts',
           },
           {
-            label: 'Configuration file',
+            label: 'Файл конфигурации',
             path: 'ecosystem/service-workers/config',
             contentPath: 'ecosystem/service-workers/config',
           },
           {
-            label: 'Communicating with the service worker',
+            label: 'Взаимодействие с service worker',
             path: 'ecosystem/service-workers/communications',
             contentPath: 'ecosystem/service-workers/communications',
           },
           {
-            label: 'Push notifications',
+            label: 'Push-уведомления',
             path: 'ecosystem/service-workers/push-notifications',
             contentPath: 'ecosystem/service-workers/push-notifications',
           },
           {
-            label: 'Service worker devops',
+            label: 'DevOps для service worker',
             path: 'ecosystem/service-workers/devops',
             contentPath: 'ecosystem/service-workers/devops',
           },
           {
-            label: 'App shell pattern',
+            label: 'Паттерн App Shell',
             path: 'ecosystem/service-workers/app-shell',
             contentPath: 'ecosystem/service-workers/app-shell',
           },
         ],
       },
       {
-        label: 'Web workers',
+        label: 'Web Workers',
         path: 'ecosystem/web-workers',
         contentPath: 'ecosystem/web-workers',
       },
       {
-        label: 'Custom build pipeline',
+        label: 'Пользовательский конвейер сборки',
         path: 'ecosystem/custom-build-pipeline',
         contentPath: 'ecosystem/custom-build-pipeline',
       },
@@ -1322,7 +1322,7 @@ export const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   ...(isDevMode()
     ? [
         {
-          label: 'Adev Dev Guide',
+          label: 'Руководство разработчика Adev',
           children: [
             {
               label: 'Kitchen Sink',
@@ -1344,36 +1344,36 @@ export const TUTORIALS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   {
     path: 'tutorials',
     contentPath: 'tutorials/home',
-    label: 'Tutorials',
+    label: 'Туториалы',
   },
 ];
 
 export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
   {
-    label: 'Roadmap',
+    label: 'Дорожная карта',
     path: 'roadmap',
     contentPath: 'reference/roadmap',
   },
   {
-    label: 'Get involved',
+    label: 'Присоединиться',
     path: 'https://github.com/angular/angular/blob/main/CONTRIBUTING.md',
   },
   {
-    label: 'API Reference',
+    label: 'Справочник API',
     preserveOtherCategoryOrder: true,
     children: [
       {
-        label: 'Overview',
+        label: 'Обзор',
         path: 'api',
       },
       ...getApiNavigationItems(),
     ],
   },
   {
-    label: 'CLI Reference',
+    label: 'Справочник CLI',
     children: [
       {
-        label: 'Overview',
+        label: 'Обзор',
         path: 'cli',
         contentPath: 'reference/cli',
       },
@@ -1385,7 +1385,7 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'ng analytics',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'cli/analytics',
           },
           {
@@ -1414,7 +1414,7 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'ng cache',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'cli/cache',
           },
           {
@@ -1439,7 +1439,7 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'ng completion',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'cli/completion',
           },
           {
@@ -1468,7 +1468,7 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'ng generate',
         children: [
           {
-            label: 'Overview',
+            label: 'Обзор',
             path: 'cli/generate',
           },
           {
@@ -1580,10 +1580,10 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
     ],
   },
   {
-    label: 'Error Encyclopedia',
+    label: 'Энциклопедия ошибок',
     children: [
       {
-        label: 'Overview',
+        label: 'Обзор',
         path: 'errors',
         contentPath: 'reference/errors/overview',
       },
@@ -1591,10 +1591,10 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
     ],
   },
   {
-    label: 'Extended Diagnostics',
+    label: 'Расширенная диагностика',
     children: [
       {
-        label: 'Overview',
+        label: 'Обзор',
         path: 'extended-diagnostics',
         contentPath: 'reference/extended-diagnostics/overview',
       },
@@ -1602,49 +1602,49 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
     ],
   },
   {
-    label: 'Versioning and releases',
+    label: 'Версионирование и релизы',
     path: 'reference/releases',
     contentPath: 'reference/releases',
   },
   {
-    label: 'Version compatibility',
+    label: 'Совместимость версий',
     path: 'reference/versions',
     contentPath: 'reference/versions',
   },
   {
-    label: 'Update guide',
+    label: 'Руководство по обновлению',
     path: 'update-guide',
   },
   {
-    label: 'Configurations',
+    label: 'Конфигурации',
     children: [
       {
-        label: 'File structure',
+        label: 'Структура файлов',
         path: 'reference/configs/file-structure',
         contentPath: 'reference/configs/file-structure',
       },
       {
-        label: 'Workspace configuration',
+        label: 'Конфигурация рабочего пространства',
         path: 'reference/configs/workspace-config',
         contentPath: 'reference/configs/workspace-config',
       },
       {
-        label: 'Angular compiler options',
+        label: 'Опции компилятора Angular',
         path: 'reference/configs/angular-compiler-options',
         contentPath: 'reference/configs/angular-compiler-options',
       },
       {
-        label: 'npm dependencies',
+        label: 'Зависимости npm',
         path: 'reference/configs/npm-packages',
         contentPath: 'reference/configs/npm-packages',
       },
     ],
   },
   {
-    label: 'Migrations',
+    label: 'Миграции',
     children: [
       {
-        label: 'Overview',
+        label: 'Обзор',
         path: 'reference/migrations',
         contentPath: 'reference/migrations/overview',
       },
@@ -1654,17 +1654,17 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/migrations/standalone',
       },
       {
-        label: 'Control Flow Syntax',
+        label: 'Синтаксис потока управления',
         path: 'reference/migrations/control-flow',
         contentPath: 'reference/migrations/control-flow',
       },
       {
-        label: 'inject() Function',
+        label: 'Функция inject()',
         path: 'reference/migrations/inject-function',
         contentPath: 'reference/migrations/inject-function',
       },
       {
-        label: 'Lazy-loaded routes',
+        label: 'Маршруты с ленивой загрузкой',
         path: 'reference/migrations/route-lazy-loading',
         contentPath: 'reference/migrations/route-lazy-loading',
       },
@@ -1684,35 +1684,35 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/migrations/signal-queries',
       },
       {
-        label: 'Clean up unused imports',
+        label: 'Очистка неиспользуемых импортов',
         path: 'reference/migrations/cleanup-unused-imports',
         contentPath: 'reference/migrations/cleanup-unused-imports',
       },
       {
-        label: 'Self-closing tags',
+        label: 'Самозакрывающиеся теги',
         path: 'reference/migrations/self-closing-tags',
         contentPath: 'reference/migrations/self-closing-tags',
       },
       {
-        label: 'NgClass to Class',
+        label: 'NgClass в Class',
         path: 'reference/migrations/ngclass-to-class',
         contentPath: 'reference/migrations/ngclass-to-class',
         status: 'new',
       },
       {
-        label: 'NgStyle to Style',
+        label: 'NgStyle в Style',
         path: 'reference/migrations/ngstyle-to-style',
         contentPath: 'reference/migrations/ngstyle-to-style',
         status: 'new',
       },
       {
-        label: 'Router Testing Module Migration',
+        label: 'Миграция модуля тестирования роутера',
         path: 'reference/migrations/router-testing-module-migration',
         contentPath: 'reference/migrations/router-testing-module-migration',
         status: 'new',
       },
       {
-        label: 'CommonModule to Standalone',
+        label: 'CommonModule в Standalone',
         path: 'reference/migrations/common-to-standalone',
         contentPath: 'reference/migrations/common-to-standalone',
         status: 'new',
@@ -1723,12 +1723,12 @@ export const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
 
 export const FOOTER_NAVIGATION_DATA: NavigationItem[] = [
   {
-    label: 'Press Kit',
+    label: 'Пресс-кит',
     path: 'press-kit',
     contentPath: 'reference/press-kit',
   },
   {
-    label: 'License',
+    label: 'Лицензия',
     path: 'license',
     contentPath: 'reference/license',
   },
