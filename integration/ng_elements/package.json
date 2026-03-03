@@ -12,7 +12,7 @@
     "rxjs": "^7.0.0",
     "tslib": "^2.3.0",
     "typescript": "5.9.3",
-    "zone.js": "0.16.0"
+    "zone.js": "0.16.1"
   },
   "devDependencies": {
     "@babel/core": "7.29.0",
