@@ -6,20 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-
 import {
   assertFileNames,
   createModuleAndProjectWithDeclarations,
   humanizeDocumentSpanLike,
   LanguageServiceTestEnv,
-} from '../../testing';
+} from '../testing';
 
 describe('get template location for component', () => {
-  beforeEach(() => {
-    initMockFileSystem('Native');
-  });
-
   it('finds location of inline template', () => {
     const files = {
       'app.ts': `

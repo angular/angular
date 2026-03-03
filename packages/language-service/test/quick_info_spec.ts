@@ -6,14 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
-import {
-  createModuleAndProjectWithDeclarations,
-  LanguageServiceTestEnv,
-  Project,
-} from '../../testing';
+import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv, Project} from '../testing';
 
 function quickInfoSkeleton(): {[fileName: string]: string} {
   return {
@@ -145,7 +140,6 @@ describe('quick info', () => {
 
   describe('strict templates (happy path)', () => {
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject('test', quickInfoSkeleton());
     });
@@ -876,7 +870,6 @@ describe('quick info', () => {
     });
 
     it('should work for object literal with shorthand property declarations', () => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject(
         'test',
@@ -1040,7 +1033,6 @@ describe('quick info', () => {
 
   describe('generics', () => {
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
     });
 
@@ -1083,7 +1075,6 @@ describe('quick info', () => {
 
   describe('non-strict compiler options', () => {
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
     });
 
@@ -1156,7 +1147,6 @@ describe('quick info', () => {
 
   describe('selectorless', () => {
     beforeEach(() => {
-      initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       project = env.addProject(
         'test',
