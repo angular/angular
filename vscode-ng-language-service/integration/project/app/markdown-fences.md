@@ -119,3 +119,26 @@ class BacktickTsFenceComponent {}
 })
 class HostCmp {}
 ```
+
+```angular-html
+<div
+  style="border: 1px solid black; --padding: 1em; cursor: pointer"
+  [style]="'border: 1px solid black; --padding: var(--some-padding); cursor: pointer'"
+  [style.border.px]="'1px solid calc(1px + 2px)'"
+>
+  css-fence-test
+</div>
+```
+
+```angular-ts
+@Component({
+  selector: 'fence-css-host',
+  template: `<p [style]="'color: red; font-size: 16px'" [style.border.px]="'2'">host</p>`,
+  host: {
+    style: 'display: block; border: 1px solid black',
+    '[style.padding.px]': '"8"',
+    '[style]': '"width: 200px; height: 50px"',
+  },
+})
+export class FenceCssHostComponent {}
+```

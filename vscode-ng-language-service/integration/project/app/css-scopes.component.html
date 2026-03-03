@@ -1,0 +1,121 @@
+<style>
+  .caseParityHtml {
+    width: 321px;
+    color: rgb(20 30 40 / 0.75);
+    --space-token-html: 6px;
+  }
+</style>
+
+<div class="caseHtmlLiteral" style="width: 320px; color: rgb(20 30 40 / 0.7)">
+  html-literal-style
+</div>
+<div class="caseHtmlLiteralBorder" style="border: 1px solid black; padding: 1em; cursor: pointer">
+  html-literal-border
+</div>
+<div class="caseHtmlLiteralCalc" style="width: calc(2px + 3px)">html-literal-calc</div>
+<div class="caseHtmlBindingExpr" [style.width.px]="exprWidth">html-binding-expr</div>
+<span class="caseBareNumericBinding" [style.width.px]="320">bare</span>
+
+<div class="caseHtmlBindingStringNumeric" [style.width.px]="'320'">html-binding-string-320</div>
+<div class="caseHtmlBindingStringUnit" [style.width.px]="'2px'">html-binding-string-2px</div>
+<div class="caseHtmlBindingBorderLiteral" [style.border]="'1px solid black'">
+  html-binding-border-literal
+</div>
+<div class="caseHtmlBindingBorderPxLiteral" [style.border.px]="'1px solid calc(1px + 2px)'">
+  html-binding-border-px-literal
+</div>
+<div class="caseHtmlBindingStyleLiteral" [style]="'border: 1px solid black'">
+  html-binding-style-literal
+</div>
+<div
+  class="caseHtmlBindingStyleCustomVar"
+  [style]="'border: 1px solid black; --padding: 1em; cursor: pointer; --custom: 1px solid black;'"
+>
+  html-binding-style-custom-var
+</div>
+
+@if (items.length > 0) {
+  <div class="caseHtmlControlFlowAfterStyleBinding">html-control-flow-after-style-binding</div>
+}
+
+<div
+  class="caseHtmlLiteralFontColor"
+  style="
+    font:
+      italic 600 14px/1.4 Inter,
+      sans-serif;
+    color: rgb(20 30 40 / 0.8);
+  "
+>
+  html-literal-font-color
+</div>
+<div class="caseHtmlLiteralBackgroundColor" style="background-color: oklch(70% 0.15 220)">
+  html-literal-background-color
+</div>
+<div class="caseHtmlBindingColorExpr" [style.color]="exprColor">html-style-color-expr</div>
+<div class="caseHtmlBindingColorLiteral" [style.color]="'oklch(62% 0.19 275)'">
+  html-style-color-literal
+</div>
+<div class="caseHtmlBindingBackgroundExpr" [style.background-color]="exprBackground">
+  html-style-background-expr
+</div>
+<div class="caseHtmlBindingBackgroundLiteral" [style.background-color]="'hsl(320 65% 45% / 0.9)'">
+  html-style-background-literal
+</div>
+<div class="caseHtmlBindingCustomPropExpr" [style.--custom-prop]="exprCustomProp">
+  html-style-custom-prop-expr
+</div>
+<div class="caseHtmlBindingCustomPropLiteral" [style.--custom-prop]="'var(--x, calc(1rem + 2px))'">
+  html-style-custom-prop-literal
+</div>
+<div
+  class="caseHtmlBindingObject"
+  [style]="{
+    color: 'oklch(70% 0.12 210)',
+    'background-color': 'linear-gradient(90deg, red, blue)',
+    '--local-size': 'calc(var(--size, 6px) * 2)',
+  }"
+>
+  html-binding-object
+</div>
+<div
+  class="caseHtmlBindingAttrStyle"
+  [attr.style]="'color: color-mix(in oklab, red 40%, blue); width: clamp(12rem, 50vw, 40rem); --pad: calc(var(--base, 4px) * 3)'"
+>
+  html-binding-attr-style
+</div>
+
+<style>
+  .caseParityStyleBlock {
+    border: 1px solid black;
+    --padding: var(--some-padding);
+    cursor: pointer;
+    --custom: 1px solid rgb(2 2 3 / 10);
+  }
+</style>
+
+<section
+  class="caseParitySection"
+  style="
+    border: 1px solid black;
+    --padding: var(--some-padding);
+    cursor: pointer;
+    --custom: 1px solid rgb(2 2 3 / 10);
+  "
+  [style]="'border: 1px solid black; --padding: var(--some-padding); cursor: pointer; --custom: 1px solid rgb(2 2 3 / 10);'"
+  [style.border.px]="'border: 1px solid black; --padding: var(--some-padding); cursor: pointer; --custom: 1px solid rgb(2 2 3 / 10);'"
+>
+  parity-section
+
+  <!-- Edge case: expression binding (should NOT get CSS scopes) -->
+  <span class="caseExpressionBinding" [style]="dynamicStyle">expr</span>
+
+  <!-- Edge case: ternary expression (should NOT get CSS scopes) -->
+  <span class="caseTernaryBinding" [style]="isActive ? 'color: red' : 'color: blue'">ternary</span>
+
+  <!-- Edge case: !important -->
+  <span class="caseImportant" [style]="'border: 1px solid black !important'">important</span>
+
+  <!-- Edge case: single-quoted plain style attribute -->
+  <span class="caseSingleQuotedStyle" style="color: red; font-size: 14px">single</span>
+</section>

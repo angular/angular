@@ -1,13 +1,25 @@
 import {setTimeout} from 'node:timers/promises';
 import * as vscode from 'vscode';
 
-import {APP_COMPONENT, FOO_TEMPLATE, MARKDOWN_FENCES} from '../test_constants';
+import {
+  APP_COMPONENT,
+  CSS_SCOPES_COMPONENT,
+  CSS_SCOPES_REFERENCE_CSS,
+  CSS_SCOPES_TEMPLATE,
+  FOO_TEMPLATE,
+  HOST_STYLE_SCOPES,
+  MARKDOWN_FENCES,
+} from '../test_constants';
 
 export const COMPLETION_COMMAND = 'vscode.executeCompletionItemProvider';
 export const HOVER_COMMAND = 'vscode.executeHoverProvider';
 export const DEFINITION_COMMAND = 'vscode.executeDefinitionProvider';
 export const APP_COMPONENT_URI = vscode.Uri.file(APP_COMPONENT);
+export const CSS_SCOPES_COMPONENT_URI = vscode.Uri.file(CSS_SCOPES_COMPONENT);
+export const CSS_SCOPES_REFERENCE_CSS_URI = vscode.Uri.file(CSS_SCOPES_REFERENCE_CSS);
+export const CSS_SCOPES_TEMPLATE_URI = vscode.Uri.file(CSS_SCOPES_TEMPLATE);
 export const FOO_TEMPLATE_URI = vscode.Uri.file(FOO_TEMPLATE);
+export const HOST_STYLE_SCOPES_URI = vscode.Uri.file(HOST_STYLE_SCOPES);
 export const MARKDOWN_FENCES_URI = vscode.Uri.file(MARKDOWN_FENCES);
 
 const ACTIVATE_TIMEOUT_MS = 10_000;

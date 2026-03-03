@@ -1,0 +1,6 @@
+.ref-parity {
+  border: 1px solid black;
+  --padding: var(--some-padding);
+  cursor: pointer;
+  --custom: 1px solid rgb(2 2 3 / 10);
+}

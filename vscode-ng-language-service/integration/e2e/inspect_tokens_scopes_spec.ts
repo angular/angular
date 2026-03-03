@@ -512,4 +512,96 @@ describe('Angular fenced markdown token scopes', () => {
 
     expectInnermostScope(token.scopes, 'meta.object-literal.key.ts');
   });
+
+  it('gives angular-html fence style="" attribute CSS property scopes', async () => {
+    const position = positionOfMarkerWithOffset(document, '--padding: 1em', 1, 0);
+    const token = await TextmateLanguageService.api.getScopeInformationAtPosition(
+      document,
+      position,
+    );
+
+    expect(token.scopes).toContain('meta.embedded.block.angular-html');
+    expect(token.scopes).toContain('source.css');
+  });
+
+  it('gives angular-html fence [style] binding CSS scopes', async () => {
+    const position = positionOfMarkerWithOffset(document, '--padding: var(--some-padding)', 1, 0);
+    const token = await TextmateLanguageService.api.getScopeInformationAtPosition(
+      document,
+      position,
+    );
+
+    expect(token.scopes).toContain('meta.embedded.block.angular-html');
+    expect(token.scopes).toContain('source.css');
+  });
+
+  it('gives angular-html fence [style.border.px] unit CSS scope', async () => {
+    const position = positionOfMarkerWithOffset(
+      document,
+      '[style.border.px]="\'1px solid calc(1px + 2px)\'"',
+      1,
+      14,
+    );
+    const token = await TextmateLanguageService.api.getScopeInformationAtPosition(
+      document,
+      position,
+    );
+
+    expect(token.scopes).toContain('meta.embedded.block.angular-html');
+    expect(token.scopes).toContain('keyword.other.unit.css');
+  });
+
+  it('gives angular-ts fence host style CSS scopes', async () => {
+    const position = positionOfMarkerWithOffset(
+      document,
+      "style: 'display: block; border: 1px solid black'",
+      1,
+      8,
+    );
+    const token = await TextmateLanguageService.api.getScopeInformationAtPosition(
+      document,
+      position,
+    );
+
+    expect(token.scopes).toContain('meta.embedded.block.angular-ts');
+    expect(token.scopes).toContain('source.css');
+  });
+
+  it('gives angular-ts fence host [style.padding.px] value CSS scopes', async () => {
+    const position = positionOfMarkerWithOffset(document, "'[style.padding.px]': '\"8\"'", 1, 1);
+    const token = await TextmateLanguageService.api.getScopeInformationAtPosition(
+      document,
+      position,
+    );
+
+    expect(token.scopes).toContain('meta.embedded.block.angular-ts');
+    expect(token.scopes).toContain('hostbindings.ng');
+  });
+
+  it('gives angular-ts fence host [style] dynamic binding CSS scopes', async () => {
+    const position = positionOfMarkerWithOffset(
+      document,
+      "'[style]': '\"width: 200px; height: 50px\"'",
+      1,
+      1,
+    );
+    const token = await TextmateLanguageService.api.getScopeInformationAtPosition(
+      document,
+      position,
+    );
+
+    expect(token.scopes).toContain('meta.embedded.block.angular-ts');
+    expect(token.scopes).toContain('hostbindings.ng');
+  });
+
+  it('gives angular-ts fence inline template [style] binding CSS scopes', async () => {
+    const position = positionOfMarkerWithOffset(document, "'color: red; font-size: 16px'", 1, 1);
+    const token = await TextmateLanguageService.api.getScopeInformationAtPosition(
+      document,
+      position,
+    );
+
+    expect(token.scopes).toContain('meta.embedded.block.angular-ts');
+    expect(token.scopes).toContain('source.css');
+  });
 });
