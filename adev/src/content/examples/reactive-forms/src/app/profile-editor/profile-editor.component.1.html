@@ -30,12 +30,12 @@
     <h2>Aliases</h2>
     <button type="button" (click)="addAlias()">+ Add another alias</button>
 
-    @for(alias of aliases.controls; track $index; let i = $index) {
-    <div>
-      <!-- The repeated alias template -->
-      <label for="alias-{{ i }}">Alias: </label>
-      <input id="alias-{{ i }}" type="text" [formControlName]="i" />
-    </div>
+    @for (alias of aliases.controls; track $index; let i = $index) {
+      <div>
+        <!-- The repeated alias template -->
+        <label for="alias-{{ i }}">Alias: </label>
+        <input id="alias-{{ i }}" type="text" [formControlName]="i" />
+      </div>
     }
   </div>
   <!-- #docregion formgroup -->

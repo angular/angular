@@ -1,16 +1,16 @@
-/**
+/*!
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {GrammarDefinition} from './types';
 
 export const Template: GrammarDefinition = {
   scopeName: 'template.ng',
-  injectionSelector: 'L:text.html -comment -control.block.ng',
+  injectionSelector: 'L:text.html -comment -control.block.ng -meta.definition.variable.ng',
   patterns: [{include: '#interpolation'}],
   repository: {
     interpolation: {

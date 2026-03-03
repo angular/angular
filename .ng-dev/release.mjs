@@ -27,7 +27,7 @@ export const release = {
   buildPackages: async () => {
     // The buildTargetPackages function is loaded at runtime as the loading the script
     // causes an invocation of Bazel.
-    const {performNpmReleaseBuild} = await import('../scripts/build/package-builder.mjs');
+    const {performNpmReleaseBuild} = await import('../scripts/build/package-builder.mts');
     return performNpmReleaseBuild();
   },
   releaseNotes: {

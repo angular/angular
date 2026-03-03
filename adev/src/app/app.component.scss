@@ -71,7 +71,7 @@
   font-size: 0.875rem;
   transform: translateY(-150%);
   transition: transform 0.3s ease-out;
-  &:focus {
+  &:focus-visible {
     transform: translateY(0);
   }
 }
@@ -161,7 +161,7 @@
     width: 100vw;
     height: 100vh;
     backdrop-filter: blur(2px);
-    background-color: color-mix(in srgb, var(--gray-1000) 5%, transparent);
+    background-color: color-mix(in srgb, var(--page-background) 5%, transparent);
     z-index: 50;
     visibility: hidden;
     opacity: 0;

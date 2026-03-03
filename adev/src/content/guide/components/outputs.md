@@ -6,7 +6,9 @@
 Компоненты Angular могут определять пользовательские события, присваивая свойству результат вызова функции `output`:
 
 ```ts {highlight:[3]}
-@Component({/*...*/})
+@Component({
+  /*...*/
+})
 export class ExpandablePanel {
   panelClosed = output<void>();
 }
@@ -20,7 +22,7 @@ export class ExpandablePanel {
 `OutputEmitterRef`:
 
 ```ts
-  this.panelClosed.emit();
+this.panelClosed.emit();
 ```
 
 Angular называет свойства, инициализированные функцией `output`, **outputs** (выходными свойствами). Вы можете
@@ -47,7 +49,7 @@ this.valueChanged.emit(7);
 this.thumbDropped.emit({
   pointerX: 123,
   pointerY: 456,
-})
+});
 ```
 
 При определении слушателя событий в шаблоне вы можете получить доступ к данным события через переменную `$event`:
@@ -75,7 +77,9 @@ export class App {
 Функция `output` принимает параметр, который позволяет указать другое имя для события в шаблоне:
 
 ```ts
-@Component({/*...*/})
+@Component({
+  /*...*/
+})
 export class CustomSlider {
   changed = output({alias: 'valueChanged'});
 }
@@ -99,7 +103,7 @@ export class CustomSlider {
 ```ts
 const someComponentRef: ComponentRef<SomeComponent> = viewContainerRef.createComponent(/*...*/);
 
-someComponentRef.instance.someEventProperty.subscribe(eventData => {
+someComponentRef.instance.someEventProperty.subscribe((eventData) => {
   console.log(eventData);
 });
 ```
@@ -108,7 +112,7 @@ Angular автоматически очищает подписки на собы
 можете отписаться от события вручную. Функция `subscribe` возвращает `OutputRefSubscription` с методом `unsubscribe`:
 
 ```ts
-const eventSubscription = someComponent.someEventProperty.subscribe(eventData => {
+const eventSubscription = someComponent.someEventProperty.subscribe((eventData) => {
   console.log(eventData);
 });
 
@@ -143,7 +147,9 @@ output-свойств.
 добавляя декоратор `@Output`:
 
 ```ts
-@Component({/*...*/})
+@Component({
+  /*...*/
+})
 export class ExpandablePanel {
   @Output() panelClosed = new EventEmitter<void>();
 }
@@ -156,7 +162,9 @@ export class ExpandablePanel {
 Декоратор `@Output` принимает параметр, позволяющий указать другое имя для события в шаблоне:
 
 ```ts
-@Component({/*...*/})
+@Component({
+  /*...*/
+})
 export class CustomSlider {
   @Output('valueChanged') changed = new EventEmitter<number>();
 }

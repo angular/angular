@@ -15,6 +15,7 @@ load(
     _sass_library = "sass_library",
     _ts_config = "ts_config",
     _ts_project = "ts_project",
+    _zoneless_web_test_suite = "zoneless_web_test_suite",
 )
 
 sass_binary = _sass_binary
@@ -22,7 +23,18 @@ sass_library = _sass_library
 npm_sass_library = _npm_sass_library
 http_server = _http_server
 js_library = _js_library
-esbuild = _esbuild
+
+def esbuild(minify = None, sourcemap = "linked", sources_content = True, **kwargs):
+    _esbuild(
+        minify = minify if minify != None else select({
+            "//devtools:debug_build": False,
+            "//conditions:default": True,
+        }),
+        sourcemap = sourcemap,
+        sources_content = sources_content,
+        **kwargs
+    )
+
 copy_to_bin = _copy_to_bin
 copy_to_directory = _copy_to_directory
 string_flag = _string_flag
@@ -36,6 +48,19 @@ def ng_web_test_suite(deps = [], **kwargs):
         "//:node_modules/@angular/platform-browser",
     ]
     _ng_web_test_suite(
+        deps = deps,
+        tsconfig = "//devtools:tsconfig_test",
+        **kwargs
+    )
+
+def zoneless_web_test_suite(deps = [], **kwargs):
+    # Provide required modules for the imports in //tools/testing/browser_tests.init.mts
+    deps = deps + [
+        "//:node_modules/@angular/compiler",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
+    ]
+    _zoneless_web_test_suite(
         deps = deps,
         tsconfig = "//devtools:tsconfig_test",
         **kwargs

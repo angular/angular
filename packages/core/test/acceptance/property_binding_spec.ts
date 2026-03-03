@@ -313,9 +313,7 @@ describe('property bindings', () => {
 
   it('should use the sanitizer in bound properties', () => {
     @Component({
-      template: `
-        <a [href]="url">
-      `,
+      template: ` <a [href]="url"> </a> `,
       standalone: false,
     })
     class App {
@@ -340,7 +338,7 @@ describe('property bindings', () => {
 
   it('should not stringify non-string values', () => {
     @Component({
-      template: `<input [required]="isRequired"/>`,
+      template: `<input [required]="isRequired" />`,
       standalone: false,
     })
     class Comp {
@@ -356,7 +354,7 @@ describe('property bindings', () => {
 
   it('should support interpolation for properties', () => {
     @Component({
-      template: `<span id="{{'_' + id + '_'}}"></span>`,
+      template: `<span id="{{ '_' + id + '_' }}"></span>`,
       standalone: false,
     })
     class Comp {
@@ -622,9 +620,7 @@ describe('property bindings', () => {
       }
 
       @Component({
-        template: `
-          <div [field]="value"></div>
-        `,
+        template: ` <div [field]="value"></div> `,
         imports: [Field],
       })
       class App {
@@ -834,6 +830,7 @@ describe('property bindings', () => {
     });
 
     it('should process attributes properly inside a for loop', () => {
+      // prettier-ignore
       @Component({
         selector: 'comp',
         template: `<div role="button" myDir #dir="myDir"></div>role: {{dir.role}}`,
@@ -841,6 +838,7 @@ describe('property bindings', () => {
       })
       class Comp {}
 
+      // prettier-ignore
       @Component({
         template: `
           <comp *ngFor="let i of [0, 1]"></comp>

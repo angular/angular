@@ -14,15 +14,15 @@ ng generate @angular/core:inject
 #### До (Before)
 
 ```typescript
-import { Component, Inject, Optional } from '@angular/core';
-import { MyService } from './service';
-import { DI_TOKEN } from './token';
+import {Component, Inject, Optional} from '@angular/core';
+import {MyService} from './service';
+import {DI_TOKEN} from './token';
 
 @Component()
 export class MyComp {
   constructor(
     private service: MyService,
-    @Inject(DI_TOKEN) @Optional() readonly token: string
+    @Inject(DI_TOKEN) @Optional() readonly token: string,
   ) {}
 }
 ```
@@ -30,14 +30,14 @@ export class MyComp {
 #### После (After)
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { MyService } from './service';
-import { DI_TOKEN } from './token';
+import {Component, inject} from '@angular/core';
+import {MyService} from './service';
+import {DI_TOKEN} from './token';
 
 @Component()
 export class MyComp {
   private service = inject(MyService);
-  readonly token = inject(DI_TOKEN, { optional: true });
+  readonly token = inject(DI_TOKEN, {optional: true});
 }
 ```
 
@@ -66,8 +66,8 @@ Angular не проверяет, что параметры абстрактны�
 #### До (Before)
 
 ```typescript
-import { Component } from '@angular/core';
-import { MyService } from './service';
+import {Component} from '@angular/core';
+import {MyService} from './service';
 
 @Component()
 export class MyComp {
@@ -106,14 +106,14 @@ constructor() {}
 #### До (Before)
 
 ```typescript
-import { Component, Inject, Optional } from '@angular/core';
-import { TOKEN_ONE, TOKEN_TWO } from './token';
+import {Component, Inject, Optional} from '@angular/core';
+import {TOKEN_ONE, TOKEN_TWO} from './token';
 
 @Component()
 export class MyComp {
   constructor(
     @Inject(TOKEN_ONE) @Optional() private tokenOne: number,
-    @Inject(TOKEN_TWO) @Optional() private tokenTwo: string | null
+    @Inject(TOKEN_TWO) @Optional() private tokenTwo: string | null,
   ) {}
 }
 ```
@@ -121,15 +121,15 @@ export class MyComp {
 #### После (After)
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { TOKEN_ONE, TOKEN_TWO } from './token';
+import {Component, inject} from '@angular/core';
+import {TOKEN_ONE, TOKEN_TWO} from './token';
 
 @Component()
 export class MyComp {
   // Note the `!` at the end.
-  private tokenOne = inject(TOKEN_ONE, { optional: true })!;
+  private tokenOne = inject(TOKEN_ONE, {optional: true})!;
 
   // Does not have `!` at the end, because the type was already nullable.
-  private tokenTwo = inject(TOKEN_TWO, { optional: true });
+  private tokenTwo = inject(TOKEN_TWO, {optional: true});
 }
 ```

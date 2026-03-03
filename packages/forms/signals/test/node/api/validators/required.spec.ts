@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {form, required} from '../../../../public_api';
-import {customError, requiredError} from '../../../../src/api/validation_errors';
+import {requiredError} from '../../../../src/api/rules/validation/validation_errors';
 
 describe('required validator', () => {
   it('returns required Error when the value is not present', () => {
@@ -24,7 +24,7 @@ describe('required validator', () => {
       },
     );
 
-    expect(f.name().errors()).toEqual([requiredError({field: f.name})]);
+    expect(f.name().errors()).toEqual([requiredError({fieldTree: f.name})]);
     f.name().value.set('pirojok-the-cat');
     expect(f.name().errors()).toEqual([]);
   });
@@ -35,7 +35,7 @@ describe('required validator', () => {
       cat,
       (p) => {
         required(p.name, {
-          error: (ctx) => customError({kind: `required-${ctx.valueOf(p.age)}`}),
+          error: (ctx) => ({kind: `required-${ctx.valueOf(p.age)}`}),
         });
       },
       {
@@ -43,7 +43,7 @@ describe('required validator', () => {
       },
     );
 
-    expect(f.name().errors()).toEqual([customError({kind: 'required-5', field: f.name})]);
+    expect(f.name().errors()).toEqual([{kind: 'required-5', fieldTree: f.name}]);
     f.name().value.set('pirojok-the-cat');
     expect(f.name().errors()).toEqual([]);
   });
@@ -62,7 +62,9 @@ describe('required validator', () => {
       },
     );
 
-    expect(f.name().errors()).toEqual([requiredError({message: 'required error', field: f.name})]);
+    expect(f.name().errors()).toEqual([
+      requiredError({message: 'required error', fieldTree: f.name}),
+    ]);
     f.name().value.set('pirojok-the-cat');
     expect(f.name().errors()).toEqual([]);
   });
@@ -85,7 +87,7 @@ describe('required validator', () => {
 
     expect(f.name().errors()).toEqual([]);
     f.age().value.set(15);
-    expect(f.name().errors()).toEqual([requiredError({field: f.name})]);
+    expect(f.name().errors()).toEqual([requiredError({fieldTree: f.name})]);
   });
 
   it('supports returning custom plain error, and wraps it as custom', () => {
@@ -106,6 +108,6 @@ describe('required validator', () => {
 
     expect(f.name().errors()).toEqual([]);
     f.name().value.set('');
-    expect(f.name().errors()).toEqual([customError({kind: 'pirojok-the-error', field: f.name})]);
+    expect(f.name().errors()).toEqual([{kind: 'pirojok-the-error', fieldTree: f.name}]);
   });
 });

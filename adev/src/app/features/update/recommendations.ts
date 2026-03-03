@@ -208,7 +208,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Basic,
     step: 'Http',
     action:
-      "If you use the legacy `HttpModule` and the `Http` service, switch to `HttpClientModule` and the `HttpClient` service. HttpClient simplifies the default ergonomics (you don't need to map to JSON anymore) and now supports typed return values and interceptors. Read more on [angular.dev](https://angular.io/guide/http).",
+      "If you use the legacy `HttpModule` and the `Http` service, switch to `HttpClientModule` and the `HttpClient` service. HttpClient simplifies the default ergonomics (you don't need to map to JSON anymore) and now supports typed return values and interceptors. Read more on [angular.dev](https://angular.dev/guide/http).",
   },
   {
     possibleIn: 430,
@@ -2604,7 +2604,8 @@ export const RECOMMENDATIONS: Step[] = [
     necessaryAsOf: 2000,
     level: ApplicationComplexity.Medium,
     step: '20.0.0_rename_rxResource_loader_to_stream',
-    action: 'Rename the `loader` property passed in rxResources to `stream`.',
+    action:
+      'Rename the `request` and `loader` properties passed in RxResource to `params` and `stream`.',
   },
   {
     possibleIn: 2000,

@@ -9,17 +9,11 @@ import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
         <span class="status-dot"></span>
         Status: {{ userStatus() }}
       </div>
-      
+
       <div class="status-controls">
-        <button (click)="goOnline()" [disabled]="userStatus() === 'online'">
-          Go Online
-        </button>
-        <button (click)="goOffline()" [disabled]="userStatus() === 'offline'">
-          Go Offline
-        </button>
-        <button (click)="toggleStatus()" class="toggle-btn">
-          Toggle Status
-        </button>
+        <button (click)="goOnline()" [disabled]="userStatus() === 'online'">Go Online</button>
+        <button (click)="goOffline()" [disabled]="userStatus() === 'offline'">Go Offline</button>
+        <button (click)="toggleStatus()" class="toggle-btn">Toggle Status</button>
       </div>
     </div>
   `,

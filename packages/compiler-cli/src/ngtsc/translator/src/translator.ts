@@ -10,7 +10,9 @@ import * as o from '@angular/compiler';
 import {
   AstFactory,
   BinaryOperator,
+  ObjectLiteralAssignment,
   ObjectLiteralProperty,
+  ObjectLiteralSpread,
   SourceMapRange,
   TemplateElement,
   TemplateLiteral,
@@ -45,6 +47,7 @@ const BINARY_OPERATORS = /* @__PURE__ */ new Map<o.BinaryOperator, BinaryOperato
   [o.BinaryOperator.NullishCoalesce, '??'],
   [o.BinaryOperator.Exponentiation, '**'],
   [o.BinaryOperator.In, 'in'],
+  [o.BinaryOperator.InstanceOf, 'instanceof'],
   [o.BinaryOperator.Assign, '='],
   [o.BinaryOperator.AdditionAssignment, '+='],
   [o.BinaryOperator.SubtractionAssignment, '-='],
@@ -390,11 +393,17 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
 
   visitLiteralMapExpr(ast: o.LiteralMapExpr, context: Context): TExpression {
     const properties: ObjectLiteralProperty<TExpression>[] = ast.entries.map((entry) => {
-      return {
-        propertyName: entry.key,
-        quoted: entry.quoted,
-        value: entry.value.visitExpression(this, context),
-      };
+      return entry instanceof o.LiteralMapPropertyAssignment
+        ? ({
+            kind: 'property',
+            propertyName: entry.key,
+            quoted: entry.quoted,
+            value: entry.value.visitExpression(this, context),
+          } satisfies ObjectLiteralAssignment<TExpression>)
+        : ({
+            kind: 'spread',
+            expression: entry.expression.visitExpression(this, context),
+          } satisfies ObjectLiteralSpread<TExpression>);
     });
     return this.setSourceMapRange(this.factory.createObjectLiteral(properties), ast.sourceSpan);
   }
@@ -405,6 +414,11 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
 
   visitTemplateLiteralElementExpr(ast: o.TemplateLiteralElementExpr, context: any) {
     throw new Error('Method not implemented');
+  }
+
+  visitSpreadElementExpr(ast: o.outputAst.SpreadElementExpr, context: any): TExpression {
+    const expression = ast.expression.visitExpression(this, context);
+    return this.setSourceMapRange(this.factory.createSpreadElement(expression), ast.sourceSpan);
   }
 
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, _context: Context): any {

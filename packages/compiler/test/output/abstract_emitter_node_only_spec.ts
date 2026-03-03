@@ -11,7 +11,7 @@ import {EmitterVisitorContext} from '../../src/output/abstract_emitter';
 
 import {originalPositionFor} from './source_map_util';
 
-describe('AbstractEmitter', () => {
+describe('AbstractEmitter (node only)', () => {
   describe('EmitterVisitorContext', () => {
     const fileA = new ParseSourceFile('a0a1a2a3a4a5a6a7a8a9', 'a.js');
     const fileB = new ParseSourceFile('b0b1b2b3b4b5b6b7b8b9', 'b.js');

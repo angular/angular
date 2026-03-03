@@ -13,9 +13,9 @@ import {expect} from '@angular/private/testing/matchers';
 import {Router, RouterModule, RouterOutlet, UrlTree, withRouterConfig} from '../index';
 import {EMPTY, of} from 'rxjs';
 
-import {provideRouter, withPlatformNavigation} from '../src/provide_router';
+import {provideRouter, withExperimentalPlatformNavigation} from '../src/provide_router';
 import {isUrlTree} from '../src/url_tree';
-import {timeout, useAutoTick} from './helpers';
+import {useAutoTick, timeout} from '@angular/private/testing';
 import {afterNextNavigation} from '../src/utils/navigations';
 
 for (const browserAPI of ['navigation', 'history'] as const) {
@@ -127,7 +127,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
               resolveNavigationPromiseOnError: true,
             }),
             browserAPI === 'navigation'
-              ? withPlatformNavigation()
+              ? withExperimentalPlatformNavigation()
               : (makeEnvironmentProviders([]) as any),
           ),
         ],

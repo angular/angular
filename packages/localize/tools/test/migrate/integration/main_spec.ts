@@ -22,7 +22,7 @@ import {runInNativeFileSystem} from '../../helpers';
 
 const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
-runInNativeFileSystem(() => {
+runInNativeFileSystem('migrateFiles()', () => {
   let fs: FileSystem;
   let logger: MockLogger;
   let rootPath: AbsoluteFsPath;
@@ -37,7 +37,7 @@ runInNativeFileSystem(() => {
     loadTestDirectory(fs, path.join(currentDir, 'test_files'), absoluteFrom('/project/test_files'));
   });
 
-  describe('migrateFiles()', () => {
+  describe('', () => {
     it('should log a warning if the migration file is empty', () => {
       const emptyMappingPath = fs.resolve(rootPath, 'test_files/empty-mapping.json');
       migrateFiles({

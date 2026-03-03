@@ -9,7 +9,7 @@
 import {LanguageService} from '../../src/language_service';
 
 import {APP_COMPONENT, MockService, setup} from './mock_host';
-import {humanizeDefinitionInfo} from './test_utils';
+import {humanizeDefinitionInfo} from './test_utils.js';
 
 describe('definitions', () => {
   let service: MockService;

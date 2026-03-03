@@ -7,15 +7,7 @@
  */
 
 import {CommonModule, NgForOf} from '@angular/common';
-import {
-  Component,
-  inject,
-  provideZonelessChangeDetection,
-  Input,
-  Type,
-  NgModule,
-  signal,
-} from '@angular/core';
+import {Component, inject, Input, Type, NgModule, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   provideRouter,
@@ -27,7 +19,7 @@ import {
 } from '../../index';
 import {RouterTestingHarness} from '../../testing';
 import {InjectionToken} from '../../../core/src/di';
-import {timeout, useAutoTick} from '../helpers';
+import {useAutoTick, timeout} from '@angular/private/testing';
 
 describe('router outlet name', () => {
   useAutoTick();
@@ -100,10 +92,10 @@ describe('router outlet name', () => {
   it('should support outlets in ngFor', async () => {
     @Component({
       template: `
-            <div *ngFor="let outlet of outlets()">
-                <router-outlet [name]="outlet"></router-outlet>
-            </div>
-            `,
+        <div *ngFor="let outlet of outlets()">
+          <router-outlet [name]="outlet"></router-outlet>
+        </div>
+      `,
       imports: [RouterOutlet, NgForOf],
     })
     class RootCmp {
@@ -487,10 +479,7 @@ describe('router outlet data', () => {
     }
 
     TestBed.configureTestingModule({
-      providers: [
-        provideRouter([{path: '**', component: MyComponent}]),
-        provideZonelessChangeDetection(),
-      ],
+      providers: [provideRouter([{path: '**', component: MyComponent}])],
     });
 
     const harness = await RouterTestingHarness.create();
@@ -506,7 +495,7 @@ describe('router outlet data', () => {
   it('overrides parent provided data with nested', async () => {
     @Component({
       imports: [RouterOutlet],
-      template: `{{outletData()}}|<router-outlet [routerOutletData]="'child'" />`,
+      template: `{{ outletData() }}|<router-outlet [routerOutletData]="'child'" />`,
     })
     class Child {
       readonly outletData = inject(ROUTER_OUTLET_DATA);
@@ -541,7 +530,7 @@ describe('router outlet data', () => {
   it('does not inherit ancestor data when not provided in nested', async () => {
     @Component({
       imports: [RouterOutlet],
-      template: `{{outletData()}}|<router-outlet />`,
+      template: `{{ outletData() }}|<router-outlet />`,
     })
     class Child {
       readonly outletData = inject(ROUTER_OUTLET_DATA);

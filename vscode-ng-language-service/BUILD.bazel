@@ -49,6 +49,7 @@ npm_package(
         "README.md",
         "angular.png",
         "package_expanded.json",
+        "schemas/tsconfig-ng.schema.json",
         "//vscode-ng-language-service/client:index.js",
         "//vscode-ng-language-service/server:npm_package",
         "//vscode-ng-language-service/syntaxes:json",

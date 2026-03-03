@@ -11,10 +11,10 @@ import {initializeMessageBus} from '../../../ng-devtools-backend';
 import {unHighlight} from '../../../ng-devtools-backend/src/lib/highlighter';
 
 import {initializeExtendedWindowOperations} from './chrome-window-extensions';
-import {BACKEND_URI, CONTENT_SCRIPT_URI} from './communication';
+import {getBackendUri, getContentScriptUri} from './comm-utils';
 import {SamePageMessageBus} from './same-page-message-bus';
 
-const messageBus = new SamePageMessageBus(BACKEND_URI, CONTENT_SCRIPT_URI);
+const messageBus = new SamePageMessageBus(getBackendUri(), getContentScriptUri());
 
 let initialized = false;
 messageBus.on('handshake', () => {

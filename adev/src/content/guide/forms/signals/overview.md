@@ -1,60 +1,46 @@
-<docs-decorative-header title="Формы с использованием Angular-сигналов" imgSrc="adev/src/assets/images/signals.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Forms with Angular Signals" imgSrc="adev/src/assets/images/signals.svg"> <!-- markdownlint-disable-line -->
 </docs-decorative-header>
 
-ВАЖНО: Формы на сигналах (Signal Forms) являются [экспериментальными](/reference/releases#experimental). API может
-измениться в будущих релизах. Избегайте использования экспериментальных API в продакшн-приложениях без полного понимания
-рисков.
+CRITICAL: Signal Forms are [experimental](/reference/releases#experimental). The API may change in future releases. Avoid using experimental APIs in production applications without understanding the risks.
 
-Signal Forms — это экспериментальная библиотека, которая позволяет управлять состоянием форм в приложениях Angular,
-основываясь на реактивном фундаменте сигналов. Благодаря автоматической двусторонней привязке, типобезопасному доступу к
-полям и валидации на основе схем, формы на сигналах помогают создавать надежные формы.
+Signal Forms is an experimental library that allows you to manage form state in Angular applications by building on the reactive foundation of signals. With automatic two-way binding, type-safe field access, and schema-based validation, Signal Forms help you create robust forms.
 
-СОВЕТ: Для быстрого знакомства с формами на сигналах ознакомьтесь
-с [руководством по основам форм на сигналах](essentials/signal-forms).
+TIP: For a quick introduction to Signal Forms, see the [Signal Forms essentials guide](essentials/signal-forms).
 
-## Почему формы на сигналах?
+## Why Signal Forms?
 
-Создание форм в веб-приложениях подразумевает управление несколькими взаимосвязанными задачами: отслеживание значений
-полей, валидация пользовательского ввода, обработка состояний ошибок и синхронизация пользовательского интерфейса (UI) с
-моделью данных. Раздельное управление этими задачами приводит к появлению шаблонного кода и усложнению логики.
+Building forms in web applications involves managing several interconnected concerns: tracking field values, validating user input, handling error states, and keeping the UI synchronized with your data model. Managing these concerns separately creates boilerplate code and complexity.
 
-Формы на сигналах решают эти проблемы следующим образом:
+Signal Forms address these challenges by:
 
-- **Автоматическая синхронизация состояния** — Автоматически синхронизирует модель данных формы с привязанными полями
-  формы.
-- **Обеспечение типобезопасности** — Поддерживает полностью типизированные схемы и привязки между элементами управления
-  UI и моделью данных.
-- **Централизация логики валидации** — Определение всех правил валидации в одном месте с использованием схемы валидации.
+- **Synchronizing state automatically** - Automatically syncs the form data model with bound form fields
+- **Providing type safety** - Supports fully type safe schemas & bindings between your UI controls and data model
+- **Centralizing validation logic** - Define all validation rules in one place using a validation schema
 
-Формы на сигналах лучше всего подходят для новых приложений, построенных на сигналах. Если вы работаете с существующим
-приложением, использующим реактивные формы (Reactive Forms), или если вам нужны гарантии стабильности в продакшене,
-реактивные формы остаются надежным выбором.
+Signal Forms work best in new applications built with signals. If you're working with an existing application that uses reactive forms, or if you need production stability guarantees, reactive forms remain a solid choice.
 
-<!-- TODO: UNCOMMENT SECTION BELOW WHEN AVAILABLE -->
-<!-- NOTE: If you're coming from template or reactive forms, you may be interested in our [comparison guide](guide/forms/signals/comparison). -->
+NOTE: If you're coming from template or reactive forms, you may be interested in the [comparison guide](guide/forms/signals/comparison).
 
-## Предварительные требования
+## Prerequisites
 
-Для использования форм на сигналах требуется:
+Signal Forms require:
 
-- Angular v21 или выше
+- Angular v21 or higher
 
-## Настройка
+## Setup
 
-Формы на сигналах уже включены в пакет `@angular/forms`. Импортируйте необходимые функции и директивы из
-`@angular/forms/signals`:
+Signal Forms are already included in the `@angular/forms` package. Import the necessary functions and directives from `@angular/forms/signals`:
 
 ```ts
-import { form, Field, required, email } from '@angular/forms/signals'
+import {form, FormField, required, email} from '@angular/forms/signals';
 ```
 
-Директиву `Field` необходимо импортировать в любой компонент, который привязывает поля формы к HTML-элементам ввода (
-inputs):
+The `FormField` directive must be imported into any component that binds form fields to HTML inputs:
 
 ```ts
 @Component({
   // ...
-  imports: [Field],
+  imports: [FormField],
 })
 ```
 
@@ -62,12 +48,12 @@ inputs):
 
 To learn more about how Signal Forms work, check out the following guides:
 
-<!-- TODO: UNCOMMENT SECTION BELOW WHEN AVAILABLE -->
 <docs-pill-row>
   <docs-pill href="essentials/signal-forms" title="Signal forms essentials" />
   <docs-pill href="guide/forms/signals/models" title="Form models" />
+  <docs-pill href="guide/forms/signals/model-design" title="Designing your form model" />
   <docs-pill href="guide/forms/signals/field-state-management" title="Field state management" />
   <docs-pill href="guide/forms/signals/validation" title="Validation" />
   <docs-pill href="guide/forms/signals/custom-controls" title="Custom controls" />
-  <!-- <docs-pill href="guide/forms/signals/arrays" title="Working with Arrays" /> -->
+  <docs-pill href="guide/forms/signals/comparison" title="Comparison with other form systems" />
 </docs-pill-row>

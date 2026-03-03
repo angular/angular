@@ -20,7 +20,7 @@ describe('markdown to html', () => {
 
   it('should render external links with _blank target', () => {
     expect(parsedMarkdown).toContain(
-      '<a href="https://angular.dev" target="_blank">Angular Site</a>',
+      '<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">Please click</a>',
     );
   });
 
@@ -36,5 +36,18 @@ describe('markdown to html', () => {
     expect(parsedMarkdown).toContain(
       '<a href="https://docs.npmjs.com/getting-started/what-is-npm" title="What is npm?" target="_blank">npm packages</a>',
     );
+  });
+
+  it('should throw if on absolute links to adev', async () => {
+    try {
+      parsedMarkdown = await parseMarkdown(
+        '[Some absolute link](https://angular.dev/yeah-nope-should-be-relative)',
+        {...rendererContext, markdownFilePath: '/content/guide/some-guide.md'},
+      );
+    } catch (e: any) {
+      expect(e.message).toContain('Absolute links to angular.dev are not allowed');
+      return;
+    }
+    fail('Did not throw for absolute link to angular.dev');
   });
 });

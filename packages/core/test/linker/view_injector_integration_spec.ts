@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {expect} from '@angular/private/testing/matchers';
 import {
   Attribute,
   ChangeDetectionStrategy,
@@ -23,7 +24,6 @@ import {
   InjectionToken,
   Injector,
   Input,
-  NgModule,
   Optional,
   Pipe,
   PipeTransform,
@@ -34,8 +34,8 @@ import {
   Type,
   ViewContainerRef,
 } from '../../src/core';
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 import {ComponentFixture, fakeAsync, TestBed} from '../../testing';
-import {expect} from '@angular/private/testing/matchers';
 
 @Directive({
   selector: '[simpleDirective]',
@@ -769,7 +769,7 @@ describe('View injector', () => {
     it('should not instantiate a directive with cyclic dependencies', () => {
       TestBed.configureTestingModule({declarations: [CycleDirective]});
       expect(() => createComponent('<div cycleDirective></div>')).toThrowError(
-        'NG0200: Circular dependency detected for `CycleDirective`. Path: CycleDirective -> CycleDirective. Find more at https://angular.dev/errors/NG0200',
+        `NG0200: Circular dependency detected for \`CycleDirective\`. Path: CycleDirective -> CycleDirective. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -786,7 +786,7 @@ describe('View injector', () => {
         });
 
         expect(() => createComponent('<div simpleComponent></div>')).toThrowError(
-          'NG0201: No provider for service found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
+          `NG0201: No provider for service found in NodeInjector. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
         );
       },
     );
@@ -808,7 +808,7 @@ describe('View injector', () => {
         expect(() =>
           createComponent('<div simpleComponent someOtherDirective></div>'),
         ).toThrowError(
-          'NG0201: No provider for service found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
+          `NG0201: No provider for service found in NodeInjector. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
         );
       },
     );
@@ -818,7 +818,7 @@ describe('View injector', () => {
       expect(() =>
         createComponent('<div simpleDirective><div needsDirectiveFromSelf></div></div>'),
       ).toThrowError(
-        'NG0201: No provider for SimpleDirective found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
+        `NG0201: No provider for SimpleDirective found in NodeInjector. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
       );
     });
 
@@ -864,7 +864,7 @@ describe('View injector', () => {
         set: {template: '<div needsDirectiveFromHost></div>'},
       });
       expect(() => createComponent('<div simpleComponent simpleDirective></div>')).toThrowError(
-        'NG0201: No provider for SimpleDirective found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
+        `NG0201: No provider for SimpleDirective found in NodeInjector. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
       );
     });
 
@@ -1013,7 +1013,7 @@ describe('View injector', () => {
       expect(compEl.nativeElement).toHaveText('0');
     });
 
-    it('should inject ViewContainerRef', () => {
+    it('should inject ViewContainerRef (injector)', () => {
       TestBed.configureTestingModule({declarations: [NeedsViewContainerRef]});
       const el = createComponent('<div needsViewContainerRef></div>');
       expect(
@@ -1021,7 +1021,7 @@ describe('View injector', () => {
       ).toBe(el.children[0].nativeElement);
     });
 
-    it('should inject ViewContainerRef', () => {
+    it('should inject ViewContainerRef (constructor DI)', () => {
       @Component({
         template: '',
         standalone: false,

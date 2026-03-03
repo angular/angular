@@ -1,5 +1,3 @@
-import 'zone.js/bundles/zone.umd';
-
 import * as domino from 'domino';
 
 // Zone public API should be included

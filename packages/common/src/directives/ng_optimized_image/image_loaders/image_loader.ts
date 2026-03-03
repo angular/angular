@@ -28,6 +28,10 @@ export interface ImageLoaderConfig {
    */
   width?: number;
   /**
+   * Height of the requested image (to be used when generating srcset).
+   */
+  height?: number;
+  /**
    * Whether the loader should generate a URL for a small image placeholder instead of a full-sized
    * image.
    */
@@ -71,7 +75,7 @@ export type ImageLoaderInfo = {
  * @publicApi
  */
 export const IMAGE_LOADER = new InjectionToken<ImageLoader>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'ImageLoader' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'ImageLoader' : '',
   {
     factory: () => noopImageLoader,
   },

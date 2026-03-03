@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {OnDestroy} from '../core';
 import {Injector, inject, ɵɵdefineInjectable} from '../di';
 import {NgZone} from '../zone';
+import {IDLE_SERVICE} from './idle_service';
+import {ApplicationRef} from '../application/application_ref';
 
 /**
  * Helper function to schedule a callback to be invoked when a browser becomes idle.
@@ -23,102 +26,78 @@ export function onIdle(callback: VoidFunction, injector: Injector) {
 }
 
 /**
- * Use shims for the `requestIdleCallback` and `cancelIdleCallback` functions for
- * environments where those functions are not available (e.g. Node.js and Safari).
- *
- * Note: we wrap the `requestIdleCallback` call into a function, so that it can be
- * overridden/mocked in test environment and picked up by the runtime code.
- */
-const _requestIdleCallback = () =>
-  typeof requestIdleCallback !== 'undefined' ? requestIdleCallback : setTimeout;
-const _cancelIdleCallback = () =>
-  typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout;
-
-/**
  * Helper service to schedule `requestIdleCallback`s for batches of defer blocks,
  * to avoid calling `requestIdleCallback` for each defer block (e.g. if
  * defer blocks are defined inside a for loop).
  */
-export class IdleScheduler {
-  // Indicates whether current callbacks are being invoked.
-  executingCallbacks = false;
-
+export class IdleScheduler implements OnDestroy {
   // Currently scheduled idle callback id.
   idleId: number | null = null;
 
-  // Set of callbacks to be invoked next.
-  current = new Set<VoidFunction>();
-
-  // Set of callbacks collected while invoking current set of callbacks.
-  // Those callbacks are scheduled for the next idle period.
-  deferred = new Set<VoidFunction>();
+  // Queue of callbacks to be invoked next.
+  queue = new Set<VoidFunction>();
+  applicationRef = inject(ApplicationRef);
 
   ngZone = inject(NgZone);
-
-  requestIdleCallbackFn = _requestIdleCallback().bind(globalThis);
-  cancelIdleCallbackFn = _cancelIdleCallback().bind(globalThis);
+  private readonly idleService = inject(IDLE_SERVICE);
 
   add(callback: VoidFunction) {
-    const target = this.executingCallbacks ? this.deferred : this.current;
-    target.add(callback);
-    if (this.idleId === null) {
-      this.scheduleIdleCallback();
-    }
+    this.queue.add(callback);
+    this.scheduleIdleCallback();
   }
 
   remove(callback: VoidFunction) {
-    const {current, deferred} = this;
-
-    current.delete(callback);
-    deferred.delete(callback);
+    this.queue.delete(callback);
 
     // If the last callback was removed and there is a pending
     // idle callback - cancel it.
-    if (current.size === 0 && deferred.size === 0) {
+    if (this.queue.size === 0) {
       this.cancelIdleCallback();
     }
   }
 
   private scheduleIdleCallback() {
-    const callback = () => {
+    if (this.idleId !== null) {
+      return;
+    }
+
+    const callback = (deadline?: IdleDeadline) => {
       this.cancelIdleCallback();
 
-      this.executingCallbacks = true;
+      for (const callbackFn of this.queue) {
+        callbackFn();
+        // _tick here is an optimized change detection check and is safe to call here.
+        // We also account for the time it takes to run change detection
+        // for the newly-created view as a part of the same idle callback.
+        this.applicationRef._tick();
+        this.queue.delete(callbackFn);
 
-      for (const callback of this.current) {
-        callback();
-      }
-      this.current.clear();
-
-      this.executingCallbacks = false;
-
-      // If there are any callbacks added during an invocation
-      // of the current ones - make them "current" and schedule
-      // a new idle callback.
-      if (this.deferred.size > 0) {
-        for (const callback of this.deferred) {
-          this.current.add(callback);
+        if (deadline && deadline.timeRemaining() === 0 && !deadline.didTimeout) {
+          break;
         }
-        this.deferred.clear();
+      }
+
+      if (this.queue.size > 0) {
         this.scheduleIdleCallback();
       }
     };
     // Ensure that the callback runs in the NgZone since
     // the `requestIdleCallback` is not currently patched by Zone.js.
-    this.idleId = this.requestIdleCallbackFn(() => this.ngZone.run(callback)) as number;
+    this.idleId = this.idleService.requestOnIdle((deadline) =>
+      this.ngZone.run(() => callback(deadline)),
+    ) as number;
   }
 
   private cancelIdleCallback() {
     if (this.idleId !== null) {
-      this.cancelIdleCallbackFn(this.idleId);
+      this.idleService.cancelOnIdle(this.idleId);
       this.idleId = null;
     }
   }
 
   ngOnDestroy() {
     this.cancelIdleCallback();
-    this.current.clear();
-    this.deferred.clear();
+    this.queue.clear();
   }
 
   /** @nocollapse */

@@ -78,17 +78,17 @@ export class LegacyMessageIdMigrationSerializer implements TranslationSerializer
 }
 
 // @public
-export function makeEs2015TranslatePlugin(diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation_2>, { missingTranslation, localizeName }?: TranslatePluginOptions, fs?: PathManipulation): PluginObj;
+export function makeEs2015TranslatePlugin(diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation_2>, input?: TranslatePluginOptions, fs?: PathManipulation): PluginObj;
 
 // @public
-export function makeEs5TranslatePlugin(diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation_2>, { missingTranslation, localizeName }?: TranslatePluginOptions, fs?: PathManipulation): PluginObj;
+export function makeEs5TranslatePlugin(diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation_2>, input?: TranslatePluginOptions, fs?: PathManipulation): PluginObj;
 
 // @public
-export function makeLocalePlugin(locale: string, { localizeName }?: TranslatePluginOptions): PluginObj;
+export function makeLocalePlugin(locale: string, input?: TranslatePluginOptions): PluginObj;
 
 // @public
 export class MessageExtractor {
-    constructor(fs: ReadonlyFileSystem, logger: Logger, { basePath, useSourceMaps, localizeName }: ExtractionOptions);
+    constructor(fs: ReadonlyFileSystem, logger: Logger, input: ExtractionOptions);
     // (undocumented)
     extractMessages(filename: string): ɵParsedMessage[];
 }

@@ -200,7 +200,12 @@ export class SwPush {
       .eventsOfType('PUSH_SUBSCRIPTION_CHANGE')
       .pipe(map((message: any) => message.data));
 
-    this.pushManager = this.sw.registration.pipe(map((registration) => registration.pushManager));
+    this.pushManager = this.sw.registration.pipe(
+      map(
+        (registration) =>
+          (registration as ServiceWorkerRegistration & {pushManager: PushManager}).pushManager,
+      ),
+    );
 
     const workerDrivenSubscriptions = this.pushManager.pipe(
       switchMap((pm) => pm.getSubscription()),

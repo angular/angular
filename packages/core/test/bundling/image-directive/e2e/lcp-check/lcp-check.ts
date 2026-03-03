@@ -17,20 +17,20 @@ import {Component} from '../../../../../src/core';
       'b.png' should *not* be treated as an LCP element,
       since there is a bigger one right below it
     -->
-    <img ngSrc="/e2e/b.png" width="5" height="5">
+    <img ngSrc="/e2e/b.png" width="5" height="5" />
 
-    <br>
+    <br />
 
     <!-- 'a.png' should be treated as an LCP element -->
-    <img [ngSrc]=imageSrc width="2500" height="2500">
+    <img [ngSrc]="imageSrc" width="2500" height="2500" />
 
-    <br>
+    <br />
 
     <!--
       'b.png' should *not* be treated as an LCP element here
       as well, since it's below the fold
     -->
-    <img ngSrc="/e2e/b.png" width="10" height="10">
+    <img ngSrc="/e2e/b.png" width="10" height="10" />
   `,
 })
 export class LcpCheckComponent {

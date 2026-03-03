@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {platform} from 'node:os';
+import ts from 'typescript';
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {CompilerOptions} from '../../src/transformers/api';
 import {createCompilerHost} from '../../src/transformers/compiler_host';
-import {platform} from 'node:os';
-import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../src/ngtsc/file_system';
@@ -27,14 +27,28 @@ const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();
 
 const varRegExp = (name: string): RegExp => new RegExp(`const \\w+ = \\[\"${name}\"\\];`);
 
-const viewQueryRegExp = (predicate: string, flags: number, ref?: string): RegExp => {
-  const maybeRef = ref ? `, ${ref}` : ``;
-  return new RegExp(`i0\\.ɵɵviewQuery\\(${predicate}, ${flags}${maybeRef}\\)`);
+const viewQueryRegExp = (queries: [{predicate: string; flags: number; ref?: string}]): RegExp => {
+  let result = `i0\\.ɵɵviewQuery`;
+
+  for (const {ref, predicate, flags} of queries) {
+    const maybeRef = ref ? `, ${ref}` : ``;
+    result += `\\(${predicate}, ${flags}${maybeRef}\\)`;
+  }
+
+  return new RegExp(result);
 };
 
-const contentQueryRegExp = (predicate: string, flags: number, ref?: string): RegExp => {
-  const maybeRef = ref ? `, ${ref}` : ``;
-  return new RegExp(`i0\\.ɵɵcontentQuery\\(dirIndex, ${predicate}, ${flags}${maybeRef}\\)`);
+const contentQueryRegExp = (
+  queries: {predicate: string; flags: number; ref?: string}[],
+): RegExp => {
+  let result = `i0\\.ɵɵcontentQuery`;
+
+  for (const {predicate, flags, ref} of queries) {
+    const maybeRef = ref ? `, ${ref}` : ``;
+    result += `\\(dirIndex, ${predicate}, ${flags}${maybeRef}\\)`;
+  }
+
+  return new RegExp(result);
 };
 
 const setClassMetadataRegExp = (expectedType: string): RegExp =>
@@ -2199,9 +2213,8 @@ runInEachFileSystem((os: string) => {
         JSON.stringify({
           extends: './tsconfig-base.json',
           compilerOptions: {
-            baseUrl: '.',
             paths: {
-              '*': ['*', 'shared/*'],
+              'foo': ['./shared/foo/index'],
             },
           },
         }),
@@ -2374,6 +2387,18 @@ runInEachFileSystem((os: string) => {
     });
 
     it('should use absolute import for forward references that were resolved from an absolute file', () => {
+      env.write(
+        'tsconfig.json',
+        JSON.stringify({
+          extends: './tsconfig-base.json',
+          compilerOptions: {
+            paths: {
+              'dir': ['./dir.ts'],
+            },
+          },
+        }),
+      );
+
       env.write(
         'dir.ts',
         `
@@ -2575,11 +2600,69 @@ runInEachFileSystem((os: string) => {
           export class HelloDir {}
 
           const someVar = {} as any;
+          const tuple = [() => {}] as const;
 
           @Component({
             template: '<div hello></div>',
             imports: [
               someVar,
+              HelloDir,
+              'invalid',
+              tuple,
+            ]
+          })
+          export class TestCmp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(3);
+      {
+        const message = ts.flattenDiagnosticMessageText(diags[0].messageText, '\n');
+        expect(getDiagnosticSourceCode(diags[0])).toBe('someVar');
+        expect(message).toContain(
+          `'imports' must be an array of components, directives, pipes, or NgModules.`,
+        );
+        expect(message).toContain(`Value is of type '{}'`);
+      }
+      {
+        const message = ts.flattenDiagnosticMessageText(diags[1].messageText, '\n');
+        expect(getDiagnosticSourceCode(diags[1])).toBe(`'invalid'`);
+        expect(message).toContain(
+          `'imports' must be an array of components, directives, pipes, or NgModules.`,
+        );
+        expect(message).toContain(`Value is of type 'string'`);
+      }
+      {
+        const message = ts.flattenDiagnosticMessageText(diags[2].messageText, '\n');
+        expect(getDiagnosticSourceCode(diags[2])).toBe('tuple');
+        expect(message).toContain(
+          `'imports' must be an array of components, directives, pipes, or NgModules.`,
+        );
+        expect(message).toContain(`Value is of type '[(not statically analyzable)]'.`);
+      }
+    });
+
+    it('should report imports diagnostic for declaration file in original expression', () => {
+      env.write(
+        'node_modules/external/index.d.ts',
+        `
+        export declare const UNRESOLVED_ITEM: readonly [unresolved];
+      `,
+      );
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive} from '@angular/core';
+          import {UNRESOLVED_ITEM as Unresolved} from 'external';
+
+          @Directive({selector: '[hello]'})
+          export class HelloDir {}
+
+          @Component({
+            template: '<div hello></div>',
+            imports: [
+              [Unresolved],
               HelloDir,
             ]
           })
@@ -2592,11 +2675,12 @@ runInEachFileSystem((os: string) => {
         ? ts.flattenDiagnosticMessageText(diags[0].messageText, '\n')
         : '';
       expect(diags.length).toBe(1);
-      expect(getDiagnosticSourceCode(diags[0])).toBe('someVar');
+      expect(diags[0].file!.fileName).toContain('test.ts');
+      expect(getDiagnosticSourceCode(diags[0])).toBe('Unresolved');
       expect(message).toContain(
         `'imports' must be an array of components, directives, pipes, or NgModules.`,
       );
-      expect(message).toContain(`Value is of type '{}'`);
+      expect(message).toContain(`Value is of type '[(not statically analyzable)]'.`);
     });
 
     describe('empty and missing selectors', () => {
@@ -5232,9 +5316,11 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toMatch(varRegExp('test2'));
       expect(jsContents).toMatch(varRegExp('accessor'));
       // match `i0.ɵɵcontentQuery(dirIndex, _c1, 5, TemplateRef)`
-      expect(jsContents).toMatch(contentQueryRegExp('\\w+', 5, 'TemplateRef'));
+      expect(jsContents).toMatch(
+        contentQueryRegExp([{predicate: '\\w+', flags: 5, ref: 'TemplateRef'}]),
+      );
       // match `i0.ɵɵviewQuery(_c2, 5, null)`
-      expect(jsContents).toMatch(viewQueryRegExp('\\w+', 5));
+      expect(jsContents).toMatch(viewQueryRegExp([{predicate: '\\w+', flags: 5}]));
     });
 
     it('should generate queries for directives', () => {
@@ -5267,13 +5353,15 @@ runInEachFileSystem((os: string) => {
       expect(jsContents).toMatch(varRegExp('test2'));
       expect(jsContents).toMatch(varRegExp('accessor'));
       // match `i0.ɵɵcontentQuery(dirIndex, _c1, 5, TemplateRef)`
-      expect(jsContents).toMatch(contentQueryRegExp('\\w+', 5, 'TemplateRef'));
+      expect(jsContents).toMatch(
+        contentQueryRegExp([{predicate: '\\w+', flags: 5, ref: 'TemplateRef'}]),
+      );
 
       // match `i0.ɵɵviewQuery(_c2, 5)`
       // Note that while ViewQuery doesn't necessarily make sense on a directive,
       // because it doesn't have a view, we still need to handle it because a component
       // could extend the directive.
-      expect(jsContents).toMatch(viewQueryRegExp('\\w+', 5));
+      expect(jsContents).toMatch(viewQueryRegExp([{predicate: '\\w+', flags: 5}]));
     });
 
     it('should handle queries that use forwardRef', () => {
@@ -5298,13 +5386,15 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      // match `i0.ɵɵcontentQuery(dirIndex, TemplateRef, 5, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('TemplateRef', 5));
-      // match `i0.ɵɵcontentQuery(dirIndex, ViewContainerRef, 5, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('ViewContainerRef', 5));
-      // match `i0.ɵɵcontentQuery(dirIndex, _c0, 5, null)`
+      // match `i0.ɵɵcontentQuery(dirIndex, TemplateRef, 5, null)(dirIndex, ViewContainerRef, 5, null)(dirIndex, _c0, 5, null)`
+      expect(jsContents).toMatch(
+        contentQueryRegExp([
+          {predicate: 'TemplateRef', flags: 5},
+          {predicate: 'ViewContainerRef', flags: 5},
+          {predicate: '_c0', flags: 5},
+        ]),
+      );
       expect(jsContents).toContain('_c0 = ["parens"];');
-      expect(jsContents).toMatch(contentQueryRegExp('_c0', 5));
     });
 
     it('should handle queries that use an InjectionToken', () => {
@@ -5329,9 +5419,9 @@ runInEachFileSystem((os: string) => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       // match `i0.ɵɵviewQuery(TOKEN, 5, null)`
-      expect(jsContents).toMatch(viewQueryRegExp('TOKEN', 5));
+      expect(jsContents).toMatch(viewQueryRegExp([{predicate: 'TOKEN', flags: 5}]));
       // match `i0.ɵɵcontentQuery(dirIndex, TOKEN, 5, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('TOKEN', 5));
+      expect(jsContents).toMatch(contentQueryRegExp([{predicate: 'TOKEN', flags: 5}]));
     });
 
     it('should compile expressions that write keys', () => {
@@ -7236,8 +7326,8 @@ runInEachFileSystem((os: string) => {
       `,
       ];
 
-      cases.forEach((template) => {
-        it('should not throw', () => {
+      cases.forEach((template, index) => {
+        it(`should not throw [id=${index}]`, () => {
           env.write('test.ts', getComponentScript(template));
           const errors = env.driveDiagnostics();
           expect(errors.length).toBe(0);
@@ -7551,7 +7641,7 @@ runInEachFileSystem((os: string) => {
         expect(diags[1].messageText).toBe('NgModule "import" field contains a cycle');
       });
 
-      it('should report if an NgModule imports itself via a forwardRef', () => {
+      it('should report if an NgModule imports itself via a forwardRef (nested)', () => {
         env.write(
           'test.ts',
           `
@@ -7701,7 +7791,9 @@ runInEachFileSystem((os: string) => {
           );
 
           const diags = await driveDiagnostics();
-          expect(diags[0].messageText).toBe('component is missing a template');
+          expect(diags[0].messageText).toBe(
+            '@Component is missing a template. Add either a `template` or `templateUrl`',
+          );
           expect(diags[0].file!.fileName).toBe(absoluteFrom('/test.ts'));
         });
 
@@ -8477,7 +8569,7 @@ runInEachFileSystem((os: string) => {
         hostVars: 6,
         hostBindings: function UnsafeAttrsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrl)("profile", ctx.attrProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
+            i0.ɵɵattribute("href", ctx.attrHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.attrSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.attrAction, i0.ɵɵsanitizeUrl)("profile", ctx.attrProfile)("innerHTML", ctx.attrInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.attrSafeTitle);
           }
         }
       `;
@@ -8528,6 +8620,34 @@ runInEachFileSystem((os: string) => {
         }
       `;
         expect(trim(jsContents)).toContain(trim(hostBindingsFn));
+      });
+
+      it('should generate sanitizers for URL properties in SVG script fn in Component', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: \`
+                <svg>
+                  <script [attr.xlink:href]="attr" [attr.href]="attr"></script>
+                </svg>
+              \`,
+            })
+            export class TestCmp {
+              attr = './script.js';
+            }
+          `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(
+          'i0.ɵɵattribute("href", ctx.attr, i0.ɵɵsanitizeResourceUrl, "xlink")("href", ctx.attr, i0.ɵɵsanitizeResourceUrl);',
+        );
       });
 
       it('should not generate sanitizers for URL properties in hostBindings fn in Component', () => {

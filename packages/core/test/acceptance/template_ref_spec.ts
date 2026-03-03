@@ -57,11 +57,11 @@ describe('TemplateRef', () => {
       @Component({
         selector: 'menu-content',
         template: `
-              <ng-template>
-                Header
-                <ng-content></ng-content>
-              </ng-template>
-            `,
+          <ng-template>
+            Header
+            <ng-content></ng-content>
+          </ng-template>
+        `,
         exportAs: 'menuContent',
         standalone: false,
       })
@@ -71,12 +71,12 @@ describe('TemplateRef', () => {
 
       @Component({
         template: `
-              <menu-content #menu="menuContent">
-                <button>Item one</button>
-                <button>Item two</button>
-                <ng-template [ngIf]="true"><button>Item three</button></ng-template>
-              </menu-content>
-            `,
+          <menu-content #menu="menuContent">
+            <button>Item one</button>
+            <button>Item two</button>
+            <ng-template [ngIf]="true"><button>Item three</button></ng-template>
+          </menu-content>
+        `,
         standalone: false,
       })
       class App {
@@ -271,9 +271,9 @@ describe('TemplateRef', () => {
   describe('context', () => {
     @Component({
       template: `
-      <ng-template #templateRef let-name="name">{{name}}</ng-template>
-      <ng-container #containerRef></ng-container>
-    `,
+        <ng-template #templateRef let-name="name">{{ name }}</ng-template>
+        <ng-container #containerRef></ng-container>
+      `,
       standalone: false,
     })
     class App {

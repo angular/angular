@@ -22,6 +22,7 @@ import {
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵwithIncrementalHydration,
   ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
+  provideStabilityDebugging,
 } from '@angular/core';
 import {RuntimeErrorCode} from './errors';
 
@@ -255,6 +256,7 @@ export function provideClientHydration(
     typeof ngDevMode !== 'undefined' && ngDevMode
       ? provideEnabledBlockingInitialNavigationDetector()
       : [],
+    typeof ngDevMode !== 'undefined' && ngDevMode ? provideStabilityDebugging() : [],
     withDomHydration(),
     featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions
       ? []

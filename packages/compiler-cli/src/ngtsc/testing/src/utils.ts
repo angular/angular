@@ -31,6 +31,7 @@ export function makeProgram(
   const compilerOptions = {
     noLib: true,
     experimentalDecorators: true,
+    strict: false,
     moduleResolution: ts.ModuleResolutionKind.Bundler,
     ...options,
   };

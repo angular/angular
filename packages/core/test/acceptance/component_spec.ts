@@ -7,6 +7,7 @@
  */
 
 import {DOCUMENT, NgIf} from '@angular/common';
+import {expect} from '@angular/private/testing/matchers';
 import {
   ApplicationRef,
   Component,
@@ -35,7 +36,6 @@ import {
   ɵɵdefineComponent,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-import {expect} from '@angular/private/testing/matchers';
 
 import {global} from '../../src/util/global';
 
@@ -84,6 +84,41 @@ describe('component', () => {
 
       expect(destroyCalls).toBe(1, 'Expected `ngOnDestroy` to only be called once.');
     });
+
+    it('should invoke onDestroy when directly destroying a root view', () => {
+      let wasOnDestroyCalled = false;
+
+      @Component({
+        selector: 'comp-with-destroy',
+        template: ``,
+        standalone: false,
+      })
+      class ComponentWithOnDestroy implements OnDestroy {
+        ngOnDestroy() {
+          wasOnDestroyCalled = true;
+        }
+      }
+
+      // This test asserts that the view tree is set up correctly based on the knowledge that this
+      // tree is used during view destruction. If the child view is not correctly attached as a
+      // child of the root view, then the onDestroy hook on the child view will never be called
+      // when the view tree is torn down following the destruction of that root view.
+      @Component({
+        selector: `test-app`,
+        template: `<comp-with-destroy></comp-with-destroy>`,
+        standalone: false,
+      })
+      class TestApp {}
+
+      TestBed.configureTestingModule({declarations: [ComponentWithOnDestroy, TestApp]});
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      fixture.destroy();
+      expect(wasOnDestroyCalled).toBe(
+        true,
+        'Expected component onDestroy method to be called when its parent view is destroyed',
+      );
+    });
   });
 
   it('should be able to dynamically insert a component into a view container at the root of a component', () => {
@@ -102,10 +137,10 @@ describe('component', () => {
 
     @Component({
       template: `
-            <wrapper>
-              <div #insertionPoint></div>
-            </wrapper>
-          `,
+        <wrapper>
+          <div #insertionPoint></div>
+        </wrapper>
+      `,
       standalone: false,
     })
     class App {
@@ -164,7 +199,11 @@ describe('component', () => {
       selector: 'encapsulated',
       encapsulation: ViewEncapsulation.Emulated,
       // styles must be non-empty to trigger `ViewEncapsulation.Emulated`
-      styles: `:host {display: block}`,
+      styles: `
+        :host {
+          display: block;
+        }
+      `,
       template: `foo<leaf></leaf>`,
       standalone: false,
     })
@@ -242,43 +281,6 @@ describe('component', () => {
     });
   });
 
-  describe('view destruction', () => {
-    it('should invoke onDestroy when directly destroying a root view', () => {
-      let wasOnDestroyCalled = false;
-
-      @Component({
-        selector: 'comp-with-destroy',
-        template: ``,
-        standalone: false,
-      })
-      class ComponentWithOnDestroy implements OnDestroy {
-        ngOnDestroy() {
-          wasOnDestroyCalled = true;
-        }
-      }
-
-      // This test asserts that the view tree is set up correctly based on the knowledge that this
-      // tree is used during view destruction. If the child view is not correctly attached as a
-      // child of the root view, then the onDestroy hook on the child view will never be called
-      // when the view tree is torn down following the destruction of that root view.
-      @Component({
-        selector: `test-app`,
-        template: `<comp-with-destroy></comp-with-destroy>`,
-        standalone: false,
-      })
-      class TestApp {}
-
-      TestBed.configureTestingModule({declarations: [ComponentWithOnDestroy, TestApp]});
-      const fixture = TestBed.createComponent(TestApp);
-      fixture.detectChanges();
-      fixture.destroy();
-      expect(wasOnDestroyCalled).toBe(
-        true,
-        'Expected component onDestroy method to be called when its parent view is destroyed',
-      );
-    });
-  });
-
   it("should clear the contents of dynamically created component when it's attached to ApplicationRef", () => {
     let wasOnDestroyCalled = false;
     @Component({
@@ -295,10 +297,10 @@ describe('component', () => {
     @Component({
       selector: 'button',
       template: `
-           <div class="wrapper"></div>
-           <div id="app-root"></div>
-           <div class="wrapper"></div>
-         `,
+        <div class="wrapper"></div>
+        <div id="app-root"></div>
+        <div class="wrapper"></div>
+      `,
       standalone: false,
     })
     class App {
@@ -748,9 +750,7 @@ describe('component', () => {
           Existing content in slot A, which <b><i>includes</i> some HTML elements</b>.
         </div>
         <div id="dynamic-comp-root-b">
-          <p>
-            Existing content in slot B, which includes some HTML elements.
-          </p>
+          <p>Existing content in slot B, which includes some HTML elements.</p>
         </div>
       `,
       standalone: false,

@@ -8,6 +8,7 @@
 
 import {DOCUMENT, PlatformLocation, PlatformNavigation} from '../../../index';
 import {inject, InjectionToken, Provider} from '@angular/core';
+import {PRECOMMIT_HANDLER_SUPPORTED} from '../../../src/navigation/platform_navigation';
 
 import {
   FakeNavigationPlatformLocation,
@@ -17,7 +18,7 @@ import {
 import {FakeNavigation} from './fake_navigation';
 
 const FAKE_NAVIGATION = new InjectionToken<FakeNavigation>('fakeNavigation', {
-  providedIn: 'root',
+  // Providing a factory implies that the token is provided in root by default
   factory: () => {
     const config = inject(MOCK_PLATFORM_LOCATION_CONFIG, {optional: true});
     const baseFallback = 'http://_empty_/';
@@ -38,5 +39,6 @@ export function provideFakePlatformNavigation(): Provider[] {
       useFactory: () => inject(FAKE_NAVIGATION),
     },
     {provide: PlatformLocation, useClass: FakeNavigationPlatformLocation},
+    {provide: PRECOMMIT_HANDLER_SUPPORTED, useValue: true},
   ];
 }

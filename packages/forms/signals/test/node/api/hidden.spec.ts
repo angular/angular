@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {customError, form, hidden, validate} from '@angular/forms/signals';
+import {form, hidden, validate} from '@angular/forms/signals';
 
 describe('hidden', () => {
   it('should initially be false', () => {
@@ -70,7 +70,7 @@ describe('hidden', () => {
         });
 
         validate(p.name, () => {
-          return customError({kind: 'dog'});
+          return {kind: 'dog'};
         });
       },
       {injector: TestBed.inject(Injector)},

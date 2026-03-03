@@ -42,7 +42,7 @@ import {Component, Input} from '@angular/core';
 
 @Component({
   selector: 'greet',
-  template: '<div> Hello, {{name}}! </div>'
+  template: '<div> Hello, {{name}}! </div>',
 })
 export class GreetComponent {
   @Input() name: string;
@@ -52,20 +52,24 @@ export class GreetComponent {
 will normally be translated into something like this:
 
 ```js
-const tslib_1 = require("tslib");
-const core_1 = require("@angular/core");
-let GreetComponent = class GreetComponent {
-};
-tslib_1.__decorate([
-    core_1.Input(),
-    tslib_1.__metadata("design:type", String)
-], GreetComponent.prototype, "name", void 0);
-GreetComponent = tslib_1.__decorate([
+const tslib_1 = require('tslib');
+const core_1 = require('@angular/core');
+let GreetComponent = class GreetComponent {};
+tslib_1.__decorate(
+  [core_1.Input(), tslib_1.__metadata('design:type', String)],
+  GreetComponent.prototype,
+  'name',
+  void 0,
+);
+GreetComponent = tslib_1.__decorate(
+  [
     core_1.Component({
-        selector: 'greet',
-        template: '<div> Hello, {{name}}! </div>'
-    })
-], GreetComponent);
+      selector: 'greet',
+      template: '<div> Hello, {{name}}! </div>',
+    }),
+  ],
+  GreetComponent,
+);
 ```
 
 which translates the decorator into a form that is executed at runtime. A `.d.ts` file is also emitted that might look something like
@@ -79,23 +83,23 @@ export class GreetComponent {
 In `ngtsc` this is instead emitted as,
 
 ```js
-const i0 = require("@angular/core");
+const i0 = require('@angular/core');
 class GreetComponent {}
 GreetComponent.ɵcmp = i0.ɵɵdefineComponent({
-    type: GreetComponent,
-    tag: 'greet',
-    factory: () => new GreetComponent(),
-    template: function (rf, ctx) {
-        if (rf & RenderFlags.Create) {
-            i0.ɵɵelementStart(0, 'div');
-            i0.ɵɵtext(1);
-            i0.ɵɵelementEnd();
-        }
-        if (rf & RenderFlags.Update) {
-            i0.ɵɵadvance();
-            i0.ɵɵtextInterpolate1('Hello ', ctx.name, '!');
-        }
+  type: GreetComponent,
+  tag: 'greet',
+  factory: () => new GreetComponent(),
+  template: function (rf, ctx) {
+    if (rf & RenderFlags.Create) {
+      i0.ɵɵelementStart(0, 'div');
+      i0.ɵɵtext(1);
+      i0.ɵɵelementEnd();
     }
+    if (rf & RenderFlags.Update) {
+      i0.ɵɵadvance();
+      i0.ɵɵtextInterpolate1('Hello ', ctx.name, '!');
+    }
+  },
 });
 ```
 
@@ -104,11 +108,7 @@ and the `.d.ts` contains:
 ```ts
 import * as i0 from '@angular/core';
 export class GreetComponent {
-  static ɵcmp: i0.NgComponentDef<
-    GreetComponent,
-    'greet',
-    {input: 'input'}
-  >;
+  static ɵcmp: i0.NgComponentDef<GreetComponent, 'greet', {input: 'input'}>;
 }
 ```
 

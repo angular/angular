@@ -1,5 +1,9 @@
-MyDir.ɵfac = …;
-MyDir.ɵdir = …;
+export class MyDir {
+  …
+  static ɵfac = …;
+  static ɵdir = …;
+}
+
 __decorate([
   CustomPropDecorator(),
   __metadata("design:type", String)

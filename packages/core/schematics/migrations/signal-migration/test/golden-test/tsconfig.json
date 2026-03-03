@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node10",
+    "moduleResolution": "nodenext",
     "experimentalDecorators": true,
     "strict": true,
     "skipLibCheck": true,

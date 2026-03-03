@@ -16,7 +16,6 @@ describe('parseRoutes', () => {
       component: 'App Root',
       path: 'App Root',
       children: [],
-      data: [],
       isAux: false,
       isLazy: false,
       isActive: true,
@@ -31,7 +30,6 @@ describe('parseRoutes', () => {
     expect(parsedRoutes).toEqual({
       'component': 'App Root',
       'path': 'App Root',
-      'data': [],
       'children': [],
       'isAux': false,
       'isLazy': false,
@@ -121,10 +119,8 @@ describe('parseRoutes', () => {
           'canMatchGuards': [],
           'canDeactivateGuards': [],
           'providers': [],
-          'resolvers': [],
           'path': '/(outlet:component-one)',
           'pathMatch': undefined,
-          'data': [],
           'isAux': true,
           'isLazy': false,
           'isActive': false,
@@ -136,11 +132,10 @@ describe('parseRoutes', () => {
           'canMatchGuards': [],
           'canDeactivateGuards': [],
           'providers': [],
-          'resolvers': [],
           'path': '/component-two',
           'pathMatch': undefined,
           'title': 'Component Two',
-          'data': [{'key': 'name', 'value': 'component-two'}],
+          'data': {name: 'component-two'},
           'isAux': false,
           'isLazy': false,
           'isActive': false,
@@ -152,11 +147,9 @@ describe('parseRoutes', () => {
               'canMatchGuards': [],
               'canDeactivateGuards': [],
               'providers': [],
-              'resolvers': [],
               'path': '/component-two/component-two-one',
               'pathMatch': undefined,
               'title': '[Function]',
-              'data': [],
               'isAux': false,
               'isLazy': false,
               'isActive': false,
@@ -168,11 +161,9 @@ describe('parseRoutes', () => {
               'canMatchGuards': [],
               'canDeactivateGuards': [],
               'providers': [],
-              'resolvers': [],
               'path': '/component-two/component-two-two',
               'pathMatch': undefined,
               'title': 'titleResolver',
-              'data': [],
               'isAux': false,
               'isLazy': false,
               'isActive': false,
@@ -186,10 +177,8 @@ describe('parseRoutes', () => {
           'canMatchGuards': [],
           'canDeactivateGuards': [],
           'providers': [],
-          'resolvers': [],
           'path': '/lazy',
           'pathMatch': undefined,
-          'data': [],
           'isAux': false,
           'isLazy': true,
           'isActive': false,
@@ -201,10 +190,8 @@ describe('parseRoutes', () => {
           'canMatchGuards': [],
           'canDeactivateGuards': [],
           'providers': [],
-          'resolvers': [],
           'path': '/redirect',
           'pathMatch': undefined,
-          'data': [],
           'isAux': false,
           'isLazy': false,
           'isActive': false,
@@ -217,10 +204,8 @@ describe('parseRoutes', () => {
           'canMatchGuards': [],
           'canDeactivateGuards': [],
           'providers': [],
-          'resolvers': [],
           'path': '/redirect-fn',
           'pathMatch': undefined,
-          'data': [],
           'isAux': false,
           'isLazy': false,
           'isActive': false,
@@ -233,10 +218,8 @@ describe('parseRoutes', () => {
           'canMatchGuards': [],
           'canDeactivateGuards': [],
           'providers': [],
-          'resolvers': [],
           'path': '/redirect-named-fn',
           'pathMatch': undefined,
-          'data': [],
           'isAux': false,
           'isLazy': false,
           'isActive': false,
@@ -245,7 +228,6 @@ describe('parseRoutes', () => {
       ],
       'isAux': false,
       'isLazy': false,
-      'data': [],
       'isActive': true,
     } as any);
   });
@@ -428,7 +410,7 @@ describe('parseRoutes', () => {
 
     const parsedRoutes = parseRoutes(nestedRouter as any);
 
-    expect(parsedRoutes.children![0].resolvers).toEqual([{key: 'user', value: 'userResolver'}]);
+    expect(parsedRoutes.children![0].resolvers).toEqual({user: 'userResolver'});
   });
 
   it('should handle resolvers with arrow functions', () => {
@@ -448,7 +430,7 @@ describe('parseRoutes', () => {
 
     const parsedRoutes = parseRoutes(nestedRouter as any);
 
-    expect(parsedRoutes.children![0].resolvers).toEqual([{key: 'data', value: 'dataResolver'}]);
+    expect(parsedRoutes.children![0].resolvers).toEqual({data: 'dataResolver'});
   });
 
   it('should handle multiple resolvers on a single route', () => {
@@ -478,11 +460,11 @@ describe('parseRoutes', () => {
 
     const parsedRoutes = parseRoutes(nestedRouter as any);
 
-    expect(parsedRoutes.children![0].resolvers).toEqual([
-      {key: 'user', value: 'userResolver'},
-      {key: 'settings', value: 'settingsResolver'},
-      {key: 'permissions', value: 'PermissionsResolver'},
-    ]);
+    expect(parsedRoutes.children![0].resolvers).toEqual({
+      user: 'userResolver',
+      settings: 'settingsResolver',
+      permissions: 'PermissionsResolver',
+    });
   });
 
   it('should handle nested routes with resolvers', () => {
@@ -516,12 +498,10 @@ describe('parseRoutes', () => {
 
     const parsedRoutes = parseRoutes(nestedRouter as any);
 
-    expect(parsedRoutes.children![0].resolvers).toEqual([
-      {key: 'parentData', value: 'parentResolver'},
-    ]);
-    expect(parsedRoutes.children![0].children![0].resolvers).toEqual([
-      {key: 'childData', value: 'childResolver'},
-    ]);
+    expect(parsedRoutes.children![0].resolvers).toEqual({parentData: 'parentResolver'});
+    expect(parsedRoutes.children![0].children![0].resolvers).toEqual({
+      childData: 'childResolver',
+    });
   });
 });
 

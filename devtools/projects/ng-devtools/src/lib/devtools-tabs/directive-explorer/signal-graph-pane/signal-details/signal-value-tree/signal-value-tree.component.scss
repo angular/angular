@@ -1,0 +1,14 @@
+:host {
+  width: 200px;
+  display: block;
+  overflow: auto;
+  border-radius: 0.25rem;
+  margin-top: 0.75rem;
+  background: var(--nonary-contrast);
+  scrollbar-width: thin;
+  scrollbar-color: var(--quaternary-contrast) transparent;
+
+  ng-object-tree-explorer {
+    --ote-padding: 0.25rem;
+  }
+}

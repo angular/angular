@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Check code lint
@@ -32,12 +32,14 @@ jobs:
         run: pnpm ng-dev ngbot verify
       - name: Confirm code builds with typescript as expected
         run: pnpm check-tooling-setup
+      - name: Validate agent skills
+        run: pnpm ng-dev ai skills validate
       - name: Check commit message
         run: pnpm ng-dev commit-message validate-range ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
       - name: Check code format
         run: pnpm ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
       - name: Check Package Licenses
-        uses: angular/dev-infra/github-actions/linting/licenses@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/linting/licenses@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
         with:
           allow-dependencies-licenses: 'pkg:npm/google-protobuf@'
 
@@ -45,13 +47,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
         with:
           disable-package-manager-cache: true
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/setup@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run unit tests
@@ -59,7 +61,7 @@ jobs:
       - name: Test build
         run: pnpm devtools:build:chrome
       - name: Cypress run
-        uses: cypress-io/github-action@7ef72e250a9e564efb4ed4c2433971ada4cc38b4 # v6.10.4
+        uses: cypress-io/github-action@f9ffb60bba0c743f8c78dfed96873e8fdb2af34c # v7.1.4
         with:
           command: pnpm devtools:test:e2e
           start: pnpm bazel run //devtools/src:devserver
@@ -71,11 +73,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/setup@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Setup Bazel Remote Caching
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run CI tests for framework
@@ -86,7 +88,7 @@ jobs:
           ASPECT_RULES_JS_FROZEN_PNPM_LOCK: '1'
       - name: Upload GRPC logs (for debugging of RBE issues)
         if: always()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           path: /tmp/rbe-grpc.log
           retention-days: 1
@@ -95,11 +97,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/setup@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Setup Bazel Remote Caching
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run integration CI tests for framework
@@ -110,11 +112,11 @@ jobs:
       labels: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/setup@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run tests
@@ -127,11 +129,11 @@ jobs:
       labels: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/setup@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run tests
@@ -142,11 +144,11 @@ jobs:
       labels: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/setup@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@eac707321ac5a964ebdd8212767ef0f45bd6a618
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - run: |

@@ -19,7 +19,7 @@
 Импортируйте валидаторы `required` и `email` из `@angular/forms/signals`:
 
 ```ts
-import { form, Field, required, email } from '@angular/forms/signals';
+import {form, FormField, required, email} from '@angular/forms/signals';
 ```
 
 </docs-step>
@@ -40,8 +40,8 @@ loginForm = form(this.loginModel, (fieldPath) => {
 
 ```ts
 loginForm = form(this.loginModel, (fieldPath) => {
-  required(fieldPath.email, { message: 'Email is required' });
-  email(fieldPath.email, { message: 'Enter a valid email address' });
+  required(fieldPath.email, {message: 'Email is required'});
+  email(fieldPath.email, {message: 'Enter a valid email address'});
 });
 ```
 
@@ -53,9 +53,9 @@ loginForm = form(this.loginModel, (fieldPath) => {
 
 ```ts
 loginForm = form(this.loginModel, (fieldPath) => {
-  required(fieldPath.email, { message: 'Email is required' });
-  email(fieldPath.email, { message: 'Enter a valid email address' });
-  required(fieldPath.password, { message: 'Password is required' });
+  required(fieldPath.email, {message: 'Email is required'});
+  email(fieldPath.email, {message: 'Enter a valid email address'});
+  required(fieldPath.password, {message: 'Password is required'});
 });
 ```
 

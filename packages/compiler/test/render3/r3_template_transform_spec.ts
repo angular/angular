@@ -98,7 +98,8 @@ class R3AstHumanizer implements t.Visitor<void> {
 
   visitSwitchBlock(block: t.SwitchBlock): void {
     this.result.push(['SwitchBlock', unparse(block.expression)]);
-    this.visitAll([block.cases]);
+    this.visitAll([block.groups]);
+    block.exhaustiveCheck?.visit(this);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase): void {
@@ -106,7 +107,15 @@ class R3AstHumanizer implements t.Visitor<void> {
       'SwitchBlockCase',
       block.expression === null ? null : unparse(block.expression),
     ]);
-    this.visitAll([block.children]);
+  }
+
+  visitSwitchBlockCaseGroup(block: t.SwitchBlockCaseGroup): void {
+    this.result.push(['SwitchBlockCaseGroup']);
+    this.visitAll([block.cases, block.children]);
+  }
+
+  visitSwitchExhaustiveCheck(block: t.SwitchExhaustiveCheck): void {
+    this.result.push(['SwitchExhaustiveCheck']);
   }
 
   visitForLoopBlock(block: t.ForLoopBlock): void {
@@ -1665,16 +1674,28 @@ describe('R3 template transform', () => {
           }
         `).toEqual([
         ['SwitchBlock', 'cond.kind'],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', 'x()'],
         ['Text', ' X case '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '"hello"'],
         ['Element', 'button'],
         ['Text', 'Y case'],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '42'],
         ['Text', ' Z case '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', null],
         ['Text', ' No case matched '],
       ]);
+    });
+
+    it('should parse a switch block with a default never case', () => {
+      expectFromHtml(`
+          @switch (cond.kind) {
+            @default never;
+          }
+        `).toEqual([['SwitchBlock', 'cond.kind'], ['SwitchExhaustiveCheck']]);
     });
 
     // This is a special case for `switch` blocks, because `preserveWhitespaces` will cause
@@ -1700,15 +1721,19 @@ describe('R3 template transform', () => {
       expectFromR3Nodes(parse(template, {preserveWhitespaces: true}).nodes).toEqual([
         ['Text', '\n        '],
         ['SwitchBlock', 'cond.kind'],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', 'x()'],
         ['Text', '\n            X case\n          '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '"hello"'],
         ['Text', '\n            '],
         ['Element', 'button'],
         ['Text', 'Y case'],
         ['Text', '\n          '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '42'],
         ['Text', '\n            Z case\n          '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', null],
         ['Text', '\n            No case matched\n          '],
         ['Text', '\n      '],
@@ -1725,13 +1750,17 @@ describe('R3 template transform', () => {
           }
         `).toEqual([
         ['SwitchBlock', '(cond.kind)'],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '(x())'],
         ['Text', ' X case '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '("hello")'],
         ['Element', 'button'],
         ['Text', 'Y case'],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '(42)'],
         ['Text', ' Z case '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', null],
         ['Text', ' No case matched '],
       ]);
@@ -1763,27 +1792,38 @@ describe('R3 template transform', () => {
           }
         `).toEqual([
         ['SwitchBlock', 'cond'],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '"a"'],
         ['SwitchBlock', 'innerCond'],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '"innerA"'],
         ['Text', ' Inner A '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '"innerB"'],
         ['Text', ' Inner B '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '"b"'],
         ['Element', 'button'],
         ['Text', 'Y case'],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '"c"'],
         ['Text', ' Z case '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', null],
         ['SwitchBlock', 'innerCond'],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '"innerC"'],
         ['Text', ' Inner C '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '"innerD"'],
         ['Text', ' Inner D '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', null],
         ['SwitchBlock', 'innerInnerCond'],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '"innerInnerA"'],
         ['Text', ' Inner inner A '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', '"innerInnerA"'],
         ['Text', ' Inner inner B '],
       ]);
@@ -1800,8 +1840,34 @@ describe('R3 template transform', () => {
           }
         `).toEqual([
         ['SwitchBlock', 'cond.kind'],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', 'x'],
         ['Text', ' X case '],
+        ['SwitchBlockCaseGroup'],
+        ['SwitchBlockCase', null],
+        ['Text', ' No case matched '],
+      ]);
+    });
+
+    it('should parse multiple case blocks in a switch block', () => {
+      expectFromHtml(`
+          @switch (cond) {
+            @case ('a') @case('b') @case('c') @case('d') { ABCD case }
+            @case ('z') { Z case }
+            @default { No case matched }
+          }
+        `).toEqual([
+        ['SwitchBlock', 'cond'],
+        ['SwitchBlockCaseGroup'],
+        ['SwitchBlockCase', '"a"'],
+        ['SwitchBlockCase', '"b"'],
+        ['SwitchBlockCase', '"c"'],
+        ['SwitchBlockCase', '"d"'],
+        ['Text', ' ABCD case '],
+        ['SwitchBlockCaseGroup'],
+        ['SwitchBlockCase', '"z"'],
+        ['Text', ' Z case '],
+        ['SwitchBlockCaseGroup'],
         ['SwitchBlockCase', null],
         ['Text', ' No case matched '],
       ]);
@@ -1920,6 +1986,50 @@ describe('R3 template transform', () => {
           }
         `),
         ).toThrowError(/@default block cannot have parameters/);
+      });
+
+      it('should report if in a @switch block a @default never block has a body', () => {
+        expect(() =>
+          parse(`
+          @switch (cond) {
+            @default never {nope}
+          }
+        `),
+        ).toThrowError(/@default block with "never" parameter cannot have a body/);
+      });
+
+      it('should report if a switch fallthrough case is followed by a @default never block', () => {
+        expect(() =>
+          parse(`
+          @switch (cond) {
+            @case (foo)
+            @default never;
+          }
+        `),
+        ).toThrowError(
+          /A @case block with no body cannot be followed by a @default block with "never" parameter/,
+        );
+      });
+
+      it('should throw if @default never is not the last case in a switch block', () => {
+        expect(() =>
+          parse(`
+          @switch (cond) {
+            @default never;
+            @case (foo) {foo}
+          }
+        `),
+        ).toThrowError(/@default block with "never" parameter must be the last case in a switch/);
+      });
+
+      it('should throw if a semicolon is missing after @default never', () => {
+        expect(() =>
+          parse(`
+          @switch (cond) {
+            @default never
+          }
+        `),
+        ).toThrowError(/Incomplete block "default never"/);
       });
     });
   });
@@ -2202,8 +2312,8 @@ describe('R3 template transform', () => {
       });
 
       it('should report syntax error in for loop expression', () => {
-        expect(() => parse(`@for (item of items..foo) {hello}`)).toThrowError(
-          /Unexpected token \./,
+        expect(() => parse(`@for (item of items#foo) {hello}`)).toThrowError(
+          /Unexpected token '#foo'/,
         );
       });
 
@@ -2564,6 +2674,14 @@ describe('R3 template transform', () => {
           @if (foo; as foo && bar) {hello}
         `),
         ).toThrowError(/"as" expression must be a valid JavaScript identifier/);
+      });
+
+      it('should report consecutive @if statements without a block in between', () => {
+        expect(() =>
+          parse(`
+          @if (foo) @if (bar) {hello}
+        `),
+        ).toThrowError(/Incomplete block "if"/);
       });
     });
   });

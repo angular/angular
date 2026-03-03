@@ -47,7 +47,7 @@ describe('bootstrapApplication for standalone components', () => {
 
       @Component({
         selector: 'test-app',
-        template: `({{testToken}})`,
+        template: `({{ testToken }})`,
         imports: [AmbientModule],
       })
       class StandaloneCmp {
@@ -112,7 +112,7 @@ describe('bootstrapApplication for standalone components', () => {
 
       @Component({
         selector: 'test-app',
-        template: `({{service.ambientToken}})`,
+        template: `({{ service.ambientToken }})`,
         imports: [AmbientModule],
       })
       class StandaloneCmp {
@@ -130,11 +130,8 @@ describe('bootstrapApplication for standalone components', () => {
         fail('Expected to throw');
       } catch (e: unknown) {
         expect(e).toBeInstanceOf(Error);
-        expect((e as Error).message).toContain(
-          'NG0201: No provider found for `InjectionToken ambient token`. ' +
-            'Source: Standalone[StandaloneCmp]. ' +
-            'Path: NeedsAmbientProvider -> InjectionToken ambient token. ' +
-            'Find more at https://angular.dev/errors/NG0201',
+        expect((e as Error).message).toMatch(
+          /NG0201: No provider found for `InjectionToken ambient token`\. Source: Standalone\[StandaloneCmp\]\. Path: NeedsAmbientProvider -> InjectionToken ambient token\. Find more at https:\/\/(?:next\.)?angular\.dev\/errors\/NG0201/,
         );
       }
     }),

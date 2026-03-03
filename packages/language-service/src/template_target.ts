@@ -17,6 +17,7 @@ import {
   PropertyRead,
   RecursiveAstVisitor,
   SafeCall,
+  ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundDeferredTrigger,
   TmplAstBoundEvent,
@@ -41,6 +42,8 @@ import {
   TmplAstReference,
   TmplAstSwitchBlock,
   TmplAstSwitchBlockCase,
+  TmplAstSwitchBlockCaseGroup,
+  TmplAstSwitchExhaustiveCheck,
   TmplAstTemplate,
   TmplAstText,
   TmplAstTextAttribute,
@@ -658,14 +661,23 @@ class TemplateTargetVisitor implements TmplAstVisitor {
 
   visitSwitchBlock(block: TmplAstSwitchBlock) {
     this.visitBinding(block.expression);
-    this.visitAll(block.cases);
+    this.visitAll(block.groups);
     this.visitAll(block.unknownBlocks);
+    if (block.exhaustiveCheck) {
+      this.visit(block.exhaustiveCheck);
+    }
   }
 
   visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {
     block.expression && this.visitBinding(block.expression);
+  }
+
+  visitSwitchBlockCaseGroup(block: TmplAstSwitchBlockCaseGroup) {
+    this.visitAll(block.cases);
     this.visitAll(block.children);
   }
+
+  visitSwitchExhaustiveCheck(block: TmplAstSwitchExhaustiveCheck) {}
 
   visitForLoopBlock(block: TmplAstForLoopBlock) {
     this.visit(block.item);
@@ -723,7 +735,11 @@ class ExpressionVisitor extends RecursiveAstVisitor {
     }
     // The third condition is to account for the implicit receiver, which should
     // not be visited.
-    if (isWithin(this.position, node.sourceSpan) && !(node instanceof ImplicitReceiver)) {
+    if (
+      isWithin(this.position, node.sourceSpan) &&
+      !(node instanceof ImplicitReceiver) &&
+      !(node instanceof ThisReceiver)
+    ) {
       path.push(node);
       node.visit(this, path);
     }

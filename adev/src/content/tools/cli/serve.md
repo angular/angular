@@ -12,23 +12,25 @@
 Вы можете определить, какой билдер используется для конкретного проекта, посмотрев цель `serve` этого проекта.
 
 ```json
-
 {
   "projects": {
     "my-app": {
       "architect": {
         // `ng serve` invokes the Architect target named `serve`.
         "serve": {
-          "builder": "@angular/build:dev-server",
+          "builder": "@angular/build:dev-server"
           // ...
         },
-        "build": { /* ... */ },
-        "test": { /* ... */ }
+        "build": {
+          /* ... */
+        },
+        "test": {
+          /* ... */
+        }
       }
     }
   }
 }
-
 ```
 
 ## Проксирование на бэкенд-сервер
@@ -67,7 +69,6 @@
     }
   }
 }
-
 ```
 
 1. Чтобы запустить сервер разработки с этой конфигурацией прокси, выполните `ng serve`.

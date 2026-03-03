@@ -29,12 +29,21 @@ import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
 import {withEventReplay} from './event_replay';
 
+import {
+  ChangeDetectionScheduler,
+  NotificationSource,
+} from '../change_detection/scheduling/zoneless_scheduling';
+import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '../defer/registry';
+import {processAndInitTriggers} from '../defer/triggering';
+import {DOCUMENT} from '../document';
+import {DOC_PAGE_BASE_URL} from '../error_details_base_url';
 import {cleanupDehydratedViews} from './cleanup';
 import {
   enableClaimDehydratedIcuCaseImpl,
   enablePrepareI18nBlockForHydrationImpl,
   setIsI18nHydrationSupportEnabled,
 } from './i18n';
+import {gatherDeferBlocksCommentNodes} from './node_lookup_utils';
 import {
   IS_HYDRATION_DOM_REUSE_ENABLED,
   IS_I18N_HYDRATION_ENABLED,
@@ -52,10 +61,6 @@ import {
   verifySsrContentsIntegrity,
 } from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
-import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from '../defer/registry';
-import {gatherDeferBlocksCommentNodes} from './node_lookup_utils';
-import {processAndInitTriggers} from '../defer/triggering';
-import {DOCUMENT} from '../document';
 
 /**
  * Indicates whether the hydration-related code was added,
@@ -83,7 +88,7 @@ let isIncrementalHydrationRuntimeSupportEnabled = false;
  * Defines a period of time that Angular waits for the `ApplicationRef.isStable` to emit `true`.
  * If there was no event with the `true` value during this time, Angular reports a warning.
  */
-const APPLICATION_IS_STABLE_TIMEOUT = 10_000;
+export const APPLICATION_IS_STABLE_TIMEOUT = 10_000;
 
 /**
  * Brings the necessary hydration code in tree-shakable manner.
@@ -148,7 +153,7 @@ function printHydrationStats(injector: Injector) {
     (isIncrementalHydrationEnabled(injector)
       ? `${ngDevMode!.deferBlocksWithIncrementalHydration} defer block(s) were configured to use incremental hydration. `
       : '') +
-    `Learn more at https://angular.dev/guide/hydration.`;
+    `Learn more at ${DOC_PAGE_BASE_URL}/guide/hydration.`;
   // tslint:disable-next-line:no-console
   console.log(message);
 }
@@ -276,6 +281,7 @@ export function withDomHydration(): EnvironmentProviders {
       {
         provide: APP_BOOTSTRAP_LISTENER,
         useFactory: () => {
+          const scheduler = inject(ChangeDetectionScheduler);
           if (inject(IS_HYDRATION_DOM_REUSE_ENABLED)) {
             const appRef = inject(ApplicationRef);
 
@@ -303,6 +309,8 @@ export function withDomHydration(): EnvironmentProviders {
                   countBlocksSkippedByHydration(appRef.injector);
                   printHydrationStats(appRef.injector);
                 }
+                // We need to schedule the execution of the render hooks because the hydration cleanup alters the DOM.
+                scheduler.notify(NotificationSource.RenderHook);
               });
             };
           }

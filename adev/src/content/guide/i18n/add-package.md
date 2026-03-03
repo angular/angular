@@ -6,7 +6,7 @@
 Для добавления пакета `@angular/localize` используйте следующую команду, которая обновит `package.json` и файлы
 конфигурации TypeScript в вашем проекте.
 
-<docs-code path="adev/src/content/examples/i18n/doc-files/commands.sh" region="add-localize"/>
+<docs-code language="shell" path="adev/src/content/examples/i18n/doc-files/commands.sh" region="add-localize"/>
 
 Эта команда добавляет `types: ["@angular/localize"]` в файлы конфигурации TypeScript.
 Она также добавляет строку `/// <reference types="@angular/localize" />` в начало файла `main.ts`, которая является

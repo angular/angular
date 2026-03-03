@@ -31,7 +31,7 @@ describe('standalone injector', () => {
     @Component({
       selector: 'standalone',
       imports: [ModuleWithAService],
-      template: `({{service.value}})`,
+      template: `({{ service.value }})`,
     })
     class TestComponent {
       constructor(readonly service: Service) {}
@@ -81,7 +81,7 @@ describe('standalone injector', () => {
     @Component({
       selector: 'standalone',
       imports: [ModuleWithAService],
-      template: `{{service.value}}`,
+      template: `{{ service.value }}`,
     })
     class DynamicComponent {
       constructor(readonly service: Service) {}

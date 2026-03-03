@@ -969,5 +969,38 @@ describe(
         reject(error);
       });
     });
+
+    describe('Promise.try', () => {
+      it('should resolve', (done: DoneFn) => {
+        (Promise as any)
+          .try(() => 1)
+          .then((v: any) => {
+            expect(v).toBe(1);
+            done();
+          });
+      });
+      it('should reject on throw', (done: DoneFn) => {
+        const error = new Error('test');
+        (Promise as any)
+          .try(() => {
+            throw error;
+          })
+          .catch((e: any) => {
+            expect(e).toBe(error);
+            done();
+          });
+      });
+      it('should execute in the correct zone', (done: DoneFn) => {
+        const zone = Zone.current.fork({name: 'promise-try'});
+        zone.run(() => {
+          (Promise as any)
+            .try(() => 1)
+            .then(() => {
+              expect(Zone.current.name).toEqual(zone.name);
+              done();
+            });
+        });
+      });
+    });
   }),
 );

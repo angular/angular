@@ -32,23 +32,9 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
     registerContext(SecurityContext.URL, [
       '*|formAction',
       'area|href',
-      'area|ping',
-      'audio|src',
       'a|href',
       'a|xlink:href',
-      'a|ping',
-      'blockquote|cite',
-      'body|background',
-      'del|cite',
       'form|action',
-      'img|src',
-      'input|src',
-      'ins|cite',
-      'q|cite',
-      'source|src',
-      'track|src',
-      'video|poster',
-      'video|src',
 
       // MathML namespace
       // https://crsrc.org/c/third_party/blink/renderer/core/sanitizer/sanitizer.cc;l=753-768;drc=b3eb16372dcd3317d65e9e0265015e322494edcd;bpv=1;bpt=1
@@ -118,22 +104,25 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
       'semantics|xlink:href',
       'none|href',
       'none|xlink:href',
+
+      // The below two items are safe and should be removed but they require a G3 clean-up as a small number of tests fail.
+      'img|src',
+      'video|src',
     ]);
 
     registerContext(SecurityContext.RESOURCE_URL, [
-      'applet|code',
-      'applet|codebase',
       'base|href',
       'embed|src',
       'frame|src',
-      'head|profile',
-      'html|manifest',
       'iframe|src',
       'link|href',
-      'media|src',
       'object|codebase',
       'object|data',
       'script|src',
+      // The below two are for Script SVG
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/SVGScriptElement/href
+      'script|href',
+      'script|xlink:href',
     ]);
 
     // Keep this in sync with SECURITY_SENSITIVE_ELEMENTS in packages/core/src/sanitization/sanitization.ts

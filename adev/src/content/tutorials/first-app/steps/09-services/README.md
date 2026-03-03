@@ -1,119 +1,110 @@
-# Сервисы Angular
+# Angular services
 
-В этом уроке показано, как создать сервис Angular и использовать внедрение зависимостей для его включения в ваше
-приложение.
+This tutorial lesson demonstrates how to create an Angular service and use dependency injection to include it in your app.
 
 <docs-video src="https://www.youtube.com/embed/-jRxG84AzCI?si=rieGfJawp9xJ00Sz"/>
 
-## Чему вы научитесь
+## What you'll learn
 
-В вашем приложении будет сервис для предоставления данных.
-В конце этого урока сервис будет читать локальные статические данные.
-В следующем уроке вы обновите сервис для получения данных от веб-сервиса.
+Your app has a service to serve the data to your app.
+At the end of this lesson, the service reads data from local, static data.
+In a later lesson, you'll update the service to get data from a web service.
 
-## Концептуальный обзор сервисов
+## Conceptual preview of services
 
-В этом руководстве представлены сервисы Angular и внедрение зависимостей.
+This tutorial introduces Angular services and dependency injection.
 
-### Сервисы Angular
+### Angular services
 
-_Сервисы Angular_ предоставляют способ разделения данных и функций приложения Angular, которые могут использоваться
-несколькими компонентами.
-Чтобы сервис можно было использовать в нескольких компонентах, он должен быть сделан _injectable_ (доступным для
-внедрения).
-Сервисы, доступные для внедрения и используемые компонентом, становятся зависимостями этого компонента.
-Компонент зависит от этих сервисов и не может функционировать без них.
+_Angular services_ provide a way for you to separate Angular app data and functions that can be used by multiple components in your app.
+To be used by multiple components, a service must be made _injectable_.
+Services that are injectable and used by a component become dependencies of that component.
+The component depends on those services and can't function without them.
 
-### Внедрение зависимостей (Dependency injection)
+### Dependency injection
 
-_Внедрение зависимостей_ — это механизм, который управляет зависимостями компонентов приложения и сервисами, которые
-могут использовать другие компоненты.
+_Dependency injection_ is the mechanism that manages the dependencies of an app's components and the services that other components can use.
 
 <docs-workflow>
 
-<docs-step title="Создание нового сервиса для вашего приложения">
-На этом шаге создается сервис, доступный для внедрения в ваше приложение.
+<docs-step title="Create a new service for your app">
+This step creates an injectable service for your app.
 
-На панели **Terminal** вашей IDE:
+In the **Terminal** pane of your IDE:
 
-1. В директории вашего проекта перейдите в папку `first-app`.
-1. В директории `first-app` выполните следующую команду для создания нового сервиса.
+1. In your project directory, navigate to the `first-app` directory.
+1. In the `first-app` directory, run this command to create the new service.
 
-```shell
-ng generate service housing --skip-tests
-```
+   ```shell
+   ng generate service housing --skip-tests
+   ```
 
-1. Запустите `ng serve` для сборки приложения и его запуска по адресу `http://localhost:4200`.
-1. Убедитесь, что приложение собирается без ошибок.
-   Исправьте ошибки перед переходом к следующему шагу.
+1. Run `ng serve` to build the app and serve it to `http://localhost:4200`.
+1. Confirm that the app builds without error.
+   Correct any errors before you continue to the next step.
    </docs-step>
 
-<docs-step title="Добавление статических данных в новый сервис">
-На этом шаге добавляются примеры данных в ваш новый сервис.
-В следующем уроке вы замените статические данные веб-интерфейсом для получения данных, как в реальном приложении.
-Пока что новый сервис вашего приложения использует данные, которые были созданы локально в `Home`.
+<docs-step title="Add static data to the new service">
+This step adds some sample data to your new service.
+In a later lesson, you'll replace the static data with a web interface to get data as you might in a real app.
+For now, your app's new service uses the data that has, so far, been created locally in `Home`.
 
-На панели **Edit** вашей IDE:
+In the **Edit** pane of your IDE:
 
-1. В `src/app/home/home.ts`, из `Home`, скопируйте переменную `housingLocationList` и её значение (массив).
-1. В `src/app/housing.service.ts`:
-1. Внутри класса `HousingService` вставьте переменную, скопированную из `Home` на предыдущем шаге.
-1. Внутри класса `HousingService` вставьте эти функции после данных, которые вы только что скопировали.
-   Эти функции позволяют зависимостям получать доступ к данным сервиса.
+1. In `src/app/home/home.ts`, from `Home`, copy the `housingLocationList` variable and its array value.
+1. In `src/app/housing.service.ts`:
+   1. Inside the `HousingService` class, paste the variable that you copied from `Home` in the previous step.
+   1. Inside the `HousingService` class, paste these functions after the data you just copied.
+      These functions allow dependencies to access the service's data.
 
-   <docs-code header="Функции сервиса в src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/housing.service.ts" visibleLines="[112,118]"/>
+      <docs-code header="Service functions in src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/housing.service.ts" visibleLines="[112,118]"/>
 
-   Эти функции понадобятся вам в будущем уроке. Пока достаточно понимать, что эти функции возвращают либо конкретный
-   `HousingLocation` по id, либо весь список.
+      You will need these functions in a future lesson. For now, it is enough to understand that these functions return either a specific `HousingLocation` by id or the entire list.
 
-1. Добавьте импорт на уровне файла для `HousingLocation`.
+   1. Add a file level import for the `HousingLocation`.
 
-   <docs-code header="Импорт типа HousingLocation в src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/housing.service.ts" visibleLines="[2]"/>
+      <docs-code header="Import HousingLocation type in  src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/housing.service.ts" visibleLines="[2]"/>
 
-1. Убедитесь, что приложение собирается без ошибок.
-   Исправьте ошибки перед переходом к следующему шагу.
+1. Confirm that the app builds without error.
+   Correct any errors before you continue to the next step.
    </docs-step>
 
-<docs-step title="Внедрение нового сервиса в `Home`">
-На этом шаге новый сервис внедряется в `Home` вашего приложения, чтобы компонент мог читать данные приложения из сервиса.
-В следующем уроке вы замените статические данные живым источником данных, как в реальном приложении.
+<docs-step title="Inject the new service into `Home`">
+This step injects the new service into your app's `Home` so that it can read the app's data from a service.
+In a later lesson, you'll replace the static data with a live data source to get data as you might in a real app.
 
-На панели **Edit** вашей IDE, в файле `src/app/home/home.ts`:
+In the **Edit** pane of your IDE, in `src/app/home/home.ts`:
 
-1. В верхней части `src/app/home/home.ts` добавьте `inject` к элементам, импортируемым из `@angular/core`. Это
-   импортирует функцию `inject` в класс `Home`.
+1.  At the top of `src/app/home/home.ts`, add the `inject` to the items imported from `@angular/core`. This will import the `inject` function into the `Home` class.
 
-<docs-code language="angular-ts" header="Обновление в src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[1]"/>
+      <docs-code language="angular-ts" header="Update to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[1]"/>
 
-1. Добавьте новый импорт на уровне файла для `HousingService`:
+1.  Add a new file level import for the `HousingService`:
 
-<docs-code language="angular-ts" header="Добавление импорта в src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[4]"/>
+      <docs-code language="angular-ts" header="Add import to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[4]"/>
 
-1. В `Home` удалите записи массива `housingLocationList` и присвойте `housingLocationList` значение пустого массива (
-   `[]`). Через несколько шагов вы обновите код для получения данных из `HousingService`.
+1.  From `Home`, delete the `housingLocationList` array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingService`.
 
-1. В `Home` добавьте следующий код для внедрения нового сервиса и инициализации данных для приложения. `constructor` —
-   это первая функция, которая запускается при создании этого компонента. Код в `constructor` присвоит
-   `housingLocationList` значение, возвращаемое вызовом `getAllHousingLocations`.
+1.  In `Home`, add the following code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
 
-<docs-code language="angular-ts" header="Инициализация данных из сервиса в src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[23,30]"/>
+      <docs-code language="angular-ts" header="Initialize data from service in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[23,30]"/>
 
-1. Сохраните изменения в `src/app/home/home.ts` и убедитесь, что ваше приложение собирается без ошибок.
-   Исправьте ошибки перед переходом к следующему шагу.
-   </docs-step>
+1.  Save the changes to `src/app/home/home.ts` and confirm your app builds without error.
+    Correct any errors before you continue to the next step.
+    </docs-step>
 
 </docs-workflow>
 
-РЕЗЮМЕ: В этом уроке вы добавили сервис Angular в свое приложение и внедрили его в класс `Home`.
-Это разделяет логику получения данных вашим приложением.
-На данный момент новый сервис получает данные из статического массива.
-В следующем уроке вы рефакторите сервис для получения данных из конечной точки API.
+SUMMARY: In this lesson, you added an Angular service to your app and injected it into the `Home` class.
+This compartmentalizes how your app gets its data.
+For now, the new service gets its data from a static array of data.
+In a later lesson, you'll refactor the service to get its data from an API endpoint.
 
-Для получения дополнительной информации по темам, рассмотренным в этом уроке, посетите:
+For more information about the topics covered in this lesson, visit:
 
 <docs-pill-row>
-  <docs-pill href="guide/di/creating-injectable-service" title="Создание injectable-сервиса"/>
-  <docs-pill href="guide/di" title="Внедрение зависимостей в Angular"/>
+  <docs-pill href="guide/di/creating-and-using-services" title="Creating an injectable service"/>
+  <docs-pill href="guide/di" title="Dependency injection in Angular"/>
   <docs-pill href="cli/generate/service" title="ng generate service"/>
   <docs-pill href="cli/generate" title="ng generate"/>
 </docs-pill-row>

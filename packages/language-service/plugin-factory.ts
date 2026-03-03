@@ -9,26 +9,10 @@
 // Note: use a type-only import to prevent TypeScript from being bundled in.
 import type ts from 'typescript';
 
-import {NgLanguageService, PluginConfig} from './api';
+export const factory: ts.server.PluginModuleFactory = (mod) => {
+  const {initialize}: {initialize: ts.server.PluginModuleFactory} = require(
+    `@angular/language-service/bundles/language-service.js`,
+  )(mod);
 
-interface PluginModule extends ts.server.PluginModule {
-  create(createInfo: ts.server.PluginCreateInfo): NgLanguageService;
-  onConfigurationChanged?(config: PluginConfig): void;
-}
-
-export const factory: ts.server.PluginModuleFactory = (tsModule): PluginModule => {
-  let plugin: PluginModule;
-
-  return {
-    create(info: ts.server.PluginCreateInfo): NgLanguageService {
-      plugin ??= require(`@angular/language-service/bundles/language-service.js`)(tsModule);
-      return plugin.create(info);
-    },
-    getExternalFiles(project: ts.server.Project): string[] {
-      return plugin?.getExternalFiles?.(project, tsModule.typescript.ProgramUpdateLevel.Full) ?? [];
-    },
-    onConfigurationChanged(config: PluginConfig): void {
-      plugin?.onConfigurationChanged?.(config);
-    },
-  };
+  return initialize(mod);
 };

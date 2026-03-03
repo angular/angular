@@ -20,7 +20,7 @@ The `createSignal()` function produces a specific type of signal that tracks a s
 const counter = signal(0);
 
 counter.set(2);
-counter.update(count => count + 1);
+counter.update((count) => count + 1);
 ```
 
 #### Equality
@@ -71,7 +71,9 @@ Effects do not execute synchronously with the set (see the section on glitch-fre
 ```typescript
 const counter = signal(0);
 const untrackedCounter = signal(0);
-effect(() => console.log(`counter: ${counter()}, untrackedCounter: ${untracked(untrackedCounter)}`));
+effect(() =>
+  console.log(`counter: ${counter()}, untrackedCounter: ${untracked(untrackedCounter)}`),
+);
 // counter: 0, untrackedCounter: 0
 
 untrackedCounter.set(1);
@@ -148,7 +150,7 @@ Consider the following setup:
 
 ```typescript
 const counter = signal(0);
-const evenOrOdd = computed(() => counter() % 2 === 0 ? 'even' : 'odd');
+const evenOrOdd = computed(() => (counter() % 2 === 0 ? 'even' : 'odd'));
 effect(() => console.log(counter() + ' is ' + evenOrOdd()));
 
 counter.set(1);
@@ -175,7 +177,7 @@ We refer to this as the "push/pull" algorithm: "dirtiness" is eagerly _pushed_ t
 When a reactive context operation (for example, an `effect`'s side effect function) is executed, the signals that it reads are tracked as dependencies. However, this may not be the same set of signals from one execution to the next. For example, this computed signal:
 
 ```typescript
-const dynamic = computed(() => useA() ? dataA() : dataB());
+const dynamic = computed(() => (useA() ? dataA() : dataB()));
 ```
 
 reads either `dataA` or `dataB` depending on the value of the `useA` signal. At any given point, it will have a dependency set of either `[useA, dataA]` or `[useA, dataB]`, and it can never depend on `dataA` and `dataB` at the same time.

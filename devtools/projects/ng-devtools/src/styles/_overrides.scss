@@ -38,6 +38,12 @@
     )
   );
 
+  @include mat.dialog-overrides(
+    (
+      container-elevation-shadow: 1,
+    )
+  );
+
   /* FRAGILE */
   .mat-mdc-menu-item {
     min-height: 32px;

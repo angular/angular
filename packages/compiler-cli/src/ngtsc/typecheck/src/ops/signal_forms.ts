@@ -1,4 +1,4 @@
-/*!
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -22,28 +22,29 @@ import {
   TmplAstTemplate,
 } from '@angular/compiler';
 import ts from 'typescript';
-import {TcbOp} from './base';
-import type {Context} from './context';
-import type {Scope} from './scope';
-import {addParseSpanInfo} from '../diagnostics';
-import {tsDeclareVariable} from '../ts_util';
 import {TypeCheckableDirectiveMeta} from '../../api';
-import {tcbExpression} from './expression';
-import {markIgnoreDiagnostics} from '../comments';
+import {TcbOp} from './base';
+import {declareVariable, TcbExpr} from './codegen';
 import {TcbBoundAttribute} from './bindings';
+import type {Context} from './context';
+import {tcbExpression} from './expression';
+import type {Scope} from './scope';
 
-/** Possible types of custom field directives. */
-export type CustomFieldType = 'value' | 'checkbox';
+/** Possible types of custom form control directives. */
+export type CustomFormControlType = 'value' | 'checkbox';
 
 /** Names of the input fields on custom controls. */
 const formControlInputFields = [
   // Should be kept in sync with the `FormUiControl` bindings,
   // defined in `packages/forms/signals/src/api/control.ts`.
   'errors',
-  'invalid',
+  'dirty',
   'disabled',
   'disabledReasons',
+  'hidden',
+  'invalid',
   'name',
+  'pending',
   'readonly',
   'touched',
   'max',
@@ -72,7 +73,7 @@ const formControlOptionalFields = new Set([
 ]);
 
 /**
- * A `TcbOp` which constructs an instance of the signal forms `Field` directive on a native element.
+ * A `TcbOp` which constructs an instance of the signal forms `FormField` directive on a native element.
  */
 export class TcbNativeFieldOp extends TcbOp {
   /** Bindings that aren't supported on signal form fields. */
@@ -100,33 +101,35 @@ export class TcbNativeFieldOp extends TcbOp {
   override execute(): null {
     const inputs = this.node instanceof TmplAstHostElement ? this.node.bindings : this.node.inputs;
     const fieldBinding =
-      inputs.find((input) => input.type === BindingType.Property && input.name === 'field') ?? null;
+      inputs.find((input) => input.type === BindingType.Property && input.name === 'formField') ??
+      null;
 
-    // This should only happen if there's something like `<input field="static"/>`
-    // which will be caught by the input type checking of the `Field` directive.
+    // This should only happen if there's something like `<input formField="static"/>`
+    // which will be caught by the input type checking of the `FormField` directive.
     if (fieldBinding === null) {
       return null;
     }
 
     checkUnsupportedFieldBindings(this.node, this.unsupportedBindingFields, this.tcb);
 
-    const expectedType = this.getExpectedTypeFromDomNode(this.node);
+    const expectedType = new TcbExpr(this.getExpectedTypeFromDomNode(this.node));
     const value = extractFieldValue(fieldBinding.value, this.tcb, this.scope);
 
     // Create a variable with the expected type and check that the field value is assignable, e.g.
     // var t1 = null! as string | number; t1 = f().value()`.
-    const id = this.tcb.allocateId();
-    const assignment = ts.factory.createBinaryExpression(id, ts.SyntaxKind.EqualsToken, value);
-    addParseSpanInfo(assignment, fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
-    this.scope.addStatement(tsDeclareVariable(id, expectedType));
-    this.scope.addStatement(ts.factory.createExpressionStatement(assignment));
+    const id = new TcbExpr(this.tcb.allocateId());
+    const assignment = new TcbExpr(`${id.print()} = ${value.print()}`);
+    assignment.addParseSpanInfo(fieldBinding.valueSpan ?? fieldBinding.sourceSpan);
+
+    this.scope.addStatement(declareVariable(id, expectedType));
+    this.scope.addStatement(assignment);
     return null;
   }
 
-  private getExpectedTypeFromDomNode(node: TmplAstElement): ts.TypeNode {
+  private getExpectedTypeFromDomNode(node: TmplAstElement): string {
     if (node.name === 'textarea' || node.name === 'select') {
       // `<textarea>` and `<select>` are always strings.
-      return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
+      return 'string';
     }
 
     if (node.name !== 'input') {
@@ -135,34 +138,39 @@ export class TcbNativeFieldOp extends TcbOp {
 
     switch (this.inputType) {
       case 'checkbox':
-        return ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword);
+        return 'boolean';
 
       case 'number':
       case 'range':
       case 'datetime-local':
-        return ts.factory.createUnionTypeNode([
-          ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-          ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
-        ]);
+        return 'string | number | null';
 
       case 'date':
       case 'month':
       case 'time':
       case 'week':
-        return ts.factory.createUnionTypeNode([
-          ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-          ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
-          ts.factory.createTypeReferenceNode('Date'),
-          ts.factory.createLiteralTypeNode(ts.factory.createNull()),
-        ]);
+        return 'string | number | Date | null';
+    }
+
+    const hasDynamicType =
+      this.inputType === null &&
+      this.node.inputs.some(
+        (input) =>
+          (input.type === BindingType.Property || input.type === BindingType.Attribute) &&
+          input.name === 'type',
+      );
+
+    // If the type is dynamic, check it as if it can be any of the types above.
+    if (hasDynamicType) {
+      return 'string | number | boolean | Date | null';
     }
 
     // Fall back to string if we couldn't map the type.
-    return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
+    return 'string';
   }
 
-  private getUnsupportedType(): ts.TypeNode {
-    return ts.factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword);
+  private getUnsupportedType(): string {
+    return 'never';
   }
 }
 
@@ -184,14 +192,12 @@ export class TcbNativeRadioButtonFieldOp extends TcbNativeFieldOp {
 
     if (valueBinding !== undefined) {
       // Include an additional expression to check that the `value` is a string.
-      const id = this.tcb.allocateId();
+      const id = new TcbExpr(this.tcb.allocateId());
       const value = tcbExpression(valueBinding.value, this.tcb, this.scope);
-      const assignment = ts.factory.createBinaryExpression(id, ts.SyntaxKind.EqualsToken, value);
-      addParseSpanInfo(assignment, valueBinding.sourceSpan);
-      this.scope.addStatement(
-        tsDeclareVariable(id, ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword)),
-      );
-      this.scope.addStatement(ts.factory.createExpressionStatement(assignment));
+      const assignment = new TcbExpr(`${id.print()} = ${value.print()}`);
+      assignment.addParseSpanInfo(valueBinding.sourceSpan);
+      this.scope.addStatement(declareVariable(id, new TcbExpr('string')));
+      this.scope.addStatement(assignment);
     }
 
     return null;
@@ -202,10 +208,10 @@ export class TcbNativeRadioButtonFieldOp extends TcbNativeFieldOp {
 export function expandBoundAttributesForField(
   directive: TypeCheckableDirectiveMeta,
   node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
-  customFieldType: CustomFieldType,
+  customFormControlType: CustomFormControlType | null,
 ): TcbBoundAttribute[] | null {
   const fieldBinding = node.inputs.find(
-    (input) => input.type === BindingType.Property && input.name === 'field',
+    (input) => input.type === BindingType.Property && input.name === 'formField',
   );
 
   if (!fieldBinding) {
@@ -215,21 +221,21 @@ export function expandBoundAttributesForField(
   let boundInputs: TcbBoundAttribute[] | null = null;
   let primaryInput: TcbBoundAttribute | null;
 
-  if (customFieldType === 'value') {
+  if (customFormControlType === 'value') {
     primaryInput = getSyntheticFieldBoundInput(
       directive,
       'value',
       'value',
       fieldBinding,
-      customFieldType,
+      customFormControlType,
     );
-  } else if (customFieldType === 'checkbox') {
+  } else if (customFormControlType === 'checkbox') {
     primaryInput = getSyntheticFieldBoundInput(
       directive,
       'checked',
       'value',
       fieldBinding,
-      customFieldType,
+      customFormControlType,
     );
   } else {
     primaryInput = null;
@@ -241,7 +247,13 @@ export function expandBoundAttributesForField(
   }
 
   for (const name of formControlInputFields) {
-    const input = getSyntheticFieldBoundInput(directive, name, name, fieldBinding, customFieldType);
+    const input = getSyntheticFieldBoundInput(
+      directive,
+      name,
+      name,
+      fieldBinding,
+      customFormControlType,
+    );
 
     if (input !== null) {
       boundInputs ??= [];
@@ -253,7 +265,7 @@ export function expandBoundAttributesForField(
 }
 
 export function isFieldDirective(meta: TypeCheckableDirectiveMeta): boolean {
-  if (meta.name !== 'Field') {
+  if (meta.name !== 'FormField') {
     return false;
   }
 
@@ -270,7 +282,7 @@ export function isFieldDirective(meta: TypeCheckableDirectiveMeta): boolean {
         ts.isPropertyDeclaration(member) &&
         ts.isComputedPropertyName(member.name) &&
         ts.isIdentifier(member.name.expression) &&
-        member.name.expression.text === 'ɵCONTROL',
+        member.name.expression.text === 'ɵNgFieldDirective',
     )
   );
 }
@@ -280,7 +292,7 @@ function getSyntheticFieldBoundInput(
   inputName: string,
   fieldPropertyName: string,
   fieldBinding: TmplAstBoundAttribute,
-  customFieldType: CustomFieldType,
+  customFieldType: CustomFormControlType | null,
 ): TcbBoundAttribute | null {
   const inputs = dir.inputs.getByBindingPropertyName(inputName);
 
@@ -323,7 +335,7 @@ function getSyntheticFieldBoundInput(
 /** Determines if a directive is a custom field and its type. */
 export function getCustomFieldDirectiveType(
   meta: TypeCheckableDirectiveMeta,
-): CustomFieldType | null {
+): CustomFormControlType | null {
   if (hasModelInput('value', meta)) {
     return 'value';
   } else if (hasModelInput('checked', meta)) {
@@ -338,7 +350,7 @@ export function isNativeField(
   node: TmplAstNode,
   allDirectiveMatches: TypeCheckableDirectiveMeta[],
 ): node is TmplAstElement & {name: 'input' | 'select' | 'textarea'} {
-  // Only applies to the `Field` directive.
+  // Only applies to the `FormField` directive.
   if (!isFieldDirective(dir)) {
     return false;
   }
@@ -400,31 +412,41 @@ export function checkUnsupportedFieldBindings(
 /**
  * Gets an expression that extracts the value of a field binding.
  */
-function extractFieldValue(expression: AST, tcb: Context, scope: Scope): ts.Expression {
+function extractFieldValue(expression: AST, tcb: Context, scope: Scope): TcbExpr {
   // Unwraps the field, e.g. `[field]="f"` turns into `f()`.
-  const innerCall = ts.factory.createCallExpression(
-    tcbExpression(expression, tcb, scope),
-    undefined,
-    undefined,
-  );
+  const innerCall = new TcbExpr(tcbExpression(expression, tcb, scope).print() + '()');
 
   // Note: we ignore diagnostics on this call, because it might not be callable
   // (e.g. `undefined` is passed in). Whether the value conforms to `FieldTree` is
   // checked using the common inputs op.
-  markIgnoreDiagnostics(innerCall);
+  innerCall.markIgnoreDiagnostics();
 
   // Extract the value from the field, e.g. `f().value()`.
-  return ts.factory.createCallExpression(
-    ts.factory.createPropertyAccessExpression(innerCall, 'value'),
-    undefined,
-    undefined,
+  return new TcbExpr(`${innerCall.print()}.value()`);
+}
+
+/** Checks whether a directive has a model-like input with a specific name. */
+function hasModelInput(name: string, meta: TypeCheckableDirectiveMeta): boolean {
+  return (
+    meta.inputs.hasBindingPropertyName(name) && meta.outputs.hasBindingPropertyName(name + 'Change')
   );
 }
 
-/** Checks whether a directive has a model input with a specific name. */
-function hasModelInput(name: string, meta: TypeCheckableDirectiveMeta): boolean {
-  return (
-    !!meta.inputs.getByBindingPropertyName(name)?.some((v) => v.isSignal) &&
-    meta.outputs.hasBindingPropertyName(name + 'Change')
-  );
+/**
+ * Determines whether a node is a form control based on its matching directives.
+ *
+ * A node is a form control if it has a matching `FormField` directive, and no other directives match
+ * the `field` input.
+ */
+export function isFormControl(allDirectiveMatches: TypeCheckableDirectiveMeta[]): boolean {
+  let result = false;
+  for (const match of allDirectiveMatches) {
+    if (match.inputs.hasBindingPropertyName('formField')) {
+      if (!isFieldDirective(match)) {
+        return false;
+      }
+      result = true;
+    }
+  }
+  return result;
 }

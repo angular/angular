@@ -9,9 +9,9 @@ import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';
     standalone: false
 })
 export class MyComponent {
-  valueA: 0;
-  valueB: 0;
-  valueC: 0;
+  valueA = 0;
+  valueB = 0;
+  valueC = 0;
 }
 
 @Pipe({

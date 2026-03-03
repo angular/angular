@@ -1,49 +1,35 @@
-# Тестирование маршрутизации и навигации
+# Testing routing and navigation
 
-Тестирование маршрутизации и навигации необходимо для того, чтобы убедиться, что ваше приложение ведет себя корректно,
-когда пользователи переходят между различными маршрутами. В этом руководстве рассматриваются различные стратегии
-тестирования функциональности маршрутизации в приложениях Angular.
+Testing routing and navigation is essential to ensure your application behaves correctly when users navigate between different routes. This guide covers various strategies for testing routing functionality in Angular applications.
 
-## Предварительные требования
+## Prerequisites
 
-Это руководство предполагает, что вы знакомы со следующими инструментами и библиотеками:
+This guide assumes you are familiar with the following tools and libraries:
 
-- **[Jasmine](https://jasmine.github.io/)** — фреймворк для тестирования JavaScript, предоставляющий синтаксис для
-  тестов (`describe`, `it`, `expect`)
-- **[Karma](https://karma-runner.github.io/)** — инструмент для запуска тестов (test runner), который выполняет тесты в
-  браузерах
-- **[Утилиты тестирования Angular](guide/testing)** — встроенные инструменты тестирования Angular ([
-  `TestBed`](api/core/testing/TestBed), [`ComponentFixture`](api/core/testing/ComponentFixture))
-- **[`RouterTestingHarness`](api/router/testing/RouterTestingHarness)** — инструментарий для тестирования
-  маршрутизируемых компонентов со встроенными возможностями навигации и тестирования компонентов
+- **[Vitest](https://vitest.dev/)** - JavaScript testing framework that provides the testing syntax (`describe`, `it`, `expect`)
+- **[Angular Testing Utilities](guide/testing)** - Angular's built-in testing tools ([`TestBed`](api/core/testing/TestBed), [`ComponentFixture`](api/core/testing/ComponentFixture))
+- **[`RouterTestingHarness`](api/router/testing/RouterTestingHarness)** - Test harness for testing routed components with built-in navigation and component testing capabilities
 
-## Сценарии тестирования
+## Testing scenarios
 
-### Параметры маршрута
+### Route parameters
 
-Компоненты часто полагаются на параметры маршрута из URL для получения данных, например, идентификатора пользователя для
-страницы профиля.
+Components often rely on route parameters from the URL to fetch data, like a user ID for a profile page.
 
-В следующем примере показано, как протестировать компонент `UserProfile`, который отображает идентификатор пользователя,
-полученный из маршрута.
+The following example shows how to test a `UserProfile` component that displays a user ID from the route.
 
-```ts
-// user-profile.component.spec.ts
-import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { RouterTestingHarness } from '@angular/router/testing';
-import { provideRouter } from '@angular/router';
-import { UserProfile } from './user-profile';
+```ts { header: 'user-profile.spec.ts'}
+import {TestBed} from '@angular/core/testing';
+import {Router} from '@angular/router';
+import {RouterTestingHarness} from '@angular/router/testing';
+import {provideRouter} from '@angular/router';
+import {UserProfile} from './user-profile';
 
 describe('UserProfile', () => {
   it('should display user ID from route parameters', async () => {
     TestBed.configureTestingModule({
       imports: [UserProfile],
-      providers: [
-        provideRouter([
-          { path: 'user/:id', component: UserProfile }
-        ])
-      ]
+      providers: [provideRouter([{path: 'user/:id', component: UserProfile}])],
     });
 
     const harness = await RouterTestingHarness.create();
@@ -54,13 +40,12 @@ describe('UserProfile', () => {
 });
 ```
 
-```angular-ts
-// user-profile.component.ts
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+```angular-ts {header: 'user-profile.ts'}
+import {Component, inject} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
-  template: '<h1>User Profile: {{userId}}</h1>'
+  template: '<h1>User Profile: {{userId}}</h1>',
 })
 export class UserProfile {
   private route = inject(ActivatedRoute);
@@ -68,43 +53,40 @@ export class UserProfile {
 }
 ```
 
-### Guard-ы маршрутов
+### Route guards
 
-Guard-ы (защитники) маршрутов управляют доступом к маршрутам на основе определенных условий, таких как аутентификация
-или права доступа. При тестировании Guard-ов сосредоточьтесь на моках зависимостей и проверке результатов навигации.
+Route guards control access to routes based on conditions like authentication or permissions. When testing guards, focus on mocking dependencies and verifying navigation outcomes.
 
-В следующем примере тестируется `authGuard`, который разрешает навигацию для аутентифицированных пользователей и
-перенаправляет неаутентифицированных пользователей на страницу входа.
+The following example tests an `authGuard` that allows navigation for authenticated users and redirects unauthenticated users to a login page.
 
-```ts
-// auth.guard.spec.ts
-import { RouterTestingHarness } from '@angular/router/testing';
-import { provideRouter, Router } from '@angular/router';
-import { authGuard } from './auth.guard';
-import { AuthStore } from './auth-store';
-import { Component } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+```ts {header: 'auth.guard.spec.ts'}
+import {vi, type Mocked} from 'vitest';
+import {RouterTestingHarness} from '@angular/router/testing';
+import {provideRouter, Router} from '@angular/router';
+import {authGuard} from './auth.guard';
+import {AuthStore} from './auth-store';
+import {Component} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 
-@Component({ template: '<h1>Protected Page</h1>' })
-class ProtectedComponent {}
+@Component({template: '<h1>Protected Page</h1>'})
+class Protected {}
 
-@Component({ template: '<h1>Login Page</h1>' })
-class LoginComponent {}
+@Component({template: '<h1>Login Page</h1>'})
+class Login {}
 
 describe('authGuard', () => {
-  let authStore: jasmine.SpyObj<AuthStore>;
+  let authStore: Mocked<AuthStore>;
   let harness: RouterTestingHarness;
 
   async function setup(isAuthenticated: boolean) {
-    authStore = jasmine.createSpyObj('AuthStore', ['isAuthenticated']);
-    authStore.isAuthenticated.and.returnValue(isAuthenticated);
+    authStore = {isAuthenticated: vi.fn().mockReturnValue(isAuthenticated)} as Mocked<AuthStore>;
 
     TestBed.configureTestingModule({
       providers: [
-        { provide: AuthStore, useValue: authStore },
+        {provide: AuthStore, useValue: authStore},
         provideRouter([
-          { path: 'protected', component: ProtectedComponent, canActivate: [authGuard] },
-          { path: 'login', component: LoginComponent },
+          {path: 'protected', component: Protected, canActivate: [authGuard]},
+          {path: 'login', component: Login},
         ]),
       ],
     });
@@ -114,25 +96,24 @@ describe('authGuard', () => {
 
   it('allows navigation when user is authenticated', async () => {
     await setup(true);
-    await harness.navigateByUrl('/protected', ProtectedComponent);
+    await harness.navigateByUrl('/protected', Protected);
     // The protected component should render when authenticated
     expect(harness.routeNativeElement?.textContent).toContain('Protected Page');
   });
 
   it('redirects to login when user is not authenticated', async () => {
     await setup(false);
-    await harness.navigateByUrl('/protected', LoginComponent);
+    await harness.navigateByUrl('/protected', Login);
     // The login component should render after redirect
     expect(harness.routeNativeElement?.textContent).toContain('Login Page');
   });
 });
 ```
 
-```ts
-// auth.guard.ts
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
-import { AuthStore } from './auth-store';
+```ts {header: 'auth.guard.ts'}
+import {inject} from '@angular/core';
+import {CanActivateFn, Router} from '@angular/router';
+import {AuthStore} from './auth-store';
 
 export const authGuard: CanActivateFn = () => {
   const authStore = inject(AuthStore);
@@ -141,28 +122,26 @@ export const authGuard: CanActivateFn = () => {
 };
 ```
 
-### Router Outlet
+### Router outlets
 
-Тесты с использованием Router Outlet — это, по сути, интеграционные тесты, поскольку вы проверяете взаимодействие
-между [`Router`](api/router/Router), самим outlet-ом и отображаемыми компонентами.
+Router outlet tests are more of an integration test since you're essentially testing the integration between the [`Router`](api/router/Router), the outlet, and the components being displayed.
 
-Вот пример настройки теста, который проверяет, что для разных маршрутов отображаются разные компоненты:
+Here's an example of how to set up a test that verifies different components are displayed for different routes:
 
-```ts
-// app.component.spec.ts
-import { TestBed } from '@angular/core/testing';
-import { RouterTestingHarness } from '@angular/router/testing';
-import { provideRouter } from '@angular/router';
-import { Component } from '@angular/core';
-import { App } from './app';
+```ts {header: 'app.spec.ts'}
+import {TestBed} from '@angular/core/testing';
+import {RouterTestingHarness} from '@angular/router/testing';
+import {provideRouter} from '@angular/router';
+import {Component} from '@angular/core';
+import {App} from './app';
 
 @Component({
-  template: '<h1>Home Page</h1>'
+  template: '<h1>Home Page</h1>',
 })
 class MockHome {}
 
 @Component({
-  template: '<h1>About Page</h1>'
+  template: '<h1>About Page</h1>',
 })
 class MockAbout {}
 
@@ -174,10 +153,10 @@ describe('App Router Outlet', () => {
       imports: [App],
       providers: [
         provideRouter([
-          { path: '', component: MockHome },
-          { path: 'about', component: MockAbout }
-        ])
-      ]
+          {path: '', component: MockHome},
+          {path: 'about', component: MockAbout},
+        ]),
+      ],
     });
 
     harness = await RouterTestingHarness.create();
@@ -197,10 +176,9 @@ describe('App Router Outlet', () => {
 });
 ```
 
-```angular-ts
-// app.component.ts
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+```angular-ts {header: 'app.ts'}
+import {Component} from '@angular/core';
+import {RouterOutlet, RouterLink} from '@angular/router';
 
 @Component({
   imports: [RouterOutlet, RouterLink],
@@ -210,30 +188,28 @@ import { RouterOutlet, RouterLink } from '@angular/router';
       <a routerLink="/about">About</a>
     </nav>
     <router-outlet />
-  `
+  `,
 })
 export class App {}
 ```
 
-### Вложенные маршруты
+### Nested routes
 
-Тестирование вложенных маршрутов гарантирует, что и родительский, и дочерний компоненты рендерятся корректно при
-переходе по вложенным URL. Это важно, так как вложенные маршруты подразумевают несколько уровней.
+Testing nested routes ensures that both the parent and child components render correctly when navigating to nested URLs. This is important because nested routes involve multiple layers.
 
-Вам необходимо проверить, что:
+You need to verify that:
 
-1. Родительский компонент рендерится должным образом.
-2. Дочерний компонент рендерится внутри него.
-3. Оба компонента имеют доступ к своим соответствующим данным маршрута.
+1. The parent component renders properly.
+2. The child component renders within it.
+3. Ensure that both components can access their respective route data.
 
-Вот пример тестирования структуры маршрутов «родитель-потомок»:
+Here's an example of testing a parent-child route structure:
 
-```ts
-// nested-routes.spec.ts
-import { TestBed } from '@angular/core/testing';
-import { RouterTestingHarness } from '@angular/router/testing';
-import { provideRouter } from '@angular/router';
-import { Parent, Child } from './nested-components';
+```ts {header: 'nested-routes.spec.ts'}
+import {TestBed} from '@angular/core/testing';
+import {RouterTestingHarness} from '@angular/router/testing';
+import {provideRouter} from '@angular/router';
+import {Parent, Child} from './nested-components';
 
 describe('Nested Routes', () => {
   let harness: RouterTestingHarness;
@@ -246,12 +222,10 @@ describe('Nested Routes', () => {
           {
             path: 'parent',
             component: Parent,
-            children: [
-              { path: 'child', component: Child }
-            ]
-          }
-        ])
-      ]
+            children: [{path: 'child', component: Child}],
+          },
+        ]),
+      ],
     });
 
     harness = await RouterTestingHarness.create();
@@ -266,46 +240,38 @@ describe('Nested Routes', () => {
 });
 ```
 
-```angular-ts
-// nested-components.ts
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+```angular-ts {header: 'nested.ts'}
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
   imports: [RouterOutlet],
   template: `
     <h1>Parent Component</h1>
     <router-outlet />
-  `
+  `,
 })
 export class Parent {}
 
 @Component({
-  template: '<h2>Child Component</h2>'
+  template: '<h2>Child Component</h2>',
 })
 export class Child {}
 ```
 
-### Параметры запроса и фрагменты
+### Query parameters and fragments
 
-Параметры запроса (например, `?search=angular&category=web`) и фрагменты URL (например, `#section1`) предоставляют
-дополнительные данные через URL, которые не влияют на то, какой компонент загружается, но влияют на поведение
-компонента. Компоненты, которые считывают параметры запроса через [
-`ActivatedRoute.queryParams`](api/router/ActivatedRoute#queryParams), должны быть протестированы, чтобы убедиться, что
-они корректно обрабатывают различные сценарии параметров.
+Query parameters (like `?search=angular&category=web`) and URL fragments (like `#section1`) provide additional data through the URL that doesn't affect which component loads, but does affect how the component behaves. Components that read query parameters through [`ActivatedRoute.queryParams`](api/router/ActivatedRoute#queryParams) need to be tested to ensure they handle different parameter scenarios correctly.
 
-В отличие от параметров маршрута, которые являются частью определения маршрута, параметры запроса необязательны и могут
-изменяться без запуска навигации по маршруту. Это означает, что вам нужно тестировать как начальную загрузку, так и
-реактивные обновления при изменении параметров запроса.
+Unlike route parameters that are part of the route definition, query parameters are optional and can change without triggering route navigation. This means you need to test both the initial loading and the reactive updates when query parameters change.
 
-Вот пример того, как тестировать параметры запроса и фрагменты:
+Here's an example of how to test query parameters and fragments:
 
-```ts
-// search.component.spec.ts
-import { TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
-import { RouterTestingHarness } from '@angular/router/testing';
-import { Search } from './search';
+```ts {header: 'search.spec.ts'}
+import {TestBed} from '@angular/core/testing';
+import {Router, provideRouter} from '@angular/router';
+import {RouterTestingHarness} from '@angular/router/testing';
+import {Search} from './search';
 
 describe('Search', () => {
   let component: Search;
@@ -314,11 +280,7 @@ describe('Search', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [Search],
-      providers: [
-        provideRouter([
-          { path: 'search', component: Search }
-        ])
-      ]
+      providers: [provideRouter([{path: 'search', component: Search}])],
     });
 
     harness = await RouterTestingHarness.create();
@@ -332,41 +294,27 @@ describe('Search', () => {
 });
 ```
 
-```angular-ts
-// search.component.ts
-import { Component, inject, computed } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+```angular-ts {header: 'search.ts'}
+import {Component, inject, computed} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Component({
-  template: '<div>Search term: {{searchTerm()}}</div>'
+  template: '<div>Search term: {{searchTerm()}}</div>',
 })
 export class Search {
   private route = inject(ActivatedRoute);
-  private queryParams = toSignal(this.route.queryParams, { initialValue: {} });
+  private queryParams = toSignal(this.route.queryParams, {initialValue: {}});
 
   searchTerm = computed(() => this.queryParams()['q'] || null);
 }
 ```
 
-## Лучшие практики тестирования роутера
+## Best practices for router testing
 
-1. **Используйте RouterTestingHarness** — Для тестирования маршрутизируемых компонентов используйте [
-   `RouterTestingHarness`](api/router/testing/RouterTestingHarness), который предоставляет более чистый API и устраняет
-   необходимость в тестовых хост-компонентах. Он предлагает прямой доступ к компонентам, встроенную навигацию и лучшую
-   типобезопасность. Однако он может не подходить для некоторых сценариев, таких как тестирование именованных outlet-ов,
-   где может потребоваться создание пользовательских хост-компонентов.
-2. **Продуманно работайте с внешними зависимостями** — Отдавайте предпочтение реальным реализациям, когда это возможно,
-   для более реалистичных тестов. Если реальные реализации невозможны (например, внешние API), используйте фейки (
-   fakes), которые приближают реальное поведение. Используйте моки (mocks) или стабы (stubs) только в крайнем случае,
-   так как они могут сделать тесты хрупкими и менее надежными.
-3. **Тестируйте состояние навигации** — Проверяйте как действие навигации, так и результирующее состояние приложения,
-   включая изменения URL и рендеринг компонентов.
-4. **Обрабатывайте асинхронные операции** — Навигация роутера асинхронна. Используйте `async/await` или [
-   `fakeAsync`](api/core/testing/fakeAsync) для правильной обработки таймингов в ваших тестах.
-5. **Тестируйте сценарии ошибок** — Включайте тесты для неверных маршрутов, неудачной навигации и отклонений Guard-ами,
-   чтобы убедиться, что ваше приложение корректно обрабатывает граничные случаи.
-6. **Не создавайте моки для Angular Router** — Вместо этого предоставляйте реальные конфигурации маршрутов и используйте
-   harness для навигации. Это делает ваши тесты более надежными и менее склонными к поломкам при внутренних обновлениях
-   Angular, а также гарантирует, что вы обнаружите реальные проблемы при обновлении роутера, поскольку моки могут
-   скрывать критические изменения.
+1. **Use RouterTestingHarness** - For testing routed components, use [`RouterTestingHarness`](api/router/testing/RouterTestingHarness) which provides a cleaner API and eliminates the need for test host components. It offers direct component access, built-in navigation, and better type safety. However, it isn't as suitable for some scenarios, such as testing named outlets, where you may need to create custom host components.
+2. **Handle external dependencies thoughtfully** - Prefer real implementations when possible for more realistic tests. If real implementations aren't feasible (e.g., external APIs), use fakes that approximate the real behavior. Use mocks or stubs only as a last resort, as they can make tests brittle and less reliable.
+3. **Test navigation state** - Verify both the navigation action and the resulting application state, including URL changes and component rendering.
+4. **Handle asynchronous operations** - Router navigation is asynchronous. Use `async/await` to properly handle timing in your tests.
+5. **Test error scenarios** - Include tests for invalid routes, failed navigation, and guard rejections to ensure your application handles edge cases gracefully.
+6. **Do not mock Angular Router** - Instead, provide real route configurations and use the harness to navigate. This makes your tests more robust and less likely to break on internal Angular updates, while also ensuring you catch real issues when the router updates since mocks can hide breaking changes.

@@ -1,4 +1,3 @@
-load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//tools:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
@@ -23,14 +22,4 @@ filegroup(
     srcs = glob([
         "*.ts",
     ]) + ["PACKAGE.md"],
-)
-
-generate_api_docs(
-    name = "localize_docs",
-    srcs = [
-        ":files_for_docgen",
-        "//packages:common_files_and_deps_for_docs",
-    ],
-    entry_point = ":index.ts",
-    module_name = "@angular/localize/init",
 )

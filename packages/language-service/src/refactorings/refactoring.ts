@@ -7,7 +7,7 @@
  */
 
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import ts from 'typescript';
+import type ts from 'typescript';
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../api';
 import {CompilerOptions} from '@angular/compiler-cli';
 import {

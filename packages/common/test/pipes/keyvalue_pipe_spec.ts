@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Component, ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import {KeyValuePipe} from '../../index';
 import {JsonPipe} from '../../public_api';
 import {defaultComparator} from '../../src/pipes/keyvalue_pipe';
-import {Component, ɵdefaultKeyValueDiffers as defaultKeyValueDiffers} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
 
 describe('KeyValuePipe', () => {
   it('should return null when given null', () => {
@@ -122,7 +122,7 @@ describe('KeyValuePipe', () => {
       expect(pipe.transform(myData, differ)?.length).toEqual(3);
     });
 
-    it('should accept an nullable object with optional keys', () => {
+    it('should accept an nullable object with optional keys (null)', () => {
       interface MyInterface {
         one?: string;
         two?: string;
@@ -134,7 +134,7 @@ describe('KeyValuePipe', () => {
       expect(pipe.transform(value)).toEqual(null);
     });
 
-    it('should accept an nullable object with optional keys', () => {
+    it('should accept an nullable object with optional keys (non-null)', () => {
       interface MyInterface {
         one?: string;
         two?: string;

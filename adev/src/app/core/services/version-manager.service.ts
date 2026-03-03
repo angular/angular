@@ -95,7 +95,7 @@ export class VersionManager {
 
   readonly currentDocsVersion = computed(() => {
     // In devmode the version is 0, so we'll target next (which is first on the list)
-    if (VERSION.major === '0') {
+    if (VERSION.major === '0' || VERSION.patch.includes('next')) {
       return this.versions()[0];
     }
 

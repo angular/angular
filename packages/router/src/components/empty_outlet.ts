@@ -23,7 +23,7 @@ export {ɵEmptyOutletComponent as EmptyOutletComponent};
  * to this `EmptyOutletComponent`.
  */
 @Component({
-  template: `<router-outlet/>`,
+  template: `<router-outlet />`,
   imports: [RouterOutlet],
   // Used to avoid component ID collisions with user code.
   exportAs: 'emptyRouterOutlet',

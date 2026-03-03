@@ -34,11 +34,15 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     CYCLIC_DI_DEPENDENCY = -200,
     // (undocumented)
+    DEF_TYPE_UNDEFINED = -919,
+    // (undocumented)
     DEFER_IN_HMR_MODE = -751,
     // (undocumented)
     DEFER_LOADING_FAILED = -750,
     // (undocumented)
     DUPLICATE_DIRECTIVE = 309,
+    // (undocumented)
+    DUPLICATE_NG_MODULE_ID = 921,
     // (undocumented)
     EXPORT_NOT_FOUND = -301,
     // (undocumented)
@@ -70,7 +74,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INFINITE_CHANGE_DETECTION = 103,
     // (undocumented)
-    INJECTOR_ALREADY_DESTROYED = 205,
+    INJECTOR_ALREADY_DESTROYED = -205,
     // (undocumented)
     INVALID_APP_ID = 211,
     // (undocumented)
@@ -82,13 +86,11 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_FACTORY_DEPENDENCY = 202,
     // (undocumented)
-    INVALID_FIELD_DIRECTIVE_HOST = 318,
-    // (undocumented)
     INVALID_I18N_STRUCTURE = 700,
     // (undocumented)
     INVALID_INHERITANCE = 903,
     // (undocumented)
-    INVALID_INJECTION_TOKEN = 204,
+    INVALID_INJECTION_TOKEN = -204,
     // (undocumented)
     INVALID_MULTI_PROVIDER = -209,
     // (undocumented)
@@ -132,6 +134,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     MUST_PROVIDE_STREAM_OPTION = 990,
     // (undocumented)
+    NG_MODULE_ID_NOT_FOUND = 920,
+    // (undocumented)
     NO_BINDING_TARGET = 315,
     // (undocumented)
     NO_COMPONENT_FACTORY_FOUND = 917,
@@ -148,7 +152,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PROVIDED_BOTH_ZONE_AND_ZONELESS = 408,
     // (undocumented)
-    PROVIDER_IN_WRONG_CONTEXT = 207,
+    PROVIDER_IN_WRONG_CONTEXT = -207,
     // (undocumented)
     PROVIDER_NOT_FOUND = -201,
     // (undocumented)
@@ -198,7 +202,11 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     VIEW_ALREADY_ATTACHED = 902,
     // (undocumented)
-    VIEW_ALREADY_DESTROYED = 911
+    VIEW_ALREADY_DESTROYED = 911,
+    // (undocumented)
+    VIEW_DESTROYED_INSERT_ERROR = 922,
+    // (undocumented)
+    VIEW_DESTROYED_MOVE_ERROR = 923
 }
 
 // (No @packageDocumentation comment for this package)

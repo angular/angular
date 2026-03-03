@@ -4,28 +4,28 @@ module(
     name = "angular",
 )
 
-bazel_dep(name = "rules_pkg", version = "1.1.0")
-bazel_dep(name = "rules_nodejs", version = "6.6.2")
-bazel_dep(name = "aspect_rules_ts", version = "3.7.1")
-bazel_dep(name = "aspect_rules_js", version = "2.8.2")
-bazel_dep(name = "aspect_rules_esbuild", version = "0.24.0")
-bazel_dep(name = "aspect_rules_jasmine", version = "2.0.0")
+bazel_dep(name = "rules_pkg", version = "1.2.0")
+bazel_dep(name = "rules_nodejs", version = "6.7.3")
+bazel_dep(name = "aspect_rules_ts", version = "3.8.5")
+bazel_dep(name = "aspect_rules_js", version = "2.9.2")
+bazel_dep(name = "aspect_rules_esbuild", version = "0.25.0")
+bazel_dep(name = "aspect_rules_jasmine", version = "2.0.3")
 bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
-bazel_dep(name = "bazel_skylib", version = "1.8.2")
-bazel_dep(name = "aspect_bazel_lib", version = "2.21.2")
-bazel_dep(name = "tar.bzl", version = "0.7.0")
-bazel_dep(name = "yq.bzl", version = "0.3.2")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
+bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
+bazel_dep(name = "tar.bzl", version = "0.9.0")
+bazel_dep(name = "yq.bzl", version = "0.3.5")
 bazel_dep(name = "rules_angular")
 git_override(
     module_name = "rules_angular",
-    commit = "940945071ebab1e8a323e93882d661d753c920f5",
-    remote = "https://github.com/devversion/rules_angular.git",
+    commit = "d746c4f75e42cffe389d1ab077f4639be2bc78d1",
+    remote = "https://github.com/angular/rules_angular.git",
 )
 
 bazel_dep(name = "devinfra")
 git_override(
     module_name = "devinfra",
-    commit = "eac707321ac5a964ebdd8212767ef0f45bd6a618",
+    commit = "b1b4bd0e3b5594a9d1f465e2dcdd27c0c28c9931",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
@@ -33,21 +33,32 @@ bazel_dep(name = "rules_sass")
 git_override(
     module_name = "rules_sass",
     commit = "1184a80751a21af8348f308abc5b38a41f26850e",
-    remote = "https://github.com/devversion/rules_sass.git",
+    remote = "https://github.com/angular/rules_sass.git",
 )
 
 bazel_dep(name = "rules_browsers")
 git_override(
     module_name = "rules_browsers",
-    commit = "f066f614451374721fac787fb1f0dbbd818d50d4",
-    remote = "https://github.com/devversion/rules_browsers.git",
+    commit = "8231142fc5516323b040883bf774ba8362645387",
+    remote = "https://github.com/angular/rules_browsers.git",
 )
 
 yq = use_extension("@yq.bzl//yq:extensions.bzl", "yq")
 use_repo(yq, "yq_toolchains")
 
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
-node.toolchain(node_version = "20.19.0")
+node.toolchain(
+    node_repositories = {
+        "22.22.0-darwin_arm64": ("node-v22.22.0-darwin-arm64.tar.gz", "node-v22.22.0-darwin-arm64", "5ed4db0fcf1eaf84d91ad12462631d73bf4576c1377e192d222e48026a902640"),
+        "22.22.0-darwin_amd64": ("node-v22.22.0-darwin-x64.tar.gz", "node-v22.22.0-darwin-x64", "5ea50c9d6dea3dfa3abb66b2656f7a4e1c8cef23432b558d45fb538c7b5dedce"),
+        "22.22.0-linux_arm64": ("node-v22.22.0-linux-arm64.tar.xz", "node-v22.22.0-linux-arm64", "1bf1eb9ee63ffc4e5d324c0b9b62cf4a289f44332dfef9607cea1a0d9596ba6f"),
+        "22.22.0-linux_ppc64le": ("node-v22.22.0-linux-ppc64le.tar.xz", "node-v22.22.0-linux-ppc64le", "d83b9957431cc18e1fc143a4b99f89cde7b8a18f53ef392231b4336afd058865"),
+        "22.22.0-linux_s390x": ("node-v22.22.0-linux-s390x.tar.xz", "node-v22.22.0-linux-s390x", "5aa0e520689448c4233e8d73f284e8e0634fdcd32b479735698494be5641f3e4"),
+        "22.22.0-linux_amd64": ("node-v22.22.0-linux-x64.tar.xz", "node-v22.22.0-linux-x64", "9aa8e9d2298ab68c600bd6fb86a6c13bce11a4eca1ba9b39d79fa021755d7c37"),
+        "22.22.0-windows_amd64": ("node-v22.22.0-win-x64.zip", "node-v22.22.0-win-x64", "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a"),
+    },
+    node_version = "22.22.0",
+)
 use_repo(node, "nodejs_toolchains")
 use_repo(node, "nodejs_darwin_amd64")
 use_repo(node, "nodejs_darwin_arm64")
@@ -60,7 +71,8 @@ use_repo(node, "nodejs_windows_amd64")
 pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
 pnpm.pnpm(
     name = "pnpm",
-    pnpm_version = "10.16.1",
+    pnpm_version = "10.30.3",
+    pnpm_version_integrity = "sha512-yWHR4KLY41TsqlFmuCJRZmi39Ey1vZUSLVkN2Bki9gb1RzttI+xKW+Bef80Y6EiNR9l4u+mBhy8RRdBumnQAFw==",
 )
 use_repo(pnpm, "pnpm")
 
@@ -71,7 +83,6 @@ npm.npm_translate_lock(
         "//:.pnpmfile.cjs",
         "//:package.json",
         "//:pnpm-workspace.yaml",
-        "//:tools/pnpm-patches/dagre-d3-es+7.0.11.patch",
         "//adev:package.json",
         "//adev/shared-docs:package.json",
         "//adev/shared-docs/pipeline/api-gen:package.json",
@@ -96,21 +107,19 @@ npm.npm_translate_lock(
         "//packages/service-worker:package.json",
         "//packages/upgrade:package.json",
         "//tools/bazel/rules_angular_store:package.json",
-        "//vscode-ng-language-service/integration/pre_standalone_project:package.json",
         "//vscode-ng-language-service/integration/project:package.json",
     ],
     npmrc = "//:.npmrc",
     pnpm_lock = "//:pnpm-lock.yaml",
-    verify_node_modules_ignored = "//:.bazelignore",
 )
 use_repo(npm, "npm")
 
 rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext")
 rules_ts_ext.deps(
     name = "angular_npm_typescript",
-    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.9.3 | jq -r '.dist.integrity'
-    ts_integrity = "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==",
-    ts_version = "5.9.3",
+    # Obtained by: curl --silent https://registry.npmjs.org/typescript/6.0.0-beta | jq -r '.dist.integrity'
+    ts_integrity = "sha512-CldZdztDpQRLM1HC6WDQjQkQN5Ub5zRau737a1diGh3lPmb9oRsaWHk1y5iqK0o7+1bNJ0oXfEGRkAogFZBL+Q==",
+    ts_version = "6.0.0-beta",
 )
 use_repo(rules_ts_ext, **{"npm_typescript": "angular_npm_typescript"})
 

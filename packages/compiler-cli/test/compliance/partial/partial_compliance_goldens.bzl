@@ -13,7 +13,7 @@ def partial_compliance_golden(filePath):
         "//packages/core:npm_package",
         "//packages:package_json",
         filePath,
-    ] + native.glob(["%s/*.ts" % path, "%s/**/*.html" % path, "%s/**/*.css" % path])
+    ] + native.glob(["%s/*.ts" % path, "%s/**/*.html" % path, "%s/**/*.css" % path], allow_empty = True)
 
     js_binary(
         name = generate_partial_name,

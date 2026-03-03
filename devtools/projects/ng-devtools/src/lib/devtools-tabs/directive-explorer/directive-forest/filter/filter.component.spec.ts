@@ -17,43 +17,39 @@ describe('FilterComponent', () => {
   const emitFilterEvent = (filter: string) => component.emitFilter(filter);
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FilterComponent],
-    }).compileComponents();
-
     fixture = TestBed.createComponent(FilterComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render if there is a single text match', () => {
+  it('should render if there is a single text match', async () => {
     expect(getMatchesCountEl()).toBeFalsy();
 
     fixture.componentRef.setInput('matchesCount', 1);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(getMatchesCountEl().nativeElement.innerText).toEqual('1 match');
   });
 
-  it('should render if there is are multiple text matches', () => {
+  it('should render if there is are multiple text matches', async () => {
     expect(getMatchesCountEl()).toBeFalsy();
 
     fixture.componentRef.setInput('matchesCount', 5);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(getMatchesCountEl().nativeElement.innerText).toEqual('5 matches');
   });
 
-  it('should render selected match', () => {
+  it('should render selected match', async () => {
     expect(getMatchesCountEl()).toBeFalsy();
 
     fixture.componentRef.setInput('matchesCount', 5);
     fixture.componentRef.setInput('currentMatch', 2);
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(getMatchesCountEl().nativeElement.innerText).toEqual('2 of 5');
   });

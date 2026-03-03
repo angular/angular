@@ -28,6 +28,7 @@ import {
   DECLARATION_COMPONENT_VIEW,
   HEADER_OFFSET,
   HYDRATION,
+  ID,
   INJECTOR,
   LView,
   TVIEW,
@@ -440,13 +441,13 @@ class LiveCollectionLContainerImpl extends LiveCollection<
       new RepeaterContext(this.lContainer, value, index),
       {dehydratedView},
     );
-    this.operationsCounter?.recordCreate();
+    ngDevMode && this.operationsCounter?.recordCreate();
 
     return embeddedLView;
   }
   override destroy(lView: LView<RepeaterContext<unknown>>): void {
     destroyLView(lView[TVIEW], lView);
-    this.operationsCounter?.recordDestroy();
+    ngDevMode && this.operationsCounter?.recordDestroy();
   }
   override updateValue(index: number, value: unknown): void {
     this.getLView(index)[CONTEXT].$implicit = value;
@@ -454,7 +455,7 @@ class LiveCollectionLContainerImpl extends LiveCollection<
 
   reset(): void {
     this.needsIndexUpdate = false;
-    this.operationsCounter?.reset();
+    ngDevMode && this.operationsCounter?.reset();
   }
 
   updateIndexes(): void {
@@ -578,7 +579,7 @@ function clearDetachAnimationList(lContainer: LContainer, index: number): void {
   if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
 
   const indexInContainer = CONTAINER_HEADER_OFFSET + index;
-  const viewToDetach = lContainer[indexInContainer];
+  const viewToDetach = lContainer[indexInContainer] as LView;
   const animations = viewToDetach
     ? (viewToDetach[ANIMATIONS] as AnimationLViewData | undefined)
     : undefined;
@@ -590,7 +591,7 @@ function clearDetachAnimationList(lContainer: LContainer, index: number): void {
   ) {
     const injector = viewToDetach[INJECTOR];
     removeFromAnimationQueue(injector, animations);
-    allLeavingAnimations.delete(viewToDetach);
+    allLeavingAnimations.delete(viewToDetach[ID]);
     animations.detachedLeaveAnimationFns = undefined;
   }
 }

@@ -6,26 +6,31 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
+import {Component, Directive, effect, forwardRef, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {timeout, useAutoTick} from '@angular/private/testing';
+import {filter, map, of} from 'rxjs';
 import {
   AbstractControl,
   ControlEvent,
+  ControlValueAccessor,
   FormArray,
   FormControl,
   FormGroup,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
   ValidationErrors,
   Validators,
   ValueChangeEvent,
 } from '../index';
-import {filter, map, of} from 'rxjs';
 
+import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model';
 import {
   asyncValidator,
   asyncValidatorReturningObservable,
   currentStateOf,
   simpleAsyncValidator,
 } from './util';
-import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model';
 
 (function () {
   function simpleValidator(c: AbstractControl): ValidationErrors | null {
@@ -37,6 +42,8 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
   }
 
   describe('FormGroup', () => {
+    useAutoTick();
+
     describe('value', () => {
       it('should be the reduced value of the child controls', () => {
         const g = new FormGroup({'one': new FormControl('111'), 'two': new FormControl('222')});
@@ -851,7 +858,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
         });
 
-        it('should emit one statusChange event per reset control', () => {
+        it('should emit one statusChange event per reset control (with value)', () => {
           form.statusChanges.subscribe(() => logger.push('form'));
           g.statusChanges.subscribe(() => logger.push('group'));
           c.statusChanges.subscribe(() => logger.push('control1'));
@@ -947,12 +954,12 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
       let control: FormControl;
       let group: FormGroup;
 
-      beforeEach(waitForAsync(() => {
+      beforeEach(async () => {
         control = new FormControl('', null, asyncValidatorReturningObservable);
         group = new FormGroup({'one': control});
-      }));
+      });
 
-      it('should fire statusChanges events for async validators added via options object', fakeAsync(() => {
+      it('should fire statusChanges events for async validators added via options object', async () => {
         // The behavior can be tested for each of the model types.
         let statuses: string[] = [];
 
@@ -963,18 +970,18 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
         asc.statusChanges.subscribe((status: any) => statuses.push(status));
 
         // After a tick, the async validator should change status PENDING -> VALID.
-        tick();
+        await timeout();
         expect(statuses).toEqual(['VALID']);
-      }));
+      });
 
-      it('should fire a statusChange if child has async validation change', fakeAsync(() => {
+      it('should fire a statusChange if child has async validation change', async () => {
         const loggedValues: string[] = [];
         group.statusChanges.subscribe((status) => loggedValues.push(status));
 
         control.setValue('');
-        tick();
+        await timeout();
         expect(loggedValues).toEqual(['PENDING', 'INVALID']);
-      }));
+      });
     });
 
     describe('getError', () => {
@@ -1120,76 +1127,76 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
     });
 
     describe('asyncValidator', () => {
-      it('should run the async validator', fakeAsync(() => {
+      it('should run the async validator', async () => {
         const c = new FormControl('value');
         const g = new FormGroup({'one': c}, null!, asyncValidator('expected'));
 
         expect(g.pending).toEqual(true);
 
-        tick(1);
+        await timeout(1);
 
         expect(g.errors).toEqual({'async': true});
         expect(g.pending).toEqual(false);
-      }));
+      });
 
-      it('should set multiple async validators from array', fakeAsync(() => {
+      it('should set multiple async validators from array', async () => {
         const g = new FormGroup({'one': new FormControl('value')}, null!, [
           asyncValidator('expected'),
           otherObservableValidator,
         ]);
         expect(g.pending).toEqual(true);
 
-        tick();
+        await timeout();
         expect(g.errors).toEqual({'async': true, 'other': true});
         expect(g.pending).toEqual(false);
-      }));
+      });
 
-      it('should set single async validator from options obj', fakeAsync(() => {
+      it('should set single async validator from options obj', async () => {
         const g = new FormGroup(
           {'one': new FormControl('value')},
           {asyncValidators: asyncValidator('expected')},
         );
         expect(g.pending).toEqual(true);
 
-        tick();
+        await timeout();
         expect(g.errors).toEqual({'async': true});
         expect(g.pending).toEqual(false);
-      }));
+      });
 
-      it('should set multiple async validators from options obj', fakeAsync(() => {
+      it('should set multiple async validators from options obj', async () => {
         const g = new FormGroup(
           {'one': new FormControl('value')},
           {asyncValidators: [asyncValidator('expected'), otherObservableValidator]},
         );
         expect(g.pending).toEqual(true);
 
-        tick();
+        await timeout();
         expect(g.errors).toEqual({'async': true, 'other': true});
         expect(g.pending).toEqual(false);
-      }));
+      });
 
-      it("should set the parent group's status to pending", fakeAsync(() => {
+      it("should set the parent group's status to pending", async () => {
         const c = new FormControl('value', null!, asyncValidator('expected'));
         const g = new FormGroup({'one': c});
 
         expect(g.pending).toEqual(true);
 
-        tick(1);
+        await timeout(1);
 
         expect(g.pending).toEqual(false);
-      }));
+      });
 
-      it("should run the parent group's async validator when children are pending", fakeAsync(() => {
+      it("should run the parent group's async validator when children are pending", async () => {
         const c = new FormControl('value', null!, asyncValidator('expected'));
         const g = new FormGroup({'one': c}, null!, asyncValidator('expected'));
 
-        tick(1);
+        await timeout(1);
 
         expect(g.errors).toEqual({'async': true});
         expect(g.get('one')!.errors).toEqual({'async': true});
-      }));
+      });
 
-      it('should handle successful async FormGroup resolving synchronously before a successful async child validator', fakeAsync(() => {
+      it('should handle successful async FormGroup resolving synchronously before a successful async child validator', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1208,16 +1215,16 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, the form control validation has resolved
         expect(currentStateOf([g, g.get('one')!])).toEqual([
           {errors: null, pending: false, status: 'VALID'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle successful async FormGroup resolving after a synchronously and successfully resolving child validator', fakeAsync(() => {
+      it('should handle successful async FormGroup resolving after a synchronously and successfully resolving child validator', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1236,16 +1243,16 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, the form group validation has resolved
         expect(currentStateOf([g, g.get('one')!])).toEqual([
           {errors: null, pending: false, status: 'VALID'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle successful async FormGroup and child control validators resolving synchronously', fakeAsync(() => {
+      it('should handle successful async FormGroup and child control validators resolving synchronously', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1262,9 +1269,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle failing async FormGroup and failing child control validators resolving synchronously', fakeAsync(() => {
+      it('should handle failing async FormGroup and failing child control validators resolving synchronously', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1286,9 +1293,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'INVALID'}, // Group
           {errors: {async: true}, pending: false, status: 'INVALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle failing async FormGroup and successful child control validators resolving synchronously', fakeAsync(() => {
+      it('should handle failing async FormGroup and successful child control validators resolving synchronously', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1304,9 +1311,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: {async: true}, pending: false, status: 'INVALID'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle failing async FormArray and successful children validators resolving synchronously', fakeAsync(() => {
+      it('should handle failing async FormArray and successful children validators resolving synchronously', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1335,9 +1342,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // Group p
           {errors: null, pending: false, status: 'VALID'}, // Control c2
         ]);
-      }));
+      });
 
-      it('should handle failing FormGroup validator resolving after successful child validator', fakeAsync(() => {
+      it('should handle failing FormGroup validator resolving after successful child validator', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1355,7 +1362,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, only form control validation has resolved
         expect(currentStateOf([g, g.get('one')!])).toEqual([
@@ -1363,16 +1370,16 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, the form group validation fails
         expect(currentStateOf([g, g.get('one')!])).toEqual([
           {errors: {async: true}, pending: false, status: 'INVALID'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle failing FormArray validator resolving after successful child validator', fakeAsync(() => {
+      it('should handle failing FormArray validator resolving after successful child validator', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1386,7 +1393,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, only form control validation has resolved
         expect(currentStateOf([a, a.at(0)!])).toEqual([
@@ -1394,16 +1401,16 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, the form array validation fails
         expect(currentStateOf([a, a.at(0)!])).toEqual([
           {errors: {async: true}, pending: false, status: 'INVALID'}, // FormArray
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle successful FormGroup validator resolving after successful child validator', fakeAsync(() => {
+      it('should handle successful FormGroup validator resolving after successful child validator', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1421,7 +1428,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, only form control validation has resolved
         expect(currentStateOf([g, g.get('one')!])).toEqual([
@@ -1429,16 +1436,15 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
 
-        tick(1);
-
+        await timeout(1);
         // After 1ms, the form group validation resolves
         expect(currentStateOf([g, g.get('one')!])).toEqual([
           {errors: null, pending: false, status: 'VALID'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle successful FormArray validator resolving after successful child validators', fakeAsync(() => {
+      it('should handle successful FormArray validator resolving after successful child validators', async () => {
         const c1 = new FormControl(
           'fcValue',
           null!,
@@ -1469,7 +1475,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // c2
         ]);
 
-        tick(2);
+        await timeout(2);
 
         // After 2ms, g validation has resolved
         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
@@ -1478,7 +1484,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // c2
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, c2 validation has resolved
         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
@@ -1487,7 +1493,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // c2
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, FormArray own validation has resolved
         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
@@ -1495,9 +1501,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // g
           {errors: null, pending: false, status: 'VALID'}, // c2
         ]);
-      }));
+      });
 
-      it('should handle failing FormArray validator resolving after successful child validators', fakeAsync(() => {
+      it('should handle failing FormArray validator resolving after successful child validators', async () => {
         const c1 = new FormControl(
           'fcValue',
           null!,
@@ -1528,7 +1534,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // c2
         ]);
 
-        tick(2);
+        await timeout(2);
 
         // After 2ms, g validation has resolved
         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
@@ -1537,7 +1543,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // c2
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, c2 validation has resolved
         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
@@ -1546,7 +1552,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // c2
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, FormArray own validation has failed
         expect(currentStateOf([a, a.at(0)!, a.at(1)!])).toEqual([
@@ -1554,9 +1560,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // g
           {errors: null, pending: false, status: 'VALID'}, // c2
         ]);
-      }));
+      });
 
-      it('should handle multiple successful FormGroup validators resolving after successful child validator', fakeAsync(() => {
+      it('should handle multiple successful FormGroup validators resolving after successful child validator', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1573,7 +1579,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, only form control validation has resolved
         expect(currentStateOf([g, g.get('one')!])).toEqual([
@@ -1581,7 +1587,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, one form async validator has resolved but not the second
         expect(currentStateOf([g, g.get('one')!])).toEqual([
@@ -1589,16 +1595,16 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, the form group validation resolves
         expect(currentStateOf([g, g.get('one')!])).toEqual([
           {errors: null, pending: false, status: 'VALID'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle multiple FormGroup validators (success then failure) resolving after successful child validator', fakeAsync(() => {
+      it('should handle multiple FormGroup validators (success then failure) resolving after successful child validator', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1615,32 +1621,30 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Control
         ]);
 
-        tick(1);
-
+        await timeout(1);
         // After 1ms, only form control validation has resolved
         expect(currentStateOf([g, g.get('one')!])).toEqual([
           {errors: null, pending: true, status: 'PENDING'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, one form async validator has resolved but not the second
         expect(currentStateOf([g, g.get('one')!])).toEqual([
           {errors: null, pending: true, status: 'PENDING'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-
-        tick(1);
+        await timeout(1);
 
         // After 1ms, the form group validation fails
         expect(currentStateOf([g, g.get('one')!])).toEqual([
           {errors: {async: true}, pending: false, status: 'INVALID'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle multiple FormGroup validators (failure then success) resolving after successful child validator', fakeAsync(() => {
+      it('should handle multiple FormGroup validators (failure then success) resolving after successful child validator', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1656,8 +1660,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Group
           {errors: null, pending: true, status: 'PENDING'}, // Control
         ]);
-
-        tick(1);
+        await timeout(1);
 
         // After 1ms, only form control validation has resolved
         expect(currentStateOf([g, g.get('one')!])).toEqual([
@@ -1665,7 +1668,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // All async validators are composed into one function. So, after 2ms, the FormGroup g is
         // still in pending state without errors
@@ -1674,16 +1677,16 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, the form group validation fails
         expect(currentStateOf([g, g.get('one')!])).toEqual([
           {errors: {async: true}, pending: false, status: 'INVALID'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle async validators in nested form groups / arrays', fakeAsync(() => {
+      it('should handle async validators in nested form groups / arrays', async () => {
         const c1 = new FormControl(
           'fcValue',
           null!,
@@ -1721,7 +1724,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Group g2
         ]);
 
-        tick(2);
+        await timeout(2);
 
         // After 2ms, g1 validation fails
         expect(currentStateOf([g, g.get('g1')!, g.get('g2')!])).toEqual([
@@ -1730,7 +1733,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Group g2
         ]);
 
-        tick(2);
+        await timeout(2);
 
         // After 2ms, g2 validation resolves
         expect(currentStateOf([g, g.get('g1')!, g.get('g2')!])).toEqual([
@@ -1739,7 +1742,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: false, status: 'VALID'}, // Group g2
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, g validation fails because g1 is invalid, but since errors do not cascade, so
         // we still have null errors for g
@@ -1748,9 +1751,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: {async: true}, pending: false, status: 'INVALID'}, // Group g1
           {errors: null, pending: false, status: 'VALID'}, // Group g2
         ]);
-      }));
+      });
 
-      it('should handle failing FormGroup validator resolving before successful child validator', fakeAsync(() => {
+      it('should handle failing FormGroup validator resolving before successful child validator', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1768,7 +1771,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, form group validation fails
         expect(currentStateOf([g, g.get('one')!])).toEqual([
@@ -1776,16 +1779,16 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, child validation resolves
         expect(currentStateOf([g, g.get('one')!])).toEqual([
           {errors: {async: true}, pending: false, status: 'INVALID'}, // Group
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
 
-      it('should handle failing FormArray validator resolving before successful child validator', fakeAsync(() => {
+      it('should handle failing FormArray validator resolving before successful child validator', async () => {
         const c = new FormControl(
           'fcValue',
           null!,
@@ -1798,8 +1801,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // FormArray
           {errors: null, pending: true, status: 'PENDING'}, // Control
         ]);
-
-        tick(1);
+        await timeout(1);
 
         // After 1ms, form array validation fails
         expect(currentStateOf([a, a.at(0)!])).toEqual([
@@ -1807,14 +1809,14 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           {errors: null, pending: true, status: 'PENDING'}, // Control
         ]);
 
-        tick(1);
+        await timeout(1);
 
         // After 1ms, child validation resolves
         expect(currentStateOf([a, a.at(0)!])).toEqual([
           {errors: {async: true}, pending: false, status: 'INVALID'}, // FormArray
           {errors: null, pending: false, status: 'VALID'}, // Control
         ]);
-      }));
+      });
     });
 
     describe('disable() & enable()', () => {
@@ -2010,35 +2012,35 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           expect(g.errors).toEqual({'expected': true});
         });
 
-        it('should clear out async group errors when disabled', fakeAsync(() => {
+        it('should clear out async group errors when disabled', async () => {
           const g = new FormGroup({'one': new FormControl()}, null!, asyncValidator('expected'));
-          tick();
+          await timeout();
           expect(g.errors).toEqual({'async': true});
 
           g.disable();
           expect(g.errors).toEqual(null);
 
           g.enable();
-          tick();
+          await timeout();
           expect(g.errors).toEqual({'async': true});
-        }));
+        });
 
-        it('should re-populate async group errors when enabled from a child', fakeAsync(() => {
+        it('should re-populate async group errors when enabled from a child', async () => {
           const g: FormGroup = new FormGroup(
             {'one': new FormControl()},
             null!,
             asyncValidator('expected'),
           );
-          tick();
+          await timeout();
           expect(g.errors).toEqual({'async': true});
 
           g.disable();
           expect(g.errors).toEqual(null);
 
           g.addControl('two', new FormControl());
-          tick();
+          await timeout();
           expect(g.errors).toEqual({'async': true});
-        }));
+        });
       });
 
       describe('disabled events', () => {
@@ -2192,7 +2194,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
       };
 
       describe('stand alone controls', () => {
-        it('should run the async validator on stand alone controls and set status to `INVALID`', fakeAsync(() => {
+        it('should run the async validator on stand alone controls and set status to `INVALID`', async () => {
           const logs: string[] = [];
           const c = new FormControl('', null, simpleAsyncValidator({timeout: 0, shouldFail: true}));
 
@@ -2200,11 +2202,11 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           expect(logs.length).toBe(0);
 
-          tick(1);
+          await timeout(1);
 
           c.setValue('new!', {emitEvent: true});
 
-          tick(1);
+          await timeout(1);
 
           // Note that above `simpleAsyncValidator` is called with `timeout:0`.  When the timeout
           // is set to `0`, the function returns `of(error)`, and the function behaves in a
@@ -2215,9 +2217,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
             'value: "new!"', // value change emitted by `setValue`
             'status: INVALID', // async validator run after `setValue` call
           ]);
-        }));
+        });
 
-        it('should run the async validator on stand alone controls and set status to `VALID`', fakeAsync(() => {
+        it('should run the async validator on stand alone controls and set status to `VALID`', async () => {
           const logs: string[] = [];
           const c = new FormControl('', null, asyncValidator('new!'));
 
@@ -2225,11 +2227,11 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           expect(logs.length).toBe(0);
 
-          tick(1);
+          await timeout(1);
 
           c.setValue('new!', {emitEvent: true});
 
-          tick(1);
+          await timeout(1);
 
           expect(logs).toEqual([
             'status: INVALID', // status change emitted as a result of initial async validator run
@@ -2237,9 +2239,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
             'status: PENDING', // status change emitted by `setValue`
             'status: VALID', // async validator run after `setValue` call
           ]);
-        }));
+        });
 
-        it('should run the async validator on stand alone controls, include `PENDING` and set status to `INVALID`', fakeAsync(() => {
+        it('should run the async validator on stand alone controls, include `PENDING` and set status to `INVALID`', async () => {
           const logs: string[] = [];
           const c = new FormControl('', null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
 
@@ -2247,11 +2249,11 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           expect(logs.length).toBe(0);
 
-          tick(1);
+          await timeout(1);
 
           c.setValue('new!', {emitEvent: true});
 
-          tick(1);
+          await timeout(1);
 
           expect(logs).toEqual([
             'status: INVALID', // status change emitted as a result of initial async validator run
@@ -2259,9 +2261,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
             'status: PENDING', // status change emitted by `setValue`
             'status: INVALID', // async validator run after `setValue` call
           ]);
-        }));
+        });
 
-        it('should run setValue before the initial async validator and set status to `VALID`', fakeAsync(() => {
+        it('should run setValue before the initial async validator and set status to `VALID`', async () => {
           const logs: string[] = [];
           const c = new FormControl('', null, asyncValidator('new!'));
 
@@ -2271,7 +2273,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           c.setValue('new!', {emitEvent: true});
 
-          tick(1);
+          await timeout(1);
 
           // The `setValue` call invoked synchronously cancels the initial run of the
           // `asyncValidator` (which would cause the control status to be changed to `INVALID`), so
@@ -2281,9 +2283,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
             'status: PENDING', // status change emitted by `setValue`
             'status: VALID', // async validator run after `setValue` call
           ]);
-        }));
+        });
 
-        it('should run setValue before the initial async validator and set status to `INVALID`', fakeAsync(() => {
+        it('should run setValue before the initial async validator and set status to `INVALID`', async () => {
           const logs: string[] = [];
           const c = new FormControl('', null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
 
@@ -2293,7 +2295,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           c.setValue('new!', {emitEvent: true});
 
-          tick(1);
+          await timeout(1);
 
           // The `setValue` call invoked synchronously cancels the initial run of the
           // `asyncValidator` (which would cause the control status to be changed to `INVALID`), so
@@ -2303,9 +2305,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
             'status: PENDING', // status change emitted by `setValue`
             'status: INVALID', // async validator run after `setValue` call
           ]);
-        }));
+        });
 
-        it('should cancel initial run of the async validator and not emit anything', fakeAsync(() => {
+        it('should cancel initial run of the async validator and not emit anything', async () => {
           const logger: string[] = [];
           const c = new FormControl('', null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
 
@@ -2315,14 +2317,14 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           c.setValue('new!', {emitEvent: false});
 
-          tick(1);
+          await timeout(1);
 
           // Because we are calling `setValue` with `emitEvent: false`, nothing is emitted
           // and our logger remains empty
           expect(logger).toEqual([]);
-        }));
+        });
 
-        it('should emit status change despite updating the value with emitEvent: false multiple times', fakeAsync(() => {
+        it('should emit status change despite updating the value with emitEvent: false multiple times', async () => {
           const c = new FormControl(
             '',
             null,
@@ -2340,7 +2342,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           const events: FormControlStatus[] = [];
           statusChange$.subscribe((e) => events.push(e));
-          tick(1);
+          await timeout(1);
 
           expect(c.status).toBe('VALID');
           expect(events.length).toBe(1);
@@ -2348,15 +2350,15 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           c.setValue('foo', {emitEvent: false});
           c.setValue('foo', {emitEvent: false});
-          tick(1);
+          await timeout(1);
 
           // We make sure that we're still not emitting if none of the updates requested an emit
           expect(c.status).toBe('VALID');
           expect(events.length).toBe(1);
           expect(events.at(-1)).toBe('VALID');
-        }));
+        });
 
-        it('should cancel initial run of the async validator and emit on the event Observable', fakeAsync(() => {
+        it('should cancel initial run of the async validator and emit on the event Observable', async () => {
           const c = new FormControl('', null, simpleAsyncValidator({timeout: 1, shouldFail: true}));
 
           const events: ControlEvent[] = [];
@@ -2366,7 +2368,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           c.setValue('new!');
 
-          tick(1);
+          await timeout(1);
 
           // validator was invoked twice (init + setValue)
           // but since we cancel pending validators we only get 1 status update cycle
@@ -2375,9 +2377,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           expect((events[1] as StatusChangeEvent).status).toBe('PENDING');
           expect(events[2]).toBeInstanceOf(StatusChangeEvent);
           expect((events[2] as StatusChangeEvent).status).toBe('INVALID');
-        }));
+        });
 
-        it('should run the sync validator on stand alone controls and set status to `INVALID`', fakeAsync(() => {
+        it('should run the sync validator on stand alone controls and set status to `INVALID`', async () => {
           const logs: string[] = [];
           const c = new FormControl('new!', Validators.required);
 
@@ -2385,19 +2387,19 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           expect(logs.length).toBe(0);
 
-          tick(1);
+          await timeout(1);
 
           c.setValue('', {emitEvent: true});
 
-          tick(1);
+          await timeout(1);
 
           expect(logs).toEqual([
             'value: ""', // value change emitted by `setValue`
             'status: INVALID', // status change emitted by `setValue`
           ]);
-        }));
+        });
 
-        it('should run the sync validator on stand alone controls and set status to `VALID`', fakeAsync(() => {
+        it('should run the sync validator on stand alone controls and set status to `VALID`', async () => {
           const logs: string[] = [];
           const c = new FormControl('', Validators.required);
 
@@ -2405,21 +2407,21 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           expect(logs.length).toBe(0);
 
-          tick(1);
+          await timeout(1);
 
           c.setValue('new!', {emitEvent: true});
 
-          tick(1);
+          await timeout(1);
 
           expect(logs).toEqual([
             'value: "new!"', // value change emitted by `setValue`
             'status: VALID', // status change emitted by `setValue`
           ]);
-        }));
+        });
       });
 
       describe('combination of multiple form controls', () => {
-        it('should run the async validator on the FormControl added to the FormGroup and set status to `VALID`', fakeAsync(() => {
+        it('should run the async validator on the FormControl added to the FormGroup and set status to `VALID`', async () => {
           const logs: string[] = [];
           const c1 = new FormControl('one');
           const g1 = new FormGroup({'one': c1});
@@ -2445,7 +2447,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           g1.setControl('one', c2);
 
-          tick(1);
+          await timeout(1);
 
           expect(logs).toEqual([
             'value (g1): {"one":"new!"}', // value change emitted by `setControl`
@@ -2459,9 +2461,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
             {errors: null, pending: false, status: 'VALID'}, // Group
             {errors: null, pending: false, status: 'VALID'}, // Control 2
           ]);
-        }));
+        });
 
-        it('should run the async validator on the FormControl added to the FormGroup and set status to `INVALID`', fakeAsync(() => {
+        it('should run the async validator on the FormControl added to the FormGroup and set status to `INVALID`', async () => {
           const logs: string[] = [];
           const c1 = new FormControl('one');
           const g1 = new FormGroup({'one': c1});
@@ -2491,7 +2493,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           g1.setControl('one', c2);
 
-          tick(1);
+          await timeout(1);
 
           expect(logs).toEqual([
             'value (g1): {"one":"new!"}',
@@ -2506,9 +2508,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
             {errors: null, pending: false, status: 'INVALID'}, // Group
             {errors: {async: true}, pending: false, status: 'INVALID'}, // Control 2
           ]);
-        }));
+        });
 
-        it('should run the async validator at `FormControl` and `FormGroup` level and set status to `INVALID`', fakeAsync(() => {
+        it('should run the async validator at `FormControl` and `FormGroup` level and set status to `INVALID`', async () => {
           const logs: string[] = [];
           const c1 = new FormControl('one');
           const g1 = new FormGroup(
@@ -2542,7 +2544,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           g1.setControl('one', c2);
 
-          tick(1);
+          await timeout(1);
 
           expect(logs).toEqual([
             'value (g1): {"one":"new!"}',
@@ -2558,9 +2560,9 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
             {errors: {async: true}, pending: false, status: 'INVALID'}, // Group
             {errors: {async: true}, pending: false, status: 'INVALID'}, // Control 2
           ]);
-        }));
+        });
 
-        it('should run the async validator on a `FormArray` and a `FormControl` and status to `INVALID`', fakeAsync(() => {
+        it('should run the async validator on a `FormArray` and a `FormControl` and status to `INVALID`', async () => {
           const logs: string[] = [];
           const c1 = new FormControl('one');
           const g1 = new FormGroup(
@@ -2602,7 +2604,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
 
           g1.setControl('one', c2);
 
-          tick(1);
+          await timeout(1);
 
           expect(logs).toEqual([
             'value (g1): {"one":"new!"}', // g1's call to `setControl` triggered value update
@@ -2623,7 +2625,7 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
             {errors: {async: true}, pending: false, status: 'INVALID'}, // FormArray
             {errors: {async: true}, pending: false, status: 'INVALID'}, // Control 2
           ]);
-        }));
+        });
       });
     });
 
@@ -2720,6 +2722,133 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
         'baz.not.ok': new FormControl('baz'),
       });
       expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    describe('FormGroup.setValue is untracked', () => {
+      @Directive({
+        selector: '[testCva]',
+        providers: [
+          {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TestCvaDirective),
+            multi: true,
+          },
+        ],
+      })
+      class TestCvaDirective implements ControlValueAccessor {
+        // This is the “dangerous” signal read that must NOT get tracked by the caller of setValue().
+        static cvaSignal = signal(0);
+
+        writeValue(value: unknown): void {
+          // If setValue() is not untracked, the *caller* effect/computed may accidentally track this read.
+          TestCvaDirective.cvaSignal();
+        }
+
+        registerOnChange(_: (value: unknown) => void): void {}
+        registerOnTouched(_: () => void): void {}
+        setDisabledState(_: boolean): void {}
+      }
+
+      @Component({
+        imports: [ReactiveFormsModule, TestCvaDirective],
+        template: `<input testCva [formControl]="control.get('one')" />`,
+      })
+      class HostComponent {
+        control = new FormGroup({one: new FormControl('')});
+      }
+
+      it('should NOT track signals read inside CVA.writeValue when setValue is called inside an effect', async () => {
+        const fixture = TestBed.createComponent(HostComponent);
+        fixture.detectChanges(); // wires up FormControlDirective + CVA
+
+        const driver = signal('A');
+        let runs = 0;
+
+        // Create the effect inside the Angular injection context.
+        TestBed.runInInjectionContext(() => {
+          effect(() => {
+            runs++;
+
+            // Only dependency we *want* is `driver()`.
+            fixture.componentInstance.control.setValue({one: driver()});
+          });
+        });
+
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the CVA signal should NOT re-run the effect.
+        TestCvaDirective.cvaSignal.set(1);
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the driver signal SHOULD re-run the effect.
+        driver.set('B');
+        await fixture.whenStable();
+        expect(runs).toBe(2);
+      });
+
+      it('should NOT track signals read inside CVA.writeValue when patchValue is called inside an effect', async () => {
+        const fixture = TestBed.createComponent(HostComponent);
+        fixture.detectChanges(); // wires up FormControlDirective + CVA
+
+        const driver = signal('A');
+        let runs = 0;
+
+        // Create the effect inside the Angular injection context.
+        TestBed.runInInjectionContext(() => {
+          effect(() => {
+            runs++;
+
+            // Only dependency we *want* is `driver()`.
+            fixture.componentInstance.control.patchValue({one: driver()});
+          });
+        });
+
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the CVA signal should NOT re-run the effect.
+        TestCvaDirective.cvaSignal.set(1);
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the driver signal SHOULD re-run the effect.
+        driver.set('B');
+        await fixture.whenStable();
+        expect(runs).toBe(2);
+      });
+
+      it('should NOT track signals read inside CVA.writeValue when reset is called inside an effect', async () => {
+        const fixture = TestBed.createComponent(HostComponent);
+        fixture.detectChanges(); // wires up FormControlDirective + CVA
+
+        const driver = signal('A');
+        let runs = 0;
+
+        // Create the effect inside the Angular injection context.
+        TestBed.runInInjectionContext(() => {
+          effect(() => {
+            runs++;
+
+            // Only dependency we *want* is `driver()`.
+            fixture.componentInstance.control.reset({one: driver()});
+          });
+        });
+
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the CVA signal should NOT re-run the effect.
+        TestCvaDirective.cvaSignal.set(1);
+        await fixture.whenStable();
+        expect(runs).toBe(1);
+
+        // Changing the driver signal SHOULD re-run the effect.
+        driver.set('B');
+        await fixture.whenStable();
+        expect(runs).toBe(2);
+      });
     });
   });
 })();

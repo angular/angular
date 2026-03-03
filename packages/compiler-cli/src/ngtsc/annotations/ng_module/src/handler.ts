@@ -264,9 +264,12 @@ export class NgModuleSymbol extends SemanticSymbol {
 /**
  * Compiles @NgModule annotations to ngModuleDef fields.
  */
-export class NgModuleDecoratorHandler
-  implements DecoratorHandler<Decorator, NgModuleAnalysis, NgModuleSymbol, NgModuleResolution>
-{
+export class NgModuleDecoratorHandler implements DecoratorHandler<
+  Decorator,
+  NgModuleAnalysis,
+  NgModuleSymbol,
+  NgModuleResolution
+> {
   constructor(
     private reflector: ReflectionHost,
     private evaluator: PartialEvaluator,
@@ -546,7 +549,7 @@ export class NgModuleDecoratorHandler
       imports.some(isForwardReference) ||
       exports.some(isForwardReference);
 
-    const type = wrapTypeReference(this.reflector, node);
+    const type = wrapTypeReference(node);
 
     let ngModuleMetadata: R3NgModuleMetadata;
     if (allowUnresolvedReferences) {

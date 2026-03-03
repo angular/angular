@@ -9,9 +9,9 @@
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {PropType} from '../../../../../../protocol';
 
-import {FlatNode} from './element-property-resolver';
 import {getTreeFlattener} from './flatten';
 import {PropertyDataSource} from './property-data-source';
+import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
 
 const flatTreeControl = new FlatTreeControl<FlatNode>(
   (node) => node.level,

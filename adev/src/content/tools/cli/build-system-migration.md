@@ -455,7 +455,7 @@ console.log(contents); // <svg>...</svg>
 `src/types.d.ts`) со следующим или похожим содержимым:
 
 ```ts
-declare module "*.svg" {
+declare module '*.svg' {
   const content: string;
   export default content;
 }
@@ -498,7 +498,7 @@ declare module "*.svg" {
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import contents from './some-file.svg' with { loader: 'text' };
+import contents from './some-file.svg' with {loader: 'text'};
 ```
 
 То же самое можно сделать с помощью выражения импорта внутри асинхронной функции.
@@ -506,7 +506,7 @@ import contents from './some-file.svg' with { loader: 'text' };
 ```ts
 async function loadSvg(): Promise<string> {
   // @ts-expect-error TypeScript cannot provide types based on attributes yet
-  return import('./some-file.svg', { with: { loader: 'text' } }).then((m) => m.default);
+  return import('./some-file.svg', {with: {loader: 'text'}}).then((m) => m.default);
 }
 ```
 
@@ -518,7 +518,7 @@ async function loadSvg(): Promise<string> {
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import imagePath from './image.webp' with { loader: 'file' };
+import imagePath from './image.webp' with {loader: 'file'};
 
 console.log(imagePath); // media/image-ULK2SIIB.webp
 ```
@@ -528,18 +528,18 @@ console.log(imagePath); // media/image-ULK2SIIB.webp
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import logo from './logo.png' with { loader: 'base64' };
+import logo from './logo.png' with {loader: 'base64'};
 
-console.log(logo) // "iVBORw0KGgoAAAANSUhEUgAA..."
+console.log(logo); // "iVBORw0KGgoAAAANSUhEUgAA..."
 ```
 
 Загрузчик `dataurl` для встраивания ресурсов как полных Data URL.
 
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
-import icon from './icon.svg' with { loader: 'dataurl' };
+import icon from './icon.svg' with {loader: 'dataurl'};
 
-console.log(icon);// "data:image/svg+xml;..."
+console.log(icon); // "data:image/svg+xml;..."
 ```
 
 Для производственных сборок, как показано в комментарии к коду выше, к пути будет автоматически добавлено хеширование

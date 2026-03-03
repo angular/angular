@@ -30,8 +30,9 @@ export function ɵɵcontentQuerySignal<T>(
   predicate: ProviderToken<unknown> | string[],
   flags: QueryFlags,
   read?: any,
-): void {
+): typeof ɵɵcontentQuerySignal {
   bindQueryToSignal(target, createContentQuery(directiveIndex, predicate, flags, read));
+  return ɵɵcontentQuerySignal;
 }
 
 /**
@@ -50,8 +51,9 @@ export function ɵɵviewQuerySignal(
   predicate: ProviderToken<unknown> | string[],
   flags: QueryFlags,
   read?: ProviderToken<unknown>,
-): void {
+): typeof ɵɵviewQuerySignal {
   bindQueryToSignal(target, createViewQuery(predicate, flags, read));
+  return ɵɵviewQuerySignal;
 }
 
 /**

@@ -179,9 +179,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   /** @docs-private */
   ngOnDestroy(): void {
-    if (this.formDirective) {
-      this.formDirective.removeControl(this);
-    }
+    this.formDirective?.removeControl(this);
   }
 
   /**

@@ -16,12 +16,11 @@ import {
   LeaveNodeAnimations,
   AnimationClassBindingFn,
 } from './interfaces';
-import {INJECTOR, LView, DECLARATION_LCONTAINER, ANIMATIONS} from '../render3/interfaces/view';
+import {INJECTOR, LView, ANIMATIONS} from '../render3/interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Renderer} from '../render3/interfaces/renderer';
 import {RElement} from '../render3/interfaces/renderer_dom';
 import {TNode} from '../render3/interfaces/node';
-import {getBeforeNodeForView} from '../render3/node_manipulation';
 
 const DEFAULT_ANIMATIONS_DISABLED = false;
 
@@ -116,6 +115,10 @@ export const longestAnimations = new WeakMap<HTMLElement, LongestAnimation>();
 // from an `@if` or `@for`.
 export const leavingNodes = new WeakMap<TNode, HTMLElement[]>();
 
+// Tracks nodes that have scheduled leave animations but were re-inserted into the DOM
+// before the animation completed, thus rescuing them from being physically removed.
+export const reusedNodes = new WeakSet<HTMLElement>();
+
 /**
  * This actually removes the leaving HTML Element in the TNode
  */
@@ -131,26 +134,43 @@ export function clearLeavingNodes(tNode: TNode, el: HTMLElement): void {
 }
 
 /**
- * In the case that we have an existing node that's animating away, like when
- * an `@if` toggles quickly, we need to end the animation for the former node
- * and remove it right away to prevent duplicate nodes showing up.
+ * In the case that we have an existing node that's animating away in a
+ * different DOM parent (e.g. a CDK overlay menu that renders each instance
+ * in its own overlay pane), we need to end the animation for the former
+ * node and remove it right away to prevent duplicate nodes showing up.
+ *
+ * Leaving elements in the same parent are left alone — their leave
+ * animation will complete naturally and remove them from the DOM.
  */
-export function cancelLeavingNodes(tNode: TNode, lView: LView): void {
-  const leavingEl = leavingNodes.get(tNode)?.shift();
-  const lContainer = lView[DECLARATION_LCONTAINER];
-  if (lContainer) {
-    // this is the insertion point for the new TNode element.
-    // it will be inserted before the declaring containers anchor.
-    const beforeNode = getBeforeNodeForView(tNode.index, lContainer);
-    // here we need to check the previous sibling of that anchor. The first
-    // previousSibling node will be the new element added. The second
-    // previousSibling will be the one that's being removed.
-    const previousNode = beforeNode?.previousSibling;
-    // We really only want to cancel animations if the leaving node is the
-    // same as the node before where the new node will be inserted. This is
-    // the control flow scenario where an if was toggled.
-    if (leavingEl && previousNode && leavingEl === previousNode) {
+export function cancelLeavingNodes(tNode: TNode, newElement: HTMLElement): void {
+  const nodes = leavingNodes.get(tNode);
+  if (!nodes || nodes.length === 0) return;
+
+  const newParent = newElement.parentNode;
+  const prevSibling = newElement.previousSibling;
+
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const leavingEl = nodes[i];
+    const leavingParent = leavingEl.parentNode;
+    // Cancel if the leaving element is:
+    // - The direct previousSibling of the new element. This is reliable
+    //   because Angular inserts new elements at the same position (before
+    //   the container anchor) where the leaving element was, making them
+    //   always adjacent. Covers @if toggling and same-VCR toggling.
+    // - The leaving element IS the new element. This happens when a node is moved
+    //   (e.g., drag-and-drop reordering). We must cancel its pending leave animation
+    //   and ensure it's not physically removed from the DOM by marking it as reused.
+    if (leavingEl === newElement) {
+      nodes.splice(i, 1);
+      reusedNodes.add(leavingEl);
       leavingEl.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+    } else if (
+      (prevSibling && leavingEl === prevSibling) ||
+      (leavingParent && newParent && leavingParent !== newParent)
+    ) {
+      nodes.splice(i, 1);
+      leavingEl.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+      leavingEl.parentNode?.removeChild(leavingEl);
     }
   }
 }
@@ -164,8 +184,11 @@ export function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
   // We need to track this tNode's element just to be sure we don't add
   // a new RNode for this TNode while this one is still animating away.
   // once the animation is complete, we remove this reference.
-  if (leavingNodes.has(tNode)) {
-    leavingNodes.get(tNode)?.push(el);
+  const nodes = leavingNodes.get(tNode);
+  if (nodes) {
+    if (!nodes.includes(el)) {
+      nodes.push(el);
+    }
   } else {
     leavingNodes.set(tNode, [el]);
   }

@@ -137,14 +137,14 @@ dialog {
 .docs-search-results__start-typing,
 .docs-search-results__no-results {
   padding: 0.75rem;
-  color: var(--gray-400);
+  color: var(--quaternary-contrast);
 }
 
 .docs-search-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--gray-400);
+  color: var(--quaternary-contrast);
   padding: 1rem;
   font-size: 0.75rem;
   font-weight: 500;

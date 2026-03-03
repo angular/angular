@@ -14,9 +14,9 @@ import {Component, signal, computed} from '@angular/core';
     <h2>Cookie recipe</h2>
 
     <label>
-    # of cookies:
-    <input type="range" min="10" max="100" step="10" [value]="count()" (input)="update($event)" />
-    {{ count() }}
+      # of cookies:
+      <input type="range" min="10" max="100" step="10" [value]="count()" (input)="update($event)" />
+      {{ count() }}
     </label>
 
     <p>Butter: {{ butter() }} cup(s)</p>

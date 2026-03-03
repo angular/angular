@@ -115,9 +115,7 @@ export class RouterPreloader implements OnDestroy {
 
   /** @docs-private */
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.subscription?.unsubscribe();
   }
 
   private processRoutes(injector: EnvironmentInjector, routes: Routes): Observable<void> {
@@ -127,11 +125,15 @@ export class RouterPreloader implements OnDestroy {
         route._injector = createEnvironmentInjector(
           route.providers,
           injector,
-          `Route: ${route.path}`,
+          typeof ngDevMode === 'undefined' || ngDevMode ? `Route: ${route.path}` : '',
         );
       }
 
       const injectorForCurrentRoute = route._injector ?? injector;
+      if (route._loadedNgModuleFactory && !route._loadedInjector) {
+        route._loadedInjector =
+          route._loadedNgModuleFactory.create(injectorForCurrentRoute).injector;
+      }
       const injectorForChildren = route._loadedInjector ?? injectorForCurrentRoute;
 
       // Note that `canLoad` is only checked as a condition that prevents `loadChildren` and not
@@ -157,6 +159,9 @@ export class RouterPreloader implements OnDestroy {
 
   private preloadConfig(injector: EnvironmentInjector, route: Route): Observable<void> {
     return this.preloadingStrategy.preload(route, () => {
+      if (injector.destroyed) {
+        return of(null);
+      }
       let loadedChildren$: Observable<LoadedRouterConfig | null>;
       if (route.loadChildren && route.canLoad === undefined) {
         loadedChildren$ = from(this.loader.loadChildren(injector, route));
@@ -171,6 +176,7 @@ export class RouterPreloader implements OnDestroy {
           }
           route._loadedRoutes = config.routes;
           route._loadedInjector = config.injector;
+          route._loadedNgModuleFactory = config.factory;
           // If the loaded config was a module, use that as the module/module injector going
           // forward. Otherwise, continue using the current module/module injector.
           return this.processRoutes(config.injector ?? injector, config.routes);

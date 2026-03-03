@@ -66,6 +66,7 @@ export declare class Navigation extends EventTarget {
 export declare class NavigationTransition {
   readonly navigationType: NavigationTypeString;
   readonly from: NavigationHistoryEntry;
+  readonly to: NavigationDestination;
   readonly finished: Promise<void>;
   readonly committed: Promise<void>;
 }

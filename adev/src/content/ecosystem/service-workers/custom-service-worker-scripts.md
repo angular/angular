@@ -75,8 +75,8 @@ importScripts('./ngsw-worker.js');
 3. Настройте регистрацию Service Worker для использования вашего пользовательского скрипта:
 
 ```ts
-import { ApplicationConfig, isDevMode } from '@angular/core';
-import { provideServiceWorker } from '@angular/service-worker';
+import {ApplicationConfig, isDevMode} from '@angular/core';
+import {provideServiceWorker} from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [

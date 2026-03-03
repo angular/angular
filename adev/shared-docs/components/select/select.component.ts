@@ -6,8 +6,26 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
-import {ChangeDetectionStrategy, Component, model, forwardRef, input, signal} from '@angular/core';
+import {
+  Combobox,
+  ComboboxDialog,
+  ComboboxInput,
+  ComboboxPopupContainer,
+} from '@angular/aria/combobox';
+import {Listbox, Option} from '@angular/aria/listbox';
+import {
+  afterRenderEffect,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  model,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core';
+import {FormValueControl} from '@angular/forms/signals';
+import {FormsModule} from '@angular/forms';
 
 type SelectOptionValue = string | number | boolean;
 
@@ -19,59 +37,86 @@ export interface SelectOption {
 @Component({
   selector: 'docs-select',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule],
+  imports: [
+    Combobox,
+    ComboboxDialog,
+    ComboboxInput,
+    ComboboxPopupContainer,
+    FormsModule,
+    Listbox,
+    Option,
+  ],
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => Select),
-      multi: true,
-    },
-  ],
-  host: {
-    class: 'docs-form-element',
-  },
 })
-export class Select implements ControlValueAccessor {
+export class Select implements FormValueControl<string | null> {
+  readonly value = model<string | null>(null);
+
   readonly id = input.required<string>({alias: 'selectId'});
   readonly name = input.required<string>();
   readonly options = input.required<SelectOption[]>();
-  readonly disabled = model(false);
+  readonly disabled = input(false);
 
-  // Implemented as part of ControlValueAccessor.
-  private onChange: (value: SelectOptionValue) => void = (_: SelectOptionValue) => {};
-  private onTouched: () => void = () => {};
+  readonly dialog = viewChild(ComboboxDialog);
+  readonly listbox = viewChild<Listbox<SelectOptionValue>>(Listbox);
+  readonly combobox = viewChild<Combobox<SelectOptionValue>>(Combobox);
 
-  protected readonly selectedOption = signal<SelectOptionValue | null>(null);
+  readonly searchString = signal('');
 
-  // Implemented as part of ControlValueAccessor.
-  writeValue(value: SelectOptionValue): void {
-    this.selectedOption.set(value);
+  readonly filteredOptions = computed(() => {
+    const search = this.searchString().toLowerCase();
+    if (!search) {
+      return this.options();
+    }
+    return this.options().filter((option) => option.label.toLowerCase().includes(search));
+  });
+
+  readonly displayValue = computed(() => {
+    const currentValue = this.value();
+    if (currentValue === null) {
+      return '';
+    }
+    const option = this.options().find((opt) => opt.value === currentValue);
+    return option ? option.label : '';
+  });
+
+  readonly selectedValues = signal<SelectOptionValue[]>([]);
+
+  constructor() {
+    afterRenderEffect(() => {
+      if (this.dialog() && this.combobox()?.expanded()) {
+        untracked(() => this.listbox()?.gotoFirst());
+        this.positionDialog();
+      }
+    });
+
+    afterRenderEffect(() => {
+      const selected = this.selectedValues();
+      if (selected.length > 0) {
+        untracked(() => this.dialog()?.close());
+        this.value.set(selected[0] as string);
+        this.searchString.set('');
+      }
+    });
+
+    afterRenderEffect(() => this.listbox()?.scrollActiveItemIntoView());
   }
+  // TODO: Improve once CDK overlay is fixed https://github.com/angular/components/issues/32504
+  private positionDialog(): void {
+    const dialog = this.dialog();
+    const combobox = this.combobox();
 
-  // Implemented as part of ControlValueAccessor.
-  registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-
-  // Implemented as part of ControlValueAccessor.
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-
-  // Implemented as part of ControlValueAccessor.
-  setDisabledState?(isDisabled: boolean): void {
-    this.disabled.set(isDisabled);
-  }
-
-  setOption($event: SelectOptionValue): void {
-    if (this.disabled()) {
+    if (!dialog || !combobox) {
       return;
     }
 
-    this.selectedOption.set($event);
-    this.onChange($event);
-    this.onTouched();
+    const comboboxRect = combobox.inputElement()?.getBoundingClientRect();
+    const scrollY = window.scrollY;
+
+    if (comboboxRect) {
+      dialog.element.style.width = `${comboboxRect.width}px`;
+      dialog.element.style.top = `${comboboxRect.bottom + scrollY + 4}px`;
+      dialog.element.style.left = `${comboboxRect.left}px`;
+    }
   }
 }

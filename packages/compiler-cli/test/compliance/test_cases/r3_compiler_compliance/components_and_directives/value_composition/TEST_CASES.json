@@ -60,11 +60,7 @@
           ]
         }
       ],
-      "compilationModeFilter": [
-        "full compile",
-        "local compile",
-        "declaration-only emit"
-      ]
+      "compilationModeFilter": ["full compile", "local compile", "declaration-only emit"]
     },
     {
       "description": "should support complex selectors",
@@ -229,12 +225,35 @@
       ]
     },
     {
+      "description": "should support spread elements in array literals",
+      "inputFiles": ["array_literal_spread.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid array emit",
+          "files": ["array_literal_spread.js"]
+        }
+      ]
+    },
+    {
       "description": "should support object literals",
       "inputFiles": ["object_literals.ts"],
       "expectations": [
         {
           "failureMessage": "Invalid object literal binding",
           "files": ["object_literals.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support object literals with spread assignments",
+      "inputFiles": ["object_literal_spread.ts"],
+      "compilerOptions": {
+        "target": "es2022"
+      },
+      "expectations": [
+        {
+          "failureMessage": "Invalid object literal binding",
+          "files": ["object_literal_spread.js"]
         }
       ]
     },
@@ -295,6 +314,16 @@
         {
           "failureMessage": "Invalid template",
           "files": ["regular_expression_with_global_flag.js"]
+        }
+      ]
+    },
+    {
+      "description": "should support rest arguments in a function call",
+      "inputFiles": ["call_rest.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid object literal binding",
+          "files": ["call_rest.js"]
         }
       ]
     }

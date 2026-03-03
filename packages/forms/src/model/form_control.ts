@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵWritable as Writable} from '@angular/core';
+import {untracked, ɵWritable as Writable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 import {removeListItem} from '../util';
@@ -505,13 +505,15 @@ export const FormControl: ɵFormControlCtor = class FormControl<TValue = any>
       emitViewToModelChange?: boolean;
     } = {},
   ): void {
-    (this as Writable<this>).value = this._pendingValue = value;
-    if (this._onChange.length && options.emitModelToViewChange !== false) {
-      this._onChange.forEach((changeFn) =>
-        changeFn(this.value, options.emitViewToModelChange !== false),
-      );
-    }
-    this.updateValueAndValidity(options);
+    untracked(() => {
+      (this as Writable<this>).value = this._pendingValue = value;
+      if (this._onChange.length && options.emitModelToViewChange !== false) {
+        this._onChange.forEach((changeFn) =>
+          changeFn(this.value, options.emitViewToModelChange !== false),
+        );
+      }
+      this.updateValueAndValidity(options);
+    });
   }
 
   override patchValue(

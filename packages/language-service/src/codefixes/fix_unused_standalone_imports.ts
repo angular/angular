@@ -13,7 +13,7 @@ import {CodeActionMeta, FixIdForCodeFixesAll} from './utils';
 import {findFirstMatchingNode} from '../utils/ts_utils';
 
 /**
- * Fix for [unused standalone imports](https://angular.io/extended-diagnostics/NG8113)
+ * Fix for [unused standalone imports](https://angular.dev/extended-diagnostics/NG8113)
  */
 export const fixUnusedStandaloneImportsMeta: CodeActionMeta = {
   errorCodes: [ngErrorCode(ErrorCode.UNUSED_STANDALONE_IMPORTS)],

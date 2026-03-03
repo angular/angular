@@ -17,12 +17,12 @@
 Angular предоставляет набор инструментов для валидации. Чтобы воспользоваться ими, сначала обновите компонент,
 импортировав `Validators` из `@angular/forms`.
 
-<docs-code language="ts" highlight="[1]">
+```ts {highlight:[1]}
 import {ReactiveFormsModule, Validators} from '@angular/forms';
 
 @Component({...})
 export class App {}
-</docs-code>
+```
 
 </docs-step>
 

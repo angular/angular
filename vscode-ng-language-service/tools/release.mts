@@ -13,11 +13,11 @@
  */
 
 // tslint:disable:no-console
-import {input} from '@inquirer/prompts';
+import {input, select} from '@inquirer/prompts';
 import chalk from 'chalk';
 import semver from 'semver';
 import {writeFile, readFile} from 'node:fs/promises';
-import {exec as nodeExec, spawn, SpawnOptions} from 'node:child_process';
+import {exec as nodeExec, spawn, type SpawnOptions} from 'node:child_process';
 import {promisify} from 'node:util';
 import {join} from 'node:path';
 
@@ -68,6 +68,8 @@ async function main(): Promise<void> {
 
   // Ensure the user has a clean working directory before starting the release process.
   await checkCleanWorkingDirectory();
+  // Ensure there is a github token before starting the release process.
+  ensureGithubToken();
 
   let branchToReleaseFrom: string | undefined = process.env['BRANCH_TO_RELEASE'];
   if (!branchToReleaseFrom) {
@@ -80,7 +82,7 @@ async function main(): Promise<void> {
   }
 
   console.log(chalk.blue(`Releasing from ${branchToReleaseFrom}.`));
-  await exec(`git fetch ${angularRepoRemote} ${branchToReleaseFrom}`);
+  await exec(`git fetch ${angularRepoRemote} ${branchToReleaseFrom} --tags`);
 
   const currentVersion = await getCurrentVersion();
   const newVersion = await getNewVersion(currentVersion);
@@ -91,10 +93,13 @@ async function main(): Promise<void> {
   await installDependencies();
   await buildExtension();
 
-  await prepareReleasePullRequest(releaseBranch, `${releaseCommitPrefix}${newVersion}`, [
-    packageJsonPath,
-    changelogPath,
-  ]);
+  const forkRemote = await getForkRemoteName();
+  await prepareReleasePullRequest(
+    releaseBranch,
+    `${releaseCommitPrefix}${newVersion}`,
+    [packageJsonPath, changelogPath],
+    forkRemote,
+  );
   await waitForPRToBeMergedAndTag(newVersion, branchToReleaseFrom);
 
   await publishExtension();
@@ -102,7 +107,7 @@ async function main(): Promise<void> {
   await createGithubRelease(newVersion, changelog);
 
   if (branchToReleaseFrom !== 'main') {
-    await cherryPickChangelog(changelog, newVersion);
+    await cherryPickChangelog(changelog, newVersion, forkRemote);
   }
 
   console.log(chalk.green('VSCode extension release process complete!'));
@@ -216,10 +221,11 @@ async function prepareReleasePullRequest(
   branch: string,
   commitMessage: string,
   files: string[],
+  forkRemote: string,
 ): Promise<void> {
   await exec(`git commit -m "${commitMessage}" "${files.join('" "')}"`);
-  await exec(`git push origin ${branch} --force-with-lease`);
-  const {stdout: remoteUrl} = await exec('git remote get-url origin');
+  await exec(`git push ${forkRemote} ${branch} --force-with-lease`);
+  const {stdout: remoteUrl} = await exec(`git remote get-url ${forkRemote}`);
   const {owner, repo} = getRepoDetails(remoteUrl);
 
   console.log(
@@ -240,13 +246,40 @@ async function prepareReleasePullRequest(
  * @param toVersion The version to generate the changelog for.
  */
 async function generateChangelog(fromVersion: string, toVersion: string): Promise<string> {
-  let {stdout: commits} = await exec(
-    `git log --left-only FETCH_HEAD...${getTagName(fromVersion)} -E ` +
+  const previousTag = await getPreviousTag(fromVersion);
+
+  // Get all subjects from the previous release to filter out duplicates (cherry-picks).
+  const {stdout: existingSubjectsOutput} = await exec(
+    `git log ${previousTag} -E ` +
       '--grep="^(feat|fix|perf)\\((vscode-extension|language-server|language-service)\\):" ' +
-      '--format="format:- %s (%h)[https://github.com/angular/angular/commit/%H]"',
+      '--format="%s"',
+  );
+  const existingSubjects = new Set(
+    existingSubjectsOutput
+      .trim()
+      .split('\n')
+      .map((s) => s.trim()),
   );
 
-  commits = commits.trim();
+  const {stdout: newCommitsRaw} = await exec(
+    `git log --left-only FETCH_HEAD...${previousTag} -E ` +
+      '--grep="^(feat|fix|perf)\\((vscode-extension|language-server|language-service)\\):" ' +
+      '--format="%s|%h|%H"',
+  );
+
+  const commits = newCommitsRaw
+    .trim()
+    .split('\n')
+    .filter((line) => {
+      if (!line) return false;
+      const [subject, shortHash, hash] = line.split('|');
+      return !existingSubjects.has(subject.trim());
+    })
+    .map((line) => {
+      const [subject, shortHash, hash] = line.split('|');
+      return `- ${subject} ([${shortHash}](https://github.com/angular/angular/commit/${hash}))`;
+    })
+    .join('\n');
 
   const now = new Date();
   const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -355,6 +388,17 @@ async function buildExtension(): Promise<void> {
   console.log(chalk.green(`VSCode extension packaged at ${extensionPath}`));
 }
 
+function ensureGithubToken(): string {
+  // https://github.com/angular/dev-infra/blob/8ce8257f740613a7291256173e2706fb2ed8aefa/ng-dev/utils/git/github-yargs.ts#L45
+  const token = process.env['GITHUB_TOKEN'] ?? process.env['TOKEN'];
+  if (!token) {
+    throw new Error(
+      'GITHUB_TOKEN nor TOKEN environment variable is not set. Cannot create GitHub release.',
+    );
+  }
+  return token;
+}
+
 /**
  * Creates a GitHub release and uploads the extension asset.
  *
@@ -362,10 +406,7 @@ async function buildExtension(): Promise<void> {
  * @param changelog The changelog content for the release.
  */
 async function createGithubRelease(version: string, changelog: string): Promise<void> {
-  const token = process.env['GITHUB_TOKEN'];
-  if (!token) {
-    throw new Error('GITHUB_TOKEN environment variable is not set. Cannot create GitHub release.');
-  }
+  const token = ensureGithubToken();
 
   console.log(chalk.blue('Creating GitHub release...'));
 
@@ -386,8 +427,6 @@ async function createGithubRelease(version: string, changelog: string): Promise<
       body: changelog
         // Remove the version header from the changelog as it is already in the release title.
         .replace(/## .*? \(\d{4}-\d{2}-\d{2}\)/, '')
-        // Remove the commit links from the changelog as they are not needed in the release body.
-        .replace(/\[https:\/\/github\.com\/angular\/angular\/commit\/[a-f0-9]+\]/g, '')
         .trim(),
       make_latest: 'false',
       prerelease: false,
@@ -453,9 +492,14 @@ async function publishExtension(): Promise<void> {
  * @param changelog The changelog content to add.
  * @param newVersion The new version number.
  */
-async function cherryPickChangelog(changelog: string, newVersion: string): Promise<void> {
+async function cherryPickChangelog(
+  changelog: string,
+  newVersion: string,
+  forkRemote: string,
+): Promise<void> {
   console.log(chalk.blue('Cherry-picking changelog to main...'));
 
+  await exec(`git stash`);
   await exec(`git fetch ${angularRepoRemote} main`);
   const cherryPickBranch = `vscode-changelog-cherry-pick${newVersion}`;
   await exec(`git branch -D ${cherryPickBranch}`).catch(() => {});
@@ -471,6 +515,7 @@ async function cherryPickChangelog(changelog: string, newVersion: string): Promi
     cherryPickBranch,
     `docs: release notes for the vscode extension ${newVersion} release`,
     [changelogPath],
+    forkRemote,
   );
 }
 
@@ -522,6 +567,40 @@ function getRepoDetails(remoteUrl: string): {owner: string; repo: string} {
 }
 
 /**
+ * Gets the previous tag to version from.
+ *
+ * It checks if the tag for the `currentVersion` exists. If it does, returning it.
+ * If not, it finds the latest tag that adheres to the semver versioning of the extension.
+ */
+async function getPreviousTag(currentVersion: string): Promise<string> {
+  const currentTag = getTagName(currentVersion);
+  try {
+    await exec(`git rev-parse "${currentTag}"`);
+    return currentTag;
+  } catch {
+    // Tag does not exist.
+  }
+
+  const {stdout: tags} = await exec(`git tag --list "${tagPrefix}*"`);
+  const versions = tags
+    .trim()
+    .split('\n')
+    .map((t) => t.trim())
+    .filter((t) => t.startsWith(tagPrefix))
+    .map((t) => t.slice(tagPrefix.length))
+    .filter((v) => semver.valid(v));
+
+  if (versions.length === 0) {
+    throw new Error('No previous release tags found.');
+  }
+
+  // Sort versions in descending order
+  versions.sort((a, b) => semver.rcompare(a, b));
+
+  return getTagName(versions[0]);
+}
+
+/**
  * Gets the tag name for the given version.
  *
  * @param version The version to generate the tag name for.
@@ -529,6 +608,56 @@ function getRepoDetails(remoteUrl: string): {owner: string; repo: string} {
  */
 function getTagName(version: string): string {
   return `${tagPrefix}${version}`;
+}
+
+/**
+ * Gets the name of the remote to use as the user's fork.
+ *
+ * This function lists all configured remotes and attempts to identify the user's fork.
+ * - If 'origin' exists and is not the upstream angular repo, it is used.
+ * - If there are other candidates (remotes that are not the upstream angular repo),
+ *   it asks the user to select one if there are multiple.
+ *
+ * @returns The name of the remote to use.
+ */
+async function getForkRemoteName(): Promise<string> {
+  const {stdout} = await exec('git remote -v');
+  const remotes = new Map<string, string>();
+  for (const line of stdout.split('\n')) {
+    const parts = line.split(/\s+/);
+    if (parts.length >= 2) {
+      const [name, url] = parts;
+      remotes.set(name, url);
+    }
+  }
+
+  const candidates: string[] = [];
+  for (const [name, url] of remotes) {
+    if (getRepoDetails(url).owner !== 'angular') {
+      candidates.push(name);
+    }
+  }
+
+  // If origin is a candidate, we prefer it appropriately IF it's likely the user's fork.
+  // The check `getRepoDetails(url).owner !== 'angular'` already filters out upstream.
+  // So if `origin` is in candidates, it's safe to use?
+  // User wanted: "If origin exists and is a candidate ... return 'origin'".
+  if (candidates.includes('origin')) {
+    return 'origin';
+  }
+
+  if (candidates.length === 0) {
+    throw new Error('No suitable fork remote found. Please add a remote for your fork.');
+  }
+
+  if (candidates.length === 1) {
+    return candidates[0];
+  }
+
+  return await select({
+    message: 'Which remote should be used as your fork (to push the release commit to for the PR)?',
+    choices: candidates.map((c) => ({value: c})),
+  });
 }
 
 // Start the release process.

@@ -7,7 +7,7 @@
  */
 
 import {signal, WritableSignal} from '@angular/core';
-import {form, required, schema, SchemaFn} from '../../public_api';
+import {FieldTree, form, required, schema, SchemaFn} from '../../public_api';
 
 interface Order {
   id: string;
@@ -86,6 +86,31 @@ function typeVerificationOnlyDoNotRunMe() {
     it('should allow FieldTree of recursive type', () => {
       type RecursiveType = (number | RecursiveType)[];
       form(signal<RecursiveType>([5]));
+    });
+
+    it('should allow ReadonlyArray in model and be iterable', () => {
+      interface Order {
+        readonly products: readonly string[];
+      }
+      const order: WritableSignal<Order> = null!;
+      const f = form(order);
+      // Iterating over products should yield FieldTree<string> items, not [string, FieldTree] entries
+      for (const product of f.products) {
+        const p: FieldTree<string> = product;
+        p().value();
+      }
+    });
+
+    it('should allow Array in model and be iterable', () => {
+      interface Order {
+        products: string[];
+      }
+      const order: WritableSignal<Order> = null!;
+      const f = form(order);
+      for (const product of f.products) {
+        const p: FieldTree<string> = product;
+        p().value();
+      }
     });
   });
 }

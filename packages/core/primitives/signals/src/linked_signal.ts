@@ -94,7 +94,7 @@ export function createLinkedSignal<S, D>(
   getter[SIGNAL] = node;
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     const debugName = node.debugName ? ' (' + node.debugName + ')' : '';
-    getter.toString = () => `[LinkedSignal${debugName}: ${node.value}]`;
+    getter.toString = () => `[LinkedSignal${debugName}: ${String(node.value)}]`;
   }
 
   runPostProducerCreatedFn(node);
@@ -113,13 +113,16 @@ export function linkedSignalUpdateFn<S, D>(
   updater: (value: D) => D,
 ): void {
   producerUpdateValueVersion(node);
+  // update() on a linked signal can't work if the current state is ERRORED, as there's no value.
+  if (node.value === ERRORED) {
+    throw node.error;
+  }
   signalUpdateFn(node, updater);
   producerMarkClean(node);
 }
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `LINKED_SIGNAL_NODE` and `REACTIVE_NODE`.
-// TODO: remove when https://github.com/evanw/esbuild/issues/3392 is resolved.
 export const LINKED_SIGNAL_NODE: object = /* @__PURE__ */ (() => {
   return {
     ...REACTIVE_NODE,

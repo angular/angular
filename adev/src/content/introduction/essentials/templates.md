@@ -15,7 +15,7 @@
 ```angular-ts
 @Component({
   selector: 'user-profile',
-  template: `<h1>Profile for {{userName()}}</h1>`,
+  template: `<h1>Profile for {{ userName() }}</h1>`,
 })
 export class UserProfile {
   userName = signal('pro_programmer_123');
@@ -60,7 +60,7 @@ export class UserProfile {
 
 ```angular-html
 <!-- Bind the `role` attribute on the `<ul>` element to value of `listRole`. -->
-<ul [attr.role]="listRole()">
+<ul [attr.role]="listRole()"></ul>
 ```
 
 Angular автоматически обновляет свойства и атрибуты DOM, когда изменяется связанное значение.
@@ -78,7 +78,9 @@ Angular позволяет добавлять слушатели событий 
 export class UserProfile {
   /* ... */
 
-  cancelSubscription() { /* Your event handling code goes here. */  }
+  cancelSubscription() {
+    /* Your event handling code goes here. */
+  }
 }
 ```
 
@@ -94,7 +96,9 @@ export class UserProfile {
 export class UserProfile {
   /* ... */
 
-  cancelSubscription(event: Event) { /* Your event handling code goes here. */  }
+  cancelSubscription(event: Event) {
+    /* Your event handling code goes here. */
+  }
 }
 ```
 
@@ -132,7 +136,7 @@ export class UserProfile {
 
 <ul class="user-badge-list">
   @for (badge of badges(); track badge.id) {
-    <li class="user-badge">{{badge.name}}</li>
+    <li class="user-badge">{{ badge.name }}</li>
   }
 </ul>
 ```

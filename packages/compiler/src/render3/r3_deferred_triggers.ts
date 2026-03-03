@@ -16,7 +16,6 @@ import {
   LiteralPrimitive,
   PropertyRead,
   RecursiveAstVisitor,
-  ThisReceiver,
 } from '../expression_parser/ast';
 import {Lexer, Token, TokenType} from '../expression_parser/lexer';
 import * as html from '../ml_parser/ast';
@@ -617,13 +616,17 @@ function createViewportTrigger(
 
     if (!(parsed.ast instanceof LiteralMap)) {
       throw new Error('Options parameter of the "viewport" trigger must be an object literal');
-    } else if (parsed.ast.keys.some((key) => key.key === 'root')) {
+    } else if (parsed.ast.keys.some((key) => key.kind === 'spread')) {
+      throw new Error('Spread operator are not allowed in this context');
+    } else if (parsed.ast.keys.some((key) => key.kind === 'property' && key.key === 'root')) {
       throw new Error(
         'The "root" option is not supported in the options parameter of the "viewport" trigger',
       );
     }
 
-    const triggerIndex = parsed.ast.keys.findIndex((key) => key.key === 'trigger');
+    const triggerIndex = parsed.ast.keys.findIndex(
+      (key) => key.kind === 'property' && key.key === 'trigger',
+    );
 
     if (triggerIndex === -1) {
       reference = null;
@@ -632,11 +635,7 @@ function createViewportTrigger(
       const value = parsed.ast.values[triggerIndex];
       const triggerFilter = (_: unknown, index: number) => index !== triggerIndex;
 
-      if (
-        !(value instanceof PropertyRead) ||
-        !(value.receiver instanceof ImplicitReceiver) ||
-        value.receiver instanceof ThisReceiver
-      ) {
+      if (!(value instanceof PropertyRead) || !(value.receiver instanceof ImplicitReceiver)) {
         throw new Error(`"trigger" option of the "viewport" trigger must be an identifier`);
       }
 

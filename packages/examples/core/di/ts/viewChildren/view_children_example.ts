@@ -28,10 +28,10 @@ export class Pane {
   selector: 'example-app',
   imports: [Pane],
   template: `
-    <pane id="1"/>
-    <pane id="2"/>
-    @if(shouldShow()) {
-      <pane id="3"/>
+    <pane id="1" />
+    <pane id="2" />
+    @if (shouldShow()) {
+      <pane id="3" />
     }
 
     <button (click)="show()">Show 3</button>

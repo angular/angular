@@ -138,15 +138,6 @@
       />
       <span class="ng-mat-menu-label-text">Show comment nodes</span>
     </label>
-    @if (supportedApis().routes) {
-      <label mat-menu-item disableRipple>
-        <mat-slide-toggle
-          [checked]="routerGraphEnabled()"
-          (change)="setRouterGraph($event.checked)"
-        />
-        <span class="ng-mat-menu-label-text">Enable Router Tree</span>
-      </label>
-    }
     @if (supportedApis().transferState) {
       <label mat-menu-item disableRipple>
         <mat-slide-toggle

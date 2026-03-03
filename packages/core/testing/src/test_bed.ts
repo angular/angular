@@ -172,6 +172,12 @@ export interface TestBed {
   createComponent<T>(component: Type<T>, options?: TestComponentOptions): ComponentFixture<T>;
 
   /**
+   * Returns the most recently created `ComponentFixture`, or throws an error if one has not
+   * yet been created.
+   */
+  getFixture<T = unknown>(): ComponentFixture<T>;
+
+  /**
    * Execute any pending effects.
    *
    * @deprecated use `TestBed.tick()` instead
@@ -412,6 +418,10 @@ export class TestBedImpl implements TestBed {
     options?: TestComponentOptions,
   ): ComponentFixture<T> {
     return TestBedImpl.INSTANCE.createComponent(component, options);
+  }
+
+  static getFixture<T = unknown>(): ComponentFixture<T> {
+    return TestBedImpl.INSTANCE.getFixture();
   }
 
   static resetTestingModule(): TestBed {
@@ -709,6 +719,19 @@ export class TestBedImpl implements TestBed {
     return fixture;
   }
 
+  getFixture<T = unknown>(): ComponentFixture<T> {
+    if (this._activeFixtures.length === 0) {
+      throw new Error('No fixture has been created yet.');
+    }
+    if (this._activeFixtures.length > 1) {
+      throw new Error(
+        `More than one component fixture has been created. Use \`TestBed.createComponent\` ` +
+          `and store the fixture on the test context, rather than using \`TestBed.getFixture\`.`,
+      );
+    }
+    return this._activeFixtures[0];
+  }
+
   /**
    * @internal strip this from published d.ts files due to
    * https://github.com/microsoft/TypeScript/issues/36216
@@ -880,6 +903,8 @@ export class TestBedImpl implements TestBed {
       // The behavior should be that TestBed.tick, ComponentFixture.detectChanges, and ApplicationRef.tick all result in the test fixtures
       // getting synchronized, regardless of whether they are autoDetect: true.
       // Automatic scheduling (zone or zoneless) will call _tick which will _not_ include fixtures with autoDetect: false
+      // If this does get changed, we will need a new flag for the scheduler to use to omit the microtask scheduling
+      // from a tick initiated by tests.
       (appRef as any).includeAllTestViews = true;
       appRef.tick();
     } finally {

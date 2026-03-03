@@ -1,3 +1,11 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {mkdtempSync} from 'node:fs';
 import {join, resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
@@ -11,11 +19,6 @@ export function makeTempDir(): string {
 export const PACKAGE_ROOT = resolve(__dirname, '..');
 export const SERVER_PATH = join(PACKAGE_ROOT, 'server', 'index.js');
 export const PROJECT_PATH = join(PACKAGE_ROOT, 'integration', 'project');
-export const PRE_STANDALONE_PROJECT_PATH = join(
-  PACKAGE_ROOT,
-  'integration',
-  'pre_standalone_project',
-);
 
 export const APP_COMPONENT = join(PROJECT_PATH, 'app', 'app.component.ts');
 export const APP_COMPONENT_URI = pathToFileURL(APP_COMPONENT).href;

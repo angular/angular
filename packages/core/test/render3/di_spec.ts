@@ -9,6 +9,7 @@
 import {Component, Directive, Self} from '../../src/core';
 import {NodeInjectorOffset} from '../../src/render3/interfaces/injector';
 import {TestBed} from '../../testing';
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 
 import {
   bloomAdd,
@@ -46,7 +47,7 @@ describe('di', () => {
         expect(() => {
           TestBed.createComponent(App).detectChanges();
         }).toThrowError(
-          'NG0201: No provider for DirNotOnSelf found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
+          `NG0201: No provider for DirNotOnSelf found in NodeInjector. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
         );
       });
     });

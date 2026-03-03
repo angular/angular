@@ -9,17 +9,14 @@
 import {ApplicationRef, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {compatForm} from '../../../compat/src/api/compat_form';
-import {CompatValidationError} from '../../../compat/src/api/compat_validation_error';
+import {compatForm, CompatValidationError} from '../../../compat/public_api';
 import {
-  customError,
   disabled,
   email,
   FieldState,
   FieldTree,
   form,
   hidden,
-  metadata,
   readonly,
   required,
   submit,
@@ -350,8 +347,12 @@ describe('Forms compat', () => {
 
       const {promise, resolve} = promiseWithResolvers<TreeValidationResult>();
 
-      const result = submit(f as unknown as FieldTree<void>, () => {
-        return promise;
+      const result = submit(f, {
+        action: (field) => {
+          expect(field.name().value()).toBe('pirojok-the-cat');
+          expect(field.age().control()).toBe(control);
+          return promise;
+        },
       });
 
       expect(f().submitting()).toBe(true);
@@ -459,7 +460,7 @@ describe('Forms compat', () => {
         },
       );
 
-      expect(f().errors()).toEqual([customError({kind: 'too small', field: f})]);
+      expect(f().errors()).toEqual([{kind: 'too small', fieldTree: f}]);
     });
 
     it('supports getting control from fieldTreeOf', () => {
@@ -486,7 +487,7 @@ describe('Forms compat', () => {
         },
       );
 
-      expect(f().errors()).toEqual([customError({kind: 'too small', field: f})]);
+      expect(f().errors()).toEqual([{kind: 'too small', fieldTree: f}]);
     });
 
     it('fails for regular values', () => {
@@ -540,7 +541,7 @@ describe('Forms compat', () => {
         required(path.name);
 
         validate(path.name, ({valueOf}) => {
-          return valueOf(path.age) < 8 ? customError({kind: 'too small'}) : undefined;
+          return valueOf(path.age) < 8 ? {kind: 'too small'} : undefined;
         });
       },
       {
@@ -550,10 +551,10 @@ describe('Forms compat', () => {
 
     expect(f.name().valid()).toBe(false);
     expect(f.name().errors()).toEqual([
-      customError({
+      {
         kind: 'too small',
-        field: f.name,
-      }),
+        fieldTree: f.name,
+      },
     ]);
 
     control.setValue(10);
@@ -705,7 +706,7 @@ describe('Forms compat', () => {
           required(path.name);
 
           validate(path.name, ({valueOf}) => {
-            return valueOf(path.age) < 8 ? customError({kind: 'too small'}) : undefined;
+            return valueOf(path.age) < 8 ? {kind: 'too small'} : undefined;
           });
           required(path.name, {
             when: ({valueOf}) => {
@@ -718,10 +719,6 @@ describe('Forms compat', () => {
 
           readonly(path.name, ({valueOf}) => {
             return valueOf(path.age) < 8;
-          });
-
-          metadata(path.name, ({valueOf}) => {
-            return valueOf(path.age) < 8 ? '' : '';
           });
 
           email(path.name, {

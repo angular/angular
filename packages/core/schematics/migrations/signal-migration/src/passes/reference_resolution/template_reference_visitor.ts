@@ -20,7 +20,6 @@ import {
   PropertyRead,
   RecursiveAstVisitor,
   SafePropertyRead,
-  ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstBoundText,
@@ -273,7 +272,8 @@ export class TemplateExpressionReferenceVisitor<
   // E.g. `{bla}` may be transformed to `{bla: bla()}`.
   override visitLiteralMap(ast: LiteralMap, context: any) {
     for (const [idx, key] of ast.keys.entries()) {
-      this.isInsideObjectShorthandExpression = !!key.isShorthandInitialized;
+      this.isInsideObjectShorthandExpression =
+        key.kind === 'property' && !!key.isShorthandInitialized;
       (ast.values[idx] as AST).visit(this, context);
       this.isInsideObjectShorthandExpression = false;
     }
@@ -444,7 +444,7 @@ function traverseReceiverAndLookupSymbol(
     path.unshift(node.name);
   }
 
-  if (!(node.receiver instanceof ImplicitReceiver || node.receiver instanceof ThisReceiver)) {
+  if (!(node.receiver instanceof ImplicitReceiver)) {
     return null;
   }
 

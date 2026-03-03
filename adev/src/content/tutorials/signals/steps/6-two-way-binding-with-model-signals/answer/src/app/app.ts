@@ -8,29 +8,24 @@ import {CustomCheckbox} from './custom-checkbox';
     <div class="shopping-app">
       <h1>Custom Checkbox Example</h1>
 
-
       <div class="demo-section">
         <!-- Two-way binding with custom components -->
-        <custom-checkbox
-          [(checked)]="agreedToTerms"
-          label="I agree to the terms"
-        />
+        <custom-checkbox [(checked)]="agreedToTerms" label="I agree to the terms" />
 
-        <custom-checkbox
-          [(checked)]="enableNotifications"
-          label="Enable notifications"
-        />
+        <custom-checkbox [(checked)]="enableNotifications" label="Enable notifications" />
 
         <!-- Controls to test two-way binding -->
         <div class="controls">
-          <p>Terms agreed:
+          <p>
+            Terms agreed:
             @if (agreedToTerms()) {
               Yes
             } @else {
               No
             }
           </p>
-          <p>Notifications:
+          <p>
+            Notifications:
             @if (enableNotifications()) {
               Enabled
             } @else {

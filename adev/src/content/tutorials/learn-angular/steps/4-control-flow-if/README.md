@@ -53,10 +53,13 @@ export class App {
 
 Вот пример:
 
-```angular-ts
+```angular-html
 template: `
-  @if (isServerRunning) { ... }
-  @else { ... }
+@if (isServerRunning) {
+  ...
+} @else {
+  ...
+}
 `;
 ```
 

@@ -1,9 +1,9 @@
-/**
+/*!
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import * as ts from 'typescript';
@@ -42,13 +42,60 @@ export function getHTMLVirtualContent(sf: ts.SourceFile): string {
   return content;
 }
 
+/**
+ * Takes a TS file and strips out all non-inline style content.
+ *
+ * @see {@link getHTMLVirtualContent}
+ */
+export function getSCSSVirtualContent(sf: ts.SourceFile): string {
+  const inlineStyleNodes: ts.Node[] = findAllMatchingNodes(sf, isInlineStyleNode);
+  const documentText = sf.text;
+
+  // Create a blank document with same text length
+  let content = documentText
+    .split('\n')
+    .map((line) => {
+      return ' '.repeat(line.length);
+    })
+    .join('\n');
+
+  // add back all the inline style regions in-place
+  for (const region of inlineStyleNodes) {
+    content =
+      content.slice(0, region.getStart(sf) + 1) +
+      documentText.slice(region.getStart(sf) + 1, region.getEnd() - 1) +
+      content.slice(region.getEnd() - 1);
+  }
+  return content;
+}
+
+export function isInlineStyleNode(node: ts.Node) {
+  if (!ts.isStringLiteralLike(node)) {
+    return false;
+  }
+
+  if (isAssignmentToPropertyWithName(node, 'styles')) {
+    return true;
+  }
+
+  if (
+    node.parent &&
+    ts.isArrayLiteralExpression(node.parent) &&
+    isAssignmentToPropertyWithName(node.parent, 'styles')
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function isAssignmentToPropertyWithName(node: ts.Node, propertyName: 'styles' | 'template') {
+  const assignment = getPropertyAssignmentFromValue(node, propertyName);
+  return assignment !== null && getClassDeclFromDecoratorProp(assignment) !== null;
+}
+
 function isInlineTemplateNode(node: ts.Node) {
-  const assignment = getPropertyAssignmentFromValue(node, 'template');
-  return (
-    ts.isStringLiteralLike(node) &&
-    assignment !== null &&
-    getClassDeclFromDecoratorProp(assignment) !== null
-  );
+  return ts.isStringLiteralLike(node) ? isAssignmentToPropertyWithName(node, 'template') : false;
 }
 
 /**

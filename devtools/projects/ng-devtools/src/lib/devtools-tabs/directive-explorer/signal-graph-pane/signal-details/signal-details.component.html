@@ -1,0 +1,119 @@
+@let node = this.node();
+@let isSignalNode = this.isSignalNode(node);
+@let isClusterNode = this.isClusterNode(node);
+
+<div class="header">
+  <div class="controls">
+    @if (isSignalNode) {
+      <button
+        ng-button
+        size="compact"
+        class="action-btn"
+        btnType="secondary"
+        (click)="gotoSource.emit(node)"
+        [disabled]="!node.debuggable"
+        matTooltip="View source"
+      >
+        <mat-icon> code </mat-icon>
+      </button>
+    } @else if (isClusterNode) {
+      <button
+        ng-button
+        size="compact"
+        class="action-btn"
+        btnType="secondary"
+        (click)="expandCluster.emit(node.id)"
+        matTooltip="Expand"
+      >
+        <mat-icon> expand_content </mat-icon>
+      </button>
+    }
+    <button
+      ng-button
+      size="compact"
+      class="action-btn"
+      btnType="secondary"
+      (click)="highlightDeps.emit({node, direction: 'down'})"
+      matTooltip="Highlight downstream dependents path"
+    >
+      <mat-icon> swipe_down_alt </mat-icon>
+    </button>
+    <button
+      ng-button
+      size="compact"
+      class="action-btn"
+      btnType="secondary"
+      (click)="highlightDeps.emit({node, direction: 'up'})"
+      matTooltip="Highlight upstream dependencies path"
+    >
+      <mat-icon> swipe_up_alt </mat-icon>
+    </button>
+  </div>
+  <button
+    ng-button
+    btnType="icon"
+    class="close-btn"
+    (click)="close.emit()"
+    title="Close the details"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<dl>
+  @if (node.label) {
+    <dt>Name:</dt>
+    <dd class="node-name">{{ node.label }}</dd>
+  }
+  @if (isSignalNode) {
+    <dt>Type:</dt>
+    <dd>
+      <span [class]="TYPE_CLASS_MAP[node.kind]" class="type">{{ node.kind }}</span>
+    </dd>
+  }
+  @if (isClusterNode) {
+    <dt>Type:</dt>
+    <dd>
+      <span [class]="CLUSTER_TYPE_CLASS_MAP[node.clusterType]" class="type">{{
+        node.clusterType
+      }}</span>
+    </dd>
+  }
+
+  @if (cluster(); as cluster) {
+    <dt>Compound of:</dt>
+    <dd>{{ cluster.name }}</dd>
+    <dt>Compound type:</dt>
+    <dd>
+      <span [class]="CLUSTER_TYPE_CLASS_MAP[cluster.type]" class="type">{{ cluster.type }}</span>
+    </dd>
+  }
+  @if (isSignalNode) {
+    <dt>Epoch:</dt>
+    <dd>{{ node.epoch }}</dd>
+  }
+
+  <!-- Cluster-type-specific properties -->
+  @if (resourceCluster(); as resource) {
+    <dt>Is loading:</dt>
+    <dd>{{ resource.isLoading }}</dd>
+
+    <dt>Status:</dt>
+    <dd>{{ resource.status }}</dd>
+
+    @if (resource.errored) {
+      <dt>Errored:</dt>
+      <dd>{{ resource.errored }}</dd>
+    }
+  }
+</dl>
+
+@let isPreviewable =
+  isSignalNode &&
+  (node.kind === 'signal' || node.kind === 'computed' || node.kind === 'linkedSignal');
+
+@if (isPreviewable || resourceCluster()) {
+  @if (previewableNode(); as previewableNode) {
+    <ng-signal-value-tree [node]="previewableNode" />
+  }
+}

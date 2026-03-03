@@ -8,7 +8,6 @@
 
 import {DocEntry} from '../../../src/ngtsc/docs';
 import {
-  ClassEntry,
   EntryType,
   InterfaceEntry,
   MemberTags,
@@ -381,6 +380,30 @@ runInEachFileSystem(() => {
       expect(ageSetterEntry.memberType).toBe(MemberType.Setter);
       expect(ageSetterEntry.type).toBe('number');
       expect(ageSetterEntry.memberTags).toContain(MemberTags.Inherited);
+    });
+
+    it('should extract return type for call signature', () => {
+      env.write(
+        'index.ts',
+        `
+          export interface AsyncValidatorFn {
+            (
+              control: AbstractControl,
+            ): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
+          }
+        `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      const interfaceEntry = docs[0] as InterfaceEntry;
+      expect(interfaceEntry.members.length).toBe(1);
+
+      const methodEntry = interfaceEntry.members[0] as MethodEntry;
+      expect(methodEntry.memberType).toBe(MemberType.Method);
+      expect(methodEntry.name).toBe('');
+      expect(methodEntry.implementation.returnType).toBe(
+        'Promise<ValidationErrors | null> | Observable<ValidationErrors | null>',
+      );
     });
   });
 });

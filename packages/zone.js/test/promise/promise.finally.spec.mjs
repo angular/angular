@@ -43,7 +43,7 @@ describe('onFinally', () => {
           },
           function onRejected() {
             done(new Error('should not be called'));
-          }
+          },
         );
     });
 
@@ -62,7 +62,7 @@ describe('onFinally', () => {
           function onRejected(reason) {
             assert.strictEqual(reason, someRejectionReason);
             done();
-          }
+          },
         );
     });
   });
@@ -86,7 +86,7 @@ describe('onFinally', () => {
           function onRejected(reason) {
             assert.strictEqual(reason, someRejectionReason);
             done();
-          }
+          },
         );
     });
 
@@ -104,7 +104,7 @@ describe('onFinally', () => {
           function onRejected(reason) {
             assert.strictEqual(reason, someRejectionReason);
             done();
-          }
+          },
         );
     });
   });
@@ -128,7 +128,7 @@ describe('onFinally', () => {
           },
           function onRejected() {
             done(new Error('should not be called'));
-          }
+          },
         );
     });
 
@@ -150,7 +150,7 @@ describe('onFinally', () => {
           function onRejected(e) {
             assert.strictEqual(e, someRejectionReason);
             done();
-          }
+          },
         );
     });
   });
@@ -177,7 +177,7 @@ describe('onFinally', () => {
           function onRejected() {
             clearTimeout(timeout);
             done(new Error('should not be called'));
-          }
+          },
         );
     });
 
@@ -202,7 +202,7 @@ describe('onFinally', () => {
           function onRejected() {
             clearTimeout(timeout);
             done(new Error('should not be called'));
-          }
+          },
         );
     });
   });
@@ -226,7 +226,7 @@ describe('onFinally', () => {
           },
           function onRejected() {
             done(new Error('should not be called'));
-          }
+          },
         );
     });
 
@@ -248,7 +248,7 @@ describe('onFinally', () => {
           function onRejected(e) {
             assert.strictEqual(e, someRejectionReason);
             done();
-          }
+          },
         );
     });
   });
@@ -272,7 +272,7 @@ describe('onFinally', () => {
           function onRejected(e) {
             assert.strictEqual(e, 4);
             done();
-          }
+          },
         );
     });
 
@@ -295,7 +295,7 @@ describe('onFinally', () => {
           function onRejected(e) {
             assert.strictEqual(e, newReason);
             done();
-          }
+          },
         );
     });
   });
@@ -325,7 +325,7 @@ describe('onFinally', () => {
           function onRejected() {
             clearTimeout(timeout);
             done(new Error('should not be called'));
-          }
+          },
         );
     });
 
@@ -353,7 +353,7 @@ describe('onFinally', () => {
             clearTimeout(timeout);
             assert.strictEqual(e, 3);
             done();
-          }
+          },
         );
     });
   });
@@ -383,7 +383,7 @@ describe('onFinally', () => {
             clearTimeout(timeout);
             assert.strictEqual(e, 4);
             done();
-          }
+          },
         );
     });
 
@@ -411,7 +411,7 @@ describe('onFinally', () => {
             clearTimeout(timeout);
             assert.strictEqual(e, anotherReason);
             done();
-          }
+          },
         );
     });
   });

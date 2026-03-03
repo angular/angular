@@ -1,49 +1,49 @@
-# Отображение маршрутов с помощью outlet
+# Show routes with outlets
 
-Директива `RouterOutlet` служит заполнителем, указывающим место, где маршрутизатор должен отобразить компонент для
-текущего URL.
+The `RouterOutlet` directive is a placeholder that marks the location where the router should render the component for the current URL.
 
-```angular-html
+```html
 <app-header />
-<router-outlet />  <!-- Angular вставляет контент вашего маршрута здесь -->
+<!-- Angular inserts your route content here -->
+<router-outlet />
 <app-footer />
 ```
 
 ```ts
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  templateUrl: './app.html',
+  styleUrl: './app.css',
 })
-export class AppComponent {}
+export class App {}
 ```
 
-В этом примере, если в приложении определены следующие маршруты:
+In this example, if an application has the following routes defined:
 
 ```ts
-import { Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
-import { ProductsComponent } from './products/products.component';
+import {Routes} from '@angular/router';
+import {Home} from './home';
+import {Products} from './products';
 
 const routes: Routes = [
   {
     path: '',
-    component: HomeComponent,
-    title: 'Home Page'
+    component: Home,
+    title: 'Home Page',
   },
   {
     path: 'products',
-    component: ProductsComponent,
-    title: 'Our Products'
-  }
+    component: Products,
+    title: 'Our Products',
+  },
 ];
 ```
 
-Когда пользователь переходит по адресу `/products`, Angular рендерит следующее:
+When a user visits `/products`, Angular renders the following:
 
 ```angular-html
 <app-header />
@@ -51,7 +51,7 @@ const routes: Routes = [
 <app-footer />
 ```
 
-Если пользователь возвращается на главную страницу, Angular рендерит:
+If the user goes back to the home page, then Angular renders:
 
 ```angular-html
 <app-header />
@@ -59,35 +59,30 @@ const routes: Routes = [
 <app-footer />
 ```
 
-При отображении маршрута элемент `<router-outlet>` остается в DOM в качестве опорной точки для будущих навигаций.
-Angular вставляет контент маршрута сразу после элемента outlet в качестве соседнего узла.
+When displaying a route, the `<router-outlet>` element remains present in the DOM as a reference point for future navigations. Angular inserts routed content just after the outlet element as a sibling.
 
 ```angular-html
-<!-- Содержимое шаблона компонента -->
+<!-- Contents of the component's template -->
 <app-header />
 <router-outlet />
 <app-footer />
 ```
 
 ```angular-html
-<!-- Контент, отображаемый на странице, когда пользователь посещает /admin -->
-<app-header>...</app-header>
-<router-outlet></router-outlet>
-<app-admin-page>...</app-admin-page>
-<app-footer>...</app-footer>
+<!-- Content rendered on the page when the user visits /admin -->
+<app-header />
+<router-outlet />
+<app-admin-page />
+<app-footer />
 ```
 
-## Вложенные маршруты и дочерние маршруты
+## Nesting routes with child routes
 
-По мере усложнения приложения может потребоваться создание маршрутов, относительных не к корневому, а к другому
-компоненту. Это позволяет создавать интерфейсы, где при изменении URL меняется только часть приложения, и у пользователя
-не возникает ощущения полной перезагрузки страницы.
+As your application grows more complex, you might want to create routes that are relative to a component other than your root component. This enables you to create experiences where only part of the application changes when the URL changes, as opposed to the users feeling like the entire page is refreshed.
 
-Такие типы вложенных маршрутов называются дочерними маршрутами. Это означает, что вы добавляете второй `<router-outlet>`
-в приложение в дополнение к `<router-outlet>` в `AppComponent`.
+These types of nested routes are called child routes. This means you're adding a second `<router-outlet>` to your app, because it is in addition to the `<router-outlet>` in AppComponent.
 
-В этом примере компонент `Settings` будет отображать нужную панель в зависимости от выбора пользователя. Одной из
-особенностей дочерних маршрутов является то, что компонент часто имеет свои собственные `<nav>` и `<router-outlet>`.
+In this example, the `Settings` component will display the desired panel based on what the user selects. One of the unique things you’ll notice about child routes is that the component often has its own `<nav>` and `<router-outlet>`.
 
 ```angular-html
 <h1>Settings</h1>
@@ -100,47 +95,44 @@ Angular вставляет контент маршрута сразу после
 <router-outlet />
 ```
 
-Дочерний маршрут похож на любой другой маршрут тем, что ему требуются `path` и `component`. Единственное отличие
-заключается в том, что дочерние маршруты помещаются в массив `children` внутри родительского маршрута.
+A child route is like any other route, in that it needs both a `path` and a `component`. The one difference is that you place child routes in a children array within the parent route.
 
 ```ts
 const routes: Routes = [
   {
-    path: 'settings-component',
-    component: SettingsComponent, // это компонент с <router-outlet> в шаблоне
+    path: 'settings',
+    component: Settings, // this is the component with the <router-outlet> in the template
     children: [
       {
-        path: 'profile', // путь дочернего маршрута
-        component: ProfileComponent, // компонент дочернего маршрута, который рендерит роутер
+        path: 'profile', // child route path
+        component: Profile, // child route component that the router renders
       },
       {
         path: 'security',
-        component: SecurityComponent, // еще один компонент дочернего маршрута, который рендерит роутер
+        component: Security, // another child route component that the router renders
       },
     ],
   },
 ];
 ```
 
-Как только `routes` и `<router-outlet>` настроены правильно, ваше приложение начинает использовать вложенные маршруты!
+Once both the `routes` and `<router-outlet>` are configured correctly, your application is now using nested routes!
 
-## Вторичные маршруты с именованными outlet
+## Secondary routes with named outlets
 
-Страницы могут иметь несколько outlet — вы можете назначить имя каждому из них, чтобы указать, какой контент к какому
-outlet относится.
+Pages may have multiple outlets— you can assign a name to each outlet to specify which content belongs to which outlet.
 
 ```angular-html
 <app-header />
 <router-outlet />
-<router-outlet name='read-more' />
-<router-outlet name='additional-actions' />
+<router-outlet name="read-more" />
+<router-outlet name="additional-actions" />
 <app-footer />
 ```
 
-Каждый outlet должен иметь уникальное имя. Имя нельзя задать или изменить динамически. По умолчанию используется имя
-`'primary'`.
+Each outlet must have a unique name. The name cannot be set or changed dynamically. By default, the name is `'primary'`.
 
-Angular сопоставляет имя outlet со свойством `outlet`, определенным в каждом маршруте:
+Angular matches the outlet's name to the `outlet` property defined on each route:
 
 ```ts
 {
@@ -150,74 +142,70 @@ Angular сопоставляет имя outlet со свойством `outlet`,
 }
 ```
 
-## События жизненного цикла outlet
+## Outlet lifecycle events
 
-Существует четыре события жизненного цикла, которые может генерировать router outlet:
+There are four lifecycle events that a router outlet can emit:
 
-| Событие      | Описание                                                               |
-| ------------ | ---------------------------------------------------------------------- |
-| `activate`   | Когда создается экземпляр нового компонента                            |
-| `deactivate` | Когда компонент уничтожается                                           |
-| `attach`     | Когда `RouteReuseStrategy` дает указание outlet присоединить поддерево |
-| `detach`     | Когда `RouteReuseStrategy` дает указание outlet отсоединить поддерево  |
+| Event        | Description                                                              |
+| ------------ | ------------------------------------------------------------------------ |
+| `activate`   | When a new component is instantiated                                     |
+| `deactivate` | When a component is destroyed                                            |
+| `attach`     | When the `RouteReuseStrategy` instructs the outlet to attach the subtree |
+| `detach`     | When the `RouteReuseStrategy` instructs the outlet to detach the subtree |
 
-Вы можете добавить слушатели событий, используя стандартный синтаксис привязки событий:
+You can add event listeners with the standard event binding syntax:
 
 ```angular-html
 <router-outlet
-  (activate)='onActivate($event)'
-  (deactivate)='onDeactivate($event)'
-  (attach)='onAttach($event)'
-  (detach)='onDetach($event)'
+  (activate)="onActivate($event)"
+  (deactivate)="onDeactivate($event)"
+  (attach)="onAttach($event)"
+  (detach)="onDetach($event)"
 />
 ```
 
-Ознакомьтесь с [API-документацией для RouterOutlet](/api/router/RouterOutlet?tab=api), если хотите узнать больше.
+Check out the [API docs for RouterOutlet](/api/router/RouterOutlet?tab=api) if you’d like to learn more.
 
-## Передача контекстных данных в маршрутизируемые компоненты
+## Passing contextual data to routed components
 
-Передача контекстных данных в маршрутизируемые компоненты часто требует глобального состояния или сложных конфигураций
-маршрутов. Чтобы упростить эту задачу, каждый `RouterOutlet` поддерживает входное свойство `routerOutletData`.
-Маршрутизируемые компоненты и их потомки могут считывать эти данные как сигнал, используя токен внедрения
-`ROUTER_OUTLET_DATA`, что позволяет настраивать конкретный outlet без изменения определений маршрутов.
+Passing contextual data to routed components often requires global state or complicated route configurations. To make this easier, each `RouterOutlet` supports a `routerOutletData` input. Routed components and their children can read this data as a signal using the `ROUTER_OUTLET_DATA` injection token, allowing outlet-specific configuration without modifying route definitions.
 
 ```angular-ts
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   imports: [RouterOutlet],
   template: `
     <h2>Dashboard</h2>
-    <router-outlet [routerOutletData]="{ layout: 'sidebar' }" />
+    <router-outlet [routerOutletData]="{layout: 'sidebar'}" />
   `,
 })
-export class DashboardComponent {}
+export class Dashboard {}
 ```
 
-Маршрутизируемый компонент может внедрить предоставленные данные outlet с помощью `ROUTER_OUTLET_DATA`:
+The routed component can inject the provided outlet data using `ROUTER_OUTLET_DATA`:
 
 ```angular-ts
-import { Component, inject } from '@angular/core';
-import { ROUTER_OUTLET_DATA } from '@angular/router';
+import {Component, inject} from '@angular/core';
+import {ROUTER_OUTLET_DATA} from '@angular/router';
 
 @Component({
   selector: 'app-stats',
   template: `<p>Stats view (layout: {{ outletData().layout }})</p>`,
 })
-export class StatsComponent {
-  outletData = inject(ROUTER_OUTLET_DATA) as Signal<{ layout: string }>;
+export class Stats {
+  outletData = inject(ROUTER_OUTLET_DATA) as Signal<{layout: string}>;
 }
 ```
 
-Когда Angular активирует `StatsComponent` в этом outlet, он получает `{ layout: 'sidebar' }` в качестве внедренных
-данных.
+When Angular activates the `Stats` in that outlet, it receives `{ layout: 'sidebar' }` as injected data.
 
-ПРИМЕЧАНИЕ: Если входное свойство `routerOutletData` не задано, внедряемое значение по умолчанию равно null.
+NOTE: When the `routerOutletData` input is unset, the injected value is null by default.
 
 ---
 
-## Следующие шаги
+## Next steps
 
-Узнайте, как [выполнять навигацию по маршрутам](/guide/routing/navigate-to-routes) с помощью Angular Router.
+Learn how to [navigate to routes](/guide/routing/navigate-to-routes) with Angular Router.

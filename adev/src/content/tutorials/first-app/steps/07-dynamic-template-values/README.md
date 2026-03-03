@@ -29,7 +29,7 @@
 1. Перейдите к файлу `src/app/housing-location/housing-location.ts`.
 1. В свойстве `template` декоратора `@Component` замените существующую HTML-разметку следующим кодом:
 
-<docs-code language="angular-ts"  header="Update HousingLocation template in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/08-ngFor/src/app/housing-location/housing-location.ts" visibleLines="[6,17]"/>
+    <docs-code language="angular-ts"  header="Update HousingLocation template in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/08-ngFor/src/app/housing-location/housing-location.ts" visibleLines="[6,17]"/>
 
 В этом обновленном коде шаблона вы использовали привязку свойств для привязки `housingLocation.photo` к атрибуту `src`.
 Атрибут `alt` использует интерполяцию для предоставления большего контекста альтернативному тексту изображения.

@@ -44,7 +44,8 @@ export class Greeter {
 
 @Component({
   selector: 'complete-component',
-  template: `{{ label() }}: <ng-content></ng-content> <ng-content></ng-content>{{ greeter.suffix }}`,
+  template: `{{ label() }}: <ng-content></ng-content> <ng-content></ng-content
+    >{{ greeter.suffix }}`,
 })
 export class CompleteComponent {
   label = input.required<string>();

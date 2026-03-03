@@ -106,7 +106,6 @@ groups:
         - thePunderWoman
         - kirjs
         - JoostK
-        - mmalerba
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
@@ -151,10 +150,8 @@ groups:
         - crisbeto
         - devversion
         - kirjs
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
         - JeanMeche
         - ~amishne
         - ~leonsenft
@@ -181,9 +178,9 @@ groups:
     reviewers:
       users:
         - ~alxhub
-        - jelbourn
         - josephperrott
         - ~pkozlowski-opensource
+        - alan-agius4
     reviews:
       request: -1 # request reviews from everyone
       required: 2 # require at least 2 approvals
@@ -202,7 +199,6 @@ groups:
     reviewers:
       users:
         - ~JiaLiPassion
-        - ~jelbourn
         - ~alxhub
         - AndrewKushnir
         - atscott
@@ -211,7 +207,6 @@ groups:
         - kirjs
         - thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
@@ -248,6 +243,8 @@ groups:
       - >
         contains_any_globs(files, [
           'adev/**/{*,.*}',
+          'tools/manual_api_docs/blocks/**/*.md',
+          'tools/manual_api_docs/elements/**/*.md',
         ])
     reviewers:
       users:
@@ -259,18 +256,18 @@ groups:
         - crisbeto
         - kirjs
         - JeanMeche
-        - jelbourn
         - thePunderWoman
         - devversion
         - josephperrott
         - ~pkozlowski-opensource
         - ~mgechev
         - MarkTechson
-        - mmalerba
         - ~hawkgs
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
+        - ~clydin
+        - ~dgp1130
 
   # =========================================================
   #  Angular DevTools
@@ -300,8 +297,13 @@ groups:
     <<: *defaults
     conditions:
       - >
-        contains_any_globs(files.exclude('.pullapprove.yml'), [
+        contains_any_globs(files
+            .exclude('.pullapprove.yml') 
+            .exclude('tools/manual_api_docs/blocks/**/*.md')
+            .exclude('tools/manual_api_docs/elements/**/*.md'),
+        [
           '{*,.*}',
+          '.agent/**/{*,.*}',
           '.devcontainer/**/{*,.*}',
           '.github/**/{*,.*}',
           '.husky/**/{*,.*}',
@@ -338,6 +340,7 @@ groups:
       - author not in ["angular-robot"]
     reviewers:
       users:
+        - alan-agius4
         - devversion
         - josephperrott
 
@@ -372,11 +375,9 @@ groups:
         - AndrewKushnir
         - ~alxhub
         - atscott
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
         - kirjs
-        - mmalerba
         - crisbeto
         - devversion
         - JeanMeche
@@ -410,10 +411,8 @@ groups:
         - AndrewKushnir
         - atscott
         - kirjs
-        - ~jelbourn
         - thePunderWoman
         - ~pkozlowski-opensource
-        - mmalerba
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
@@ -421,6 +420,24 @@ groups:
       request: 2 # Request reviews from 2 people
       required: 1 # Require that 1 person approve
       reviewed_for: required
+
+  # =========================================================
+  #  Agent Skills
+  # =========================================================
+  agent-skills:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'skills/{*,.*}',
+          'skills/**/{*,.*}',
+        ])
+    reviewers:
+      users:
+        - marktechson
+        - kirjs
+        - ~JeanMeche
+        - ~dgp1130
 
   ####################################################################################
   #  Special Cases
@@ -442,7 +459,6 @@ groups:
         - AndrewKushnir
         - andrewseguin
         - dgp1130
-        - ~jelbourn
         - thePunderWoman
         - josephperrott
 
@@ -465,10 +481,6 @@ groups:
         - thePunderWoman # Jessica Janiuk
         - AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
-    labels:
-      pending: 'requires: TGP'
-      approved: 'requires: TGP'
-      rejected: 'requires: TGP'
 
   # External team required reviews
   primitives-shared:
@@ -486,10 +498,6 @@ groups:
         - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed
         - ENAML # Ethan Cline
-    labels:
-      pending: 'requires: TGP'
-      approved: 'requires: TGP'
-      rejected: 'requires: TGP'
 
   ####################################################################################
   # Override managed result groups
@@ -512,7 +520,6 @@ groups:
     reviewers:
       users:
         - alxhub
-        - jelbourn
         - josephperrott
     reviews:
       request: 0

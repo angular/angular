@@ -7,6 +7,8 @@
  */
 
 import {CommonModule} from '@angular/common';
+import {By} from '@angular/platform-browser';
+import {BehaviorSubject} from 'rxjs';
 import {
   assertInInjectionContext,
   Attribute,
@@ -14,7 +16,10 @@ import {
   Component,
   ComponentRef,
   createEnvironmentInjector,
+  ɵcreateInjector as createInjector,
   createNgModule,
+  ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID,
+  DestroyRef,
   Directive,
   ElementRef,
   ENVIRONMENT_INITIALIZER,
@@ -35,6 +40,7 @@ import {
   INJECTOR,
   Injector,
   Input,
+  ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
   LOCALE_ID,
   makeEnvironmentProviders,
   ModuleWithProviders,
@@ -46,6 +52,7 @@ import {
   Pipe,
   PipeTransform,
   Provider,
+  provideZoneChangeDetection,
   runInInjectionContext,
   Self,
   SkipSelf,
@@ -55,18 +62,12 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
   ViewRef,
-  ɵcreateInjector as createInjector,
-  ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID,
   ɵINJECTOR_SCOPE,
-  ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
-  DestroyRef,
-  provideZoneChangeDetection,
 } from '../../src/core';
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../../src/error_details_base_url';
 import {RuntimeError, RuntimeErrorCode} from '../../src/errors';
 import {ViewRef as ViewRefInternal} from '../../src/render3/view_ref';
 import {TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
-import {BehaviorSubject} from 'rxjs';
 
 const getProvidersByToken = (
   providers: Provider[],
@@ -517,10 +518,10 @@ describe('di', () => {
 
       @Component({
         template: `
-        <div dirA>
-          <span dirB dirC #dir="dirC">{{ dir.value }}</span>
-        </div>
-      `,
+          <div dirA>
+            <span dirB dirC #dir="dirC">{{ dir.value }}</span>
+          </div>
+        `,
         standalone: false,
       })
       class MyComp {}
@@ -941,15 +942,15 @@ describe('di', () => {
 
         @Component({
           template: `<div dirB value="declaration">
-           <ng-template #foo>
-               <div dirA #dir="dirA">{{ dir.dirB.value }}</div>
-           </ng-template>
-         </div>
+              <ng-template #foo>
+                <div dirA #dir="dirA">{{ dir.dirB.value }}</div>
+              </ng-template>
+            </div>
 
-         <div dirB value="insertion">
-           <div structuralDir [tmp]="foo"></div>
-           <!-- insertion point -->
-         </div>`,
+            <div dirB value="insertion">
+              <div structuralDir [tmp]="foo"></div>
+              <!-- insertion point -->
+            </div>`,
           standalone: false,
         })
         class MyComp {
@@ -1055,8 +1056,7 @@ describe('di', () => {
         class Projector {}
 
         @Component({
-          template: `
-          <projector>
+          template: ` <projector>
             <div dirA>
               <ng-container #childOrigin></ng-container>
               <ng-container #childOriginWithDirB dirB></ng-container>
@@ -1203,7 +1203,7 @@ describe('di', () => {
       expect(cmp.componentInstance.testB.a.injector).toBe('standalone');
     });
 
-    it('should not have access to the directive injector in a standalone injector from within a directive-level provider factory', () => {
+    it('should not have access to the directive injector in a standalone injector from within a directive-level provider factory when using Optional', () => {
       class TestA {
         constructor(public injector: string) {}
       }
@@ -1264,7 +1264,7 @@ describe('di', () => {
       expect(() => TestBed.createComponent(MyComp)).toThrowError(
         'NG0200: Circular dependency detected for `DirectiveA`. ' +
           'Path: DirectiveA -> DirectiveA. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -2554,7 +2554,7 @@ describe('di', () => {
 
           TestBed.configureTestingModule({declarations: [DirectiveString, MyComp, MyApp]});
           expect(() => TestBed.createComponent(MyApp)).toThrowError(
-            'NG0201: No provider for String found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
+            `NG0201: No provider for String found in NodeInjector. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
           );
         });
 
@@ -2652,7 +2652,7 @@ describe('di', () => {
 
           TestBed.configureTestingModule({declarations: [DirectiveComp, MyComp, MyApp]});
           expect(() => TestBed.createComponent(MyApp)).toThrowError(
-            'NG0201: No provider for MyApp found in NodeInjector. Find more at https://angular.dev/errors/NG0201',
+            `NG0201: No provider for MyApp found in NodeInjector. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0201`,
           );
         });
 
@@ -2694,10 +2694,10 @@ describe('di', () => {
 
             @Component({
               template: `
-                   <div group>
-                     <my-comp></my-comp>
-                   </div>
-                 `,
+                <div group>
+                  <my-comp></my-comp>
+                </div>
+              `,
               standalone: false,
             })
             class MyApp {}
@@ -3206,7 +3206,9 @@ describe('di', () => {
       @Component({
         template: `<div parentDir>
           <ng-container *ngIf="showing">
-            <span childDir child2Dir #child1="childDir" #child2="child2Dir">{{ child1.value }}-{{ child2.value }}</span>
+            <span childDir child2Dir #child1="childDir" #child2="child2Dir"
+              >{{ child1.value }}-{{ child2.value }}</span
+            >
           </ng-container>
         </div>`,
         standalone: false,
@@ -3752,9 +3754,8 @@ describe('di', () => {
         @Component({
           selector: 'my-app',
           template: `<my-comp>
-               <div dir otherDir #dir="dir"></div>
-             </my-comp>
-              `,
+            <div dir otherDir #dir="dir"></div>
+          </my-comp> `,
           standalone: false,
         })
         class MyApp {
@@ -3915,7 +3916,7 @@ describe('di', () => {
       }
 
       @Component({
-        template: `<my-comp token='token'></my-comp>`,
+        template: `<my-comp token="token"></my-comp>`,
         standalone: false,
       })
       class WrapperComp {
@@ -5050,7 +5051,8 @@ describe('di', () => {
             style="margin: 1px; color: red;"
             class="hello there"
             some-attr="foo"
-            other="ignore"></div>
+            other="ignore"
+          ></div>
         `,
         imports: [Dir],
       })
@@ -5147,14 +5149,14 @@ describe('di', () => {
 
       @Component({
         imports: [Dir],
-        template: `
-          <div
-            dir
-            exists="existsValue"
-            [binding]="bindingValue"
-            (output)="noop()"
-            other="otherValue"
-            ignore="ignoreValue"></div>`,
+        template: ` <div
+          dir
+          exists="existsValue"
+          [binding]="bindingValue"
+          (output)="noop()"
+          other="otherValue"
+          ignore="ignoreValue"
+        ></div>`,
       })
       class TestCmp {
         @ViewChild(Dir) dir!: Dir;
@@ -5364,11 +5366,7 @@ describe('di', () => {
 
     @Component({
       template: `
-        <div i18n>{
-          count, select,
-          =1 {One}
-          other {Other value is: {{count | somePipe}}}
-        }</div>
+        <div i18n>{count, select, =1 {One} other {Other value is: {{count | somePipe}}}}</div>
       `,
       standalone: false,
     })
@@ -5407,9 +5405,7 @@ describe('di', () => {
 
     @Component({
       template: `
-        <ng-template #source i18n>
-          {{count | somePipe}} <span>items</span>
-        </ng-template>
+        <ng-template #source i18n> {{ count | somePipe }} <span>items</span> </ng-template>
         <ng-container #target></ng-container>
       `,
       standalone: false,
@@ -5465,7 +5461,7 @@ describe('di', () => {
     }
 
     @Component({
-      template: `<div dirA> <child></child> </div>`,
+      template: `<div dirA><child></child></div>`,
       standalone: false,
     })
     class App {
@@ -5674,7 +5670,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         standalone: false,
       })
       class App {
@@ -5739,16 +5735,16 @@ describe('di', () => {
 
       @Component({
         template: `
-            <menu-trigger #outerTrigger [triggerFor]="outerTemplate"></menu-trigger>
-            <ng-template #outerTemplate>
-              <menu></menu>
+          <menu-trigger #outerTrigger [triggerFor]="outerTemplate"></menu-trigger>
+          <ng-template #outerTemplate>
+            <menu></menu>
 
-              <menu-trigger #innerTrigger [triggerFor]="innerTemplate"></menu-trigger>
-              <ng-template #innerTemplate>
-                <menu #innerMenu></menu>
-              </ng-template>
+            <menu-trigger #innerTrigger [triggerFor]="innerTemplate"></menu-trigger>
+            <ng-template #innerTemplate>
+              <menu #innerMenu></menu>
             </ng-template>
-          `,
+          </ng-template>
+        `,
         standalone: false,
       })
       class App {
@@ -5783,21 +5779,21 @@ describe('di', () => {
 
       @Component({
         template: `
-            <menu-trigger #grandparentTrigger [triggerFor]="grandparentTemplate"></menu-trigger>
-            <ng-template #grandparentTemplate>
+          <menu-trigger #grandparentTrigger [triggerFor]="grandparentTemplate"></menu-trigger>
+          <ng-template #grandparentTemplate>
+            <menu></menu>
+
+            <menu-trigger #parentTrigger [triggerFor]="parentTemplate"></menu-trigger>
+            <ng-template #parentTemplate>
               <menu></menu>
 
-              <menu-trigger #parentTrigger [triggerFor]="parentTemplate"></menu-trigger>
-              <ng-template #parentTemplate>
-                <menu></menu>
-
-                <menu-trigger #childTrigger [triggerFor]="childTemplate"></menu-trigger>
-                <ng-template #childTemplate>
-                  <menu #childMenu></menu>
-                </ng-template>
+              <menu-trigger #childTrigger [triggerFor]="childTemplate"></menu-trigger>
+              <ng-template #childTemplate>
+                <menu #childMenu></menu>
               </ng-template>
             </ng-template>
-          `,
+          </ng-template>
+        `,
         standalone: false,
       })
       class App {
@@ -5894,7 +5890,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         standalone: false,
       })
       class App {
@@ -5935,7 +5931,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         standalone: false,
       })
       class App {
@@ -5978,7 +5974,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         providers: [{provide: token, useValue: 'hello from parent'}],
         standalone: false,
       })
@@ -6024,7 +6020,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         standalone: false,
       })
       class App {
@@ -6057,11 +6053,11 @@ describe('di', () => {
 
       @Component({
         template: `
-            <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
-            <ng-template #menuTemplate>
-              <menu></menu>
-            </ng-template>
-          `,
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <ng-template #menuTemplate>
+            <menu></menu>
+          </ng-template>
+        `,
         providers: [{provide: token, useValue: 'hello from parent'}],
         standalone: false,
       })
@@ -6112,7 +6108,7 @@ describe('di', () => {
           <ng-template #menuTemplate>
             <menu></menu>
           </ng-template>
-      `,
+        `,
         standalone: false,
       })
       class App {
@@ -6155,11 +6151,11 @@ describe('di', () => {
       @Component({
         selector: 'parent',
         template: `
-            <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
-            <ng-template #menuTemplate>
-              <menu></menu>
-            </ng-template>
-           `,
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <ng-template #menuTemplate>
+            <menu></menu>
+          </ng-template>
+        `,
         standalone: false,
       })
       class Parent {
@@ -6271,9 +6267,9 @@ describe('di', () => {
 
       @Component({
         template: `
-              <declarer></declarer>
-              <creator></creator>
-            `,
+          <declarer></declarer>
+          <creator></creator>
+        `,
         standalone: false,
       })
       class App {
@@ -6368,13 +6364,13 @@ describe('di', () => {
 
       @Component({
         template: `
-              <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
-              <div provide-token>
-                <ng-template #menuTemplate>
-                  <menu></menu>
-                </ng-template>
-              </div>
-            `,
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <div provide-token>
+            <ng-template #menuTemplate>
+              <menu></menu>
+            </ng-template>
+          </div>
+        `,
         providers: [{provide: token, useValue: 'hello from parent'}],
         standalone: false,
       })
@@ -6429,13 +6425,13 @@ describe('di', () => {
 
       @Component({
         template: `
-              <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
-              <ng-template #menuTemplate>
-                <section provide-token>
-                  <wrapper></wrapper>
-                </section>
-              </ng-template>
-            `,
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <ng-template #menuTemplate>
+            <section provide-token>
+              <wrapper></wrapper>
+            </section>
+          </ng-template>
+        `,
         providers: [{provide: token, useValue: 'hello from parent'}],
         standalone: false,
       })
@@ -6490,13 +6486,13 @@ describe('di', () => {
 
       @Component({
         template: `
-              <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
-              <div provide-token>
-                <ng-template #menuTemplate>
-                  <wrapper></wrapper>
-                </ng-template>
-              </div>
-            `,
+          <menu-trigger [triggerFor]="menuTemplate"></menu-trigger>
+          <div provide-token>
+            <ng-template #menuTemplate>
+              <wrapper></wrapper>
+            </ng-template>
+          </div>
+        `,
         providers: [{provide: token, useValue: 'hello from parent'}],
         standalone: false,
       })
@@ -6645,7 +6641,7 @@ describe('di', () => {
         'NG0200: Circular dependency detected for `InjectionToken A`. ' +
           'Source: DynamicTestModule. ' +
           'Path: InjectionToken A -> InjectionToken B -> InjectionToken A. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -6681,7 +6677,7 @@ describe('di', () => {
         'NG0200: Circular dependency detected for `InjectionToken A`. ' +
           'Source: DynamicTestModule. ' +
           'Path: InjectionToken A -> InjectionToken B -> InjectionToken A. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -6724,7 +6720,7 @@ describe('di', () => {
         'NG0200: Circular dependency detected for `InjectionToken A`. ' +
           'Source: DynamicTestModule. ' +
           'Path: InjectionToken A -> InjectionToken B -> InjectionToken A. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -6742,11 +6738,11 @@ describe('di', () => {
       expect(() => createInjector(AModule)).toThrowError(
         'NG0200: Circular dependency detected for `AModule`. ' +
           'Path: AModule -> BModule -> AModule. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
-    it('should detect cyclic dependency in Module/Environment injector when `Injector.get` is used', () => {
+    it('should detect cyclic dependency in Module/Environment injector when `Injector.get` is used (multi=true)', () => {
       const A = new InjectionToken('A');
       const B = new InjectionToken('B');
       @Injectable()
@@ -6786,7 +6782,7 @@ describe('di', () => {
         'NG0200: Circular dependency detected for `InjectionToken A`. ' +
           'Source: DynamicTestModule. ' +
           'Path: InjectionToken A -> InjectionToken B -> InjectionToken A. ' +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
 
@@ -6823,7 +6819,7 @@ describe('di', () => {
       expect(() => TestBed.createComponent(App)).toThrowError(
         'NG0200: Circular dependency detected for `InjectionToken A`. ' +
           "Path: App -> ('InjectionToken A':AService) -> ('InjectionToken B':BService) -> ('InjectionToken A':AService). " +
-          'Find more at https://angular.dev/errors/NG0200',
+          `Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG0200`,
       );
     });
   });

@@ -143,6 +143,7 @@ export enum BinaryOperator {
   NullishCoalesce,
   Exponentiation,
   In,
+  InstanceOf,
   AdditionAssignment,
   SubtractionAssignment,
   MultiplicationAssignment,
@@ -1331,20 +1332,43 @@ export class LiteralArrayExpr extends Expression {
   }
 }
 
-export class LiteralMapEntry {
+export class LiteralMapPropertyAssignment {
   constructor(
     public key: string,
     public value: Expression,
     public quoted: boolean,
   ) {}
-  isEquivalent(e: LiteralMapEntry): boolean {
+
+  isEquivalent(e: LiteralMapPropertyAssignment): boolean {
     return this.key === e.key && this.value.isEquivalent(e.value);
   }
 
-  clone(): LiteralMapEntry {
-    return new LiteralMapEntry(this.key, this.value.clone(), this.quoted);
+  clone(): LiteralMapPropertyAssignment {
+    return new LiteralMapPropertyAssignment(this.key, this.value.clone(), this.quoted);
+  }
+
+  isConstant() {
+    return this.value.isConstant();
   }
 }
+
+export class LiteralMapSpreadAssignment {
+  constructor(public expression: Expression) {}
+
+  isEquivalent(e: LiteralMapSpreadAssignment): boolean {
+    return e instanceof LiteralMapSpreadAssignment && this.expression.isEquivalent(e.expression);
+  }
+
+  clone(): LiteralMapSpreadAssignment {
+    return new LiteralMapSpreadAssignment(this.expression.clone());
+  }
+
+  isConstant() {
+    return this.expression.isConstant();
+  }
+}
+
+export type LiteralMapEntry = LiteralMapPropertyAssignment | LiteralMapSpreadAssignment;
 
 export class LiteralMapExpr extends Expression {
   public valueType: Type | null = null;
@@ -1364,7 +1388,7 @@ export class LiteralMapExpr extends Expression {
   }
 
   override isConstant() {
-    return this.entries.every((e) => e.value.isConstant());
+    return this.entries.every((e) => e.isConstant());
   }
 
   override visitExpression(visitor: ExpressionVisitor, context: any): any {
@@ -1402,6 +1426,31 @@ export class CommaExpr extends Expression {
   }
 }
 
+export class SpreadElementExpr extends Expression {
+  constructor(
+    public expression: Expression,
+    sourceSpan?: ParseSourceSpan | null,
+  ) {
+    super(null, sourceSpan);
+  }
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof SpreadElementExpr && this.expression.isEquivalent(e.expression);
+  }
+
+  override isConstant() {
+    return this.expression.isConstant();
+  }
+
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitSpreadElementExpr(this, context);
+  }
+
+  override clone(): SpreadElementExpr {
+    return new SpreadElementExpr(this.expression.clone(), this.sourceSpan);
+  }
+}
+
 export interface ExpressionVisitor {
   visitReadVarExpr(ast: ReadVarExpr, context: any): any;
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any;
@@ -1429,6 +1478,7 @@ export interface ExpressionVisitor {
   visitArrowFunctionExpr(ast: ArrowFunctionExpr, context: any): any;
   visitParenthesizedExpr(ast: ParenthesizedExpr, context: any): any;
   visitRegularExpressionLiteral(ast: RegularExpressionLiteralExpr, context: any): any;
+  visitSpreadElementExpr(ast: SpreadElementExpr, context: any): any;
 }
 
 export const NULL_EXPR = new LiteralExpr(null, null, null);
@@ -1724,7 +1774,13 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     return this.visitExpression(ast, context);
   }
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any {
-    ast.entries.forEach((entry) => entry.value.visitExpression(this, context));
+    ast.entries.forEach((entry) => {
+      if (entry instanceof LiteralMapSpreadAssignment) {
+        entry.expression.visitExpression(this, context);
+      } else {
+        entry.value.visitExpression(this, context);
+      }
+    });
     return this.visitExpression(ast, context);
   }
   visitCommaExpr(ast: CommaExpr, context: any): any {
@@ -1741,6 +1797,10 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   }
   visitParenthesizedExpr(ast: ParenthesizedExpr, context: any) {
     ast.expr.visitExpression(this, context);
+    return this.visitExpression(ast, context);
+  }
+  visitSpreadElementExpr(ast: SpreadElementExpr, context: any): any {
+    ast.expression.visitExpression(this, context);
     return this.visitExpression(ast, context);
   }
   visitAllExpressions(exprs: Expression[], context: any): void {
@@ -1847,7 +1907,7 @@ export function literalMap(
   type: MapType | null = null,
 ): LiteralMapExpr {
   return new LiteralMapExpr(
-    values.map((e) => new LiteralMapEntry(e.key, e.value, e.quoted)),
+    values.map((e) => new LiteralMapPropertyAssignment(e.key, e.value, e.quoted)),
     type,
     null,
   );

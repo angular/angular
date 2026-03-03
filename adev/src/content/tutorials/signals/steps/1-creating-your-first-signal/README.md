@@ -42,7 +42,7 @@ export class App {
 1. Привязав сигнал к атрибуту class с помощью `[class]="userStatus()"`
 2. Отобразив текст статуса, заменив `???` на `{{ userStatus() }}`
 
-```html
+```angular-html
 <!-- Update from: -->
 <div class="status-indicator offline">
   <span class="status-dot"></span>
@@ -83,12 +83,8 @@ goOffline() {
 
 ```html
 <!-- Add bindings to the existing buttons: -->
-<button (click)="goOnline()" [disabled]="userStatus() === 'online'">
-  Go Online
-</button>
-<button (click)="goOffline()" [disabled]="userStatus() === 'offline'">
-  Go Offline
-</button>
+<button (click)="goOnline()" [disabled]="userStatus() === 'online'">Go Online</button>
+<button (click)="goOffline()" [disabled]="userStatus() === 'offline'">Go Offline</button>
 ```
 
 </docs-step>
@@ -110,9 +106,7 @@ toggleStatus() {
 Кнопка переключения уже есть в шаблоне. Подключите её к вашему методу `toggleStatus()`:
 
 ```html
-<button (click)="toggleStatus()" class="toggle-btn">
-  Toggle Status
-</button>
+<button (click)="toggleStatus()" class="toggle-btn">Toggle Status</button>
 ```
 
 </docs-step>

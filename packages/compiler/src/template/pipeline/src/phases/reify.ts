@@ -7,6 +7,7 @@
  */
 
 import * as o from '../../../../output/output_ast';
+import {CONTEXT_NAME} from '../../../../render3/view/util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
 import {
@@ -91,7 +92,11 @@ function ensureNoIrForDebug(job: CompilationJob) {
 
 function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp>): void {
   for (const op of ops) {
-    ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
+    ir.transformExpressionsInOp(
+      op,
+      (expr) => reifyIrExpression(unit, expr),
+      ir.VisitorContextFlag.None,
+    );
 
     switch (op.kind) {
       case ir.OpKind.Text:
@@ -604,7 +609,11 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
 
 function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
-    ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
+    ir.transformExpressionsInOp(
+      op,
+      (expr) => reifyIrExpression(unit, expr),
+      ir.VisitorContextFlag.None,
+    );
 
     switch (op.kind) {
       case ir.OpKind.Advance:
@@ -743,10 +752,10 @@ function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
 }
 
 function reifyControl(op: ir.ControlOp): ir.UpdateOp {
-  return ng.control(op.expression, op.sanitizer, op.sourceSpan);
+  return ng.control(op.sourceSpan);
 }
 
-function reifyIrExpression(expr: o.Expression): o.Expression {
+function reifyIrExpression(unit: CompilationUnit, expr: o.Expression): o.Expression {
   if (!ir.isIrExpression(expr)) {
     return expr;
   }
@@ -803,6 +812,15 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.storeLet(expr.value, expr.sourceSpan);
     case ir.ExpressionKind.TrackContext:
       return o.variable('this');
+    case ir.ExpressionKind.ArrowFunction:
+      if (expr.varOffset === null) {
+        throw new Error(`AssertionError: variable offset was not assigned to arrow function`);
+      }
+      return ng.arrowFunction(
+        expr.varOffset,
+        unit.job.pool.getSharedFunctionReference(getArrowFunctionFactory(unit, expr), 'arrowFn'),
+        o.variable(CONTEXT_NAME),
+      );
     default:
       throw new Error(
         `AssertionError: Unsupported reification of ir.Expression kind: ${
@@ -888,4 +906,33 @@ function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Express
 
   op.trackByFn = unit.job.pool.getSharedFunctionReference(fn, '_forTrack');
   return op.trackByFn;
+}
+
+/** Gets a factory for an arrow function expression. */
+function getArrowFunctionFactory(
+  unit: CompilationUnit,
+  expr: ir.ArrowFunctionExpr,
+): o.ArrowFunctionExpr {
+  reifyUpdateOperations(unit, expr.ops);
+
+  const statements: o.Statement[] = [];
+  for (const op of expr.ops) {
+    if (op.kind !== ir.OpKind.Statement) {
+      throw new Error(
+        `AssertionError: expected reified statements, but found op ${ir.OpKind[op.kind]}`,
+      );
+    }
+    statements.push(op.statement);
+  }
+
+  // If there's only one return statement as the body, we can turn it into a single-line function.
+  const body =
+    statements.length === 1 && statements[0] instanceof o.ReturnStatement
+      ? statements[0].value
+      : statements;
+
+  return o.arrowFn(
+    [new o.FnParam(expr.contextName), new o.FnParam(expr.currentViewName)],
+    o.arrowFn(expr.parameters, body),
+  );
 }

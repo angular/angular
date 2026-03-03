@@ -1,11 +1,14 @@
  // ...
- MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
+export class MyComponent {
   // ...
-  template: function MyComponent_Template(rf, $ctx$) {
+  static ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     // ...
-    if (rf & 2) {
-      $r3$.ɵɵclassProp("apple", $ctx$.yesToApple)("orange", $ctx$.yesToOrange)("tomato", $ctx$.yesToTomato);
-    }
-  },
-  encapsulation: 2
-});
+    template: function MyComponent_Template(rf, $ctx$) {
+      // ...
+      if (rf & 2) {
+        $r3$.ɵɵclassProp("apple", $ctx$.yesToApple)("orange", $ctx$.yesToOrange)("tomato", $ctx$.yesToTomato);
+      }
+    },
+    encapsulation: 2
+  });
+}

@@ -20,6 +20,14 @@
     color: var(--septenary-contrast);
   }
 
+  &.type-secondary {
+    border-radius: 2rem;
+    background: transparent;
+    box-sizing: border-box;
+    border: 1px solid var(--quaternary-contrast);
+    color: var(--color-text);
+  }
+
   &.type-icon {
     background: transparent;
     border: none;

@@ -50,11 +50,11 @@ user = httpResource(() => ({
   mode: 'cors',
   redirect: 'error',
   priority: 'high',
-  cache : 'force-cache',
+  cache: 'force-cache',
   credentials: 'include',
   referrer: 'no-referrer',
   integrity: 'sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GhEXAMPLEKEY=',
-  referrerPolicy: 'no-referrer'
+  referrerPolicy: 'no-referrer',
 }));
 ```
 
@@ -102,7 +102,7 @@ httpResource.arrayBuffer(() => ({ … })); // возвращает ArrayBuffer �
 ```ts
 const starWarsPersonSchema = z.object({
   name: z.string(),
-  height: z.number({ coerce: true }),
+  height: z.number({coerce: true}),
   edited: z.string().datetime(),
   films: z.array(z.string()),
 });
@@ -110,10 +110,9 @@ const starWarsPersonSchema = z.object({
 export class CharacterViewer {
   id = signal(1);
 
-  swPersonResource = httpResource(
-    () => `https://swapi.info/api/people/${this.id()}`,
-    { parse: starWarsPersonSchema.parse }
-  );
+  swPersonResource = httpResource(() => `https://swapi.info/api/people/${this.id()}`, {
+    parse: starWarsPersonSchema.parse,
+  });
 }
 ```
 
@@ -126,10 +125,7 @@ API, что и `HttpClient`. Подробнее см. в разделе [Тес�
 
 ```ts
 TestBed.configureTestingModule({
-  providers: [
-    provideHttpClient(),
-    provideHttpClientTesting(),
-  ],
+  providers: [provideHttpClient(), provideHttpClientTesting()],
 });
 
 const id = signal(0);

@@ -334,6 +334,7 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
 
 // @public
 export interface ImageLoaderConfig {
+    height?: number;
     isPlaceholder?: boolean;
     loaderParams?: {
         [key: string]: any;
@@ -638,7 +639,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     static ngAcceptInputType_priority: unknown;
     // (undocumented)
     static ngAcceptInputType_width: unknown;
-    ngOnChanges(changes: SimpleChanges): void;
+    ngOnChanges(changes: SimpleChanges<NgOptimizedImage>): void;
     ngOnInit(): void;
     ngSrc: string;
     ngSrcset: string;
@@ -728,14 +729,26 @@ export class NgSwitchDefault {
 export class NgTemplateOutlet<C = unknown> implements OnChanges {
     constructor(_viewContainerRef: ViewContainerRef);
     // (undocumented)
+    protected injector: Injector;
+    // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
     ngTemplateOutlet: TemplateRef<C> | null | undefined;
     ngTemplateOutletContext: C | null | undefined;
-    ngTemplateOutletInjector: Injector | null | undefined;
+    ngTemplateOutletInjector: Injector | 'outlet' | null | undefined;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgTemplateOutlet<any>, "[ngTemplateOutlet]", never, { "ngTemplateOutletContext": { "alias": "ngTemplateOutletContext"; "required": false; }; "ngTemplateOutlet": { "alias": "ngTemplateOutlet"; "required": false; }; "ngTemplateOutletInjector": { "alias": "ngTemplateOutletInjector"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgTemplateOutlet<any>, never>;
+}
+
+// @public
+export class NoTrailingSlashPathLocationStrategy extends PathLocationStrategy {
+    // (undocumented)
+    prepareExternalUrl(internal: string): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<NoTrailingSlashPathLocationStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<NoTrailingSlashPathLocationStrategy>;
 }
 
 // @public @deprecated
@@ -984,6 +997,16 @@ export class TitleCasePipe implements PipeTransform {
     static ɵfac: i0.ɵɵFactoryDeclaration<TitleCasePipe, never>;
     // (undocumented)
     static ɵpipe: i0.ɵɵPipeDeclaration<TitleCasePipe, "titlecase", true>;
+}
+
+// @public
+export class TrailingSlashPathLocationStrategy extends PathLocationStrategy {
+    // (undocumented)
+    prepareExternalUrl(internal: string): string;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<TrailingSlashPathLocationStrategy, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<TrailingSlashPathLocationStrategy>;
 }
 
 // @public @deprecated

@@ -300,23 +300,16 @@ export type QueryParamsHandling = 'merge' | 'preserve' | 'replace' | '';
 /**
  * The type for the function that can be used to handle redirects when the path matches a `Route` config.
  *
- * The `RedirectFunction` does _not_ have access to the full
- * `ActivatedRouteSnapshot` interface. Some data are not accurately known
- * at the route matching phase. For example, resolvers are not run until
- * later, so any resolved title would not be populated. The same goes for lazy
- * loaded components. This is also true for all the snapshots up to the
- * root, so properties that include parents (root, parent, pathFromRoot)
- * are also excluded. And naturally, the full route matching hasn't yet
- * happened so firstChild and children are not available either.
+ * The `RedirectFunction` does not have access to the full
+ * `ActivatedRouteSnapshot` interface because Route matching has not
+ * yet completed when the function is called. See {@link PartialMatchRouteSnapshot}
+ * for more information.
  *
  * @see {@link Route#redirectTo}
  * @publicApi
  */
 export type RedirectFunction = (
-  redirectData: Pick<
-    ActivatedRouteSnapshot,
-    'routeConfig' | 'url' | 'params' | 'queryParams' | 'fragment' | 'data' | 'outlet' | 'title'
-  >,
+  redirectData: PartialMatchRouteSnapshot,
 ) => MaybeAsync<string | UrlTree>;
 
 /**
@@ -792,11 +785,17 @@ export interface Route {
    * @internal
    */
   _loadedInjector?: EnvironmentInjector;
+  /**
+   * Filled if loadChildren retruns a module factory
+   * @internal
+   */
+  _loadedNgModuleFactory?: NgModuleFactory<any>;
 }
 
 export interface LoadedRouterConfig {
   routes: Route[];
   injector: EnvironmentInjector | undefined;
+  factory?: NgModuleFactory<unknown>;
 }
 
 /**
@@ -1152,7 +1151,11 @@ export type CanDeactivateFn<T> = (
  * @see [CanMatch](guide/routing/route-guards#canmatch)
  */
 export interface CanMatch {
-  canMatch(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
+  canMatch(
+    route: Route,
+    segments: UrlSegment[],
+    currentSnapshot?: PartialMatchRouteSnapshot,
+  ): MaybeAsync<GuardResult>;
 }
 
 /**
@@ -1169,12 +1172,45 @@ export interface CanMatch {
  *
  * @param route The route configuration.
  * @param segments The URL segments that have not been consumed by previous parent route evaluations.
+ * @param currentSnapshot The current route snapshot up to this point in the matching process. While this parameter is optional,
+ * it will always be defined when called by the Router. It is only optional for backwards compatibility with functions defined prior
+ * to the introduction of this parameter.
  *
  * @publicApi
  * @see {@link Route}
  * @see [CanMatch](guide/routing/route-guards#canmatch)
  */
-export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
+export type CanMatchFn = (
+  route: Route,
+  segments: UrlSegment[],
+  currentSnapshot?: PartialMatchRouteSnapshot,
+) => MaybeAsync<GuardResult>;
+
+/**
+ * A subset of the `ActivatedRouteSnapshot` interface that includes only the known data
+ * up to the route matching phase. Some data are not accurately known
+ * at in this phase. For example, resolvers are not run until
+ * later, so any resolved title would not be populated. The same goes for lazy
+ * loaded components. This is also true for all the snapshots up to the
+ * root, so properties that include parents (root, parent, pathFromRoot)
+ * are also excluded. And naturally, the full route matching hasn't yet
+ * happened so firstChild and children are not available either.
+ *
+ * @publicApi
+ */
+export type PartialMatchRouteSnapshot = Pick<
+  ActivatedRouteSnapshot,
+  | 'routeConfig'
+  | 'url'
+  | 'params'
+  | 'queryParams'
+  | 'fragment'
+  | 'data'
+  | 'outlet'
+  | 'title'
+  | 'paramMap'
+  | 'queryParamMap'
+>;
 
 /**
  * @description
@@ -1500,8 +1536,8 @@ export interface NavigationBehaviorOptions {
   /**
    * Developer-defined state that can be passed to any navigation.
    * Access this value through the `Navigation.extras` object
-   * returned from the [Router.getCurrentNavigation()
-   * method](api/router/Router#getcurrentnavigation) while a navigation is executing.
+   * returned from the [Router.currentNavigation()
+   * method](api/router/Router#currentNavigation) while a navigation is executing.
    *
    * After a navigation completes, the router writes an object containing this
    * value together with a `navigationId` to `history.state`.
@@ -1555,7 +1591,7 @@ export interface NavigationBehaviorOptions {
    *   const userService = inject(UserService);
    *   const router = inject(Router);
    *   if (!userService.isLoggedIn()) {
-   *     const targetOfCurrentNavigation = router.getCurrentNavigation()?.finalUrl;
+   *     const targetOfCurrentNavigation = router.currentNavigation()?.finalUrl;
    *     const redirect = router.parseUrl('/404');
    *     return new RedirectCommand(redirect, {browserUrl: targetOfCurrentNavigation});
    *   }

@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -357,24 +357,20 @@ export abstract class AbstractFormDirective
   }
 
   private _cleanUpFormContainer(dir: FormArrayName | FormGroupName): void {
-    if (this.form) {
-      const ctrl: any = this.form.get(dir.path);
-      if (ctrl) {
-        const isControlUpdated = cleanUpFormContainer(ctrl, dir);
-        if (isControlUpdated) {
-          // Run validity check only in case a control was updated (i.e. view validators were
-          // removed) as removing view validators might cause validity to change.
-          ctrl.updateValueAndValidity({emitEvent: false});
-        }
+    const ctrl: any = this.form?.get(dir.path);
+    if (ctrl) {
+      const isControlUpdated = cleanUpFormContainer(ctrl, dir);
+      if (isControlUpdated) {
+        // Run validity check only in case a control was updated (i.e. view validators were
+        // removed) as removing view validators might cause validity to change.
+        ctrl.updateValueAndValidity({emitEvent: false});
       }
     }
   }
 
   private _updateRegistrations() {
     this.form._registerOnCollectionChange(this._onCollectionChange);
-    if (this._oldForm) {
-      this._oldForm._registerOnCollectionChange(() => {});
-    }
+    this._oldForm?._registerOnCollectionChange(() => {});
   }
 
   private _updateValidators() {

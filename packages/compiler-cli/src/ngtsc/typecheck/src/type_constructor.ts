@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ExpressionType, R3Identifiers, WrappedNodeExpr} from '@angular/compiler';
+import {R3Identifiers} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
@@ -14,50 +14,37 @@ import {TypeCtorMetadata} from '../api';
 
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {checkIfGenericTypeBoundsCanBeEmitted} from './tcb_util';
-import {tsCreateTypeQueryForCoercedInput} from './ts_util';
+import {quoteAndEscape, TcbExpr, tempPrint} from './ops/codegen';
 
 export function generateTypeCtorDeclarationFn(
   env: ReferenceEmitEnvironment,
   meta: TypeCtorMetadata,
   nodeTypeRef: ts.EntityName,
   typeParams: ts.TypeParameterDeclaration[] | undefined,
-): ts.Statement {
-  const rawTypeArgs = typeParams !== undefined ? generateGenericArgs(typeParams) : undefined;
-  const rawType = ts.factory.createTypeReferenceNode(nodeTypeRef, rawTypeArgs);
-
-  const initParam = constructTypeCtorParameter(env, meta, rawType);
-
+): TcbExpr {
+  const typeArgs = generateGenericArgs(typeParams);
+  const typeRef = ts.isIdentifier(nodeTypeRef)
+    ? nodeTypeRef.text
+    : tempPrint(nodeTypeRef, nodeTypeRef.getSourceFile());
+  const typeRefWithGenerics = `${typeRef}${typeArgs}`;
+  const initParam = constructTypeCtorParameter(
+    env,
+    meta,
+    nodeTypeRef.getSourceFile(),
+    typeRef,
+    typeRefWithGenerics,
+  );
   const typeParameters = typeParametersWithDefaultTypes(typeParams);
+  let source: string;
 
   if (meta.body) {
-    const fnType = ts.factory.createFunctionTypeNode(
-      /* typeParameters */ typeParameters,
-      /* parameters */ [initParam],
-      /* type */ rawType,
-    );
-
-    const decl = ts.factory.createVariableDeclaration(
-      /* name */ meta.fnName,
-      /* exclamationToken */ undefined,
-      /* type */ fnType,
-      /* body */ ts.factory.createNonNullExpression(ts.factory.createNull()),
-    );
-    const declList = ts.factory.createVariableDeclarationList([decl], ts.NodeFlags.Const);
-    return ts.factory.createVariableStatement(
-      /* modifiers */ undefined,
-      /* declarationList */ declList,
-    );
+    const fnType = `${typeParameters}(${initParam}) => ${typeRefWithGenerics}`;
+    source = `const ${meta.fnName}: ${fnType} = null!`;
   } else {
-    return ts.factory.createFunctionDeclaration(
-      /* modifiers */ [ts.factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
-      /* asteriskToken */ undefined,
-      /* name */ meta.fnName,
-      /* typeParameters */ typeParameters,
-      /* parameters */ [initParam],
-      /* type */ rawType,
-      /* body */ undefined,
-    );
+    source = `declare function ${meta.fnName}${typeParameters}(${initParam}): ${typeRefWithGenerics}`;
   }
+
+  return new TcbExpr(source);
 }
 
 /**
@@ -99,44 +86,37 @@ export function generateInlineTypeCtor(
   env: ReferenceEmitEnvironment,
   node: ClassDeclaration<ts.ClassDeclaration>,
   meta: TypeCtorMetadata,
-): ts.MethodDeclaration {
+): string {
   // Build rawType, a `ts.TypeNode` of the class with its generic parameters passed through from
   // the definition without any type bounds. For example, if the class is
   // `FooDirective<T extends Bar>`, its rawType would be `FooDirective<T>`.
-  const rawTypeArgs =
-    node.typeParameters !== undefined ? generateGenericArgs(node.typeParameters) : undefined;
-  const rawType = ts.factory.createTypeReferenceNode(node.name, rawTypeArgs);
-
-  const initParam = constructTypeCtorParameter(env, meta, rawType);
+  const typeRef = node.name.text;
+  const typeRefWithGenerics = `${typeRef}${generateGenericArgs(node.typeParameters)}`;
+  const initParam = constructTypeCtorParameter(
+    env,
+    meta,
+    node.getSourceFile(),
+    typeRef,
+    typeRefWithGenerics,
+  );
 
   // If this constructor is being generated into a .ts file, then it needs a fake body. The body
   // is set to a return of `null!`. If the type constructor is being generated into a .d.ts file,
   // it needs no body.
-  let body: ts.Block | undefined = undefined;
-  if (meta.body) {
-    body = ts.factory.createBlock([
-      ts.factory.createReturnStatement(ts.factory.createNonNullExpression(ts.factory.createNull())),
-    ]);
-  }
+  const body = `{ return null!; }`;
+  const typeParams = typeParametersWithDefaultTypes(node.typeParameters);
 
   // Create the type constructor method declaration.
-  return ts.factory.createMethodDeclaration(
-    /* modifiers */ [ts.factory.createModifier(ts.SyntaxKind.StaticKeyword)],
-    /* asteriskToken */ undefined,
-    /* name */ meta.fnName,
-    /* questionToken */ undefined,
-    /* typeParameters */ typeParametersWithDefaultTypes(node.typeParameters),
-    /* parameters */ [initParam],
-    /* type */ rawType,
-    /* body */ body,
-  );
+  return `static ${meta.fnName}${typeParams}(${initParam}): ${typeRefWithGenerics} ${body}`;
 }
 
 function constructTypeCtorParameter(
   env: ReferenceEmitEnvironment,
   meta: TypeCtorMetadata,
-  rawType: ts.TypeReferenceNode,
-): ts.ParameterDeclaration {
+  sourceFile: ts.SourceFile,
+  typeRef: string,
+  typeRefWithGenerics: string,
+): string {
   // initType is the type of 'init', the single argument to the type constructor method.
   // If the Directive has any inputs, its initType will be:
   //
@@ -146,90 +126,68 @@ function constructTypeCtorParameter(
   // directive will be inferred.
   //
   // In the special case there are no inputs, initType is set to {}.
-  let initType: ts.TypeNode | null = null;
+  let initType: string | null = null;
 
-  const plainKeys: ts.LiteralTypeNode[] = [];
-  const coercedKeys: ts.PropertySignature[] = [];
-  const signalInputKeys: ts.LiteralTypeNode[] = [];
+  const plainKeys: string[] = [];
+  const coercedKeys: string[] = [];
+  const signalInputKeys: string[] = [];
 
   for (const {classPropertyName, transform, isSignal} of meta.fields.inputs) {
     if (isSignal) {
-      signalInputKeys.push(
-        ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(classPropertyName)),
-      );
+      signalInputKeys.push(quoteAndEscape(classPropertyName));
     } else if (!meta.coercedInputFields.has(classPropertyName)) {
-      plainKeys.push(
-        ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(classPropertyName)),
-      );
+      plainKeys.push(quoteAndEscape(classPropertyName));
     } else {
       const coercionType =
         transform != null
-          ? transform.type.node
-          : tsCreateTypeQueryForCoercedInput(rawType.typeName, classPropertyName);
+          ? tempPrint(transform.type.node, sourceFile)
+          : `typeof ${typeRef}.ngAcceptInputType_${classPropertyName}`;
 
-      coercedKeys.push(
-        ts.factory.createPropertySignature(
-          /* modifiers */ undefined,
-          /* name */ classPropertyName,
-          /* questionToken */ undefined,
-          /* type */ coercionType,
-        ),
-      );
+      coercedKeys.push(`${classPropertyName}: ${coercionType}`);
     }
   }
+
   if (plainKeys.length > 0) {
     // Construct a union of all the field names.
-    const keyTypeUnion = ts.factory.createUnionTypeNode(plainKeys);
-
-    // Construct the Pick<rawType, keyTypeUnion>.
-    initType = ts.factory.createTypeReferenceNode('Pick', [rawType, keyTypeUnion]);
+    initType = `Pick<${typeRefWithGenerics}, ${plainKeys.join(' | ')}>`;
   }
   if (coercedKeys.length > 0) {
-    const coercedLiteral = ts.factory.createTypeLiteralNode(coercedKeys);
-
-    initType =
-      initType !== null
-        ? ts.factory.createIntersectionTypeNode([initType, coercedLiteral])
-        : coercedLiteral;
+    let coercedLiteral = '{\n';
+    for (const key of coercedKeys) {
+      coercedLiteral += `${key};\n`;
+    }
+    coercedLiteral += '}';
+    initType = initType !== null ? `${initType} & ${coercedLiteral}` : coercedLiteral;
   }
   if (signalInputKeys.length > 0) {
-    const keyTypeUnion = ts.factory.createUnionTypeNode(signalInputKeys);
+    const keyTypeUnion = signalInputKeys.join(' | ');
 
     // Construct the UnwrapDirectiveSignalInputs<rawType, keyTypeUnion>.
-    const unwrapDirectiveSignalInputsExpr = env.referenceExternalType(
+    const unwrapRef = env.referenceExternalSymbol(
       R3Identifiers.UnwrapDirectiveSignalInputs.moduleName,
       R3Identifiers.UnwrapDirectiveSignalInputs.name,
-      [
-        // TODO:
-        new ExpressionType(new WrappedNodeExpr(rawType)),
-        new ExpressionType(new WrappedNodeExpr(keyTypeUnion)),
-      ],
     );
-
-    initType =
-      initType !== null
-        ? ts.factory.createIntersectionTypeNode([initType, unwrapDirectiveSignalInputsExpr])
-        : unwrapDirectiveSignalInputsExpr;
+    const unwrapExpr = `${unwrapRef.print()}<${typeRefWithGenerics}, ${keyTypeUnion}>`;
+    initType = initType !== null ? `${initType} & ${unwrapExpr}` : unwrapExpr;
   }
 
   if (initType === null) {
     // Special case - no inputs, outputs, or other fields which could influence the result type.
-    initType = ts.factory.createTypeLiteralNode([]);
+    initType = '{}';
   }
 
   // Create the 'init' parameter itself.
-  return ts.factory.createParameterDeclaration(
-    /* modifiers */ undefined,
-    /* dotDotDotToken */ undefined,
-    /* name */ 'init',
-    /* questionToken */ undefined,
-    /* type */ initType,
-    /* initializer */ undefined,
-  );
+  return `init: ${initType}`;
 }
 
-function generateGenericArgs(params: ReadonlyArray<ts.TypeParameterDeclaration>): ts.TypeNode[] {
-  return params.map((param) => ts.factory.createTypeReferenceNode(param.name, undefined));
+function generateGenericArgs(
+  typeParameters: ReadonlyArray<ts.TypeParameterDeclaration> | undefined,
+): string {
+  if (typeParameters === undefined || typeParameters.length === 0) {
+    return '';
+  }
+
+  return `<${typeParameters.map((param) => param.name.text).join(', ')}>`;
 }
 
 export function requiresInlineTypeCtor(
@@ -288,22 +246,21 @@ export function requiresInlineTypeCtor(
  */
 function typeParametersWithDefaultTypes(
   params: ReadonlyArray<ts.TypeParameterDeclaration> | undefined,
-): ts.TypeParameterDeclaration[] | undefined {
-  if (params === undefined) {
-    return undefined;
+): string {
+  if (params === undefined || params.length === 0) {
+    return '';
   }
 
-  return params.map((param) => {
-    if (param.default === undefined) {
-      return ts.factory.updateTypeParameterDeclaration(
-        param,
-        param.modifiers,
-        param.name,
-        param.constraint,
-        ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
-      );
-    } else {
-      return param;
-    }
+  const paramStrings = params.map((param) => {
+    const constraint = param.constraint
+      ? ` extends ${tempPrint(param.constraint, param.getSourceFile())}`
+      : '';
+    const defaultValue = ` = ${
+      param.default ? tempPrint(param.default, param.getSourceFile()) : 'any'
+    }`;
+
+    return `${param.name.text}${constraint}${defaultValue}`;
   });
+
+  return `<${paramStrings.join(', ')}>`;
 }

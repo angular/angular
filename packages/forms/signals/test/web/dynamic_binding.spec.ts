@@ -18,17 +18,17 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {
   disabled,
-  Field,
-  FieldTree,
   form,
   FormCheckboxControl,
+  FormField,
   FormValueControl,
   required,
+  type Field,
 } from '@angular/forms/signals';
 
 describe('createComponent', () => {
   describe('FormValueControl', () => {
-    it(`synchronizes value from '[field]' binding`, () => {
+    it(`synchronizes value from '[formField]' binding`, () => {
       @Component({template: ''})
       class CustomInput implements FormValueControl<string> {
         readonly value = model.required<string>();
@@ -41,14 +41,14 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<string>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<string>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.value()).toBe('initial value');
 
       // Model --> View
@@ -62,7 +62,7 @@ describe('createComponent', () => {
       expect(control().value()).toBe('from component');
     });
 
-    it(`synchronizes properties from '[field]' binding`, () => {
+    it(`synchronizes properties from '[formField]' binding`, () => {
       @Component({template: ''})
       class CustomInput implements FormValueControl<string> {
         readonly value = model.required<string>();
@@ -81,14 +81,14 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<string>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<string>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.disabled()).toBe(false);
 
       disabledSignal.set(true);
@@ -98,7 +98,7 @@ describe('createComponent', () => {
   });
 
   describe('FormCheckboxControl', () => {
-    it(`synchronizes value from '[field]' binding`, () => {
+    it(`synchronizes value from '[formField]' binding`, () => {
       @Component({template: ''})
       class CustomCheckbox implements FormCheckboxControl {
         readonly checked = model.required<boolean>();
@@ -111,14 +111,14 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<boolean>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<boolean>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.checked()).toBe(true);
 
       // Model --> View
@@ -132,7 +132,7 @@ describe('createComponent', () => {
       expect(control().value()).toBe(true);
     });
 
-    it(`synchronizes properties from '[field]' binding`, () => {
+    it(`synchronizes properties from '[formField]' binding`, () => {
       @Component({template: ''})
       class CustomCheckbox implements FormCheckboxControl {
         readonly checked = model.required<boolean>();
@@ -151,14 +151,14 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<boolean>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<boolean>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       });
       fixture.changeDetectorRef.detectChanges();
 
-      expect(control().fieldBindings()).toHaveSize(1);
+      expect(control().formFieldBindings()).toHaveSize(1);
       expect(fixture.instance.required()).toBe(false);
 
       requiredSignal.set(true);
@@ -167,10 +167,10 @@ describe('createComponent', () => {
     });
   });
 
-  it(`should not treat component with '[field]' input as a control`, () => {
+  it(`should not treat component with '[formField]' input as a control`, () => {
     @Component({template: ''})
     class TestCmp {
-      readonly field = input.required<FieldTree<string>>();
+      readonly formField = input.required<Field<string>>();
       readonly value = model.required<string>();
     }
 
@@ -183,17 +183,17 @@ describe('createComponent', () => {
       environmentInjector,
       directives: [
         {
-          type: Field<string>,
-          bindings: [inputBinding('field', () => control)],
+          type: FormField<string>,
+          bindings: [inputBinding('formField', () => control)],
         },
       ],
     });
     fixture.changeDetectorRef.detectChanges();
 
-    expect(control().fieldBindings()).toHaveSize(0);
+    expect(control().formFieldBindings()).toHaveSize(0);
   });
 
-  it(`should throw for invalid '[field]' binding host`, () => {
+  it(`should throw for invalid '[formField]' binding host`, () => {
     @Component({template: ''})
     class InvalidFieldHost {}
 
@@ -207,11 +207,11 @@ describe('createComponent', () => {
         environmentInjector,
         directives: [
           {
-            type: Field<string>,
-            bindings: [inputBinding('field', () => control)],
+            type: FormField<string>,
+            bindings: [inputBinding('formField', () => control)],
           },
         ],
       }),
-    ).toThrowError(/Component InvalidFieldHost (.+) is an invalid \[field\] directive host\./);
+    ).toThrowError(/Component InvalidFieldHost (.+) is an invalid \[formField\] directive host\./);
   });
 });

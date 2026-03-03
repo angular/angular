@@ -62,7 +62,6 @@ Tailwind CSS и его peer-зависимостей:
 Добавьте плагин `@tailwindcss/postcss` в вашу конфигурацию PostCSS.
 
 ```json {header: '.postcssrc.json'}
-
 {
   "plugins": {
     "@tailwindcss/postcss": {}
@@ -74,15 +73,15 @@ Tailwind CSS и его peer-зависимостей:
 
 Добавьте `@import` в файл `./src/styles.css` для импорта Tailwind CSS.
 
-<docs-code language="css" header="src/styles.css">
-@import "tailwindcss";
-</docs-code>
+```css {header: "src/styles.css"}
+@import 'tailwindcss';
+```
 
 Если вы используете SCSS, добавьте `@use` в файл `./src/styles.scss`.
 
-<docs-code language="scss" header="src/styles.scss">
-@use "tailwindcss";
-</docs-code>
+```scss {header: "src/styles.scss"}
+@use 'tailwindcss';
+```
 
 ### 5. Начните использовать Tailwind в вашем проекте
 
@@ -92,9 +91,7 @@ Tailwind CSS и его peer-зависимостей:
 Например, вы можете добавить следующий код в ваш файл `app.html`:
 
 ```html
-<h1 class="text-3xl font-bold underline">
-  Hello world!
-</h1>
+<h1 class="text-3xl font-bold underline">Hello world!</h1>
 ```
 
 ## Дополнительные ресурсы

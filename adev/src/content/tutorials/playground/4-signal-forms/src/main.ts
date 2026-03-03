@@ -1,6 +1,6 @@
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
+import {email, form, FormField, required, submit} from '@angular/forms/signals';
 import {bootstrapApplication} from '@angular/platform-browser';
-import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
-import {form, Field, required, email, debounce, submit} from '@angular/forms/signals';
 
 interface LoginData {
   email: string;
@@ -14,7 +14,7 @@ interface LoginData {
       <div>
         <label>
           Email:
-          <input type="email" [field]="loginForm.email" />
+          <input type="email" [formField]="loginForm.email" />
         </label>
 
         @if (loginForm.email().invalid()) {
@@ -29,7 +29,7 @@ interface LoginData {
       <div>
         <label>
           Password:
-          <input type="password" [field]="loginForm.password" />
+          <input type="password" [formField]="loginForm.password" />
         </label>
 
         @if (loginForm.password().invalid()) {
@@ -45,7 +45,7 @@ interface LoginData {
     </form>
   `,
   styleUrl: 'main.css',
-  imports: [Field],
+  imports: [FormField],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginApp {

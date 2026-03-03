@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_examples_db", "ng_package", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,8 +17,25 @@ ng_project(
     ],
 )
 
+ng_examples_db(
+    name = "forms_example_database",
+    srcs = glob(
+        include = [
+            "examples/**/*.md",
+        ],
+        allow_empty = True,
+    ),
+    out = "resources/code-examples.db",
+    path = "packages/forms/examples",
+)
+
 ng_package(
-    srcs = ["package.json"],
+    srcs = [
+        "package.json",
+    ],
+    data = [
+        "resources/code-examples.db",
+    ],
     package = "@angular/forms",
     tags = [
         "release-with-framework",

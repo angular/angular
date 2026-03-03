@@ -7,7 +7,7 @@ import {Component, input, ChangeDetectionStrategy} from '@angular/core';
       <h3>{{ name() }}</h3>
       <p class="price">\${{ price() }}</p>
       <p class="status">
-        Status: 
+        Status:
         @if (available()) {
           <span class="available">Available</span>
         } @else {

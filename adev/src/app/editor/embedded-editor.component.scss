@@ -106,7 +106,7 @@ $width-breakpoint: 950px;
   z-index: var(--z-index-content);
 
   docs-icon {
-    color: var(--gray-400);
+    color: var(--quaternary-contrast);
     margin: auto;
     font-size: 1.3rem;
     transition: color 0.3s ease;
@@ -120,7 +120,7 @@ $width-breakpoint: 950px;
 
   &:disabled {
     docs-icon {
-      color: var(--gray-400);
+      color: var(--quaternary-contrast);
     }
   }
 }

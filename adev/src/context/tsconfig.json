@@ -6,7 +6,7 @@
     "sourceMap": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "target": "esnext",
+    "target": "es2022",
     "types": ["node"],
     "paths": {}
   }

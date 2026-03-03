@@ -1,6 +1,6 @@
 {
   "name": "zone.js",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "description": "Zones for JavaScript",
   "main": "./bundles/zone.umd.js",
   "module": "./fesm2015/zone.js",
@@ -8,10 +8,10 @@
   "fesm2015": "./fesm2015/zone.js",
   "typings": "./zone.d.ts",
   "devDependencies": {
-    "@csstools/css-calc": "2.1.4",
-    "@csstools/css-color-parser": "3.1.0",
+    "@csstools/css-calc": "3.1.1",
+    "@csstools/css-color-parser": "4.0.2",
     "@externs/nodejs": "1.5.0",
-    "@types/jasmine": "5.1.13",
+    "@types/jasmine": "6.0.0",
     "@types/node": "^24.3.0",
     "@types/systemjs": "6.15.4",
     "bluebird": "3.7.2",
@@ -22,9 +22,9 @@
     "jest": "30.2.0",
     "mocha": "11.7.5",
     "mock-require": "3.0.3",
-    "jasmine": "5.12.0",
+    "jasmine": "6.1.0",
     "source-map-support": "0.5.21",
-    "jasmine-core": "5.12.1",
+    "jasmine-core": "6.1.0",
     "jasmine-reporters": "2.5.2",
     "rxjs": "7.8.2",
     "systemjs": "6.15.1",
@@ -36,7 +36,8 @@
     "jest:test": "jest --config ./test/jest/jest.config.js",
     "jest:nodetest": "jest --config ./test/jest/jest.node.config.js",
     "vitest:test": "vitest ./test/vitest/vitest.spec.js",
-    "promisefinallytest": "mocha ./test/promise/promise.finally.spec.mjs"
+    "promisefinallytest": "mocha ./test/promise/promise.finally.spec.mjs",
+    "release": "node tools/release.mts"
   },
   "repository": {
     "type": "git",

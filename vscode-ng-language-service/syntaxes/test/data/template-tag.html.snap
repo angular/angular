@@ -127,6 +127,18 @@
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.tag.ng
 ><div [invalidProperty)="val"></div>
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.tag.ng
+><div [class.min-h-[calc(100vh-var(--header-height))]]="val"></div>
+#^^^^^ template.tag.ng
+#     ^ template.tag.ng meta.ng-binding.property.html entity.other.attribute-name.html entity.other.ng-binding-name.property.html punctuation.definition.ng-binding-name.begin.html
+#      ^^^^^ template.tag.ng meta.ng-binding.property.html entity.other.attribute-name.html entity.other.ng-binding-name.property.html entity.other.ng-binding-name.class.min-h-[calc(100vh-var(--header-height))].html
+#           ^ template.tag.ng meta.ng-binding.property.html entity.other.attribute-name.html entity.other.ng-binding-name.property.html entity.other.ng-binding-name.class.min-h-[calc(100vh-var(--header-height))].html punctuation.accessor.html
+#            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.tag.ng meta.ng-binding.property.html entity.other.attribute-name.html entity.other.ng-binding-name.property.html entity.other.ng-binding-name.class.min-h-[calc(100vh-var(--header-height))].html
+#                                                    ^ template.tag.ng meta.ng-binding.property.html entity.other.attribute-name.html entity.other.ng-binding-name.property.html punctuation.definition.ng-binding-name.end.html
+#                                                     ^ template.tag.ng meta.ng-binding.property.html punctuation.separator.key-value.html
+#                                                      ^ template.tag.ng meta.ng-binding.property.html string.quoted.html punctuation.definition.string.begin.html
+#                                                       ^^^ template.tag.ng meta.ng-binding.property.html expression.ng variable.other.readwrite.ts
+#                                                          ^ template.tag.ng meta.ng-binding.property.html string.quoted.html punctuation.definition.string.end.html
+#                                                           ^^^^^^^^ template.tag.ng
 >
 ><!-- Event binding test -->
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.tag.ng
@@ -348,7 +360,15 @@
 #                                  ^ template.tag.ng meta.ng-binding.two-way.html string.quoted.html punctuation.definition.string.end.html
 #                                   ^^^^^^^^^^^^^^^^^ template.tag.ng
 ><my-component [(%invalid)]="invalid"></my-component>
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.tag.ng
+#^^^^^^^^^^^^^^ template.tag.ng
+#              ^^ template.tag.ng meta.ng-binding.property.html entity.other.attribute-name.html entity.other.ng-binding-name.property.html punctuation.definition.ng-binding-name.begin.html
+#                ^ template.tag.ng meta.ng-binding.property.html entity.other.attribute-name.html entity.other.ng-binding-name.property.html entity.other.ng-binding-name.%.html
+#                 ^^^^^^^^^ template.tag.ng meta.ng-binding.property.html entity.other.attribute-name.html entity.other.ng-binding-name.property.html
+#                          ^ template.tag.ng meta.ng-binding.property.html punctuation.separator.key-value.html
+#                           ^ template.tag.ng meta.ng-binding.property.html string.quoted.html punctuation.definition.string.begin.html
+#                            ^^^^^^^ template.tag.ng meta.ng-binding.property.html expression.ng variable.other.readwrite.ts
+#                                   ^ template.tag.ng meta.ng-binding.property.html string.quoted.html punctuation.definition.string.end.html
+#                                    ^^^^^^^^^^^^^^^^^ template.tag.ng
 ><my-component ([invalid)]="invalid"></my-component>
 #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.tag.ng
 >

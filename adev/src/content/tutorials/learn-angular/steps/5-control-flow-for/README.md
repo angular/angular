@@ -41,7 +41,13 @@ export class App {
 В классе `App` добавьте свойство `users`, содержащее пользователей и их имена.
 
 ```ts
-[{id: 0, name: 'Sarah'}, {id: 1, name: 'Amy'}, {id: 2, name: 'Rachel'}, {id: 3, name: 'Jessica'}, {id: 4, name: 'Poornima'}]
+[
+  {id: 0, name: 'Sarah'},
+  {id: 1, name: 'Amy'},
+  {id: 2, name: 'Rachel'},
+  {id: 3, name: 'Jessica'},
+  {id: 4, name: 'Poornima'},
+];
 ```
 
 </docs-step>

@@ -95,6 +95,9 @@ export function toR3DirectiveMeta<TExpression>(
     lifecycle: {
       usesOnChanges: metaObj.has('usesOnChanges') ? metaObj.getBoolean('usesOnChanges') : false,
     },
+    controlCreate: metaObj.has('controlCreate')
+      ? toControlCreate(metaObj.getObject('controlCreate'))
+      : null,
     name: typeName,
     usesInheritance: metaObj.has('usesInheritance') ? metaObj.getBoolean('usesInheritance') : false,
     isStandalone: metaObj.has('isStandalone')
@@ -131,6 +134,15 @@ function toInputMapping<TExpression>(
     key,
     value as AstValue<LegacyInputPartialMapping, TExpression>,
   );
+}
+
+function toControlCreate<TExpression>(
+  controlCreate: AstObject<NonNullable<R3DeclareDirectiveMetadata['controlCreate']>, TExpression>,
+) {
+  const passThroughValue = controlCreate.getValue('passThroughInput');
+  return {
+    passThroughInput: passThroughValue.isNull() ? null : passThroughValue.getString(),
+  };
 }
 
 /**

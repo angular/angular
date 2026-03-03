@@ -12,6 +12,7 @@ node_modules/@angular/language-service/package.json
 node_modules/@angular/language-service/plugin-factory.d.ts
 node_modules/typescript
 package.json
+schemas/tsconfig-ng.schema.json
 server/README.md
 server/bin/ngserver
 server/index.js

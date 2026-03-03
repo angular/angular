@@ -37,8 +37,8 @@ import {Component} from '@angular/core';
 import {CdkDrag} from '@angular/cdk/drag-drop';
 
 @Component({
-  selector: 'my-custom-component',
-  templateUrl: 'my-custom-component.html',
+  selector: 'drag-drop-example',
+  templateUrl: 'drag-drop-example.html',
   imports: [CdkDrag],
 })
 export class DragDropExample {}
@@ -49,10 +49,10 @@ export class DragDropExample {}
 Вы можете сделать любой элемент перетаскиваемым, добавив директиву `cdkDrag`. По умолчанию все перетаскиваемые элементы
 поддерживают свободное перемещение.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/overview/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/overview/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/overview/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/overview/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/overview/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/overview/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/overview/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/overview/app/app.css"/>
 </docs-code-multifile>
 
 ## Создание списка сортируемых перетаскиваемых элементов
@@ -64,10 +64,10 @@ export class DragDropExample {}
 Директивы drag and drop не обновляют вашу модель данных. Чтобы обновить модель данных, подпишитесь на событие
 `cdkDropListDropped` (которое срабатывает, когда пользователь заканчивает перетаскивание) и обновите данные вручную.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/sorting/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/sorting/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/sorting/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/sorting/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/sorting/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/sorting/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/sorting/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/sorting/app/app.css"/>
 </docs-code-multifile>
 
 Вы можете использовать токен внедрения `CDK_DROP_LIST` для получения ссылок на экземпляры `cdkDropList`. Для получения
@@ -95,17 +95,17 @@ export class DragDropExample {}
 <div cdkDropList id="list-two" [cdkDropListConnectedTo]="['list-one']"></div>
 ```
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/connected-sorting/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/connected-sorting/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/connected-sorting/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/connected-sorting/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/connected-sorting/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/connected-sorting/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/connected-sorting/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/connected-sorting/app/app.css"/>
 </docs-code-multifile>
 
 Используйте директиву `cdkDropListGroup`, если у вас неизвестное количество связанных списков, чтобы настроить
 соединение автоматически. Любой новый `cdkDropList`, добавленный в группу, автоматически связывается со всеми остальными
 списками.
 
-```html
+```angular-html
 <div cdkDropListGroup>
   <!-- Все списки здесь будут связаны. -->
   @for (list of lists; track list) {
@@ -114,10 +114,10 @@ export class DragDropExample {}
 </div>
 ```
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/connected-sorting-group/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/connected-sorting-group/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/connected-sorting-group/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/connected-sorting-group/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/connected-sorting-group/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/connected-sorting-group/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/connected-sorting-group/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/connected-sorting-group/app/app.css"/>
 </docs-code-multifile>
 
 Вы можете использовать токен внедрения `CDK_DROP_LIST_GROUP` для получения ссылок на экземпляры `cdkDropListGroup`. Для
@@ -131,10 +131,10 @@ export class DragDropExample {}
 Angular вызывает предикат всякий раз, когда перетаскиваемый элемент входит в новый контейнер. В зависимости от того,
 возвращает предикат true или false, элемент может быть разрешен или запрещен для помещения в новый контейнер.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/enter-predicate/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/enter-predicate/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/enter-predicate/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/enter-predicate/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/enter-predicate/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/enter-predicate/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/enter-predicate/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/enter-predicate/app/app.css"/>
 </docs-code-multifile>
 
 ## Прикрепление данных
@@ -143,7 +143,7 @@ Angular вызывает предикат всякий раз, когда пер
 `cdkDropListData` соответственно. Вы можете привязаться к событиям, вызываемым обеими директивами, которые будут
 включать эти данные, что позволит легко определить источник взаимодействия drag или drop.
 
-```html
+```angular-html
 @for (list of lists; track list) {
   <div cdkDropList [cdkDropListData]="list" (cdkDropListDropped)="drop($event)">
     @for (item of list; track item) {
@@ -161,10 +161,10 @@ Angular вызывает предикат всякий раз, когда пер
 перетаскивания только за определенный элемент захвата, добавьте директиву `cdkDragHandle` к элементу внутри `cdkDrag`.
 Вы можете добавить столько элементов `cdkDragHandle`, сколько необходимо.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/custom-handle/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/custom-handle/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/custom-handle/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/custom-handle/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/custom-handle/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/custom-handle/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/custom-handle/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/custom-handle/app/app.css"/>
 </docs-code-multifile>
 
 Вы можете использовать токен внедрения `CDK_DRAG_HANDLE` для получения ссылок на экземпляры `cdkDragHandle`. Для
@@ -183,10 +183,10 @@ Angular вызывает предикат всякий раз, когда пер
 Клонированный элемент удаляет свой атрибут id, чтобы избежать наличия нескольких элементов с одинаковым id на странице.
 Это приведет к тому, что любой CSS, нацеленный на этот id, не будет применен.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/custom-preview/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/custom-preview/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/custom-preview/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/custom-preview/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/custom-preview/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/custom-preview/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/custom-preview/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/custom-preview/app/app.css"/>
 </docs-code-multifile>
 
 Вы можете использовать токен внедрения `CDK_DRAG_PREVIEW` для получения ссылок на экземпляры `cdkDragPreview`. Для
@@ -219,10 +219,10 @@ Angular вызывает предикат всякий раз, когда пер
 размещен при сбросе. По умолчанию плейсхолдер — это клон перетаскиваемого элемента. Вы можете заменить плейсхолдер на
 кастомный, используя директиву `*cdkDragPlaceholder`:
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/custom-placeholder/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/custom-placeholder/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/custom-placeholder/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/custom-placeholder/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/custom-placeholder/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/custom-placeholder/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/custom-placeholder/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/custom-placeholder/app/app.css"/>
 </docs-code-multifile>
 
 Вы можете использовать токен внедрения `CDK_DRAG_PLACEHOLDER` для получения ссылок на экземпляры `cdkDragPlaceholder`.
@@ -237,10 +237,10 @@ Angular вызывает предикат всякий раз, когда пер
 Атрибут принимает селектор и ищет вверх по DOM, пока не найдет элемент, соответствующий селектору. Если элемент найден,
 он становится перетаскиваемым. Это полезно, например, для того, чтобы сделать диалоговое окно перетаскиваемым.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/root-element/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/root-element/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/root-element/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/root-element/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/root-element/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/root-element/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/root-element/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/root-element/app/app.css"/>
 </docs-code-multifile>
 
 В качестве альтернативы вы можете изменить токен внедрения `CDK_DRAG_CONFIG`, чтобы обновить `rootElementSelector` в
@@ -255,10 +255,10 @@ Angular вызывает предикат всякий раз, когда пер
 задать позицию элемента. Частый случай использования — восстановление позиции перетаскиваемого элемента после того, как
 пользователь ушел со страницы и вернулся.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/free-drag-position/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/free-drag-position/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/free-drag-position/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/free-drag-position/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/free-drag-position/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/free-drag-position/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/free-drag-position/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/free-drag-position/app/app.css"/>
 </docs-code-multifile>
 
 ### Ограничение перемещения внутри элемента
@@ -268,10 +268,10 @@ Angular вызывает предикат всякий раз, когда пер
 Если совпадение найдено, элемент становится границей, за пределы которой перетаскиваемый элемент не может выйти.
 `cdkDragBoundary` также можно использовать, когда `cdkDrag` находится внутри `cdkDropList`.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/boundary/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/boundary/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/boundary/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/boundary/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/boundary/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/boundary/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/boundary/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/boundary/app/app.css"/>
 </docs-code-multifile>
 
 В качестве альтернативы вы можете изменить токен внедрения `CDK_DRAG_CONFIG`, чтобы обновить `boundaryElement` в
@@ -285,10 +285,10 @@ Angular вызывает предикат всякий раз, когда пер
 определенной осью, установите `cdkDragLockAxis` в значение "x" или "y" на `cdkDrag`. Чтобы ограничить перетаскивание для
 нескольких элементов внутри `cdkDropList`, установите `cdkDropListLockAxis` на `cdkDropList`.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/axis-lock/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/axis-lock/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/axis-lock/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/axis-lock/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/axis-lock/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/axis-lock/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/axis-lock/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/axis-lock/app/app.css"/>
 </docs-code-multifile>
 
 В качестве альтернативы вы можете изменить токен внедрения `CDK_DRAG_CONFIG`, чтобы обновить `lockAxis` в конфигурации.
@@ -305,10 +305,10 @@ Angular вызывает предикат всякий раз, когда пер
 Вы можете задержать начало перетаскивания, используя входное свойство `cdkDragStartDelay`. Оно заставляет ждать
 указанное количество миллисекунд удержания указателя, прежде чем начать перетаскивание элемента.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/delay-drag/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/delay-drag/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/delay-drag/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/delay-drag/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/delay-drag/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/delay-drag/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/delay-drag/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/delay-drag/app/app.css"/>
 </docs-code-multifile>
 
 В качестве альтернативы вы можете изменить токен внедрения `CDK_DRAG_CONFIG`, чтобы обновить `dragStartDelay` в
@@ -323,10 +323,10 @@ Angular вызывает предикат всякий раз, когда пер
 `cdkDropListDisabled` на `cdkDropList`. Также можно отключить конкретный элемент захвата через `cdkDragHandleDisabled`
 на `cdkDragHandle`.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/disable-drag/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/disable-drag/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/disable-drag/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/disable-drag/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/disable-drag/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/disable-drag/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/disable-drag/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/disable-drag/app/app.css"/>
 </docs-code-multifile>
 
 В качестве альтернативы вы можете изменить токен внедрения `CDK_DRAG_CONFIG`, чтобы обновить `draggingDisabled` в
@@ -341,10 +341,10 @@ Angular вызывает предикат всякий раз, когда пер
 По умолчанию директива `cdkDropList` предполагает, что списки вертикальные. Это можно изменить, установив свойство
 `cdkDropListOrientation` в значение `horizontal`.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/horizontal-sorting/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/horizontal-sorting/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/horizontal-sorting/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/horizontal-sorting/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/horizontal-sorting/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/horizontal-sorting/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/horizontal-sorting/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/horizontal-sorting/app/app.css"/>
 </docs-code-multifile>
 
 В качестве альтернативы вы можете изменить токен внедрения `CDK_DRAG_CONFIG`, чтобы обновить `listOrientation` в
@@ -362,10 +362,10 @@ Angular вызывает предикат всякий раз, когда пер
 `cdkDropListOrientation` в значение `mixed`. Это заставляет список использовать другую стратегию сортировки элементов,
 которая включает их перемещение в DOM. Однако список больше не сможет анимировать действие сортировки.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/mixed-sorting/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/mixed-sorting/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/mixed-sorting/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/mixed-sorting/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/mixed-sorting/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/mixed-sorting/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/mixed-sorting/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/mixed-sorting/app/app.css"/>
 </docs-code-multifile>
 
 ### Выборочная сортировка
@@ -375,10 +375,10 @@ Angular вызывает предикат всякий раз, когда пер
 перетаскиваемый элемент собирается переместиться на новый индекс в списке. Если предикат возвращает true, элемент будет
 перемещен на новый индекс, в противном случае он сохранит свою текущую позицию.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/sort-predicate/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/sort-predicate/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/sort-predicate/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/sort-predicate/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/sort-predicate/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/sort-predicate/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/sort-predicate/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/sort-predicate/app/app.css"/>
 </docs-code-multifile>
 
 ### Отключение сортировки
@@ -388,10 +388,10 @@ Angular вызывает предикат всякий раз, когда пер
 `cdkDropListSortingDisabled`, чтобы предотвратить сортировку перетаскиваемых элементов в `cdkDropList`. Это сохраняет
 начальную позицию перетаскиваемого элемента в исходном списке, если он не будет перетащен на новую валидную позицию.
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/disable-sorting/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/disable-sorting/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/disable-sorting/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/disable-sorting/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/disable-sorting/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/disable-sorting/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/disable-sorting/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/disable-sorting/app/app.css"/>
 </docs-code-multifile>
 
 В качестве альтернативы вы можете изменить токен внедрения `CDK_DRAG_CONFIG`, чтобы обновить `sortingDisabled` в
@@ -412,10 +412,10 @@ Angular вызывает предикат всякий раз, когда пер
 Сочетание `cdkDropListHasAnchor` с `cdkDropListSortingDisabled` позволяет создать список, из которого пользователь может
 копировать элементы, не имея возможности переупорядочивать исходный список (например, список товаров и корзина покупок).
 
-<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/copy-list/app/app.component.ts">
-  <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/copy-list/app/app.component.html"/>
-  <docs-code header="app.component.ts" path="adev/src/content/examples/drag-drop/src/copy-list/app/app.component.ts"/>
-  <docs-code header="app.component.css" path="adev/src/content/examples/drag-drop/src/copy-list/app/app.component.css"/>
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/copy-list/app/app.ts">
+  <docs-code header="app.html" path="adev/src/content/examples/drag-drop/src/copy-list/app/app.html"/>
+  <docs-code header="app.ts" path="adev/src/content/examples/drag-drop/src/copy-list/app/app.ts"/>
+  <docs-code header="app.css" path="adev/src/content/examples/drag-drop/src/copy-list/app/app.css"/>
 </docs-code-multifile>
 
 ## Настройка анимаций

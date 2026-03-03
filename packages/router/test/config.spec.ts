@@ -112,7 +112,7 @@ describe('config', () => {
       }).toThrowError();
     });
 
-    it('should throw when component and redirectTo are used together', () => {
+    it('should throw when canActivate and redirectTo are used together', () => {
       expect(() => {
         validateConfig([{path: 'a', redirectTo: 'b', canActivate: []}]);
       }).toThrowError();

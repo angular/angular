@@ -3,8 +3,6 @@
 [Angular CLI][CliMain] автоматически включает данные локали, если вы запускаете команду [`ng build`][CliBuild] с опцией
 `--localize`.
 
-<!--todo: replace with docs-code -->
-
 ```shell
 ng build --localize
 ```

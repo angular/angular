@@ -161,11 +161,11 @@ describe('queries as signals', () => {
 
       @Component({
         template: `
+          <div #el></div>
+          @if (show) {
             <div #el></div>
-            @if (show) {
-              <div #el></div>
-            }
-          `,
+          }
+        `,
       })
       class AppComponent {
         divEl = viewChild.required<ElementRef<HTMLDivElement>>('el');
@@ -190,11 +190,11 @@ describe('queries as signals', () => {
     it('should return the same array instance when there were no changes in results after view manipulation', () => {
       @Component({
         template: `
-            <div #el></div>
-            @if (show) {
-              <div></div>
-            }
-          `,
+          <div #el></div>
+          @if (show) {
+            <div></div>
+          }
+        `,
       })
       class AppComponent {
         divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
@@ -273,7 +273,7 @@ describe('queries as signals', () => {
     it('should run content queries defined on components', () => {
       @Component({
         selector: 'query-cmp',
-        template: `{{noOfEls()}}`,
+        template: `{{ noOfEls() }}`,
       })
       class QueryComponent {
         elements = contentChildren('el');
@@ -292,7 +292,7 @@ describe('queries as signals', () => {
         imports: [QueryComponent],
         template: `
           <query-cmp>
-            <div #el></div >
+            <div #el></div>
             @if (show) {
               <div #el></div>
             }
@@ -388,12 +388,12 @@ describe('queries as signals', () => {
       @Component({
         imports: [MarkerForResults, InspectsQueryResults, DeclareQuery],
         template: `
-                <div declare>
-                  <div marker></div>
-                  <div inspect></div>
-                  <div marker></div>
-                </div>
-             `,
+          <div declare>
+            <div marker></div>
+            <div inspect></div>
+            <div marker></div>
+          </div>
+        `,
       })
       class AppComponent {}
 
@@ -619,11 +619,11 @@ describe('queries as signals', () => {
     it('should allow combination via inheritance of both types of queries in one component', () => {
       @Component({
         template: `
+          <div #el></div>
+          @if (show) {
             <div #el></div>
-            @if (show) {
-              <div #el></div>
-            }
-          `,
+          }
+        `,
       })
       class BaseComponent {
         show = false;
@@ -632,11 +632,11 @@ describe('queries as signals', () => {
 
       @Component({
         template: `
+          <div #el></div>
+          @if (show) {
             <div #el></div>
-            @if (show) {
-              <div #el></div>
-            }
-          `,
+          }
+        `,
       })
       class AppComponent extends BaseComponent {
         @ViewChildren('el') divElsDecorator!: QueryList<ElementRef<HTMLDivElement>>;

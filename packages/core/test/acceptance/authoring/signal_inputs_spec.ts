@@ -427,9 +427,7 @@ describe('signal inputs', () => {
 
       @Component({
         selector: 'app-content',
-        template: `
-          <ng-content></ng-content>
-        `,
+        template: ` <ng-content></ng-content> `,
         styles: animateStyles,
         host: {
           'animate.leave': 'fade-out',
@@ -613,8 +611,8 @@ describe('signal inputs', () => {
 
       @Component({
         template: `
-          @for(itm of list(); track itm) {
-          <ng-template [messageRenderer]="itm" (closed)="removeItem($event)" />
+          @for (itm of list(); track itm) {
+            <ng-template [messageRenderer]="itm" (closed)="removeItem($event)" />
           }
         `,
         imports: [MessageRendererDirective],
@@ -653,6 +651,72 @@ describe('signal inputs', () => {
       tick(300); // Advance timers by animation duration (0.5s)
       fixture.detectChanges(); // Detect changes after animation completes and element is removed
       expect(fixture.nativeElement.querySelector('notification')).toBeNull(); // Verify element is removed
+    }));
+
+    it('should support nested animate.leave with signal inputs via host binding', fakeAsync(() => {
+      const styles = `
+        .fade-out {
+          animation: fade-out 500ms;
+        }
+        @keyframes fade-out {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+      `;
+
+      @Component({
+        selector: 'child-cmp',
+        template: '<div class="target">Content</div>',
+        host: {
+          '[animate.leave]': 'animClass()',
+        },
+      })
+      class ChildCmp {
+        animClass = input.required<string>();
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        styles: [styles],
+        imports: [ChildCmp],
+        template: `
+          @if (show()) {
+            <div class="parent">
+              <child-cmp [animClass]="'fade-out'" class="child-comp" />
+            </div>
+          }
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestCmp {
+        show = signal(true);
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(TestCmp);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      const target = fixture.nativeElement.querySelector('.child-comp');
+      expect(target).toBeTruthy();
+
+      cmp.show.set(false);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      const targetAfter = fixture.nativeElement.querySelector('.child-comp');
+      expect(targetAfter).withContext('Nested component should persist').not.toBeNull();
+
+      if (targetAfter) {
+        expect(targetAfter.classList.contains('fade-out'))
+          .withContext('Should have animation class from signal input host binding')
+          .toBeTruthy();
+
+        targetAfter.dispatchEvent(new AnimationEvent('animationend', {animationName: 'fade-out'}));
+        tick();
+
+        expect(fixture.nativeElement.querySelector('.child-comp')).toBeNull();
+      }
     }));
   });
 });

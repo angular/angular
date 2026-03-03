@@ -11,3 +11,7 @@ this is a code block
 ```
 code block without language
 ```
+
+```shell {hideDollar}
+echo "hello"
+```

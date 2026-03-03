@@ -20,26 +20,16 @@ special element we can produce very clean templates easy to understand and work 
 For example, we may want to have a number of elements shown conditionally but they do not need to be
 all under the same root element. That can be easily done by wrapping them in such a block:
 
-<code-example format="html" language="html">
-
-&lt;ng-container \*ngIf="condition"&gt;
-&hellip;
-&lt;/ng-container&gt;
-
-</code-example>
+```angular-html
+<ng-container *ngIf="condition"> … </ng-container>
+```
 
 This can also be augmented with an `else` statement alongside an `<ng-template>` as:
 
-<code-example format="html" language="html">
-
-&lt;ng-container \*ngIf="condition; else templateA"&gt;
-&hellip;
-&lt;/ng-container&gt;
-&lt;ng-template #templateA&gt;
-&hellip;
-&lt;/ng-template&gt;
-
-</code-example>
+```angular-html
+<ng-container *ngIf="condition; else templateA"> … </ng-container>
+<ng-template #templateA> … </ng-template>
+```
 
 ### Combination of multiple structural directives
 
@@ -51,30 +41,25 @@ The most common scenario is with `*ngIf` and `*ngFor`. For example, let's imagin
 list of items but each item needs to be displayed only if a certain condition is true. We could be
 tempted to try something like:
 
-<code-example format="html" language="html">
-
-&lt;ul&gt;
-&lt;li *ngFor="let item of items" *ngIf="item.isValid"&gt;
-{{ item.name }}
-&lt;/li&gt;
-&lt;/ul&gt;
-
-</code-example>
+```angular-html
+<ul>
+    <li *ngFor="let item of items" *ngIf="item.isValid">
+    {{ item.name }}
+    </li>
+</ul>
+```
 
 As we said that would not work, what we can do is to simply move one of the structural directives to
 an `<ng-container>` element, which would then wrap the other one, like so:
 
-<code-example format="html" language="html">
-
-&lt;ul&gt;
-&lt;ng-container *ngFor="let item of items"&gt;
-&lt;li *ngIf="item.isValid"&gt;
-{{ item.name }}
-&lt;/li&gt;
-&lt;/ng-container&gt;
-&lt;/ul&gt;
-
-</code-example>
+```angular-html
+<ul>
+    <ng-container *ngFor="let item of items">
+        <li *ngIf="item.isValid"> {{ item.name }}
+        </li>
+    </ng-container>
+</ul>
+```
 
 This would work as intended without introducing any new unnecessary elements in the DOM.
 
@@ -94,25 +79,18 @@ an `NgTemplateOutlet`.
 
 Like so:
 
-<code-example format="html" language="html">
+```angular-html
+<ng-container *ngTemplateOutlet="tmpl; context: {$implicit: 'Hello'}" />
 
-&lt;!-- &hellip; --&gt;
+<ng-container *ngTemplateOutlet="tmpl; context: {$implicit: 'World'}" />
 
-&lt;ng-container \*ngTemplateOutlet="tmpl; context: {&dollar;implicit: 'Hello'}"&gt;
-&lt;/ng-container&gt;
+<ng-template #tmpl let-text>
+    <h1>
+    {{ text }}
+    </h1>
+</ng-template>
 
-&lt;!-- &hellip; --&gt;
-
-&lt;ng-container \*ngTemplateOutlet="tmpl; context: {&dollar;implicit: 'World'}"&gt;
-&lt;/ng-container&gt;
-
-&lt;!-- &hellip; --&gt;
-
-&lt;ng-template #tmpl let-text&gt;
-&lt;h1&gt;{{ text }}&lt;/h1&gt;
-&lt;/ng-template&gt;
-
-</code-example>
+```
 
 For more information regarding `NgTemplateOutlet`, see
 the [`NgTemplateOutlet`s api documentation page](api/common/NgTemplateOutlet).

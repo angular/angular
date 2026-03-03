@@ -20,7 +20,7 @@
 Импортируйте функцию `submit` из `@angular/forms/signals`:
 
 ```ts
-import { form, Field, required, email, submit } from '@angular/forms/signals';
+import {form, FormField, required, email, submit} from '@angular/forms/signals';
 ```
 
 </docs-step>
@@ -47,7 +47,7 @@ onSubmit(event: Event) {
 В вашем шаблоне привяжите метод `onSubmit()` к событию отправки формы:
 
 ```html
-<form (submit)="onSubmit($event)">
+<form (submit)="onSubmit($event)"></form>
 ```
 
 </docs-step>
@@ -56,9 +56,7 @@ onSubmit(event: Event) {
 Обновите кнопку отправки, чтобы она была отключена, когда форма невалидна:
 
 ```html
-<button type="submit" [disabled]="loginForm().invalid()">
-  Log in
-</button>
+<button type="submit" [disabled]="loginForm().invalid()">Log in</button>
 ```
 
 Это предотвращает отправку, если в форме есть ошибки валидации.

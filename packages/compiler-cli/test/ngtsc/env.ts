@@ -95,6 +95,7 @@ export class NgtscTestEnvironment {
       `{
       "compilerOptions": {
         "emitDecoratorMetadata": false,
+        "strictPropertyInitialization": false,
         "experimentalDecorators": true,
         "skipLibCheck": true,
         "noImplicitAny": true,
@@ -102,7 +103,6 @@ export class NgtscTestEnvironment {
         "strictNullChecks": true,
         "outDir": "built",
         "rootDir": ".",
-        "baseUrl": ".",
         "allowJs": true,
         "declaration": true,
         "target": "es2015",

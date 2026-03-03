@@ -7,7 +7,7 @@
  */
 
 import path from 'path';
-import {exec} from './utils.mjs';
+import {exec} from './utils.mts';
 
 /** Branded string representing a resolved Bazel benchmark target. */
 export type ResolvedTarget = string & {

@@ -1,6 +1,19 @@
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("//devtools/tools:defaults.bzl", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
+
+bool_flag(
+    name = "debug",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "debug_build",
+    flag_values = {
+        ":debug": "True",
+    },
+)
 
 exports_files([
     "tsconfig.json",

@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  PLATFORM_ID,
-  Provider,
-  provideZoneChangeDetection,
-  Type,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, PLATFORM_ID, Provider, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {isBrowser, isNode, withHead} from '@angular/private/testing';
@@ -41,12 +34,6 @@ import {
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZoneChangeDetection()],
-    });
-  });
-
   const PLACEHOLDER_BLUR_AMOUNT = 15;
 
   describe('preload <link> element on a server', () => {
@@ -734,6 +721,7 @@ describe('Image directive', () => {
           // Update input (expect to throw)
           (fixture.componentInstance as unknown as {[key: string]: unknown})[inputName as string] =
             value;
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
         }).toThrowError(new RegExp(expectedErrorMessage));
       });
@@ -993,7 +981,7 @@ describe('Image directive', () => {
         await fixture.whenStable();
 
         // trick to wait for the whenStable() to fire in the directive
-        await Promise.resolve();
+        await new Promise((resolve) => setTimeout(resolve));
 
         if (isBrowser) {
           expect(consoleWarnSpy.calls.count()).toBe(1);
@@ -1340,6 +1328,33 @@ describe('Image directive', () => {
       // Double quotes removed to account for different browser behavior.
       expect(styles.get('background-image')?.replace(/"/g, '')).toBe(
         `url(${IMG_BASE_URL}/path/img.png?w=30&ph=true)`,
+      );
+    });
+
+    it('should pass calculated height to placeholder loader based on aspect ratio', () => {
+      const placeholderLoaderWithHeight = (config: ImageLoaderConfig) => {
+        const widthStr = config.width ? `w=${config.width}` : '';
+        const heightStr = config.height ? `h=${config.height}` : '';
+        const phStr = config.isPlaceholder ? 'ph=true' : '';
+        const params = [widthStr, heightStr, phStr].filter((p) => p).join('&');
+        return `${IMG_BASE_URL}/${config.src}${params ? '?' + params : ''}`;
+      };
+      const imageConfig = {
+        placeholderResolution: 30,
+      };
+      setupTestingModule({imageLoader: placeholderLoaderWithHeight, imageConfig});
+      const template = '<img ngSrc="path/img.png" width="400" height="200" placeholder />';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      const styles = parseInlineStyles(img);
+      // Aspect ratio is 400/200 = 2, placeholderResolution is 30
+      // Expected height: 30 / 2 = 15
+      // Double quotes removed to account for different browser behavior.
+      expect(styles.get('background-image')?.replace(/"/g, '')).toBe(
+        `url(${IMG_BASE_URL}/path/img.png?w=30&h=15&ph=true)`,
       );
     });
 
@@ -1872,6 +1887,7 @@ describe('Image directive', () => {
       expect(imgs[0].src).toBe(`${IMG_BASE_URL}/img.png`);
 
       fixture.componentInstance.ngSrc = 'updatedImg.png';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(imgs[0].src).toBe(`${IMG_BASE_URL}/updatedImg.png`);
     });
@@ -1900,6 +1916,7 @@ describe('Image directive', () => {
       );
 
       fixture.componentInstance.ngSrc = 'updatedImg.png';
+      fixture.changeDetectorRef.markForCheck();
       nativeElement = fixture.nativeElement as HTMLElement;
       imgs = nativeElement.querySelectorAll('img')!;
       fixture.detectChanges();
@@ -1988,6 +2005,122 @@ describe('Image directive', () => {
       const imgs = nativeElement.querySelectorAll('img')!;
       expect(imgs[0].srcset).toBe(
         `${IMG_BASE_URL}/img.png?w=640&testProp1=testValue1&testProp2=testValue2 640w, ${IMG_BASE_URL}/img.png?w=750&testProp1=testValue1&testProp2=testValue2 750w, ${IMG_BASE_URL}/img.png?w=828&testProp1=testValue1&testProp2=testValue2 828w, ${IMG_BASE_URL}/img.png?w=1080&testProp1=testValue1&testProp2=testValue2 1080w, ${IMG_BASE_URL}/img.png?w=1200&testProp1=testValue1&testProp2=testValue2 1200w, ${IMG_BASE_URL}/img.png?w=1920&testProp1=testValue1&testProp2=testValue2 1920w, ${IMG_BASE_URL}/img.png?w=2048&testProp1=testValue1&testProp2=testValue2 2048w, ${IMG_BASE_URL}/img.png?w=3840&testProp1=testValue1&testProp2=testValue2 3840w`,
+      );
+    });
+
+    it('should pass height to custom image loader based on aspect ratio', () => {
+      const imageLoader = (config: ImageLoaderConfig) => {
+        const widthStr = config.width ? `w=${config.width}` : '';
+        const heightStr = config.height ? `h=${config.height}` : '';
+        const params = [widthStr, heightStr].filter((p) => p).join('&');
+        return `${IMG_BASE_URL}/${config.src}${params ? '?' + params : ''}`;
+      };
+      setupTestingModule({imageLoader});
+
+      const template = '<img ngSrc="img.png" width="150" height="50">';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      // For src without width, height should not be passed
+      expect(img.src).toBe(`${IMG_BASE_URL}/img.png`);
+    });
+
+    it('should pass calculated height to custom image loader when generating srcsets', () => {
+      const imageLoader = (config: ImageLoaderConfig) => {
+        const widthStr = config.width ? `w=${config.width}` : '';
+        const heightStr = config.height ? `h=${config.height}` : '';
+        const params = [widthStr, heightStr].filter((p) => p).join('&');
+        return `${IMG_BASE_URL}/${config.src}${params ? '?' + params : ''}`;
+      };
+      setupTestingModule({imageLoader});
+
+      const template = '<img ngSrc="img.png" width="150" height="50">';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      // Aspect ratio is 150/50 = 3, so for widths 150 and 300:
+      // height should be 50 and 100 respectively
+      expect(img.srcset).toBe(
+        `${IMG_BASE_URL}/img.png?w=150&h=50 1x, ${IMG_BASE_URL}/img.png?w=300&h=100 2x`,
+      );
+    });
+
+    it('should pass calculated height to custom image loader when generating responsive srcsets', () => {
+      const imageLoader = (config: ImageLoaderConfig) => {
+        const widthStr = config.width ? `w=${config.width}` : '';
+        const heightStr = config.height ? `h=${config.height}` : '';
+        const params = [widthStr, heightStr].filter((p) => p).join('&');
+        return `${IMG_BASE_URL}/${config.src}${params ? '?' + params : ''}`;
+      };
+      setupTestingModule({imageLoader});
+
+      const template = '<img ngSrc="img.png" width="150" height="50" sizes="100vw">';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      // Aspect ratio is 150/50 = 3
+      // Expected heights: 640/3=213, 750/3=250, etc.
+      expect(img.srcset).toBe(
+        `${IMG_BASE_URL}/img.png?w=640&h=213 640w, ${IMG_BASE_URL}/img.png?w=750&h=250 750w, ${IMG_BASE_URL}/img.png?w=828&h=276 828w, ${IMG_BASE_URL}/img.png?w=1080&h=360 1080w, ${IMG_BASE_URL}/img.png?w=1200&h=400 1200w, ${IMG_BASE_URL}/img.png?w=1920&h=640 1920w, ${IMG_BASE_URL}/img.png?w=2048&h=683 2048w, ${IMG_BASE_URL}/img.png?w=3840&h=1280 3840w`,
+      );
+    });
+
+    it('should not pass height to custom image loader when height is not provided', () => {
+      const imageLoader = (config: ImageLoaderConfig) => {
+        const widthStr = config.width ? `w=${config.width}` : '';
+        const heightStr = config.height ? `h=${config.height}` : '';
+        const params = [widthStr, heightStr].filter((p) => p).join('&');
+        return `${IMG_BASE_URL}/${config.src}${params ? '?' + params : ''}`;
+      };
+      setupTestingModule({imageLoader});
+
+      const template = '<img ngSrc="img.png" fill>';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      // No height provided (fill mode), so aspect ratio cannot be calculated
+      // In fill mode, a responsive srcset is generated but without height parameters
+      expect(img.srcset).toBe(
+        `${IMG_BASE_URL}/img.png?w=640 640w, ${IMG_BASE_URL}/img.png?w=750 750w, ${IMG_BASE_URL}/img.png?w=828 828w, ${IMG_BASE_URL}/img.png?w=1080 1080w, ${IMG_BASE_URL}/img.png?w=1200 1200w, ${IMG_BASE_URL}/img.png?w=1920 1920w, ${IMG_BASE_URL}/img.png?w=2048 2048w, ${IMG_BASE_URL}/img.png?w=3840 3840w`,
+      );
+    });
+
+    it('should pass height to custom image loaders', () => {
+      @Component({
+        selector: 'test-cmp',
+        standalone: false,
+        template: `<img [ngSrc]="ngSrc" width="300" height="150" sizes="100vw" />`,
+      })
+      class TestComponent {
+        ngSrc = `img.png`;
+      }
+      const imageLoader = (config: ImageLoaderConfig) => {
+        const params: string[] = [];
+        if (config.width) {
+          params.push(`w=${config.width}`);
+        }
+        if (config.height) {
+          params.push(`h=${config.height}`);
+        }
+        const query = params.length ? `?${params.join('&')}` : '';
+        return `${IMG_BASE_URL}/${config.src}${query}`;
+      };
+      setupTestingModule({imageLoader, component: TestComponent});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      let nativeElement = fixture.nativeElement as HTMLElement;
+      let imgs = nativeElement.querySelectorAll('img')!;
+      expect(imgs[0].getAttribute('srcset')).toBe(
+        `${IMG_BASE_URL}/img.png?w=640&h=320 640w, ${IMG_BASE_URL}/img.png?w=750&h=375 750w, ${IMG_BASE_URL}/img.png?w=828&h=414 828w, ${IMG_BASE_URL}/img.png?w=1080&h=540 1080w, ${IMG_BASE_URL}/img.png?w=1200&h=600 1200w, ${IMG_BASE_URL}/img.png?w=1920&h=960 1920w, ${IMG_BASE_URL}/img.png?w=2048&h=1024 2048w, ${IMG_BASE_URL}/img.png?w=3840&h=1920 3840w`,
       );
     });
 

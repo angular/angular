@@ -652,7 +652,7 @@ runInEachFileSystem(() => {
       // This test verifies that ambient types declared in node_modules/@types are still available
       // in incremental compilations. In the below code, the usage of `require` should be valid
       // in the original program and the incremental program.
-      env.tsconfig({fullTemplateTypeCheck: true});
+      env.tsconfig({fullTemplateTypeCheck: true}, {types: ['node']});
       env.write('node_modules/@types/node/index.d.ts', 'declare var require: any;');
       env.write(
         'main.ts',

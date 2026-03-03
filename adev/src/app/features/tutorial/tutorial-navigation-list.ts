@@ -15,29 +15,32 @@ import {NavigationItem} from '@angular/docs';
   selector: 'adev-tutorial-navigation-list',
   imports: [RouterLink, RouterLinkActive, NgTemplateOutlet],
   template: `
-  <ng-template #navigationList let-navigationItems>
-  <ul class="docs-navigation-list docs-faceted-list">
-    @for (item of navigationItems; track $index) {
-      <li class="docs-faceted-list-item">
-        <a
-        [routerLink]="'/' + item.path"
-        routerLinkActive="docs-faceted-list-item-active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        >
-            <span class="docs-faceted-list-item-text"> {{item.label}} </span>
-        </a>
+    <ng-template #navigationList let-navigationItems>
+      <ul class="docs-navigation-list docs-faceted-list">
+        @for (item of navigationItems; track $index) {
+          <li class="docs-faceted-list-item">
+            <a
+              [routerLink]="'/' + item.path"
+              routerLinkActive="docs-faceted-list-item-active"
+              [routerLinkActiveOptions]="{exact: true}"
+            >
+              <span class="docs-faceted-list-item-text"> {{ item.label }} </span>
+            </a>
 
-        @if (item.children && item.children.length > 0) {
-          <ng-container
-            *ngTemplateOutlet="navigationList; context: {$implicit: item.children, level: item.level}"
-          />
+            @if (item.children && item.children.length > 0) {
+              <ng-container
+                *ngTemplateOutlet="
+                  navigationList;
+                  context: {$implicit: item.children, level: item.level}
+                "
+              />
+            }
+          </li>
         }
-      </li>
-    }
-  </ul>
-</ng-template>
+      </ul>
+    </ng-template>
 
-<ng-container *ngTemplateOutlet="navigationList; context: {$implicit: navigationItems()}" />
+    <ng-container *ngTemplateOutlet="navigationList; context: {$implicit: navigationItems()}" />
   `,
   styleUrls: ['./tutorial-navigation-list.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

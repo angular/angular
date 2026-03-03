@@ -7,15 +7,20 @@
 }
 
 @switch (a) {
-    @case (1) {
+    @case(0) @case (1) {
         {{getCase1()}}
     }
-    @case (2) {
+    @case (2) @case(3) {
         {{a.b.c}}
     }
     @default {
         default case
     }
+}
+
+@switch(aOrb) {
+    @case(a) {}
+    @default never;
 }
 
 @if (a==b) { hello } @else  { goodbye }

@@ -74,6 +74,12 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope | 
   }
 
   view.update.prepend(generateVariablesInScopeForView(view, scope, false));
+
+  for (const expr of view.functions) {
+    expr.ops.prepend(
+      generateVariablesInScopeForView(view, getScopeForView(view, parentScope), true),
+    );
+  }
 }
 
 /**

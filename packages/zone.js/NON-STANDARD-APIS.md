@@ -247,7 +247,7 @@ Zone['__zone_symbol__jsonp']({
   jsonp: getJSONP,
   sendFuncName: 'send',
   successFuncName: 'jsonpSuccessCallback',
-  failedFuncName: 'jsonpFailedCallback'
+  failedFuncName: 'jsonpFailedCallback',
 });
 ```
 

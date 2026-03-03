@@ -42,7 +42,7 @@ export class Tab {
     <tab>
       <pane id="1"></pane>
       <pane id="2"></pane>
-      @if(shouldShow()) {
+      @if (shouldShow()) {
         <pane id="3">
           <tab>
             <pane id="3_1"></pane>

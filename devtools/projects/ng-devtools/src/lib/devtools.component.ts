@@ -24,7 +24,7 @@ import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Frame} from './application-environment';
 import {BrowserStylesService} from './application-services/browser_styles_service';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {SUPPORTED_APIS} from './application-providers/supported_apis';
 
 const DETECT_ANGULAR_ATTEMPTS = 20;
@@ -47,13 +47,13 @@ enum AngularStatus {
   EXISTS,
 }
 
-const LAST_SUPPORTED_VERSION = 9;
+export const LAST_SUPPORTED_VERSION = 12;
 
 @Component({
   selector: 'ng-devtools',
   templateUrl: './devtools.component.html',
   styleUrls: ['./devtools.component.scss'],
-  imports: [DevToolsTabsComponent, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
+  imports: [DevToolsTabsComponent, MatIcon, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsComponent implements OnDestroy {
@@ -65,6 +65,8 @@ export class DevToolsComponent implements OnDestroy {
   readonly angularIsInDevMode = signal(true);
   readonly hydration = signal(false);
   readonly ivy = signal<boolean | undefined>(undefined);
+
+  readonly LAST_SUPPORTED_VERSION = LAST_SUPPORTED_VERSION;
 
   readonly supportedVersion = computed(() => {
     const version = this.angularVersion();
@@ -100,7 +102,10 @@ export class DevToolsComponent implements OnDestroy {
       this.ivy.set(ivy);
       this._interval$.unsubscribe();
       this.hydration.set(hydration);
-      this.supportedApis.init(supportedApis);
+
+      if (supportedApis) {
+        this.supportedApis.init(supportedApis);
+      }
     });
   }
 

@@ -228,6 +228,10 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
 
   visitLiteralMapExpr(ast: o.LiteralMapExpr, context: Context): ts.TypeLiteralNode {
     const entries = ast.entries.map((entry) => {
+      if (entry instanceof o.LiteralMapSpreadAssignment) {
+        throw new Error('Spread is not supported in this context');
+      }
+
       const {key, quoted} = entry;
       const type = this.translateExpression(entry.value, context);
       return ts.factory.createPropertySignature(
@@ -274,6 +278,11 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
 
   visitParenthesizedExpr(ast: o.ParenthesizedExpr, context: any) {
     throw new Error('Method not implemented.');
+  }
+
+  visitSpreadElementExpr(ast: o.outputAst.SpreadElementExpr, context: any) {
+    const typeNode = this.translateExpression(ast.expression, context);
+    return ts.factory.createRestTypeNode(typeNode);
   }
 
   private translateType(type: o.Type, context: Context): ts.TypeNode {

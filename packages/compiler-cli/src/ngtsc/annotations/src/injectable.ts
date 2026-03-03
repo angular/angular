@@ -66,9 +66,12 @@ export interface InjectableHandlerData {
 /**
  * Adapts the `compileInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
-export class InjectableDecoratorHandler
-  implements DecoratorHandler<Decorator, InjectableHandlerData, null, unknown>
-{
+export class InjectableDecoratorHandler implements DecoratorHandler<
+  Decorator,
+  InjectableHandlerData,
+  null,
+  unknown
+> {
   constructor(
     private reflector: ReflectionHost,
     private evaluator: PartialEvaluator,
@@ -272,7 +275,7 @@ function extractInjectableMetadata(
   reflector: ReflectionHost,
 ): R3InjectableMetadata {
   const name = clazz.name.text;
-  const type = wrapTypeReference(reflector, clazz);
+  const type = wrapTypeReference(clazz);
   const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {
     throw new FatalDiagnosticError(

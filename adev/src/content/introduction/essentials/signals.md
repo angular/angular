@@ -21,7 +21,7 @@ firstName.set('Jaime');
 
 // You can also use the `update` method to change the value
 // based on the previous value.
-firstName.update(name => name.toUpperCase());
+firstName.update((name) => name.toUpperCase());
 ```
 
 Angular отслеживает, где читаются сигналы и когда они обновляются. Фреймворк использует эту информацию для выполнения
@@ -59,8 +59,10 @@ console.log(firstNameCapitalized()); // JAIME
 
 Используйте `signal` и `computed` внутри ваших компонентов для создания и управления состоянием:
 
-```typescript
-@Component({/* ... */})
+```ts
+@Component({
+  /* ... */
+})
 export class UserProfile {
   isTrial = signal(false);
   isTrialExpired = signal(false);

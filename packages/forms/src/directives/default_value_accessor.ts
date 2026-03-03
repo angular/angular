@@ -46,7 +46,7 @@ function _isAndroid(): boolean {
  * @publicApi
  */
 export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'CompositionEventMode' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'CompositionEventMode' : '',
 );
 
 /**

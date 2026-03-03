@@ -1,485 +1,290 @@
-<docs-decorative-header title="Дорожная карта Angular" imgSrc="adev/src/assets/images/roadmap.svg"> <!-- markdownlint-disable-line -->
-Узнайте, как команда Angular развивает веб-технологии.
+<docs-decorative-header title="Angular Roadmap" imgSrc="adev/src/assets/images/roadmap.svg"> <!-- markdownlint-disable-line -->
+Learn how the Angular team is building momentum on the web.
 </docs-decorative-header>
 
-Будучи проектом с открытым исходным кодом, Angular позволяет отслеживать ежедневные коммиты, PR и динамику развития на
-GitHub. Чтобы сделать связь этой ежедневной работы с будущим фреймворка более прозрачной, наша дорожная карта объединяет
-текущее и запланированное видение команды.
+As an open source project, Angular’s daily commits, PRs and momentum is all trackable on GitHub. To increase transparency into how this daily work connects to the framework’s future, our roadmap brings together the team’s current and future planned vision.
 
-Следующие проекты не привязаны к конкретной версии Angular. Мы выпустим их по завершении, и они станут частью
-определенной версии в соответствии с нашим графиком релизов, следуя семантическому версионированию. Например, мы
-выпускаем функции в следующей минорной версии после завершения или в следующей мажорной, если они включают критические
-изменения (breaking changes).
+The following projects are not associated with a particular Angular version. We will release them on completion, and they will be part of a specific version based on our release schedule, following semantic versioning. For example, we release features in the next minor after completion or the next major if they include breaking changes.
 
-В настоящее время у Angular есть две цели для фреймворка:
+Currently, Angular has three goals for the framework:
 
-1. Улучшение [опыта разработки на Angular](#improving-the-angular-developer-experience) и
-2. Повышение производительности фреймворка.
+1. Improve the [AI experience for developers](/ai)
+1. Improve the [Angular developer experience](#improving-the-angular-developer-experience)
+1. Improve the framework’s performance
 
-Продолжайте чтение, чтобы узнать, как мы планируем достичь этих целей с помощью конкретных проектов.
+Continue reading to learn how we plan to deliver these objectives with specific project work.
 
-## Изучайте современный Angular
+## Explore modern Angular
 
-Начните разработку с использованием новейших функций Angular из нашей дорожной карты. Этот список отражает текущий
-статус новых функций:
+Start developing with the latest Angular features from our roadmap. This list represents the current status of new features from our roadmap:
 
-### Доступно для экспериментов
+### Available to experiment with
 
+- [Signal Forms](/guide/forms/signals/overview)
 - [Resource API](/guide/signals/resource)
 - [httpResource](/api/common/http/httpResource)
 
-### Готово к продакшену
+### Production ready
 
-- [Zoneless-обнаружение изменений](/guide/zoneless)
+- [Zoneless change detection](/guide/zoneless)
 - [Linked Signal API](/guide/signals/linked-signal)
-- [Инкрементальная гидратация](/guide/incremental-hydration)
+- [Incremental hydration](/guide/incremental-hydration)
 - [Effect API](/api/core/effect)
-- [Воспроизведение событий с SSR](/api/platform-browser/withEventReplay)
-- [Режим рендеринга на уровне маршрута](/guide/ssr)
+- [Event replay with SSR](/api/platform-browser/withEventReplay)
+- [Route-level render mode](/guide/ssr)
 
-## Улучшение опыта разработки на Angular
+## Improving the AI experience for Angular Developers
 
-### Скорость разработки
-
-<docs-card-container>
-  <docs-card title="Без селекторов" href="">
-  Чтобы уменьшить шаблонный код и улучшить эргономику Standalone-компонентов, мы разрабатываем решение, которое сделает селекторы необязательными. Чтобы использовать компонент или директиву, вы сможете импортировать их и использовать непосредственно в шаблоне компонента.
-
-Мы начали раннее прототипирование компонентов без селекторов и все еще находимся на ранних стадиях планирования. Мы
-откроем обсуждение (RFC), когда у нас будет дизайн и мы будем готовы к следующим шагам.
-</docs-card>
-<docs-card title="Формы на Сигналах" href="">
-Мы планируем проанализировать существующие отзывы о формах Angular и разработать решение, которое отвечает требованиям
-разработчиков и использует Сигналы для управления реактивным состоянием.
-</docs-card>
-<docs-card title="Асинхронная реактивность" href="https://github.com/angular/angular/discussions/60121">
-Чтобы позволить разработчикам обрабатывать асинхронный поток данных с помощью сигналов, мы разработали асинхронный
-примитив `resource`. Опираясь на него, мы представили `httpResource`, который позволяет отправлять HTTP-запросы и
-получать ответ в виде сигнала.
-
-Мы все еще активно собираем отзывы об этих новых экспериментальных API. Пожалуйста, попробуйте их и поделитесь своим
-мнением с нами на GitHub!
-</docs-card>
-<docs-card title="Zoneless Angular" href="">
-В v18 мы выпустили экспериментальную поддержку Zoneless в Angular. Это позволяет разработчикам использовать фреймворк
-без включения zone.js в бандл, что улучшает производительность, опыт отладки и совместимость. В рамках первоначального
-релиза мы также представили поддержку Zoneless в Angular CDK и Angular Material.
-
-В v19 мы представили поддержку Zoneless в SSR (рендеринг на стороне сервера), устранили некоторые граничные случаи и
-создали схематику для создания Zoneless-проектов. Мы перевели <a href="https://fonts.google.com/">Google Fonts</a> на
-режим без зон, что улучшило производительность, опыт разработки и позволило нам выявить пробелы, которые необходимо
-устранить перед переводом этой функции в статус developer preview.
-
-Начиная с Angular v20.2, Zoneless Angular стал стабильным и включает улучшения в обработке ошибок и SSR.
-</docs-card>
-<docs-card title="Интеграция Сигналов" href="">
-Мы работаем над улучшением интеграции фундаментальных пакетов Angular, таких как формы, HTTP и роутер, с Сигналами. В
-рамках этого проекта мы будем искать возможности для внедрения удобных API на основе сигналов или оберток для улучшения
-целостного опыта разработки.
-</docs-card>
-<docs-card title="Улучшение HMR (Hot Module Reload)"
-href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306">
-Мы работаем над ускорением цикла редактирования/обновления, внедряя горячую замену модулей (HMR).
-
-В Angular v19 мы выпустили начальную поддержку HMR для CSS и шаблонов, а в v20 перевели HMR шаблонов в стабильный
-статус. Мы продолжим собирать отзывы, чтобы убедиться, что мы удовлетворяем потребности разработчиков, прежде чем
-отметить этот проект как завершенный.
-</docs-card>
-</docs-card-container>
-
-### Улучшение Angular Material и CDK
+### Bringing the best of AI to Angular
 
 <docs-card-container>
-  <docs-card title="Новые примитивы CDK" href="">
-  Мы работаем над новыми примитивами CDK, чтобы облегчить создание пользовательских компонентов на основе шаблонов проектирования WAI-ARIA для [Combobox](https://www.w3.org/TR/wai-aria-practices-1.1/#combobox). Angular v14 представил стабильные [примитивы меню и диалогов](https://material.angular.dev/cdk/categories) как часть этого проекта, а v15 — Listbox.
+  <docs-card title="AI Powered Angular" href="">
+  AI continues to shape the development landscape. It has changed how we develop apps and the types of user experiences that are possible. We plan to best support the developer community in AI-assisted coding and integrating AI in their applications.
   </docs-card>
-  <docs-card title="Доступность компонентов Angular" href="">
-  Мы оцениваем компоненты в Angular Material на соответствие стандартам доступности, таким как WCAG, и работаем над исправлением любых проблем, возникающих в процессе.
+  <docs-card title="AI Development">
+  The team will continue to develop meaningful integrations with tools like Google AI Studio, Gemini CLI and other agentic tooling such as Agentic IDEs like Antigravity. We plan to launch solutions that stay in line with the rapidly evolving industry. Some examples include agent skills, new MCP features and AI SDKs.
+  </docs-card>
+  <docs-card title="Code Generation">
+  [Based on our research](https://blog.angular.dev/beyond-the-horizon-how-angular-is-embracing-ai-for-next-gen-apps-7a7ed706e1a3), code generation for Angular is already high quality with modern LLMs. We will continue our investments in improving code generation for Angular. This means we will regularly evaluate code generation quality using current models and work to improve it through system instructions, documentation, and tactical framework changes. We also will continue investments in [Web Codegen Scorer](https://github.com/angular/web-codegen-scorer), our evaluation infrastructure.
+  </docs-card>
+  <docs-card title="AI Powered Experiences">
+  There is a new frontier for Angular developers to explore with new concepts such as Dynamic UI generation. We started with building Angular support for A2UI and are actively searching out more opportunities to support modern application experiences.
   </docs-card>
 </docs-card-container>
 
-### Улучшение инструментов
+## Improving the Angular developer experience
+
+### Developer velocity
 
 <docs-card-container>
-  <docs-card title="Модернизация инструментов модульного тестирования с ng test" href="">
-  В v12 мы пересмотрели опыт сквозного (e2e) тестирования Angular, заменив Protractor современными альтернативами, такими как Cypress, Nightwatch, Puppeteer, Playwright и Webdriver.io. Далее мы хотим заняться `ng test`, чтобы модернизировать опыт модульного тестирования в Angular.
+  <docs-card title="Compiler">
+    Microsoft has spent the last year porting the TypeScript compiler to Go, with the promise of a 5 - 10x speedup for typical TypeScript compilations. Angular has perhaps one of the deepest integrations with the TypeScript compiler, which will require bigger architectural changes to support new tsgo-based workflows for both the compiler and language service.
 
-В Angular v20 мы представили экспериментальную поддержку vitest. Обязательно попробуйте и поделитесь с нами своим
-мнением!
+We're in the process of prototyping and exploring what this support would look like, and will deliver an Angular compiler that is compatible with tsgo and brings the performance benefits of Microsoft's native port to the Angular ecosystem.
 </docs-card>
-<docs-card title="Оценка поддержки Nitro в Angular CLI" href="https://nitro.unjs.io/">
-Мы воодушевлены набором функций, которые предлагает Nitro, такими как больше вариантов развертывания, улучшенная
-совместимость SSR с различными средами выполнения и файловая маршрутизация. В 2025 году мы оценим, как это вписывается в
-модель SSR Angular.
 
-Мы будем делиться новостями по мере продвижения в этом исследовании.
-</docs-card>
-<docs-card title="Отладка Сигналов в Angular DevTools" href="">
-С развитием Сигналов в Angular мы работаем над лучшими инструментами для их отладки. В приоритете — пользовательский
-интерфейс для проверки и отладки сигналов.
+  <docs-card title="Enhanced Ecosystem compatibility">
+    Developers are mixing AI generated code with manually generated code, and want to make use of popular libraries and integrate new experiences quickly. Angular wants to integrate well into that ecosystem - developers should be able to use the tools they love and mix and match frameworks according to their requirements.
+
+As part of this project, we'll explore the requirement space of cross framework interop and our build tooling to improve our compatibility. We also want to see if we can contribute to this space by providing framework-agnostic solutions to open problems in the web ecosystem, similar to what we delivered with the [Web Codegen Scorer](https://github.com/angular/web-codegen-scorer) project.
+
+  </docs-card>
+
+  <docs-card title="Signal Forms" href="/guide/forms/signals/overview">
+  In Angular v21, we landed an experimental version of Signal Forms. This new approach allows developers to manage form state using signals, providing an ergonomic forms creation experience. Next, our plans include promoting Signal Forms to stable and enhancing interoperability with reactive forms - enabling teams to progressively migrate large forms at their own pace.
+  </docs-card>
+  <docs-card title="Reactivity" href="">
+  We introduced experimental signal APIs, resource() and httpResource(), for flexible asynchronous data handling. We plan to promote these APIs to developer preview/stable based on community feedback.
+  We are also evaluating new APIs for unhandled use cases, considering community benefits and tradeoffs before implementation after careful consideration.
+  </docs-card>
+  <docs-card title="Change Detection" href="">
+  With Zoneless being stable and default, we are also planning to shift the default change detection strategy to OnPush, to follow current best practices. [See the RFC discussion for details](https://github.com/angular/angular/discussions/66779).
+  </docs-card>
+  <docs-card title="Components">
+  In Angular v21, we launched Angular Aria in developer preview, providing eight patterns for accessible, headless components. We're planning to promote these patterns to stable and introduce new patterns where needed . We want to provide developers with a solid foundation for developing their own components using Angular Aria - we provide the interactions and you bring the style that matches your design systems. Developers will have the choice of developing custom components with Angular Aria, use interaction patterns from the CDK, or use ready-made styled Material Components.
+
+For accessibility, we are continuously evaluating the components and patterns against accessibility standards such as WCAG and are working to fix any issues that arise from this process.
 </docs-card>
 </docs-card-container>
 
-## Будущая работа, исследования и прототипирование
-
-Этот раздел представляет исследования и прототипирование потенциальных будущих проектов. Возможным исходом может быть
-решение, что наши текущие решения являются лучшими вариантами. Другие проекты могут привести к RFC, переходу в статус
-проектов в разработке или снижению приоритета по мере того, как веб продолжает развиваться вместе с нашим фреймворком.
+### Improve tooling
 
 <docs-card-container>
-  <docs-card title="Исследование потокового SSR" href="">
-  В последних нескольких релизах мы работали над тем, чтобы сделать SSR в Angular более надежным. В нашем списке приоритетов — исследование потокового SSR для Zoneless-приложений.
-  </docs-card>
-  <docs-card title="Исследование улучшений формата написания кода" href="">
-  Основываясь на результатах опросов разработчиков, мы увидели возможности для улучшения эргономики формата написания компонентов. Первым шагом процесса будет сбор требований и понимание проблемного пространства перед переходом к RFC. Мы будем делиться новостями по мере прогресса. Высоким приоритетом в будущей работе будет обратная совместимость и интероперабельность.
-  </docs-card>
-  <docs-card title="Улучшение TestBed" href="">
-  Основываясь на отзывах за эти годы и недавних обновлениях в среде выполнения Angular, мы оценим TestBed, чтобы выявить возможности для улучшения опыта разработки и уменьшения шаблонного кода при написании модульных тестов.
-  </docs-card>
-  <docs-card title="Постепенное внедрение" href="">
-  Angular не хватало инструментов и гибкости для добавления интерактивности в многостраничные приложения или встраивания компонента Angular в существующее приложение, созданное на другом фреймворке.
-
-В рамках этого проекта мы изучим требования к взаимодействию между фреймворками и наши инструменты сборки, чтобы сделать
-этот вариант использования возможным.
+  <docs-card title="Modernize unit testing tooling with ng test" href="">
+  Following the stable release of Vitest in Angular v21, it is now our primary test runner. We are now focused on promoting our experimental Karma to Vitest migration tool to stable as well as investigating new features to further refine and improve the developer testing workflow.
 </docs-card>
 </docs-card-container>
 
-## Завершенные проекты
+## Completed projects
 
 <docs-card-container>
-  <docs-card title="Конфигурация маршрутов на сервере" link="Завершено во 2 кв. 2025" href="">
-  Мы работаем над обеспечением более эргономичной конфигурации маршрутов на сервере. Мы хотим сделать тривиальным объявление того, какие маршруты должны рендериться на сервере (SSR), пререндериться или рендериться на клиенте.
+  <docs-card title="Signal debugging in Angular DevTools" href="" link="Completed in 2025">
+  With the evolution of Signals in Angular, we are working on a better tooling for debugging them. High on the priority list is a UI for inspecting and debugging signals.
+  </docs-card>
+  <docs-card title="Improve HMR (Hot Module Reload)" href="https://github.com/angular/angular/issues/39367#issuecomment-1439537306" link="Completed in 2025">
+  We're working towards faster edit/refresh cycle by enabling hot module replacement.
 
-В Angular v19 мы выпустили developer preview режима рендеринга на уровне маршрута, который позволяет детально
-настраивать, какие маршруты Angular должен пререндерить, рендерить на сервере или на клиенте. В Angular v20 мы перевели
-его в стабильный статус.
+In Angular v19 we shipped initial support for CSS and template HMR and in v20 we graduated template HMR to stable. We'll continue collecting feedback to make sure we're addressing developers' needs before we mark this project as complete.
 </docs-card>
-<docs-card title="Включение инкрементальной гидратации" link="Завершено во 2 кв. 2025" href="">
-В v17 мы вывели гидратацию из статуса developer preview, и мы постоянно наблюдаем улучшение LCP на 40-50%. С тех пор мы
-начали прототипирование инкрементальной гидратации и показали демо на сцене ng-conf.
+<docs-card title="Zoneless Angular" href="" link="Completed in Q4 2025">
+In v18 we shipped experimental zoneless support in Angular. It enables developers to use the framework without including zone.js in their bundle, which improves performance, debugging experience, and interoperability. As part of the initial release we also introduced zoneless support to the Angular CDK and Angular Material.
 
-В v19 мы выпустили инкрементальную гидратацию в режиме developer preview, работающую на блоках `@defer`. В Angular v20
-мы перевели её в стабильный статус!
-</docs-card>
-<docs-card title="Внедрение Angular Signals" link="Завершено во 2 кв. 2025"
-href="https://github.com/angular/angular/discussions/49685">
-Этот проект переосмысливает модель реактивности Angular, вводя Сигналы как примитив реактивности. Первоначальное
-планирование вылилось в сотни дискуссий, разговоров с разработчиками, сессий обратной связи, исследований
-пользовательского опыта и серию RFC, которые получили более 1000 комментариев.
+    In v19 we introduced zoneless support in server-side rendering, addressed some edge cases, and created a schematic to scaffold zoneless projects. We transitioned <a href="https://fonts.google.com/">Google Fonts</a> to zoneless which improved performance, developer experience, and allowed us to identify gaps that we need to address before moving this feature to developer preview.
 
-В Angular v20 мы перевели все фундаментальные примитивы реактивности в стабильный статус, включая signal, effect,
-linkedSignal, запросы на основе сигналов и inputs.
-</docs-card>
-<docs-card title="Поддержка двумерного Drag-and-Drop" link="Завершено во 2 кв. 2024"
-href="https://github.com/angular/components/issues/13372">
-В рамках этого проекта мы реализовали поддержку смешанной ориентации для Angular CDK drag and drop. Это одна из самых
-востребованных функций репозитория.
-</docs-card>
-<docs-card title="Воспроизведение событий с SSR и пререндерингом" link="Завершено в 4 кв. 2024"
-href="https://angular.dev/api/platform-browser/withEventReplay">
-В v18 мы представили функцию воспроизведения событий при использовании SSR или пререндеринга. Для этой функции мы
-зависим от примитива диспетчеризации событий (ранее известного как jsaction), который работает на Google.com.
+    As of Angular v20.2, Zoneless Angular is now stable and includes improvements in error handling and server-side rendering.
+    </docs-card>
+    <docs-card title="Server route configuration" link="Completed in Q2 2025" href="">
+    We're working towards enabling a more ergonomic route configuration on the server. We want to make it trivial to declare which routes should be server-side rendered, prerendered or client-side rendered.
 
-В Angular v19 мы перевели воспроизведение событий в стабильный статус и включили его по умолчанию для всех новых
-проектов.
+In Angular v19 we shipped developer preview of route-level render mode which allows you to granularly configure which routes you want Angular to prerender, server-side render or client-side render. In Angular v20 we graduated it to stable.
 </docs-card>
-<docs-card title="Интеграция Angular Language Service со Schematics" link="Завершено в 4 кв. 2024" href="">
-Чтобы облегчить разработчикам использование современных API Angular, мы включили интеграцию между Angular language
-service и schematics, что позволяет вам рефакторить ваше приложение одним кликом.
-</docs-card>
-<docs-card title="Упрощение импорта Standalone-компонентов с помощью Language Service" link="Завершено в 4 кв. 2024"
-href="">
-В рамках этой инициативы language service автоматически импортирует компоненты и пайпы в Standalone-приложениях и
-приложениях на основе NgModule. Кроме того, мы добавили диагностику шаблонов для выделения неиспользуемых импортов в
-Standalone-компонентах, что должно помочь уменьшить размер бандлов приложения.
-</docs-card>
-<docs-card title="Локальные переменные шаблона" link="Завершено в 3 кв. 2024">
-Мы выпустили поддержку локальных переменных шаблона в Angular, см. документацию [
-`@let`](https://angular.dev/api/core/@let) для получения дополнительной информации.
-</docs-card>
-<docs-card title="Расширение возможностей настройки Angular Material" link="Завершено во 2 кв. 2024"
-href="https://material.angular.dev/guide/theming">
-Чтобы обеспечить лучшую настройку наших компонентов Angular Material и включить возможности Material 3, мы будем
-сотрудничать с командой Google Material Design над определением API темизации на основе токенов.
+<docs-card title="Enable incremental hydration" link="Completed in Q2 2025" href="">
+In v17 we graduated hydration from developer preview and we've been consistently observing 40-50% improvements in LCP. Since then we started prototyping incremental hydration and shared a demo on stage at ng-conf.
 
-В v17.2 мы поделились экспериментальной поддержкой Angular Material 3, а в v18 перевели её в стабильный статус.
+In v19 we shipped the incremental hydration in developer preview mode, powered by `@defer` blocks. In Angular v20 we graduated it to stable!
 </docs-card>
-<docs-card title="Внедрение отложенной загрузки" link="Завершено во 2 кв. 2024"
-href="https://next.angular.dev/guide/defer">
-В v17 мы выпустили откладываемые представления (deferrable views) в developer preview, которые предоставляют
-эргономичный API для отложенной загрузки кода. В v18 мы включили откладываемые представления для разработчиков библиотек
-и перевели API в стабильный статус.
-</docs-card>
-<docs-card title="Поддержка iframe в Angular DevTools" link="Завершено во 2 кв. 2024" href="">
-Мы включили отладку и профилирование приложений Angular, встроенных в iframe на странице.
-</docs-card>
-<docs-card title="Автоматизация перехода существующих проектов с гибридным рендерингом на esbuild и vite" link="
-Завершено во 2 кв. 2024" href="tools/cli/build-system-migration">
-В v17 мы выпустили билдер приложений на основе vite и esbuild и включили его по умолчанию для новых проектов. Это
-улучшает время сборки для проектов, использующих гибридный рендеринг, до 87%. В рамках v18 мы выпустили схематики и
-руководство, которые мигрируют существующие проекты, использующие гибридный рендеринг, на новый конвейер сборки.
-</docs-card>
-<docs-card title="Сделать Angular.dev официальным домом для разработчиков Angular" link="Завершено во 2 кв. 2024"
-href="https://goo.gle/angular-dot-dev">
-Angular.dev — это новый сайт, домен и дом для разработки на Angular. Новый сайт содержит обновленную документацию,
-учебные пособия и руководства, которые помогут разработчикам создавать приложения с использованием новейших функций
-Angular.
-</docs-card>
-<docs-card title="Внедрение встроенного управляющего потока" link="Завершено во 2 кв. 2024"
-href="https://next.angular.dev/essentials/conditionals-and-loops">
-В v17 мы выпустили developer preview новой версии управляющего потока. Он приносит значительные улучшения
-производительности и лучшую эргономику для написания шаблонов. Мы также предоставили миграцию существующих `*ngIf`,
-`*ngFor` и `*ngSwitch`, которую вы можете запустить для перевода вашего проекта на новую реализацию. Начиная с v18,
-встроенный управляющий поток стал стабильным.
-</docs-card>
-<docs-card title="Модернизация руководства по началу работы" link="Завершено в 4 кв. 2023" href="">
-За последние два квартала мы разработали
-новое [видео](https://www.youtube.com/watch?v=xAT0lHYhHMY&list=PL1w1q3fL4pmj9k1FrJ3Pe91EPub2_h4jF)
-и [текстовое](https://angular.dev/tutorials/learn-angular) руководство, основанное на Standalone-компонентах.
-</docs-card>
-<docs-card title="Исследование современных бандлеров" link="Завершено в 4 кв. 2023" href="guide/hydration">
-В Angular v16 мы выпустили developer preview билдера на основе esbuild с поддержкой `ng build` и `ng serve`. Сервер
-разработки `ng serve` использует Vite и многофайловую компиляцию с помощью esbuild и компилятора Angular. В v17 мы
-вывели инструменты сборки из статуса developer preview и включили их по умолчанию для новых проектов.
-</docs-card>
-<docs-card title="Внедрение API отладки внедрения зависимостей" link="Завершено в 4 кв. 2023" href="tools/devtools">
-Чтобы улучшить утилиты отладки Angular и Angular DevTools, мы будем работать над API, предоставляющими доступ к среде
-выполнения внедрения зависимостей (DI). В рамках проекта мы откроем методы отладки, которые позволят нам исследовать
-иерархию инжекторов и зависимости через их связанные провайдеры. Начиная с v17, мы выпустили функцию, которая позволяет
-нам подключаться к жизненному циклу внедрения зависимостей. Мы также запустили визуализацию дерева инжекторов и проверку
-провайдеров, объявленных внутри каждого отдельного узла.
-</docs-card>
-<docs-card title="Улучшение документации и схематик для Standalone-компонентов" link="Завершено в 4 кв. 2023" href="
-components">
-Мы выпустили developer preview коллекции схематик `ng new --standalone`, позволяющей создавать приложения без NgModules.
-В v17 мы переключили новый формат создания приложений на Standalone API и изменили документацию, чтобы отразить эту
-рекомендацию. Кроме того, мы выпустили схематики, поддерживающие обновление существующих приложений до
-Standalone-компонентов, директив и пайпов. Даже несмотря на то, что NgModules останутся в обозримом будущем, мы
-рекомендуем вам изучить преимущества новых API для улучшения опыта разработки и получения выгоды от новых функций,
-которые мы для них создаем.
-</docs-card>
-<docs-card title="Исследование гидратации и улучшений SSR" link="Завершено в 4 кв. 2023">
-В v16 мы выпустили developer preview неразрушающей полной гидратации, см. [руководство по гидратации](guide/hydration)
-и [пост в блоге](https://blog.angular.dev/whats-next-for-server-side-rendering-in-angular-2a6f27662b67) для получения
-дополнительной информации. Мы уже видим значительные улучшения Core Web Vitals, включая [LCP](https://web.dev/lcp)
-и [CLS](https://web.dev/cls). В лабораторных тестах мы постоянно наблюдали улучшение LCP реального приложения на 45%.
+<docs-card title="Deliver Angular Signals" link="Completed in Q2 2025" href="https://github.com/angular/angular/discussions/49685">
+This project rethinks the Angular reactivity model by introducing Signals as a reactivity primitive. The initial planning resulted in hundreds of discussions, conversations with developers, feedback sessions, user experience studies, and a series of RFCs, which received over 1,000 comments.
 
-В v17 мы запустили гидратацию вне режима developer preview и сделали ряд улучшений в SSR, включая: обнаружение маршрутов
-во время выполнения для SSG, ускорение времени сборки до 87% для приложений с гибридным рендерингом, подсказку,
-включающую гибридный рендеринг для новых проектов.
+In Angular v20 we graduated all the fundamental reactivity primitives to stable including signal, effect, linkedSignal, signal-based queries, and inputs.
 </docs-card>
-<docs-card title="Неразрушающая полная гидратация приложения" link="Завершено в 1 кв. 2023" href="guide/hydration">
-В v16 мы выпустили developer preview неразрушающей полной гидратации, которая позволяет Angular повторно использовать
-существующие узлы DOM на странице, отрисованной на сервере, вместо того чтобы создавать приложение с нуля.
-Дополнительную информацию см. в руководстве по гидратации.
+<docs-card title="Support two-dimensional drag-and-drop" link="Completed in Q2 2024" href="https://github.com/angular/components/issues/13372">
+As part of this project, we implemented mixed orientation support for the Angular CDK drag and drop. This is one of the repository's most highly requested features.
 </docs-card>
-<docs-card title="Улучшения в директиве изображений" link="Завершено в 1 кв. 2023" href="guide/image-optimization">
-Мы выпустили директиву изображений Angular как стабильную в v15. Мы представили новую функцию режима заполнения (fill
-mode), которая позволяет изображениям вписываться в их родительский контейнер, а не иметь явные размеры. За последние
-два месяца команда Chrome Aurora портировала директиву в v12 и новее.
+<docs-card title="Event replay with SSR and prerendering" link="Completed in Q4 2024" href="https://angular.dev/api/platform-browser/withEventReplay">
+In v18 we introduced an event replay functionality when using server-side rendering or prerendering. For this feature we depend on the event dispatch primitive (previously known as jsaction) that is running on Google.com.
+
+In Angular v19 we graduated event replay to stable and enabled it by default for all new projects.
 </docs-card>
-<docs-card title="Рефакторинг документации" link="Завершено в 1 кв. 2023" href="https://angular.io">
-Обеспечить соответствие всей существующей документации единому набору типов контента. Обновить чрезмерное использование
-документации в стиле учебников, превратив её в независимые темы. Мы хотим убедиться, что контент за пределами основных
-учебных пособий является самодостаточным и не связан жестко с серией руководств. Во 2 квартале 2022 года мы переработали
-контент по шаблонам и внедрению зависимостей. В 1 квартале 2023 года мы улучшили руководства по HTTP, и на этом мы
-приостанавливаем проект рефакторинга документации.
+<docs-card title="Integrate Angular Language Service with Schematics" link="Completed in Q4 2024" href="">
+To make it easier for developers to use modern Angular APIs, we enabled integration between the Angular language service and schematics which allows you to refactor your app with a single click.
 </docs-card>
-<docs-card title="Улучшение производительности изображений" link="Завершено в 4 кв. 2022" href="
-guide/image-optimization">
-Команды Aurora и Angular работают над реализацией директивы изображений, направленной на улучшение Core Web Vitals. Мы
-выпустили стабильную версию директивы изображений в v15.
+<docs-card title="Streamline standalone imports with Language Service" link="Completed in Q4 2024" href="">
+As part of this initiative, the language service automatically imports components and pipes in standalone and NgModule-based apps. Additionally, we've added a template diagnostic to highlight unused imports in standalone components, which should help make application bundles smaller.
 </docs-card>
-<docs-card title="Современный CSS" link="Завершено в 4 кв. 2022"
-href="https://blog.angular.dev/modern-css-in-angular-layouts-4a259dca9127">
-Веб-экосистема постоянно развивается, и мы хотим отражать последние современные стандарты в Angular. В этом проекте мы
-стремимся предоставить рекомендации по использованию современных функций CSS в Angular, чтобы гарантировать, что
-разработчики следуют лучшим практикам для макета, стилизации и т.д. Мы поделились официальными рекомендациями по макету
-и в рамках этой инициативы прекратили публикацию flex layout.
+<docs-card title="Local template variables" link="Completed in Q3 2024">
+We've released the support for local template variables in Angular, see [`@let` docs](/api/core/@let) for additional information.
 </docs-card>
-<docs-card title="Поддержка добавления директив к хост-элементам" link="Завершено в 4 кв. 2022" href="
-guide/directives/directive-composition-api">
-Давний запрос на функцию — добавить возможность добавлять директивы к хост-элементам. Эта функция позволяет
-разработчикам дополнять свои собственные компоненты дополнительным поведением без использования наследования. В v15 мы
-выпустили наш API композиции директив, который позволяет улучшать хост-элементы с помощью директив.
+<docs-card title="Expand the customizability of Angular Material" link="Completed in Q2 2024" href="https://material.angular.dev/guide/theming">
+To provide better customization of our Angular Material components and enable Material 3 capabilities, we'll be collaborating with Google's Material Design team on defining token-based theming APIs.
+
+In v17.2 we shared experimental support for Angular Material 3 and in v18 we graduated it to stable.
 </docs-card>
-<docs-card title="Улучшенные трассировки стека" link="Завершено в 4 кв. 2022"
-href="https://developer.chrome.com/blog/devtools-better-angular-debugging/">
-Angular и Chrome DevTools работают вместе, чтобы обеспечить более читаемые трассировки стека для сообщений об ошибках. В
-v15 мы выпустили улучшенные релевантные и связанные трассировки стека. В качестве инициативы с более низким приоритетом
-мы будем изучать, как сделать трассировки стека более дружелюбными, предоставляя более точные имена кадров вызова для
-шаблонов.
+<docs-card title="Introduce deferred loading" link="Completed in Q2 2024" href="https://next.angular.dev/guide/templates/defer">
+In v17 we shipped deferrable views in developer preview, which provide an ergonomic API for deferred code loading. In v18 we enabled deferrable views for library developers and graduated the API to stable.
 </docs-card>
-<docs-card title="Улучшенные компоненты Angular Material за счет интеграции MDC Web" link="Завершено в 4 кв. 2022"
-href="https://material.angular.dev/guide/mdc-migration">
-MDC Web — это библиотека, созданная командой Google Material Design, которая предоставляет повторно используемые
-примитивы для создания компонентов Material Design. Команда Angular внедряет эти примитивы в Angular Material.
-Использование MDC Web более тесно связывает Angular Material со спецификацией Material Design, расширяет доступность,
-улучшает качество компонентов и повышает скорость работы нашей команды.
+<docs-card title="iframe support in Angular DevTools" link="Completed in Q2 2024" href="">
+We enabled debugging and profiling of Angular apps embedded within an iframe on the page.
 </docs-card>
-<docs-card title="Реализация API для опциональных NgModules" link="Завершено в 4 кв. 2022"
-href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
-В процессе упрощения Angular мы работаем над внедрением API, которые позволяют разработчикам инициализировать
-приложения, создавать экземпляры компонентов и использовать роутер без NgModules. Angular v14 представил developer
-preview API для Standalone-компонентов, директив и пайпов. В следующие несколько кварталов мы соберем отзывы от
-разработчиков и завершим проект, сделав API стабильными. В качестве следующего шага мы будем работать над улучшением
-таких вариантов использования, как TestBed, Angular elements и т.д.
+<docs-card title="Automation for transition of existing hybrid rendering projects to esbuild and vite" link="Completed in Q2 2024" href="tools/cli/build-system-migration">
+In v17 we shipped a vite and esbuild-based application builder and enabled it for new projects by default. It improves build time for projects using hybrid rendering with up to 87%. As part of v18 we shipped schematics and a guide that migrate existing projects using hybrid rendering to the new build pipeline.
 </docs-card>
-<docs-card title="Разрешение привязки к защищенным (protected) полям в шаблонах" link="Завершено во 2 кв. 2022" href="
-guide/templates/binding">
-Чтобы улучшить инкапсуляцию компонентов Angular, мы включили возможность привязки к защищенным членам экземпляра
-компонента. Таким образом, вам больше не придется делать поле или метод публичным, чтобы использовать его внутри ваших
-шаблонов.
+<docs-card title="Make Angular.dev the official home for Angular developers" link="Completed in Q2 2024" href="https://goo.gle/angular-dot-dev">
+Angular.dev is the new site, domain and home for Angular development. The new site contains updated documentation, tutorials and guidance that will help developers build with Angular’s latest features.
 </docs-card>
-<docs-card title="Публикация руководств по продвинутым концепциям" link="Завершено во 2 кв. 2022"
-href="https://angular.io/guide/change-detection">
-Разработать и опубликовать подробное руководство по обнаружению изменений. Разработать контент для профилирования
-производительности приложений Angular. Осветить, как обнаружение изменений взаимодействует с Zone.js, и объяснить, когда
-оно запускается, как профилировать его продолжительность, а также общие практики оптимизации производительности.
+<docs-card title="Introduce built-in control flow" link="Completed in Q2 2024" href="https://next.angular.dev/essentials/conditionals-and-loops">
+In v17 we shipped a developer preview version of a new control flow. It brings significant performance improvements and better ergonomics for template authoring. We also provided a migration of existing `*ngIf`, `*ngFor`, and `*ngSwitch` which you can run to move your project to the new implementation. As of v18 the built-in control flow is now stable.
 </docs-card>
-<docs-card title="Внедрение строгой типизации для @angular/forms" link="Завершено во 2 кв. 2022" href="
-guide/forms/typed-forms">
-В 4 квартале 2021 года мы разработали решение для введения строгой типизации для форм, а в 1 квартале 2022 года
-завершили соответствующий запрос комментариев (RFC). В настоящее время мы реализуем стратегию внедрения с автоматическим
-шагом миграции, который включит улучшения для существующих проектов. Сначала мы тестируем решение на более чем 2500
-проектах в Google, чтобы обеспечить плавный путь миграции для внешнего сообщества.
+<docs-card title="Modernize getting started tutorial" link="Completed Q4 2023" href="">
+Over the past two quarters, we developed a new [video](https://www.youtube.com/watch?v=xAT0lHYhHMY&list=PL1w1q3fL4pmj9k1FrJ3Pe91EPub2_h4jF) and [textual](/tutorials/learn-angular) tutorial based on standalone components.
 </docs-card>
-<docs-card title="Удаление устаревшего View Engine" link="Завершено в 1 кв. 2022"
-href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
-После завершения перехода всех наших внутренних инструментов на Ivy мы удалим устаревший View Engine для снижения
-концептуальной сложности Angular, уменьшения размера пакетов, снижения затрат на обслуживание и уменьшения сложности
-кодовой базы.
+<docs-card title="Investigate modern bundlers" link="Completed Q4 2023" href="guide/hydration">
+In Angular v16, we released a developer preview of an esbuild-based builder with support for `ng build` and `ng serve`. The `ng serve` development server uses Vite and a multi-file compilation by esbuild and the Angular compiler. In v17 we graduated the build tooling from developer preview and enabled it by default for new projects.
 </docs-card>
-<docs-card title="Упрощенная ментальная модель Angular с опциональными NgModules" link="Завершено в 1 кв. 2022"
-href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
-Чтобы упростить ментальную модель Angular и процесс обучения, мы будем работать над тем, чтобы сделать NgModules
-опциональными. Эта работа позволяет разработчикам создавать Standalone-компоненты и реализовывать альтернативный API для
-объявления области компиляции компонента. Мы начали этот проект с обсуждений высокоуровневого дизайна, которые мы
-зафиксировали в RFC.
+<docs-card title="Introduce dependency injection debugging APIs" link="Completed Q4 2023" href="tools/devtools">
+To improve the debugging utilities of Angular and Angular DevTools, we'll work on APIs that provide access to the dependency injection runtime. As part of the project, we'll expose debugging methods that allow us to explore the injector hierarchy and the dependencies across their associated providers. As of v17, we shipped a feature that enables us to plug into the dependency injection life-cycle. We also launched a visualization of the injector tree and inspection of the providers declared inside each individual node,
 </docs-card>
-<docs-card title="Проектирование строгой типизации для @angular/forms" link="Завершено в 1 кв. 2022" href="
-guide/forms/typed-forms">
-Мы будем работать над поиском способа реализации более строгой проверки типов для реактивных форм с минимальными
-последствиями для обратной совместимости. Таким образом, мы позволим разработчикам выявлять больше проблем во время
-разработки, обеспечим лучшую поддержку текстовых редакторов и IDE, а также улучшим проверку типов для реактивных форм.
+<docs-card title="Improve documentation and schematics for standalone components" link="Completed Q4 2023" href="components">
+We released a developer preview of the `ng new --standalone` schematics collection, allowing you to create apps free of NgModules. In v17 we switched the new application authoring format to standalone APIs and changed the documentation to reflect the recommendation. Additionally, we shipped schematics which support updating existing applications to standalone components, directives, and pipes. Even though NgModules will stick around for foreseeable future, we recommend you to explore the benefits of the new APIs to improve developer experience and benefit from the new features we build for them.
 </docs-card>
-<docs-card title="Улучшение интеграции Angular DevTools с фреймворком" link="Завершено в 1 кв. 2022" href="
-tools/devtools">
-Чтобы улучшить интеграцию Angular DevTools с фреймворком, мы работаем над переносом кодовой базы в монорепозиторий
-angular/angular. Это включает перевод Angular DevTools на Bazel и интеграцию его в существующие процессы и конвейер CI.
+<docs-card title="Explore hydration and server-side rendering improvements" link="Completed Q4 2023">
+In v16, we released a developer preview of non-destructive full hydration, see the [hydration guide](guide/hydration) and the [blog post](https://blog.angular.dev/whats-next-for-server-side-rendering-in-angular-2a6f27662b67) for additional information. We're already seeing significant improvements to Core Web Vitals, including [LCP](https://web.dev/lcp) and [CLS](https://web.dev/cls). In lab tests, we consistently observed 45% better LCP of a real-world app.
+
+In v17 we launched hydration outside developer preview and did a series of improvements in the server-side rendering story, including: route discovery at runtime for SSG, up to 87% faster build times for hybrid rendered applications, prompt that enables hybrid rendering for new projects.
 </docs-card>
-<docs-card title="Запуск расширенной диагностики компилятора" link="Завершено в 1 кв. 2022" href="
-reference/extended-diagnostics">
-Расширить диагностику компилятора Angular за пределы проверки типов. Внедрить другие проверки корректности и
-соответствия для дополнительной гарантии правильности и лучших практик.
+<docs-card title="Non-destructive full app hydration" link="Completed Q1 2023" href="guide/hydration">
+In v16, we released a developer preview of non-destructive full hydration, which allows Angular to reuse existing DOM nodes on a server-side rendered page, instead of re-creating an app from scratch. See additional information in the hydration guide.
 </docs-card>
-<docs-card title="Обновление нашей стратегии e2e-тестирования" link="Завершено в 3 кв. 2021" href="guide/testing">
-Чтобы гарантировать, что мы предоставляем перспективную стратегию e2e-тестирования, мы хотим оценить состояние
-Protractor, инновации сообщества, лучшие практики e2e и изучить новые возможности. В качестве первых шагов мы поделились
-RFC и работали с партнерами, чтобы обеспечить плавную интеграцию между Angular CLI и современными инструментами для
-e2e-тестирования. В качестве следующего шага нам нужно завершить рекомендации и составить список ресурсов для перехода.
+<docs-card title="Improvements in the image directive" link="Completed Q1 2023" href="guide/image-optimization">
+We released the Angular image directive as stable in v15. We introduced a new fill mode feature that enables images to fit within their parent container rather than having explicit dimensions. Over the past two months, the Chrome Aurora team backported the directive to v12 and newer.
 </docs-card>
-<docs-card title="Библиотеки Angular используют Ivy" link="Завершено в 3 кв. 2021" href="tools/libraries">
-Ранее в 2020 году мы поделились RFC по распространению библиотек Ivy. После бесценных отзывов от сообщества мы
-разработали дизайн проекта. Сейчас мы инвестируем в развитие распространения библиотек Ivy, включая обновление формата
-пакетов библиотек для использования компиляции Ivy, разблокировку устаревания формата библиотек View Engine и ngcc.
+<docs-card title="Documentation refactoring" link="Completed Q1 2023" href="https://angular.io">
+Ensure all existing documentation fits into a consistent set of content types. Update excessive use of tutorial-style documentation into independent topics. We want to ensure the content outside the main tutorials is self-sufficient without being tightly coupled to a series of guides. In Q2 2022, we refactored the template content and dependency injection. In Q1 2023, we improved the HTTP guides, and with this, we're putting the documentation refactoring project on hold.
 </docs-card>
-<docs-card title="Улучшение времени тестирования и отладки с автоматическим удалением тестового окружения" link="
-Завершено в 3 кв. 2021" href="guide/testing">
-Чтобы улучшить время тестирования и создать лучшую изоляцию между тестами, мы хотим изменить TestBed так, чтобы он
-автоматически очищал и удалял тестовое окружение после каждого запуска теста.
+<docs-card title="Improve image performance" link="Completed Q4 2022" href="guide/image-optimization">
+The Aurora and the Angular teams are working on the implementation of an image directive that aims to improve Core Web Vitals. We shipped a stable version of the image directive in v15.
 </docs-card>
-<docs-card title="Устаревание и удаление поддержки IE11" link="Завершено в 3 кв. 2021"
-href="https://github.com/angular/angular/issues/41840">
-Internet Explorer 11 (IE11) мешал Angular использовать некоторые современные функции веб-платформы. В рамках этого
-проекта мы собираемся объявить устаревшей и удалить поддержку IE11, чтобы открыть путь для современных функций,
-предоставляемых вечнозелеными (evergreen) браузерами. Мы провели RFC, чтобы собрать отзывы сообщества и принять решение
-о следующих шагах для продвижения вперед.
+<docs-card title="Modern CSS" link="Completed Q4 2022" href="https://blog.angular.dev/modern-css-in-angular-layouts-4a259dca9127">
+The Web ecosystem evolves constantly and we want to reflect the latest modern standards in Angular. In this project we aim to provide guidelines on using modern CSS features in Angular to ensure developers follow best practices for layout, styling, etc. We shared official guidelines for layout and as part of the initiative stopped publishing flex layout.
 </docs-card>
-<docs-card title="Использование ES2017+ в качестве языка вывода по умолчанию" link="Завершено в 3 кв. 2021"
-href="https://www.typescriptlang.org/docs/handbook/tsconfig-json.html">
-Поддержка современных браузеров позволяет нам использовать преимущества более компактного, выразительного и
-производительного нового синтаксиса JavaScript. В рамках этого проекта мы исследуем, какие существуют препятствия для
-продвижения этой инициативы, и предпримем шаги для её реализации.
+<docs-card title="Support adding directives to host elements" link="Completed Q4 2022" href="guide/directives/directive-composition-api">
+A long-standing feature request is to add the ability to add directives to host elements. The feature lets developers augment their own components with additional behaviors without using inheritance. In v15 we shipped our directive composition API, which enables enhancing host elements with directives.
 </docs-card>
-<docs-card title="Ускоренная отладка и профилирование производительности с Angular DevTools" link="Завершено во 2 кв.
-2021" href="tools/devtools">
-Мы работаем над инструментами разработки для Angular, которые предоставляют утилиты для отладки и профилирования
-производительности. Этот проект направлен на то, чтобы помочь разработчикам понять структуру компонентов и обнаружение
-изменений в приложении Angular.
+<docs-card title="Better stack traces" link="Completed Q4 2022" href="https://developer.chrome.com/blog/devtools-better-angular-debugging/">
+The Angular and the Chrome DevTools are working together to enable more readable stack traces for error messages. In v15 we released improved relevant and linked stack traces. As a lower priority initiative, we'll be exploring how to make the stack traces friendlier by providing more accurate call frame names for templates.
 </docs-card>
-<docs-card title="Оптимизация релизов с консолидированным версионированием и ветвлением Angular" link="Завершено во 2
-кв. 2021" href="reference/releases">
-Мы хотим консолидировать инструменты управления релизами между несколькими репозиториями GitHub для Angular (
-angular/angular, angular/angular-cli и angular/components). Это позволит нам повторно использовать инфраструктуру,
-унифицировать и упростить процессы, а также повысить надежность нашего процесса релизов.
+<docs-card title="Enhanced Angular Material components by integrating MDC Web" link="Completed Q4 2022" href="https://material.angular.dev/guide/mdc-migration">
+MDC Web is a library created by the Google Material Design team that provides reusable primitives for building Material Design components. The Angular team is incorporating these primitives into Angular Material. Using MDC Web aligns Angular Material more closely with the Material Design specification, expands accessibility, improves component quality, and improves the velocity of our team.
 </docs-card>
-<docs-card title="Повышение согласованности разработки благодаря стандартизации сообщений коммитов" link="Завершено во 2
-кв. 2021" href="https://github.com/angular/angular">
-Мы хотим унифицировать требования к сообщениям коммитов и их соответствие во всех репозиториях Angular (angular/angular,
-angular/components и angular/angular-cli), чтобы обеспечить согласованность нашего процесса разработки и повторно
-использовать инфраструктурные инструменты.
+<docs-card title="Implement APIs for optional NgModules" link="Completed Q4 2022" href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
+In the process of making Angular simpler, we are working on introducing APIs that allow developers to initialize apps, instantiate components, and use the router without NgModules. Angular v14 introduces developer preview of the APIs for standalone components, directives, and pipes. In the next few quarters we'll collect feedback from developers and finalize the project making the APIs stable. As the next step we will work on improving use cases such as TestBed, Angular elements, etc.
 </docs-card>
-<docs-card title="Перевод Angular Language Service на Ivy" link="Завершено во 2 кв. 2021" href="tools/language-service">
-Цель этого проекта — улучшить опыт и удалить устаревшую зависимость путем перевода language service на Ivy. Сегодня
-language service все еще использует компилятор View Engine и проверку типов, даже для приложений Ivy. Мы хотим
-использовать парсер шаблонов Ivy и улучшенную проверку типов для Angular Language Service, чтобы соответствовать
-поведению приложения. Эта миграция также является шагом к разблокировке удаления View Engine, что упростит Angular,
-уменьшит размер пакета npm и улучшит поддерживаемость фреймворка.
+<docs-card title="Allow binding to protected fields in templates" link="Completed Q2 2022" href="guide/templates/binding">
+To improve the encapsulation of Angular components we enabled binding to protected members of the component instance. This way you'll no longer have to expose a field or a method as public to use it inside your templates.
 </docs-card>
-<docs-card title="Повышенная безопасность с нативными Trusted Types в Angular" link="Завершено во 2 кв. 2021" href="
-best-practices/security">
-В сотрудничестве с командой безопасности Google мы добавляем поддержку нового API Trusted Types. Этот API веб-платформы
-помогает разработчикам создавать более безопасные веб-приложения.
+<docs-card title="Publish guides on advanced concepts" link="Completed Q2 2022" href="https://angular.io/guide/change-detection">
+Develop and publish an in-depth guide on change detection. Develop content for performance profiling of Angular apps. Cover how change detection interacts with Zone.js and explain when it gets triggered, how to profile its duration, as well as common practices for performance optimization.
 </docs-card>
-<docs-card title="Оптимизированная скорость сборки и размеры бандлов с Angular CLI webpack 5" link="Завершено во 2 кв.
-2021" href="tools/cli/build">
-В рамках релиза v11 мы представили опциональную (opt-in) предварительную версию webpack 5 в Angular CLI. Чтобы
-обеспечить стабильность, мы продолжим итерации над реализацией, чтобы обеспечить улучшение скорости сборки и размера
-бандлов.
+<docs-card title="Rollout strict typings for @angular/forms" link="Completed Q2 2022" href="guide/forms/typed-forms">
+In Q4 2021 we designed a solution for introducing strict typings for forms and in Q1 2022 we concluded the corresponding request for comments. Currently, we are implementing a rollout strategy with an automated migration step that will enable the improvements for existing projects. We are first testing the solution with more than 2,500 projects at Google to ensure a smooth migration path for the external community.
 </docs-card>
-<docs-card title="Более быстрые приложения за счет встраивания критических стилей в Universal-приложениях" link="
-Завершено в 1 кв. 2021" href="guide/ssr">
-Загрузка внешних таблиц стилей является блокирующей операцией, что означает, что браузер не может начать рендеринг
-вашего приложения, пока не загрузит все ссылочные CSS. Наличие ресурсов, блокирующих рендеринг, в заголовке страницы
-может существенно повлиять на производительность её загрузки, например, на первую отрисовку контента (FCP). Чтобы
-сделать приложения быстрее, мы сотрудничаем с командой Google Chrome над встраиванием критического CSS и асинхронной
-загрузкой остальных стилей.
+<docs-card title="Remove legacy View Engine" link="Completed Q1 2022" href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
+After the transition of all our internal tooling to Ivy is completed, we will remove the legacy View Engine for reduced Angular conceptual overhead, smaller package size, lower maintenance cost, and lower codebase complexity.
 </docs-card>
-<docs-card title="Улучшение отладки с помощью более качественных сообщений об ошибках Angular" link="Завершено в 1 кв.
-2021" href="reference/errors">
-Сообщения об ошибках часто содержат ограниченную полезную информацию, помогающую разработчикам их устранять. Мы работаем
-над тем, чтобы сделать сообщения об ошибках более понятными, добавляя связанные коды, разрабатывая руководства и другие
-материалы для обеспечения более плавного опыта отладки.
+<docs-card title="Simplified Angular mental model with optional NgModules" link="Completed Q1 2022" href="https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8">
+To simplify the Angular mental model and learning journey, we will be working on making NgModules optional. This work lets developers develop standalone components and implement an alternative API for declaring the compilation scope of the component. We kicked this project off with high-level design discussions that we captured in an RFC.
 </docs-card>
-<docs-card title="Улучшенная адаптация разработчиков с обновленной вводной документацией" link="Завершено в 1 кв. 2021"
-href="tutorials">
-Мы переопределим пути обучения пользователей и обновим вводную документацию. Мы четко сформулируем преимущества Angular,
-расскажем, как изучить его возможности, и предоставим руководство, чтобы разработчики могли освоить фреймворк в
-кратчайшие сроки.
+<docs-card title="Design strict typing for @angular/forms" link="Completed Q1 2022" href="guide/forms/typed-forms">
+We will work on finding a way to implement stricter type checking for reactive forms with minimal backward incompatible implications. This way, we let developers catch more issues during development time, enable better text editor and IDE support, and improve the type checking for reactive forms.
 </docs-card>
-<docs-card title="Расширение лучших практик использования harness компонентов" link="Завершено в 1 кв. 2021"
-href="https://material.angular.dev/guide/using-component-harnesses">
-Angular CDK представил концепцию harness (обвязок) для тестирования компонентов в Angular версии 9. Тестовые harness
-позволяют авторам компонентов создавать поддерживаемые API для тестирования взаимодействия с компонентами. Мы продолжаем
-улучшать эту инфраструктуру harness и разъяснять лучшие практики их использования. Мы также работаем над тем, чтобы
-стимулировать более широкое внедрение harness внутри Google.
+<docs-card title="Improve integration of Angular DevTools with framework" link="Completed Q1 2022" href="tools/devtools">
+To improve the integration of Angular DevTools with the framework, we are working on moving the codebase to the angular/angular monorepository. This includes transitioning Angular DevTools to Bazel and integrating it into the existing processes and CI pipeline.
 </docs-card>
-<docs-card title="Написание руководства по проекции контента" link="Завершено во 2 кв. 2021"
-href="https://angular.io/docs">
-Проекция контента — это ключевая концепция Angular, которая не имеет того освещения в документации, которого она
-заслуживает. В рамках этого проекта мы хотим определить основные варианты использования и концепции проекции контента и
-задокументировать их.
+<docs-card title="Launch advanced compiler diagnostics" link="Completed Q1 2022" href="reference/extended-diagnostics">
+Extend the diagnostics of the Angular compiler outside type checking. Introduce other correctness and conformance checks to further guarantee correctness and best practices.
 </docs-card>
-<docs-card title="Миграция на ESLint" link="Завершено в 4 кв. 2020" href="tools/cli">
-В связи с устареванием TSLint мы переходим на ESLint. В рамках этого процесса мы будем работать над обеспечением
-обратной совместимости с нашей текущей рекомендуемой конфигурацией TSLint, реализуем стратегию миграции для существующих
-приложений Angular и внедрим новые инструменты в набор инструментов Angular CLI.
+<docs-card title="Update our e2e testing strategy" link="Completed Q3 2021" href="guide/testing">
+To ensure we provide a future-proof e2e testing strategy, we want to evaluate the state of Protractor, community innovations, e2e best practices, and explore novel opportunities. As first steps of the effort, we shared an RFC and worked with partners to ensure smooth integration between the Angular CLI and state-of-the-art tooling for e2e testing. As the next step, we need to finalize the recommendations and compile a list of resources for the transition.
 </docs-card>
-<docs-card title="Операция Bye Bye Backlog (также известная как Operation Byelog)" link="Завершено в 4 кв. 2020"
-href="https://github.com/angular/angular/issues">
-Мы активно инвестируем до 50% наших инженерных мощностей в сортировку (triage) проблем и PR, пока не получим четкого
-понимания более широких потребностей сообщества. После этого мы выделим до 20% наших инженерных мощностей, чтобы
-оперативно реагировать на новые заявки.
+<docs-card title="Angular libraries use Ivy" link="Completed Q3 2021" href="tools/libraries">
+Earlier in 2020, we shared an RFC for Ivy library distribution. After invaluable feedback from the community, we developed a design of the project. We are now investing in the development of Ivy library distribution, including an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and ngcc.
+</docs-card>
+<docs-card title="Improve test times and debugging with automatic test environment tear down" link="Completed Q3 2021" href="guide/testing">
+To improve test time and create better isolation across tests, we want to change TestBed to automatically clean up and tear down the test environment after each test run.
+</docs-card>
+<docs-card title="Deprecate and remove IE11 support" link="Completed Q3 2021" href="https://github.com/angular/angular/issues/41840">
+Internet Explorer 11 (IE11) has been preventing Angular from taking advantage of some of the modern features of the Web platform. As part of this project we are going to deprecate and remove IE11 support to open the path for modern features that evergreen browsers provide. We ran an RFC to collect feedback from the community and decide on next steps to move forward.
+</docs-card>
+<docs-card title="Leverage ES2017+ as the default output language" link="Completed Q3 2021" href="https://www.typescriptlang.org/docs/handbook/tsconfig-json.html">
+Supporting modern browsers lets us take advantage of the more compact, expressive, and performant new syntax of JavaScript. As part of this project we will investigate what the blockers are to moving forward with this effort, and take the steps to enable it.
+</docs-card>
+<docs-card title="Accelerated debugging and performance profiling with Angular DevTools" link="Completed Q2 2021" href="tools/devtools">
+We are working on development tooling for Angular that provides utilities for debugging and performance profiling. This project aims to help developers understand the component structure and the change detection in an Angular app.
+</docs-card>
+<docs-card title="Streamline releases with consolidated Angular versioning & branching" link="Completed Q2 2021" href="reference/releases">
+We want to consolidate release management tooling between the multiple GitHub repositories for Angular (angular/angular, angular/angular-cli, and angular/components). This effort lets us reuse infrastructure, unify and simplify processes, and improve the reliability of our release process.
+</docs-card>
+<docs-card title="Higher developer consistency with commit message standardization" link="Completed Q2 2021" href="https://github.com/angular/angular">
+We want to unify commit message requirements and conformance across Angular repositories (angular/angular, angular/components, and angular/angular-cli) to bring consistency to our development process and reuse infrastructure tooling.
+</docs-card>
+<docs-card title="Transition the Angular language service to Ivy" link="Completed Q2 2021" href="tools/language-service">
+The goal of this project is to improve the experience and remove legacy dependency by transitioning the language service to Ivy. Today the language service still uses the View Engine compiler and type checking, even for Ivy apps. We want to use the Ivy template parser and improved type checking for the Angular Language service to match app behavior. This migration is also a step towards unblocking the removal of View Engine, which will simplify Angular, reduce the npm package size, and improve the maintainability of the framework.
+</docs-card>
+<docs-card title="Increased security with native Trusted Types in Angular" link="Completed Q2 2021" href="best-practices/security">
+In collaboration with the Google security team, we are adding support for the new Trusted Types API. This web platform API helps developers build more secure web apps.
+</docs-card>
+<docs-card title="Optimized build speed and bundle sizes with Angular CLI webpack 5" link="Completed Q2 2021" href="tools/cli/build">
+As part of the v11 release, we introduced an opt-in preview of webpack 5 in the Angular CLI. To ensure stability, we will continue iterating on the implementation to enable build speed and bundle size improvements.
+</docs-card>
+<docs-card title="Faster apps by inlining critical styles in Universal apps" link="Completed Q1 2021" href="guide/ssr">
+Loading external stylesheets is a blocking operation, which means that the browser cannot start rendering your app until it loads all the referenced CSS. Having render-blocking resources in the header of a page can significantly impact its load performance, for example, its first contentful paint. To make apps faster, we have been collaborating with the Google Chrome team on inlining critical CSS and loading the rest of the styles asynchronously.
+</docs-card>
+<docs-card title="Improve debugging with better Angular error messages" link="Completed Q1 2021" href="reference/errors">
+Error messages often bring limited actionable information to help developers resolve them. We have been working on making error messages more discoverable by adding associated codes, developing guides, and other materials to ensure a smoother debugging experience.
+</docs-card>
+<docs-card title="Improved developer onboarding with refreshed introductory documentation" link="Completed Q1 2021" href="tutorials">
+We will redefine the user learning journeys and refresh the introductory documentation. We will clearly state the benefits of Angular, how to explore its capabilities and provide guidance so developers can become proficient with the framework in as little time as possible.
+</docs-card>
+<docs-card title="Expand component harnesses best practices" link="Completed Q1 2021" href="https://material.angular.dev/guide/using-component-harnesses">
+Angular CDK introduced the concept of component test harnesses to Angular in version 9. Test harnesses let component authors create supported APIs for testing component interactions. We are continuing to improve this harness infrastructure and clarifying the best practices around using harnesses. We are also working to drive more harness adoption inside of Google.
+</docs-card>
+<docs-card title="Author a guide for content projection" link="Completed Q2 2021" href="https://angular.io/docs">
+Content projection is a core Angular concept that does not have the presence it deserves in the documentation. As part of this project we want to identify the core use cases and concepts for content projection and document them.
+</docs-card>
+<docs-card title="Migrate to ESLint" link="Completed Q4 2020" href="tools/cli">
+With the deprecation of TSLint we will be moving to ESLint. As part of the process, we will work on ensuring backward compatibility with our current recommended TSLint configuration, implement a migration strategy for existing Angular apps and introduce new tooling to the Angular CLI toolchain.
+</docs-card>
+<docs-card title="Operation Bye Bye Backlog (also known as Operation Byelog)" link="Completed Q4 2020" href="https://github.com/angular/angular/issues">
+We are actively investing up to 50% of our engineering capacity on triaging issues and PRs until we have a clear understanding of broader community needs. After that, we will commit up to 20% of our engineering capacity to keep up with new submissions promptly.
 </docs-card>
 </docs-card-container>

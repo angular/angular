@@ -1,9 +1,9 @@
-/**
+/*!
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 function findArgument(argv: string[], argName: string): string | undefined {
@@ -70,6 +70,7 @@ interface CommandLineOptions {
   disableLetSyntax: boolean;
   angularCoreVersion?: string;
   suppressAngularDiagnosticCodes?: string;
+  useClientSideFileWatcher?: boolean;
 }
 
 export function parseCommandLine(argv: string[]): CommandLineOptions {
@@ -95,6 +96,7 @@ export function parseCommandLine(argv: string[]): CommandLineOptions {
     disableLetSyntax: hasArgument(argv, '--disableLetSyntax'),
     angularCoreVersion: findArgument(argv, '--angularCoreVersion'),
     suppressAngularDiagnosticCodes: findArgument(argv, '--suppressAngularDiagnosticCodes'),
+    useClientSideFileWatcher: hasArgument(argv, '--useClientSideFileWatcher'),
   };
 }
 

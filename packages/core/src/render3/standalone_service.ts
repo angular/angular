@@ -35,7 +35,9 @@ export class StandaloneService implements OnDestroy {
           ? createEnvironmentInjector(
               [providers],
               this._injector,
-              `Standalone[${componentDef.type.name}]`,
+              typeof ngDevMode !== 'undefined' && ngDevMode
+                ? `Standalone[${componentDef.type.name}]`
+                : '',
             )
           : null;
       this.cachedInjectors.set(componentDef, standaloneInjector);

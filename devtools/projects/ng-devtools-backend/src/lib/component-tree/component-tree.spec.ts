@@ -7,7 +7,11 @@
  */
 
 import {Injector, ɵGlobalDevModeUtils} from '@angular/core';
-import {getInjectorFromElementNode, getRootElements} from './component-tree';
+import {
+  getInjectorFromElementNode,
+  getRootElements,
+  serializeProviderRecord,
+} from './component-tree';
 
 type Ng = ɵGlobalDevModeUtils['ng'];
 const NG_VERSION = 'ng-version';
@@ -100,6 +104,45 @@ describe('component-tree', () => {
       const roots = getRootElements();
       expect(roots.length).toEqual(1);
       expect(roots).toContain(document.body);
+    });
+  });
+
+  describe('serializeProviderRecord', () => {
+    it('should return "internal" type for internal tokens', () => {
+      const internalTokenNames = [
+        'ElementRef',
+        'Renderer2',
+        'ViewContainerRef',
+        'DestroyRef',
+        'ChangeDetectorRef',
+        'Injector',
+      ];
+
+      internalTokenNames.forEach((tokenName, index) => {
+        const token = () => {};
+        Object.defineProperty(token, 'name', {value: tokenName});
+        const providerRecord: any = {
+          provider: () => {},
+          token,
+          isViewProvider: false,
+        };
+        const result = serializeProviderRecord(providerRecord, index);
+        expect(result.type).toBe('internal');
+        expect(result.token).toBe(tokenName);
+      });
+    });
+
+    it('should return "type" for non-internal function providers', () => {
+      const token = () => {};
+      Object.defineProperty(token, 'name', {value: 'MyCustomService'});
+      const providerRecord: any = {
+        provider: () => {},
+        token,
+        isViewProvider: false,
+      };
+      const result = serializeProviderRecord(providerRecord, 0);
+      expect(result.type).toBe('type');
+      expect(result.token).toBe('MyCustomService');
     });
   });
 });

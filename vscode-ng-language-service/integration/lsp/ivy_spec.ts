@@ -1,9 +1,9 @@
-/**
+/*!
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {fileURLToPath, pathToFileURL} from 'node:url';
@@ -23,6 +23,7 @@ import {
 } from '../../common/requests';
 import {
   APP_COMPONENT,
+  APP_COMPONENT_MODULE,
   APP_COMPONENT_MODULE_URI,
   APP_COMPONENT_URI,
   BAR_COMPONENT,
@@ -32,7 +33,6 @@ import {
   FOO_TEMPLATE,
   FOO_TEMPLATE_URI,
   makeTempDir,
-  PRE_STANDALONE_PROJECT_PATH,
   PROJECT_PATH,
   TSCONFIG,
 } from '../test_constants';
@@ -43,7 +43,7 @@ import {
   initializeServer,
   openTextDocument,
   ServerOptions,
-} from './test_utils';
+} from './test_utils.js';
 
 describe('Angular language server', () => {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000; /* 10 seconds */
@@ -76,7 +76,7 @@ describe('Angular language server', () => {
       textDocument: {
         uri: APP_COMPONENT_URI,
       },
-      position: {line: 4, character: 25},
+      position: {line: 4, character: 26},
     });
     expect(response?.contents).toContain({
       language: 'typescript',
@@ -453,11 +453,11 @@ export class AppComponent {
           textDocument: {
             uri: APP_COMPONENT_URI,
           },
-          position: {line: 4, character: 25},
+          position: {line: 4, character: 26},
         })) as {range: lsp.Range; placeholder: string};
         expect(response.range).toEqual({
-          start: {line: 4, character: 25},
-          end: {line: 4, character: 29},
+          start: {line: 4, character: 26},
+          end: {line: 4, character: 30},
         });
         expect(response.placeholder).toEqual('name');
       });
@@ -472,8 +472,8 @@ export class AppComponent {
         };
         const expectedRenameInTemplate = {
           range: {
-            start: {line: 4, character: 25},
-            end: {line: 4, character: 29},
+            start: {line: 4, character: 26},
+            end: {line: 4, character: 30},
           },
           newText: 'surname',
         };
@@ -483,7 +483,7 @@ export class AppComponent {
             textDocument: {
               uri: APP_COMPONENT_URI,
             },
-            position: {line: 4, character: 25},
+            position: {line: 4, character: 26},
             newName: 'surname',
           });
           expect(response).not.toBeNull();
@@ -610,15 +610,6 @@ export class AppComponent {
       position: {line: 1, character: 0},
     });
     expect(response).toBeNull();
-  });
-
-  it('should handle apps where standalone is not enabled by default (pre v19)', async () => {
-    await initServer({angularCoreVersion: '18.0.0'});
-    const moduleFile = join(PRE_STANDALONE_PROJECT_PATH, 'app/app.module.ts');
-
-    openTextDocument(client, moduleFile);
-    const diagnostics = await getDiagnosticsForFile(client, moduleFile);
-    expect(diagnostics.length).toBe(0);
   });
 
   it('should provide a "go to component" codelens', async () => {

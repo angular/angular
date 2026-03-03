@@ -15,7 +15,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
   selector: 'example-app',
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      @if(name.invalid) {
+      @if (name.invalid) {
         <p>Name is invalid.</p>
       }
       <div formGroupName="name">

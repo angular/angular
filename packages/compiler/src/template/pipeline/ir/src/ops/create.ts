@@ -33,7 +33,7 @@ import {
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
-import type {BindingOp, Interpolation, UpdateOp} from './update';
+import type {Interpolation, UpdateOp} from './update';
 
 /**
  * An operation usable on the creation side of the IR.
@@ -1964,7 +1964,11 @@ export interface ControlCreateOp extends Op<CreateOp> {
 
 /** Creates a {@link ControlCreateOp}. */
 export function createControlCreateOp(sourceSpan: ParseSourceSpan): ControlCreateOp {
-  return {kind: OpKind.ControlCreate, sourceSpan, ...NEW_OP};
+  return {
+    kind: OpKind.ControlCreate,
+    sourceSpan,
+    ...NEW_OP,
+  };
 }
 
 /**

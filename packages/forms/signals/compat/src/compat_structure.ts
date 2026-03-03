@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal, signal, WritableSignal} from '@angular/core';
+import {
+  computed,
+  Signal,
+  signal,
+  WritableSignal,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
+import {RuntimeErrorCode} from '../../src/errors';
 import {FormFieldManager} from '../../src/field/manager';
 import {FieldNode, ParentFieldNode} from '../../src/field/node';
 import {
@@ -101,22 +108,30 @@ function getControlValueSignal<T>(options: CompatFieldNodeOptions) {
  */
 export class CompatStructure extends FieldNodeStructure {
   override value: WritableSignal<unknown>;
-  override keyInParent: Signal<string> = (() => {
-    throw new Error('Compat nodes do not use keyInParent.');
-  }) as unknown as Signal<string>;
+  override keyInParent: Signal<string>;
   override root: FieldNode;
   override pathKeys: Signal<readonly string[]>;
   override readonly children = signal([]);
-  override readonly childrenMap = signal(undefined);
+  override readonly childrenMap = computed(() => undefined);
   override readonly parent: ParentFieldNode | undefined;
   override readonly fieldManager: FormFieldManager;
 
   constructor(node: FieldNode, options: CompatFieldNodeOptions) {
-    super(options.logic);
+    super(options.logic, node, () => {
+      throw new RuntimeError(
+        RuntimeErrorCode.COMPAT_NO_CHILDREN,
+        ngDevMode && `Compat nodes don't have children.`,
+      );
+    });
     this.value = getControlValueSignal(options);
     this.parent = getParentFromOptions(options);
     this.root = this.parent?.structure.root ?? node;
     this.fieldManager = getFieldManagerFromOptions(options);
+
+    const identityInParent = options.kind === 'child' ? options.identityInParent : undefined;
+    const initialKeyInParent = options.kind === 'child' ? options.initialKeyInParent : undefined;
+    this.keyInParent = this.createKeyInParent(options, identityInParent, initialKeyInParent);
+
     this.pathKeys = computed(() =>
       this.parent ? [...this.parent.structure.pathKeys(), this.keyInParent()] : [],
     );

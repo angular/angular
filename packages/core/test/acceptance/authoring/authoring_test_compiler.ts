@@ -27,7 +27,7 @@ async function main() {
     skipLibCheck: true,
     module: ts.ModuleKind.ESNext,
     target: ts.ScriptTarget.ESNext,
-    moduleResolution: ts.ModuleResolutionKind.Node10,
+    moduleResolution: ts.ModuleResolutionKind.NodeNext,
   });
 
   const host = new TypeScriptReflectionHost(program.getTypeChecker());

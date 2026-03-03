@@ -70,7 +70,7 @@ export const appConfig: ApplicationConfig = {
         headerName: 'X-Custom-Xsrf-Header',
       }),
     ),
-  ]
+  ],
 };
 ```
 
@@ -81,10 +81,6 @@ export const appConfig: ApplicationConfig = {
 
 ```ts
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideHttpClient(
-      withNoXsrfProtection(),
-    ),
-  ]
+  providers: [provideHttpClient(withNoXsrfProtection())],
 };
 ```

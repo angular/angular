@@ -10,6 +10,6 @@ import {Component, Input, NgModule} from '@angular/core';
 	`,
 })
 export class MyComponent {
-  someBoolean: boolean;
+  someBoolean = false;
   someField!: any;
 }

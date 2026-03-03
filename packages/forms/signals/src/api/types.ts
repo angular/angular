@@ -6,16 +6,56 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Signal, ɵFieldState} from '@angular/core';
+import {Signal, WritableSignal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
-import type {Field} from './field_directive';
-import {AggregateMetadataKey, MetadataKey} from './metadata';
-import type {ValidationError} from './validation_errors';
+import type {FormField} from '../directive/form_field_directive';
+import type {MetadataKey, ValidationError} from './rules';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
  */
 declare const ɵɵTYPE: unique symbol;
+
+/**
+ * Options that can be specified when submitting a form.
+ *
+ * @experimental 21.2.0
+ */
+export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
+  /**
+   * Function to run when submitting the form data (when form is valid).
+   *
+   * @param field The contextually relevant field for this action function (the root field when
+   *   specified during form creation, and the submitted field when specified as part of the
+   *   `submit()` call)
+   * @param detail An object containing the root field of the submitted form as well as the
+   *   submitted field itself
+   */
+  action: (
+    field: FieldTree<TRootModel & TSubmittedModel>,
+    detail: {root: FieldTree<TRootModel>; submitted: FieldTree<TSubmittedModel>},
+  ) => Promise<TreeValidationResult>;
+  /**
+   * Function to run when attempting to submit the form data but validation is failing.
+   *
+   * @param field The contextually relevant field for this onInvalid function (the root field when
+   *   specified during form creation, and the submitted field when specified as part of the
+   *   `submit()` call)
+   * @param detail An object containing the root field of the submitted form as well as the
+   *   submitted field itself
+   */
+  onInvalid?: (
+    field: FieldTree<TRootModel & TSubmittedModel>,
+    detail: {root: FieldTree<TRootModel>; submitted: FieldTree<TSubmittedModel>},
+  ) => void;
+  /**
+   * Whether to ignore any of the validators when submitting:
+   * - 'pending': Will submit if there are no invalid validators, pending validators do not block submission (default)
+   * - 'none': Will not submit unless all validators are passing, pending validators block submission
+   * - 'ignore': Will always submit regardless of invalid or pending validators
+   */
+  ignoreValidators?: 'pending' | 'none' | 'all';
+}
 
 /**
  * A type that represents either a single value of type `T` or a readonly array of `T`.
@@ -60,14 +100,6 @@ export declare namespace PathKind {
 }
 
 /**
- * A status indicating whether a field is unsubmitted, submitted, or currently submitting.
- *
- * @category types
- * @experimental 21.0.0
- */
-export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
-
-/**
  * A reason for a field's disablement.
  *
  * @category logic
@@ -75,7 +107,7 @@ export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
  */
 export interface DisabledReason {
   /** The field that is disabled. */
-  readonly field: FieldTree<unknown>;
+  readonly fieldTree: FieldTree<unknown>;
   /** A user-facing message describing the reason for the disablement. */
   readonly message?: string;
 }
@@ -103,7 +135,7 @@ export type ValidationSuccess = null | undefined | void;
  * @experimental 21.0.0
  */
 export type TreeValidationResult<
-  E extends ValidationError.WithOptionalField = ValidationError.WithOptionalField,
+  E extends ValidationError.WithOptionalFieldTree = ValidationError.WithOptionalFieldTree,
 > = ValidationSuccess | OneOrMany<E>;
 
 /**
@@ -140,6 +172,20 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
   | 'pending';
 
 /**
+ * A field accessor function that returns the state of the field.
+ *
+ * @template TValue The type of the value stored in the field.
+ * @template TKey The type of the property key which this field resides under in its parent.
+ *
+ * @category types
+ * @experimental 21.2.0
+ */
+export type Field<TValue, TKey extends string | number = string | number> = () => FieldState<
+  TValue,
+  TKey
+>;
+
+/**
  * An object that represents a tree of fields in a form. This includes both primitive value fields
  * (e.g. fields that contain a `string` or `number`), as well as "grouping fields" that contain
  * sub-fields. `FieldTree` objects are arranged in a tree whose structure mimics the structure of the
@@ -169,7 +215,7 @@ export type FieldTree<TModel, TKey extends string | number = string | number> =
     // Children:
     ([TModel] extends [AbstractControl]
       ? object
-      : [TModel] extends [Array<infer U>]
+      : [TModel] extends [ReadonlyArray<infer U>]
         ? ReadonlyArrayLike<MaybeFieldTree<U, number>>
         : TModel extends Record<string, any>
           ? Subfields<TModel>
@@ -226,8 +272,80 @@ export type MaybeFieldTree<TModel, TKey extends string | number = string | numbe
  * @category structure
  * @experimental 21.0.0
  */
-export interface FieldState<TValue, TKey extends string | number = string | number>
-  extends ɵFieldState<TValue> {
+export interface FieldState<TValue, TKey extends string | number = string | number> {
+  /**
+   * The {@link FieldTree} associated with this field state.
+   */
+  readonly fieldTree: FieldTree<unknown, TKey>;
+
+  /**
+   * A writable signal containing the value for this field.
+   *
+   * Updating this signal will update the data model that the field is bound to.
+   *
+   * While updates from the UI control are eventually reflected here, they may be delayed if
+   * debounced.
+   */
+  readonly value: WritableSignal<TValue>;
+
+  /**
+   * A signal indicating whether the field is currently disabled.
+   */
+  readonly disabled: Signal<boolean>;
+
+  /**
+   * A signal indicating the field's maximum value, if applicable.
+   *
+   * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
+   */
+  readonly max?: Signal<number | undefined>;
+
+  /**
+   * A signal indicating the field's maximum string length, if applicable.
+   *
+   * Applies to `<input>`, `<textarea>`, and custom controls.
+   */
+  readonly maxLength?: Signal<number | undefined>;
+
+  /**
+   * A signal indicating the field's minimum value, if applicable.
+   *
+   * Applies to `<input>` with a numeric or date `type` attribute and custom controls.
+   */
+  readonly min?: Signal<number | undefined>;
+
+  /**
+   * A signal indicating the field's minimum string length, if applicable.
+   *
+   * Applies to `<input>`, `<textarea>`, and custom controls.
+   */
+  readonly minLength?: Signal<number | undefined>;
+
+  /**
+   * A signal of a unique name for the field, by default based on the name of its parent field.
+   */
+  readonly name: Signal<string>;
+
+  /**
+   * A signal indicating the patterns the field must match.
+   */
+  readonly pattern: Signal<readonly RegExp[]>;
+
+  /**
+   * A signal indicating whether the field is currently readonly.
+   */
+  readonly readonly: Signal<boolean>;
+
+  /**
+   * A signal indicating whether the field is required.
+   */
+  readonly required: Signal<boolean>;
+
+  /**
+   * A signal indicating whether the field has been touched by the user.
+   */
+  readonly touched: Signal<boolean>;
+
   /**
    * A signal indicating whether field value has been changed by user.
    */
@@ -247,12 +365,12 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly hidden: Signal<boolean>;
   readonly disabledReasons: Signal<readonly DisabledReason[]>;
-  readonly errors: Signal<ValidationError.WithField[]>;
+  readonly errors: Signal<ValidationError.WithFieldTree[]>;
 
   /**
    * A signal containing the {@link errors} of the field and its descendants.
    */
-  readonly errorSummary: Signal<ValidationError.WithField[]>;
+  readonly errorSummary: Signal<ValidationError.WithFieldTree[]>;
 
   /**
    * A signal indicating whether the field's value is currently valid.
@@ -293,26 +411,34 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly keyInParent: Signal<TKey>;
   /**
-   * The {@link Field} directives that bind this field to a UI control.
+   * The {@link FormField} directives that bind this field to a UI control.
    */
-  readonly fieldBindings: Signal<readonly Field<unknown>[]>;
+  readonly formFieldBindings: Signal<readonly FormField<unknown>[]>;
 
   /**
-   * Reads an aggregate metadata value from the field.
-   * @param key The metadata key to read.
+   * A signal containing the value of the control to which this field is bound.
+   *
+   * This differs from {@link value} in that it's not subject to debouncing, and thus is used to
+   * buffer debounced updates from the control to the field. This will also not take into account
+   * the {@link controlValue} of children.
    */
-  metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
+  readonly controlValue: WritableSignal<TValue>;
+
+  /**
+   * Sets the dirty status of the field to `true`.
+   */
+  markAsDirty(): void;
+
+  /**
+   * Sets the touched status of the field to `true`.
+   */
+  markAsTouched(): void;
 
   /**
    * Reads a metadata value from the field.
    * @param key The metadata key to read.
    */
-  metadata<M>(key: MetadataKey<M>): M | undefined;
-
-  /**
-   * Checks whether the given metadata key has been defined for this field.
-   */
-  hasMetadata(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean;
+  metadata<M>(key: MetadataKey<M, any, any>): M | undefined;
 
   /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
@@ -322,6 +448,13 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * @param value Optional value to set to the form. If not passed, the value will not be changed.
    */
   reset(value?: TValue): void;
+
+  /**
+   * Focuses the first UI control in the DOM that is bound to this field state.
+   * If no UI control is bound, does nothing.
+   * @param options Optional focus options to pass to the native focus() method.
+   */
+  focusBoundControl(options?: FocusOptions): void;
 }
 
 /**
@@ -419,7 +552,7 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
     (TModel extends AbstractControl
       ? unknown
       : // Array paths have no subpaths
-        TModel extends Array<any>
+        TModel extends ReadonlyArray<any>
         ? unknown
         : // Object subfields
           TModel extends Record<string, any>
@@ -444,9 +577,42 @@ export type MaybeSchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Ro
   | SchemaPathTree<Exclude<TModel, undefined>, TPathKind>;
 
 /**
- * Defines logic for a form.
+ * A reusable schema that defines behavior and rules for a form.
  *
- * @template TValue The type of data stored in the form that this schema is attached to.
+ * A `Schema` encapsulates form logic such as validation rules, disabled states, readonly states,
+ * and other field-level behaviors.
+ *
+ * Unlike raw {@link SchemaFn}, a `Schema` is created using
+ * the {@link schema} function and is cached per-form, even when applied to multiple fields.
+ *
+ * ### Creating a reusable schema
+ *
+ * ```typescript
+ * interface Address {
+ *   street: string;
+ *   city: string;
+ * }
+ *
+ * // Create a reusable schema for address fields
+ * const addressSchema = schema<Address>((p) => {
+ *   required(p.street);
+ *   required(p.city);
+ * });
+ *
+ * // Apply the schema to multiple forms
+ * const shippingForm = form(shippingModel, addressSchema, {injector});
+ * const billingForm = form(billingModel, addressSchema, {injector});
+ * ```
+ *
+ * ### Passing a schema to a form
+ *
+ * A schema can also be passed as a second argument to the {@link form} function.
+ *
+ * ```typescript
+ * readonly userForm = form(addressModel, addressSchema);
+ * ```
+ *
+ * @template TModel Data type.
  *
  * @category types
  * @experimental 21.0.0
@@ -456,9 +622,21 @@ export type Schema<in TModel> = {
 };
 
 /**
- * Function that defines rules for a schema.
+ * A function that receives a {@link SchemaPathTree} and applies rules to fields.
  *
- * @template TModel The type of data stored in the form that this schema function is attached to.
+ * A `SchemaFn` can be passed directly to {@link form} or to the {@link schema} function to create a
+ * cached {@link Schema}.
+ *
+ * ```typescript
+ * const userFormSchema: SchemaFn<User> = (p) => {
+ *   required(p.name);
+ *   disabled(p.email, ({valueOf}) => valueOf(p.name) === '');
+ * };
+ *
+ * const f = form(userModel, userFormSchema, {injector});
+ * ```
+ *
+ * @template TModel Data type.
  * @template TPathKind The kind of path this schema function can be bound to.
  *
  * @category types
@@ -469,7 +647,7 @@ export type SchemaFn<TModel, TPathKind extends PathKind = PathKind.Root> = (
 ) => void;
 
 /**
- * A schema or schema definition function.
+ * A {@link Schema} or {@link SchemaFn}.
  *
  * @template TModel The type of data stored in the form that this schema function is attached to.
  * @template TPathKind The kind of path this schema function can be bound to.
@@ -508,7 +686,7 @@ export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root>
  */
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
-  ValidationResult<ValidationError.WithoutField>,
+  ValidationResult<ValidationError.WithoutFieldTree>,
   TPathKind
 >;
 
@@ -535,7 +713,7 @@ export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = 
  *
  * @template TValue The type of value stored in the field being validated
  * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
- *
+ * @see [Signal Form Validation](/guide/forms/signals/validation)
  * @category types
  * @experimental 21.0.0
  */
@@ -572,7 +750,7 @@ export interface RootFieldContext<TValue> {
   /** The state of the current field. */
   readonly state: FieldState<TValue>;
   /** The current field. */
-  readonly field: FieldTree<TValue>;
+  readonly fieldTree: FieldTree<TValue>;
 
   /** Gets the value of the field represented by the given path. */
   valueOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): PValue;

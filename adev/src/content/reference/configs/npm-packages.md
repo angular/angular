@@ -1,51 +1,43 @@
-# npm-зависимости рабочего пространства
+# Workspace npm dependencies
 
-Фреймворк Angular, Angular CLI и компоненты, используемые приложениями Angular, упакованы
-как [npm-пакеты](https://docs.npmjs.com/getting-started/what-is-npm 'What is npm?') и распространяются
-через [реестр npm](https://docs.npmjs.com).
+The Angular Framework, Angular CLI, and components used by Angular applications are packaged as [npm packages](https://docs.npmjs.com/getting-started/what-is-npm 'What is npm?') and distributed using the [npm registry](https://docs.npmjs.com).
 
-Вы можете загрузить и установить эти npm-пакеты,
-используя [клиент командной строки npm](https://docs.npmjs.com/cli/install).
-По умолчанию Angular CLI использует клиент npm.
+You can download and install these npm packages by using the [npm CLI client](https://docs.npmjs.com/cli/install).
+By default, Angular CLI uses the npm client.
 
-HELPFUL: См. [Настройка локальной среды](tools/cli/setup-local 'Setting up for Local Development') для получения
-информации о требуемых версиях и установке `Node.js` и `npm`.
+HELPFUL: See [Local Environment Setup](tools/cli/setup-local 'Setting up for Local Development') for information about the required versions and installation of `Node.js` and `npm`.
 
-Если у вас уже есть запущенные проекты на вашем компьютере, использующие другие версии Node.js и npm, рассмотрите
-возможность использования [nvm](https://github.com/creationix/nvm) для управления несколькими версиями Node.js и npm.
+If you already have projects running on your machine that use other versions of Node.js and npm, consider using [nvm](https://github.com/creationix/nvm) to manage the multiple versions of Node.js and npm.
 
 ## `package.json`
 
-`npm` устанавливает пакеты, указанные в файле [`package.json`](https://docs.npmjs.com/files/package.json).
+`npm` installs the packages identified in a [`package.json`](https://docs.npmjs.com/files/package.json) file.
 
-Команда CLI `ng new` создает файл `package.json` при создании нового рабочего пространства.
-Этот `package.json` используется всеми проектами в рабочем пространстве, включая исходный проект приложения, который
-создается CLI при создании рабочего пространства.
-Библиотеки, созданные с помощью `ng generate library`, будут содержать свой собственный файл `package.json`.
+The CLI command `ng new` creates a `package.json` file when it creates the new workspace.
+This `package.json` is used by all projects in the workspace, including the initial application project that is created by the CLI when it creates the workspace.
+Libraries created with `ng generate library` will include their own `package.json` file.
 
-Изначально этот `package.json` включает _стартовый набор пакетов_, некоторые из которых необходимы для Angular, а другие
-поддерживают распространенные сценарии приложений.
-Вы добавляете пакеты в `package.json` по мере развития вашего приложения.
+Initially, this `package.json` includes _a starter set of packages_, some of which are required by Angular and others that support common application scenarios.
+You add packages to `package.json` as your application evolves.
 
-## Зависимости по умолчанию
+## Default Dependencies
 
-Следующие пакеты Angular включены в качестве зависимостей в файл `package.json` по умолчанию для нового рабочего
-пространства Angular.
-Полный список пакетов Angular см. в [справочнике API](api).
+The following Angular packages are included as dependencies in the default `package.json` file for a new Angular workspace.
+For a complete list of Angular packages, see the [API reference](api).
 
-| Имя пакета                                                                                     | Подробности                                                                                                                                                                                                                                       |
-| :--------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`@angular/animations`](api#animations)                                                        | Устаревшая библиотека анимации Angular позволяет легко определять и применять эффекты анимации, такие как переходы страниц и списков. Для получения дополнительной информации см. [Руководство по устаревшим анимациям](guide/legacy-animations). |
-| [`@angular/common`](api#common)                                                                | Часто необходимые сервисы, пайпы и директивы, предоставляемые командой Angular.                                                                                                                                                                   |
-| `@angular/compiler`                                                                            | Компилятор шаблонов Angular. Он понимает шаблоны Angular и может преобразовывать их в код, который запускает приложение.                                                                                                                          |
-| `@angular/compiler-cli`                                                                        | Компилятор Angular, который вызывается командами `ng build` и `ng serve` Angular CLI. Он обрабатывает шаблоны Angular с помощью `@angular/compiler` внутри стандартной компиляции TypeScript.                                                     |
-| [`@angular/core`](api#core)                                                                    | Критически важные части фреймворка времени выполнения, необходимые каждому приложению. Включает все декораторы метаданных, такие как `@Component`, внедрение зависимостей и хуки жизненного цикла компонентов.                                    |
-| [`@angular/forms`](api#forms)                                                                  | Поддержка как [форм на основе шаблонов](guide/forms), так и [реактивных форм](guide/forms/reactive-forms). См. [Введение в формы](guide/forms).                                                                                                   |
-| [`@angular/platform-browser`](api#platform-browser)                                            | Всё, что связано с DOM и браузером, особенно части, помогающие рендерить в DOM.                                                                                                                                                                   |
-| [`@angular/platform-browser-dynamic`](api#platform-browser-dynamic)                            | Включает [провайдеры](api/core/Provider) и методы для компиляции и запуска приложения на клиенте, используя [JIT-компилятор](tools/cli/aot-compiler#choosing-a-compiler).                                                                         |
-| [`@angular/router`](api#router)                                                                | Модуль маршрутизатора выполняет навигацию между страницами вашего приложения при изменении URL браузера. Для получения дополнительной информации см. [Маршрутизация и навигация](guide/routing).                                                  |
-| [`@angular/cli`](https://github.com/angular/angular-cli)                                       | Содержит исполняемый файл Angular CLI для запуска команд `ng`.                                                                                                                                                                                    |
-| [`@angular-devkit/build-angular`](https://www.npmjs.com/package/@angular-devkit/build-angular) | Содержит стандартные билдеры CLI для сборки, тестирования и запуска приложений и библиотек Angular.                                                                                                                                               |
-| [`rxjs`](https://www.npmjs.com/package/rxjs)                                                   | Библиотека для реактивного программирования с использованием `Observables`.                                                                                                                                                                       |
-| [`zone.js`](https://github.com/angular/zone.js)                                                | Angular полагается на `zone.js` для запуска процессов обнаружения изменений Angular, когда нативные операции JavaScript вызывают события.                                                                                                         |
-| [`typescript`](https://www.npmjs.com/package/typescript)                                       | Компилятор TypeScript, языковой сервер и встроенные определения типов.                                                                                                                                                                            |
+| Package name                                                                                   | Details                                                                                                                                                                                                      |
+| :--------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@angular/animations`](api#animations)                                                        | Angular's legacy animations library makes it easy to define and apply animation effects such as page and list transitions. For more information, see the [Legacy Animations guide](guide/legacy-animations). |
+| [`@angular/common`](api#common)                                                                | The commonly-needed services, pipes, and directives provided by the Angular team.                                                                                                                            |
+| `@angular/compiler`                                                                            | Angular's template compiler. It understands Angular templates and can convert them to code that makes the application run.                                                                                   |
+| `@angular/compiler-cli`                                                                        | Angular's compiler which is invoked by the Angular CLI's `ng build` and `ng serve` commands. It processes Angular templates with `@angular/compiler` inside a standard TypeScript compilation.               |
+| [`@angular/core`](api#core)                                                                    | Critical runtime parts of the framework that are needed by every application. Includes all metadata decorators such as `@Component`, dependency injection, and component lifecycle hooks.                    |
+| [`@angular/forms`](api#forms)                                                                  | Support for both [template-driven](guide/forms) and [reactive forms](guide/forms/reactive-forms). See [Introduction to forms](guide/forms).                                                                  |
+| [`@angular/platform-browser`](api#platform-browser)                                            | Everything DOM and browser related, especially the pieces that help render into the DOM.                                                                                                                     |
+| [`@angular/platform-browser-dynamic`](api#platform-browser-dynamic)                            | Includes [providers](api/core/Provider) and methods to compile and run the application on the client using the [JIT compiler](tools/cli/aot-compiler#choosing-a-compiler).                                   |
+| [`@angular/router`](api#router)                                                                | The router module navigates among your application pages when the browser URL changes. For more information, see [Routing and Navigation](guide/routing).                                                    |
+| [`@angular/cli`](https://github.com/angular/angular-cli)                                       | Contains the Angular CLI binary for running `ng` commands.                                                                                                                                                   |
+| [`@angular-devkit/build-angular`](https://www.npmjs.com/package/@angular-devkit/build-angular) | Contains default CLI builders for bundling, testing, and serving Angular applications and libraries.                                                                                                         |
+| [`rxjs`](https://www.npmjs.com/package/rxjs)                                                   | A library for reactive programming using `Observables`.                                                                                                                                                      |
+| [`zone.js`](https://github.com/angular/zone.js)                                                | Angular relies on `zone.js` to run Angular's change detection processes when native JavaScript operations raise events.                                                                                      |
+| [`typescript`](https://www.npmjs.com/package/typescript)                                       | The TypeScript compiler, language server, and built-in type definitions.                                                                                                                                     |
