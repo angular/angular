@@ -33,6 +33,7 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/transform/jit",
         "//packages/compiler-cli/src/ngtsc/translator",
+        "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/util",
     ],
