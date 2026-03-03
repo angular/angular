@@ -72,4 +72,23 @@ describe('Animations Integration', () => {
     const finalBoxes = await page.$$('.example-box');
     expect(finalBoxes.length).toBe(3);
   });
+
+  it('should remove element when animationend is dropped (fallback timeout)', async () => {
+    // Wait for the fallback element to be rendered
+    await page.waitForSelector('.fallback-el');
+
+    let fallbackEls = await page.$$('.fallback-el');
+    expect(fallbackEls.length).toBe(1);
+
+    // Click the hide and intercept button
+    await page.click('#hide-and-intercept');
+
+    // Wait for fallback to kick in (animation is 50ms, fallback is duration + 50ms)
+    // We give it a small buffer to ensure the timeout fires
+    await new Promise((res) => setTimeout(res, 300));
+
+    // Check that we have 0 items
+    fallbackEls = await page.$$('.fallback-el');
+    expect(fallbackEls.length).toBe(0);
+  });
 });
