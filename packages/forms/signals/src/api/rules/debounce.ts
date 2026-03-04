@@ -44,7 +44,7 @@ function normalizeDebouncer<TValue, TPathKind extends PathKind>(
   // If it's 'blur', return a debouncer that never resolves. The field will still be updated when
   // the control is blurred.
   if (debouncer === 'blur') {
-    return never;
+    return debounceUntilBlur();
   }
   // If it's a non-zero number, return a timer-based debouncer.
   if (debouncer > 0) {
@@ -54,6 +54,9 @@ function normalizeDebouncer<TValue, TPathKind extends PathKind>(
   return immediate;
 }
 
+/**
+ * Creates a debouncer that will wait for the given duration before resolving.
+ */
 function debounceForDuration(durationInMilliseconds: number): Debouncer<unknown> {
   return (_context, abortSignal) => {
     return new Promise((resolve) => {
@@ -74,9 +77,16 @@ function debounceForDuration(durationInMilliseconds: number): Debouncer<unknown>
   };
 }
 
-function immediate() {}
-
-const NEVER = new Promise<never>(() => {});
-function never(): Promise<never> {
-  return NEVER;
+/**
+ * Creates a debouncer that will wait indefinitely, relying on the node to synchronize pending
+ * updates when blurred.
+ */
+function debounceUntilBlur(): Debouncer<unknown> {
+  return (_context, abortSignal) => {
+    return new Promise((resolve) => {
+      abortSignal.addEventListener('abort', () => resolve(), {once: true});
+    });
+  };
 }
+
+function immediate(): void {}
