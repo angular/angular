@@ -1,3 +1,10 @@
+## 21.2.2 (2026-03-04)
+
+- fix(extension): bundle TypeScript 5.9 internally ([da57d1af73](https://github.com/angular/angular/commit/da57d1af732292823b1ea187b6e9cd9f6b4eca39))
+
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 21.2.1 (2026-02-25)
 
 - perf(language-service): use lightweight project warmup for Angular analysis ([d2137928e8](https://github.com/angular/angular/commit/d2137928e8f075527016a3c011dd8efc4d4e1ebd))
