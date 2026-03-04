@@ -110,7 +110,10 @@
 
 @let isPreviewable =
   isSignalNode &&
-  (node.kind === 'signal' || node.kind === 'computed' || node.kind === 'linkedSignal');
+  (node.kind === 'signal' ||
+    node.kind === 'computed' ||
+    node.kind === 'linkedSignal' ||
+    node.kind === 'childSignalProp');
 
 @if (isPreviewable || resourceCluster()) {
   @if (previewableNode(); as previewableNode) {
