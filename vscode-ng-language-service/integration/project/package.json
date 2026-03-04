@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "ng-packagr": "21.2.0",
-    "typescript": "6.0.0-beta"
+    "typescript": "5.9.3"
   },
   "scripts": {
     "build": "ng-packagr -p libs/post/ng-package.json -c libs/post/tsconfig.json"
