@@ -31,12 +31,17 @@ describe('type check blocks', () => {
 
   it('should generate literal map expressions', () => {
     const TEMPLATE = '{{ method({foo: a, bar: b}) }}';
-    expect(tcb(TEMPLATE)).toContain('(this).method({ "foo": ((this).a), "bar": ((this).b) })');
+    expect(tcb(TEMPLATE)).toContain('(this).method(({ "foo": ((this).a), "bar": ((this).b) }))');
   });
 
   it('should generate literal array expressions', () => {
     const TEMPLATE = '{{ method([a, b]) }}';
     expect(tcb(TEMPLATE)).toContain('(this).method([((this).a), ((this).b)])');
+  });
+
+  it('should parenthesize literal maps bound to DOM properties', () => {
+    const TEMPLATE = '<div [class]="{foo: true, bar: false}"></div>';
+    expect(tcb(TEMPLATE)).toContain('if (true) { ({ "foo": true, "bar": false }); }');
   });
 
   it('should handle non-null assertions', () => {
@@ -112,8 +117,8 @@ describe('type check blocks', () => {
   });
 
   it('should handle "in" expressions', () => {
-    expect(tcb(`{{'bar' in {bar: 'bar'} }}`)).toContain(`(("bar") in ({ "bar": "bar" }))`);
-    expect(tcb(`{{!('bar' in {bar: 'bar'}) }}`)).toContain(`!((("bar") in ({ "bar": "bar" })))`);
+    expect(tcb(`{{'bar' in {bar: 'bar'} }}`)).toContain(`(("bar") in (({ "bar": "bar" })))`);
+    expect(tcb(`{{!('bar' in {bar: 'bar'}) }}`)).toContain(`!((("bar") in (({ "bar": "bar" }))))`);
   });
 
   it('should handle "instanceof" expressions', () => {
@@ -1878,7 +1883,7 @@ describe('type check blocks', () => {
       `;
 
       expect(tcb(TEMPLATE)).toContain(
-        'new IntersectionObserver(null!, { "rootMargin": "123px" }); "" + ((this).main()); "" + ((this).placeholder());',
+        'new IntersectionObserver(null!, ({ "rootMargin": "123px" })); "" + ((this).main()); "" + ((this).placeholder());',
       );
     });
   });
