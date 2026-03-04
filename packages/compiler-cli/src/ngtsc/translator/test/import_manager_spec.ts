@@ -27,7 +27,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import { input } from "@angular/core";
       input;
     `),
@@ -48,7 +47,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import * as i0 from "@angular/core";
       i0;
     `),
@@ -78,7 +76,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import { input, output } from "@angular/core";
       input;
       output;
@@ -109,7 +106,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import * as i0 from "@angular/core";
       import * as i1 from "@angular/core/rxjs-interop";
       i0;
@@ -141,7 +137,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import * as i0 from "@angular/core";
       i0;
       i0.output;
@@ -172,7 +167,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import * as i0 from "@angular/core";
       import { input } from "@angular/core";
       input;
@@ -371,7 +365,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import * as i0 from "@angular/core";
       i0.input;
       i0.output;
@@ -484,7 +477,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import "@angular/core";
     `),
     );
@@ -506,7 +498,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import { input as input_1 } from "@angular/core";
       input_1;
       const input = 1;
@@ -534,7 +525,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import { input as input_1 } from "@angular/core";
       input_1;
       function x() {
@@ -566,7 +556,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-        "use strict";
         import { input } from "@angular/core";
         input;
     `),
@@ -587,7 +576,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import { input } from "@angular/core";
       input;
     `),
@@ -617,7 +605,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import { input } from "@angular/core";
       import { input as input_1 } from "@angular/core2";
       input;
@@ -650,7 +637,6 @@ describe('import manager', () => {
     expect(inputRef).toBe(inputRef2);
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import { input } from "@angular/core";
       input;
       input;
@@ -805,7 +791,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-        "use strict";
         import { foo as bar } from "@angular/core";
         bar;
         bar;
@@ -838,7 +823,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-        "use strict";
         import { foo as bar, foo as baz } from "@angular/core";
         bar;
         baz;
@@ -870,7 +854,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-        "use strict";
         import { foo, bar as foo } from "@angular/core";
         foo;
         foo;
@@ -1011,7 +994,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import { output } from "@angular/core";
       input;
       output;
@@ -1041,7 +1023,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       import { input } from "@angular/core";
       input;
     `),
@@ -1065,7 +1046,6 @@ describe('import manager', () => {
 
     expect(res).toBe(
       omitLeadingWhitespace(`
-      "use strict";
       foo;
     `),
     );

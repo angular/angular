@@ -87,9 +87,6 @@ def zone_bundle(
             "--skipLibCheck",
             "--target",
             "es5",
-            # Needed to target es5
-            "--ignoreDeprecations",
-            "6.0",
             "--lib",
             "es2015,dom",
             "--allowJS",
@@ -162,9 +159,6 @@ def zone_bundle(
             "--skipLibCheck",
             "--target",
             "es5",
-            # Needed to target es5
-            "--ignoreDeprecations",
-            "6.0",
             "--lib",
             "es2015,dom",
             "--allowJS",

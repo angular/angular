@@ -78,13 +78,14 @@ function compileTests(fs: FileSystem, test: ComplianceTest): {errors: string[]} 
       ...test.compilerOptions,
       noEmit: true,
       skipLibCheck: true,
+      // Ensure we can resolve the imports in the mock FS
+      baseUrl: rootDir,
       paths: {
-        '*': ['./node_modules/*'],
+        '*': ['node_modules/*'],
       },
       // Use classic Node resolution which works better with the simple mock FS structure
       // than 'Bundler' or 'NodeNext' which expect specific package.json exports.
-      moduleResolution: ts.ModuleResolutionKind.Node16,
-      module: ts.ModuleKind.Node16,
+      moduleResolution: ts.ModuleResolutionKind.Node10,
       strict: true,
       // TODO: enable once we fix the generated code
       noImplicitAny: false,
