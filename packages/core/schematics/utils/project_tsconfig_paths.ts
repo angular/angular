@@ -24,10 +24,6 @@ export async function getProjectTsConfigPaths(
   const workspace = await getWorkspace(tree);
   for (const [, project] of workspace.projects) {
     for (const [name, target] of project.targets) {
-      if (name !== 'build' && name !== 'test') {
-        continue;
-      }
-
       for (const [, options] of allTargetOptions(target)) {
         const tsConfig = options['tsConfig'];
         // Filter out tsconfig files that don't exist in the CLI project.
@@ -35,10 +31,10 @@ export async function getProjectTsConfigPaths(
           continue;
         }
 
-        if (name === 'build') {
-          buildPaths.add(normalize(tsConfig));
-        } else {
+        if (name === 'test' || name.includes('test')) {
           testPaths.add(normalize(tsConfig));
+        } else {
+          buildPaths.add(normalize(tsConfig));
         }
       }
     }

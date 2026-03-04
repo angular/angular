@@ -1984,6 +1984,42 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should work with an esbuild target in angular.json', async () => {
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {
+          t: {
+            root: '',
+            architect: {
+              esbuild: {
+                options: {tsConfig: './tsconfig.json'},
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(private foo: Foo) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts')).toContain('private foo = inject(Foo);');
+  });
+
   describe('internal-only behavior', () => {
     function runInternalMigration(
       {replaceParameterReferences} = {replaceParameterReferences: true},
