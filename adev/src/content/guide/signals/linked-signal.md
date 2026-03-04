@@ -55,10 +55,6 @@ console.log(selectedOption()); // 'Email'
 ```
 
 
-While `computed` is commonly used to derive read-only state from other signals, `linkedSignal` is helpful when the derived value should remain writable or preserve user-driven updates as its source changes. This makes `linkedSignal` a good fit for state that depends on another signal but should not be fully recomputed or overwritten on every update.
-
-
-
 ## Accounting for previous state
 
 In some cases, the computation for a `linkedSignal` needs to account for the previous value of the `linkedSignal`.
@@ -138,3 +134,15 @@ const activeUserEditCopy = linkedSignal({
   equal: (a, b) => a.id === b.id,
 });
 ```
+
+## When to prefer `linkedSignal` over `computed`
+
+While `computed` is typically used to derive read-only state from other signals,
+`linkedSignal` is useful when the derived state should remain writable or
+preserve user-driven updates as its source changes.
+
+Use `linkedSignal` when the value depends on another signal but still needs to
+be explicitly set or updated in response to user interaction.
+
+Additionally, `linkedSignal` should be used when you need access to the previous
+state while reacting to a source signal.
