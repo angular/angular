@@ -402,6 +402,13 @@ export interface LViewEnvironment {
    * HTML stylesheets may choose not to provide a `SharedStylesHost`.
    */
   sharedStylesHost: SharedStylesHost | null;
+
+  /**
+   * The fallback host node (usually the injected DOCUMENT's head) to attach
+   * styles to when a specific host (like a ShadowRoot) is not available or
+   * applicable.
+   */
+  fallbackHost: Node | null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */

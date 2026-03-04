@@ -119,6 +119,7 @@ export class ViewFixture {
         changeDetectionScheduler: null,
         ngReflect: false,
         sharedStylesHost: new MockSharedStylesHost(),
+        fallbackHost: document,
       },
       hostRenderer,
       null,

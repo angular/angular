@@ -72,6 +72,7 @@ export function enterViewWithOneDiv() {
       changeDetectionScheduler: null,
       ngReflect: false,
       sharedStylesHost: new MockSharedStylesHost(),
+      fallbackHost: document,
     },
     renderer,
     null,

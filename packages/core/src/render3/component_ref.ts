@@ -182,6 +182,7 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
   }
 
   const sharedStylesHost = rootLViewInjector.get(SHARED_STYLES_HOST, null);
+  const fallbackHost = rootLViewInjector.get(DOCUMENT, getDocument() as any)?.head ?? null;
 
   return {
     rendererFactory,
@@ -189,6 +190,7 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
     changeDetectionScheduler,
     ngReflect,
     sharedStylesHost,
+    fallbackHost,
   };
 }
 
@@ -327,11 +329,12 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
           const rootNode = hostElement.getRootNode?.();
           const isShadowRoot =
             rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot;
-          const styleHost = isShadowRoot ? rootNode : getDocument().head;
+          const fallbackHost = rootLView[ENVIRONMENT].fallbackHost ?? getDocument().head;
+          const styleHost = isShadowRoot ? rootNode : fallbackHost;
 
-          sharedStylesHost.addHost(styleHost);
+          sharedStylesHost.addHost(styleHost as Node);
           (rootLView[ON_DESTROY_HOOKS] ??= []).push(
-            () => void sharedStylesHost.removeHost(styleHost),
+            () => void sharedStylesHost.removeHost(styleHost as Node),
           );
         }
       }

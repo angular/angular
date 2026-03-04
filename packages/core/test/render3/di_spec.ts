@@ -157,6 +157,7 @@ describe('di', () => {
           changeDetectionScheduler: null,
           ngReflect: false,
           sharedStylesHost: new MockSharedStylesHost(),
+          fallbackHost: document,
         },
         {} as any,
         null,

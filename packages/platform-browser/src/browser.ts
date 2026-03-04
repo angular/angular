@@ -268,6 +268,8 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
   DomRendererFactory2,
   {provide: SHARED_STYLES_HOST, useClass: SharedStylesHost},
+  // TODO: Only remains for backwards compat, should be removed.
+  {provide: SharedStylesHost, useExisting: SHARED_STYLES_HOST},
   EventManager,
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: XhrFactory, useClass: BrowserXhr},
