@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject} from '../di';
+import {assertInInjectionContext, inject, Injector} from '../di';
 import {DestroyRef} from '../linker';
 import {effect} from '../render3/reactivity/effect';
 import {signal} from '../render3/reactivity/signal';
@@ -28,6 +28,7 @@ import {
  *   returns a promise that resolves when the debounced value should be updated.
  * @param options The options to use for the debounced signal.
  * @returns A resource representing the debounced signal.
+ * @experimental
  */
 export function debounced<T>(
   source: () => T,
@@ -37,6 +38,10 @@ export function debounced<T>(
   if (isInParamsFunction()) {
     throw invalidResourceCreationInParams();
   }
+  if (ngDevMode && !options?.injector) {
+    assertInInjectionContext(debounced);
+  }
+  const injector = options?.injector ?? inject(Injector);
 
   const state = signal<ResourceSnapshot<T>>({
     status: 'resolved',
@@ -53,7 +58,7 @@ export function debounced<T>(
   let active: Promise<void> | void | undefined;
   let pendingValue: T | undefined;
 
-  (options?.injector?.get(DestroyRef) ?? inject(DestroyRef)).onDestroy(() => {
+  injector.get(DestroyRef).onDestroy(() => {
     active = undefined;
   });
 
@@ -114,7 +119,7 @@ export function debounced<T>(
         });
       }
     },
-    {injector: options?.injector},
+    {injector},
   );
 
   return resourceFromSnapshots(state);
