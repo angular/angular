@@ -1,3 +1,18 @@
+<a name="21.2.1"></a>
+# 21.2.1 (2026-03-04)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e2e9a9a531](https://github.com/angular/angular/commit/e2e9a9a531c9e9a69701e549f28354cc5d5edd77) | fix | adds transfer cache to httpResource to fix hydration |
+| [b4ec3cc4e4](https://github.com/angular/angular/commit/b4ec3cc4e41f2948ad0830eb14aa05d14fa3a9ed) | fix | prevent child animation elements from being orphaned |
+| [e923d88398](https://github.com/angular/angular/commit/e923d8839868c79989502ab3503e13d93c78516a) | fix | Prevent removal of elements during drag and drop |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [277ade97ac](https://github.com/angular/angular/commit/277ade97ac2a3a7f2a5b513acaa93e7663cdc55f) | fix | correctly cache blob responses in transfer cache ([#67002](https://github.com/angular/angular/pull/67002)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.19"></a>
 # 19.2.19 (2026-02-25)
 ## Breaking Changes
