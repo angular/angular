@@ -52,7 +52,6 @@ export interface IdleService {
 }
 
 export const IDLE_SERVICE = new InjectionToken<IdleService>(ngDevMode ? 'IDLE_SERVICE' : '', {
-  providedIn: 'root',
   factory: () => new RequestIdleCallbackService(),
 });
 
