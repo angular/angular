@@ -229,12 +229,12 @@ export const httpResource: HttpResourceFn = (() => {
  * This is used to parse the response appropriately before returning it to
  * the requestee.
  */
-type ResponseType = 'arraybuffer' | 'blob' | 'json' | 'text';
+type HttpResponseContentType = 'arraybuffer' | 'blob' | 'json' | 'text';
 type RawRequestType =
   | ((ctx: ResourceParamsContext) => string | undefined)
   | ((ctx: ResourceParamsContext) => HttpResourceRequest | undefined);
 
-function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
+function makeHttpResourceFn<TRaw>(responseType: HttpResponseContentType) {
   return function httpResource<TResult = TRaw>(
     request: RawRequestType,
     options?: HttpResourceOptions<TResult, TRaw>,
@@ -285,7 +285,7 @@ function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
 function normalizeRequest(
   ctx: ResourceParamsContext,
   request: RawRequestType,
-  responseType: ResponseType,
+  responseType: HttpResponseContentType,
 ): HttpRequest<unknown> | undefined {
   let unwrappedRequest = typeof request === 'function' ? request(ctx) : request;
   if (unwrappedRequest === undefined) {
@@ -350,12 +350,22 @@ class HttpResourceImpl<T>
     source: this.extRequest,
     computation: () => undefined as number | undefined,
   });
+  private _redirected = linkedSignal({
+    source: this.extRequest,
+    computation: () => undefined as boolean | undefined,
+  });
+  private _responseType = linkedSignal({
+    source: this.extRequest,
+    computation: () => undefined as ResponseType | undefined,
+  });
 
   readonly headers = computed(() =>
     this.status() === 'resolved' || this.status() === 'error' ? this._headers() : undefined,
   );
   readonly progress = this._progress.asReadonly();
   readonly statusCode = this._statusCode.asReadonly();
+  readonly redirected = this._redirected.asReadonly();
+  readonly responseType = this._responseType.asReadonly();
 
   constructor(
     injector: Injector,
@@ -395,6 +405,8 @@ class HttpResourceImpl<T>
               case HttpEventType.Response:
                 this._headers.set(event.headers);
                 this._statusCode.set(event.status);
+                this._redirected.set(event.redirected);
+                this._responseType.set(event.responseType);
                 try {
                   send({value: parse ? parse(event.body) : (event.body as T)});
                 } catch (error) {
@@ -410,6 +422,8 @@ class HttpResourceImpl<T>
             if (error instanceof HttpErrorResponse) {
               this._headers.set(error.headers);
               this._statusCode.set(error.status);
+              this._redirected.set(error.redirected);
+              this._responseType.set(error.responseType);
             }
 
             send({error});
@@ -445,6 +459,8 @@ class HttpResourceImpl<T>
     this._headers.set(undefined);
     this._progress.set(undefined);
     this._statusCode.set(undefined);
+    this._redirected.set(undefined);
+    this._responseType.set(undefined);
   }
 
   // This is a type only override of the method
