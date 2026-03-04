@@ -57,7 +57,7 @@ import {AnalyticsLogger} from './analytics-logger.service';
   selector: 'app-navbar',
   template: `<a href="#" (click)="navigateToDetail($event)">Detail Page</a>`,
 })
-export class NavbarComponent {
+export class Navbar {
   // Injecting dependencies using class field initializers
   private router = inject(Router);
   private analytics = inject(AnalyticsLogger);
@@ -89,7 +89,7 @@ import {HttpClient} from '@angular/common/http';
 @Component({
   /*...*/
 })
-export class MyComponent {
+export class Example {
   private service1 = inject(MyService); // ✅ Field initializer
 
   private service2: MyService;

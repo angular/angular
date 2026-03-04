@@ -38,7 +38,7 @@ Define the `outlet` in the route config:
 ```ts
 {
   path: 'chat',
-  component: ChatComponent,
+  component: Chat,
   outlet: 'sidebar'
 }
 ```

@@ -13,7 +13,7 @@ An injection context is automatically available in:
 
 ```ts
 @Component({...})
-export class MyComponent {
+export class Example {
   // ✅ Valid: Field initializer
   private router = inject(Router);
 

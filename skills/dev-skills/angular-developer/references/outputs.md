@@ -2,7 +2,7 @@
 
 Outputs allow a child component to emit custom events that a parent component can listen to. Angular recommends using the new `output()` function for modern applications.
 
-## Signal-based Outputs
+## Function-based outputs
 
 Declare outputs using the `output()` function. This returns an `OutputEmitterRef`.
 
@@ -70,7 +70,7 @@ The legacy API uses the `@Output()` decorator with an `EventEmitter`. It remains
 import { Component, Output, EventEmitter } from '@angular/core';
 
 @Component({...})
-export class LegacyComponent {
+export class LegacyExample {
   @Output() valueChanged = new EventEmitter<number>();
 
   // With alias

@@ -35,7 +35,7 @@ Use `redirectTo` to point one path to another.
 
 ```ts
 { path: 'articles', redirectTo: '/blog' },
-{ path: 'blog', component: BlogComponent },
+{ path: 'blog', component: Blog },
 ```
 
 ## Page Titles
@@ -43,7 +43,7 @@ Use `redirectTo` to point one path to another.
 Associate titles with routes for accessibility. Titles can be static or dynamic (via `ResolveFn` or a custom `TitleStrategy`).
 
 ```ts
-{ path: 'home', component: HomeComponent, title: 'Home Page' }
+{ path: 'home', component: Home, title: 'Home Page' }
 ```
 
 ## Route Data and Providers
@@ -58,10 +58,10 @@ Define sub-views using the `children` property. Parent components must include a
 ```ts
 {
   path: 'product/:id',
-  component: ProductComponent,
+  component: Product,
   children: [
-    { path: 'info', component: ProductInfoComponent },
-    { path: 'reviews', component: ProductReviewsComponent },
+    { path: 'info', component: ProductInfo },
+    { path: 'reviews', component: ProductReviews },
   ],
 }
 ```

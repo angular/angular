@@ -18,7 +18,7 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
     </nav>
   `,
 })
-export class NavComponent {
+export class Nav {
   userId = '123';
 }
 ```

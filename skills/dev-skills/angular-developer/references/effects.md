@@ -23,7 +23,7 @@ Effects execute asynchronously during the change detection process. They always 
 import { Component, signal, effect } from '@angular/core';
 
 @Component({...})
-export class MyComponent {
+export class Example {
   count = signal(0);
 
   constructor() {
@@ -48,19 +48,19 @@ Standard `effect` runs _before_ Angular updates the DOM. If you need to manually
 
 ### Render Phases
 
-To prevent layout thrashing (forced synchronous layouts), `afterRenderEffect` forces you to divide your DOM reads and writes into specific phases.
+To prevent reflows (forced layout thrashing), `afterRenderEffect` forces you to divide your DOM reads and writes into specific phases.
 
 ```ts
 import { Component, afterRenderEffect, viewChild, ElementRef } from '@angular/core';
 
 @Component({...})
-export class ChartComponent {
+export class Chart {
   canvas = viewChild.required<ElementRef>('canvas');
 
   constructor() {
     afterRenderEffect({
       // 1. Read from the DOM
-      read: () => {
+      earlyRead: () => {
         return this.canvas().nativeElement.getBoundingClientRect().width;
       },
       // 2. Write to the DOM (receives the result of the previous phase)

@@ -15,7 +15,7 @@ ng add @angular/fire
 To update the application and its dependencies (which automatically runs code migrations):
 
 ```bash
-ng update @angular/core@18 @angular/cli@18
+ng update @angular/core@<latest or specific version> @angular/cli<latest or specific version>
 ```
 
 ## 2. Generating Code (`ng generate` or `ng g`)
