@@ -803,9 +803,8 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, block.branches);
   }
   visitIfBlockBranch(block: IfBlockBranch): void {
-    const blockItems = block.children;
-    block.expressionAlias && blockItems.push(block.expressionAlias);
-    visitAll(this, blockItems);
+    visitAll(this, block.children);
+    block.expressionAlias?.visit(this);
   }
   visitContent(content: Content): void {
     visitAll(this, content.children);
