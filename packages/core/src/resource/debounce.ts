@@ -28,7 +28,7 @@ import {
  *   returns a promise that resolves when the debounced value should be updated.
  * @param options The options to use for the debounced signal.
  * @returns A resource representing the debounced signal.
- * @experimental
+ * @experimental 22.0
  */
 export function debounced<T>(
   source: () => T,
