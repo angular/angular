@@ -178,12 +178,18 @@ class TcbExprTranslator implements AstVisitor {
 
     let literal = `{ ${properties.join(', ')} }`;
 
-    // If strictLiteralTypes is disabled, array literals are cast to `any`.
     if (!this.config.strictLiteralTypes) {
-      literal = `(${literal} as any)`;
+      // If strictLiteralTypes is disabled, array literals are cast to `any`.
+      literal = `${literal} as any`;
     }
 
-    return new TcbExpr(literal).addParseSpanInfo(ast.sourceSpan);
+    const expression = new TcbExpr(literal).addParseSpanInfo(ast.sourceSpan);
+
+    // Always parenthesize the literal, because for DOM bindings we may put it
+    // directly in the function body at which point TS might parse it as a block.
+    expression.wrapForTypeChecker();
+
+    return expression;
   }
 
   visitLiteralPrimitive(ast: LiteralPrimitive): TcbExpr {
