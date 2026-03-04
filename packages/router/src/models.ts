@@ -1113,7 +1113,11 @@ export type CanDeactivateFn<T> = (
  * class CanMatchTeamSection implements CanMatch {
  *   constructor(private permissions: Permissions, private currentUser: UserToken) {}
  *
- *   canMatch(route: Route, segments: UrlSegment[]): Observable<boolean>|Promise<boolean>|boolean {
+ *   canMatch(
+ *     route: Route,
+ *     segments: UrlSegment[],
+ *     currentSnapshot: PartialMatchRouteSnapshot,
+ *   ): Observable<boolean> | Promise<boolean> | boolean {
  *     return this.permissions.canAccess(this.currentUser, route, segments);
  *   }
  * }
@@ -1154,7 +1158,7 @@ export interface CanMatch {
   canMatch(
     route: Route,
     segments: UrlSegment[],
-    currentSnapshot?: PartialMatchRouteSnapshot,
+    currentSnapshot: PartialMatchRouteSnapshot,
   ): MaybeAsync<GuardResult>;
 }
 
@@ -1172,9 +1176,7 @@ export interface CanMatch {
  *
  * @param route The route configuration.
  * @param segments The URL segments that have not been consumed by previous parent route evaluations.
- * @param currentSnapshot The current route snapshot up to this point in the matching process. While this parameter is optional,
- * it will always be defined when called by the Router. It is only optional for backwards compatibility with functions defined prior
- * to the introduction of this parameter.
+ * @param currentSnapshot The current route snapshot up to this point in the matching process.
  *
  * @publicApi
  * @see {@link Route}
@@ -1183,7 +1185,7 @@ export interface CanMatch {
 export type CanMatchFn = (
   route: Route,
   segments: UrlSegment[],
-  currentSnapshot?: PartialMatchRouteSnapshot,
+  currentSnapshot: PartialMatchRouteSnapshot,
 ) => MaybeAsync<GuardResult>;
 
 /**
