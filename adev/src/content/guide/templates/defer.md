@@ -134,7 +134,7 @@ The available triggers are as follows:
 
 | Trigger                       | Description                                                            |
 | ----------------------------- | ---------------------------------------------------------------------- |
-| [`idle`](#idle)               | Triggers when the browser is idle.                                     |
+| [`idle`](#idle)               | Triggers when the browser is idle. Supports an optional timeout.       |
 | [`viewport`](#viewport)       | Triggers when specified content enters the viewport                    |
 | [`interaction`](#interaction) | Triggers when the user interacts with specified element                |
 | [`hover`](#hover)             | Triggers when the mouse hovers over specified area                     |
@@ -145,6 +145,8 @@ The available triggers are as follows:
 
 The `idle` trigger loads the deferred content once the browser has reached an idle state, based on requestIdleCallback. This is the default behavior with a defer block.
 
+You can optionally specify a timeout in milliseconds that is passed to [`requestIdleCallback`](https://developer.mozilla.org/docs/Web/API/Window/requestIdleCallback). If the browser doesn't schedule the callback soon enough, the work will run no later than the specified timeout.
+
 ```angular-html
 <!-- @defer (on idle) -->
 @defer {
@@ -152,6 +154,32 @@ The `idle` trigger loads the deferred content once the browser has reached an id
 } @placeholder {
   <div>Large component placeholder</div>
 }
+
+<!-- With a 500ms timeout -->
+@defer (on idle(500)) {
+  <large-cmp />
+}
+```
+
+##### Customizing `idle` behavior
+
+You can customize the `idle` trigger by providing your own `IdleService` implementation and registering it with `provideIdleServiceWith` in your application's providers.
+
+```ts
+@Injectable({providedIn: 'root'})
+class CustomIdleService implements IdleService {
+  requestOnIdle(callback: (deadline?: IdleDeadline) => void, options?: IdleRequestOptions) {
+    // Custom idle scheduling logic can be implemented here.
+  }
+
+  cancelOnIdle(id: number) {
+    // Implement custom idle cancellation here.
+  }
+}
+
+bootstrapApplication(App, {
+  providers: [provideIdleServiceWith(CustomIdleService)],
+});
 ```
 
 #### `viewport`
@@ -296,6 +324,11 @@ In the example below, the prefetching starts when a browser becomes idle and the
   <large-cmp />
 } @placeholder {
   <div>Large component placeholder</div>
+}
+
+<!-- Prefetching with a 500ms idle timeout -->
+@defer (on interaction; prefetch on idle(500)) {
+  <large-cmp />
 }
 ```
 
