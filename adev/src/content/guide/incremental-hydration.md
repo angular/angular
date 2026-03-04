@@ -49,7 +49,7 @@ The available triggers are as follows:
 
 | Trigger                                             | Description                                                            |
 | --------------------------------------------------- | ---------------------------------------------------------------------- |
-| [`hydrate on idle`](#hydrate-on-idle)               | Triggers when the browser is idle.                                     |
+| [`hydrate on idle`](#hydrate-on-idle)               | Triggers when the browser is idle. Supports an optional timeout.       |
 | [`hydrate on viewport`](#hydrate-on-viewport)       | Triggers when specified content enters the viewport                    |
 | [`hydrate on interaction`](#hydrate-on-interaction) | Triggers when the user interacts with specified element                |
 | [`hydrate on hover`](#hydrate-on-hover)             | Triggers when the mouse hovers over specified area                     |
@@ -60,11 +60,18 @@ The available triggers are as follows:
 
 The `hydrate on idle` trigger loads the deferrable view's dependencies and hydrates the content once the browser has reached an idle state, based on `requestIdleCallback`.
 
+You can optionally specify a timeout in milliseconds that is passed to [`requestIdleCallback`](https://developer.mozilla.org/docs/Web/API/Window/requestIdleCallback). If the browser doesn't schedule the callback soon enough, the work will run no later than the specified timeout.
+
 ```angular-html
 @defer (hydrate on idle) {
   <large-cmp />
 } @placeholder {
   <div>Large component placeholder</div>
+}
+
+<!-- With a 500ms timeout -->
+@defer (hydrate on idle(500)) {
+  <large-cmp />
 }
 ```
 
