@@ -70,6 +70,20 @@ Releasing `zone.js` is a two step process.
 1. Create a PR which updates the changelog, and get it merged using normal merge process.
 2. Once the PR is merged check out the merge SHA of the PR and release `zone.js` from that SHA and tag it.
 
+### Automated Release
+
+You can use the automated release script which handles both steps (run from the root of the repo):
+
+```bash
+pnpm zonejs:release
+```
+
+Follow the interactive prompts to either create a PR or cut a release.
+
+---
+
+### Manual Release (Legacy)
+
 #### 1. Creating a PR for release
 
 ```

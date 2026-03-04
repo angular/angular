@@ -36,7 +36,8 @@
     "jest:test": "jest --config ./test/jest/jest.config.js",
     "jest:nodetest": "jest --config ./test/jest/jest.node.config.js",
     "vitest:test": "vitest ./test/vitest/vitest.spec.js",
-    "promisefinallytest": "mocha ./test/promise/promise.finally.spec.mjs"
+    "promisefinallytest": "mocha ./test/promise/promise.finally.spec.mjs",
+    "release": "node tools/release.mts"
   },
   "repository": {
     "type": "git",

@@ -6,11 +6,11 @@
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
-  "packageManager": "pnpm@10.30.2",
+  "packageManager": "pnpm@10.30.3",
   "engines": {
     "npm": "Please use pnpm instead of NPM to install dependencies",
     "yarn": "Please use pnpm instead of Yarn to install dependencies",
-    "pnpm": "10.30.2"
+    "pnpm": "10.30.3"
   },
   "repository": {
     "type": "git",
@@ -50,7 +50,8 @@
     "dev:prod": "pnpm --filter=dev-app dev:prod",
     "dev:build": "pnpm --filter=dev-app dev:build",
     "benchmarks": "node scripts/benchmarks/index.mts",
-    "diff-release-package": "node scripts/diff-release-package.mts"
+    "diff-release-package": "node scripts/diff-release-package.mts",
+    "zonejs:release": "pnpm --filter=zone.js release"
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
@@ -163,7 +164,7 @@
   "devDependencies": {
     "@actions/core": "^3.0.0",
     "@actions/github": "^9.0.0",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#c78d7a03ae1ca76d2946651d0dd7f476f09b4374",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#b689a712350ceb3e0051174be92b7ca9c9c32824",
     "@babel/plugin-proposal-async-generator-functions": "7.20.7",
     "@babel/plugin-transform-async-generator-functions": "^7.27.1",
     "@bazel/bazelisk": "^1.7.5",

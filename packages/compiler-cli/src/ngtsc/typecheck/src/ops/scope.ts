@@ -35,11 +35,11 @@ import {
 } from '@angular/compiler';
 import ts from 'typescript';
 import {TcbOp} from './base';
+import {TcbExpr} from './codegen';
 import {TypeCheckableDirectiveMeta} from '../../api';
 import {Context} from './context';
 import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
 import {TcbElementOp} from './element';
-import {addParseSpanInfo} from '../diagnostics';
 import {tcbExpression, TcbConditionOp, TcbExpressionOp} from './expression';
 import {TcbBlockImplicitVariableOp, TcbBlockVariableOp, TcbTemplateVariableOp} from './variables';
 import {TcbComponentContextCompletionOp} from './completions';
@@ -89,7 +89,7 @@ export class Scope {
   /**
    * A queue of operations which need to be performed to generate the TCB code for this scope.
    *
-   * This array can contain either a `TcbOp` which has yet to be executed, or a `ts.Expression|null`
+   * This array can contain either a `TcbOp` which has yet to be executed, or a `TcbExpr|null`
    * representing the memoized result of executing the operation. As operations are executed, their
    * results are written into the `opQueue`, overwriting the original operation.
    *
@@ -99,7 +99,7 @@ export class Scope {
    * that fits instead. This has the same semantics as TypeScript itself when types are referenced
    * circularly.
    */
-  private opQueue: (TcbOp | ts.Expression | null)[] = [];
+  private opQueue: (TcbOp | TcbExpr | null)[] = [];
 
   /**
    * A map of `TmplAstElement`s to the index of their `TcbElementOp` in the `opQueue`
@@ -138,7 +138,7 @@ export class Scope {
    * `TmplAstVariable` nodes) to the index of their `TcbVariableOp`s in the `opQueue`, or to
    * pre-resolved variable identifiers.
    */
-  private varMap = new Map<TmplAstVariable, number | ts.Identifier>();
+  private varMap = new Map<TmplAstVariable, number | TcbExpr>();
 
   /**
    * A map of the names of `TmplAstLetDeclaration`s to the index of their op in the `opQueue`.
@@ -152,26 +152,26 @@ export class Scope {
    *
    * Executing the `TcbOp`s in the `opQueue` populates this array.
    */
-  private statements: ts.Statement[] = [];
+  private statements: TcbExpr[] = [];
 
   /**
    * Gets names of the for loop context variables and their types.
    */
   private static getForLoopContextVariableTypes() {
-    return new Map<string, ts.KeywordTypeSyntaxKind>([
-      ['$first', ts.SyntaxKind.BooleanKeyword],
-      ['$last', ts.SyntaxKind.BooleanKeyword],
-      ['$even', ts.SyntaxKind.BooleanKeyword],
-      ['$odd', ts.SyntaxKind.BooleanKeyword],
-      ['$index', ts.SyntaxKind.NumberKeyword],
-      ['$count', ts.SyntaxKind.NumberKeyword],
+    return new Map<string, string>([
+      ['$first', 'boolean'],
+      ['$last', 'boolean'],
+      ['$even', 'boolean'],
+      ['$odd', 'boolean'],
+      ['$index', 'number'],
+      ['$count', 'number'],
     ]);
   }
 
   private constructor(
     private tcb: Context,
     private parent: Scope | null = null,
-    private guard: ts.Expression | null = null,
+    private guard: TcbExpr | null = null,
   ) {}
 
   /**
@@ -195,7 +195,7 @@ export class Scope {
       | TmplAstHostElement
       | null,
     children: TmplAstNode[] | null,
-    guard: ts.Expression | null,
+    guard: TcbExpr | null,
   ): Scope {
     const scope = new Scope(tcb, parentScope, guard);
 
@@ -237,8 +237,8 @@ export class Scope {
     } else if (scopedNode instanceof TmplAstForLoopBlock) {
       // Register the variable for the loop so it can be resolved by
       // children. It'll be declared once the loop is created.
-      const loopInitializer = tcb.allocateId();
-      addParseSpanInfo(loopInitializer, scopedNode.item.sourceSpan);
+      const loopInitializer = new TcbExpr(tcb.allocateId());
+      loopInitializer.addParseSpanInfo(scopedNode.item.sourceSpan);
       scope.varMap.set(scopedNode.item, loopInitializer);
 
       const forLoopContextVariableTypes = Scope.getForLoopContextVariableTypes();
@@ -248,9 +248,7 @@ export class Scope {
           throw new Error(`Unrecognized for loop context variable ${variable.name}`);
         }
 
-        const type = ts.factory.createKeywordTypeNode(
-          forLoopContextVariableTypes.get(variable.value)!,
-        );
+        const type = new TcbExpr(forLoopContextVariableTypes.get(variable.value)!);
         Scope.registerVariable(
           scope,
           variable,
@@ -301,34 +299,11 @@ export class Scope {
    * @param directive if present, a directive type on a `TmplAstElement` or `TmplAstTemplate` to
    * look up instead of the default for an element or template node.
    */
-  resolve(
-    node: LocalSymbol,
-    directive?: TypeCheckableDirectiveMeta,
-  ): ts.Identifier | ts.NonNullExpression {
+  resolve(node: LocalSymbol, directive?: TypeCheckableDirectiveMeta): TcbExpr {
     // Attempt to resolve the operation locally.
     const res = this.resolveLocal(node, directive);
     if (res !== null) {
-      // We want to get a clone of the resolved expression and clear the trailing comments
-      // so they don't continue to appear in every place the expression is used.
-      // As an example, this would otherwise produce:
-      // var _t1 /**T:DIR*/ /*1,2*/ = _ctor1();
-      // _t1 /**T:DIR*/ /*1,2*/.input = 'value';
-      //
-      // In addition, returning a clone prevents the consumer of `Scope#resolve` from
-      // attaching comments at the declaration site.
-      let clone: ts.Identifier | ts.NonNullExpression;
-
-      if (ts.isIdentifier(res)) {
-        clone = ts.factory.createIdentifier(res.text);
-      } else if (ts.isNonNullExpression(res)) {
-        clone = ts.factory.createNonNullExpression(res.expression);
-      } else {
-        throw new Error(`Could not resolve ${node} to an Identifier or a NonNullExpression`);
-      }
-
-      ts.setOriginalNode(clone, res);
-      (clone as any).parent = clone.parent;
-      return ts.setSyntheticTrailingComments(clone, []);
+      return res;
     } else if (this.parent !== null) {
       // Check with the parent.
       return this.parent.resolve(node, directive);
@@ -340,14 +315,14 @@ export class Scope {
   /**
    * Add a statement to this scope.
    */
-  addStatement(stmt: ts.Statement): void {
+  addStatement(stmt: TcbExpr): void {
     this.statements.push(stmt);
   }
 
   /**
    * Get the statements.
    */
-  render(): ts.Statement[] {
+  render(): TcbExpr[] {
     for (let i = 0; i < this.opQueue.length; i++) {
       // Optional statements cannot be skipped when we are generating the TCB for use
       // by the TemplateTypeChecker.
@@ -361,8 +336,8 @@ export class Scope {
    * Returns an expression of all template guards that apply to this scope, including those of
    * parent scopes. If no guards have been applied, null is returned.
    */
-  guards(): ts.Expression | null {
-    let parentGuards: ts.Expression | null = null;
+  guards(): TcbExpr | null {
+    let parentGuards: TcbExpr | null = null;
     if (this.parent !== null) {
       // Start with the guards from the parent scope, if present.
       parentGuards = this.parent.guards();
@@ -374,16 +349,13 @@ export class Scope {
     } else if (parentGuards === null) {
       // There's no guards from the parent scope, so this scope's guard represents all available
       // guards.
-      return this.guard;
+      return typeof this.guard === 'string' ? new TcbExpr(this.guard) : this.guard;
     } else {
       // Both the parent scope and this scope provide a guard, so create a combination of the two.
       // It is important that the parent guard is used as left operand, given that it may provide
       // narrowing that is required for this scope's guard to be valid.
-      return ts.factory.createBinaryExpression(
-        parentGuards,
-        ts.SyntaxKind.AmpersandAmpersandToken,
-        this.guard,
-      );
+      const guard = typeof this.guard === 'string' ? this.guard : this.guard.print();
+      return new TcbExpr(`(${parentGuards.print()}) && (${guard})`);
     }
   }
 
@@ -418,15 +390,12 @@ export class Scope {
       | TmplAstHostElement
       | null,
     children: TmplAstNode[] | null,
-    guard: ts.Expression | null,
+    guard: TcbExpr | null,
   ): Scope {
     return Scope.forNodes(this.tcb, parentScope, scopedNode, children, guard);
   }
 
-  private resolveLocal(
-    ref: LocalSymbol,
-    directive?: TypeCheckableDirectiveMeta,
-  ): ts.Expression | null {
+  private resolveLocal(ref: LocalSymbol, directive?: TypeCheckableDirectiveMeta): TcbExpr | null {
     if (ref instanceof TmplAstReference && this.referenceOpMap.has(ref)) {
       return this.resolveOp(this.referenceOpMap.get(ref)!);
     } else if (ref instanceof TmplAstLetDeclaration && this.letDeclOpMap.has(ref.name)) {
@@ -435,7 +404,9 @@ export class Scope {
       // Resolving a context variable for this template.
       // Execute the `TcbVariableOp` associated with the `TmplAstVariable`.
       const opIndexOrNode = this.varMap.get(ref)!;
-      return typeof opIndexOrNode === 'number' ? this.resolveOp(opIndexOrNode) : opIndexOrNode;
+      return typeof opIndexOrNode === 'number'
+        ? this.resolveOp(opIndexOrNode)
+        : new TcbExpr(opIndexOrNode.print(true /* ignoreComments */));
     } else if (
       ref instanceof TmplAstTemplate &&
       directive === undefined &&
@@ -469,9 +440,9 @@ export class Scope {
   }
 
   /**
-   * Like `executeOp`, but assert that the operation actually returned `ts.Expression`.
+   * Like `executeOp`, but assert that the operation actually returned `TcbExpr`.
    */
-  private resolveOp(opIndex: number): ts.Expression {
+  private resolveOp(opIndex: number): TcbExpr {
     const res = this.executeOp(opIndex, /* skipOptional */ false);
     if (res === null) {
       throw new Error(`Error resolving operation, got null`);
@@ -486,10 +457,10 @@ export class Scope {
    * and also protects against a circular dependency from the operation to itself by temporarily
    * setting the operation's result to a special expression.
    */
-  private executeOp(opIndex: number, skipOptional: boolean): ts.Expression | null {
+  private executeOp(opIndex: number, skipOptional: boolean): TcbExpr | null {
     const op = this.opQueue[opIndex];
     if (!(op instanceof TcbOp)) {
-      return op;
+      return op === null ? null : new TcbExpr(op.print(true /* ignoreComments */));
     }
 
     if (skipOptional && op.optional) {
@@ -500,7 +471,10 @@ export class Scope {
     // operation results in a circular dependency, this will prevent an infinite loop and allow for
     // the resolution of such cycles.
     this.opQueue[opIndex] = op.circularFallback();
-    const res = op.execute();
+    let res = op.execute();
+    if (res !== null) {
+      res = new TcbExpr(res.print(true /* ignoreComments */));
+    }
     // Once the operation has finished executing, it's safe to cache the real result.
     this.opQueue[opIndex] = res;
     return res;

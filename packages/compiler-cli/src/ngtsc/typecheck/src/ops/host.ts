@@ -7,12 +7,10 @@
  */
 
 import {TmplAstHostElement} from '@angular/compiler';
-import ts from 'typescript';
 import {TcbOp} from './base';
+import {TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {tsCreateElement, tsCreateVariable} from '../ts_util';
-import {addParseSpanInfo} from '../diagnostics';
 
 /**
  * A `TcbOp` which creates an expression for a the host element of a directive.
@@ -30,11 +28,19 @@ export class TcbHostElementOp extends TcbOp {
     super();
   }
 
-  override execute(): ts.Identifier {
+  override execute(): TcbExpr {
     const id = this.tcb.allocateId();
-    const initializer = tsCreateElement(...this.element.tagNames);
-    addParseSpanInfo(initializer, this.element.sourceSpan);
-    this.scope.addStatement(tsCreateVariable(id, initializer));
-    return id;
+    let tagNames: string;
+
+    if (this.element.tagNames.length === 1) {
+      tagNames = `"${this.element.tagNames[0]}"`;
+    } else {
+      tagNames = `null! as ${this.element.tagNames.map((t) => `"${t}"`).join(' | ')}`;
+    }
+
+    const initializer = new TcbExpr(`document.createElement(${tagNames})`);
+    initializer.addParseSpanInfo(this.element.sourceSpan);
+    this.scope.addStatement(new TcbExpr(`var ${id} = ${initializer.print()}`));
+    return new TcbExpr(id);
   }
 }

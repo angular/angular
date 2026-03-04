@@ -7,9 +7,9 @@
  */
 
 import {BindingType, TmplAstComponent, TmplAstElement, TmplAstHostElement} from '@angular/compiler';
-import ts from 'typescript';
 import {REGISTRY} from '../dom';
 import {TcbOp} from './base';
+import {TcbExpr} from './codegen';
 import {Context} from './context';
 import {getComponentTagName} from './selectorless';
 
@@ -37,7 +37,7 @@ export class TcbDomSchemaCheckerOp extends TcbOp {
     return false;
   }
 
-  override execute(): ts.Expression | null {
+  override execute(): TcbExpr | null {
     const element = this.element;
     const isTemplateElement =
       element instanceof TmplAstElement || element instanceof TmplAstComponent;

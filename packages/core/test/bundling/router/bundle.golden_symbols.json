@@ -1027,6 +1027,7 @@
       "resolveForwardRef",
       "resolveNode",
       "retrieveHydrationInfo",
+      "reusedNodes",
       "rootRoute",
       "runAfterLeaveAnimations",
       "runCanActivate",

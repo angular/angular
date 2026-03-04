@@ -12,20 +12,17 @@ import {
   ImplicitReceiver,
   ParsedEventType,
   PropertyRead,
-  ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstElement,
 } from '@angular/compiler';
-import ts from 'typescript';
 import {TcbOp} from './base';
+import {quoteAndEscape, getStatementsBlock, TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TypeCheckableDirectiveMeta} from '../../api';
-import {addParseSpanInfo} from '../diagnostics';
 import {TcbExpressionTranslator, unwrapWritableSignal} from './expression';
-import {tsCreateVariable} from '../ts_util';
-import {addExpressionIdentifier, ExpressionIdentifier} from '../comments';
+import {ExpressionIdentifier} from '../comments';
 import {checkSplitTwoWayBinding} from './bindings';
 import {LocalSymbol} from './references';
 
@@ -44,7 +41,7 @@ const enum EventParamType {
  * `ts.Expression`, with special handling of the `$event` variable that can be used within event
  * bindings.
  */
-export function tcbEventHandlerExpression(ast: AST, tcb: Context, scope: Scope): ts.Expression {
+export function tcbEventHandlerExpression(ast: AST, tcb: Context, scope: Scope): TcbExpr {
   const translator = new TcbEventHandlerTranslator(tcb, scope);
   return translator.translate(ast);
 }
@@ -72,7 +69,7 @@ export class TcbDirectiveOutputsOp extends TcbOp {
   }
 
   override execute(): null {
-    let dirId: ts.Expression | null = null;
+    let dirId: TcbExpr | null = null;
     const outputs = this.dir.outputs;
 
     for (const output of this.outputs) {
@@ -97,22 +94,17 @@ export class TcbDirectiveOutputsOp extends TcbOp {
       if (dirId === null) {
         dirId = this.scope.resolve(this.node, this.dir);
       }
-      const outputField = ts.factory.createElementAccessExpression(
-        dirId,
-        ts.factory.createStringLiteral(field),
-      );
-      addParseSpanInfo(outputField, output.keySpan);
+      const outputField = new TcbExpr(`${dirId.print()}[${quoteAndEscape(field)}]`);
+      outputField.addParseSpanInfo(output.keySpan);
+
       if (this.tcb.env.config.checkTypeOfOutputEvents) {
         // For strict checking of directive events, generate a call to the `subscribe` method
         // on the directive's output field to let type information flow into the handler function's
         // `$event` parameter.
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Infer);
-        const subscribeFn = ts.factory.createPropertyAccessExpression(outputField, 'subscribe');
-        const call = ts.factory.createCallExpression(subscribeFn, /* typeArguments */ undefined, [
-          handler,
-        ]);
-        addParseSpanInfo(call, output.sourceSpan);
-        this.scope.addStatement(ts.factory.createExpressionStatement(call));
+        const call = new TcbExpr(`${outputField.print()}.subscribe(${handler.print()})`);
+        call.addParseSpanInfo(output.sourceSpan);
+        this.scope.addStatement(call);
       } else {
         // If strict checking of directive events is disabled:
         //
@@ -120,9 +112,9 @@ export class TcbDirectiveOutputsOp extends TcbOp {
         //   of the `TemplateTypeChecker` can still find the node for the class member for the
         //   output.
         // * Emit a handler function where the `$event` parameter has an explicit `any` type.
-        this.scope.addStatement(ts.factory.createExpressionStatement(outputField));
+        this.scope.addStatement(outputField);
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Any);
-        this.scope.addStatement(ts.factory.createExpressionStatement(handler));
+        this.scope.addStatement(handler);
       }
     }
 
@@ -154,7 +146,7 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
   }
 
   override execute(): null {
-    let elId: ts.Expression | null = null;
+    let elId: TcbExpr | null = null;
 
     // TODO(alxhub): this could be more efficient.
     for (const output of this.outputs) {
@@ -178,31 +170,31 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
       if (output.type === ParsedEventType.LegacyAnimation) {
         // Animation output bindings always have an `$event` parameter of type `AnimationEvent`.
         const eventType = this.tcb.env.config.checkTypeOfAnimationEvents
-          ? this.tcb.env.referenceExternalType('@angular/animations', 'AnimationEvent')
+          ? this.tcb.env.referenceExternalSymbol('@angular/animations', 'AnimationEvent').print()
           : EventParamType.Any;
 
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, eventType);
-        this.scope.addStatement(ts.factory.createExpressionStatement(handler));
+        this.scope.addStatement(handler);
       } else if (output.type === ParsedEventType.Animation) {
-        const eventType = this.tcb.env.referenceExternalType(
+        const eventType = this.tcb.env.referenceExternalSymbol(
           '@angular/core',
           'AnimationCallbackEvent',
         );
 
-        const handler = tcbCreateEventHandler(output, this.tcb, this.scope, eventType);
-        this.scope.addStatement(ts.factory.createExpressionStatement(handler));
+        const handler = tcbCreateEventHandler(output, this.tcb, this.scope, eventType.print());
+        this.scope.addStatement(handler);
       } else if (this.tcb.env.config.checkTypeOfDomEvents) {
         // If strict checking of DOM events is enabled, generate a call to `addEventListener` on
         // the element instance so that TypeScript's type inference for
         // `HTMLElement.addEventListener` using `HTMLElementEventMap` to infer an accurate type for
         // `$event` depending on the event name. For unknown event names, TypeScript resorts to the
         // base `Event` type.
-        let target: ts.Expression;
-        let domEventAssertion: ts.Expression | undefined;
+        let target: TcbExpr;
+        let domEventAssertion: TcbExpr | undefined;
 
         // Only check for `window` and `document` since in theory any target can be passed.
         if (output.target === 'window' || output.target === 'document') {
-          target = ts.factory.createIdentifier(output.target);
+          target = new TcbExpr(output.target);
         } else if (elId === null) {
           target = elId = this.scope.resolve(this.target);
         } else {
@@ -228,26 +220,17 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
         if (
           this.target instanceof TmplAstElement &&
           this.target.isVoid &&
-          ts.isIdentifier(target) &&
           this.tcb.env.config.allowDomEventAssertion
         ) {
-          domEventAssertion = ts.factory.createCallExpression(
-            this.tcb.env.referenceExternalSymbol('@angular/core', 'ɵassertType'),
-            [ts.factory.createTypeQueryNode(target)],
-            [
-              ts.factory.createPropertyAccessExpression(
-                ts.factory.createIdentifier(EVENT_PARAMETER),
-                'target',
-              ),
-            ],
+          const assertUtil = this.tcb.env.referenceExternalSymbol('@angular/core', 'ɵassertType');
+          domEventAssertion = new TcbExpr(
+            `${assertUtil.print()}<typeof ${target.print()}>(${EVENT_PARAMETER}.target)`,
           );
         }
 
-        const propertyAccess = ts.factory.createPropertyAccessExpression(
-          target,
-          'addEventListener',
+        const propertyAccess = new TcbExpr(`${target.print()}.addEventListener`).addParseSpanInfo(
+          output.keySpan,
         );
-        addParseSpanInfo(propertyAccess, output.keySpan);
         const handler = tcbCreateEventHandler(
           output,
           this.tcb,
@@ -255,18 +238,16 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
           EventParamType.Infer,
           domEventAssertion,
         );
-        const call = ts.factory.createCallExpression(
-          /* expression */ propertyAccess,
-          /* typeArguments */ undefined,
-          /* arguments */ [ts.factory.createStringLiteral(output.name), handler],
+        const call = new TcbExpr(
+          `${propertyAccess.print()}(${quoteAndEscape(output.name)}, ${handler.print()})`,
         );
-        addParseSpanInfo(call, output.sourceSpan);
-        this.scope.addStatement(ts.factory.createExpressionStatement(call));
+        call.addParseSpanInfo(output.sourceSpan);
+        this.scope.addStatement(call);
       } else {
         // If strict checking of DOM inputs is disabled, emit a handler function where the `$event`
         // parameter has an explicit `any` type.
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Any);
-        this.scope.addStatement(ts.factory.createExpressionStatement(handler));
+        this.scope.addStatement(handler);
       }
     }
 
@@ -275,7 +256,7 @@ export class TcbUnclaimedOutputsOp extends TcbOp {
 }
 
 class TcbEventHandlerTranslator extends TcbExpressionTranslator {
-  protected override resolve(ast: AST): ts.Expression | null {
+  protected override resolve(ast: AST): TcbExpr | null {
     // Recognize a property read on the implicit receiver corresponding with the event parameter
     // that is available in event bindings. Since this variable is a parameter of the handler
     // function that the converted expression becomes a child of, just create a reference to the
@@ -285,9 +266,7 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
       ast.receiver instanceof ImplicitReceiver &&
       ast.name === EVENT_PARAMETER
     ) {
-      const event = ts.factory.createIdentifier(EVENT_PARAMETER);
-      addParseSpanInfo(event, ast.nameSpan);
-      return event;
+      return new TcbExpr(EVENT_PARAMETER).addParseSpanInfo(ast.nameSpan);
     }
 
     return super.resolve(ast);
@@ -315,14 +294,14 @@ function tcbCreateEventHandler(
   event: TmplAstBoundEvent,
   tcb: Context,
   scope: Scope,
-  eventType: EventParamType | ts.TypeNode,
-  assertionExpression?: ts.Expression,
-): ts.Expression {
+  eventType: EventParamType | string,
+  assertionExpression?: TcbExpr,
+): TcbExpr {
   const handler = tcbEventHandlerExpression(event.handler, tcb, scope);
-  const statements: ts.Statement[] = [];
+  const statements: TcbExpr[] = [];
 
   if (assertionExpression !== undefined) {
-    statements.push(ts.factory.createExpressionStatement(assertionExpression));
+    statements.push(assertionExpression);
   }
 
   // TODO(crisbeto): remove the `checkTwoWayBoundEvents` check in v20.
@@ -332,28 +311,23 @@ function tcbCreateEventHandler(
     // this will already be covered by the corresponding input binding, however it allows us to
     // handle the case where the input has a wider type than the output (see #58971).
     const target = tcb.allocateId();
-    const assignment = ts.factory.createBinaryExpression(
-      target,
-      ts.SyntaxKind.EqualsToken,
-      ts.factory.createIdentifier(EVENT_PARAMETER),
-    );
+    const initializer = tcb.env.config.allowSignalsInTwoWayBindings
+      ? unwrapWritableSignal(handler, tcb)
+      : handler;
 
     statements.push(
-      tsCreateVariable(
-        target,
-        tcb.env.config.allowSignalsInTwoWayBindings ? unwrapWritableSignal(handler, tcb) : handler,
-      ),
-      ts.factory.createExpressionStatement(assignment),
+      new TcbExpr(`var ${target} = ${initializer.print()}`),
+      new TcbExpr(`${target} = ${EVENT_PARAMETER}`),
     );
   } else {
-    statements.push(ts.factory.createExpressionStatement(handler));
+    statements.push(handler);
   }
 
-  let eventParamType: ts.TypeNode | undefined;
+  let eventParamType: string | undefined;
   if (eventType === EventParamType.Infer) {
     eventParamType = undefined;
   } else if (eventType === EventParamType.Any) {
-    eventParamType = ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
+    eventParamType = 'any';
   } else {
     eventParamType = eventType;
   }
@@ -361,29 +335,18 @@ function tcbCreateEventHandler(
   // Obtain all guards that have been applied to the scope and its parents, as they have to be
   // repeated within the handler function for their narrowing to be in effect within the handler.
   const guards = scope.guards();
+  let body = `{\n${getStatementsBlock(statements)} }`;
 
-  let body = ts.factory.createBlock(statements);
   if (guards !== null) {
     // Wrap the body in an `if` statement containing all guards that have to be applied.
-    body = ts.factory.createBlock([ts.factory.createIfStatement(guards, body)]);
+    body = `{ if (${guards.print()}) ${body} }`;
   }
 
-  const eventParam = ts.factory.createParameterDeclaration(
-    /* modifiers */ undefined,
-    /* dotDotDotToken */ undefined,
-    /* name */ EVENT_PARAMETER,
-    /* questionToken */ undefined,
-    /* type */ eventParamType,
+  const eventParam = new TcbExpr(
+    `${EVENT_PARAMETER}${eventParamType === undefined ? '' : ': ' + eventParamType}`,
   );
-  addExpressionIdentifier(eventParam, ExpressionIdentifier.EVENT_PARAMETER);
+  eventParam.addExpressionIdentifier(ExpressionIdentifier.EVENT_PARAMETER);
 
   // Return an arrow function instead of a function expression to preserve the `this` context.
-  return ts.factory.createArrowFunction(
-    /* modifiers */ undefined,
-    /* typeParameters */ undefined,
-    /* parameters */ [eventParam],
-    /* type */ ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
-    /* equalsGreaterThanToken */ undefined,
-    /* body */ body,
-  );
+  return new TcbExpr(`(${eventParam.print()}): any => ${body}`);
 }

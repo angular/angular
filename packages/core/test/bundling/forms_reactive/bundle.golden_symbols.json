@@ -902,6 +902,7 @@
       "resolveForwardRef",
       "resolveProvider",
       "retrieveHydrationInfo",
+      "reusedNodes",
       "runAfterLeaveAnimations",
       "runEffectsInView",
       "runInInjectionContext",
