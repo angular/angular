@@ -1,3 +1,74 @@
+<a name="22.0.0-next.0"></a>
+# 22.0.0-next.0 (2026-03-04)
+## Breaking Changes
+### 
+- Node.js v20 is no longer supported. The minimum supported Node.js versions are now v22.22.0 and v24.13.1.
+### compiler
+- data prefixed attribute no-longer bind inputs nor outputs.
+- The compiler will throw when there a when inputs, outputs or model are binding to the same input/outputs.
+- `in` variables will throw in template expressions.
+### core
+- change AnimationCallbackEvent.animationComplete signature
+### http
+- Use the `HttpXhrBackend` with `provideHttpClient(withXhr)` if you want to keep supporting upload progress reports.
+### router
+- `provideRoutes()` has been removed. Use `provideRouter()` or `ROUTES` as multi token if necessary.
+### upgrade
+- Deprecated `getAngularLib`/`setAngularLib` have been removed use `getAngularJSGlobal`/`setAngularJSGlobal` instead.
+## Deprecations
+### http
+- `withFetch` is now deprecated, it can be safely removed.
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d550bf713a](https://github.com/angular/angular/commit/d550bf713a5f558a85cc85639ce96de3677f324a) | build | update minimum supported Node.js versions |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [488d962bc7](https://github.com/angular/angular/commit/488d962bc700fb7189749c63ba63eac50a54e363) | fix | Don't bind inputs/outputs for `data-` attributes |
+| [03db2aefaa](https://github.com/angular/angular/commit/03db2aefaa88bc73b6af6ed1c9c722b65079ab3b) | fix | throw on duplicate input/outputs |
+| [786ef8261f](https://github.com/angular/angular/commit/786ef8261f4faca0693ef73938d3a6275b5baf7f) | fix | throw on invalid in expressions |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2c87f21abe](https://github.com/angular/angular/commit/2c87f21abe902f5ef04396994e351762b96836b1) | fix | always parenthesize object literals in TCB |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [17d3ea44e2](https://github.com/angular/angular/commit/17d3ea44e25e077b18178aa8108828f36eb821f4) | feat | add `IdleRequestOptions` support to `IdleService` |
+| [3bc095d508](https://github.com/angular/angular/commit/3bc095d508653982a48b337afd51bfedbbde1f87) | feat | Add a schematics to migrate `provideHttpClient` to keep using the `HttpXhrBackend` implementation. |
+| [cb4cb77053](https://github.com/angular/angular/commit/cb4cb77053a817fe800af6395783720761e29ada) | feat | Add migration to add `ChangeDetectionStrategy.Eager` where applicable |
+| [2206efa55f](https://github.com/angular/angular/commit/2206efa55fc1de160333d62680f8893c47525335) | feat | add special return statuses for resource params |
+| [246a984a5d](https://github.com/angular/angular/commit/246a984a5df0006bc5f4025baf918345aa38499c) | feat | add TestBed.getFixture |
+| [a5981b83a6](https://github.com/angular/angular/commit/a5981b83a60577d9068d2429bcbed969edca581b) | feat | support customization of @defer's on idle behavior |
+| [98eb24cea0](https://github.com/angular/angular/commit/98eb24cea0498382cc7cf7d7b85cd9ead5ad99ad) | feat | Support optional timeout for idle deferred triggers |
+| [f9d8da6924](https://github.com/angular/angular/commit/f9d8da69243ae1cd0eb1ab197fdd80e9a34107c1) | fix | bind global context to idle callback shims in @defer's idle service |
+| [b9b5c279b4](https://github.com/angular/angular/commit/b9b5c279b444ab2684fe911982930dc7c31ed43c) | refactor | enhance AnimationCallbackEvent.animationComplete signature |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fb166772d2](https://github.com/angular/angular/commit/fb166772d2e987c0145bdd5bbe83b2a29d74f31c) | fix | split the `touched` model into an input and `touch` output |
+| [2061fd8253](https://github.com/angular/angular/commit/2061fd8253882a46336aae8d73a79a1b176449e0) | fix | Untrack `setValue` in reactive forms |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5c432fb8bb](https://github.com/angular/angular/commit/5c432fb8bb69343ef2633811c37c0c6c0fd65126) | feat | Use `FetchBackend` as default for the `HttpBackend` implementation |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c6f98c723c](https://github.com/angular/angular/commit/c6f98c723cdd2c209092927855f8cbaf63ecce30) | feat | Add support for idle timeout in defer blocks |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3683902234](https://github.com/angular/angular/commit/3683902234acf74c7047337bda4db937e93f93d7) | feat | adds browserUrl input support to router links |
+| [bdb6ae9dbc](https://github.com/angular/angular/commit/bdb6ae9dbc080cd6ce4f5058c65f6b2bd853beda) | refactor | remove deprecated `provideRoutes` function. |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [01a179577b](https://github.com/angular/angular/commit/01a179577b5a250f5801f6d9a04378aea73c4251) | refactor | remove `getAngularLib`/`setAngularLib` |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.1"></a>
 # 21.2.1 (2026-03-04)
 ### core
