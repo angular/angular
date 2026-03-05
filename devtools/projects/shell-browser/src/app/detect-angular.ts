@@ -18,6 +18,7 @@ import {getDetectAngularScriptUri} from './comm-utils';
 import {SamePageMessageBus} from './same-page-message-bus';
 
 const detectAngularMessageBus = new SamePageMessageBus(
+  '[DetectAngular=>CS]',
   getDetectAngularScriptUri(),
   getDetectAngularScriptUri(),
 );
