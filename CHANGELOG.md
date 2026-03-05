@@ -1,3 +1,24 @@
+<a name="22.0.0-next.1"></a>
+# 22.0.0-next.1 (2026-03-05)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [72a17afaf3](https://github.com/angular/angular/commit/72a17afaf32194d42e4b5c090d4f75bad875930b) | fix | prevent mutation of children array in RecursiveVisitor |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dc4cf649b6](https://github.com/angular/angular/commit/dc4cf649b62fd47e0e1bd255ec954d88585899c4) | fix | ignore generated ngDevMode signal branch for code coverage |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c767d678cf](https://github.com/angular/angular/commit/c767d678cff65a89f380b4512590fa732db072c8) | feat | add 'blur' option to debounce rule |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f01901d766](https://github.com/angular/angular/commit/f01901d7668ab926bd7a786f43dbb18f2bb8a5b7) | fix | avoid generating invalid code in ChangeDetectionStrategy.Eager migration |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.0-next.0"></a>
 # 22.0.0-next.0 (2026-03-04)
 ## Breaking Changes
