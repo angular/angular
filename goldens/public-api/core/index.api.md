@@ -218,8 +218,6 @@ export enum ChangeDetectionStrategy {
 
 // @public
 export abstract class ChangeDetectorRef {
-    // @deprecated
-    abstract checkNoChanges(): void;
     abstract detach(): void;
     abstract detectChanges(): void;
     abstract markForCheck(): void;
