@@ -56,6 +56,7 @@ function attemptBackendHandshake() {
 port.onDisconnect.addListener(handleDisconnect);
 
 const detectAngularMessageBus = new SamePageMessageBus(
+  '[ContentScript=>DetectAngular]',
   getContentScriptUri(),
   getDetectAngularScriptUri(),
 );
@@ -87,7 +88,11 @@ detectAngularMessageBus.on('detectAngular', (detectionResult) => {
   attemptBackendHandshake();
 });
 
-const localMessageBus = new SamePageMessageBus(getContentScriptUri(), getBackendUri());
+const localMessageBus = new SamePageMessageBus(
+  '[ConstentScript=>BackEnd]',
+  getContentScriptUri(),
+  getBackendUri(),
+);
 const chromeMessageBus = new ChromeMessageBus(port);
 
 const handshakeWithBackend = (): void => {
