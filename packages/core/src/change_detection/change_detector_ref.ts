@@ -98,18 +98,6 @@ export abstract class ChangeDetectorRef {
   abstract detectChanges(): void;
 
   /**
-   * Checks the change detector and its children, and throws if any changes are detected.
-   *
-   * Use in development mode to verify that running change detection doesn't introduce
-   * other changes. Calling it in production mode is a noop.
-   *
-   * @deprecated This is a test-only API that does not have a place in production interface.
-   * `checkNoChanges` is already part of an `ApplicationRef` tick when the app is running in dev
-   * mode. For more granular `checkNoChanges` validation, use `ComponentFixture`.
-   */
-  abstract checkNoChanges(): void;
-
-  /**
    * Re-attaches the previously detached view to the change detection tree.
    * Views are attached to the tree by default.
    *
