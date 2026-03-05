@@ -173,6 +173,10 @@ bootstrapApplication(AppComponent, {
 Always ensure that the nonces you provide are <strong>unique per request</strong> and that they are not predictable or guessable.
 If an attacker can predict future nonces, they can circumvent the protections offered by CSP.
 
+Generating a nonce at the origin server is generally discouraged when using a CDN, as responses are frequently cached. If the server generates a nonce and the CDN caches that HTML response, every subsequent visitor receives the same "unique" value, allowing an attacker to discover the static value and bypass CSP protections.
+
+To maintain the "one-time-use" integrity of a nonce, it should ideally be generated at the Edge layer (e.g., CDN) just before the content is delivered to the user.
+
 </docs-callout>
 
 NOTE: If you want to [inline the critical CSS](/tools/cli/build#critical-css-inlining) of your application, you can not use the `CSP_NONCE` token, and should prefer the `autoCsp` option or set the `ngCspNonce` attribute on the root application element.
