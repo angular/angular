@@ -7,7 +7,7 @@
  */
 
 import {createPlatformFactory, NgModule, PlatformRef, StaticProvider} from '@angular/core';
-import {platformBrowserDynamic} from '../../index';
+import {platformBrowser} from '@angular/platform-browser';
 import {BrowserTestingModule} from '@angular/platform-browser/testing';
 
 /**
@@ -15,7 +15,7 @@ import {BrowserTestingModule} from '@angular/platform-browser/testing';
  * In case you are not in a CLI app and rely on JIT compilation, you might also need to import `@angular/compiler`
  */
 export const platformBrowserDynamicTesting: (extraProviders?: StaticProvider[]) => PlatformRef =
-  createPlatformFactory(platformBrowserDynamic, 'browserDynamicTesting');
+  createPlatformFactory(platformBrowser, 'browserDynamicTesting');
 
 /**
  * NgModule for testing.

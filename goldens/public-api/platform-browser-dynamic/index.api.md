@@ -4,24 +4,8 @@
 
 ```ts
 
-import { Compiler } from '@angular/core';
-import { CompilerFactory } from '@angular/core';
-import { CompilerOptions } from '@angular/core';
-import { PlatformRef } from '@angular/core';
-import { StaticProvider } from '@angular/core';
-import { Version } from '@angular/core';
-
-// @public @deprecated (undocumented)
-export class JitCompilerFactory implements CompilerFactory {
-    // (undocumented)
-    createCompiler(options?: CompilerOptions[]): Compiler;
-}
-
-// @public @deprecated (undocumented)
-export const platformBrowserDynamic: (extraProviders?: StaticProvider[]) => PlatformRef;
-
-// @public (undocumented)
-export const VERSION: Version;
+// @public
+export const IS_A_MODULE = true;
 
 // (No @packageDocumentation comment for this package)
 
