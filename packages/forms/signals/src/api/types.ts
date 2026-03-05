@@ -60,7 +60,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
 /**
  * Options for the `markAsTouched` method.
  *
- * @experimental 21.2.2
+ * @experimental 21.2.0
  */
 export interface MarkAsTouchedOptions {
   /**

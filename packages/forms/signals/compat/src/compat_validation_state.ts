@@ -14,9 +14,8 @@ import {
   extractNestedReactiveErrors,
   type CompatValidationError,
 } from '../../src/compat/validation_errors';
-import {getControlStatusSignal} from './compat_field_node';
+import {CompatFieldNode, getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
-import {CompatFieldNode} from './compat_field_node';
 
 // Readonly signal containing an empty array, used for optimization.
 const EMPTY_ARRAY_SIGNAL = computed(() => []);
