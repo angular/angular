@@ -172,7 +172,7 @@ const resp = new HttpResponse({
 
 ## Working with redirect information
 
-When using `HttpClient` with the `withFetch` provider, responses include a `redirected` property that indicates whether the response was the result of a redirect. This property aligns with the native Fetch API specification and can be useful in interceptors for handling redirect scenarios.
+When `HttpClient` uses the fetch backend , responses include a `redirected` property that indicates whether the response was the result of a redirect. This property aligns with the native Fetch API specification and can be useful in interceptors for handling redirect scenarios.
 
 An interceptor can access and act upon the redirect information:
 
@@ -215,7 +215,7 @@ export function authRedirectInterceptor(
 
 ## Working with response types
 
-When using `HttpClient` with the `withFetch` provider, responses include a `type` property that indicates how the browser handled the response based on CORS policies and request mode. This property aligns with the native Fetch API specification and provides valuable insights for debugging CORS issues and understanding response accessibility.
+When `HttpClient` uses the fetch backend , responses include a `type` property that indicates how the browser handled the response based on CORS policies and request mode. This property aligns with the native Fetch API specification and provides valuable insights for debugging CORS issues and understanding response accessibility.
 
 The response `type` property can have the following values:
 
