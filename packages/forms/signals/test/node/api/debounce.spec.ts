@@ -268,6 +268,49 @@ describe('debounce', () => {
     });
   });
 
+  describe('until blurred', () => {
+    it('should synchronize value immediately on touch', () => {
+      const address = signal({street: ''});
+      const addressForm = form(
+        address,
+        (address) => {
+          debounce(address.street, 'blur');
+        },
+        options(),
+      );
+      const street = addressForm.street();
+
+      street.controlValue.set('1600 Amphitheatre Pkwy');
+      expect(street.controlValue()).toBe('1600 Amphitheatre Pkwy');
+      expect(street.value()).toBe('');
+
+      street.markAsTouched();
+      expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+    });
+
+    it('should be ignored if value is directly set before blur', () => {
+      const address = signal({street: ''});
+      const addressForm = form(
+        address,
+        (address) => {
+          debounce(address.street, 'blur');
+        },
+        options(),
+      );
+      const street = addressForm.street();
+
+      street.controlValue.set('1600 Amphitheatre Pkwy');
+      expect(street.value()).toBe('');
+
+      street.value.set('2000 N Shoreline Blvd');
+      expect(street.value()).toBe('2000 N Shoreline Blvd');
+      expect(street.controlValue()).toBe('2000 N Shoreline Blvd');
+
+      street.markAsTouched();
+      expect(street.value()).toBe('2000 N Shoreline Blvd');
+    });
+  });
+
   describe('inheritance', () => {
     it('should inherit debounce from parent', async () => {
       const address = signal({street: ''});
