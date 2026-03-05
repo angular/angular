@@ -382,10 +382,13 @@ Each time a new alias instance is added, the new form array instance is provided
 NOTE: In zoneless applications, mutating a reactive forms model (for example calling `FormArray.push()`) does not automatically schedule component change detection. If your template depends on structural model changes such as `aliases.controls`, make sure the component notifies Angular to run change detection, for example by bridging a forms observable to `ChangeDetectorRef.markForCheck()`:
 
 ```ts
-import {ChangeDetectorRef, DestroyRef, inject} from '@angular/core';
+import {ChangeDetectorRef, Component, DestroyRef, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
-export class ProfileEditorComponent {
+@Component({
+  /* ... */
+})
+export class ProfileEditor {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
 
