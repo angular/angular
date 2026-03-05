@@ -58,6 +58,19 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
 }
 
 /**
+ * Options for the `markAsTouched` method.
+ *
+ * @experimental 21.2.0
+ */
+export interface MarkAsTouchedOptions {
+  /**
+   * If `true`, only marks the current field as touched.
+   * If `false` or not provided, marks the field and all its descendants as touched.
+   */
+  skipDescendants?: boolean;
+}
+
+/**
  * A type that represents either a single value of type `T` or a readonly array of `T`.
  * @template T The type of the value(s).
  *
@@ -516,9 +529,11 @@ export interface FieldState<
   markAsDirty(): void;
 
   /**
-   * Sets the touched status of the field to `true`.
+   * Sets the touched status of the field and its descendants to `true`.
+   *
+   * @param options Options for marking the field as touched.
    */
-  markAsTouched(): void;
+  markAsTouched(options?: MarkAsTouchedOptions): void;
 
   /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.

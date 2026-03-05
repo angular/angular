@@ -17,7 +17,13 @@ import {
   REQUIRED,
 } from '../api/rules/metadata';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
-import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
+import type {
+  DisabledReason,
+  FieldContext,
+  FieldState,
+  FieldTree,
+  MarkAsTouchedOptions,
+} from '../api/types';
 import type {FormField} from '../directive/form_field_directive';
 import {DYNAMIC} from '../schema/logic';
 import {LogicNode} from '../schema/logic_node';
@@ -238,14 +244,24 @@ export class FieldNode implements FieldState<unknown> {
     return this.metadataState.has(key);
   }
 
-  /**
-   * Marks this specific field as touched.
-   */
-  markAsTouched(): void {
+  markAsTouched(options?: MarkAsTouchedOptions): void {
     untracked(() => {
-      this.nodeState.markAsTouched();
+      this.markAsTouchedInternal(options);
       this.flushSync();
     });
+  }
+
+  markAsTouchedInternal(options?: MarkAsTouchedOptions): void {
+    if (this.validationState.shouldSkipValidation()) {
+      return;
+    }
+    this.nodeState.markAsTouched();
+    if (options?.skipDescendants) {
+      return;
+    }
+    for (const child of this.structure.children()) {
+      child.markAsTouchedInternal();
+    }
   }
 
   /**

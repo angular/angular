@@ -408,24 +408,14 @@ export async function submit<TModel>(
     );
   }
 
+  node.markAsTouched();
+
   const onInvalid = options?.onInvalid as FormSubmitOptions<unknown, unknown>['onInvalid'];
-  const ignoreValidators = options?.ignoreValidators ?? 'pending';
-
-  // Determine whether or not to run the action based on the current validity.
-  let shouldRunAction = true;
-  untracked(() => {
-    markAllAsTouched(node);
-
-    if (ignoreValidators === 'none') {
-      shouldRunAction = node.valid();
-    } else if (ignoreValidators === 'pending') {
-      shouldRunAction = !node.invalid();
-    }
-  });
+  const shouldRun = shouldRunAction(node, options?.ignoreValidators);
 
   // Run the action (or alternatively the `onInvalid` callback)
   try {
-    if (shouldRunAction) {
+    if (shouldRun) {
       node.submitState.selfSubmitting.set(true);
       const errors = await untracked(() => action?.(field, detail));
       errors && setSubmissionErrors(node, errors);
@@ -452,17 +442,17 @@ export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
   return SchemaImpl.create(fn) as unknown as Schema<TValue>;
 }
 
-/** Marks a {@link node} and its descendants as touched. */
-function markAllAsTouched(node: FieldNode) {
-  // Don't mark hidden, disabled, or readonly fields as touched since they don't contribute to the
-  // form's validity. This also prevents errors from appearing immediately if they're later made
-  // interactive.
-  if (node.validationState.shouldSkipValidation()) {
-    return;
-  }
-  node.markAsTouched();
-  for (const child of node.structure.children()) {
-    markAllAsTouched(child);
+function shouldRunAction(
+  node: FieldNode,
+  ignoreValidators?: FormSubmitOptions<unknown, unknown>['ignoreValidators'],
+) {
+  switch (ignoreValidators) {
+    case 'all':
+      return true;
+    case 'none':
+      return untracked(node.valid);
+    default: // Ignore pending validators by default (or specified 'pending').
+      return !untracked(node.invalid);
   }
 }
 
