@@ -18,27 +18,45 @@ import type {Debouncer, PathKind, SchemaPath, SchemaPathRules} from '../types';
  * the field is touched, or the most recently debounced update resolves.
  *
  * @param path The target path to debounce.
- * @param durationOrDebouncer Either a debounce duration in milliseconds, or a custom
- *     {@link Debouncer} function.
+ * @param config A debounce configuration, which can be either a debounce duration in milliseconds,
+ *     `'blur'` to debounce until the field is blurred, or a custom {@link Debouncer} function.
  *
  * @experimental 21.0.0
  */
 export function debounce<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  durationOrDebouncer: number | Debouncer<TValue, TPathKind>,
+  config: number | 'blur' | Debouncer<TValue, TPathKind>,
 ): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  const debouncer =
-    typeof durationOrDebouncer === 'function'
-      ? durationOrDebouncer
-      : durationOrDebouncer > 0
-        ? debounceForDuration(durationOrDebouncer)
-        : immediate;
+  const debouncer = normalizeDebouncer(config);
   pathNode.builder.addMetadataRule(DEBOUNCER, () => debouncer);
 }
 
+function normalizeDebouncer<TValue, TPathKind extends PathKind>(
+  debouncer: number | 'blur' | Debouncer<TValue, TPathKind>,
+) {
+  // If it's already a debounce function, return it as-is.
+  if (typeof debouncer === 'function') {
+    return debouncer;
+  }
+  // If it's 'blur', return a debouncer that never resolves. The field will still be updated when
+  // the control is blurred.
+  if (debouncer === 'blur') {
+    return debounceUntilBlur();
+  }
+  // If it's a non-zero number, return a timer-based debouncer.
+  if (debouncer > 0) {
+    return debounceForDuration(debouncer);
+  }
+  // Otherwise it's 0, so we return a function that will synchronize the model without delay.
+  return immediate;
+}
+
+/**
+ * Creates a debouncer that will wait for the given duration before resolving.
+ */
 function debounceForDuration(durationInMilliseconds: number): Debouncer<unknown> {
   return (_context, abortSignal) => {
     return new Promise((resolve) => {
@@ -59,4 +77,16 @@ function debounceForDuration(durationInMilliseconds: number): Debouncer<unknown>
   };
 }
 
-function immediate() {}
+/**
+ * Creates a debouncer that will wait indefinitely, relying on the node to synchronize pending
+ * updates when blurred.
+ */
+function debounceUntilBlur(): Debouncer<unknown> {
+  return (_context, abortSignal) => {
+    return new Promise((resolve) => {
+      abortSignal.addEventListener('abort', () => resolve(), {once: true});
+    });
+  };
+}
+
+function immediate(): void {}
