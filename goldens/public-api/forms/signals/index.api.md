@@ -143,7 +143,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     readonly invalid: Signal<boolean>;
     readonly keyInParent: Signal<TKey>;
     markAsDirty(): void;
-    markAsTouched(): void;
+    markAsTouched(options?: MarkAsTouchedOptions): void;
     readonly max?: Signal<number | undefined>;
     readonly maxLength?: Signal<number | undefined>;
     metadata<M>(key: MetadataKey<M, any, any>): M | undefined;
@@ -297,6 +297,11 @@ export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root>
 
 // @public
 export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind.Root> = (result: TResult, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
+
+// @public
+export interface MarkAsTouchedOptions {
+    self?: boolean;
+}
 
 // @public
 export const MAX: MetadataKey<Signal<number | undefined>, number | undefined, number | undefined>;
