@@ -417,7 +417,7 @@ describe('FieldNode', () => {
       expect(f().touched()).toBe(true);
     });
 
-    it('does not propagate down', () => {
+    it('propagates down by default', () => {
       const f = form(
         signal({
           a: 1,
@@ -426,8 +426,28 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
+      expect(f().touched()).toBe(false);
       expect(f.a().touched()).toBe(false);
+      expect(f.b().touched()).toBe(false);
       f().markAsTouched();
+      expect(f().touched()).toBe(true);
+      expect(f.a().touched()).toBe(true);
+      expect(f.b().touched()).toBe(true);
+    });
+
+    it('does not propagate down when skipDescendants is true', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().touched()).toBe(false);
+      expect(f.a().touched()).toBe(false);
+      f().markAsTouched({skipDescendants: true});
+      expect(f().touched()).toBe(true);
       expect(f.a().touched()).toBe(false);
     });
 

@@ -94,7 +94,7 @@ export class CompatFieldAdapter implements FieldAdapter {
     if (!options.control) {
       return this.basicAdapter.createValidationState(node);
     }
-    return new CompatValidationState(options);
+    return new CompatValidationState(node, options);
   }
 
   /**

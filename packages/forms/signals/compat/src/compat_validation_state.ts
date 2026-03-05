@@ -14,12 +14,11 @@ import {
   extractNestedReactiveErrors,
   type CompatValidationError,
 } from '../../src/compat/validation_errors';
-import {getControlStatusSignal} from './compat_field_node';
+import {CompatFieldNode, getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
 
 // Readonly signal containing an empty array, used for optimization.
 const EMPTY_ARRAY_SIGNAL = computed(() => []);
-const TRUE_SIGNAL = computed(() => true);
 
 /**
  * Compat version of a validation state that wraps a FormControl, and proxies it's validation state.
@@ -36,7 +35,10 @@ export class CompatValidationState implements ValidationState {
 
   readonly parseErrors: Signal<ValidationError.WithFormField[]> = computed(() => []);
 
-  constructor(options: CompatFieldNodeOptions) {
+  constructor(
+    private readonly node: CompatFieldNode,
+    options: CompatFieldNodeOptions,
+  ) {
     this.syncValid = getControlStatusSignal(options, (c: AbstractControl) => c.status === 'VALID');
     this.errors = getControlStatusSignal(options, extractNestedReactiveErrors);
     this.pending = getControlStatusSignal(options, (c) => c.pending);
@@ -57,7 +59,12 @@ export class CompatValidationState implements ValidationState {
   rawSyncTreeErrors = EMPTY_ARRAY_SIGNAL;
   syncErrors = EMPTY_ARRAY_SIGNAL;
   rawAsyncErrors = EMPTY_ARRAY_SIGNAL;
-  shouldSkipValidation = TRUE_SIGNAL;
+
+  // Compat fields can't have validation rules applied to them; however, there are other
+  // features that depend on this property, such as `markAsTouched()`.
+  readonly shouldSkipValidation = computed(
+    () => this.node.hidden() || this.node.disabled() || this.node.readonly(),
+  );
 
   /**
    * Computes status based on whether the field is valid/invalid/pending.
