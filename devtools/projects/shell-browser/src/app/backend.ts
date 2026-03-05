@@ -14,7 +14,11 @@ import {initializeExtendedWindowOperations} from './chrome-window-extensions';
 import {getBackendUri, getContentScriptUri} from './comm-utils';
 import {SamePageMessageBus} from './same-page-message-bus';
 
-const messageBus = new SamePageMessageBus(getBackendUri(), getContentScriptUri());
+const messageBus = new SamePageMessageBus(
+  '[Backend=>ContentScript]',
+  getBackendUri(),
+  getContentScriptUri(),
+);
 
 let initialized = false;
 messageBus.on('handshake', () => {
