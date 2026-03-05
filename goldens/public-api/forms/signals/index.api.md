@@ -702,24 +702,15 @@ export type ValidationSuccess = null | undefined | void;
 // @public
 export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, ValidationResult, TPathKind>;
 
-// @public @deprecated (undocumented)
-export type WithField<T> = WithFieldTree<T>;
-
 // @public
 export type WithFieldTree<T> = T & {
     fieldTree: ReadonlyFieldTree<unknown>;
 };
 
-// @public @deprecated (undocumented)
-export type WithOptionalField<T> = WithOptionalFieldTree<T>;
-
 // @public
 export type WithOptionalFieldTree<T> = Omit<T, 'fieldTree'> & {
     fieldTree?: ReadonlyFieldTree<unknown>;
 };
-
-// @public @deprecated (undocumented)
-export type WithoutField<T> = WithoutFieldTree<T>;
 
 // @public
 export type WithoutFieldTree<T> = T & {
