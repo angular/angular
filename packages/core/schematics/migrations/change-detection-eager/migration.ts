@@ -19,6 +19,7 @@ import {
   TsurgeFunnelMigration,
 } from '../../utils/tsurge';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
+import {getLeadingLineWhitespaceOfNode} from '../../utils/tsurge/helpers/ast/leading_space';
 
 export interface ChangeDetectionEagerMigrationPhase1Data {
   replacements: Replacement[];
@@ -105,14 +106,8 @@ export class ChangeDetectionEagerMigration extends TsurgeFunnelMigration<
 
           if (properties.length > 0) {
             const lastProp = properties[properties.length - 1];
-            insertPos = lastProp.getEnd();
-
-            // Simpler approach: check comma after last property.
-            const textAfter = sf.text.substring(lastProp.getEnd());
-            const hasComma = /^\s*,/.test(textAfter);
-            const prefix = hasComma ? '' : ',';
-
-            toInsert = `${prefix}\n  changeDetection: ${exprText}.Eager`;
+            insertPos = lastProp.getStart();
+            toInsert = `changeDetection: ${exprText}.Eager,\n${getLeadingLineWhitespaceOfNode(lastProp)}`;
           } else {
             insertPos = metadata.getStart() + 1;
             toInsert = `\n  changeDetection: ${exprText}.Eager\n`;
