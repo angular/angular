@@ -4,6 +4,7 @@ ng_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.spec.ts"]),
+    tsconfig = "//packages/forms/signals/test:tsconfig_test",
     deps = [
         "//:node_modules/zod",
         "//packages/core",
