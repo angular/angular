@@ -161,6 +161,12 @@
         }
       }
     },
+    "languages": [
+      {
+        "id": "angular-tag-comment",
+        "configuration": "./syntaxes/template-tag-language-configuration.json"
+      }
+    ],
     "grammars": [
       {
         "path": "./syntaxes/inline-template.json",
@@ -236,7 +242,10 @@
         "injectTo": [
           "text.html.derivative",
           "source.ts"
-        ]
+        ],
+        "embeddedLanguages": {
+          "template.tag.ng": "angular-tag-comment"
+        }
       },
       {
         "path": "./syntaxes/expression.json",
