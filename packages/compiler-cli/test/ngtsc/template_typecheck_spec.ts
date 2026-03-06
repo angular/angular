@@ -2915,7 +2915,7 @@ runInEachFileSystem(() => {
             value: number;
           }
 
-          @Directive({standalone: true})
+          @Directive({})
           export class HostDir {
             @Input({transform: (val: HostDirType) => 1}) val!: number;
           }
@@ -2969,7 +2969,7 @@ runInEachFileSystem(() => {
             value: number;
           }
 
-          @Directive({standalone: true})
+          @Directive({})
           export class Parent {
             @Input({transform: (val: ParentType) => 1}) val!: number;
           }
@@ -8284,7 +8284,7 @@ suppress
         expect(diags[1].messageText).toBe('PercentPipe is not used within the template of MyComp');
       });
 
-      it('should report unused imports coming from a nested array from the same file', () => {
+      it('should not report unused imports coming from a nested array from the same file when some are used', () => {
         env.write(
           'used.ts',
           `
@@ -8339,11 +8339,10 @@ suppress
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('UnusedDir is not used within the template of MyComp');
+        expect(diags.length).toBe(0);
       });
 
-      it('should report unused imports coming from an array used as the `imports` initializer', () => {
+      it('should not report unused imports coming from an array used as the `imports` initializer when some are used', () => {
         env.write(
           'used.ts',
           `
@@ -8387,8 +8386,40 @@ suppress
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toBe('UnusedDir is not used within the template of MyComp');
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report unused imports when imports is directly assigned to a local array identifier and some are used', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'app-1',
+            template: '',
+          })
+          export class AppComponent1 {}
+
+          @Component({
+            selector: 'app-2',
+            template: '',
+          })
+          export class AppComponent2 {}
+
+          const importsAsArray = [AppComponent1, AppComponent2];
+
+          @Component({
+            selector: 'app-4',
+            template: '<app-2/>',
+            imports: importsAsArray,
+          })
+          export class AppComponent4 {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
       });
 
       it('should not report unused imports coming from an array through a spread expression from a different file', () => {
@@ -8577,6 +8608,182 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(0);
+      });
+
+      it('should report all imports unused when all elements of a local spread array are unused', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive} from '@angular/core';
+
+          @Component({ 
+            selector: 'app-dummy',
+            template: '',
+          })
+          export class DummyComponent {}
+
+          @Component({ 
+            selector: 'app-dummy2',
+            template: '',          
+          })
+          export class Dummy2Component {}
+
+          @Directive({
+            selector: '[used]',  
+          })
+          export class UsedDir {}
+
+          const LIST_OF_COMPONENTS = [DummyComponent, Dummy2Component];
+
+          @Component({
+            selector: 'app-test-img',
+            imports: [UsedDir, ...LIST_OF_COMPONENTS],
+            template: \`<div used></div>\`,
+          })
+          export default class TestImg {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe('All imports are unused');
+      });
+
+      it('should not report unused imports from a local spread array when some are used', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive} from '@angular/core';
+
+          @Directive({selector: '[used]'})
+          export class UsedDir {}
+
+          @Directive({selector: '[unused1]' })
+          export class UnusedDir1 {}
+
+          @Directive({selector: '[unused2]' })
+          export class UnusedDir2 {}
+
+          const LIST_OF_DIRECTIVES = [UsedDir, UnusedDir1, UnusedDir2];
+
+          @Component({
+            selector: 'app-test',
+            imports: [...LIST_OF_DIRECTIVES],
+            template: \`<div used></div>\`,
+          })
+          export class TestComponent {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should report all imports unused for local spread arrays where all elements are unused', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive} from '@angular/core';
+
+          @Directive({selector: '[dir1]' })
+          export class Dir1 {}
+
+          @Directive({selector: '[dir2]' })
+          export class Dir2 {}
+
+          @Directive({selector: '[dir3]' })
+          export class Dir3 {}
+
+          @Directive({selector: '[dir4]' })
+          export class Dir4 {}
+
+          const LIST1 = [Dir1, Dir2];
+          const LIST2 = [Dir3, Dir4];
+
+          @Component({
+            selector: 'app-test',
+            imports: [...LIST1, ...LIST2],
+            template: \`<div dir1></div>\`,
+          })
+          export class TestComponent {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe('All imports are unused');
+      });
+
+      it('should report direct unused imports and not report spread arrays where some are used', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive} from '@angular/core';
+
+          @Directive({selector: '[direct-used]' })
+          export class DirectUsed {}
+
+          @Directive({selector: '[direct-unused]' })
+          export class DirectUnused {}
+
+          @Directive({selector: '[spread-used]' })
+          export class SpreadUsed {}
+
+          @Directive({selector: '[spread-unused]' })
+          export class SpreadUnused {}
+
+          const SPREAD_LIST = [SpreadUsed, SpreadUnused];
+
+          @Component({
+            selector: 'app-test',
+            imports: [DirectUsed, DirectUnused, ...SPREAD_LIST],
+            template: \`<div direct-used spread-used></div>\`,
+          })
+          export class TestComponent {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          'DirectUnused is not used within the template of TestComponent',
+        );
+      });
+
+      it('should report direct unused imports and not report nested arrays where some are used', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive} from '@angular/core';
+
+          @Directive({selector: '[direct-used]'})
+          export class DirectUsed {}
+
+          @Directive({selector: '[direct-unused]'})
+          export class DirectUnused {}
+
+          @Directive({selector: '[nested-used]'})
+          export class NestedUsed {}
+
+          @Directive({selector: '[nested-unused]'})
+          export class NestedUnused {}
+
+          const NESTED_LIST = [NestedUsed, NestedUnused];
+
+          @Component({
+            selector: 'app-test',
+            imports: [DirectUsed, DirectUnused, NESTED_LIST],
+            template: \`<div direct-used nested-used></div>\`,
+          })
+          export class TestComponent {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          'DirectUnused is not used within the template of TestComponent',
+        );
       });
     });
 
