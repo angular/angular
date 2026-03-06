@@ -382,12 +382,109 @@ runInEachFileSystem(() => {
         );
 
         const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(2);
+        expect(diags.length).toBe(3);
         expect(diags[0].messageText).toBe(
           `Type 'InputSignal<number>' is not assignable to type 'number'.`,
         );
-        expect(diags[1].messageText).toBe(
+
+        expect(diags[1].messageText).toEqual(
+          jasmine.stringContaining(
+            `Type 'InputSignal<number>' is missing the following properties from type 'WritableSignal<number>':`,
+          ),
+        );
+        expect(diags[2].messageText).toBe(
           `Type 'number' is not assignable to type 'InputSignal<number>'.`,
+        );
+      });
+
+      it('should not allow a computed() signal directly bound to an any-typed model input', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, model, computed, signal} from '@angular/core';
+
+          @Directive({selector: '[anyModel]'})
+          export class AnyModel {
+            anyModel = model.required<any>();
+          }
+
+          @Component({
+            template: \`<input anyModel [(anyModel)]="computedValue" />\`,
+            imports: [AnyModel],
+          })
+          export class TestComp {
+            base = signal(1);
+            computedValue = computed(() => this.base() + 1);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toEqual(
+          jasmine.stringContaining(
+            `Type 'Signal<number>' is missing the following properties from type 'WritableSignal<number>':`,
+          ),
+        );
+      });
+
+      it('should not allow a signal().asReadonly() directly bound to an any-typed model input', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, model, signal} from '@angular/core';
+
+          @Directive({selector: '[anyModel]'})
+          export class AnyModel {
+            anyModel = model.required<any>();
+          }
+
+          @Component({
+            template: \`<input anyModel [(anyModel)]="valueReadonly" />\`,
+            imports: [AnyModel],
+          })
+          export class TestComp {
+            valueReadonly = signal(1).asReadonly();
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toEqual(
+          jasmine.stringContaining(
+            `Type 'Signal<number>' is missing the following properties from type 'WritableSignal<number>':`,
+          ),
+        );
+      });
+
+      it('should not allow an input() signal directly bound to an any-typed model input', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, model, input} from '@angular/core';
+
+          @Directive({selector: '[anyModel]'})
+          export class AnyModel {
+            anyModel = model.required<any>();
+          }
+
+          @Component({
+            template: \`<input anyModel [(anyModel)]="inputValue" />\`,
+            imports: [AnyModel],
+          })
+          export class TestComp {
+            inputValue = input(1);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toEqual(
+          jasmine.stringContaining(
+            `Type 'InputSignal<number>' is missing the following properties from type 'WritableSignal<number>':`,
+          ),
         );
       });
 
@@ -410,6 +507,34 @@ runInEachFileSystem(() => {
           })
           export class TestComp {
             value = model(0);
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should allow a generic type parameter in a two-way binding', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, Directive, model} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class TestDir {
+            value = model.required<any>();
+          }
+
+          @Component({
+            selector: 'generic-comp',
+            template: \`<div dir [(value)]="activeDate"></div>\`,
+            imports: [TestDir],
+          })
+          export class GenericComp<D> {
+            activeDate!: D;
           }
         `,
         );
