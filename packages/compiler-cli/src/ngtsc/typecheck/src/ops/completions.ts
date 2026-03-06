@@ -26,7 +26,7 @@ export class TcbComponentContextCompletionOp extends TcbOp {
   override readonly optional = false;
 
   override execute(): null {
-    const ctx = new TcbExpr('this.');
+    const ctx = new TcbExpr('this._');
     ctx.markIgnoreDiagnostics();
     ctx.addExpressionIdentifier(ExpressionIdentifier.COMPONENT_COMPLETION);
     this.scope.addStatement(ctx);
