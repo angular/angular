@@ -7,21 +7,14 @@
  */
 
 import ts from 'typescript';
-
-import {
-  TcbComponentMetadata,
-  TcbTypeCheckBlockMetadata,
-  TcbTypeParameter,
-  TypeCheckId,
-} from '../api';
-
+import {TcbComponentMetadata, TcbTypeCheckBlockMetadata, TcbTypeParameter} from '../api';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {createHostBindingsBlockGuard} from './host_bindings';
 import {Context, TcbGenericContextBehavior} from './ops/context';
 import {Scope} from './ops/scope';
-import {getStatementsBlock, tempPrint} from './ops/codegen';
+import {getStatementsBlock} from './ops/codegen';
 
 /**
  * Given a `ts.ClassDeclaration` for a component, and metadata regarding that component, compose a
@@ -67,13 +60,7 @@ export function generateTypeCheckBlock(
     meta.isStandalone,
     meta.preserveWhitespaces,
   );
-  const ctxRawType = env.referenceTcbType(component.ref);
-  if (!ts.isTypeReferenceNode(ctxRawType)) {
-    throw new Error(
-      `Expected TypeReferenceNode when referencing the ctx param for ${component.ref.name}`,
-    );
-  }
-
+  const ctxRawType = env.referenceTcbValue(component.ref);
   let typeParameters: TcbTypeParameter[] | undefined = undefined;
   let typeArguments: string[] | undefined = undefined;
 
@@ -102,7 +89,6 @@ export function generateTypeCheckBlock(
     }
   }
 
-  const sourceFile = env.contextFile;
   const typeParamsStr =
     typeParameters === undefined || typeParameters.length === 0
       ? ''
@@ -111,11 +97,8 @@ export function generateTypeCheckBlock(
     typeArguments === undefined || typeArguments.length === 0
       ? ''
       : `<${typeArguments.join(', ')}>`;
-  const typeRef = ts.isIdentifier(ctxRawType.typeName)
-    ? ctxRawType.typeName.text
-    : tempPrint(ctxRawType.typeName, sourceFile);
 
-  const thisParamStr = `this: ${typeRef}${typeArgsStr}`;
+  const thisParamStr = `this: ${ctxRawType.print()}${typeArgsStr}`;
   const statements: string[] = [];
 
   // Add the template type checking code.

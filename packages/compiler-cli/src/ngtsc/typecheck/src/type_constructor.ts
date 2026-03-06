@@ -14,20 +14,17 @@ import {TypeCtorMetadata, TcbTypeParameter} from '../api';
 
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {checkIfGenericTypeBoundsCanBeEmitted, generateTcbTypeParameters} from './tcb_util';
-import {quoteAndEscape, TcbExpr, tempPrint} from './ops/codegen';
+import {quoteAndEscape, TcbExpr} from './ops/codegen';
 
 export function generateTypeCtorDeclarationFn(
   env: ReferenceEmitEnvironment,
   meta: TypeCtorMetadata,
-  nodeTypeRef: ts.EntityName,
+  nodeTypeRef: TcbExpr,
   typeParams: TcbTypeParameter[] | undefined,
 ): TcbExpr {
   const typeArgs = generateGenericArgs(typeParams);
-  const typeRef = ts.isIdentifier(nodeTypeRef)
-    ? nodeTypeRef.text
-    : tempPrint(nodeTypeRef, nodeTypeRef.getSourceFile());
-  const typeRefWithGenerics = `${typeRef}${typeArgs}`;
-  const initParam = constructTypeCtorParameter(env, meta, typeRef, typeRefWithGenerics);
+  const typeRefWithGenerics = `${nodeTypeRef.print()}${typeArgs}`;
+  const initParam = constructTypeCtorParameter(env, meta, nodeTypeRef.print(), typeRefWithGenerics);
   const typeParameters = typeParametersWithDefaultTypes(typeParams);
   let source: string;
 
