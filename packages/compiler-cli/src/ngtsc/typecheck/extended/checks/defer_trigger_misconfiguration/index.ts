@@ -12,10 +12,13 @@ import {
   TmplAstDeferredBlock,
   TmplAstDeferredTrigger,
   TmplAstHoverDeferredTrigger,
+  TmplAstIdleDeferredTrigger,
   TmplAstImmediateDeferredTrigger,
   TmplAstInteractionDeferredTrigger,
   TmplAstTimerDeferredTrigger,
   TmplAstViewportDeferredTrigger,
+  LiteralMap,
+  LiteralPrimitive,
 } from '@angular/compiler';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
@@ -26,6 +29,57 @@ import {
   TemplateCheckWithVisitor,
   TemplateContext,
 } from '../../api';
+
+function areLiteralMapsEqual(a: LiteralMap | null, b: LiteralMap | null): boolean {
+  // Treat null and empty LiteralMaps as equivalent
+  const aIsEmpty = a === null || a.keys.length === 0;
+  const bIsEmpty = b === null || b.keys.length === 0;
+
+  if (aIsEmpty && bIsEmpty) return true;
+  if (aIsEmpty || bIsEmpty) return false;
+  if (a.keys.length !== b.keys.length) return false;
+
+  const bMap = new Map<string, unknown>();
+
+  for (let i = 0; i < b.keys.length; i++) {
+    const bKey = b.keys[i];
+    if (bKey.kind !== 'property') continue;
+    const bVal = b.values[i];
+    bMap.set(bKey.key, bVal instanceof LiteralPrimitive ? bVal.value : null);
+  }
+
+  for (let i = 0; i < a.keys.length; i++) {
+    const aKey = a.keys[i];
+    if (aKey.kind !== 'property') continue;
+    const aVal = a.values[i];
+    const aValue = aVal instanceof LiteralPrimitive ? aVal.value : null;
+
+    if (!bMap.has(aKey.key)) return false;
+    if (bMap.get(aKey.key) !== aValue) return false;
+  }
+
+  return true;
+}
+
+function getTimedTriggerValue(
+  trigger: TmplAstTimerDeferredTrigger | TmplAstIdleDeferredTrigger,
+): number | null {
+  if (trigger instanceof TmplAstTimerDeferredTrigger) {
+    return trigger.delay;
+  }
+
+  return trigger.timeout;
+}
+
+function formatTimedTrigger(
+  trigger: TmplAstTimerDeferredTrigger | TmplAstIdleDeferredTrigger,
+): string {
+  if (trigger instanceof TmplAstTimerDeferredTrigger) {
+    return `timer(${trigger.delay}ms)`;
+  }
+
+  return trigger.timeout === null ? 'idle' : `idle(${trigger.timeout}ms)`;
+}
 
 /**
  * This check implements warnings for unreachable or redundant @defer triggers.
@@ -81,32 +135,59 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
       }
     }
 
+    // `prefetch` without an explicit main trigger defaults the main trigger to `idle`,
+    if (mains.length === 0 && prefetches.length > 0) {
+      const msg =
+        `Define a main trigger when using 'prefetch' triggers. ` +
+        `Without an explicit main trigger, @defer defaults to 'idle' and prefetch may have no effect.`;
+      diags.push(
+        ctx.makeTemplateDiagnostic(
+          node.sourceSpan,
+          formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+        ),
+      );
+    }
+
     // If there is exactly one main and at least one prefetch, compare them.
     if (mains.length === 1 && prefetches.length > 0) {
       const main = mains[0];
 
       for (const pre of prefetches) {
-        // Timer vs Timer: warn when prefetch delay >= main delay
-        const isTimerTriggger =
+        // Delay-based pairs (timer/idle): warn when prefetch fires no sooner than main.
+
+        const isTimerPair =
           main instanceof TmplAstTimerDeferredTrigger && pre instanceof TmplAstTimerDeferredTrigger;
-        if (isTimerTriggger) {
-          const mainDelay = main.delay;
-          const preDelay = pre.delay;
-          if (preDelay >= mainDelay) {
-            const msg = `The Prefetch 'timer(${preDelay}ms)' is not scheduled before the main 'timer(${mainDelay}ms)', so it won’t run prior to rendering. Lower the prefetch delay or remove it.`;
-            diags.push(
-              ctx.makeTemplateDiagnostic(
-                pre.sourceSpan ?? node.sourceSpan,
-                formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
-              ),
-            );
+
+        const isIdlePair =
+          main instanceof TmplAstIdleDeferredTrigger && pre instanceof TmplAstIdleDeferredTrigger;
+
+        if (isTimerPair || isIdlePair) {
+          const mainVal = getTimedTriggerValue(main);
+          const preVal = getTimedTriggerValue(pre);
+          const sameUntimedIdle = mainVal == null && preVal == null;
+          const comparableTimedPair = mainVal != null && preVal != null && preVal >= mainVal;
+
+          if (!sameUntimedIdle && !comparableTimedPair) {
+            continue;
           }
+
+          const msg =
+            `The Prefetch '${formatTimedTrigger(pre)}' is not scheduled before the main '${formatTimedTrigger(main)}',` +
+            ` so it won't run prior to rendering. Lower the prefetch timing or remove it.`;
+
+          diags.push(
+            ctx.makeTemplateDiagnostic(
+              pre.sourceSpan ?? node.sourceSpan,
+              formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+            ),
+          );
+
+          continue;
         }
 
-        // Reference-based triggers (hover/interaction/viewport): only warn if both
-        // have a reference and the references are identical. If references differ
-        // (or one is missing), the prefetch targets a different element and
-        // provides potential value.
+        // Reference-based triggers (hover/interaction/viewport): warn if both
+        // have identical configurations - same reference (or both null) and
+        // same options (for viewport triggers).
 
         const isHoverTrigger =
           main instanceof TmplAstHoverDeferredTrigger && pre instanceof TmplAstHoverDeferredTrigger;
@@ -120,9 +201,12 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
           pre instanceof TmplAstViewportDeferredTrigger;
 
         if (isHoverTrigger || isInteractionTrigger || isViewportTrigger) {
-          const mainRef = main.reference;
-          const preRef = pre.reference;
-          if (mainRef && preRef && mainRef === preRef) {
+          const referencesMatch = main.reference === pre.reference;
+          const optionsMatch = isViewportTrigger
+            ? areLiteralMapsEqual(main.options, pre.options)
+            : true;
+
+          if (referencesMatch && optionsMatch) {
             const kindName = main.constructor.name.replace('DeferredTrigger', '').toLowerCase();
             const msg = `Prefetch '${kindName}' matches the main trigger and provides no benefit. Remove the prefetch modifier.`;
             diags.push(
