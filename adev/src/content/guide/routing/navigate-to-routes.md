@@ -137,6 +137,13 @@ export class UserDetail {
     // To:   /users
     this.router.navigate(['..'], {relativeTo: this.route});
   }
+
+  navigateToList() {
+    // Angular resolves the commands array as a single navigation path relative to the current route.
+    // From: /users/123
+    // Result: /users/list
+    this.router.navigate(['..', 'list'], {relativeTo: this.route});
+  }
 }
 ```
 
