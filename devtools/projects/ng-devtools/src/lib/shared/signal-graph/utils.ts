@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DebugSignalGraphNode} from '../../../../../../protocol';
+import {DebugSignalGraphNode} from '../../../../../protocol';
 import {
   DevtoolsClusterNode,
   DevtoolsSignalNode,

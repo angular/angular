@@ -14,7 +14,7 @@ import {PropertyPaneHeaderComponent} from './property-pane-header/property-pane-
 import {DeferViewComponent} from './defer-view/defer-view.component';
 import {PropertyViewComponent} from './property-view/property-view.component';
 import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
-import {DevtoolsSignalGraphNode} from '../signal-graph';
+import {DevtoolsSignalGraphNode} from '../../../shared/signal-graph';
 
 @Component({
   selector: 'ng-property-pane',

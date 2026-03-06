@@ -31,9 +31,9 @@ import {DocsRefButtonComponent} from '../../../../../shared/docs-ref-button/docs
 import {ObjectTreeExplorerComponent} from '../../../../../shared/object-tree-explorer/object-tree-explorer.component';
 import {SUPPORTED_APIS} from '../../../../../application-providers/supported_apis';
 
-import {SignalGraphManager} from '../../../signal-graph/signal-graph-manager';
+import {SignalGraphManager} from '../../../signal-graph-manager/signal-graph-manager';
 import {FlatNode} from '../../../../../shared/object-tree-explorer/object-tree-types';
-import {DevtoolsSignalGraphNode} from '../../../signal-graph';
+import {DevtoolsSignalGraphNode} from '../../../../../shared/signal-graph';
 
 @Component({
   selector: 'ng-property-view-body',

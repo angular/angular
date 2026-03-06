@@ -27,8 +27,8 @@ ng_project(
         "//:node_modules/@types/d3",
         "//:node_modules/d3",
         "//:node_modules/dagre-d3-es",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/ng-devtools/src/lib/shared/signal-graph",
         "//devtools/projects/protocol",
     ],
 )

@@ -11,11 +11,11 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {DataSource} from '@angular/cdk/collections';
 
-import {MessageBus, PropType} from '../../../../../../../../protocol';
-import {DevtoolsSignalNode, SignalGraphManager} from '../../../signal-graph';
+import {ElementPosition, MessageBus, PropType} from '../../../../../../protocol';
+import {DevtoolsSignalNode} from '../../signal-graph';
 import {arrayifyProps, SignalDataSource} from './signal-data-source';
-import {ObjectTreeExplorerComponent} from '../../../../../shared/object-tree-explorer/object-tree-explorer.component';
-import {FlatNode, Property} from '../../../../../shared/object-tree-explorer/object-tree-types';
+import {ObjectTreeExplorerComponent} from '../../object-tree-explorer/object-tree-explorer.component';
+import {FlatNode, Property} from '../../object-tree-explorer/object-tree-types';
 
 @Component({
   selector: 'ng-signal-value-tree',
@@ -25,10 +25,10 @@ import {FlatNode, Property} from '../../../../../shared/object-tree-explorer/obj
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignalValueTreeComponent {
-  private readonly signalGraph = inject(SignalGraphManager);
   private readonly messageBus = inject(MessageBus);
 
   protected readonly node = input.required<DevtoolsSignalNode>();
+  protected readonly element = input.required<ElementPosition>();
 
   protected readonly treeControl = computed<FlatTreeControl<FlatNode>>(() => {
     return new FlatTreeControl(
@@ -59,7 +59,7 @@ export class SignalValueTreeComponent {
         },
       ),
       this.treeControl(),
-      {element: this.signalGraph.element()!, signalId: node.id},
+      {element: this.element(), signalId: node.id},
       this.messageBus,
     );
   });

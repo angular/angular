@@ -9,18 +9,18 @@
 import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 
-import {DebugSignalGraphNode} from '../../../../../../../protocol';
+import {DebugSignalGraphNode, ElementPosition} from '../../../../../protocol';
 import {SignalValueTreeComponent} from './signal-value-tree/signal-value-tree.component';
-import {ButtonComponent} from '../../../../shared/button/button.component';
+import {ButtonComponent} from '../button/button.component';
 import {
   isClusterNode,
   isSignalNode,
   DevtoolsSignalGraphNode,
-  SignalGraphManager,
   DevtoolsClusterNodeType,
   DevtoolsSignalNode,
   DevtoolsClusterNode,
-} from '../../signal-graph';
+  DevtoolsSignalGraph,
+} from '../signal-graph';
 import {MatTooltip} from '@angular/material/tooltip';
 
 const TYPE_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
@@ -52,9 +52,9 @@ interface ResourceCluster {
   imports: [SignalValueTreeComponent, MatIcon, ButtonComponent, MatTooltip],
 })
 export class SignalDetailsComponent {
-  private readonly signalGraph = inject(SignalGraphManager);
-
   protected readonly node = input.required<DevtoolsSignalGraphNode>();
+  protected readonly graph = input.required<DevtoolsSignalGraph>();
+  protected readonly element = input.required<ElementPosition>();
 
   protected readonly gotoSource = output<DevtoolsSignalGraphNode>();
   protected readonly expandCluster = output<string>();
@@ -73,7 +73,7 @@ export class SignalDetailsComponent {
   protected readonly cluster = computed(() => {
     const node = this.node();
     if (isSignalNode(node) && node.clusterId) {
-      return this.signalGraph.graph()?.clusters[node.clusterId]!;
+      return this.graph().clusters[node.clusterId]!;
     }
     return null;
   });
@@ -105,9 +105,7 @@ export class SignalDetailsComponent {
       if (!selectedNode.previewNode) {
         return null;
       }
-      previewableNode = this.signalGraph.graph()?.nodes[
-        selectedNode.previewNode
-      ] as DevtoolsSignalNode;
+      previewableNode = this.graph().nodes[selectedNode.previewNode] as DevtoolsSignalNode;
     } else {
       previewableNode = selectedNode;
     }
@@ -116,10 +114,9 @@ export class SignalDetailsComponent {
   });
 
   private getCompoundNodeValueHof(node: DevtoolsClusterNode) {
-    const compoundNodes = (this.signalGraph
-      .graph()
-      ?.nodes.filter((n) => isSignalNode(n) && n.clusterId === node.id) ||
-      []) as DevtoolsSignalNode[];
+    const compoundNodes = (this.graph().nodes.filter(
+      (n) => isSignalNode(n) && n.clusterId === node.id,
+    ) || []) as DevtoolsSignalNode[];
 
     return (name: string) =>
       compoundNodes?.find((n) => n.label === name)?.preview.preview.replace(/"/g, '');
