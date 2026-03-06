@@ -45,6 +45,9 @@ export interface ControlDirectiveHost<_TPassthroughInput extends string | undefi
    */
   readonly customControl: unknown | undefined;
 
+  /** The native DOM element for the host node, if applicable. */
+  readonly nativeElement: HTMLElement;
+
   /**
    * Registers a listener that will be called when the custom control's value changes.
    *

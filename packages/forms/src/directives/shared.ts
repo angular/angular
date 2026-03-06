@@ -64,7 +64,7 @@ export function controlPath(name: string | null, parent: ControlContainer): stri
  * @param control Form control instance that should be linked.
  * @param dir Directive that should be linked with a given control.
  */
-export function setUpControl(
+export function setUpControlValueAccessor(
   control: FormControl,
   dir: NgControl,
   callSetDisabledState: SetDisabledStateOption = setDisabledStateDefault,
@@ -385,7 +385,7 @@ export function syncPendingControls(
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
   dir: NgControl,
-  valueAccessors: ControlValueAccessor[],
+  valueAccessors: ControlValueAccessor[] | null | undefined,
 ): ControlValueAccessor | null {
   if (!valueAccessors) return null;
 

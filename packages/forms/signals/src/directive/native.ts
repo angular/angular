@@ -6,49 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {type Renderer2, untracked} from '@angular/core';
+import {untracked} from '@angular/core';
 import {NativeInputParseError, WithoutFieldTree} from '../api/rules';
 import type {ParseResult} from '../api/transformed_value';
 
-/**
- * Supported native control element types.
- *
- * The `type` property of a {@link HTMLTextAreaElement} should always be 'textarea', but the
- * TypeScript DOM API type definition lacks this detail, so we include it here.
- *
- * https://developer.mozilla.org/en-US/docs/Web/API/HTMLTextAreaElement/type
- */
-export type NativeFormControl =
-  | HTMLInputElement
-  | HTMLSelectElement
-  | (HTMLTextAreaElement & {type: 'textarea'});
+// Re-export shared native utilities from main forms package
+export {
+  isNativeFormElement,
+  isNumericFormElement,
+  isTextualFormElement,
+  setNativeDomProperty,
+  type NativeFormControl,
+} from '../../../src/directives/native';
 
-export function isNativeFormElement(element: HTMLElement): element is NativeFormControl {
-  return (
-    element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'TEXTAREA'
-  );
-}
-
-export function isNumericFormElement(element: HTMLElement): boolean {
-  if (element.tagName !== 'INPUT') {
-    return false;
-  }
-
-  const type = (element as HTMLInputElement).type;
-  return (
-    type === 'date' ||
-    type === 'datetime-local' ||
-    type === 'month' ||
-    type === 'number' ||
-    type === 'range' ||
-    type === 'time' ||
-    type === 'week'
-  );
-}
-
-export function isTextualFormElement(element: HTMLElement): boolean {
-  return element.tagName === 'INPUT' || element.tagName === 'TEXTAREA';
-}
+import type {NativeFormControl} from '../../../src/directives/native';
 
 /**
  * Returns the value from a native control element.
@@ -162,44 +133,5 @@ export function setNativeNumberControlValue(element: HTMLInputElement, value: nu
     element.value = '';
   } else {
     element.valueAsNumber = value;
-  }
-}
-
-/**
- * Updates the native DOM property on the given node.
- *
- * @param key The control binding key (identifies the property type, e.g. disabled, required).
- * @param name The DOM attribute/property name.
- * @param value The new value for the property.
- */
-export function setNativeDomProperty(
-  renderer: Renderer2,
-  element: NativeFormControl,
-  name: 'name' | 'disabled' | 'required' | 'readonly' | 'min' | 'max' | 'minLength' | 'maxLength',
-  value: string | number | undefined,
-) {
-  switch (name) {
-    case 'name':
-      renderer.setAttribute(element, name, value as string);
-      break;
-    case 'disabled':
-    case 'readonly':
-    case 'required':
-      if (value) {
-        renderer.setAttribute(element, name, '');
-      } else {
-        renderer.removeAttribute(element, name);
-      }
-      break;
-    case 'max':
-    case 'min':
-    case 'minLength':
-    case 'maxLength':
-      if (value !== undefined) {
-        renderer.setAttribute(element, name, value.toString());
-      } else {
-        renderer.removeAttribute(element, name);
-      }
-      break;
   }
 }

@@ -9,15 +9,19 @@ export class MyComponent {
     template: function MyComponent_Template(rf, ctx) {
       if (rf & 1) {
         i0.ɵɵelement(0, "div", 0);
+        i0.ɵɵcontrolCreate();
         i0.ɵɵelementStart(1, "div");
         i0.ɵɵtext(2, "Not a form control either.");
         i0.ɵɵelementEnd();
+        i0.ɵɵcontrolCreate();
         i0.ɵɵelement(3, "input", 1);
         i0.ɵɵcontrolCreate();
       }
       if (rf & 2) {
+        i0.ɵɵcontrol();
         i0.ɵɵadvance();
         i0.ɵɵattribute("formField", ctx.value);
+        i0.ɵɵcontrol();
         i0.ɵɵadvance(2);
         i0.ɵɵproperty("formField", ctx.value);
         i0.ɵɵcontrol();
