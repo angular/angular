@@ -155,6 +155,7 @@ describe('di', () => {
           sanitizer: null,
           changeDetectionScheduler: null,
           ngReflect: false,
+          tracingService: null,
         },
         {} as any,
         null,
