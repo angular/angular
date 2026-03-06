@@ -41,6 +41,7 @@ import {
   RendererFactory2,
   RendererType2,
   Sanitizer,
+  ɵSHARED_STYLES_HOST as SHARED_STYLES_HOST,
   signal,
   TemplateRef,
   ViewChild,
@@ -49,6 +50,7 @@ import {
   ɵsetDocument,
 } from '../../src/core';
 import {ComponentFixture, TestBed, TestComponentRenderer} from '../../testing';
+import {MockSharedStylesHost} from '../../testing/src/mock_shared_styles_host';
 
 describe('ViewContainerRef', () => {
   /**
@@ -698,6 +700,46 @@ describe('ViewContainerRef', () => {
         </div>
         <after></after>
       </ng-template>`);
+    });
+  });
+
+  describe('destroy', () => {
+    // NOTE: We may not necessarily _want_ this to be the case, but it does seem to be necessary
+    // for some amount of Angular code out there. We may want to consider lifting this constraint.
+    it('should not throw if the injector is destroyed before a view is removed', () => {
+      @Component({
+        template: 'View Content',
+        standalone: false,
+      })
+      class DynamicComponent {}
+
+      @Component({
+        template: '<ng-container #vcr></ng-container>',
+        standalone: false,
+      })
+      class App {
+        @ViewChild('vcr', {read: ViewContainerRef, static: true})
+        vcr!: ViewContainerRef;
+      }
+
+      TestBed.configureTestingModule({declarations: [App, DynamicComponent]});
+
+      const envInjector = createEnvironmentInjector([], TestBed.inject(EnvironmentInjector));
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const componentRef = fixture.componentInstance.vcr.createComponent(DynamicComponent, {
+        environmentInjector: envInjector,
+      });
+      fixture.detectChanges();
+
+      // Destroy the environment injector first
+      envInjector.destroy();
+
+      // Should be able to destroy the component afterwards.
+      expect(() => {
+        componentRef.destroy();
+      }).not.toThrow();
     });
   });
 
@@ -1401,6 +1443,8 @@ describe('ViewContainerRef', () => {
         declarations: [EmbeddedViewInsertionComp, VCRefDirective, EmbeddedComponent],
       });
 
+      const mockSharedStylesHost = new MockSharedStylesHost();
+
       @NgModule({
         providers: [
           {provide: String, useValue: 'root_module'},
@@ -1410,11 +1454,19 @@ describe('ViewContainerRef', () => {
           {provide: ErrorHandler, useValue: TestBed.inject(ErrorHandler)},
           {provide: RendererFactory2, useValue: TestBed.inject(RendererFactory2)},
           {provide: ANIMATION_QUEUE, useValue: TestBed.inject(ANIMATION_QUEUE)},
+          {provide: SHARED_STYLES_HOST, useValue: mockSharedStylesHost},
+          {provide: DOCUMENT, useValue: document},
         ],
       })
       class MyAppModule {}
 
-      @NgModule({providers: [{provide: String, useValue: 'some_module'}]})
+      @NgModule({
+        providers: [
+          {provide: String, useValue: 'some_module'},
+          {provide: SHARED_STYLES_HOST, useValue: mockSharedStylesHost},
+          {provide: DOCUMENT, useValue: document},
+        ],
+      })
       class SomeModule {}
 
       // Compile test modules in order to be able to pass the NgModuleRef or the

@@ -33,7 +33,10 @@ import {
   T_HOST,
   TView,
   TVIEW,
+  HOST,
+  ENVIRONMENT,
 } from '../interfaces/view';
+import {getDocument} from '../interfaces/document';
 import {
   addViewToDOM,
   destroyLView,
@@ -116,6 +119,17 @@ export function addLViewToLContainer(
     }
   }
 
+  // To ensure styles are placed on a parent shadow root, we need to register it as a host.
+  const sharedStylesHost = lView[ENVIRONMENT].sharedStylesHost;
+  if (sharedStylesHost) {
+    const host = lView[HOST] ?? lContainer[NATIVE];
+    const rootNode = host.getRootNode?.();
+    const isShadowRoot =
+      rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot;
+    const fallbackHost = lView[ENVIRONMENT].fallbackHost ?? getDocument().head;
+    sharedStylesHost.addHost((isShadowRoot ? rootNode : fallbackHost) as Node);
+  }
+
   // When in hydration mode, reset the pointer to the first child in
   // the dehydrated view. This indicates that the view was hydrated and
   // further attaching/detaching should work with this view as normal.
@@ -153,6 +167,22 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView |
   const viewToDetach = lContainer[indexInContainer];
 
   if (viewToDetach) {
+    const host = viewToDetach[HOST] ?? lContainer[NATIVE];
+
+    // Defensive check, sometimes a view may be detached multiple times through direct
+    // lifecycle management in user code.
+    if (host.isConnected) {
+      const sharedStylesHost = viewToDetach[ENVIRONMENT].sharedStylesHost;
+      if (sharedStylesHost) {
+        // Undo the `SharedStylesHost` registration.
+        const rootNode = host.getRootNode?.();
+        const isShadowRoot =
+          rootNode && typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot;
+        const fallbackHost = viewToDetach[ENVIRONMENT].fallbackHost ?? getDocument().head;
+        sharedStylesHost.removeHost((isShadowRoot ? rootNode : fallbackHost) as Node);
+      }
+    }
+
     const declarationLContainer = viewToDetach[DECLARATION_LCONTAINER];
     if (declarationLContainer !== null && declarationLContainer !== lContainer) {
       detachMovedView(declarationLContainer, viewToDetach);

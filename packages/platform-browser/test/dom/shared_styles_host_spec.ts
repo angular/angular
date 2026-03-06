@@ -34,6 +34,26 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).toEqual('<style>a {};</style>');
     });
 
+    it('should track the same host added multiple times', () => {
+      // Add same host twice.
+      ssh.addHost(someHost);
+      ssh.addHost(someHost);
+
+      // Styles are added to host.
+      ssh.addStyles(['a {};']);
+      expect(someHost.innerHTML).toContain('<style>a {};</style>');
+
+      // Only remove host once, styles should continue to be added.
+      ssh.removeHost(someHost);
+      ssh.addStyles(['b {};']);
+      expect(someHost.innerHTML).toContain('<style>b {};</style>');
+
+      // Remove host second time, new styles are no longer added.
+      ssh.removeHost(someHost);
+      ssh.addStyles(['c {};']);
+      expect(someHost.innerHTML).not.toContain('<style>c {};</style>');
+    });
+
     it('should add styles only once to hosts', () => {
       ssh.addStyles(['a {};']);
       ssh.addHost(someHost);
@@ -41,7 +61,8 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).toEqual('<style>a {};</style>');
     });
 
-    it('should use the document head as default host', () => {
+    it('should allow adding the document head as a host', () => {
+      ssh.addHost(doc.head);
       ssh.addStyles(['a {};', 'b {};']);
       expect(doc.head).toHaveText('a {};b {};');
     });
@@ -88,6 +109,26 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).toEqual('<link rel="stylesheet" href="component-1.css">');
     });
 
+    it('should track the same host added multiple times', () => {
+      // Add same host twice.
+      ssh.addHost(someHost);
+      ssh.addHost(someHost);
+
+      // Styles are added to host.
+      ssh.addStyles([], ['component-1.css']);
+      expect(someHost.innerHTML).toContain('<link rel="stylesheet" href="component-1.css">');
+
+      // Only remove host once, styles should continue to be added.
+      ssh.removeHost(someHost);
+      ssh.addStyles([], ['component-2.css']);
+      expect(someHost.innerHTML).toContain('<link rel="stylesheet" href="component-2.css">');
+
+      // Remove host second time, new styles are no longer added.
+      ssh.removeHost(someHost);
+      ssh.addStyles([], ['component-3.css']);
+      expect(someHost.innerHTML).not.toContain('<link rel="stylesheet" href="component-3.css">');
+    });
+
     it('should add styles only once to hosts', () => {
       ssh.addStyles([], ['component-1.css']);
       ssh.addHost(someHost);
@@ -95,7 +136,8 @@ describe('SharedStylesHost', () => {
       expect(someHost.innerHTML).toEqual('<link rel="stylesheet" href="component-1.css">');
     });
 
-    it('should use the document head as default host', () => {
+    it('should allow adding the document head as a host', () => {
+      ssh.addHost(doc.head);
       ssh.addStyles([], ['component-1.css', 'component-2.css']);
       expect(doc.head.innerHTML).toContain('<link rel="stylesheet" href="component-1.css">');
       expect(doc.head.innerHTML).toContain('<link rel="stylesheet" href="component-2.css">');

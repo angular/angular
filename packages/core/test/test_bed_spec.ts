@@ -55,6 +55,7 @@ import {DeferBlockBehavior} from '../testing';
 import {TestBed, TestBedImpl} from '../testing/src/test_bed';
 
 import {NgModuleType} from '../src/render3';
+import {getDocument} from '../src/render3/interfaces/document';
 import {depsTracker} from '../src/render3/deps_tracker/deps_tracker';
 import {setClassMetadataAsync} from '../src/render3/metadata';
 import {
@@ -2703,8 +2704,7 @@ describe('TestBed module teardown', () => {
     });
 
     const fixtures = [TestBed.createComponent(StyledComp1), TestBed.createComponent(StyledComp2)];
-    const fixtureDocument = fixtures[0].nativeElement.ownerDocument;
-    const styleCountBefore = fixtureDocument.querySelectorAll('style').length;
+    const styleCountBefore = getDocument().querySelectorAll('style').length;
 
     // Note that we can only assert that the behavior works as expected by checking that the
     // number of stylesheets has decreased. We can't expect that they'll be zero, because there
@@ -2712,7 +2712,7 @@ describe('TestBed module teardown', () => {
     // behavior.
     expect(styleCountBefore).toBeGreaterThan(0);
     TestBed.resetTestingModule();
-    expect(fixtureDocument.querySelectorAll('style').length).toBeLessThan(styleCountBefore);
+    expect(getDocument().querySelectorAll('style').length).toBeLessThan(styleCountBefore);
   });
 
   it('should rethrow errors based on the default teardown behavior', () => {

@@ -35,6 +35,7 @@ import {noop} from '../../src/util/noop';
 import {getRendererFactory2} from './imported_renderer2';
 import {createTNode} from '../../src/render3/tnode_manipulation';
 import {createLView, createTView} from '../../src/render3/view/construction';
+import {ɵMockSharedStylesHost as MockSharedStylesHost} from '@angular/core/testing';
 
 /**
  * Fixture useful for testing operations which need `LView` / `TView`
@@ -117,6 +118,8 @@ export class ViewFixture {
         sanitizer: sanitizer || null,
         changeDetectionScheduler: null,
         ngReflect: false,
+        sharedStylesHost: new MockSharedStylesHost(),
+        fallbackHost: document,
       },
       hostRenderer,
       null,
