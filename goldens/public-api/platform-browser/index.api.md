@@ -97,48 +97,6 @@ export abstract class EventManagerPlugin {
     abstract supports(eventName: string): boolean;
 }
 
-// @public @deprecated
-export const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
-
-// @public @deprecated
-export const HAMMER_LOADER: InjectionToken<HammerLoader>;
-
-// @public @deprecated
-export class HammerGestureConfig {
-    buildHammer(element: HTMLElement): HammerInstance;
-    events: string[];
-    options?: {
-        cssProps?: any;
-        domEvents?: boolean;
-        enable?: boolean | ((manager: any) => boolean);
-        preset?: any[];
-        touchAction?: string;
-        recognizers?: any[];
-        inputClass?: any;
-        inputTarget?: EventTarget;
-    };
-    overrides: {
-        [key: string]: Object;
-    };
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<HammerGestureConfig, never>;
-    // (undocumented)
-    static ɵprov: i0.ɵɵInjectableDeclaration<HammerGestureConfig>;
-}
-
-// @public @deprecated
-export type HammerLoader = () => Promise<void>;
-
-// @public @deprecated
-export class HammerModule {
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<HammerModule, never>;
-    // (undocumented)
-    static ɵinj: i0.ɵɵInjectorDeclaration<HammerModule>;
-    // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<HammerModule, never, never, never>;
-}
-
 // @public
 export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
     // (undocumented)
