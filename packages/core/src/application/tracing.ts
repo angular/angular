@@ -64,4 +64,11 @@ export interface TracingService<T extends TracingSnapshot> {
    * @return A new event handler to be bound instead of the original one.
    */
   wrapEventListener?<T extends Function>(element: HTMLElement, eventName: string, handler: T): T;
+
+  /**
+   * Trace the creation of a component instance.
+   * @param className Name of the component. May be null if the class is anonymous.
+   * @param fn Function that creates the component instance.
+   */
+  componentCreate?<T>(className: string | null, fn: () => T): T;
 }
