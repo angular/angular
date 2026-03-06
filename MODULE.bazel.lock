@@ -1093,7 +1093,7 @@
     "@@rules_nodejs+//nodejs:extensions.bzl%node": {
       "general": {
         "bzlTransitiveDigest": "4pUxCNc22K4I+6+4Nxu52Hur12tFRfa1JMsN5mdDv60=",
-        "usagesDigest": "KPrVC20EpmNLHQSGRGsz6ZB7N+diCkGcvOuEi2g5ZCI=",
+        "usagesDigest": "I93v6Pvyg7085aIL9doDSavAwSMXIfuzVr5+cc0aGnI=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -1103,46 +1103,46 @@
             "attributes": {
               "node_download_auth": {},
               "node_repositories": {
-                "22.22.0-darwin_arm64": [
-                  "node-v22.22.0-darwin-arm64.tar.gz",
-                  "node-v22.22.0-darwin-arm64",
-                  "5ed4db0fcf1eaf84d91ad12462631d73bf4576c1377e192d222e48026a902640"
+                "22.22.1-darwin_arm64": [
+                  "node-v22.22.1-darwin-arm64.tar.gz",
+                  "node-v22.22.1-darwin-arm64",
+                  "679ad4966339e4ef4900f57996714864e4211b898825bb840c3086c419fbcef2"
                 ],
-                "22.22.0-darwin_amd64": [
-                  "node-v22.22.0-darwin-x64.tar.gz",
-                  "node-v22.22.0-darwin-x64",
-                  "5ea50c9d6dea3dfa3abb66b2656f7a4e1c8cef23432b558d45fb538c7b5dedce"
+                "22.22.1-darwin_amd64": [
+                  "node-v22.22.1-darwin-x64.tar.gz",
+                  "node-v22.22.1-darwin-x64",
+                  "07b13722d558790fca20bb1ecf61bde24b7a4863111f7be77fc57251a407359a"
                 ],
-                "22.22.0-linux_arm64": [
-                  "node-v22.22.0-linux-arm64.tar.xz",
-                  "node-v22.22.0-linux-arm64",
-                  "1bf1eb9ee63ffc4e5d324c0b9b62cf4a289f44332dfef9607cea1a0d9596ba6f"
+                "22.22.1-linux_arm64": [
+                  "node-v22.22.1-linux-arm64.tar.xz",
+                  "node-v22.22.1-linux-arm64",
+                  "0f3550d58d45e5d3cf7103d9e3f69937f09fe82fb5dd474c66a5d816fa58c9ee"
                 ],
-                "22.22.0-linux_ppc64le": [
-                  "node-v22.22.0-linux-ppc64le.tar.xz",
-                  "node-v22.22.0-linux-ppc64le",
-                  "d83b9957431cc18e1fc143a4b99f89cde7b8a18f53ef392231b4336afd058865"
+                "22.22.1-linux_ppc64le": [
+                  "node-v22.22.1-linux-ppc64le.tar.xz",
+                  "node-v22.22.1-linux-ppc64le",
+                  "a65a44cf0224505f052b90357b763dbc1ea9148f4f5f2284f0596cf2000f819b"
                 ],
-                "22.22.0-linux_s390x": [
-                  "node-v22.22.0-linux-s390x.tar.xz",
-                  "node-v22.22.0-linux-s390x",
-                  "5aa0e520689448c4233e8d73f284e8e0634fdcd32b479735698494be5641f3e4"
+                "22.22.1-linux_s390x": [
+                  "node-v22.22.1-linux-s390x.tar.xz",
+                  "node-v22.22.1-linux-s390x",
+                  "e08b3a73d0bd840e008f589e4be4a2ef3d4a0c59015f4f20a04ed7fc968042a2"
                 ],
-                "22.22.0-linux_amd64": [
-                  "node-v22.22.0-linux-x64.tar.xz",
-                  "node-v22.22.0-linux-x64",
-                  "9aa8e9d2298ab68c600bd6fb86a6c13bce11a4eca1ba9b39d79fa021755d7c37"
+                "22.22.1-linux_amd64": [
+                  "node-v22.22.1-linux-x64.tar.xz",
+                  "node-v22.22.1-linux-x64",
+                  "9a6bc82f9b491279147219f6a18add1e18424dce90d41d2a5fcd69d4924ba3aa"
                 ],
-                "22.22.0-windows_amd64": [
-                  "node-v22.22.0-win-x64.zip",
-                  "node-v22.22.0-win-x64",
-                  "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a"
+                "22.22.1-windows_amd64": [
+                  "node-v22.22.1-win-x64.zip",
+                  "node-v22.22.1-win-x64",
+                  "877cb93829e14fffbbc7903e7d8037336c9a79f3ea43c5d0b8c2379b79da56de"
                 ]
               },
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.22.0",
+              "node_version": "22.22.1",
               "include_headers": false,
               "platform": "linux_amd64"
             }
@@ -1152,46 +1152,46 @@
             "attributes": {
               "node_download_auth": {},
               "node_repositories": {
-                "22.22.0-darwin_arm64": [
-                  "node-v22.22.0-darwin-arm64.tar.gz",
-                  "node-v22.22.0-darwin-arm64",
-                  "5ed4db0fcf1eaf84d91ad12462631d73bf4576c1377e192d222e48026a902640"
+                "22.22.1-darwin_arm64": [
+                  "node-v22.22.1-darwin-arm64.tar.gz",
+                  "node-v22.22.1-darwin-arm64",
+                  "679ad4966339e4ef4900f57996714864e4211b898825bb840c3086c419fbcef2"
                 ],
-                "22.22.0-darwin_amd64": [
-                  "node-v22.22.0-darwin-x64.tar.gz",
-                  "node-v22.22.0-darwin-x64",
-                  "5ea50c9d6dea3dfa3abb66b2656f7a4e1c8cef23432b558d45fb538c7b5dedce"
+                "22.22.1-darwin_amd64": [
+                  "node-v22.22.1-darwin-x64.tar.gz",
+                  "node-v22.22.1-darwin-x64",
+                  "07b13722d558790fca20bb1ecf61bde24b7a4863111f7be77fc57251a407359a"
                 ],
-                "22.22.0-linux_arm64": [
-                  "node-v22.22.0-linux-arm64.tar.xz",
-                  "node-v22.22.0-linux-arm64",
-                  "1bf1eb9ee63ffc4e5d324c0b9b62cf4a289f44332dfef9607cea1a0d9596ba6f"
+                "22.22.1-linux_arm64": [
+                  "node-v22.22.1-linux-arm64.tar.xz",
+                  "node-v22.22.1-linux-arm64",
+                  "0f3550d58d45e5d3cf7103d9e3f69937f09fe82fb5dd474c66a5d816fa58c9ee"
                 ],
-                "22.22.0-linux_ppc64le": [
-                  "node-v22.22.0-linux-ppc64le.tar.xz",
-                  "node-v22.22.0-linux-ppc64le",
-                  "d83b9957431cc18e1fc143a4b99f89cde7b8a18f53ef392231b4336afd058865"
+                "22.22.1-linux_ppc64le": [
+                  "node-v22.22.1-linux-ppc64le.tar.xz",
+                  "node-v22.22.1-linux-ppc64le",
+                  "a65a44cf0224505f052b90357b763dbc1ea9148f4f5f2284f0596cf2000f819b"
                 ],
-                "22.22.0-linux_s390x": [
-                  "node-v22.22.0-linux-s390x.tar.xz",
-                  "node-v22.22.0-linux-s390x",
-                  "5aa0e520689448c4233e8d73f284e8e0634fdcd32b479735698494be5641f3e4"
+                "22.22.1-linux_s390x": [
+                  "node-v22.22.1-linux-s390x.tar.xz",
+                  "node-v22.22.1-linux-s390x",
+                  "e08b3a73d0bd840e008f589e4be4a2ef3d4a0c59015f4f20a04ed7fc968042a2"
                 ],
-                "22.22.0-linux_amd64": [
-                  "node-v22.22.0-linux-x64.tar.xz",
-                  "node-v22.22.0-linux-x64",
-                  "9aa8e9d2298ab68c600bd6fb86a6c13bce11a4eca1ba9b39d79fa021755d7c37"
+                "22.22.1-linux_amd64": [
+                  "node-v22.22.1-linux-x64.tar.xz",
+                  "node-v22.22.1-linux-x64",
+                  "9a6bc82f9b491279147219f6a18add1e18424dce90d41d2a5fcd69d4924ba3aa"
                 ],
-                "22.22.0-windows_amd64": [
-                  "node-v22.22.0-win-x64.zip",
-                  "node-v22.22.0-win-x64",
-                  "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a"
+                "22.22.1-windows_amd64": [
+                  "node-v22.22.1-win-x64.zip",
+                  "node-v22.22.1-win-x64",
+                  "877cb93829e14fffbbc7903e7d8037336c9a79f3ea43c5d0b8c2379b79da56de"
                 ]
               },
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.22.0",
+              "node_version": "22.22.1",
               "include_headers": false,
               "platform": "linux_arm64"
             }
@@ -1201,46 +1201,46 @@
             "attributes": {
               "node_download_auth": {},
               "node_repositories": {
-                "22.22.0-darwin_arm64": [
-                  "node-v22.22.0-darwin-arm64.tar.gz",
-                  "node-v22.22.0-darwin-arm64",
-                  "5ed4db0fcf1eaf84d91ad12462631d73bf4576c1377e192d222e48026a902640"
+                "22.22.1-darwin_arm64": [
+                  "node-v22.22.1-darwin-arm64.tar.gz",
+                  "node-v22.22.1-darwin-arm64",
+                  "679ad4966339e4ef4900f57996714864e4211b898825bb840c3086c419fbcef2"
                 ],
-                "22.22.0-darwin_amd64": [
-                  "node-v22.22.0-darwin-x64.tar.gz",
-                  "node-v22.22.0-darwin-x64",
-                  "5ea50c9d6dea3dfa3abb66b2656f7a4e1c8cef23432b558d45fb538c7b5dedce"
+                "22.22.1-darwin_amd64": [
+                  "node-v22.22.1-darwin-x64.tar.gz",
+                  "node-v22.22.1-darwin-x64",
+                  "07b13722d558790fca20bb1ecf61bde24b7a4863111f7be77fc57251a407359a"
                 ],
-                "22.22.0-linux_arm64": [
-                  "node-v22.22.0-linux-arm64.tar.xz",
-                  "node-v22.22.0-linux-arm64",
-                  "1bf1eb9ee63ffc4e5d324c0b9b62cf4a289f44332dfef9607cea1a0d9596ba6f"
+                "22.22.1-linux_arm64": [
+                  "node-v22.22.1-linux-arm64.tar.xz",
+                  "node-v22.22.1-linux-arm64",
+                  "0f3550d58d45e5d3cf7103d9e3f69937f09fe82fb5dd474c66a5d816fa58c9ee"
                 ],
-                "22.22.0-linux_ppc64le": [
-                  "node-v22.22.0-linux-ppc64le.tar.xz",
-                  "node-v22.22.0-linux-ppc64le",
-                  "d83b9957431cc18e1fc143a4b99f89cde7b8a18f53ef392231b4336afd058865"
+                "22.22.1-linux_ppc64le": [
+                  "node-v22.22.1-linux-ppc64le.tar.xz",
+                  "node-v22.22.1-linux-ppc64le",
+                  "a65a44cf0224505f052b90357b763dbc1ea9148f4f5f2284f0596cf2000f819b"
                 ],
-                "22.22.0-linux_s390x": [
-                  "node-v22.22.0-linux-s390x.tar.xz",
-                  "node-v22.22.0-linux-s390x",
-                  "5aa0e520689448c4233e8d73f284e8e0634fdcd32b479735698494be5641f3e4"
+                "22.22.1-linux_s390x": [
+                  "node-v22.22.1-linux-s390x.tar.xz",
+                  "node-v22.22.1-linux-s390x",
+                  "e08b3a73d0bd840e008f589e4be4a2ef3d4a0c59015f4f20a04ed7fc968042a2"
                 ],
-                "22.22.0-linux_amd64": [
-                  "node-v22.22.0-linux-x64.tar.xz",
-                  "node-v22.22.0-linux-x64",
-                  "9aa8e9d2298ab68c600bd6fb86a6c13bce11a4eca1ba9b39d79fa021755d7c37"
+                "22.22.1-linux_amd64": [
+                  "node-v22.22.1-linux-x64.tar.xz",
+                  "node-v22.22.1-linux-x64",
+                  "9a6bc82f9b491279147219f6a18add1e18424dce90d41d2a5fcd69d4924ba3aa"
                 ],
-                "22.22.0-windows_amd64": [
-                  "node-v22.22.0-win-x64.zip",
-                  "node-v22.22.0-win-x64",
-                  "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a"
+                "22.22.1-windows_amd64": [
+                  "node-v22.22.1-win-x64.zip",
+                  "node-v22.22.1-win-x64",
+                  "877cb93829e14fffbbc7903e7d8037336c9a79f3ea43c5d0b8c2379b79da56de"
                 ]
               },
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.22.0",
+              "node_version": "22.22.1",
               "include_headers": false,
               "platform": "linux_s390x"
             }
@@ -1250,46 +1250,46 @@
             "attributes": {
               "node_download_auth": {},
               "node_repositories": {
-                "22.22.0-darwin_arm64": [
-                  "node-v22.22.0-darwin-arm64.tar.gz",
-                  "node-v22.22.0-darwin-arm64",
-                  "5ed4db0fcf1eaf84d91ad12462631d73bf4576c1377e192d222e48026a902640"
+                "22.22.1-darwin_arm64": [
+                  "node-v22.22.1-darwin-arm64.tar.gz",
+                  "node-v22.22.1-darwin-arm64",
+                  "679ad4966339e4ef4900f57996714864e4211b898825bb840c3086c419fbcef2"
                 ],
-                "22.22.0-darwin_amd64": [
-                  "node-v22.22.0-darwin-x64.tar.gz",
-                  "node-v22.22.0-darwin-x64",
-                  "5ea50c9d6dea3dfa3abb66b2656f7a4e1c8cef23432b558d45fb538c7b5dedce"
+                "22.22.1-darwin_amd64": [
+                  "node-v22.22.1-darwin-x64.tar.gz",
+                  "node-v22.22.1-darwin-x64",
+                  "07b13722d558790fca20bb1ecf61bde24b7a4863111f7be77fc57251a407359a"
                 ],
-                "22.22.0-linux_arm64": [
-                  "node-v22.22.0-linux-arm64.tar.xz",
-                  "node-v22.22.0-linux-arm64",
-                  "1bf1eb9ee63ffc4e5d324c0b9b62cf4a289f44332dfef9607cea1a0d9596ba6f"
+                "22.22.1-linux_arm64": [
+                  "node-v22.22.1-linux-arm64.tar.xz",
+                  "node-v22.22.1-linux-arm64",
+                  "0f3550d58d45e5d3cf7103d9e3f69937f09fe82fb5dd474c66a5d816fa58c9ee"
                 ],
-                "22.22.0-linux_ppc64le": [
-                  "node-v22.22.0-linux-ppc64le.tar.xz",
-                  "node-v22.22.0-linux-ppc64le",
-                  "d83b9957431cc18e1fc143a4b99f89cde7b8a18f53ef392231b4336afd058865"
+                "22.22.1-linux_ppc64le": [
+                  "node-v22.22.1-linux-ppc64le.tar.xz",
+                  "node-v22.22.1-linux-ppc64le",
+                  "a65a44cf0224505f052b90357b763dbc1ea9148f4f5f2284f0596cf2000f819b"
                 ],
-                "22.22.0-linux_s390x": [
-                  "node-v22.22.0-linux-s390x.tar.xz",
-                  "node-v22.22.0-linux-s390x",
-                  "5aa0e520689448c4233e8d73f284e8e0634fdcd32b479735698494be5641f3e4"
+                "22.22.1-linux_s390x": [
+                  "node-v22.22.1-linux-s390x.tar.xz",
+                  "node-v22.22.1-linux-s390x",
+                  "e08b3a73d0bd840e008f589e4be4a2ef3d4a0c59015f4f20a04ed7fc968042a2"
                 ],
-                "22.22.0-linux_amd64": [
-                  "node-v22.22.0-linux-x64.tar.xz",
-                  "node-v22.22.0-linux-x64",
-                  "9aa8e9d2298ab68c600bd6fb86a6c13bce11a4eca1ba9b39d79fa021755d7c37"
+                "22.22.1-linux_amd64": [
+                  "node-v22.22.1-linux-x64.tar.xz",
+                  "node-v22.22.1-linux-x64",
+                  "9a6bc82f9b491279147219f6a18add1e18424dce90d41d2a5fcd69d4924ba3aa"
                 ],
-                "22.22.0-windows_amd64": [
-                  "node-v22.22.0-win-x64.zip",
-                  "node-v22.22.0-win-x64",
-                  "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a"
+                "22.22.1-windows_amd64": [
+                  "node-v22.22.1-win-x64.zip",
+                  "node-v22.22.1-win-x64",
+                  "877cb93829e14fffbbc7903e7d8037336c9a79f3ea43c5d0b8c2379b79da56de"
                 ]
               },
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.22.0",
+              "node_version": "22.22.1",
               "include_headers": false,
               "platform": "linux_ppc64le"
             }
@@ -1299,46 +1299,46 @@
             "attributes": {
               "node_download_auth": {},
               "node_repositories": {
-                "22.22.0-darwin_arm64": [
-                  "node-v22.22.0-darwin-arm64.tar.gz",
-                  "node-v22.22.0-darwin-arm64",
-                  "5ed4db0fcf1eaf84d91ad12462631d73bf4576c1377e192d222e48026a902640"
+                "22.22.1-darwin_arm64": [
+                  "node-v22.22.1-darwin-arm64.tar.gz",
+                  "node-v22.22.1-darwin-arm64",
+                  "679ad4966339e4ef4900f57996714864e4211b898825bb840c3086c419fbcef2"
                 ],
-                "22.22.0-darwin_amd64": [
-                  "node-v22.22.0-darwin-x64.tar.gz",
-                  "node-v22.22.0-darwin-x64",
-                  "5ea50c9d6dea3dfa3abb66b2656f7a4e1c8cef23432b558d45fb538c7b5dedce"
+                "22.22.1-darwin_amd64": [
+                  "node-v22.22.1-darwin-x64.tar.gz",
+                  "node-v22.22.1-darwin-x64",
+                  "07b13722d558790fca20bb1ecf61bde24b7a4863111f7be77fc57251a407359a"
                 ],
-                "22.22.0-linux_arm64": [
-                  "node-v22.22.0-linux-arm64.tar.xz",
-                  "node-v22.22.0-linux-arm64",
-                  "1bf1eb9ee63ffc4e5d324c0b9b62cf4a289f44332dfef9607cea1a0d9596ba6f"
+                "22.22.1-linux_arm64": [
+                  "node-v22.22.1-linux-arm64.tar.xz",
+                  "node-v22.22.1-linux-arm64",
+                  "0f3550d58d45e5d3cf7103d9e3f69937f09fe82fb5dd474c66a5d816fa58c9ee"
                 ],
-                "22.22.0-linux_ppc64le": [
-                  "node-v22.22.0-linux-ppc64le.tar.xz",
-                  "node-v22.22.0-linux-ppc64le",
-                  "d83b9957431cc18e1fc143a4b99f89cde7b8a18f53ef392231b4336afd058865"
+                "22.22.1-linux_ppc64le": [
+                  "node-v22.22.1-linux-ppc64le.tar.xz",
+                  "node-v22.22.1-linux-ppc64le",
+                  "a65a44cf0224505f052b90357b763dbc1ea9148f4f5f2284f0596cf2000f819b"
                 ],
-                "22.22.0-linux_s390x": [
-                  "node-v22.22.0-linux-s390x.tar.xz",
-                  "node-v22.22.0-linux-s390x",
-                  "5aa0e520689448c4233e8d73f284e8e0634fdcd32b479735698494be5641f3e4"
+                "22.22.1-linux_s390x": [
+                  "node-v22.22.1-linux-s390x.tar.xz",
+                  "node-v22.22.1-linux-s390x",
+                  "e08b3a73d0bd840e008f589e4be4a2ef3d4a0c59015f4f20a04ed7fc968042a2"
                 ],
-                "22.22.0-linux_amd64": [
-                  "node-v22.22.0-linux-x64.tar.xz",
-                  "node-v22.22.0-linux-x64",
-                  "9aa8e9d2298ab68c600bd6fb86a6c13bce11a4eca1ba9b39d79fa021755d7c37"
+                "22.22.1-linux_amd64": [
+                  "node-v22.22.1-linux-x64.tar.xz",
+                  "node-v22.22.1-linux-x64",
+                  "9a6bc82f9b491279147219f6a18add1e18424dce90d41d2a5fcd69d4924ba3aa"
                 ],
-                "22.22.0-windows_amd64": [
-                  "node-v22.22.0-win-x64.zip",
-                  "node-v22.22.0-win-x64",
-                  "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a"
+                "22.22.1-windows_amd64": [
+                  "node-v22.22.1-win-x64.zip",
+                  "node-v22.22.1-win-x64",
+                  "877cb93829e14fffbbc7903e7d8037336c9a79f3ea43c5d0b8c2379b79da56de"
                 ]
               },
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.22.0",
+              "node_version": "22.22.1",
               "include_headers": false,
               "platform": "darwin_amd64"
             }
@@ -1348,46 +1348,46 @@
             "attributes": {
               "node_download_auth": {},
               "node_repositories": {
-                "22.22.0-darwin_arm64": [
-                  "node-v22.22.0-darwin-arm64.tar.gz",
-                  "node-v22.22.0-darwin-arm64",
-                  "5ed4db0fcf1eaf84d91ad12462631d73bf4576c1377e192d222e48026a902640"
+                "22.22.1-darwin_arm64": [
+                  "node-v22.22.1-darwin-arm64.tar.gz",
+                  "node-v22.22.1-darwin-arm64",
+                  "679ad4966339e4ef4900f57996714864e4211b898825bb840c3086c419fbcef2"
                 ],
-                "22.22.0-darwin_amd64": [
-                  "node-v22.22.0-darwin-x64.tar.gz",
-                  "node-v22.22.0-darwin-x64",
-                  "5ea50c9d6dea3dfa3abb66b2656f7a4e1c8cef23432b558d45fb538c7b5dedce"
+                "22.22.1-darwin_amd64": [
+                  "node-v22.22.1-darwin-x64.tar.gz",
+                  "node-v22.22.1-darwin-x64",
+                  "07b13722d558790fca20bb1ecf61bde24b7a4863111f7be77fc57251a407359a"
                 ],
-                "22.22.0-linux_arm64": [
-                  "node-v22.22.0-linux-arm64.tar.xz",
-                  "node-v22.22.0-linux-arm64",
-                  "1bf1eb9ee63ffc4e5d324c0b9b62cf4a289f44332dfef9607cea1a0d9596ba6f"
+                "22.22.1-linux_arm64": [
+                  "node-v22.22.1-linux-arm64.tar.xz",
+                  "node-v22.22.1-linux-arm64",
+                  "0f3550d58d45e5d3cf7103d9e3f69937f09fe82fb5dd474c66a5d816fa58c9ee"
                 ],
-                "22.22.0-linux_ppc64le": [
-                  "node-v22.22.0-linux-ppc64le.tar.xz",
-                  "node-v22.22.0-linux-ppc64le",
-                  "d83b9957431cc18e1fc143a4b99f89cde7b8a18f53ef392231b4336afd058865"
+                "22.22.1-linux_ppc64le": [
+                  "node-v22.22.1-linux-ppc64le.tar.xz",
+                  "node-v22.22.1-linux-ppc64le",
+                  "a65a44cf0224505f052b90357b763dbc1ea9148f4f5f2284f0596cf2000f819b"
                 ],
-                "22.22.0-linux_s390x": [
-                  "node-v22.22.0-linux-s390x.tar.xz",
-                  "node-v22.22.0-linux-s390x",
-                  "5aa0e520689448c4233e8d73f284e8e0634fdcd32b479735698494be5641f3e4"
+                "22.22.1-linux_s390x": [
+                  "node-v22.22.1-linux-s390x.tar.xz",
+                  "node-v22.22.1-linux-s390x",
+                  "e08b3a73d0bd840e008f589e4be4a2ef3d4a0c59015f4f20a04ed7fc968042a2"
                 ],
-                "22.22.0-linux_amd64": [
-                  "node-v22.22.0-linux-x64.tar.xz",
-                  "node-v22.22.0-linux-x64",
-                  "9aa8e9d2298ab68c600bd6fb86a6c13bce11a4eca1ba9b39d79fa021755d7c37"
+                "22.22.1-linux_amd64": [
+                  "node-v22.22.1-linux-x64.tar.xz",
+                  "node-v22.22.1-linux-x64",
+                  "9a6bc82f9b491279147219f6a18add1e18424dce90d41d2a5fcd69d4924ba3aa"
                 ],
-                "22.22.0-windows_amd64": [
-                  "node-v22.22.0-win-x64.zip",
-                  "node-v22.22.0-win-x64",
-                  "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a"
+                "22.22.1-windows_amd64": [
+                  "node-v22.22.1-win-x64.zip",
+                  "node-v22.22.1-win-x64",
+                  "877cb93829e14fffbbc7903e7d8037336c9a79f3ea43c5d0b8c2379b79da56de"
                 ]
               },
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.22.0",
+              "node_version": "22.22.1",
               "include_headers": false,
               "platform": "darwin_arm64"
             }
@@ -1397,46 +1397,46 @@
             "attributes": {
               "node_download_auth": {},
               "node_repositories": {
-                "22.22.0-darwin_arm64": [
-                  "node-v22.22.0-darwin-arm64.tar.gz",
-                  "node-v22.22.0-darwin-arm64",
-                  "5ed4db0fcf1eaf84d91ad12462631d73bf4576c1377e192d222e48026a902640"
+                "22.22.1-darwin_arm64": [
+                  "node-v22.22.1-darwin-arm64.tar.gz",
+                  "node-v22.22.1-darwin-arm64",
+                  "679ad4966339e4ef4900f57996714864e4211b898825bb840c3086c419fbcef2"
                 ],
-                "22.22.0-darwin_amd64": [
-                  "node-v22.22.0-darwin-x64.tar.gz",
-                  "node-v22.22.0-darwin-x64",
-                  "5ea50c9d6dea3dfa3abb66b2656f7a4e1c8cef23432b558d45fb538c7b5dedce"
+                "22.22.1-darwin_amd64": [
+                  "node-v22.22.1-darwin-x64.tar.gz",
+                  "node-v22.22.1-darwin-x64",
+                  "07b13722d558790fca20bb1ecf61bde24b7a4863111f7be77fc57251a407359a"
                 ],
-                "22.22.0-linux_arm64": [
-                  "node-v22.22.0-linux-arm64.tar.xz",
-                  "node-v22.22.0-linux-arm64",
-                  "1bf1eb9ee63ffc4e5d324c0b9b62cf4a289f44332dfef9607cea1a0d9596ba6f"
+                "22.22.1-linux_arm64": [
+                  "node-v22.22.1-linux-arm64.tar.xz",
+                  "node-v22.22.1-linux-arm64",
+                  "0f3550d58d45e5d3cf7103d9e3f69937f09fe82fb5dd474c66a5d816fa58c9ee"
                 ],
-                "22.22.0-linux_ppc64le": [
-                  "node-v22.22.0-linux-ppc64le.tar.xz",
-                  "node-v22.22.0-linux-ppc64le",
-                  "d83b9957431cc18e1fc143a4b99f89cde7b8a18f53ef392231b4336afd058865"
+                "22.22.1-linux_ppc64le": [
+                  "node-v22.22.1-linux-ppc64le.tar.xz",
+                  "node-v22.22.1-linux-ppc64le",
+                  "a65a44cf0224505f052b90357b763dbc1ea9148f4f5f2284f0596cf2000f819b"
                 ],
-                "22.22.0-linux_s390x": [
-                  "node-v22.22.0-linux-s390x.tar.xz",
-                  "node-v22.22.0-linux-s390x",
-                  "5aa0e520689448c4233e8d73f284e8e0634fdcd32b479735698494be5641f3e4"
+                "22.22.1-linux_s390x": [
+                  "node-v22.22.1-linux-s390x.tar.xz",
+                  "node-v22.22.1-linux-s390x",
+                  "e08b3a73d0bd840e008f589e4be4a2ef3d4a0c59015f4f20a04ed7fc968042a2"
                 ],
-                "22.22.0-linux_amd64": [
-                  "node-v22.22.0-linux-x64.tar.xz",
-                  "node-v22.22.0-linux-x64",
-                  "9aa8e9d2298ab68c600bd6fb86a6c13bce11a4eca1ba9b39d79fa021755d7c37"
+                "22.22.1-linux_amd64": [
+                  "node-v22.22.1-linux-x64.tar.xz",
+                  "node-v22.22.1-linux-x64",
+                  "9a6bc82f9b491279147219f6a18add1e18424dce90d41d2a5fcd69d4924ba3aa"
                 ],
-                "22.22.0-windows_amd64": [
-                  "node-v22.22.0-win-x64.zip",
-                  "node-v22.22.0-win-x64",
-                  "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a"
+                "22.22.1-windows_amd64": [
+                  "node-v22.22.1-win-x64.zip",
+                  "node-v22.22.1-win-x64",
+                  "877cb93829e14fffbbc7903e7d8037336c9a79f3ea43c5d0b8c2379b79da56de"
                 ]
               },
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.22.0",
+              "node_version": "22.22.1",
               "include_headers": false,
               "platform": "windows_amd64"
             }
@@ -1446,46 +1446,46 @@
             "attributes": {
               "node_download_auth": {},
               "node_repositories": {
-                "22.22.0-darwin_arm64": [
-                  "node-v22.22.0-darwin-arm64.tar.gz",
-                  "node-v22.22.0-darwin-arm64",
-                  "5ed4db0fcf1eaf84d91ad12462631d73bf4576c1377e192d222e48026a902640"
+                "22.22.1-darwin_arm64": [
+                  "node-v22.22.1-darwin-arm64.tar.gz",
+                  "node-v22.22.1-darwin-arm64",
+                  "679ad4966339e4ef4900f57996714864e4211b898825bb840c3086c419fbcef2"
                 ],
-                "22.22.0-darwin_amd64": [
-                  "node-v22.22.0-darwin-x64.tar.gz",
-                  "node-v22.22.0-darwin-x64",
-                  "5ea50c9d6dea3dfa3abb66b2656f7a4e1c8cef23432b558d45fb538c7b5dedce"
+                "22.22.1-darwin_amd64": [
+                  "node-v22.22.1-darwin-x64.tar.gz",
+                  "node-v22.22.1-darwin-x64",
+                  "07b13722d558790fca20bb1ecf61bde24b7a4863111f7be77fc57251a407359a"
                 ],
-                "22.22.0-linux_arm64": [
-                  "node-v22.22.0-linux-arm64.tar.xz",
-                  "node-v22.22.0-linux-arm64",
-                  "1bf1eb9ee63ffc4e5d324c0b9b62cf4a289f44332dfef9607cea1a0d9596ba6f"
+                "22.22.1-linux_arm64": [
+                  "node-v22.22.1-linux-arm64.tar.xz",
+                  "node-v22.22.1-linux-arm64",
+                  "0f3550d58d45e5d3cf7103d9e3f69937f09fe82fb5dd474c66a5d816fa58c9ee"
                 ],
-                "22.22.0-linux_ppc64le": [
-                  "node-v22.22.0-linux-ppc64le.tar.xz",
-                  "node-v22.22.0-linux-ppc64le",
-                  "d83b9957431cc18e1fc143a4b99f89cde7b8a18f53ef392231b4336afd058865"
+                "22.22.1-linux_ppc64le": [
+                  "node-v22.22.1-linux-ppc64le.tar.xz",
+                  "node-v22.22.1-linux-ppc64le",
+                  "a65a44cf0224505f052b90357b763dbc1ea9148f4f5f2284f0596cf2000f819b"
                 ],
-                "22.22.0-linux_s390x": [
-                  "node-v22.22.0-linux-s390x.tar.xz",
-                  "node-v22.22.0-linux-s390x",
-                  "5aa0e520689448c4233e8d73f284e8e0634fdcd32b479735698494be5641f3e4"
+                "22.22.1-linux_s390x": [
+                  "node-v22.22.1-linux-s390x.tar.xz",
+                  "node-v22.22.1-linux-s390x",
+                  "e08b3a73d0bd840e008f589e4be4a2ef3d4a0c59015f4f20a04ed7fc968042a2"
                 ],
-                "22.22.0-linux_amd64": [
-                  "node-v22.22.0-linux-x64.tar.xz",
-                  "node-v22.22.0-linux-x64",
-                  "9aa8e9d2298ab68c600bd6fb86a6c13bce11a4eca1ba9b39d79fa021755d7c37"
+                "22.22.1-linux_amd64": [
+                  "node-v22.22.1-linux-x64.tar.xz",
+                  "node-v22.22.1-linux-x64",
+                  "9a6bc82f9b491279147219f6a18add1e18424dce90d41d2a5fcd69d4924ba3aa"
                 ],
-                "22.22.0-windows_amd64": [
-                  "node-v22.22.0-win-x64.zip",
-                  "node-v22.22.0-win-x64",
-                  "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a"
+                "22.22.1-windows_amd64": [
+                  "node-v22.22.1-win-x64.zip",
+                  "node-v22.22.1-win-x64",
+                  "877cb93829e14fffbbc7903e7d8037336c9a79f3ea43c5d0b8c2379b79da56de"
                 ]
               },
               "node_urls": [
                 "https://nodejs.org/dist/v{version}/{filename}"
               ],
-              "node_version": "22.22.0",
+              "node_version": "22.22.1",
               "include_headers": false,
               "platform": "windows_arm64"
             }
