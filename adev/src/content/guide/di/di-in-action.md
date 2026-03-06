@@ -1,15 +1,15 @@
-# DI in action
+# Внедрение зависимостей в действии {#di-in-action}
 
-This guide explores additional features of dependency injection in Angular.
+В этом руководстве рассматриваются дополнительные возможности внедрения зависимостей в Angular.
 
-NOTE: For comprehensive coverage of InjectionToken and custom providers, see the [defining dependency providers guide](guide/di/defining-dependency-providers#injection-tokens).
+NOTE: Подробное описание `InjectionToken` и пользовательских провайдеров см. в [руководстве по настройке провайдеров зависимостей](guide/di/defining-dependency-providers#injection-tokens).
 
-## Inject the component's DOM element
+## Внедрение DOM-элемента компонента {#inject-the-components-dom-element}
 
-Although developers strive to avoid it, some visual effects and third-party tools require direct DOM access.
-As a result, you might need to access a component's DOM element.
+Хотя разработчики стараются избегать прямого доступа к DOM, некоторые визуальные эффекты и сторонние инструменты его требуют.
+В таких случаях может понадобиться доступ к DOM-элементу компонента.
 
-Angular exposes the underlying element of a `@Component` or `@Directive` via injection using the `ElementRef` injection token:
+Angular предоставляет базовый элемент `@Component` или `@Directive` через внедрение с помощью токена `ElementRef`:
 
 ```ts {highlight:[7]}
 import {Directive, ElementRef, inject} from '@angular/core';
@@ -26,9 +26,9 @@ export class HighlightDirective {
 }
 ```
 
-## Inject the host element's tag name
+## Внедрение имени тега хост-элемента {#inject-the-host-elements-tag-name}
 
-When you need the tag name of a host element, inject it using the `HOST_TAG_NAME` token.
+Когда нужно получить имя тега хост-элемента, внедрите его с помощью токена `HOST_TAG_NAME`.
 
 ```ts
 import {Directive, HOST_TAG_NAME, inject} from '@angular/core';
@@ -55,23 +55,23 @@ export class RoleButtonDirective {
 }
 ```
 
-NOTE: If the host element might not have a tag name (e.g., `ng-container` or `ng-template`), make the injection optional.
+NOTE: Если у хост-элемента может не быть имени тега (например, `ng-container` или `ng-template`), сделайте внедрение опциональным.
 
-## Resolve circular dependencies with a forward reference
+## Разрешение циклических зависимостей с помощью прямой ссылки {#resolve-circular-dependencies-with-a-forward-reference}
 
-The order of class declaration matters in TypeScript.
-You can't refer directly to a class until it's been defined.
+Порядок объявления классов в TypeScript имеет значение.
+Нельзя ссылаться на класс до его определения.
 
-This isn't usually a problem, especially if you adhere to the recommended _one class per file_ rule.
-But sometimes circular references are unavoidable.
-For example, when class 'A' refers to class 'B' and 'B' refers to 'A', one of them has to be defined first.
+Обычно это не проблема, особенно если придерживаться рекомендуемого правила _один класс — один файл_.
+Но иногда циклических ссылок не избежать.
+Например, когда класс 'A' ссылается на класс 'B', а 'B' — на 'A': один из них должен быть определён первым.
 
-The Angular `forwardRef()` function creates an _indirect_ reference that Angular can resolve later.
+Функция Angular `forwardRef()` создаёт _косвенную_ ссылку, которую Angular разрешит позже.
 
-You face a similar problem when a class makes _a reference to itself_.
-For example, in its `providers` array.
-The `providers` array is a property of the `@Component()` decorator function, which must appear before the class definition.
-You can break such circular references by using `forwardRef`.
+Аналогичная проблема возникает, когда класс ссылается _сам на себя_.
+Например, в своём массиве `providers`.
+Массив `providers` — это свойство функции декоратора `@Component()`, которое должно предшествовать определению класса.
+Разорвать такие циклические ссылки можно с помощью `forwardRef`.
 
 ```typescript {header: 'app.component.ts', highlight: [4]}
 providers: [

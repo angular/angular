@@ -1,88 +1,88 @@
-# Add routes to the application
+# Добавление маршрутов в приложение {#add-routes-to-the-application}
 
-This tutorial lesson demonstrates how to add routes to your app.
+В этом уроке показано, как добавить маршруты в приложение.
 
 <docs-video src="https://www.youtube.com/embed/r5DEBMuStPw?si=H6Bx6nLJoMLaMxkx" />
 
-IMPORTANT: We recommend using your local environment to learn routing.
+IMPORTANT: Для изучения маршрутизации рекомендуется использовать локальную среду.
 
-## What you'll learn
+## Что вы узнаете {#what-youll-learn}
 
-At the end of this lesson your application will have support for routing.
+В конце этого урока ваше приложение будет поддерживать маршрутизацию.
 
-## Conceptual preview of routing
+## Общее представление о маршрутизации {#conceptual-preview-of-routing}
 
-This tutorial introduces routing in Angular. Routing is the ability to navigate from one component in the application to another. In [Single Page Applications (SPA)](guide/routing), only parts of the page are updated to represent the requested view for the user.
+В этом уроке рассматривается маршрутизация в Angular. Маршрутизация — это возможность перемещаться от одного Компонента приложения к другому. В [одностраничных приложениях (SPA)](guide/routing) только части страницы обновляются для отображения запрошенного представления.
 
-The [Angular Router](guide/routing) enables users to declare routes and specify which component should be displayed on the screen if that route is requested by the application.
+[Angular Router](guide/routing) позволяет разработчикам объявлять маршруты и указывать, какой Компонент должен отображаться на экране при запросе этого маршрута приложением.
 
-In this lesson, you will enable routing in your application to navigate to the details page.
+В этом уроке вы включите маршрутизацию в приложении для перехода на страницу деталей.
 
 <docs-workflow>
 
-<docs-step title="Create a default details component ">
-1. From the terminal, enter the following command to create the `Details`:
+<docs-step title="Создайте Компонент деталей по умолчанию ">
+1. В терминале введите следующую команду для создания `Details`:
 
     ```shell
     ng generate component details
     ```
 
-    This component will represent the details page that provides more information on a given housing location.
+    Этот Компонент будет представлять страницу деталей, предоставляющую дополнительную информацию о конкретном объекте жилья.
 
 </docs-step>
 
-<docs-step title="Add routing to the application">
-1.  In the `src/app` directory, create a file called `routes.ts`. This file is where we will define the routes in the application.
+<docs-step title="Добавьте маршрутизацию в приложение">
+1.  В директории `src/app` создайте файл `routes.ts`. В этом файле будут определены маршруты приложения.
 
-2.  In `main.ts`, make the following updates to enable routing in the application:
-    1.  Import the routes file and the `provideRouter` function:
+2.  В `main.ts` выполните следующие обновления для включения маршрутизации в приложении:
+    1.  Импортируйте файл маршрутов и функцию `provideRouter`:
 
           <docs-code header="Import routing details in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[7,8]"/>
 
-    1.  Update the call to `bootstrapApplication` to include the routing configuration:
+    1.  Обновите вызов `bootstrapApplication`, включив конфигурацию маршрутизации:
 
           <docs-code header="Add router configuration in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[10,17]"/>
 
-3.  In `src/app/app.ts`, update the component to use routing:
-    1.  Add file level imports for the router directives `RouterOutlet` and `RouterLink`:
+3.  В `src/app/app.ts` обновите Компонент для использования маршрутизации:
+    1.  Добавьте импорты директив Роутера `RouterOutlet` и `RouterLink` на уровне файла:
 
           <docs-code language="angular-ts" header="Import router directives in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[3]"/>
 
-    1.  Add `RouterOutlet` and `RouterLink` to the `@Component` metadata imports
+    1.  Добавьте `RouterOutlet` и `RouterLink` в массив `imports` метаданных `@Component`
 
           <docs-code language="angular-ts" header="Add router directives to component imports in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[6]"/>
 
-    1.  In the `template` property, replace the `<app-home />` tag with the `<router-outlet>` directive and add a link back to the home page. Your code should match this code:
+    1.  В свойстве `template` замените тег `<app-home />` директивой `<router-outlet>` и добавьте ссылку обратно на главную страницу. Ваш код должен соответствовать этому:
 
           <docs-code language="angular-ts" header="Add router-outlet in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[7,18]"/>
 
 </docs-step>
 
-<docs-step title="Add route to new component">
-In the previous step you removed the reference to the `<app-home>` component in the template. In this step, you will add a new route to that component.
+<docs-step title="Добавьте маршрут к новому Компоненту">
+На предыдущем шаге вы удалили ссылку на Компонент `<app-home>` из Шаблона. На этом шаге вы добавите новый маршрут к этому Компоненту.
 
-1. In `routes.ts`, perform the following updates to create a route.
-   1. Add a file level imports for the `Home`, `Details` and the `Routes` type that you'll use in the route definitions.
+1. В `routes.ts` выполните следующие обновления для создания маршрута.
+   1. Добавьте импорты `Home`, `Details` и типа `Routes`, которые будут использоваться в определениях маршрутов, на уровне файла.
 
       <docs-code header="Import components and Routes" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/routes.ts" visibleLines="[1,3]"/>
 
-   1. Define a variable called `routeConfig` of type `Routes` and define two routes for the app:
+   1. Определите переменную `routeConfig` типа `Routes` и задайте два маршрута для приложения:
       <docs-code header="Add routes to the app" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/routes.ts" visibleLines="[5,18]"/>
 
-      The entries in the `routeConfig` array represent the routes in the application. The first entry navigates to the `Home` whenever the url matches `''`. The second entry uses some special formatting that will be revisited in a future lesson.
+      Записи в массиве `routeConfig` представляют маршруты приложения. Первая запись выполняет переход к `Home` при совпадении URL с `''`. Вторая запись использует специальный синтаксис форматирования, который будет рассмотрен в будущем уроке.
 
-1. Save all changes and confirm that the application works in the browser. The application should still display the list of housing locations.
+1. Сохраните все изменения и убедитесь, что приложение работает в браузере. Приложение по-прежнему должно отображать список объектов жилья.
    </docs-step>
 
 </docs-workflow>
 
-SUMMARY: In this lesson, you enabled routing in your app as well as defined new routes. Now your app can support navigation between views. In the next lesson, you will learn to navigate to the "details" page for a given housing location.
+SUMMARY: В этом уроке вы включили маршрутизацию в приложении и определили новые маршруты. Теперь приложение поддерживает навигацию между представлениями. В следующем уроке вы научитесь переходить на страницу «деталей» для конкретного объекта жилья.
 
-You are making great progress with your app, well done.
+Вы делаете отличные успехи в работе с приложением, молодцы.
 
-For more information about the topics covered in this lesson, visit:
+Для получения дополнительной информации по темам, рассмотренным в этом уроке, посетите:
 
 <docs-pill-row>
-  <docs-pill href="guide/routing" title="Routing in Angular Overview"/>
-  <docs-pill href="guide/routing/common-router-tasks" title="Common Routing Tasks"/>
+  <docs-pill href="guide/routing" title="Обзор маршрутизации в Angular"/>
+  <docs-pill href="guide/routing/common-router-tasks" title="Общие задачи маршрутизации"/>
 </docs-pill-row>

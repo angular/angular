@@ -1,60 +1,60 @@
-# Integrate details page into application
+# Интеграция страницы деталей в приложение {#integrate-details-page-into-application}
 
-This tutorial lesson demonstrates how to connect the details page to your app.
+В этом уроке показано, как подключить страницу деталей к приложению.
 
 <docs-video src="https://www.youtube.com/embed/-jRxG84AzCI?si=CbqIpmRpwp5ZZDnu&amp;start=345"/>
 
-IMPORTANT: We recommend using your local environment to learn routing.
+IMPORTANT: Для изучения маршрутизации рекомендуется использовать локальную среду.
 
-## What you'll learn
+## Что вы узнаете {#what-youll-learn}
 
-At the end of this lesson your application will have support for routing to the details page.
+В конце этого урока ваше приложение будет поддерживать маршрутизацию на страницу деталей.
 
-## Conceptual preview of routing with route parameters
+## Общее представление о маршрутизации с параметрами маршрута {#conceptual-preview-of-routing-with-route-parameters}
 
-Each housing location has specific details that should be displayed when a user navigates to the details page for that item. To accomplish this goal, you will need to use route parameters.
+Каждый объект жилья имеет конкретные детали, которые должны отображаться при переходе пользователя на страницу деталей этого объекта. Для достижения этой цели необходимо использовать параметры маршрута.
 
-Route parameters enable you to include dynamic information as a part of your route URL. To identify which housing location a user has clicked on you will use the `id` property of the `HousingLocation` type.
+Параметры маршрута позволяют включать динамическую информацию как часть URL маршрута. Для определения объекта жилья, на который нажал пользователь, используется свойство `id` типа `HousingLocation`.
 
 <docs-workflow>
 
-<docs-step title="Using `routerLink` for dynamic navigation">
-In lesson 10, you added a second route to `src/app/routes.ts` which includes a special segment that identifies the route parameter, `id`:
+<docs-step title="Использование `routerLink` для динамической навигации">
+В уроке 10 вы добавили второй маршрут в `src/app/routes.ts`, включающий специальный сегмент, определяющий параметр маршрута `id`:
 
 ```
 'details/:id'
 ```
 
-In this case, `:id` is dynamic and will change based on how the route is requested by the code.
+В данном случае `:id` является динамическим и будет меняться в зависимости от того, как маршрут запрашивается кодом.
 
-1.  In `src/app/housing-location/housing-location.ts`, add an anchor tag to the `section` element and include the `routerLink` directive:
+1.  В `src/app/housing-location/housing-location.ts` добавьте тег привязки в элемент `section` и включите директиву `routerLink`:
 
     <docs-code language="angular-ts" header="Add anchor with a routerLink directive to housing-location.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/housing-location/housing-location.ts" visibleLines="[18]"/>
 
-    The `routerLink` directive enables Angular's router to create dynamic links in the application. The value assigned to the `routerLink` is an array with two entries: the static portion of the path and the dynamic data.
+    Директива `routerLink` позволяет Роутеру Angular создавать динамические ссылки в приложении. Значение, присвоенное `routerLink`, является массивом с двумя элементами: статической частью пути и динамическими данными.
 
-    For the `routerLink` to work in the template, add a file level import of `RouterLink` and `RouterOutlet` from '@angular/router', then update the component `imports` array to include both `RouterLink` and `RouterOutlet`.
+    Чтобы `routerLink` работал в Шаблоне, добавьте импорт `RouterLink` и `RouterOutlet` из '@angular/router' на уровне файла, а затем обновите массив `imports` Компонента, включив оба элемента: `RouterLink` и `RouterOutlet`.
 
-1.  At this point you can confirm that the routing is working in your app. In the browser, refresh the home page and click the "Learn More" button for a housing location.
+1.  На этом этапе можно убедиться, что маршрутизация работает в приложении. В браузере обновите главную страницу и нажмите кнопку «Learn More» для любого объекта жилья.
 
       <img alt="details page displaying the text 'details works!'" src="assets/images/tutorials/first-app/homes-app-lesson-11-step-1.png">
 
 </docs-step>
 
-<docs-step title="Get route parameters">
-In this step, you will get the route parameter in the `Details`. Currently, the app displays `details works!`. Next you'll update the code to display the `id` value passed using the route parameters.
+<docs-step title="Получите параметры маршрута">
+На этом шаге вы получаете параметр маршрута в `Details`. В данный момент приложение отображает `details works!`. Далее вы обновите код для отображения значения `id`, переданного через параметры маршрута.
 
-1.  In `src/app/details/details.ts` update the template to import the functions, classes and services that you'll need to use in the `Details`:
+1.  В `src/app/details/details.ts` обновите Шаблон, импортировав функции, классы и Сервисы, которые будут использоваться в `Details`:
 
       <docs-code header="Update file level imports" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[1,4]"/>
 
-1.  Update the `template` property of the `@Component` decorator to display the value `housingLocationId`:
+1.  Обновите свойство `template` декоратора `@Component` для отображения значения `housingLocationId`:
 
          ```angular-ts
          template: `<p>details works! {{ housingLocationId }}</p>`,
          ```
 
-1.  Update the body of the `Details` class with the following code:
+1.  Обновите тело класса `Details` следующим кодом:
 
          ```ts
          export class Details {
@@ -66,73 +66,73 @@ In this step, you will get the route parameter in the `Details`. Currently, the 
          }
          ```
 
-    This code gives the `Details` access to the `ActivatedRoute` router feature that enables you to have access to the data about the current route. In the `constructor`, the code converts the `id` parameter acquired from the route from a string to a number.
+    Этот код предоставляет `Details` доступ к функциональности `ActivatedRoute` Роутера, которая позволяет получить доступ к данным текущего маршрута. В `constructor` код преобразует параметр `id`, полученный из маршрута, из строки в число.
 
-1.  Save all changes.
+1.  Сохраните все изменения.
 
-1.  In the browser, click on one of the housing location's "Learn More" links and confirm that the numeric value displayed on the page matches the `id` property for that location in the data.
+1.  В браузере нажмите на одну из ссылок «Learn More» объектов жилья и убедитесь, что числовое значение, отображаемое на странице, совпадает со свойством `id` данного объекта в данных.
     </docs-step>
 
-<docs-step title="Customize the `Details`">
-Now that routing is working properly in the application this is a great time to update the template of the `Details` to display the specific data represented by the housing location for the route parameter.
+<docs-step title="Настройте `Details`">
+Теперь, когда маршрутизация работает корректно, самое время обновить Шаблон `Details` для отображения конкретных данных объекта жилья, соответствующего параметру маршрута.
 
-To access the data you will add a call to the `HousingService`.
+Для доступа к данным необходимо добавить вызов `HousingService`.
 
-1. Update the template code to match the following code:
+1. Обновите код Шаблона в соответствии со следующим:
 
    <docs-code language="angular-ts" header="Update the Details template in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[8,29]"/>
 
-   Notice that the `housingLocation` properties are being accessed with the optional chaining operator `?`. This ensures that if the `housingLocation` value is null or undefined the application doesn't crash.
+   Обратите внимание, что к свойствам `housingLocation` применяется оператор опциональной цепочки `?`. Это гарантирует, что приложение не «упадёт» при значении `housingLocation` равном null или undefined.
 
-1. Update the body of the `Details` class to match the following code:
+1. Обновите тело класса `Details` в соответствии со следующим:
 
    <docs-code language="angular-ts" header="Update the Details class in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[32,41]"/>
 
-   Now the component has the code to display the correct information based on the selected housing location. The `constructor` now includes a call to the `HousingService` to pass the route parameter as an argument to the `getHousingLocationById` service function.
+   Теперь Компонент содержит код для отображения корректной информации на основе выбранного объекта жилья. `constructor` теперь включает вызов `HousingService` для передачи параметра маршрута в качестве аргумента функции Сервиса `getHousingLocationById`.
 
-1. Copy the following styles into the `src/app/details/details.css` file:
+1. Скопируйте следующие стили в файл `src/app/details/details.css`:
 
    <docs-code header="Add styles for the Details" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.css" visibleLines="[1,71]"/>
 
-   and save your changes
+   и сохраните изменения
 
-1. In `Details` use the just created `details.css` file as the source for the styles:
+1. В `Details` используйте только что созданный файл `details.css` как источник стилей:
    <docs-code language="angular-ts" header="Update details.ts to use the created css file" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[30]"/>
 
-1. In the browser refresh the page and confirm that when you click on the "Learn More" link for a given housing location the details page displays the correct information based on the data for that selected item.
+1. В браузере обновите страницу и убедитесь, что при нажатии на ссылку «Learn More» для конкретного объекта жилья страница деталей отображает корректную информацию на основе данных выбранного объекта.
 
 <img alt="Details page listing home info" src="assets/images/tutorials/first-app/homes-app-lesson-11-step-3.png">
 
 </docs-step>
 
-<docs-step title="Check navigation in the `Home`">
-In a previous lesson you updated the `App` template to include a `routerLink`. Adding that code updated your app to enable navigation back to the `Home` whenever the logo is clicked.
+<docs-step title="Проверьте навигацию в `Home`">
+В предыдущем уроке вы обновили Шаблон `App`, включив `routerLink`. Добавление этого кода обновило приложение для включения навигации обратно к `Home` при нажатии на логотип.
 
-1.  Confirm that your code matches the following:
+1.  Убедитесь, что ваш код соответствует следующему:
 
       <docs-code language="angular-ts" header="Confirm the routerLink in app.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/app.ts" visibleLines="[8,19]"/>
 
-    Your code should already be up-to-date but confirm to be sure.
+    Ваш код уже должен быть актуальным, но проверьте на всякий случай.
 
     </docs-step>
 
 </docs-workflow>
 
-SUMMARY: In this lesson you added routing to show details pages.
+SUMMARY: В этом уроке вы добавили маршрутизацию для отображения страниц деталей.
 
-You now know how to:
+Теперь вы знаете, как:
 
-- use route parameters to pass data to a route
-- use the `routerLink` directive to use dynamic data to create a route
-- use route parameter to retrieve data from the `HousingService` to display specific housing location information.
+- использовать параметры маршрута для передачи данных в маршрут
+- использовать директиву `routerLink` для создания маршрута на основе динамических данных
+- использовать параметр маршрута для получения данных из `HousingService` с целью отображения информации о конкретном объекте жилья.
 
-Really great work so far.
+Отличная работа!
 
-For more information about the topics covered in this lesson, visit:
+Для получения дополнительной информации по темам, рассмотренным в этом уроке, посетите:
 
 <docs-pill-row>
-  <docs-pill href="guide/routing/read-route-state#get-information-about-the-current-route-with-activatedroute" title="Route Parameters"/>
-  <docs-pill href="guide/routing" title="Routing in Angular Overview"/>
-  <docs-pill href="guide/routing/common-router-tasks" title="Common Routing Tasks"/>
-  <docs-pill href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Optional_chaining" title="Optional Chaining Operator"/>
+  <docs-pill href="guide/routing/read-route-state#get-information-about-the-current-route-with-activatedroute" title="Параметры маршрута"/>
+  <docs-pill href="guide/routing" title="Обзор маршрутизации в Angular"/>
+  <docs-pill href="guide/routing/common-router-tasks" title="Общие задачи маршрутизации"/>
+  <docs-pill href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Optional_chaining" title="Оператор опциональной цепочки"/>
 </docs-pill-row>

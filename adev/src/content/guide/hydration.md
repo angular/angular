@@ -1,26 +1,26 @@
-# Hydration
+# Гидратация {#hydration}
 
-## What is hydration
+## Что такое Гидратация {#what-is-hydration}
 
-Hydration is the process that restores the server-side rendered application on the client. This includes things like reusing the server rendered DOM structures, persisting the application state, transferring application data that was retrieved already by the server, and other processes.
+Гидратация — это процесс восстановления отрендеренного на сервере приложения на стороне клиента. Он включает повторное использование структур DOM, отрендеренных сервером, сохранение состояния приложения, передачу данных приложения, которые уже были получены сервером, и другие процессы.
 
-## Why is hydration important?
+## Почему важна Гидратация? {#why-is-hydration-important}
 
-Hydration improves application performance by avoiding extra work to re-create DOM nodes. Instead, Angular tries to match existing DOM elements to the applications structure at runtime and reuses DOM nodes when possible. This results in a performance improvement that can be measured using [Core Web Vitals (CWV)](https://web.dev/learn-core-web-vitals/) statistics, such as reducing the First Input Delay ([FID](https://web.dev/fid/)) and Largest Contentful Paint ([LCP](https://web.dev/lcp/)), as well as Cumulative Layout Shift ([CLS](https://web.dev/cls/)). Improving these numbers also affects things like SEO performance.
+Гидратация улучшает производительность приложения, исключая лишнюю работу по воссозданию DOM-узлов. Angular пытается сопоставить существующие DOM-элементы со структурой приложения во время выполнения и по возможности повторно использует DOM-узлы. Это приводит к улучшению производительности, измеримому по статистике [Core Web Vitals (CWV)](https://web.dev/learn-core-web-vitals/): снижению First Input Delay ([FID](https://web.dev/fid/)), улучшению Largest Contentful Paint ([LCP](https://web.dev/lcp/)), а также снижению Cumulative Layout Shift ([CLS](https://web.dev/cls/)). Улучшение этих показателей также влияет на производительность SEO.
 
-Without hydration enabled, server-side rendered Angular applications will destroy and re-render the application's DOM, which may result in a visible UI flicker. This re-rendering can negatively impact [Core Web Vitals](https://web.dev/learn-core-web-vitals/) like [LCP](https://web.dev/lcp/) and cause a layout shift. Enabling hydration allows the existing DOM to be re-used and prevents a flicker.
+Без включённой Гидратации приложения Angular с SSR уничтожают и повторно рендерят DOM приложения, что может приводить к видимому мерцанию интерфейса. Это повторное рендеринг может негативно влиять на [Core Web Vitals](https://web.dev/learn-core-web-vitals/) — в частности, на [LCP](https://web.dev/lcp/) — и вызывать сдвиг компоновки. Включение Гидратации позволяет повторно использовать существующий DOM и предотвращает мерцание.
 
-## How do you enable hydration in Angular
+## Как включить Гидратацию в Angular {#how-do-you-enable-hydration-in-angular}
 
-Hydration can be enabled for server-side rendered (SSR) applications only. Follow the [Angular SSR Guide](guide/ssr) to enable server-side rendering first.
+Гидратацию можно включить только для приложений с SSR. Сначала следуйте [руководству по Angular SSR](guide/ssr), чтобы включить рендеринг на стороне сервера.
 
-### Using Angular CLI
+### С помощью Angular CLI {#using-angular-cli}
 
-If you've used Angular CLI to enable SSR (either by enabling it during application creation or later via `ng add @angular/ssr`), the code that enables hydration should already be included into your application.
+Если вы использовали Angular CLI для включения SSR (либо при создании приложения, либо позднее через `ng add @angular/ssr`), код, включающий Гидратацию, должен уже быть добавлен в приложение.
 
-### Manual setup
+### Ручная настройка {#manual-setup}
 
-If you have a custom setup and didn't use Angular CLI to enable SSR, you can enable hydration manually by visiting your main application component or module and importing `provideClientHydration` from `@angular/platform-browser`. You'll then add that provider to your app's bootstrapping providers list.
+Если у вас настраиваемая конфигурация и вы не использовали Angular CLI для включения SSR, включите Гидратацию вручную: откройте главный Компонент или модуль приложения и импортируйте `provideClientHydration` из `@angular/platform-browser`. Затем добавьте этот провайдер в список провайдеров загрузки приложения.
 
 ```typescript
 import {
@@ -34,7 +34,7 @@ bootstrapApplication(App, {
 });
 ```
 
-Alternatively if you are using NgModules, you would add `provideClientHydration` to your root app module's provider list.
+Если вы используете NgModules, добавьте `provideClientHydration` в список провайдеров корневого модуля приложения.
 
 ```typescript
 import {provideClientHydration} from '@angular/platform-browser';
@@ -49,21 +49,21 @@ import {NgModule} from '@angular/core';
 export class AppModule {}
 ```
 
-IMPORTANT: Make sure that the `provideClientHydration()` call is also included into a set of providers that is used to bootstrap an application on the **server**. In applications with the default project structure (generated by the `ng new` command), adding a call to the root `AppModule` should be sufficient, since this module is imported by the server module. If you use a custom setup, add the `provideClientHydration()` call to the providers list in the server bootstrap configuration.
+IMPORTANT: Убедитесь, что вызов `provideClientHydration()` также включён в набор провайдеров, используемых для загрузки приложения на **сервере**. В приложениях со стандартной структурой проекта (созданной командой `ng new`) достаточно добавить вызов в корневой `AppModule`, поскольку этот модуль импортируется серверным модулем. При использовании пользовательской конфигурации добавьте вызов `provideClientHydration()` в список провайдеров серверной конфигурации загрузки.
 
-### Verify that hydration is enabled
+### Проверка включения Гидратации {#verify-that-hydration-is-enabled}
 
-After you've configured hydration and have started up your server, load your application in the browser.
+После настройки Гидратации и запуска сервера загрузите приложение в браузере.
 
-HELPFUL: You will likely need to fix instances of Direct DOM Manipulation before hydration will fully work either by switching to Angular constructs or by using `ngSkipHydration`. See [Constraints](#constraints), [Direct DOM Manipulation](#direct-dom-manipulation), and [How to skip hydration for particular components](#how-to-skip-hydration-for-particular-components) for more details.
+HELPFUL: Перед полноценной работой Гидратации вам, скорее всего, потребуется устранить случаи прямого манипулирования DOM — либо заменив их конструкциями Angular, либо применив `ngSkipHydration`. Подробнее: [Ограничения](#constraints), [Прямое манипулирование DOM](#direct-dom-manipulation) и [Как пропустить Гидратацию для отдельных Компонентов](#how-to-skip-hydration-for-particular-components).
 
-While running an application in dev mode, you can confirm hydration is enabled by opening the Developer Tools in your browser and viewing the console. You should see a message that includes hydration-related stats, such as the number of components and nodes hydrated. Angular calculates the stats based on all components rendered on a page, including those that come from third-party libraries.
+В режиме разработки можно убедиться в том, что Гидратация включена, открыв инструменты разработчика в браузере и просмотрев консоль. Вы должны увидеть сообщение со статистикой, связанной с Гидратацией, — например, количеством гидратированных Компонентов и узлов. Angular рассчитывает статистику на основе всех Компонентов, отрендеренных на странице, включая те, что поступают из сторонних библиотек.
 
-You can also use [Angular DevTools browser extension](tools/devtools) to see hydration status of components on a page. Angular DevTools also allows to enable an overlay to indicate which parts of the page were hydrated. If there is a hydration mismatch error - DevTools would also highlight a component that caused the error.
+Также можно использовать [браузерное расширение Angular DevTools](tools/devtools) для просмотра статуса Гидратации Компонентов на странице. Angular DevTools позволяет включить оверлей, показывающий, какие части страницы были гидратированы. При ошибке несоответствия Гидратации DevTools также выделит Компонент, вызвавший ошибку.
 
-## Capturing and replaying events
+## Захват и воспроизведение событий {#capturing-and-replaying-events}
 
-When an application is rendered on the server, it is visible in a browser as soon as produced HTML loads. Users may assume that they can interact with the page, but event listeners are not attached until hydration completes. Starting from v18, you can enable the Event Replay feature that allows to capture all events that happen before hydration and replay those events once hydration has completed. You can enable it using the `withEventReplay()` function, for example:
+Когда приложение рендерится на сервере, оно становится видимым в браузере сразу после загрузки созданного HTML. Пользователи могут предположить, что могут взаимодействовать со страницей, однако обработчики событий подключаются только после завершения Гидратации. Начиная с v18 можно включить функцию Event Replay, которая перехватывает все события, произошедшие до Гидратации, и воспроизводит их после её завершения. Функция включается с помощью функции `withEventReplay()`:
 
 ```typescript
 import {provideClientHydration, withEventReplay} from '@angular/platform-browser';
@@ -73,88 +73,88 @@ bootstrapApplication(App, {
 });
 ```
 
-### How event replay works
+### Как работает воспроизведение событий {#how-event-replay-works}
 
-Event Replay is a feature that improves user experience by capturing user events that were triggered before the hydration process is complete. Then those events are replayed, ensuring none of that interaction was lost.
+Event Replay — это функция, улучшающая пользовательский опыт: она перехватывает события, произошедшие до завершения Гидратации, а затем воспроизводит их, гарантируя, что ни одно взаимодействие не было потеряно.
 
-The Event Replay is divided into three main phases:
+Event Replay разделён на три основных фазы:
 
-- **Capturing user interactions**<br>
-  Prior to **Hydration**, Event Replay captures and stores all interactions that the user may perform, such as clicks and other browser native events.
+- **Захват взаимодействий пользователя**<br>
+  До завершения **Гидратации** Event Replay перехватывает и сохраняет все взаимодействия пользователя — клики и другие нативные браузерные события.
 
-- **Storing events**<br>
-  The **Event Contract** keeps in memory all the interactions recorded in the previous step, ensuring that they are not lost for later replay.
+- **Хранение событий**<br>
+  **Event Contract** хранит в памяти все взаимодействия, зафиксированные на предыдущем шаге, чтобы обеспечить их воспроизведение в дальнейшем.
 
-- **Relaunch of events**<br>
-  Once **Hydration** is complete, Angular re-invokes the captured events.
+- **Воспроизведение событий**<br>
+  После завершения **Гидратации** Angular повторно вызывает перехваченные события.
 
-Event replay supports _native browser events_, for example `click`, `mouseover`, and `focusin`. If you'd like to learn more about JSAction, the library that powers event replay, you can read more [on the readme](https://github.com/angular/angular/tree/main/packages/core/primitives/event-dispatch#readme).
+Event Replay поддерживает _нативные браузерные события_ — например, `click`, `mouseover` и `focusin`. Подробнее о JSAction — библиотеке, которая обеспечивает работу Event Replay, — можно узнать [в readme](https://github.com/angular/angular/tree/main/packages/core/primitives/event-dispatch#readme).
 
 ---
 
-This feature ensures a consistent user experience, preventing user actions performed before Hydration from being ignored.
+Эта функция обеспечивает согласованный пользовательский опыт, предотвращая игнорирование действий, выполненных до завершения Гидратации.
 
-NOTE: If you have [incremental hydration](guide/incremental-hydration) enabled, event replay is automatically enabled under the hood.
+NOTE: Если включена [инкрементная Гидратация](guide/incremental-hydration), Event Replay автоматически включается под капотом.
 
-## Constraints
+## Ограничения {#constraints}
 
-Hydration imposes a few constraints on your application that are not present without hydration enabled. Your application must have the same generated DOM structure on both the server and the client. The process of hydration expects the DOM tree to have the same structure in both places. This also includes whitespaces and comment nodes that Angular produces during the rendering on the server. Those whitespaces and nodes must be present in the HTML generated by the server-side rendering process.
+Гидратация накладывает на приложение ряд ограничений, которых нет без неё. Приложение должно генерировать одинаковую структуру DOM на сервере и на клиенте. Процесс Гидратации ожидает, что дерево DOM будет идентичным в обоих местах. Это включает пробельные символы и комментарии, которые Angular создаёт при рендеринге на сервере. Эти пробелы и узлы должны присутствовать в HTML, сгенерированном процессом SSR.
 
-IMPORTANT: The HTML produced by the server side rendering operation **must not** be altered between the server and the client.
+IMPORTANT: HTML, созданный при SSR, **не должен** изменяться между сервером и клиентом.
 
-If there is a mismatch between server and client DOM tree structures, the hydration process will encounter problems attempting to match up what was expected to what is actually present in the DOM. Components that do direct DOM manipulation using native DOM APIs are the most common culprit.
+При расхождении структур DOM-деревьев на сервере и клиенте процесс Гидратации столкнётся с проблемами при сопоставлении ожидаемого и фактического DOM. Чаще всего причиной являются Компоненты, напрямую манипулирующие DOM с помощью нативных API.
 
-### Direct DOM Manipulation
+### Прямое манипулирование DOM {#direct-dom-manipulation}
 
-If you have components that manipulate the DOM using native DOM APIs or use `innerHTML` or `outerHTML`, the hydration process will encounter errors. Specific cases where DOM manipulation is a problem are situations like accessing the `document`, querying for specific elements, and injecting additional nodes using `appendChild`. Detaching DOM nodes and moving them to other locations will also result in errors.
+Если в Компонентах используются нативные API DOM или `innerHTML`/`outerHTML`, процесс Гидратации будет завершаться с ошибками. К проблемным случаям относятся: обращение к `document`, выборка конкретных элементов и вставка дополнительных узлов через `appendChild`. Отключение DOM-узлов и их перемещение в другие места также приводит к ошибкам.
 
-This is because Angular is unaware of these DOM changes and cannot resolve them during the hydration process. Angular will expect a certain structure, but it will encounter a different structure when attempting to hydrate. This mismatch will result in hydration failure and throw a DOM mismatch error ([see below](#errors)).
+Это происходит потому, что Angular не знает об этих изменениях DOM и не может их учесть в процессе Гидратации. Angular ожидает определённую структуру, но при попытке гидратации обнаруживает другую. Это несоответствие приводит к сбою Гидратации и выбрасыванию ошибки несоответствия DOM ([см. ниже](#errors)).
 
-It is best to refactor your component to avoid this sort of DOM manipulation. Try to use Angular APIs to do this work, if you can. If you cannot refactor this behavior, use the `ngSkipHydration` attribute ([described below](#how-to-skip-hydration-for-particular-components)) until you can refactor into a hydration friendly solution.
+Лучшим решением будет рефакторинг Компонента для отказа от такого манипулирования DOM. По возможности используйте Angular API для этой работы. Если рефакторинг невозможен, используйте атрибут `ngSkipHydration` ([описан ниже](#how-to-skip-hydration-for-particular-components)) до тех пор, пока не будет реализовано совместимое с Гидратацией решение.
 
-### Valid HTML structure
+### Валидная HTML-структура {#valid-html-structure}
 
-There are a few cases where if you have a component template that does not have valid HTML structure, this could result in a DOM mismatch error during hydration.
+Существуют случаи, когда Шаблон Компонента с невалидной HTML-структурой может приводить к ошибке несоответствия DOM при Гидратации.
 
-As an example, here are some of the most common cases of this issue.
+Вот некоторые наиболее распространённые случаи.
 
-- `<table>` without a `<tbody>`
-- `<div>` inside a `<p>`
-- `<a>` inside another `<a>`
+- `<table>` без `<tbody>`
+- `<div>` внутри `<p>`
+- `<a>` внутри другого `<a>`
 
-If you are uncertain about whether your HTML is valid, you can use a [syntax validator](https://validator.w3.org/) to check it.
+Если есть сомнения в валидности HTML, воспользуйтесь [валидатором синтаксиса](https://validator.w3.org/).
 
-NOTE: While the HTML standard does not require the `<tbody>` element inside tables, modern browsers automatically create a `<tbody>` element in tables that do not declare one. Because of this inconsistency, always explicitly declare a `<tbody>` element in tables to avoid hydration errors.
+NOTE: Хотя HTML-стандарт не требует элемента `<tbody>` внутри таблиц, современные браузеры автоматически его создают в таблицах без явного объявления. Из-за этой несогласованности всегда явно указывайте `<tbody>` в таблицах, чтобы избежать ошибок Гидратации.
 
-### Preserve Whitespaces Configuration
+### Конфигурация сохранения пробельных символов {#preserve-whitespaces-configuration}
 
-When using the hydration feature, we recommend using the default setting of `false` for `preserveWhitespaces`. If this setting is not in your tsconfig, the value will be `false` and no changes are required. If you choose to enable preserving whitespaces by adding `preserveWhitespaces: true` to your tsconfig, it is possible you may encounter issues with hydration. This is not yet a fully supported configuration.
+При использовании функции Гидратации рекомендуется оставлять значение `false` для `preserveWhitespaces` по умолчанию. Если этот параметр отсутствует в вашем tsconfig, его значение равно `false`, и изменения не требуются. Если вы решите включить сохранение пробельных символов, добавив `preserveWhitespaces: true` в tsconfig, возможны проблемы с Гидратацией. Эта конфигурация пока не полностью поддерживается.
 
-HELPFUL: Make sure that this setting is set **consistently** in `tsconfig.server.json` for your server and `tsconfig.app.json` for your browser builds. A mismatched value will cause hydration to break.
+HELPFUL: Убедитесь, что этот параметр задан **согласованно** в `tsconfig.server.json` для сервера и `tsconfig.app.json` для браузерных сборок. Несоответствие значений приведёт к нарушению Гидратации.
 
-If you choose to set this setting in your tsconfig, we recommend to set it only in `tsconfig.app.json` which by default the `tsconfig.server.json` will inherit it from.
+Если вы всё же решите задать этот параметр в tsconfig, рекомендуется делать это только в `tsconfig.app.json`, от которого `tsconfig.server.json` наследует значения по умолчанию.
 
-### Custom or Noop Zone.js are not yet supported
+### Нестандартный или «noop» Zone.js пока не поддерживается {#custom-or-noop-zonejs-are-not-yet-supported}
 
-Hydration relies on a signal from Zone.js when it becomes stable inside an application, so that Angular can start the serialization process on the server or post-hydration cleanup on the client to remove DOM nodes that remained unclaimed.
+Гидратация полагается на сигнал от Zone.js о достижении стабильного состояния внутри приложения, чтобы Angular мог начать процесс сериализации на сервере или пост-гидратационную очистку на клиенте для удаления невостребованных DOM-узлов.
 
-Providing a custom or a "noop" Zone.js implementation may lead to a different timing of the "stable" event, thus triggering the serialization or the cleanup too early or too late. This is not yet a fully supported configuration and you may need to adjust the timing of the `onStable` event in the custom Zone.js implementation.
+Использование нестандартной или «noop»-реализации Zone.js может изменить тайминг события «stable», что приведёт к слишком раннему или слишком позднему запуску сериализации или очистки. Эта конфигурация пока не полностью поддерживается, и вам может потребоваться скорректировать тайминг события `onStable` в нестандартной реализации Zone.js.
 
-## Errors
+## Ошибки {#errors}
 
-There are several hydration related errors you may encounter ranging from node mismatches to cases when the `ngSkipHydration` was used on an invalid host node. The most common error case that may occur is due to direct DOM manipulation using native APIs that results in hydration being unable to find or match the expected DOM tree structure on the client that was rendered by the server. The other case you may encounter this type of error was mentioned in the [Valid HTML structure](#valid-html-structure) section earlier. So, make sure the HTML in your templates are using valid structure, and you'll avoid that error case.
+Существует несколько ошибок, связанных с Гидратацией: от несоответствий узлов до случаев, когда `ngSkipHydration` применён к недопустимому узлу хоста. Наиболее распространённая ошибка — прямое манипулирование DOM с помощью нативных API, из-за чего Гидратация не может найти или сопоставить ожидаемую структуру DOM на клиенте с той, что была отрендерена сервером. Другой случай был описан в разделе [Валидная HTML-структура](#valid-html-structure). Убедитесь, что HTML в ваших Шаблонах использует валидную структуру — и этой ошибки удастся избежать.
 
-For a full reference on hydration related errors, visit the [Errors Reference Guide](/errors).
+Полный справочник по ошибкам Гидратации: [Справочник по ошибкам](/errors).
 
-## How to skip hydration for particular components
+## Как пропустить Гидратацию для отдельных Компонентов {#how-to-skip-hydration-for-particular-components}
 
-Some components may not work properly with hydration enabled due to some of the aforementioned issues, like [Direct DOM Manipulation](#direct-dom-manipulation). As a workaround, you can add the `ngSkipHydration` attribute to a component's tag in order to skip hydrating the entire component.
+Некоторые Компоненты могут некорректно работать с включённой Гидратацией из-за упомянутых проблем, например [прямого манипулирования DOM](#direct-dom-manipulation). В качестве временного решения добавьте атрибут `ngSkipHydration` к тегу Компонента, чтобы пропустить гидратацию всего Компонента.
 
 ```angular-html
 <app-example ngSkipHydration />
 ```
 
-Alternatively you can set `ngSkipHydration` as a host binding.
+Как вариант, можно задать `ngSkipHydration` через host-привязку.
 
 ```typescript
 @Component({
@@ -164,41 +164,41 @@ Alternatively you can set `ngSkipHydration` as a host binding.
 class ExampleComponent {}
 ```
 
-The `ngSkipHydration` attribute will force Angular to skip hydrating the entire component and its children. Using this attribute means that the component will behave as if hydration is not enabled, meaning it will destroy and re-render itself.
+Атрибут `ngSkipHydration` заставит Angular пропустить гидратацию всего Компонента и его дочерних элементов. Это означает, что Компонент будет вести себя так, как если бы Гидратация не была включена: он будет уничтожен и перерендерен заново.
 
-HELPFUL: This will fix rendering issues, but it means that for this component (and its children), you don't get the benefits of hydration. You will need to adjust your component's implementation to avoid hydration-breaking patterns (i.e. Direct DOM Manipulation) to be able to remove the skip hydration annotation.
+HELPFUL: Это исправит проблемы рендеринга, однако означает, что данный Компонент (и его дочерние элементы) не получат преимуществ Гидратации. Для возможности удаления аннотации skip hydration необходимо изменить реализацию Компонента, чтобы избежать паттернов, нарушающих Гидратацию (например, прямого манипулирования DOM).
 
-The `ngSkipHydration` attribute can only be used on component host nodes. Angular throws an error if this attribute is added to other nodes.
+Атрибут `ngSkipHydration` можно использовать только на узлах хоста Компонентов. Angular выбрасывает ошибку, если атрибут добавлен к другим узлам.
 
-Keep in mind that adding the `ngSkipHydration` attribute to your root application component would effectively disable hydration for your entire application. Be careful and thoughtful about using this attribute. It is intended as a last resort workaround. Components that break hydration should be considered bugs that need to be fixed.
+Имейте в виду, что добавление атрибута `ngSkipHydration` к корневому Компоненту приложения фактически отключит Гидратацию для всего приложения. Используйте этот атрибут осторожно и обдуманно. Он задуман как крайняя мера. Компоненты, нарушающие Гидратацию, следует рассматривать как баги, требующие исправления.
 
-## Hydration Timing and Application Stability
+## Тайминг Гидратации и стабильность приложения {#hydration-timing-and-application-stability}
 
-Application stability is an important part of the hydration process. Hydration and any post-hydration processes only occur once the application has reported stability. There are a number of ways that stability can be delayed. Examples include setting timeouts and intervals, unresolved promises, and pending microtasks. In those cases, you may encounter the [Application remains unstable](errors/NG0506) error, which indicates that your app has not yet reached the stable state after 10 seconds. If you're finding that your application is not hydrating right away, take a look at what is impacting application stability and refactor to avoid causing these delays.
+Стабильность приложения — важная часть процесса Гидратации. Гидратация и любые пост-гидратационные процессы выполняются только после того, как приложение сообщает о стабильности. Существует ряд причин, которые могут задержать достижение стабильности: установка таймаутов и интервалов, неразрешённые промисы и ожидающие микрозадачи. В таких случаях может возникнуть ошибка [Application remains unstable](errors/NG0506), указывающая, что приложение не достигло стабильного состояния за 10 секунд. Если приложение не гидратируется своевременно, выясните, что влияет на стабильность приложения, и выполните рефакторинг для устранения задержек.
 
-### Debugging Application Stability
+### Отладка стабильности приложения {#debugging-application-stability}
 
-The `provideStabilityDebugging` utility helps identify why your application fails to stabilize. This utility is provided by default in dev mode when using `provideClientHydration`. You can also add it manually to the application providers for use in production bundles or when using SSR without hydration, for example. The feature logs information to the console if the application takes longer than expected to stabilize.
+Утилита `provideStabilityDebugging` помогает определить причины нестабильности приложения. По умолчанию в режиме разработки она предоставляется при использовании `provideClientHydration`. Вы также можете добавить её вручную в провайдеры приложения для использования в production-бандлах или при SSR без Гидратации. Функция записывает в консоль информацию, если приложение дольше ожидаемого не стабилизируется.
 
 ```typescript
 import {provideStabilityDebugging} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
-import 'zone.js/plugins/task-tracking'; // Use if you have Zone.js with `provideZoneChangeDetection`
+import 'zone.js/plugins/task-tracking'; // Используйте, если Zone.js используется с `provideZoneChangeDetection`
 
 bootstrapApplication(App, {
   providers: [provideStabilityDebugging()],
 });
 ```
 
-When enabled, the utility logs pending tasks (`PendingTasks`) to the console. If your application uses Zone.js, you can also import `zone.js/plugins/task-tracking` to see which macrotasks are keeping the Angular Zone from stabilizing. This plugin provides the stack trace of the macrotask creation, effectively helping you identify the source of the delay.
+После включения утилита записывает в консоль ожидающие задачи (`PendingTasks`). Если приложение использует Zone.js, можно также импортировать `zone.js/plugins/task-tracking`, чтобы увидеть, какие макрозадачи не дают Angular Zone стабилизироваться. Этот плагин предоставляет трассировку стека создания макрозадачи, что помогает выявить источник задержки.
 
-IMPORTANT: Angular does not remove the zone.js task tracking plugin or this utility from production bundles. Use them only for temporary debugging of stability issues during development, including for optimized production builds.
+IMPORTANT: Angular не удаляет плагин отслеживания задач Zone.js и эту утилиту из production-бандлов. Используйте их только для временной отладки проблем со стабильностью в процессе разработки, включая оптимизированные production-сборки.
 
-## I18N
+## I18N {#i18n}
 
-HELPFUL: By default, Angular will skip hydration for components that use i18n blocks, effectively re-rendering those components from scratch.
+HELPFUL: По умолчанию Angular пропускает Гидратацию для Компонентов, использующих блоки i18n, фактически перерендеривая их с нуля.
 
-To enable hydration for i18n blocks, you can add [`withI18nSupport`](/api/platform-browser/withI18nSupport) to your `provideClientHydration` call.
+Чтобы включить Гидратацию для блоков i18n, добавьте [`withI18nSupport`](/api/platform-browser/withI18nSupport) в вызов `provideClientHydration`.
 
 ```typescript
 import {
@@ -213,18 +213,18 @@ bootstrapApplication(App, {
 });
 ```
 
-## Consistent rendering across server-side and client-side
+## Согласованный рендеринг на сервере и клиенте {#consistent-rendering-across-server-side-and-client-side}
 
-Avoid introducing `@if` blocks and other conditionals that display different content when server-side rendering than client-side rendering, such as using an `@if` block with Angular's `isPlatformBrowser` function. These rendering differences cause layout shifts, negatively impacting end-user experience and core web vitals.
+Избегайте добавления блоков `@if` и других условных конструкций, отображающих разный контент при SSR и CSR, — например, блоков `@if` с функцией Angular `isPlatformBrowser`. Такие различия в рендеринге вызывают сдвиги компоновки, негативно влияя на пользовательский опыт и Core Web Vitals.
 
-## Third Party Libraries with DOM Manipulation
+## Сторонние библиотеки с манипулированием DOM {#third-party-libraries-with-dom-manipulation}
 
-There are a number of third party libraries that depend on DOM manipulation to be able to render. D3 charts is a prime example. These libraries worked without hydration, but they may cause DOM mismatch errors when hydration is enabled. For now, if you encounter DOM mismatch errors using one of these libraries, you can add the `ngSkipHydration` attribute to the component that renders using that library.
+Существует ряд сторонних библиотек, которые зависят от манипулирования DOM для рендеринга. Типичный пример — графики D3. Эти библиотеки работали без Гидратации, но при её включении могут вызывать ошибки несоответствия DOM. На данный момент при возникновении таких ошибок можно добавить атрибут `ngSkipHydration` к Компоненту, выполняющему рендеринг с помощью данной библиотеки.
 
-## Third Party Scripts with DOM Manipulation
+## Сторонние скрипты с манипулированием DOM {#third-party-scripts-with-dom-manipulation}
 
-Many third party scripts, such as ad trackers and analytics, modify the DOM before hydration can occur. These scripts may cause hydration errors because the page no longer matches the structure expected by Angular. Prefer deferring this type of script until after hydration whenever possible. Consider using [`AfterNextRender`](api/core/afterNextRender) to delay the script until post-hydration processes have occurred.
+Многие сторонние скрипты — например, трекеры рекламы и аналитические системы — изменяют DOM до завершения Гидратации. Такие скрипты могут вызывать ошибки Гидратации, поскольку страница перестаёт соответствовать структуре, ожидаемой Angular. По возможности откладывайте выполнение таких скриптов до завершения Гидратации. Рассмотрите использование [`AfterNextRender`](api/core/afterNextRender) для задержки скрипта до завершения пост-гидратационных процессов.
 
-## Incremental Hydration
+## Инкрементная Гидратация {#incremental-hydration}
 
-Incremental hydration is an advanced form of hydration that allows for more granular control over when hydration happens. See the [incremental hydration guide](guide/incremental-hydration) for more information.
+Инкрементная Гидратация — это продвинутая форма Гидратации, обеспечивающая более детальный контроль над моментом гидратации. Подробнее: [руководство по инкрементной Гидратации](guide/incremental-hydration).

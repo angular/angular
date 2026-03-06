@@ -1,39 +1,39 @@
-# NgModules
+# NgModules {#ngmodules}
 
-IMPORTANT: The Angular team recommends using [standalone components](guide/components) instead of `NgModule` for all new code. Use this guide to understand existing code built with `@NgModule`.
+IMPORTANT: Команда Angular рекомендует использовать [автономные Компоненты](guide/components) вместо `NgModule` для всего нового кода. Используйте это руководство для понимания существующего кода, построенного с `@NgModule`.
 
-An NgModule is a class marked by the `@NgModule` decorator. This decorator accepts _metadata_ that tells Angular how to compile component templates and configure dependency injection.
+NgModule — это класс, помеченный декоратором `@NgModule`. Этот декоратор принимает _метаданные_, сообщающие Angular, как компилировать Шаблоны Компонентов и настраивать внедрение зависимостей.
 
 ```typescript
 import {NgModule} from '@angular/core';
 
 @NgModule({
-  // Metadata goes here
+  // Метаданные здесь
 })
 export class CustomMenuModule {}
 ```
 
-An NgModule has two main responsibilities:
+NgModule имеет две основные обязанности:
 
-- Declaring components, directives, and pipes that belong to the NgModule
-- Add providers to the injector for components, directives, and pipes that import the NgModule
+- Объявление Компонентов, Директив и пайпов, принадлежащих NgModule
+- Добавление провайдеров в инжектор для Компонентов, Директив и пайпов, импортирующих NgModule
 
-## Declarations
+## Declarations (Объявления) {#declarations}
 
-The `declarations` property of the `@NgModule` metadata declares the components, directives, and pipes that belong to the NgModule.
+Свойство `declarations` метаданных `@NgModule` объявляет Компоненты, Директивы и пайпы, принадлежащие NgModule.
 
 ```typescript
 @NgModule({
   /* ... */
-  // CustomMenu and CustomMenuItem are components.
+  // CustomMenu и CustomMenuItem — это Компоненты.
   declarations: [CustomMenu, CustomMenuItem],
 })
 export class CustomMenuModule {}
 ```
 
-In the example above, the components `CustomMenu` and `CustomMenuItem` belong to `CustomMenuModule`.
+В приведённом примере Компоненты `CustomMenu` и `CustomMenuItem` принадлежат `CustomMenuModule`.
 
-The `declarations` property additionally accepts _arrays_ of components, directives, and pipes. These arrays, in turn, may also contain other arrays.
+Свойство `declarations` также принимает _массивы_ Компонентов, Директив и пайпов. Эти массивы, в свою очередь, также могут содержать другие массивы.
 
 ```typescript
 const MENU_COMPONENTS = [CustomMenu, CustomMenuItem];
@@ -41,20 +41,20 @@ const WIDGETS = [MENU_COMPONENTS, CustomSlider];
 
 @NgModule({
   /* ... */
-  // This NgModule declares all of CustomMenu, CustomMenuItem,
-  // CustomSlider, and CustomCheckbox.
+  // Этот NgModule объявляет CustomMenu, CustomMenuItem,
+  // CustomSlider и CustomCheckbox.
   declarations: [WIDGETS, CustomCheckbox],
 })
 export class CustomMenuModule {}
 ```
 
-If Angular discovers any components, directives, or pipes declared in more than one NgModule, it reports an error.
+Если Angular обнаружит Компоненты, Директивы или пайпы, объявленные более чем в одном NgModule, он сообщит об ошибке.
 
-Any components, directives, or pipes must be explicitly marked as `standalone: false` in order to be declared in an NgModule.
+Любые Компоненты, Директивы или пайпы должны быть явно помечены как `standalone: false`, чтобы быть объявленными в NgModule.
 
 ```typescript
 @Component({
-  // Mark this component as `standalone: false` so that it can be declared in an NgModule.
+  // Пометить Компонент как `standalone: false`, чтобы он мог быть объявлен в NgModule.
   standalone: false,
   /* ... */
 })
@@ -63,66 +63,67 @@ export class CustomMenu {
 }
 ```
 
-### imports
+### imports (Импорты) {#imports}
 
-Components declared in an NgModule may depend on other components, directives, and pipes. Add these dependencies to the `imports` property of the `@NgModule` metadata.
+Компоненты, объявленные в NgModule, могут зависеть от других Компонентов, Директив и пайпов. Добавляйте эти зависимости в свойство `imports` метаданных `@NgModule`.
 
 ```typescript
 @NgModule({
   /* ... */
-  // CustomMenu and CustomMenuItem depend on the PopupTrigger and SelectorIndicator components.
+  // CustomMenu и CustomMenuItem зависят от Компонентов PopupTrigger и SelectorIndicator.
   imports: [PopupTrigger, SelectionIndicator],
   declarations: [CustomMenu, CustomMenuItem],
 })
 export class CustomMenuModule {}
 ```
 
-The `imports` array accepts other NgModules, as well as standalone components, directives, and pipes.
+Массив `imports` принимает другие NgModule, а также автономные Компоненты, Директивы и пайпы.
 
-### exports
+### exports (Экспорты) {#exports}
 
-An NgModule can _export_ its declared components, directives, and pipes such that they're available to other components and NgModules.
+NgModule может _экспортировать_ объявленные им Компоненты, Директивы и пайпы, делая их доступными для других Компонентов и NgModule.
 
 ```typescript
 @NgModule({
   imports: [PopupTrigger, SelectionIndicator],
   declarations: [CustomMenu, CustomMenuItem],
 
-  // Make CustomMenu and CustomMenuItem available to
-  // components and NgModules that import CustomMenuModule.
+  // Сделать CustomMenu и CustomMenuItem доступными для
+  // Компонентов и NgModule, импортирующих CustomMenuModule.
   exports: [CustomMenu, CustomMenuItem],
 })
 export class CustomMenuModule {}
 ```
 
-The `exports` property is not limited to declarations, however. An NgModule can also export any other components, directives, pipes, and NgModules that it imports.
+Свойство `exports` не ограничивается только объявлениями. NgModule также может экспортировать любые другие Компоненты, Директивы, пайпы и NgModule, которые он импортирует.
 
 ```typescript
 @NgModule({
   imports: [PopupTrigger, SelectionIndicator],
   declarations: [CustomMenu, CustomMenuItem],
 
-  // Also make PopupTrigger available to any component or NgModule that imports CustomMenuModule.
+  // Также сделать PopupTrigger доступным для любого Компонента или NgModule,
+  // импортирующего CustomMenuModule.
   exports: [CustomMenu, CustomMenuItem, PopupTrigger],
 })
 export class CustomMenuModule {}
 ```
 
-## `NgModule` providers
+## Провайдеры `NgModule` {#ngmodule-providers}
 
-TIP: See the [Dependency Injection guide](guide/di) for information on dependency injection and providers.
+TIP: Информация о внедрении зависимостей и провайдерах: [руководство по внедрению зависимостей](guide/di).
 
-An `NgModule` can specify `providers` for injected dependencies. These providers are available to:
+`NgModule` может задавать `providers` для инъектируемых зависимостей. Эти провайдеры доступны:
 
-- Any standalone component, directive, or pipe that imports the NgModule, and
-- The `declarations` and `providers` of any _other_ NgModule that imports the NgModule.
+- Любому автономному Компоненту, Директиве или пайпу, импортирующему NgModule, а также
+- `declarations` и `providers` любого _другого_ NgModule, импортирующего данный NgModule.
 
 ```typescript
 @NgModule({
   imports: [PopupTrigger, SelectionIndicator],
   declarations: [CustomMenu, CustomMenuItem],
 
-  // Provide the OverlayManager service
+  // Предоставить Сервис OverlayManager
   providers: [OverlayManager],
   /* ... */
 })
@@ -136,44 +137,44 @@ export class CustomMenuModule {}
 export class UserProfileModule {}
 ```
 
-In the example above:
+В приведённом примере:
 
-- The `CustomMenuModule` provides `OverlayManager`.
-- The `CustomMenu` and `CustomMenuItem` components can inject `OverlayManager` because they're declared in `CustomMenuModule`.
-- `UserProfile` can inject `OverlayManager` because its NgModule imports `CustomMenuModule`.
-- `UserDataClient` can inject `OverlayManager` because its NgModule imports `CustomMenuModule`.
+- `CustomMenuModule` предоставляет `OverlayManager`.
+- Компоненты `CustomMenu` и `CustomMenuItem` могут внедрять `OverlayManager`, поскольку объявлены в `CustomMenuModule`.
+- `UserProfile` может внедрять `OverlayManager`, поскольку его NgModule импортирует `CustomMenuModule`.
+- `UserDataClient` может внедрять `OverlayManager`, поскольку его NgModule импортирует `CustomMenuModule`.
 
-### The `forRoot` and `forChild` pattern
+### Паттерн `forRoot` и `forChild` {#the-forroot-and-forchild-pattern}
 
-Some NgModules define a static `forRoot` method that accepts some configuration and returns an array of providers. The name "`forRoot`" is a convention that indicates that these providers are intended to be added exclusively to the _root_ of your application during bootstrap.
+Некоторые NgModule определяют статический метод `forRoot`, принимающий конфигурацию и возвращающий массив провайдеров. Название «`forRoot`» — это соглашение, указывающее, что эти провайдеры предназначены для добавления исключительно в _корень_ приложения при загрузке.
 
-Any providers included in this way are eagerly loaded, increasing the JavaScript bundle size of your initial page load.
+Провайдеры, включённые таким образом, загружаются нетерпеливо, увеличивая размер JavaScript-бандла начальной загрузки.
 
 ```typescript
 bootstrapApplication(MyApplicationRoot, {
-  providers: [CustomMenuModule.forRoot(/* some config */)],
+  providers: [CustomMenuModule.forRoot(/* некая конфигурация */)],
 });
 ```
 
-Similarly, some NgModules may define a static `forChild` that indicates the providers are intended to be added to components within your application hierarchy.
+Аналогично, некоторые NgModule могут определять статический метод `forChild`, указывающий, что провайдеры предназначены для добавления к Компонентам в иерархии приложения.
 
 ```typescript
 @Component({
   /* ... */
-  providers: [CustomMenuModule.forChild(/* some config */)],
+  providers: [CustomMenuModule.forChild(/* некая конфигурация */)],
 })
 export class UserProfile {
   /* ... */
 }
 ```
 
-## Bootstrapping an application
+## Загрузка приложения {#bootstrapping-an-application}
 
-IMPORTANT: The Angular team recommends using [bootstrapApplication](api/platform-browser/bootstrapApplication) instead of `bootstrapModule` for all new code. Use this guide to understand existing applications bootstrapped with `@NgModule`.
+IMPORTANT: Команда Angular рекомендует использовать [bootstrapApplication](api/platform-browser/bootstrapApplication) вместо `bootstrapModule` для всего нового кода. Используйте это руководство для понимания существующих приложений, загружаемых с `@NgModule`.
 
-The `@NgModule` decorator accepts an optional `bootstrap` array that may contain one or more components.
+Декоратор `@NgModule` принимает необязательный массив `bootstrap`, который может содержать один или несколько Компонентов.
 
-You can use the [`bootstrapModule`](/api/core/PlatformRef#bootstrapModule) method from either [`platformBrowser`](api/platform-browser/platformBrowser) or [`platformServer`](api/platform-server/platformServer) to start an Angular application. When run, this function locates any elements on the page with a CSS selector that matches the listed component(s) and renders those components on the page.
+Для запуска Angular-приложения можно использовать метод [`bootstrapModule`](/api/core/PlatformRef#bootstrapModule) из [`platformBrowser`](api/platform-browser/platformBrowser) или [`platformServer`](api/platform-server/platformServer). При запуске функция находит элементы на странице с CSS-селектором, соответствующим перечисленным Компонентам, и рендерит их на странице.
 
 ```typescript
 import {platformBrowser} from '@angular/platform-browser';
@@ -186,6 +187,6 @@ export class MyApplicationModule {}
 platformBrowser().bootstrapModule(MyApplicationModule);
 ```
 
-Components listed in `bootstrap` are automatically included in the NgModule's declarations.
+Компоненты, указанные в `bootstrap`, автоматически включаются в объявления NgModule.
 
-When you bootstrap an application from an NgModule, the collected `providers` of this module and all of the `providers` of its `imports` are eagerly loaded and available to inject for the entire application.
+При загрузке приложения из NgModule собранные `providers` этого модуля и все `providers` его `imports` загружаются нетерпеливо и доступны для внедрения во всём приложении.

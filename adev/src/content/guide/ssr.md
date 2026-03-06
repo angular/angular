@@ -1,32 +1,32 @@
-# Server and hybrid rendering
+# Серверный и гибридный рендеринг {#server-and-hybrid-rendering}
 
-Angular ships all applications as client-side rendered (CSR) by default. While this approach delivers an initial payload that's lightweight, it introduces trade-offs including slower load times, degraded performance metrics, and higher resource demands since the user's device performs most of the computations. As a result, many applications achieve significant performance improvements by integrating server-side rendering (SSR) into a hybrid rendering strategy.
+По умолчанию Angular собирает все приложения с рендерингом на стороне клиента (CSR). Хотя этот подход обеспечивает лёгкую начальную полезную нагрузку, он имеет компромиссы: более медленное время загрузки, ухудшенные метрики производительности и повышенные требования к ресурсам, поскольку большую часть вычислений выполняет устройство пользователя. В результате многие приложения достигают значительного улучшения производительности за счёт интеграции SSR (Рендеринга на стороне сервера) в стратегию гибридного рендеринга.
 
-## What is hybrid rendering?
+## Что такое гибридный рендеринг? {#what-is-hybrid-rendering}
 
-Hybrid rendering allows developers to leverage the benefits of server-side rendering (SSR), pre-rendering (also known as "static site generation" or SSG) and client-side rendering (CSR) to optimize your Angular application. It gives you fine-grained control over how the different parts of your app are rendered to give your users the best experience possible.
+Гибридный рендеринг позволяет разработчикам использовать преимущества SSR (Рендеринга на стороне сервера), предварительного рендеринга (также известного как «статическая генерация сайта» или SSG) и CSR для оптимизации Angular-приложения. Он даёт детальный контроль над тем, как рендерятся различные части приложения, чтобы обеспечить пользователям наилучший опыт.
 
-## Setting up hybrid rendering
+## Настройка гибридного рендеринга {#setting-up-hybrid-rendering}
 
-You can create a **new** project with hybrid rendering by using the server-side rendering flag (i.e., `--ssr`) with the Angular CLI `ng new` command:
+Создать **новый** проект с гибридным рендерингом можно с помощью флага SSR (т.е. `--ssr`) команды Angular CLI `ng new`:
 
 ```shell
 ng new --ssr
 ```
 
-You can also enable hybrid rendering by adding server-side rendering to an existing project with the `ng add` command:
+Также можно включить гибридный рендеринг в существующем проекте командой `ng add`:
 
 ```shell
 ng add @angular/ssr
 ```
 
-NOTE: By default, Angular prerenders your entire application and generates a server file. To disable this and create a fully static app, set `outputMode` to `static`. To enable SSR, update the server routes to use `RenderMode.Server`. For more details, see [`Server routing`](#server-routing) and [`Generate a fully static application`](#generate-a-fully-static-application).
+NOTE: По умолчанию Angular предварительно рендерит всё приложение и генерирует серверный файл. Чтобы отключить это и создать полностью статическое приложение, задайте `outputMode` равным `static`. Чтобы включить SSR, обновите серверные маршруты, указав `RenderMode.Server`. Подробнее: [`Серверные маршруты`](#server-routing) и [`Генерация полностью статического приложения`](#generate-a-fully-static-application).
 
-## Server routing
+## Серверные маршруты {#server-routing}
 
-### Configuring server routes
+### Настройка серверных маршрутов {#configuring-server-routes}
 
-You can create a server route config by declaring an array of [`ServerRoute`](api/ssr/ServerRoute 'API reference') objects. This configuration typically lives in a file named `app.routes.server.ts`.
+Конфигурацию серверных маршрутов можно создать, объявив массив объектов [`ServerRoute`](api/ssr/ServerRoute 'API reference'). Обычно эта конфигурация хранится в файле `app.routes.server.ts`.
 
 ```typescript
 // app.routes.server.ts
@@ -34,25 +34,25 @@ import {RenderMode, ServerRoute} from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
-    path: '', // This renders the "/" route on the client (CSR)
+    path: '', // Этот маршрут рендерится на клиенте (CSR)
     renderMode: RenderMode.Client,
   },
   {
-    path: 'about', // This page is static, so we prerender it (SSG)
+    path: 'about', // Эта страница статична, поэтому мы предварительно рендерим её (SSG)
     renderMode: RenderMode.Prerender,
   },
   {
-    path: 'profile', // This page requires user-specific data, so we use SSR
+    path: 'profile', // Эта страница требует данных, специфичных для пользователя, поэтому используем SSR
     renderMode: RenderMode.Server,
   },
   {
-    path: '**', // All other routes will be rendered on the server (SSR)
+    path: '**', // Все остальные маршруты рендерятся на сервере (SSR)
     renderMode: RenderMode.Server,
   },
 ];
 ```
 
-You can add this config to your application with [`provideServerRendering`](api/ssr/provideServerRendering 'API reference') using the [`withRoutes`](api/ssr/withRoutes 'API reference') function:
+Добавьте эту конфигурацию в приложение с помощью [`provideServerRendering`](api/ssr/provideServerRendering 'API reference'), используя функцию [`withRoutes`](api/ssr/withRoutes 'API reference'):
 
 ```typescript
 import {provideServerRendering, withRoutes} from '@angular/ssr';
@@ -62,12 +62,12 @@ import {serverRoutes} from './app.routes.server';
 const serverConfig: ApplicationConfig = {
   providers: [
     provideServerRendering(withRoutes(serverRoutes)),
-    // ... other providers ...
+    // ... другие провайдеры ...
   ],
 };
 ```
 
-When using the [App shell pattern](ecosystem/service-workers/app-shell), you must specify the component to be used as the app shell for client-side rendered routes. To do this, use the [`withAppShell`](api/ssr/withAppShell 'API reference') feature:
+При использовании [паттерна App shell](ecosystem/service-workers/app-shell) необходимо указать Компонент, используемый в качестве app shell для маршрутов с CSR. Для этого используйте возможность [`withAppShell`](api/ssr/withAppShell 'API reference'):
 
 ```typescript
 import {provideServerRendering, withRoutes, withAppShell} from '@angular/ssr';
@@ -76,66 +76,66 @@ import {AppShell} from './app-shell';
 const serverConfig: ApplicationConfig = {
   providers: [
     provideServerRendering(withRoutes(serverRoutes), withAppShell(AppShell)),
-    // ... other providers ...
+    // ... другие провайдеры ...
   ],
 };
 ```
 
-### Rendering modes
+### Режимы рендеринга {#rendering-modes}
 
-The server routing configuration lets you specify how each route in your application should render by setting a [`RenderMode`](api/ssr/RenderMode 'API reference'):
+Конфигурация серверных маршрутов позволяет задать способ рендеринга каждого маршрута приложения, установив [`RenderMode`](api/ssr/RenderMode 'API reference'):
 
-| Rendering mode      | Description                                                                                                 |
-| ------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Server (SSR)**    | Renders the application on the server for each request, sending a fully populated HTML page to the browser. |
-| **Client (CSR)**    | Renders the application in the browser. This is the default Angular behavior.                               |
-| **Prerender (SSG)** | Prerenders the application at build time, generating static HTML files for each route.                      |
+| Режим рендеринга    | Описание                                                                                                            |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Server (SSR)**    | Рендерит приложение на сервере для каждого запроса, отправляя браузеру полностью заполненную HTML-страницу.         |
+| **Client (CSR)**    | Рендерит приложение в браузере. Это поведение Angular по умолчанию.                                                |
+| **Prerender (SSG)** | Предварительно рендерит приложение во время сборки, генерируя статические HTML-файлы для каждого маршрута.          |
 
-#### Choosing a rendering mode
+#### Выбор режима рендеринга {#choosing-a-rendering-mode}
 
-Each rendering mode has different benefits and drawbacks. You can choose rendering modes based on the specific needs of your application.
+Каждый режим рендеринга имеет свои преимущества и недостатки. Выбирайте режим исходя из конкретных потребностей вашего приложения.
 
-##### Client-side rendering (CSR)
+##### Рендеринг на стороне клиента (CSR) {#client-side-rendering-csr}
 
-Client-side rendering has the simplest development model, as you can write code that assumes it always runs in a web browser. This lets you use a wide range of client-side libraries that also assume they run in a browser.
+CSR предлагает наиболее простую модель разработки, поскольку можно писать код, предполагая, что он всегда выполняется в браузере. Это позволяет использовать широкий спектр клиентских библиотек, которые также рассчитаны на работу в браузере.
 
-Client-side rendering generally has worse performance than other rendering modes, as it must download, parse, and execute your page's JavaScript before the user can see any rendered content. If your page fetches more data from the server as it renders, users also have to wait for those additional requests before they can view the complete content.
+CSR, как правило, уступает другим режимам по производительности, поскольку браузер должен загрузить, разобрать и выполнить JavaScript вашей страницы, прежде чем пользователь увидит отрендеренный контент. Если страница дополнительно запрашивает данные с сервера в процессе рендеринга, пользователю придётся ждать и этих запросов.
 
-If your page is indexed by search crawlers, client-side rendering may negatively affect search engine optimization (SEO), as search crawlers have limits to how much JavaScript they execute when indexing a page.
+Если страница индексируется поисковыми роботами, CSR может негативно влиять на SEO, поскольку роботы ограничены в объёме выполняемого JavaScript при индексировании.
 
-When client-side rendering, the server does not need to do any work to render a page beyond serving static JavaScript assets. You may consider this factor if server cost is a concern.
+При CSR серверу не нужно выполнять никакой работы по рендерингу страницы — достаточно обслуживать статические JavaScript-ресурсы. Это следует учитывать, если важна стоимость серверных ресурсов.
 
-Applications that support installable, offline experiences with [service workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) can rely on client-side rendering without needing to communicate with a server.
+Приложения, поддерживающие установку и работу в офлайн-режиме с помощью [service workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API), могут полагаться на CSR без необходимости обращения к серверу.
 
-##### Server-side rendering (SSR)
+##### SSR (Рендеринг на стороне сервера) {#server-side-rendering-ssr}
 
-Server-side rendering offers faster page loads than client-side rendering. Instead of waiting for JavaScript to download and run, the server directly renders an HTML document upon receiving a request from the browser. The user experiences only the latency necessary for the server to fetch data and render the requested page. This mode also eliminates the need for additional network requests from the browser, as your code can fetch data during rendering on the server.
+SSR обеспечивает более быструю загрузку страниц по сравнению с CSR. Вместо ожидания загрузки и запуска JavaScript сервер напрямую рендерит HTML-документ при получении запроса от браузера. Пользователь испытывает только задержку, необходимую серверу для получения данных и рендеринга запрошенной страницы. Этот режим также исключает необходимость дополнительных сетевых запросов из браузера, поскольку код может получать данные в процессе серверного рендеринга.
 
-Server-side rendering generally has excellent search engine optimization (SEO), as search crawlers receive a fully rendered HTML document.
+SSR, как правило, обеспечивает отличное SEO, поскольку поисковые роботы получают полностью отрендеренный HTML-документ.
 
-Server-side rendering requires you to author code that does not strictly depend on browser APIs and limits your selection of JavaScript libraries that assume they run in a browser.
+SSR требует написания кода, не зависящего строго от браузерных API, и ограничивает выбор JavaScript-библиотек, рассчитанных на работу в браузере.
 
-When server-side rendering, your server runs Angular to produce an HTML response for every request which may increase server hosting costs.
+При SSR сервер запускает Angular для формирования HTML-ответа на каждый запрос, что может увеличить расходы на хостинг.
 
-##### Build-time prerendering
+##### Предварительный рендеринг во время сборки {#build-time-prerendering}
 
-Prerendering offers faster page loads than both client-side rendering and server-side rendering. Because prerendering creates HTML documents at _build-time_, the server can directly respond to requests with the static HTML document without any additional work.
+Предварительный рендеринг обеспечивает более быструю загрузку страниц по сравнению и с CSR, и с SSR. Поскольку HTML-документы создаются _во время сборки_, сервер может напрямую отвечать на запросы статическим HTML-документом без какой-либо дополнительной работы.
 
-Prerendering requires that all information necessary to render a page is available at _build-time_. This means that prerendered pages cannot include any data to the specific user loading the page. Prerendering is primarily useful for pages that are the same for all users of your application.
+Предварительный рендеринг требует, чтобы вся информация, необходимая для рендеринга страницы, была доступна _во время сборки_. Это означает, что предварительно отрендеренные страницы не могут содержать данные, специфичные для конкретного пользователя. Предварительный рендеринг наиболее полезен для страниц, одинаковых для всех пользователей.
 
-Because prerendering occurs at build-time, it may add significant time to your production builds. Using [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') to produce a large number of HTML documents may affect the total file size of your deployments, and thus lead to slower deployments.
+Поскольку предварительный рендеринг выполняется во время сборки, он может значительно увеличить время production-сборок. Использование [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') для генерации большого количества HTML-документов может повлиять на общий размер файлов деплоя и, следовательно, замедлить развёртывание.
 
-Prerendering generally has excellent search engine optimization (SEO), as search crawlers receive a fully rendered HTML document.
+Предварительный рендеринг, как правило, обеспечивает отличное SEO, поскольку поисковые роботы получают полностью отрендеренный HTML-документ.
 
-Prerendering requires you to author code that does not strictly depend on browser APIs and limits your selection of JavaScript libraries that assume they run in a browser.
+Предварительный рендеринг требует написания кода, не зависящего строго от браузерных API, и ограничивает выбор JavaScript-библиотек, рассчитанных на работу в браузере.
 
-Prerendering incurs extremely little overhead per server request, as your server responds with static HTML documents. Static files are also easily cached by Content Delivery Networks (CDNs), browsers, and intermediate caching layers for even faster subsequent page loads. Fully static sites can also be deployed solely through a CDN or static file server, eliminating the need to maintain a custom server runtime for your application. This enhances scalability by offloading work from an application web server, making it particularly beneficial for high-traffic applications.
+Предварительный рендеринг создаёт минимальные накладные расходы на каждый запрос: сервер отвечает статическими HTML-документами. Статические файлы также легко кешируются CDN-сетями, браузерами и промежуточными слоями кеширования, обеспечивая ещё более быструю последующую загрузку. Полностью статические сайты можно развёртывать исключительно через CDN или сервер статических файлов, исключая необходимость поддержки пользовательского серверного окружения. Это повышает масштабируемость за счёт разгрузки веб-сервера приложения, что особенно выгодно для высоконагруженных приложений.
 
-NOTE: When using Angular service worker, the first request is server-rendered, but all subsequent requests are handled by the service worker and rendered client-side.
+NOTE: При использовании Angular service worker первый запрос рендерится на сервере, но все последующие обрабатываются service worker и рендерятся на стороне клиента.
 
-### Setting headers and status codes
+### Установка заголовков и статус-кодов {#setting-headers-and-status-codes}
 
-You can set custom headers and status codes for individual server routes using the `headers` and `status` properties in the `ServerRoute` configuration.
+Для отдельных серверных маршрутов можно задавать пользовательские заголовки и статус-коды, используя свойства `headers` и `status` в конфигурации `ServerRoute`.
 
 ```typescript
 // app.routes.server.ts
@@ -150,33 +150,33 @@ export const serverRoutes: ServerRoute[] = [
     },
     status: 201,
   },
-  // ... other routes
+  // ... другие маршруты
 ];
 ```
 
-### Redirects
+### Перенаправления {#redirects}
 
-Angular handles redirects specified by the [`redirectTo`](api/router/Route#redirectTo 'API reference') property in route configurations, differently on the server-side.
+Angular по-разному обрабатывает перенаправления, заданные свойством [`redirectTo`](api/router/Route#redirectTo 'API reference') в конфигурации маршрутов, на стороне сервера.
 
-**Server-Side Rendering (SSR)**
-Redirects are performed using standard HTTP redirects (e.g., 301, 302) within the server-side rendering process.
+**SSR (Рендеринг на стороне сервера)**
+Перенаправления выполняются через стандартные HTTP-перенаправления (например, 301, 302) в процессе SSR.
 
-**Prerendering (SSG)**
-Redirects are implemented as "soft redirects" using [`<meta http-equiv="refresh">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta#refresh) tags in the prerendered HTML.
+**Предварительный рендеринг (SSG)**
+Перенаправления реализуются как «мягкие перенаправления» с использованием тегов [`<meta http-equiv="refresh">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta#refresh) в предварительно отрендеренном HTML.
 
-### Customizing build-time prerendering (SSG)
+### Настройка предварительного рендеринга во время сборки (SSG) {#customizing-build-time-prerendering-ssg}
 
-When using [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'), you can specify several configuration options to customize the prerendering and serving process.
+При использовании [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference') можно задавать несколько параметров конфигурации для настройки процесса предварительного рендеринга и обслуживания.
 
-#### Parameterized routes
+#### Параметризованные маршруты {#parameterized-routes}
 
-For each route with [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'), you can specify a [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') function. This function lets you control which specific parameters produce separate prerendered documents.
+Для каждого маршрута с [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference') можно задать функцию [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference'). Эта функция позволяет управлять тем, какие конкретные параметры создают отдельные предварительно отрендеренные документы.
 
-The [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') function returns a `Promise` that resolves to an array of objects. Each object is a key-value map of route parameter name to value. For example, if you define a route like `post/:id`, `getPrerenderParams ` could return the array `[{id: 123}, {id: 456}]`, and thus render separate documents for `post/123` and `post/456`.
+Функция [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') возвращает `Promise`, который разрешается в массив объектов. Каждый объект — это карта «имя параметра маршрута → значение». Например, для маршрута `post/:id` функция `getPrerenderParams` может вернуть массив `[{id: 123}, {id: 456}]` и таким образом создать отдельные документы для `post/123` и `post/456`.
 
-The body of [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') can use Angular's [`inject`](api/core/inject 'API reference') function to inject dependencies and perform any work to determine which routes to prerender. This typically includes making requests to fetch data to construct the array of parameter values.
+В теле [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') можно использовать функцию Angular [`inject`](api/core/inject 'API reference') для внедрения зависимостей и выполнения любой работы по определению маршрутов для предварительного рендеринга. Как правило, это включает запросы на получение данных для построения массива значений параметров.
 
-You can also use this function with catch-all routes (e.g., `/**`), where the parameter name will be `"**"` and the return value will be the segments of the path, such as `foo/bar`. These can be combined with other parameters (e.g., `/post/:id/**`) to handle more complex route configuration.
+Также можно использовать эту функцию с catch-all маршрутами (например, `/**`), где имя параметра будет `"**"`, а возвращаемым значением — сегменты пути, например `foo/bar`. Их можно комбинировать с другими параметрами (например, `/post/:id/**`) для обработки более сложных конфигураций маршрутов.
 
 ```ts
 // app.routes.server.ts
@@ -188,9 +188,9 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
     async getPrerenderParams() {
       const dataService = inject(PostService);
-      const ids = await dataService.getIds(); // Assuming this returns ['1', '2', '3']
+      const ids = await dataService.getIds(); // Предположим, возвращает ['1', '2', '3']
 
-      return ids.map((id) => ({id})); // Generates paths like: /post/1, /post/2, /post/3
+      return ids.map((id) => ({id})); // Генерирует пути: /post/1, /post/2, /post/3
     },
   },
   {
@@ -200,25 +200,25 @@ export const serverRoutes: ServerRoute[] = [
       return [
         {id: '1', '**': 'foo/3'},
         {id: '2', '**': 'bar/4'},
-      ]; // Generates paths like: /post/1/foo/3, /post/2/bar/4
+      ]; // Генерирует пути: /post/1/foo/3, /post/2/bar/4
     },
   },
 ];
 ```
 
-Because [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') exclusively applies to [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'), this function always runs at _build-time_. `getPrerenderParams` must not rely on any browser-specific or server-specific APIs for data.
+Поскольку [`getPrerenderParams`](api/ssr/ServerRoutePrerenderWithParams#getPrerenderParams 'API reference') применяется исключительно к [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference'), эта функция всегда выполняется _во время сборки_. `getPrerenderParams` не должна зависеть от браузерных или серверных API для получения данных.
 
-IMPORTANT: When using [`inject`](api/core/inject 'API reference') inside `getPrerenderParams`, please remember that `inject` must be used synchronously. It cannot be invoked within asynchronous callbacks or following any `await` statements. For more information, refer to `runInInjectionContext`.
+IMPORTANT: При использовании [`inject`](api/core/inject 'API reference') внутри `getPrerenderParams` помните, что `inject` должен использоваться синхронно. Его нельзя вызывать внутри асинхронных коллбэков или после выражений `await`. Подробнее см. `runInInjectionContext`.
 
-#### Fallback strategies
+#### Стратегии запасного варианта {#fallback-strategies}
 
-When using [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference') mode, you can specify a fallback strategy to handle requests for paths that haven't been prerendered.
+При использовании режима [`RenderMode.Prerender`](api/ssr/RenderMode#Prerender 'API reference') можно задать стратегию запасного варианта для обработки запросов к маршрутам, которые не были предварительно отрендерены.
 
-The available fallback strategies are:
+Доступные стратегии запасного варианта:
 
-- **Server:** Falls back to server-side rendering. This is the **default** behavior if no `fallback` property is specified.
-- **Client:** Falls back to client-side rendering.
-- **None:** No fallback. Angular will not handle requests for paths that are not prerendered.
+- **Server:** Откат на SSR. Это **поведение по умолчанию**, если свойство `fallback` не задано.
+- **Client:** Откат на CSR.
+- **None:** Нет запасного варианта. Angular не будет обрабатывать запросы к маршрутам, которые не были предварительно отрендерены.
 
 ```ts
 // app.routes.server.ts
@@ -228,22 +228,22 @@ export const serverRoutes: ServerRoute[] = [
   {
     path: 'post/:id',
     renderMode: RenderMode.Prerender,
-    fallback: PrerenderFallback.Client, // Fallback to CSR if not prerendered
+    fallback: PrerenderFallback.Client, // Откат на CSR, если не предварительно отрендерено
     async getPrerenderParams() {
-      // This function returns an array of objects representing prerendered posts at the paths:
-      // `/post/1`, `/post/2`, and `/post/3`.
-      // The path `/post/4` will utilize the fallback behavior if it's requested.
+      // Эта функция возвращает массив объектов, представляющих предварительно
+      // отрендеренные посты по путям: `/post/1`, `/post/2` и `/post/3`.
+      // Путь `/post/4` будет использовать запасной вариант при запросе.
       return [{id: 1}, {id: 2}, {id: 3}];
     },
   },
 ];
 ```
 
-## Authoring server-compatible components
+## Создание компонентов, совместимых с сервером {#authoring-server-compatible-components}
 
-Some common browser APIs and capabilities might not be available on the server. Applications cannot make use of browser-specific global objects like `window`, `document`, `navigator`, or `location` as well as certain properties of `HTMLElement`.
+Некоторые распространённые браузерные API и возможности могут быть недоступны на сервере. Приложения не могут использовать браузерные глобальные объекты, такие как `window`, `document`, `navigator` или `location`, а также некоторые свойства `HTMLElement`.
 
-In general, code which relies on browser-specific symbols should only be executed in the browser, not on the server. This can be enforced through the `afterEveryRender` and `afterNextRender` lifecycle hooks. These are only executed on the browser and skipped on the server.
+В общем случае код, зависящий от браузерных символов, должен выполняться только в браузере, а не на сервере. Это обеспечивается с помощью хуков жизненного цикла `afterEveryRender` и `afterNextRender`. Они выполняются только в браузере и пропускаются на сервере.
 
 ```angular-ts
 import {Component, viewChild, afterNextRender} from '@angular/core';
@@ -257,27 +257,27 @@ export class MyComponent {
 
   constructor() {
     afterNextRender(() => {
-      // Safe to check `scrollHeight` because this will only run in the browser, not the server.
+      // Безопасно проверять `scrollHeight`, поскольку это выполняется только в браузере, не на сервере.
       console.log('content height: ' + this.contentRef().nativeElement.scrollHeight);
     });
   }
 }
 ```
 
-NOTE: Prefer [platform-specific providers](guide/ssr#providing-platform-specific-implementations) over runtime checks with `isPlatformBrowser` or `isPlatformServer`.
+NOTE: Предпочтительнее использовать [платформо-специфичные провайдеры](guide/ssr#providing-platform-specific-implementations) вместо проверок `isPlatformBrowser` или `isPlatformServer` во время выполнения.
 
-IMPORTANT: Avoid using `isPlatformBrowser` in templates with `@if` or other conditionals to render different content on server and client. This causes hydration mismatches and layout shifts, negatively impacting user experience and [Core Web Vitals](https://web.dev/learn-core-web-vitals/). Instead, use `afterNextRender` for browser-specific initialization and keep rendered content consistent across platforms.
+IMPORTANT: Избегайте использования `isPlatformBrowser` в Шаблонах с `@if` или другими условными конструкциями для рендеринга разного контента на сервере и клиенте. Это вызывает несоответствия Гидратации и сдвиги компоновки, негативно влияя на пользовательский опыт и [Core Web Vitals](https://web.dev/learn-core-web-vitals/). Вместо этого используйте `afterNextRender` для инициализации, специфичной для браузера, и сохраняйте отрендеренный контент согласованным на всех платформах.
 
-## Setting providers on the server
+## Настройка провайдеров на сервере {#setting-providers-on-the-server}
 
-On the server side, top level provider values are set once when the application code is initially parsed and evaluated.
-This means that providers configured with `useValue` will keep their value across multiple requests, until the server application is restarted.
+На стороне сервера значения провайдеров верхнего уровня задаются один раз при первоначальном разборе и выполнении кода приложения.
+Это означает, что провайдеры, настроенные с `useValue`, сохранят своё значение при нескольких запросах до перезапуска серверного приложения.
 
-If you want to generate a new value for each request, use a factory provider with `useFactory`. The factory function will run for every incoming request, ensuring that a new value is created and assigned to the token each time.
+Если нужно генерировать новое значение для каждого запроса, используйте фабричный провайдер с `useFactory`. Фабричная функция будет выполняться для каждого входящего запроса, гарантируя, что каждый раз будет создаваться и присваиваться токену новое значение.
 
-## Providing platform-specific implementations
+## Предоставление платформо-специфичных реализаций {#providing-platform-specific-implementations}
 
-When your application needs different behavior on the browser and server, provide separate service implementations for each platform. This approach centralizes platform logic in dedicated services.
+Когда приложению требуется разное поведение в браузере и на сервере, предоставьте отдельные реализации Сервиса для каждой платформы. Этот подход централизует логику платформы в специализированных Сервисах.
 
 ```ts
 export abstract class AnalyticsService {
@@ -285,29 +285,29 @@ export abstract class AnalyticsService {
 }
 ```
 
-Create the browser implementation:
+Создайте реализацию для браузера:
 
 ```ts
 @Injectable()
 export class BrowserAnalyticsService implements AnalyticsService {
   trackEvent(name: string): void {
-    // Sends the event to the browser-based third-party analytics provider
+    // Отправляет событие стороннему провайдеру аналитики на основе браузера
   }
 }
 ```
 
-Create the server implementation:
+Создайте серверную реализацию:
 
 ```ts
 @Injectable()
 export class ServerAnalyticsService implements AnalyticsService {
   trackEvent(name: string): void {
-    // Records the event on the server
+    // Записывает событие на сервере
   }
 }
 ```
 
-Register the browser implementation in your main application configuration:
+Зарегистрируйте браузерную реализацию в основной конфигурации приложения:
 
 ```ts
 // app.config.ts
@@ -316,7 +316,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-Override with the server implementation in your server configuration:
+Переопределите серверной реализацией в конфигурации сервера:
 
 ```ts
 // app.config.server.ts
@@ -325,7 +325,7 @@ const serverConfig: ApplicationConfig = {
 };
 ```
 
-Inject and use the service in your components:
+Внедряйте и используйте Сервис в Компонентах:
 
 ```ts
 @Component({
@@ -340,9 +340,9 @@ export class Checkout {
 }
 ```
 
-## Accessing Document via DI
+## Доступ к Document через DI {#accessing-document-via-di}
 
-When working with server-side rendering, you should avoid directly referencing browser-specific globals like `document`. Instead, use the [`DOCUMENT`](api/core/DOCUMENT) token to access the document object in a platform-agnostic way.
+При работе с SSR следует избегать прямых ссылок на браузерные глобальные объекты, такие как `document`. Вместо этого используйте токен [`DOCUMENT`](api/core/DOCUMENT) для доступа к объекту document платформо-независимым способом.
 
 ```ts
 import {Injectable, inject, DOCUMENT} from '@angular/core';
@@ -351,8 +351,8 @@ import {Injectable, inject, DOCUMENT} from '@angular/core';
 export class CanonicalLinkService {
   private readonly document = inject(DOCUMENT);
 
-  // During server rendering, inject a <link rel="canonical"> tag
-  // so the generated HTML includes the correct canonical URL
+  // При серверном рендеринге внедряем тег <link rel="canonical">,
+  // чтобы в сгенерированном HTML был правильный канонический URL
   setCanonical(href: string): void {
     const link = this.document.createElement('link');
     link.rel = 'canonical';
@@ -362,15 +362,15 @@ export class CanonicalLinkService {
 }
 ```
 
-HELPFUL: For managing meta tags, Angular provides the `Meta` service.
+HELPFUL: Для управления мета-тегами Angular предоставляет Сервис `Meta`.
 
-## Accessing Request and Response via DI
+## Доступ к Request и Response через DI {#accessing-request-and-response-via-di}
 
-The `@angular/core` package provides several tokens for interacting with the server-side rendering environment. These tokens give you access to crucial information and objects within your Angular application during SSR.
+Пакет `@angular/core` предоставляет несколько токенов для взаимодействия со средой SSR. Эти токены дают доступ к важной информации и объектам в Angular-приложении во время SSR.
 
-- **[`REQUEST`](api/core/REQUEST 'API reference'):** Provides access to the current request object, which is of type [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) from the Web API. This allows you to access headers, cookies, and other request information.
-- **[`RESPONSE_INIT`](api/core/RESPONSE_INIT 'API reference'):** Provides access to the response initialization options, which is of type [`ResponseInit`](https://developer.mozilla.org/en-US/docs/Web/API/Response/Response#parameters) from the Web API. This allows you to set headers and the status code for the response dynamically. Use this token to set headers or status codes that need to be determined at runtime.
-- **[`REQUEST_CONTEXT`](api/core/REQUEST_CONTEXT 'API reference'):** Provides access to additional context related to the current request. This context can be passed as the second parameter of the [`handle`](api/ssr/AngularAppEngine#handle 'API reference') function. Typically, this is used to provide additional request-related information that is not part of the standard Web API.
+- **[`REQUEST`](api/core/REQUEST 'API reference'):** Предоставляет доступ к текущему объекту запроса типа [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) из Web API. Позволяет получать доступ к заголовкам, куки и другой информации запроса.
+- **[`RESPONSE_INIT`](api/core/RESPONSE_INIT 'API reference'):** Предоставляет доступ к параметрам инициализации ответа типа [`ResponseInit`](https://developer.mozilla.org/en-US/docs/Web/API/Response/Response#parameters) из Web API. Позволяет динамически устанавливать заголовки и статус-код ответа. Используйте этот токен для установки заголовков или статус-кодов, которые должны определяться во время выполнения.
+- **[`REQUEST_CONTEXT`](api/core/REQUEST_CONTEXT 'API reference'):** Предоставляет доступ к дополнительному контексту, связанному с текущим запросом. Этот контекст можно передать вторым параметром функции [`handle`](api/ssr/AngularAppEngine#handle 'API reference'). Как правило, используется для предоставления дополнительной информации, связанной с запросом, которая не является частью стандартного Web API.
 
 ```angular-ts
 import {inject, REQUEST} from '@angular/core';
@@ -390,22 +390,22 @@ export class MyComponent {
 <!-- UL is used below as otherwise the list will not be include as part of the note. -->
 <!-- prettier-ignore-start -->
 
-IMPORTANT: The above tokens will be `null` in the following scenarios:<ul class="docs-list">
-  <li>During the build processes.</li>
-  <li>When the application is rendered in the browser (CSR).</li>
-  <li>When performing static site generation (SSG).</li>
-  <li>During route extraction in development (at the time of the request).</li>
+IMPORTANT: Вышеуказанные токены будут `null` в следующих сценариях:<ul class="docs-list">
+  <li>В процессе сборки.</li>
+  <li>Когда приложение рендерится в браузере (CSR).</li>
+  <li>При статической генерации сайта (SSG).</li>
+  <li>При извлечении маршрутов в процессе разработки (в момент запроса).</li>
 </ul>
 
 <!-- prettier-ignore-end -->
 
-## Generate a fully static application
+## Генерация полностью статического приложения {#generate-a-fully-static-application}
 
-By default, Angular prerenders your entire application and generates a server file for handling requests. This allows your app to serve pre-rendered content to users. However, if you prefer a fully static site without a server, you can opt out of this behavior by setting the `outputMode` to `static` in your `angular.json` configuration file.
+По умолчанию Angular предварительно рендерит всё приложение и генерирует серверный файл для обработки запросов. Это позволяет приложению обслуживать предварительно отрендеренный контент пользователям. Однако если вы предпочитаете полностью статический сайт без сервера, можно отказаться от этого поведения, установив `outputMode` равным `static` в файле конфигурации `angular.json`.
 
-When `outputMode` is set to `static`, Angular generates pre-rendered HTML files for each route at build time, but it does not generate a server file or require a Node.js server to serve the app. This is useful for deploying to static hosting providers where a backend server is not needed.
+Когда `outputMode` установлен в `static`, Angular генерирует предварительно отрендеренные HTML-файлы для каждого маршрута во время сборки, но не создаёт серверный файл и не требует Node.js-сервера для обслуживания приложения. Это полезно при развёртывании у провайдеров статического хостинга, где серверный бэкенд не нужен.
 
-To configure this, update your `angular.json` file as follows:
+Для настройки обновите файл `angular.json` следующим образом:
 
 ```json
 {
@@ -423,16 +423,16 @@ To configure this, update your `angular.json` file as follows:
 }
 ```
 
-## Caching data when using HttpClient
+## Кеширование данных при использовании HttpClient {#caching-data-when-using-httpclient}
 
-`HttpClient` caches outgoing network requests when running on the server. This information is serialized and transferred to the browser as part of the initial HTML sent from the server. In the browser, `HttpClient` checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. `HttpClient` stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
+`HttpClient` кеширует исходящие сетевые запросы при работе на сервере. Эта информация сериализуется и передаётся в браузер как часть начального HTML, отправляемого сервером. В браузере `HttpClient` проверяет, есть ли данные в кеше, и если да — повторно использует их вместо нового HTTP-запроса при начальном рендеринге приложения. `HttpClient` прекращает использовать кеш, как только приложение становится [стабильным](api/core/ApplicationRef#isStable) в браузере.
 
-### Configuring the caching options
+### Настройка параметров кеширования {#configuring-the-caching-options}
 
-You can customize how Angular caches HTTP responses during server‑side rendering (SSR) and reuses them during hydration by configuring `HttpTransferCacheOptions`.  
-This configuration is provided globally using `withHttpTransferCacheOptions` inside `provideClientHydration()`.
+Можно настроить, как Angular кеширует HTTP-ответы при SSR и повторно использует их при Гидратации, задав `HttpTransferCacheOptions`.
+Эта конфигурация предоставляется глобально через `withHttpTransferCacheOptions` внутри `provideClientHydration()`.
 
-By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization` or `Proxy-Authorization` headers. You can override those settings by using `withHttpTransferCacheOptions` to the hydration configuration.
+По умолчанию `HttpClient` кеширует все запросы `HEAD` и `GET`, не содержащие заголовков `Authorization` или `Proxy-Authorization`. Эти настройки можно переопределить через `withHttpTransferCacheOptions` в конфигурации Гидратации.
 
 ```ts
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -454,10 +454,10 @@ bootstrapApplication(App, {
 
 ---
 
-### `includeHeaders`
+### `includeHeaders` {#includeheaders}
 
-Specifies which headers from the server response should be included in cached entries.  
-No headers are included by default.
+Задаёт, какие заголовки из серверного ответа должны включаться в кешированные записи.
+По умолчанию заголовки не включаются.
 
 ```ts
 withHttpTransferCacheOptions({
@@ -465,14 +465,14 @@ withHttpTransferCacheOptions({
 });
 ```
 
-IMPORTANT: Avoid including sensitive headers like authentication tokens. These can leak user‑specific data between requests.
+IMPORTANT: Избегайте включения чувствительных заголовков, таких как токены аутентификации. Они могут привести к утечке пользовательских данных между запросами.
 
 ---
 
-### `includePostRequests`
+### `includePostRequests` {#includepostrequests}
 
-By default, only `GET` and `HEAD` requests are cached.  
-You can enable caching for `POST` requests when they are used as read operations such as GraphQL queries.
+По умолчанию кешируются только запросы `GET` и `HEAD`.
+Можно включить кеширование `POST`-запросов, если они используются как операции чтения — например, для GraphQL-запросов.
 
 ```ts
 withHttpTransferCacheOptions({
@@ -480,14 +480,14 @@ withHttpTransferCacheOptions({
 });
 ```
 
-Use this only when `POST` requests are **idempotent** and safe to reuse between server and client renders.
+Используйте это только тогда, когда `POST`-запросы являются **идемпотентными** и безопасны для повторного использования между серверным и клиентским рендерингом.
 
 ---
 
-### `includeRequestsWithAuthHeaders`
+### `includeRequestsWithAuthHeaders` {#includerequestswithauthorizationheaders}
 
-Determines whether requests containing `Authorization` or `Proxy‑Authorization` headers are eligible for caching.  
-By default, these are excluded to prevent caching user‑specific responses.
+Определяет, имеют ли право на кеширование запросы, содержащие заголовки `Authorization` или `Proxy-Authorization`.
+По умолчанию они исключены, чтобы предотвратить кеширование пользовательских ответов.
 
 ```ts
 withHttpTransferCacheOptions({
@@ -495,24 +495,24 @@ withHttpTransferCacheOptions({
 });
 ```
 
-Enable only when authentication headers do **not** affect the response content (for example, public tokens for analytics APIs).
+Включайте только тогда, когда заголовки аутентификации **не влияют** на содержимое ответа (например, публичные токены для аналитических API).
 
-### Per‑request overrides
+### Переопределения для отдельных запросов {#per-request-overrides}
 
-You can override caching behavior for a specific request using the `transferCache` request option.
+Можно переопределить поведение кеширования для конкретного запроса, используя параметр запроса `transferCache`.
 
 ```ts
-// Include specific headers for this request
+// Включить конкретные заголовки для этого запроса
 http.get('/api/profile', {transferCache: {includeHeaders: ['CustomHeader']}});
 ```
 
-### Disabling caching
+### Отключение кеширования {#disabling-caching}
 
-You can disable HTTP caching of requests sent from the server either globally or individually.
+Кеширование HTTP-запросов, отправляемых с сервера, можно отключить глобально или для отдельных запросов.
 
-#### Globally
+#### Глобально {#globally}
 
-To disable caching for all requests in your application, use the `withNoHttpTransferCache` feature:
+Чтобы отключить кеширование всех запросов в приложении, используйте возможность `withNoHttpTransferCache`:
 
 ```ts
 import {
@@ -526,9 +526,9 @@ bootstrapApplication(App, {
 });
 ```
 
-#### Filtering
+#### Фильтрация {#filtering}
 
-You can also selectively disable caching for certain requests using the [`filter`](api/common/http/HttpTransferCacheOptions) option in `withHttpTransferCacheOptions`. For example, you can disable caching for a specific API endpoint:
+Можно также выборочно отключить кеширование для определённых запросов, используя опцию [`filter`](api/common/http/HttpTransferCacheOptions) в `withHttpTransferCacheOptions`. Например, отключить кеширование для конкретной API-точки:
 
 ```ts
 import {
@@ -548,23 +548,23 @@ bootstrapApplication(App, {
 });
 ```
 
-Use this option to exclude endpoints with user‑specific or dynamic data (for example `/api/profile`).
+Используйте эту опцию для исключения точек с пользовательскими или динамическими данными (например, `/api/profile`).
 
-#### Per-request
+#### Для отдельного запроса {#per-request}
 
-To disable caching for an individual request, you can specify the [`transferCache`](api/common/http/HttpRequest#transferCache) option in an `HttpRequest`.
+Чтобы отключить кеширование для отдельного запроса, укажите опцию [`transferCache`](api/common/http/HttpRequest#transferCache) в `HttpRequest`.
 
 ```ts
 httpClient.get('/api/sensitive-data', {transferCache: false});
 ```
 
-NOTE: If your application uses different HTTP origins to make API calls on the server and on the client, the `HTTP_TRANSFER_CACHE_ORIGIN_MAP` token allows you to establish a mapping between those origins, so that `HttpTransferCache` feature can recognize those requests as the same ones and reuse the data cached on the server during hydration on the client.
+NOTE: Если приложение использует разные HTTP-источники для API-запросов на сервере и на клиенте, токен `HTTP_TRANSFER_CACHE_ORIGIN_MAP` позволяет установить соответствие между этими источниками, чтобы функция `HttpTransferCache` распознавала запросы как идентичные и повторно использовала данные, кешированные на сервере, при Гидратации на клиенте.
 
-## Configuring a server
+## Настройка сервера {#configuring-a-server}
 
-### Node.js
+### Node.js {#nodejs}
 
-The `@angular/ssr/node` extends `@angular/ssr` specifically for Node.js environments. It provides APIs that make it easier to implement server-side rendering within your Node.js application. For a complete list of functions and usage examples, refer to the [`@angular/ssr/node` API reference](api/ssr/node/AngularNodeAppEngine) API reference.
+`@angular/ssr/node` расширяет `@angular/ssr` специально для сред Node.js. Он предоставляет API, упрощающие реализацию SSR в Node.js-приложении. Полный список функций и примеры использования: [API-справочник `@angular/ssr/node`](api/ssr/node/AngularNodeAppEngine).
 
 ```ts
 // server.ts
@@ -585,21 +585,21 @@ app.use('*', (req, res, next) => {
       if (response) {
         writeResponseToNodeResponse(response, res);
       } else {
-        next(); // Pass control to the next middleware
+        next(); // Передать управление следующему middleware
       }
     })
     .catch(next);
 });
 
 /**
- * The request handler used by the Angular CLI (dev-server and during build).
+ * Обработчик запросов, используемый Angular CLI (dev-server и при сборке).
  */
 export const reqHandler = createNodeRequestHandler(app);
 ```
 
-### Non-Node.js
+### Не-Node.js окружения {#non-nodejs}
 
-The `@angular/ssr` provides essential APIs for server-side rendering your Angular application on platforms other than Node.js. It leverages the standard [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) objects from the Web API, enabling you to integrate Angular SSR into various server environments. For detailed information and examples, refer to the [`@angular/ssr` API reference](api/ssr/AngularAppEngine).
+`@angular/ssr` предоставляет основные API для SSR Angular-приложения на платформах, отличных от Node.js. Он использует стандартные объекты [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) и [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) из Web API, позволяя интегрировать Angular SSR в различные серверные среды. Подробная информация и примеры: [API-справочник `@angular/ssr`](api/ssr/AngularAppEngine).
 
 ```ts
 // server.ts
@@ -608,7 +608,7 @@ import {AngularAppEngine, createRequestHandler} from '@angular/ssr';
 const angularApp = new AngularAppEngine();
 
 /**
- * This is a request handler used by the Angular CLI (dev-server and during build).
+ * Обработчик запросов, используемый Angular CLI (dev-server и при сборке).
  */
 export const reqHandler = createRequestHandler(async (req: Request) => {
   const res: Response | null = await angularApp.render(req);
@@ -617,6 +617,6 @@ export const reqHandler = createRequestHandler(async (req: Request) => {
 });
 ```
 
-## Security
+## Безопасность {#security}
 
-For detailed information on preventing Server-Side Request Forgery (SSRF) and configuring allowed hosts, see the [Server-side security](best-practices/security#preventing-server-side-request-forgery-ssrf) guide.
+Подробная информация о предотвращении Server-Side Request Forgery (SSRF) и настройке разрешённых хостов: [руководство по серверной безопасности](best-practices/security#preventing-server-side-request-forgery-ssrf).

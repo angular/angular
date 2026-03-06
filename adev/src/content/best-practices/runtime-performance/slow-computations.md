@@ -1,26 +1,26 @@
-# Slow computations
+# Медленные вычисления {#slow-computations}
 
-On every change detection cycle, Angular synchronously:
+В каждом цикле обнаружения изменений Angular синхронно:
 
-- Evaluates all template expressions in all components, unless specified otherwise, based on that each component's detection strategy
-- Executes the `ngDoCheck`, `ngAfterContentChecked`, `ngAfterViewChecked`, and `ngOnChanges` lifecycle hooks.
-  A single slow computation within a template or a lifecycle hook can slow down the entire change detection process because Angular runs the computations sequentially.
+- Вычисляет все выражения шаблона во всех компонентах, если не указано иное, на основе стратегии обнаружения каждого компонента
+- Выполняет хуки жизненного цикла `ngDoCheck`, `ngAfterContentChecked`, `ngAfterViewChecked` и `ngOnChanges`.
+  Единственное медленное вычисление в шаблоне или хуке жизненного цикла может замедлить весь процесс обнаружения изменений, поскольку Angular выполняет вычисления последовательно.
 
-## Identifying slow computations
+## Выявление медленных вычислений {#identifying-slow-computations}
 
-You can identify heavy computations with Angular DevTools’ profiler. In the performance timeline, click a bar to preview a particular change detection cycle. This displays a bar chart, which shows how long the framework spent in change detection for each component. When you click a component, you can preview how long Angular spent evaluating its template and lifecycle hooks.
+Тяжёлые вычисления можно выявить с помощью профайлера Angular DevTools. На временной шкале производительности щёлкните по полосе, чтобы просмотреть конкретный цикл обнаружения изменений. Откроется столбчатая диаграмма, показывающая, сколько времени фреймворк тратил на обнаружение изменений для каждого компонента. При щелчке по компоненту можно увидеть, сколько времени Angular тратил на вычисление его шаблона и хуков жизненного цикла.
 
 <img alt="Angular DevTools profiler preview showing slow computation" src="assets/images/best-practices/runtime-performance/slow-computations.png">
 
-For example, in the preceding screenshot, the second recorded change detection cycle is selected. Angular spent over 573 ms on this cycle, with the most time spent in the `EmployeeListComponent`. In the details panel, you can see that Angular spent over 297 ms evaluating the template of the `EmployeeListComponent`.
+Например, на приведённом скриншоте выбран второй записанный цикл обнаружения изменений. Angular потратил более 573 мс на этот цикл, большую часть времени — на `EmployeeListComponent`. На панели деталей видно, что Angular потратил более 297 мс на вычисление шаблона `EmployeeListComponent`.
 
-## Optimizing slow computations
+## Оптимизация медленных вычислений {#optimizing-slow-computations}
 
-Here are several techniques to remove slow computations:
+Ниже приведены несколько техник устранения медленных вычислений:
 
-- **Optimizing the underlying algorithm**. This is the recommended approach. If you can speed up the algorithm that is causing the problem, you can speed up the entire change detection mechanism.
-- **Caching using pure pipes**. You can move the heavy computation to a pure [pipe](guide/templates/pipes). Angular reevaluates a pure pipe only if it detects that its inputs have changed, compared to the previous time Angular called it.
-- **Using memoization**. [Memoization](https://en.wikipedia.org/wiki/Memoization) is a similar technique to pure pipes, with the difference that pure pipes preserve only the last result from the computation where memoization could store multiple results.
-- **Avoid repaints/reflows in lifecycle hooks**. Certain [operations](https://web.dev/avoid-large-complex-layouts-and-layout-thrashing/) cause the browser to either synchronously recalculate the layout of the page or re-render it. Since reflows and repaints are generally slow, you want to avoid performing them in every change detection cycle.
+- **Оптимизация базового алгоритма**. Это рекомендуемый подход. Если удастся ускорить алгоритм, вызывающий проблему, можно ускорить весь механизм обнаружения изменений.
+- **Кэширование с помощью чистых Pipe**. Тяжёлое вычисление можно перенести в чистый [Pipe](guide/templates/pipes). Angular переоценивает чистый Pipe только если обнаруживает изменение его входных данных по сравнению с предыдущим вызовом.
+- **Использование мемоизации**. [Мемоизация](https://en.wikipedia.org/wiki/Memoization) — техника, похожая на чистые Pipe, но с тем отличием, что чистые Pipe сохраняют только последний результат вычисления, тогда как мемоизация может хранить несколько результатов.
+- **Избегание перерисовок/перекомпоновок в хуках жизненного цикла**. Определённые [операции](https://web.dev/avoid-large-complex-layouts-and-layout-thrashing/) заставляют браузер синхронно пересчитывать компоновку страницы или заново её отрисовывать. Поскольку перекомпоновка и перерисовка в целом медленные, следует избегать их выполнения в каждом цикле обнаружения изменений.
 
-Pure pipes and memoization have different trade-offs. Pure pipes are an Angular built-in concept compared to memoization, which is a general software engineering practice for caching function results. The memory overhead of memoization could be significant if you invoke the heavy computation frequently with different arguments.
+Чистые Pipe и мемоизация имеют разные компромиссы. Чистые Pipe — встроенная концепция Angular, тогда как мемоизация — общая практика программной инженерии для кэширования результатов функций. Накладные расходы на память при мемоизации могут быть значительными, если часто вызывать тяжёлое вычисление с разными аргументами.

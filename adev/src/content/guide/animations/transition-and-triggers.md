@@ -1,304 +1,304 @@
-# Animation transitions and triggers
+# Переходы и триггеры анимаций {#animation-transitions-and-triggers}
 
-IMPORTANT: The `@angular/animations` package is now deprecated. The Angular team recommends using native CSS with `animate.enter` and `animate.leave` for animations for all new code. Learn more at the new enter and leave [animation guide](guide/animations). Also see [Migrating away from Angular's Animations package](guide/animations/migration) to learn how you can start migrating to pure CSS animations in your apps.
+IMPORTANT: Пакет `@angular/animations` устарел. Команда Angular рекомендует использовать нативный CSS с `animate.enter` и `animate.leave` для анимаций во всём новом коде. Подробнее в новом [руководстве по анимациям](guide/animations). Также ознакомьтесь с разделом [Миграция с пакета Angular Animations](guide/animations/migration), чтобы узнать, как начать переход на чистые CSS-анимации.
 
-This guide goes into depth on special transition states such as the `*` wildcard and `void`. It shows how these special states are used for elements entering and leaving a view.
-This section also explores multiple animation triggers, animation callbacks, and sequence-based animation using keyframes.
+Это руководство подробно рассматривает специальные состояния переходов — маску `*` и `void`. Показано, как эти специальные состояния используются для элементов, входящих в представление или уходящих из него.
+Также рассматриваются несколько триггеров анимации, обратные вызовы анимаций и покадровая анимация с помощью keyframes.
 
-## Predefined states and wildcard matching
+## Предопределённые состояния и сопоставление с маской {#predefined-states-and-wildcard-matching}
 
-In Angular, transition states can be defined explicitly through the [`state()`](api/animations/state) function, or using the predefined `*` wildcard and `void` states.
+В Angular состояния переходов могут быть определены явно через функцию [`state()`](api/animations/state) или с помощью предопределённых состояний — маски `*` и `void`.
 
-### Wildcard state
+### Состояние-маска {#wildcard-state}
 
-An asterisk `*` or _wildcard_ matches any animation state.
-This is useful for defining transitions that apply regardless of the HTML element's start or end state.
+Звёздочка `*` или _маска_ соответствует любому состоянию анимации.
+Это полезно для определения переходов, применяемых независимо от начального или конечного состояния HTML-элемента.
 
-For example, a transition of `open => *` applies when the element's state changes from open to anything else.
+Например, переход `open => *` применяется, когда состояние элемента изменяется с `open` на любое другое.
 
 <img alt="wildcard state expressions" src="assets/images/guide/animations/wildcard-state-500.png">
 
-The following is another code sample using the wildcard state together with the previous example using the `open` and `closed` states.
-Instead of defining each state-to-state transition pair, any transition to `closed` takes 1 second, and any transition to `open` takes 0.5 seconds.
+Ниже ещё один пример кода с использованием состояния-маски совместно с предыдущим примером состояний `open` и `closed`.
+Вместо определения каждой пары переходов «состояние — состояние», переход в `closed` занимает 1 секунду, а переход в `open` — 0,5 секунды.
 
-This allows the addition of new states without having to include separate transitions for each one.
+Это позволяет добавлять новые состояния без необходимости включать отдельные переходы для каждого из них.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="trigger-wildcard1"/>
 
-Use a double arrow syntax to specify state-to-state transitions in both directions.
+Для указания переходов состояний в обоих направлениях используйте синтаксис двойной стрелки.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="trigger-wildcard2"/>
 
-### Use wildcard state with multiple transition states
+### Использование состояния-маски с несколькими состояниями перехода {#use-wildcard-state-with-multiple-transition-states}
 
-In the two-state button example, the wildcard isn't that useful because there are only two possible states, `open` and `closed`.
-In general, use wildcard states when an element has multiple potential states that it can change to.
-If the button can change from `open` to either `closed` or something like `inProgress`, using a wildcard state could reduce the amount of coding needed.
+В примере с кнопкой с двумя состояниями маска не особо полезна, поскольку существуют только два возможных состояния — `open` и `closed`.
+В целом состояния-маски используются, когда элемент может переходить в несколько потенциальных состояний.
+Если кнопка может переходить из `open` в `closed` или в нечто вроде `inProgress`, использование состояния-маски может сократить объём кода.
 
 <img alt="wildcard state with 3 states" src="assets/images/guide/animations/wildcard-3-states.png">
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="trigger-transition"/>
 
-The `* => *` transition applies when any change between two states takes place.
+Переход `* => *` применяется при любом изменении между двумя состояниями.
 
-Transitions are matched in the order in which they are defined.
-Thus, you can apply other transitions on top of the `* => *` transition.
-For example, define style changes or animations that would apply just to `open => closed`, then use `* => *` as a fallback for state pairings that aren't otherwise called out.
+Переходы сопоставляются в порядке их определения.
+Таким образом, другие переходы можно применять поверх перехода `* => *`.
+Например, можно определить изменения стилей или анимации, применяемые только к `open => closed`, а `* => *` использовать в качестве запасного варианта для пар состояний, не охваченных явно.
 
-To do this, list the more specific transitions _before_ `* => *`.
+Для этого перечисляйте более конкретные переходы _перед_ `* => *`.
 
-### Use wildcards with styles
+### Использование масок со стилями {#use-wildcards-with-styles}
 
-Use the wildcard `*` with a style to tell the animation to use whatever the current style value is, and animate with that.
-Wildcard is a fallback value that's used if the state being animated isn't declared within the trigger.
+Используйте маску `*` со стилем, чтобы сообщить анимации о необходимости использовать текущее значение стиля.
+Маска служит резервным значением, используемым, если состояние, которое нужно анимировать, не объявлено внутри триггера.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="transition4"/>
 
-### Void state
+### Состояние void {#void-state}
 
-Use the `void` state to configure transitions for an element that is entering or leaving a page.
-See [Animating entering and leaving a view](guide/legacy-animations/transition-and-triggers#aliases-enter-and-leave).
+Используйте состояние `void` для настройки переходов элемента, входящего на страницу или уходящего с неё.
+См. [Анимация входа и ухода из представления](guide/legacy-animations/transition-and-triggers#aliases-enter-and-leave).
 
-### Combine wildcard and void states
+### Объединение состояний-масок и void {#combine-wildcard-and-void-states}
 
-Combine wildcard and void states in a transition to trigger animations that enter and leave the page:
+Объединяйте состояния-маски и `void` в переходе для запуска анимаций входа и ухода со страницы:
 
-- A transition of `* => void` applies when the element leaves a view, regardless of what state it was in before it left
-- A transition of `void => *` applies when the element enters a view, regardless of what state it assumes when entering
-- The wildcard state `*` matches to _any_ state, including `void`
+- Переход `* => void` применяется при уходе элемента из представления, независимо от его предыдущего состояния
+- Переход `void => *` применяется при входе элемента в представление, независимо от состояния при входе
+- Состояние-маска `*` соответствует _любому_ состоянию, включая `void`
 
-## Animate entering and leaving a view
+## Анимация входа и ухода из представления {#animate-entering-and-leaving-a-view}
 
-This section shows how to animate elements entering or leaving a page.
+В этом разделе показано, как анимировать элементы, входящие на страницу или уходящие с неё.
 
-Add a new behavior:
+Добавим новое поведение:
 
-- When you add a hero to the list of heroes, it appears to fly onto the page from the left
-- When you remove a hero from the list, it appears to fly out to the right
+- При добавлении героя в список он как будто влетает на страницу слева
+- При удалении героя из списка он как будто улетает вправо
 
 <docs-code header="hero-list-enter-leave.ts" path="adev/src/content/examples/animations/src/app/hero-list-enter-leave.ts" region="animationdef"/>
 
-In the preceding code, you applied the `void` state when the HTML element isn't attached to a view.
+В приведённом коде состояние `void` применяется, когда HTML-элемент не прикреплён к представлению.
 
-## Aliases :enter and :leave
+## Псевдонимы :enter и :leave {#aliases-enter-and-leave}
 
-`:enter` and `:leave` are aliases for the `void => *` and `* => void` transitions.
-These aliases are used by several animation functions.
+`:enter` и `:leave` — псевдонимы переходов `void => *` и `* => void` соответственно.
+Эти псевдонимы используются в нескольких функциях анимации.
 
 ```ts {hideCopy}
 
-transition ( ':enter', [ … ] ); // alias for void => _
-transition ( ':leave', [ … ] ); // alias for _ => void
+transition ( ':enter', [ … ] ); // псевдоним для void => _
+transition ( ':leave', [ … ] ); // псевдоним для _ => void
 
 ```
 
-It's harder to target an element that is entering a view because it isn't in the DOM yet.
-Use the aliases `:enter` and `:leave` to target HTML elements that are inserted or removed from a view.
+Сложнее нацелиться на входящий в представление элемент, поскольку его ещё нет в DOM.
+Используйте псевдонимы `:enter` и `:leave` для нацеливания на HTML-элементы, вставляемые в представление или удаляемые из него.
 
-### Use `*ngIf` and `*ngFor` with :enter and :leave
+### Использование `*ngIf` и `*ngFor` с :enter и :leave {#use-ngif-and-ngfor-with-enter-and-leave}
 
-The `:enter` transition runs when any `*ngIf` or `*ngFor` views are placed on the page, and `:leave` runs when those views are removed from the page.
+Переход `:enter` запускается, когда любые представления `*ngIf` или `*ngFor` размещаются на странице, а `:leave` — когда эти представления удаляются со страницы.
 
-IMPORTANT: Entering/leaving behaviors can sometime be confusing.
-As a rule of thumb consider that any element being added to the DOM by Angular passes via the `:enter` transition. Only elements being directly removed from the DOM by Angular pass via the `:leave` transition. For example, an element's view is removed from the DOM because its parent is being removed from the DOM.
+IMPORTANT: Поведение входа/ухода иногда может вызывать путаницу.
+Как правило, считайте, что любой элемент, добавляемый в DOM Angular, проходит через переход `:enter`. Через переход `:leave` проходят только элементы, непосредственно удаляемые из DOM Angular. Например, представление элемента удаляется из DOM, потому что его родитель удаляется из DOM.
 
-This example has a special trigger for the enter and leave animation called `myInsertRemoveTrigger`.
-The HTML template contains the following code.
+В этом примере используется специальный триггер для анимации входа и ухода под названием `myInsertRemoveTrigger`.
+HTML-шаблон содержит следующий код.
 
 <docs-code header="insert-remove.html" path="adev/src/content/examples/animations/src/app/insert-remove.html" region="insert-remove"/>
 
-In the component file, the `:enter` transition sets an initial opacity of 0. It then animates it to change that opacity to 1 as the element is inserted into the view.
+В файле компонента переход `:enter` устанавливает начальную прозрачность 0 и затем анимирует её до 1 при вставке элемента в представление.
 
 <docs-code header="insert-remove.ts" path="adev/src/content/examples/animations/src/app/insert-remove.ts" region="enter-leave-trigger"/>
 
-Note that this example doesn't need to use [`state()`](api/animations/state).
+Обратите внимание, что в этом примере не нужно использовать [`state()`](api/animations/state).
 
-## Transition :increment and :decrement
+## Переход :increment и :decrement {#transition-increment-and-decrement}
 
-The `transition()` function takes other selector values, `:increment` and `:decrement`.
-Use these to kick off a transition when a numeric value has increased or decreased in value.
+Функция `transition()` принимает другие значения селекторов — `:increment` и `:decrement`.
+Используйте их для запуска перехода при увеличении или уменьшении числового значения.
 
-HELPFUL: The following example uses `query()` and `stagger()` methods.
-For more information on these methods, see the [complex sequences](guide/legacy-animations/complex-sequences) page.
+HELPFUL: В следующем примере используются методы `query()` и `stagger()`.
+Подробнее об этих методах — на странице [сложных последовательностей](guide/legacy-animations/complex-sequences).
 
 <docs-code header="hero-list-page.ts" path="adev/src/content/examples/animations/src/app/hero-list-page.ts" region="increment"/>
 
-## Boolean values in transitions
+## Булевы значения в переходах {#boolean-values-in-transitions}
 
-If a trigger contains a Boolean value as a binding value, then this value can be matched using a `transition()` expression that compares `true` and `false`, or `1` and `0`.
+Если триггер содержит булево значение в качестве значения привязки, его можно сопоставить с выражением `transition()`, сравнивающим `true` и `false` или `1` и `0`.
 
 <docs-code header="open-close.html" path="adev/src/content/examples/animations/src/app/open-close.2.html" region="trigger-boolean"/>
 
-In the code snippet above, the HTML template binds a `<div>` element to a trigger named `openClose` with a status expression of `isOpen`, and with possible values of `true` and `false`.
-This pattern is an alternative to the practice of creating two named states like `open` and `close`.
+В приведённом фрагменте кода HTML-шаблон привязывает элемент `<div>` к триггеру `openClose` с выражением состояния `isOpen` и возможными значениями `true` и `false`.
+Этот подход является альтернативой созданию двух именованных состояний — `open` и `close`.
 
-Inside the `@Component` metadata under the `animations:` property, when the state evaluates to `true`, the associated HTML element's height is a wildcard style or default.
-In this case, the animation uses whatever height the element already had before the animation started.
-When the element is `closed`, the element gets animated to a height of 0, which makes it invisible.
+Внутри метаданных `@Component` под свойством `animations:`, когда состояние равно `true`, высота соответствующего HTML-элемента — это маска или значение по умолчанию.
+В данном случае анимация использует ту высоту, которую элемент имел до начала анимации.
+Когда элемент находится в состоянии `closed`, его высота анимируется до 0, делая его невидимым.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.2.ts" region="trigger-boolean"/>
 
-## Multiple animation triggers
+## Несколько триггеров анимации {#multiple-animation-triggers}
 
-You can define more than one animation trigger for a component.
-Attach animation triggers to different elements, and the parent-child relationships among the elements affect how and when the animations run.
+Для компонента можно определить более одного триггера анимации.
+Прикрепляйте триггеры анимации к разным элементам, и отношения родитель-потомок между элементами влияют на то, как и когда выполняются анимации.
 
-### Parent-child animations
+### Анимации родителя и потомка {#parent-child-animations}
 
-Each time an animation is triggered in Angular, the parent animation always gets priority and child animations are blocked.
-For a child animation to run, the parent animation must query each of the elements containing child animations. It then lets the animations run using the [`animateChild()`](api/animations/animateChild) function.
+При каждом срабатывании анимации в Angular родительская анимация всегда имеет приоритет, а дочерние анимации блокируются.
+Для запуска дочерней анимации родительская должна выполнить запрос к элементам, содержащим дочерние анимации, с помощью функции [`animateChild()`](api/animations/animateChild).
 
-#### Disable an animation on an HTML element
+#### Отключение анимации на HTML-элементе {#disable-an-animation-on-an-html-element}
 
-A special animation control binding called `@.disabled` can be placed on an HTML element to turn off animations on that element, as well as any nested elements.
-When true, the `@.disabled` binding prevents all animations from rendering.
+Специальная привязка управления анимацией `@.disabled` может быть размещена на HTML-элементе для отключения анимаций на нём и всех вложенных элементах.
+Когда равно `true`, привязка `@.disabled` предотвращает рендеринг всех анимаций.
 
-The following code sample shows how to use this feature.
+Следующий пример кода показывает, как использовать эту возможность.
 
 <docs-code-multifile>
     <docs-code header="open-close.html" path="adev/src/content/examples/animations/src/app/open-close.4.html" region="toggle-animation"/>
     <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.4.ts" region="toggle-animation" language="typescript"/>
 </docs-code-multifile>
 
-When the `@.disabled` binding is true, the `@childAnimation` trigger doesn't kick off.
+Когда привязка `@.disabled` равна `true`, триггер `@childAnimation` не срабатывает.
 
-When an element within an HTML template has animations turned off using the `@.disabled` host binding, animations are turned off on all inner elements as well.
-You can't selectively turn off multiple animations on a single element.<!-- vale off -->
+Когда анимации отключены на элементе HTML-шаблона с помощью хост-привязки `@.disabled`, они также отключаются на всех внутренних элементах.
+Нельзя выборочно отключить несколько анимаций на одном элементе.<!-- vale off -->
 
-A selective child animations can still be run on a disabled parent in one of the following ways:
+Выборочную анимацию дочерних элементов всё же можно запустить на отключённом родителе одним из следующих способов:
 
-- A parent animation can use the [`query()`](api/animations/query) function to collect inner elements located in disabled areas of the HTML template.
-Those elements can still animate.
+- Родительская анимация может использовать функцию [`query()`](api/animations/query) для сбора внутренних элементов в отключённых областях HTML-шаблона.
+Эти элементы всё равно могут анимироваться.
 <!-- vale on -->
 
-- A child animation can be queried by a parent and then later animated with the `animateChild()` function
+- Дочерняя анимация может быть запрошена родителем и затем анимирована с помощью функции `animateChild()`
 
-#### Disable all animations
+#### Отключение всех анимаций {#disable-all-animations}
 
-To turn off all animations for an Angular application, place the `@.disabled` host binding on the topmost Angular component.
+Для отключения всех анимаций в Angular-приложении разместите хост-привязку `@.disabled` на верхнем Angular-компоненте.
 
 <docs-code header="app.ts" path="adev/src/content/examples/animations/src/app/app.ts" region="toggle-app-animations"/>
 
-HELPFUL: Disabling animations application-wide is useful during end-to-end \(E2E\) testing.
+HELPFUL: Отключение анимаций на уровне всего приложения полезно при end-to-end \(E2E\) тестировании.
 
-## Animation callbacks
+## Обратные вызовы анимаций {#animation-callbacks}
 
-The animation `trigger()` function emits _callbacks_ when it starts and when it finishes.
-The following example features a component that contains an `openClose` trigger.
+Функция `trigger()` анимации генерирует _обратные вызовы_ при запуске и завершении.
+Следующий пример содержит компонент с триггером `openClose`.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="events1"/>
 
-In the HTML template, the animation event is passed back via `$event`, as `@triggerName.start` and `@triggerName.done`, where `triggerName` is the name of the trigger being used.
-In this example, the trigger `openClose` appears as follows.
+В HTML-шаблоне событие анимации передаётся через `$event` в виде `@triggerName.start` и `@triggerName.done`, где `triggerName` — имя используемого триггера.
+В этом примере триггер `openClose` выглядит следующим образом.
 
 <docs-code header="open-close.html" path="adev/src/content/examples/animations/src/app/open-close.3.html" region="callbacks"/>
 
-A potential use for animation callbacks could be to cover for a slow API call, such as a database lookup.
-For example, an **InProgress** button can be set up to have its own looping animation while the backend system operation finishes.
+Обратные вызовы анимаций могут использоваться для перекрытия медленного API-вызова, например поиска в базе данных.
+Например, кнопку **InProgress** можно настроить на зацикленную анимацию до завершения операции на стороне сервера.
 
-Another animation can be called when the current animation finishes.
-For example, the button goes from the `inProgress` state to the `closed` state when the API call is completed.
+Другую анимацию можно запустить по завершении текущей.
+Например, кнопка переходит из состояния `inProgress` в состояние `closed` при завершении API-вызова.
 
-An animation can influence an end user to _perceive_ the operation as faster, even when it is not.
+Анимация может влиять на восприятие пользователем — заставлять _воспринимать_ операцию как более быструю, даже если это не так.
 
-Callbacks can serve as a debugging tool, for example in conjunction with `console.warn()` to view the application's progress in a browser's Developer JavaScript Console.
-The following code snippet creates console log output for the original example, a button with the two states of `open` and `closed`.
+Обратные вызовы могут служить инструментом отладки — например, совместно с `console.warn()` для отслеживания хода выполнения приложения в консоли разработчика браузера.
+Следующий фрагмент кода создаёт вывод в консоль для оригинального примера — кнопки с двумя состояниями `open` и `closed`.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.ts" region="events"/>
 
-## Keyframes
+## Keyframes {#keyframes}
 
-To create an animation with multiple steps run in sequence, use _keyframes_.
+Для создания анимации с несколькими последовательными шагами используйте _keyframes_.
 
-Angular's `keyframe()` function allows several style changes within a single timing segment.
-For example, the button, instead of fading, could change color several times over a single 2-second time span.
+Функция `keyframe()` в Angular позволяет выполнять несколько изменений стиля в рамках одного временного сегмента.
+Например, кнопка вместо плавного исчезновения могла бы менять цвет несколько раз за 2 секунды.
 
 <img alt="keyframes" src="assets/images/guide/animations/keyframes-500.png">
 
-The code for this color change might look like this.
+Код для такого изменения цвета может выглядеть следующим образом.
 
 <docs-code header="status-slider.ts" path="adev/src/content/examples/animations/src/app/status-slider.ts" region="keyframes"/>
 
-### Offset
+### Смещение {#offset}
 
-Keyframes include an `offset` that defines the point in the animation where each style change occurs.
-Offsets are relative measures from zero to one, marking the beginning and end of the animation. They should be applied to each of the keyframe steps if used at least once.
+Keyframes включают параметр `offset`, определяющий точку анимации, в которой происходит каждое изменение стиля.
+Смещения — это относительные значения от нуля до единицы, обозначающие начало и конец анимации. Если они используются хотя бы один раз, их необходимо применять к каждому из шагов keyframe.
 
-Defining offsets for keyframes is optional.
-If you omit them, evenly spaced offsets are automatically assigned.
-For example, three keyframes without predefined offsets receive offsets of 0, 0.5, and 1.
-Specifying an offset of 0.8 for the middle transition in the preceding example might look like this.
+Определение смещений для keyframes необязательно.
+Если не указать, смещения с равными интервалами назначаются автоматически.
+Например, три keyframe без заранее определённых смещений получат смещения 0, 0.5 и 1.
+Указание смещения 0.8 для среднего перехода в предыдущем примере могло бы выглядеть так.
 
 <img alt="keyframes with offset" src="assets/images/guide/animations/keyframes-offset-500.png">
 
-The code with offsets specified would be as follows.
+Код с указанными смещениями выглядел бы следующим образом.
 
 <docs-code header="status-slider.ts" path="adev/src/content/examples/animations/src/app/status-slider.ts" region="keyframesWithOffsets"/>
 
-You can combine keyframes with `duration`, `delay`, and `easing` within a single animation.
+Keyframes можно комбинировать с `duration`, `delay` и `easing` в рамках одной анимации.
 
-### Keyframes with a pulsation
+### Keyframes с пульсацией {#keyframes-with-a-pulsation}
 
-Use keyframes to create a pulse effect in your animations by defining styles at specific offset throughout the animation.
+Используйте keyframes для создания эффекта пульсации в анимациях, определяя стили в определённых точках анимации.
 
-Here's an example of using keyframes to create a pulse effect:
+Пример использования keyframes для создания эффекта пульсации:
 
-- The original `open` and `closed` states, with the original changes in height, color, and opacity, occurring over a timeframe of 1 second
-- A keyframes sequence inserted in the middle that causes the button to appear to pulsate irregularly over the course of that same 1 second timeframe
+- Исходные состояния `open` и `closed` с исходными изменениями высоты, цвета и прозрачности на протяжении 1 секунды
+- Последовательность keyframes, вставленная в середину, которая заставляет кнопку неравномерно пульсировать в течение той же 1 секунды
 
 <img alt="keyframes with irregular pulsation" src="assets/images/guide/animations/keyframes-pulsation.png">
 
-The code snippet for this animation might look like this.
+Фрагмент кода для этой анимации может выглядеть следующим образом.
 
 <docs-code header="open-close.ts" path="adev/src/content/examples/animations/src/app/open-close.1.ts" region="trigger"/>
 
-### Animatable properties and units
+### Анимируемые свойства и единицы {#animatable-properties-and-units}
 
-Angular animations support builds on top of web animations, so you can animate any property that the browser considers animatable.
-This includes positions, sizes, transforms, colors, borders, and more.
-The W3C maintains a list of animatable properties on its [CSS Transitions](https://www.w3.org/TR/css-transitions-1) page.
+Поддержка анимаций Angular построена на основе веб-анимаций, поэтому можно анимировать любое свойство, которое браузер считает анимируемым.
+Сюда входят позиция, размер, трансформации, цвета, рамки и многое другое.
+W3C поддерживает список анимируемых свойств на странице [CSS Transitions](https://www.w3.org/TR/css-transitions-1).
 
-For properties with a numeric value, define a unit by providing the value as a string, in quotes, with the appropriate suffix:
+Для свойств с числовым значением определяйте единицу измерения, указывая значение в виде строки в кавычках с соответствующим суффиксом:
 
-- 50 pixels:
+- 50 пикселей:
   `'50px'`
 
-- Relative font size:
+- Относительный размер шрифта:
   `'3em'`
 
-- Percentage:
+- Проценты:
   `'100%'`
 
-You can also provide the value as a number. In such cases Angular assumes a default unit of pixels, or `px`.
-Expressing 50 pixels as `50` is the same as saying `'50px'`.
+Также можно указать значение в виде числа. В таком случае Angular предполагает единицу измерения по умолчанию — пиксели или `px`.
+Выражение 50 пикселей как `50` равнозначно `'50px'`.
 
-HELPFUL: The string `"50"` would instead not be considered valid\).
+HELPFUL: Строка `"50"` не будет считаться допустимой\).
 
-### Automatic property calculation with wildcards
+### Автоматическое вычисление свойств с масками {#automatic-property-calculation-with-wildcards}
 
-Sometimes, the value of a dimensional style property isn't known until runtime.
-For example, elements often have widths and heights that depend on their content or the screen size.
-These properties are often challenging to animate using CSS.
+Иногда значение размерного свойства стиля неизвестно до момента выполнения.
+Например, ширина и высота элементов часто зависят от их содержимого или размера экрана.
+Анимировать такие свойства с помощью CSS бывает непросто.
 
-In these cases, you can use a special wildcard `*` property value under `style()`. The value of that particular style property is computed at runtime and then plugged into the animation.
+В таких случаях можно использовать специальное значение свойства-маски `*` в `style()`. Значение этого конкретного свойства стиля вычисляется во время выполнения и подставляется в анимацию.
 
-The following example has a trigger called `shrinkOut`, used when an HTML element leaves the page.
-The animation takes whatever height the element has before it leaves, and animates from that height to zero.
+Следующий пример содержит триггер `shrinkOut`, используемый при уходе HTML-элемента со страницы.
+Анимация берёт высоту элемента перед уходом и анимирует от этой высоты до нуля.
 
 <docs-code header="hero-list-auto.ts" path="adev/src/content/examples/animations/src/app/hero-list-auto.ts" region="auto-calc"/>
 
-### Keyframes summary
+### Итоги по keyframes {#keyframes-summary}
 
-The `keyframes()` function in Angular allows you to specify multiple interim styles within a single transition. An optional `offset` can be used to define the point in the animation where each style change should occur.
+Функция `keyframes()` в Angular позволяет задавать несколько промежуточных стилей в рамках одного перехода. Необязательный параметр `offset` позволяет определить точку анимации, в которой должно происходить каждое изменение стиля.
 
-## More on Angular animations
+## Дополнительные материалы по анимациям Angular {#more-on-angular-animations}
 
-You might also be interested in the following:
+Вас также могут заинтересовать следующие материалы:
 
 <docs-pill-row>
-  <docs-pill href="guide/legacy-animations" title="Introduction to Angular animations"/>
-  <docs-pill href="guide/legacy-animations/complex-sequences" title="Complex animation sequences"/>
-  <docs-pill href="guide/legacy-animations/reusable-animations" title="Reusable animations"/>
-  <docs-pill href="guide/routing/route-transition-animations" title="Route transition animations"/>
-  <docs-pill href="guide/animations/migration" title="Migrating to Native CSS Animations"/>
+  <docs-pill href="guide/legacy-animations" title="Введение в анимации Angular"/>
+  <docs-pill href="guide/legacy-animations/complex-sequences" title="Сложные последовательности анимаций"/>
+  <docs-pill href="guide/legacy-animations/reusable-animations" title="Повторно используемые анимации"/>
+  <docs-pill href="guide/routing/route-transition-animations" title="Анимации переходов маршрутов"/>
+  <docs-pill href="guide/animations/migration" title="Миграция на нативные CSS-анимации"/>
 </docs-pill-row>

@@ -1,10 +1,10 @@
-# Navigate to routes
+# Навигация по маршрутам {#navigate-to-routes}
 
-The RouterLink directive is Angular's declarative approach to navigation. It allows you to use standard anchor elements (`<a>`) that seamlessly integrate with Angular's routing system.
+Директива RouterLink — это декларативный подход Angular к навигации. Она позволяет использовать стандартные якорные элементы (`<a>`), которые бесшовно интегрируются с системой маршрутизации Angular.
 
-## How to use RouterLink
+## Использование RouterLink {#how-to-use-routerlink}
 
-Instead of using regular anchor elements `<a>` with an `href` attribute, you add a RouterLink directive with the appropriate path in order to leverage Angular routing.
+Вместо использования обычных якорных элементов `<a>` с атрибутом `href` добавьте директиву RouterLink с соответствующим путём для использования Angular-маршрутизации.
 
 ```angular-ts
 import {RouterLink} from '@angular/router';
@@ -22,61 +22,61 @@ import {RouterLink} from '@angular/router';
 export class App {}
 ```
 
-### Using absolute or relative links
+### Использование абсолютных или относительных ссылок {#using-absolute-or-relative-links}
 
-**Relative URLs** in Angular routing allow you to define navigation paths relative to the current route's location. This is in contrast to **absolute URLs** which contain the full path with the protocol (e.g., `http://`) and the **root domain** (e.g., `google.com`).
+**Относительные URL** в Angular-маршрутизации позволяют определять пути навигации относительно расположения текущего маршрута. В отличие от **абсолютных URL**, которые содержат полный путь с протоколом (например, `http://`) и **корневым доменом** (например, `google.com`).
 
 ```angular-html
-<!-- Absolute URL -->
+<!-- Абсолютный URL -->
 <a href="https://www.angular.dev/essentials">Angular Essentials Guide</a>
 
-<!-- Relative URL -->
+<!-- Относительный URL -->
 <a href="/essentials">Angular Essentials Guide</a>
 ```
 
-In this example, the first example contains the full path with the protocol (i.e., `https://`) and the root domain (i.e., `angular.dev`) explicitly defined for the essentials page. In contrast, the second example assumes the user is already on the correct root domain for `/essentials`.
+В этом примере первый вариант содержит полный путь с протоколом (то есть `https://`) и корневым доменом (то есть `angular.dev`), явно заданными для страницы essentials. Второй вариант предполагает, что пользователь уже находится на нужном корневом домене для `/essentials`.
 
-Generally speaking, relative URLs are preferred as they are more maintainable across applications since they don’t need to know their absolute position within the routing hierarchy.
+Как правило, относительные URL предпочтительнее, так как они более поддерживаемы в приложениях, поскольку не требуют знания абсолютного положения в иерархии маршрутизации.
 
-### How relative URLs work
+### Как работают относительные URL {#how-relative-urls-work}
 
-Angular routing has two syntaxes for defining relative URLs: strings and arrays.
+Angular-маршрутизация поддерживает два синтаксиса для определения относительных URL: строки и массивы.
 
 ```angular-html
-<!-- Navigates user to /dashboard -->
+<!-- Переходит на /dashboard -->
 <a routerLink="dashboard">Dashboard</a>
 <a [routerLink]="['dashboard']">Dashboard</a>
 ```
 
-HELPFUL: Passing a string is the most common way to define relative URLs.
+HELPFUL: Передача строки — наиболее распространённый способ определения относительных URL.
 
-When you need to define dynamic parameters in a relative URL, use the array syntax:
+Когда нужно определить динамические параметры в относительном URL, используйте синтаксис массива:
 
 ```angular-html
 <a [routerLink]="['user', currentUserId]">Current User</a>
 ```
 
-In addition, Angular routing allows you to specify whether you want the path to be relative to the current URL or to the root domain based on whether the relative path is prefixed with a forward slash (`/`) or not.
+Кроме того, Angular-маршрутизация позволяет указывать, должен ли путь быть относительным к текущему URL или к корневому домену — в зависимости от того, предваряется ли относительный путь косой чертой (`/`) или нет.
 
-For example, if the user is on `example.com/settings`, here is how different relative paths can be defined for various scenarios:
+Например, если пользователь находится на `example.com/settings`, вот как можно определить различные относительные пути для разных сценариев:
 
 ```angular-html
-<!-- Navigates to /settings/notifications -->
+<!-- Переходит на /settings/notifications -->
 <a routerLink="notifications">Notifications</a>
 <a routerLink="/settings/notifications">Notifications</a>
 
-<!-- Navigates to /team/:teamId/user/:userId -->
+<!-- Переходит на /team/:teamId/user/:userId -->
 <a routerLink="/team/123/user/456">User 456</a>
 <a [routerLink]="['/team', teamId, 'user', userId]">Current User</a>
 ```
 
-## Programmatic navigation to routes
+## Программная навигация по маршрутам {#programmatic-navigation-to-routes}
 
-While `RouterLink` handles declarative navigation in templates, Angular provides programmatic navigation for scenarios where you need to navigate based on logic, user actions, or application state. By injecting `Router`, you can dynamically navigate to routes, pass parameters, and control navigation behavior in your TypeScript code.
+Хотя `RouterLink` обеспечивает декларативную навигацию в шаблонах, Angular предоставляет программную навигацию для сценариев, где нужно переходить на основе логики, действий пользователя или состояния приложения. Внедрив `Router`, можно динамически переходить на маршруты, передавать параметры и управлять поведением навигации в TypeScript-коде.
 
-### `router.navigate()`
+### `router.navigate()` {#router-navigate}
 
-You can use the `router.navigate()` method to programmatically navigate between routes by specifying a URL path array.
+Метод `router.navigate()` позволяет программно переходить между маршрутами, указывая массив URL-пути.
 
 ```angular-ts
 import {Router} from '@angular/router';
@@ -89,26 +89,26 @@ export class AppDashboard {
   private router = inject(Router);
 
   navigateToProfile() {
-    // Standard navigation
+    // Стандартная навигация
     this.router.navigate(['/profile']);
 
-    // With route parameters
+    // С параметрами маршрута
     this.router.navigate(['/users', userId]);
 
-    // With query parameters
+    // С параметрами запроса
     this.router.navigate(['/search'], {
       queryParams: {category: 'books', sort: 'price'},
     });
 
-    // With matrix parameters
+    // С матричными параметрами
     this.router.navigate(['/products', {featured: true, onSale: true}]);
   }
 }
 ```
 
-`router.navigate()` supports both simple and complex routing scenarios, allowing you to pass route parameters, [query parameters](/guide/routing/read-route-state#query-parameters), and control navigation behavior.
+`router.navigate()` поддерживает как простые, так и сложные сценарии маршрутизации, позволяя передавать параметры маршрута, [параметры запроса](/guide/routing/read-route-state#query-parameters) и управлять поведением навигации.
 
-You can also build dynamic navigation paths relative to your component’s location in the routing tree using the `relativeTo` option.
+Также можно строить динамические пути навигации относительно расположения компонента в дереве маршрутизации с помощью опции `relativeTo`.
 
 ```angular-ts
 import {Router, ActivatedRoute} from '@angular/router';
@@ -124,52 +124,52 @@ export class UserDetail {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  // Navigate to a sibling route
+  // Переход к соседнему маршруту
   navigateToEdit() {
-    // From: /users/123
-    // To:   /users/123/edit
+    // Из: /users/123
+    // В:  /users/123/edit
     this.router.navigate(['edit'], {relativeTo: this.route});
   }
 
-  // Navigate to parent
+  // Переход к родительскому маршруту
   navigateToParent() {
-    // From: /users/123
-    // To:   /users
+    // Из: /users/123
+    // В:  /users
     this.router.navigate(['..'], {relativeTo: this.route});
   }
 }
 ```
 
-### `router.navigateByUrl()`
+### `router.navigateByUrl()` {#router-navigatebyurl}
 
-The `router.navigateByUrl()` method provides a direct way to programmatically navigate using URL path strings rather than array segments. This method is ideal when you have a full URL path and need to perform absolute navigation, especially when working with externally provided URLs or deep linking scenarios.
+Метод `router.navigateByUrl()` предоставляет прямой способ программной навигации с использованием строк URL-пути вместо сегментов массива. Этот метод идеален, когда у вас есть полный URL-путь и нужно выполнить абсолютную навигацию, особенно при работе с URL, предоставленными извне, или в сценариях глубоких ссылок.
 
 ```ts
-// Standard route navigation
+// Стандартная навигация по маршруту
 router.navigateByUrl('/products');
 
-// Navigate to nested route
+// Переход к вложенному маршруту
 router.navigateByUrl('/products/featured');
 
-// Complete URL with parameters and fragment
+// Полный URL с параметрами и фрагментом
 router.navigateByUrl('/products/123?view=details#reviews');
 
-// Navigate with query parameters
+// Навигация с параметрами запроса
 router.navigateByUrl('/search?category=books&sortBy=price');
 
-// With matrix parameters
+// С матричными параметрами
 router.navigateByUrl('/sales-awesome;isOffer=true;showModal=false');
 ```
 
-In the event you need to replace the current URL in history, `navigateByUrl` also accepts a configuration object that has a `replaceUrl` option.
+Если нужно заменить текущий URL в истории, `navigateByUrl` также принимает объект конфигурации с опцией `replaceUrl`.
 
 ```ts
-// Replace current URL in history
+// Замена текущего URL в истории
 router.navigateByUrl('/checkout', {
   replaceUrl: true,
 });
 ```
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-Learn how to [read route state](/guide/routing/read-route-state) to create responsive and context-aware components.
+Узнайте, как [читать состояние маршрута](/guide/routing/read-route-state) для создания отзывчивых и контекстно-зависимых компонентов.

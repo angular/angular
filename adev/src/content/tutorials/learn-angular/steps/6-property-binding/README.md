@@ -1,27 +1,27 @@
-# Property Binding in Angular
+# Привязка свойства в Angular {#property-binding-in-angular}
 
-Property binding in Angular enables you to set values for properties of HTML elements, Angular components and more.
+Привязка свойства в Angular позволяет устанавливать значения для свойств HTML-элементов, Angular-Компонентов и многого другого.
 
-Use property binding to dynamically set values for properties and attributes. You can do things such as toggle button features, set image paths programmatically, and share values between components.
+Используйте Привязку свойства для динамического задания значений свойств и атрибутов. Вы можете переключать функции кнопки, программно задавать пути к изображениям и обмениваться значениями между Компонентами.
 
-NOTE: Learn more about [setting dynamic properties and attributes in the essentials guide](/essentials/templates#setting-dynamic-properties-and-attributes).
+NOTE: Подробнее об [установке динамических свойств и атрибутов в основном руководстве](/essentials/templates#setting-dynamic-properties-and-attributes).
 
-In this activity, you'll learn how to use property binding in templates.
+В этом упражнении вы научитесь использовать Привязку свойства в Шаблонах.
 
 <hr />
 
-To bind to an element's attribute, wrap the attribute name in square brackets. Here's an example:
+Чтобы привязаться к атрибуту элемента, заключите имя атрибута в квадратные скобки. Пример:
 
 ```angular-html
 <img alt="photo" [src]="imageURL" />
 ```
 
-In this example, the value of the `src` attribute will be bound to the class property `imageURL`. Whatever value `imageURL` has will be set as the `src` attribute of the `img` tag.
+В этом примере значение атрибута `src` будет привязано к свойству класса `imageURL`. Какое бы значение ни имел `imageURL`, оно будет установлено как атрибут `src` тега `img`.
 
 <docs-workflow>
 
-<docs-step title="Add a property called `isEditable`" header="app.ts" language="ts">
-Update the code in `app.ts` by adding a property to the `App` class called `isEditable` with the initial value set to `true`.
+<docs-step title="Добавьте свойство `isEditable`" header="app.ts" language="ts">
+Обновите код в `app.ts`, добавив свойство `isEditable` в класс `App` с начальным значением `true`.
 
 ```ts {highlight:[2]}
 export class App {
@@ -31,8 +31,8 @@ export class App {
 
 </docs-step>
 
-<docs-step title="Bind to `contentEditable`" header="app.ts" language="ts">
-Next, bind the `contentEditable` attribute of the `div` to the `isEditable` property by using the <code aria-label="square brackets">[]</code> syntax.
+<docs-step title="Привяжите `contentEditable`" header="app.ts" language="ts">
+Затем привяжите атрибут `contentEditable` элемента `div` к свойству `isEditable`, используя синтаксис <code aria-label="square brackets">[]</code>.
 
 ```angular-ts {highlight:[3]}
 @Component({
@@ -45,6 +45,6 @@ Next, bind the `contentEditable` attribute of the `div` to the `isEditable` prop
 
 </docs-workflow>
 
-The div is now editable. Nice work 👍
+Теперь div доступен для редактирования. Отличная работа!
 
-Property binding is one of Angular's many powerful features. If you'd like to learn more checkout [the Angular documentation](guide/templates/binding#css-class-and-style-property-bindings).
+Привязка свойства — одна из многих мощных возможностей Angular. Для получения дополнительной информации изучите [документацию Angular](guide/templates/binding#css-class-and-style-property-bindings).

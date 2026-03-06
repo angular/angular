@@ -1,122 +1,122 @@
-# Hello world
+# Hello world {#hello-world}
 
-This first lesson serves as the starting point from which each lesson in this tutorial adds new features to build a complete Angular app. In this lesson, we'll update the application to display the famous text, "Hello World".
+Этот первый урок служит отправной точкой, от которой каждый последующий урок добавляет новые возможности для построения полноценного Angular-приложения. В этом уроке мы обновим приложение, чтобы оно отображало знаменитый текст «Hello World».
 
 <docs-video src="https://www.youtube.com/embed/UnOwDuliqZA?si=uML-cDRbrxmYdD_9"/>
 
-## What you'll learn
+## Что вы узнаете {#what-youll-learn}
 
-If your application runs successfully in the browser and displays the executed content without errors, it confirms that your development environment and IDE are correctly set up to begin building an Angular app.
+Если приложение успешно запускается в браузере и отображает содержимое без ошибок, это подтверждает, что ваша среда разработки и IDE настроены правильно для начала работы с Angular-приложением.
 
-NOTE: If you are working with the embedded editor, skip to [step four](#create-hello-world).
-When working in the browser playground, you do not need to `ng serve` to run the app. Other commands like `ng generate` can be done in the console window to your right.
+NOTE: Если вы работаете со встроенным редактором, перейдите сразу к [шагу четыре](#create-hello-world).
+При работе в браузерном редакторе не нужно выполнять `ng serve` для запуска приложения. Другие команды, такие как `ng generate`, можно выполнять в окне консоли справа.
 
 <docs-workflow>
 
-<docs-step title="Download the default app">
-Start by clicking the "Download" icon in the top right pan of the code editor. This will download a `.zip` file containing the source code for this tutorial. Open this in your local Terminal and IDE then move on to testing the default app.
+<docs-step title="Скачайте приложение по умолчанию">
+Начните с нажатия на значок «Download» в правом верхнем углу редактора кода. Это загрузит `.zip`-файл с исходным кодом данного урока. Откройте его в локальном терминале и IDE, а затем перейдите к тестированию приложения по умолчанию.
 
-At any step in the tutorial, you can click this icon to download the step's source code and start from there.
+На любом шаге урока вы можете нажать этот значок, чтобы загрузить исходный код текущего шага и начать с него.
 </docs-step>
 
-<docs-step title="Test the default app">
-In this step, after you download the default starting app, you build the default Angular app.
-This confirms that your development environment has what you need to continue the tutorial.
+<docs-step title="Протестируйте приложение по умолчанию">
+На этом шаге, после загрузки стартового приложения, вы собираете Angular-приложение по умолчанию.
+Это подтверждает, что ваша среда разработки готова к продолжению урока.
 
-In the **Terminal** pane of your IDE:
+В панели **Терминал** вашей IDE:
 
-1. In your project directory, navigate to the `first-app` directory.
-1. Run this command to install the dependencies needed to run the app.
+1. В директории проекта перейдите в директорию `first-app`.
+1. Выполните эту команду для установки зависимостей, необходимых для запуска приложения.
 
    ```shell
    npm install
    ```
 
-1. Run this command to build and serve the default app.
+1. Выполните эту команду для сборки и запуска приложения по умолчанию.
 
    ```shell
    ng serve
    ```
 
-   The app should build without errors.
+   Приложение должно собраться без ошибок.
 
-1. In a web browser on your development computer, open `http://localhost:4200`.
-1. Confirm that the default web site appears in the browser.
-1. You can leave `ng serve` running as you complete the next steps.
+1. В веб-браузере на вашем компьютере разработки откройте `http://localhost:4200`.
+1. Убедитесь, что в браузере отображается сайт по умолчанию.
+1. Вы можете оставить `ng serve` запущенным на время выполнения следующих шагов.
    </docs-step>
 
-<docs-step title="Review the files in the project">
-In this step, you get to know the files that make up a default Angular app.
+<docs-step title="Изучите файлы проекта">
+На этом шаге вы знакомитесь с файлами, из которых состоит Angular-приложение по умолчанию.
 
-In the **Explorer** pane of your IDE:
+В панели **Explorer** вашей IDE:
 
-1. In your project directory, navigate to the `first-app` directory.
-1. Open the `src` directory to see these files.
-   1. In the file explorer, find the Angular app files (`/src`).
-      1. `index.html` is the app's top level HTML template.
-      1. `styles.css` is the app's top level style sheet.
-      1. `main.ts` is where the app starts running.
-      1. `favicon.ico` is the app's icon, just as you would find in any web site.
-   1. In the file explorer, find the Angular app's component files (`/app`).
-      1. `app.ts` is the source file that describes the `app-root` component.
-         This is the top-level Angular component in the app. A component is the basic building block of an Angular application.
-         The component description includes the component's code, HTML template, and styles, which can be described in this file, or in separate files.
+1. В директории проекта перейдите в директорию `first-app`.
+1. Откройте директорию `src`, чтобы увидеть следующие файлы.
+   1. В обозревателе файлов найдите файлы Angular-приложения (`/src`).
+      1. `index.html` — основной HTML-шаблон приложения верхнего уровня.
+      1. `styles.css` — таблица стилей приложения верхнего уровня.
+      1. `main.ts` — место, откуда начинается выполнение приложения.
+      1. `favicon.ico` — значок приложения, как и на любом веб-сайте.
+   1. В обозревателе файлов найдите файлы Компонентов Angular-приложения (`/app`).
+      1. `app.ts` — исходный файл, описывающий Компонент `app-root`.
+         Это Angular-Компонент верхнего уровня в приложении. Компонент является основным строительным блоком Angular-приложения.
+         Описание Компонента включает код, HTML-Шаблон и стили, которые могут быть описаны в этом файле или в отдельных файлах.
 
-         In this app, the styles are in a separate file while the component's code and HTML template are in this file.
+         В этом приложении стили находятся в отдельном файле, тогда как код Компонента и HTML-Шаблон — в этом файле.
 
-      1. `app.css` is the style sheet for this component.
-      1. New components are added to this directory.
+      1. `app.css` — таблица стилей данного Компонента.
+      1. Новые Компоненты добавляются в эту директорию.
 
-   1. In the file explorer, find the image directory (`/assets`) that contains images used by the app.
-   1. In the file explorer, find the files and directories that an Angular app needs to build and run, but they are not files that you normally interact with.
-      1. `.angular` has files required to build the Angular app.
-      1. `.e2e` has files used to test the app.
-      1. `.node_modules` has the node.js packages that the app uses.
-      1. `angular.json` describes the Angular app to the app building tools.
-      1. `package.json` is used by `npm` (the node package manager) to run the finished app.
-      1. `tsconfig.*` are the files that describe the app's configuration to the TypeScript compiler.
+   1. В обозревателе файлов найдите директорию изображений (`/assets`), содержащую изображения, используемые приложением.
+   1. В обозревателе файлов найдите файлы и директории, которые Angular-приложению необходимы для сборки и запуска, но с которыми вы обычно не взаимодействуете напрямую.
+      1. `.angular` содержит файлы, необходимые для сборки Angular-приложения.
+      1. `.e2e` содержит файлы для тестирования приложения.
+      1. `.node_modules` содержит пакеты node.js, используемые приложением.
+      1. `angular.json` описывает Angular-приложение для инструментов сборки.
+      1. `package.json` используется `npm` (менеджером пакетов node) для запуска готового приложения.
+      1. `tsconfig.*` — файлы, описывающие конфигурацию приложения для компилятора TypeScript.
 
-After you have reviewed the files that make up an Angular app project, continue to the next step.
+После изучения файлов Angular-проекта перейдите к следующему шагу.
 </docs-step>
 
-<docs-step title="Create `Hello World`">
-In this step, you update the Angular project files to change the displayed content.
+<docs-step title="Создайте `Hello World`">
+На этом шаге вы обновляете файлы Angular-проекта, чтобы изменить отображаемое содержимое.
 
-In your IDE:
+В вашей IDE:
 
-1. Open `first-app/src/index.html`.
-   NOTE: This step and the next are only for your local environment!
+1. Откройте `first-app/src/index.html`.
+   NOTE: Этот шаг и следующий только для локальной среды!
 
-1. In `index.html`, replace the `<title>` element with this code to update the title of the app.
+1. В `index.html` замените элемент `<title>` следующим кодом, чтобы обновить заголовок приложения.
 
    <docs-code header="Replace in src/index.html" path="adev/src/content/tutorials/first-app/steps/02-Home/src/index.html" visibleLines="[5]"/>
 
-   Then, save the changes you just made to `index.html`.
+   Затем сохраните изменения, внесённые в `index.html`.
 
-1. Next, open `first-app/src/app/app.ts`.
-1. In `app.ts`, in the `@Component` definition, replace the `template` line with this code to change the text in the app component.
+1. Далее откройте `first-app/src/app/app.ts`.
+1. В `app.ts`, в определении `@Component`, замените строку `template` следующим кодом, чтобы изменить текст в Компоненте приложения.
 
    <docs-code language="angular-ts" header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[6,8]"/>
 
-1. In `app.ts`, in the `App` class definition, replace the `title` line with this code to change the component title.
+1. В `app.ts`, в определении класса `App`, замените строку `title` следующим кодом, чтобы изменить заголовок Компонента.
 
    <docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/02-Home/src/app/app.ts" visibleLines="[11,13]"/>
 
-   Then, save the changes you made to `app.ts`.
+   Затем сохраните изменения, внесённые в `app.ts`.
 
-1. If you stopped the `ng serve` command from step 1, in the **Terminal** window of your IDE, run `ng serve` again.
-1. Open your browser and navigate to `localhost:4200` and confirm that the app builds without error and displays _Homes_ in the title and _Hello world_ in the body of your app:
+1. Если вы остановили команду `ng serve` из шага 1, в окне **Терминал** вашей IDE снова выполните `ng serve`.
+1. Откройте браузер и перейдите по адресу `localhost:4200`, убедитесь, что приложение собирается без ошибок и отображает _Homes_ в заголовке и _Hello world_ в теле приложения:
    <img alt="browser frame of page displaying the text 'Hello World'" src="assets/images/tutorials/first-app/homes-app-lesson-01-browser.png">
    </docs-step>
 
 </docs-workflow>
 
-SUMMARY: In this lesson, you updated a default Angular app to display _Hello world_.
-In the process, you learned about the `ng serve` command to serve your app locally for testing.
+SUMMARY: В этом уроке вы обновили Angular-приложение по умолчанию для отображения _Hello world_.
+В процессе вы познакомились с командой `ng serve` для локального запуска приложения в целях тестирования.
 
-For more information about the topics covered in this lesson, visit:
+Для получения дополнительной информации по темам, рассмотренным в этом уроке, посетите:
 
 <docs-pill-row>
-  <docs-pill href="guide/components" title="Angular Components"/>
-  <docs-pill href="tools/cli" title="Creating applications with the Angular CLI"/>
+  <docs-pill href="guide/components" title="Компоненты Angular"/>
+  <docs-pill href="tools/cli" title="Создание приложений с помощью Angular CLI"/>
 </docs-pill-row>

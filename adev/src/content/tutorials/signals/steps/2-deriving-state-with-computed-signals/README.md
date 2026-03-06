@@ -1,17 +1,17 @@
-# Deriving state with computed signals
+# Производное состояние с вычисляемыми Сигналами {#deriving-state-with-computed-signals}
 
-Now that you've learned [how to create and update signals](/tutorials/signals/1-creating-your-first-signal), let's learn about computed signals. Computed signals are derived values that automatically update when their dependencies change. They're perfect for creating reactive calculations based on other signals.
+Теперь, когда вы узнали, [как создавать и обновлять Сигналы](/tutorials/signals/1-creating-your-first-signal), давайте изучим вычисляемые Сигналы. Вычисляемые Сигналы — это производные значения, которые автоматически обновляются при изменении их зависимостей. Они идеально подходят для создания реактивных вычислений на основе других Сигналов.
 
-In this activity, you'll learn how to use the `computed()` function to create derived state that updates automatically when the underlying signals change.
+В этом упражнении вы научитесь использовать функцию `computed()` для создания производного состояния, которое автоматически обновляется при изменении базовых Сигналов.
 
-Let's enhance our user status system by adding computed values that derive information from our user status signal. The starter code now includes three status options: `'online'`, `'away'`, and `'offline'`.
+Давайте улучшим систему статуса пользователя, добавив вычисляемые значения, производные от Сигнала статуса пользователя. Стартовый код теперь включает три варианта статуса: `'online'`, `'away'` и `'offline'`.
 
 <hr />
 
 <docs-workflow>
 
-<docs-step title="Import computed function">
-Add `computed` to your existing imports.
+<docs-step title="Импортируйте функцию computed">
+Добавьте `computed` к существующим импортам.
 
 ```ts
 // Add computed to existing imports
@@ -20,18 +20,18 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
 
 </docs-step>
 
-<docs-step title="Create a computed signal for notifications">
-Add a computed signal that determines if notifications should be enabled based on user status.
+<docs-step title="Создайте вычисляемый Сигнал для уведомлений">
+Добавьте вычисляемый Сигнал, определяющий, должны ли быть включены уведомления в зависимости от статуса пользователя.
 
 ```ts
 notificationsEnabled = computed(() => this.userStatus() === 'online');
 ```
 
-This computed signal will automatically recalculate whenever the `userStatus` signal changes. Notice how we call `this.userStatus()` inside the computed function to read the signal's value.
+Этот вычисляемый Сигнал будет автоматически пересчитываться при каждом изменении Сигнала `userStatus`. Обратите внимание, что мы вызываем `this.userStatus()` внутри функции вычисления для получения значения Сигнала.
 </docs-step>
 
-<docs-step title="Create a computed signal for a descriptive message">
-Add a computed signal that creates a descriptive message based on the user status.
+<docs-step title="Создайте вычисляемый Сигнал для описательного сообщения">
+Добавьте вычисляемый Сигнал, создающий описательное сообщение на основе статуса пользователя.
 
 ```ts
 statusMessage = computed(() => {
@@ -49,11 +49,11 @@ statusMessage = computed(() => {
 });
 ```
 
-This shows how computed signals can handle more complex logic with switch statements and string transformations.
+Это показывает, как вычисляемые Сигналы могут обрабатывать более сложную логику с операторами switch и преобразованиями строк.
 </docs-step>
 
-<docs-step title="Create a computed signal that calculates working hours availability">
-Add a computed signal that calculates if the user is within their working hours.
+<docs-step title="Создайте вычисляемый Сигнал для расчёта доступности в рабочие часы">
+Добавьте вычисляемый Сигнал, рассчитывающий, находится ли пользователь в рабочие часы.
 
 ```ts
 isWithinWorkingHours = computed(() => {
@@ -64,13 +64,13 @@ isWithinWorkingHours = computed(() => {
 });
 ```
 
-This demonstrates how computed signals can perform calculations and combine multiple data sources. The value updates automatically when the `userStatus` changes.
+Это демонстрирует, как вычисляемые Сигналы могут выполнять вычисления и объединять несколько источников данных. Значение обновляется автоматически при изменении `userStatus`.
 </docs-step>
 
-<docs-step title="Display the computed values in the template">
-The template already has placeholders showing "Loading...". Replace them with your computed signals:
+<docs-step title="Отобразите вычисляемые значения в Шаблоне">
+В Шаблоне уже есть заполнители с текстом «Loading...». Замените их вычисляемыми Сигналами:
 
-1. For notifications, replace `Loading...` with an `@if` block:
+1. Для уведомлений замените `Loading...` блоком `@if`:
 
    ```angular-html
    @if (notificationsEnabled()) {
@@ -80,13 +80,13 @@ The template already has placeholders showing "Loading...". Replace them with yo
    }
    ```
 
-1. For the message, replace `Loading...` with:
+1. Для сообщения замените `Loading...` на:
 
    ```angular-html
    {{ statusMessage() }}
    ```
 
-1. For working hours, replace `Loading...` with an `@if` block:
+1. Для рабочих часов замените `Loading...` блоком `@if`:
 
    ```angular-html
    @if (isWithinWorkingHours()) {
@@ -96,18 +96,18 @@ The template already has placeholders showing "Loading...". Replace them with yo
    }
    ```
 
-Notice how computed signals are called just like regular signals - with parentheses!
+Обратите внимание, что вычисляемые Сигналы вызываются так же, как и обычные Сигналы — со скобками!
 </docs-step>
 
 </docs-workflow>
 
-Excellent! You've now learned how to create computed signals.
+Превосходно! Теперь вы научились создавать вычисляемые Сигналы.
 
-Here are some key points to remember:
+Вот несколько ключевых моментов для запоминания:
 
-- **Computed signals are reactive**: They automatically update when their dependencies change
-- **They're read-only**: You can't directly set computed values, they're derived from other signals
-- **They can contain complex logic**: Use them for calculations, transformations, and derived state
-- **They provide a way to make performant computations based on dynamic state**: Angular only recalculates them when their dependencies actually change
+- **Вычисляемые Сигналы реактивны**: они автоматически обновляются при изменении их зависимостей
+- **Они доступны только для чтения**: нельзя напрямую задать значение вычисляемых Сигналов — они производятся из других Сигналов
+- **Они могут содержать сложную логику**: используйте их для вычислений, преобразований и производного состояния
+- **Они обеспечивают производительные вычисления на основе динамического состояния**: Angular пересчитывает их только при фактическом изменении их зависимостей
 
-In the next lesson, you'll learn about [a different way to derive state with linkedSignals](/tutorials/signals/3-deriving-state-with-linked-signals)!
+В следующем уроке вы узнаете о [другом способе производства состояния с помощью linkedSignals](/tutorials/signals/3-deriving-state-with-linked-signals)!

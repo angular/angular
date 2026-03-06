@@ -1,22 +1,22 @@
-# Angular elements overview
+# Обзор Angular elements {#angular-elements-overview}
 
-_Angular elements_ are Angular components packaged as _custom elements_ \(also called Web Components\), a web standard for defining new HTML elements in a framework-agnostic way.
+_Angular elements_ — это Angular-Компоненты, упакованные в виде _пользовательских элементов_ \(также называемых Web Components\): веб-стандарт для определения новых HTML-элементов без привязки к фреймворку.
 
-[Custom elements](https://developer.mozilla.org/docs/Web/Web_Components/Using_custom_elements) are a Web Platform feature available on all browsers supported by Angular.
-A custom element extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code.
-The browser maintains a `CustomElementRegistry` of defined custom elements, which maps an instantiable JavaScript class to an HTML tag.
+[Пользовательские элементы](https://developer.mozilla.org/docs/Web/Web_Components/Using_custom_elements) — это возможность веб-платформы, доступная во всех браузерах, поддерживаемых Angular.
+Пользовательский элемент расширяет HTML, позволяя определять тег, содержимое которого создаётся и управляется кодом JavaScript.
+Браузер хранит реестр `CustomElementRegistry` определённых пользовательских элементов, связывающий инстанцируемый JavaScript-класс с HTML-тегом.
 
-The `@angular/elements` package exports a `createCustomElement()` API that provides a bridge from Angular's component interface and change detection functionality to the built-in DOM API.
+Пакет `@angular/elements` экспортирует API `createCustomElement()`, который обеспечивает связь между интерфейсом Angular-Компонента и функциональностью обнаружения изменений и встроенным DOM API.
 
-Transforming a component to a custom element makes all the required Angular infrastructure available to the browser.
-Creating a custom element is simple and straightforward, and automatically connects your component-defined view with change detection and data binding, mapping Angular functionality to the corresponding built-in HTML equivalents.
+Преобразование Компонента в пользовательский элемент делает всю необходимую Angular-инфраструктуру доступной для браузера.
+Создание пользовательского элемента — простой и прямолинейный процесс, автоматически связывающий представление Компонента с Обнаружением изменений и привязкой данных, сопоставляя функциональность Angular с соответствующими встроенными HTML-эквивалентами.
 
-## Using custom elements
+## Использование пользовательских элементов {#using-custom-elements}
 
-Custom elements bootstrap themselves - they start when they are added to the DOM, and are destroyed when removed from the DOM.
-Once a custom element is added to the DOM for any page, it looks and behaves like any other HTML element, and does not require any special knowledge of Angular terms or usage conventions.
+Пользовательские элементы самозапускаются: они стартуют при добавлении в DOM и уничтожаются при удалении из DOM.
+После добавления пользовательского элемента в DOM любой страницы он выглядит и ведёт себя как обычный HTML-элемент, не требуя специальных знаний о терминах или соглашениях Angular.
 
-To add the `@angular/elements` package to your workspace, run the following command:
+Чтобы добавить пакет `@angular/elements` в рабочее пространство, выполните следующую команду:
 
 <docs-code-multifile>
   <docs-code header="npm" language="shell">
@@ -33,67 +33,67 @@ To add the `@angular/elements` package to your workspace, run the following comm
   </docs-code>
 </docs-code-multifile>
 
-### How it works
+### Принцип работы {#how-it-works}
 
-The `createCustomElement()` function converts a component into a class that can be registered with the browser as a custom element.
-After you register your configured class with the browser's custom-element registry, use the new element just like a built-in HTML element in content that you add directly into the DOM:
+Функция `createCustomElement()` преобразует Компонент в класс, который можно зарегистрировать в браузере как пользовательский элемент.
+После регистрации настроенного класса в реестре пользовательских элементов браузера используйте новый элемент как встроенный HTML-элемент в контенте, добавляемом напрямую в DOM:
 
 ```html
 <my-popup message="Use Angular!"></my-popup>
 ```
 
-When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM.
-The content is provided by the component's template, which uses Angular template syntax, and is rendered using the component and DOM data.
-Input properties in the component correspond to input attributes for the element.
+При размещении пользовательского элемента на странице браузер создаёт экземпляр зарегистрированного класса и добавляет его в DOM.
+Контент предоставляется Шаблоном Компонента, использующим синтаксис Angular-шаблонов, и рендерится с использованием данных Компонента и DOM.
+Входные свойства Компонента соответствуют входным атрибутам элемента.
 
-## Transforming components to custom elements
+## Преобразование Компонентов в пользовательские элементы {#transforming-components-to-custom-elements}
 
-Angular provides the `createCustomElement()` function for converting an Angular component, together with its dependencies, to a custom element.
+Angular предоставляет функцию `createCustomElement()` для преобразования Angular-Компонента вместе с его зависимостями в пользовательский элемент.
 
-The conversion process implements the `NgElementConstructor` interface, and creates a
-constructor class that is configured to produce a self-bootstrapping instance of your component.
+Процесс преобразования реализует интерфейс `NgElementConstructor` и создаёт
+класс-конструктор, настроенный для создания самозапускающегося экземпляра вашего Компонента.
 
-Use the browser's native [`customElements.define()`](https://developer.mozilla.org/docs/Web/API/CustomElementRegistry/define) function to register the configured constructor and its associated custom-element tag with the browser's [`CustomElementRegistry`](https://developer.mozilla.org/docs/Web/API/CustomElementRegistry).
-When the browser encounters the tag for the registered element, it uses the constructor to create a custom-element instance.
+Используйте нативную функцию браузера [`customElements.define()`](https://developer.mozilla.org/docs/Web/API/CustomElementRegistry/define) для регистрации настроенного конструктора и связанного тега пользовательского элемента в [`CustomElementRegistry`](https://developer.mozilla.org/docs/Web/API/CustomElementRegistry) браузера.
+Когда браузер встречает тег зарегистрированного элемента, он использует конструктор для создания экземпляра пользовательского элемента.
 
-IMPORTANT: Avoid using the component's selector as the custom element tag name.
-This can lead to unexpected behavior, due to Angular creating two component instances for a single DOM element:
-One regular Angular component and a second one using the custom element.
+IMPORTANT: Избегайте использования селектора Компонента в качестве имени тега пользовательского элемента.
+Это может привести к неожиданному поведению из-за того, что Angular создаёт два экземпляра Компонента для одного DOM-элемента:
+один обычный Angular-Компонент и второй — с использованием пользовательского элемента.
 
-### Mapping
+### Маппинг {#mapping}
 
-A custom element _hosts_ an Angular component, providing a bridge between the data and logic defined in the component and standard DOM APIs.
-Component properties and logic map directly into HTML attributes and the browser's event system.
+Пользовательский элемент _хостит_ Angular-Компонент, обеспечивая мост между данными и логикой, определёнными в Компоненте, и стандартными DOM API.
+Свойства и логика Компонента напрямую отображаются в HTML-атрибуты и систему событий браузера.
 
-- The creation API parses the component looking for input properties, and defines corresponding attributes for the custom element.
-  It transforms the property names to make them compatible with custom elements, which do not recognize case distinctions.
-  The resulting attribute names use dash-separated lowercase.
-  For example, for a component with `inputProp = input({alias: 'myInputProp'})`, the corresponding custom element defines an attribute `my-input-prop`.
+- Creation API анализирует Компонент в поисках входных свойств и определяет соответствующие атрибуты для пользовательского элемента.
+  Имена свойств преобразуются для совместимости с пользовательскими элементами, которые не различают регистр.
+  Результирующие имена атрибутов используют строчные буквы с дефисами.
+  Например, для Компонента с `inputProp = input({alias: 'myInputProp'})` соответствующий пользовательский элемент определяет атрибут `my-input-prop`.
 
-- Component outputs are dispatched as HTML [Custom Events](https://developer.mozilla.org/docs/Web/API/CustomEvent), with the name of the custom event matching the output name.
-  For example, for a component with `valueChanged = output()`, the corresponding custom element dispatches events with the name "valueChanged", and the emitted data is stored on the event's `detail` property.
-  If you provide an alias, that value is used; for example, `clicks = output<string>({alias: 'myClick'});` results in dispatch events with the name "myClick".
+- Выходные параметры Компонента диспетчеризуются как HTML [Custom Events](https://developer.mozilla.org/docs/Web/API/CustomEvent), где имя события совпадает с именем выходного параметра.
+  Например, для Компонента с `valueChanged = output()` соответствующий пользовательский элемент диспетчеризует события с именем «valueChanged», а испускаемые данные хранятся в свойстве `detail` события.
+  При указании псевдонима используется его значение; например, `clicks = output<string>({alias: 'myClick'});` приводит к событиям с именем «myClick».
 
-For more information, see Web Component documentation for [Creating custom events](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Events#creating_custom_events).
+Подробнее: документация Web Components по [созданию пользовательских событий](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Events#creating_custom_events).
 
-## Example: A Popup Service
+## Пример: Popup Service {#example-a-popup-service}
 
-Previously, when you wanted to add a component to an application at runtime, you had to define a _dynamic component_, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling.
+Раньше, чтобы добавить Компонент в приложение во время выполнения, нужно было определить _динамический Компонент_, загрузить его, прикрепить к элементу в DOM и вручную настраивать зависимости, Обнаружение изменений и обработку событий.
 
-Using an Angular custom element makes the process simpler and more transparent, by providing all the infrastructure and framework automatically —all you have to do is define the kind of event handling you want.
-\(You do still have to exclude the component from compilation, if you are not going to use it in your application.\)
+Использование пользовательского Angular-элемента упрощает этот процесс, обеспечивая всю инфраструктуру и фреймворк автоматически — достаточно определить желаемый тип обработки событий.
+\(При этом Компонент, не используемый в приложении, по-прежнему следует исключить из компиляции.\)
 
-The following Popup Service example application defines a component that you can either load dynamically or convert to a custom element.
+Следующий пример приложения Popup Service определяет Компонент, который можно загружать динамически или преобразовать в пользовательский элемент.
 
-| Files              | Details                                                                                                                                                                                                             |
-| :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `popup.ts`         | Defines a simple pop-up element that displays an input message, with some animation and styling.                                                                                                                    |
-| `popup.service.ts` | Creates an injectable service that provides two different ways to invoke the `Popup`; as a dynamic component, or as a custom element. Notice how much more setup is required for the dynamic-loading method.        |
-| `app.ts`           | Defines the application's root component, which uses the `PopupService` to add the pop-up to the DOM at run time. When the application runs, the root component's constructor converts `Popup` to a custom element. |
+| Файлы              | Описание                                                                                                                                                                                                                      |
+| :----------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `popup.ts`         | Определяет простой всплывающий элемент, отображающий входное сообщение с анимацией и стилизацией.                                                                                                                            |
+| `popup.service.ts` | Создаёт инъектируемый Сервис, предоставляющий два способа вызова `Popup`: как динамический Компонент или как пользовательский элемент. Обратите внимание, насколько больше настройки требует метод с динамической загрузкой. |
+| `app.ts`           | Определяет корневой Компонент приложения, использующий `PopupService` для добавления всплывающего окна в DOM во время выполнения. Конструктор корневого Компонента преобразует `Popup` в пользовательский элемент при запуске. |
 
-For comparison, the demo shows both methods.
-One button adds the popup using the dynamic-loading method, and the other uses the custom element.
-The result is the same, but the preparation is different.
+Для сравнения демонстрация показывает оба метода.
+Одна кнопка добавляет всплывающее окно через динамическую загрузку, другая — через пользовательский элемент.
+Результат одинаковый, но подготовка — разная.
 
 <docs-code-multifile>
     <docs-code language="angular-ts" header="popup.ts" path="adev/src/content/examples/elements/src/app/popup.ts"/>
@@ -101,20 +101,20 @@ The result is the same, but the preparation is different.
     <docs-code header="app.ts" path="adev/src/content/examples/elements/src/app/app.ts"/>
 </docs-code-multifile>
 
-## Typings for custom elements
+## Типизация для пользовательских элементов {#typings-for-custom-elements}
 
-Generic DOM APIs, such as `document.createElement()` or `document.querySelector()`, return an element type that is appropriate for the specified arguments.
-For example, calling `document.createElement('a')` returns an `HTMLAnchorElement`, which TypeScript knows has an `href` property.
-Similarly, `document.createElement('div')` returns an `HTMLDivElement`, which TypeScript knows has no `href` property.
+Универсальные DOM API, такие как `document.createElement()` или `document.querySelector()`, возвращают тип элемента, соответствующий указанным аргументам.
+Например, вызов `document.createElement('a')` возвращает `HTMLAnchorElement`, и TypeScript знает, что у него есть свойство `href`.
+Аналогично, `document.createElement('div')` возвращает `HTMLDivElement`, и TypeScript знает, что у него нет свойства `href`.
 
-When called with unknown elements, such as a custom element name \(`popup-element` in our example\), the methods return a generic type, such as `HTMLElement`, because TypeScript can't infer the correct type of the returned element.
+При вызове с неизвестными элементами — например, именем пользовательского элемента \(`popup-element` в нашем примере\) — методы возвращают универсальный тип `HTMLElement`, поскольку TypeScript не может определить корректный тип возвращаемого элемента.
 
-Custom elements created with Angular extend `NgElement` \(which in turn extends `HTMLElement`\).
-Additionally, these custom elements will have a property for each input of the corresponding component.
-For example, our `popup-element` has a `message` property of type `string`.
+Пользовательские элементы, созданные с Angular, расширяют `NgElement` \(который, в свою очередь, расширяет `HTMLElement`\).
+Кроме того, эти пользовательские элементы имеют свойство для каждого входного параметра соответствующего Компонента.
+Например, `popup-element` имеет свойство `message` типа `string`.
 
-There are a few options if you want to get correct types for your custom elements.
-Assume you create a `my-dialog` custom element based on the following component:
+Есть несколько способов получить корректную типизацию для пользовательских элементов.
+Предположим, вы создаёте пользовательский элемент `my-dialog` на основе следующего Компонента:
 
 ```ts
 @Component(/* ... */)
@@ -123,21 +123,21 @@ class MyDialog {
 }
 ```
 
-The most straightforward way to get accurate typings is to cast the return value of the relevant DOM methods to the correct type.
-For that, use the `NgElement` and `WithProperties` types \(both exported from `@angular/elements`\):
+Наиболее простой способ получить точную типизацию — приведение возвращаемого значения соответствующих DOM-методов к корректному типу.
+Для этого используйте типы `NgElement` и `WithProperties` \(оба экспортируются из `@angular/elements`\):
 
 ```ts
 const aDialog = document.createElement('my-dialog') as NgElement &
   WithProperties<{content: string}>;
 aDialog.content = 'Hello, world!';
-aDialog.content = 123; // <-- ERROR: TypeScript knows this should be a string.
-aDialog.body = 'News'; // <-- ERROR: TypeScript knows there is no `body` property on `aDialog`.
+aDialog.content = 123; // <-- ОШИБКА: TypeScript знает, что должна быть строка.
+aDialog.body = 'News'; // <-- ОШИБКА: TypeScript знает, что свойства `body` у `aDialog` нет.
 ```
 
-This is a good way to quickly get TypeScript features, such as type checking and autocomplete support, for your custom element.
-But it can get cumbersome if you need it in several places, because you have to cast the return type on every occurrence.
+Это хороший способ быстро получить возможности TypeScript — проверку типов и поддержку автодополнения — для пользовательских элементов.
+Однако это может стать громоздким при использовании в нескольких местах, поскольку каждый раз придётся приводить тип.
 
-An alternative way, that only requires defining each custom element's type once, is augmenting the `HTMLElementTagNameMap`, which TypeScript uses to infer the type of a returned element based on its tag name \(for DOM methods such as `document.createElement()`, `document.querySelector()`, etc.\):
+Альтернативный способ, требующий определения типа каждого пользовательского элемента лишь один раз, — расширение `HTMLElementTagNameMap`, которое TypeScript использует для вывода типа возвращаемого элемента на основе имени тега \(для DOM-методов вроде `document.createElement()`, `document.querySelector()` и т.д.\):
 
 ```ts
 
@@ -151,18 +151,18 @@ declare global {
 
 ```
 
-Now, TypeScript can infer the correct type the same way it does for built-in elements:
+Теперь TypeScript может выводить корректный тип так же, как и для встроенных элементов:
 
 ```ts
-document.createElement('div'); //--> HTMLDivElement (built-in element)
-document.querySelector('foo'); //--> Element        (unknown element)
-document.createElement('my-dialog'); //--> NgElement & WithProperties<{content: string}> (custom element)
-document.querySelector('my-other-element'); //--> NgElement & WithProperties<{foo: 'bar'}>      (custom element)
+document.createElement('div'); //--> HTMLDivElement (встроенный элемент)
+document.querySelector('foo'); //--> Element        (неизвестный элемент)
+document.createElement('my-dialog'); //--> NgElement & WithProperties<{content: string}> (пользовательский элемент)
+document.querySelector('my-other-element'); //--> NgElement & WithProperties<{foo: 'bar'}>      (пользовательский элемент)
 ```
 
-## Limitations
+## Ограничения {#limitations}
 
-Care should be taken when destroying and then re-attaching custom elements created with `@angular/elements` due to issues with the [disconnect()](https://github.com/angular/angular/issues/38778) callback. Cases where you may run into this issue are:
+При уничтожении и последующем повторном присоединении пользовательских элементов, созданных с `@angular/elements`, следует проявлять осторожность из-за проблем с коллбэком [disconnect()](https://github.com/angular/angular/issues/38778). К случаям, когда вы можете столкнуться с этой проблемой, относятся:
 
-- Rendering a component in an `ng-if` or `ng-repeat` in `AngularJS`
-- Manually detaching and re-attaching an element to the DOM
+- Рендеринг Компонента в `ng-if` или `ng-repeat` в AngularJS
+- Ручное отсоединение и повторное присоединение элемента к DOM

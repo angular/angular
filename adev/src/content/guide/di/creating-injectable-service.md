@@ -1,25 +1,25 @@
-# Creating an injectable service
+# Создание внедряемого сервиса {#creating-an-injectable-service}
 
-Service is a broad category encompassing any value, function, or feature that an application needs.
-A service is typically a class with a narrow, well-defined purpose.
-A component is one type of class that can use DI.
+Сервис — это широкая категория, охватывающая любое значение, функцию или возможность, которая нужна приложению.
+Как правило, сервис — это класс с чётко определённой и узкой областью ответственности.
+Компонент — это один из видов классов, который может использовать внедрение зависимостей.
 
-Angular distinguishes components from services to increase modularity and reusability.
-By separating a component's view-related features from other kinds of processing, you can make your component classes lean and efficient.
+Angular разграничивает компоненты и сервисы, чтобы повысить модульность и возможность повторного использования.
+Отделяя функциональность, связанную с представлением, от другой логики обработки, вы делаете классы компонентов лаконичными и эффективными.
 
-Ideally, a component's job is to enable the user experience and nothing more.
-A component should present properties and methods for data binding, to mediate between the view (rendered by the template) and the application logic (which often includes some notion of a model).
+В идеале задача компонента — обеспечить взаимодействие с пользователем и ничего более.
+Компонент должен предоставлять свойства и методы для привязки данных, служа посредником между представлением (отображаемым шаблоном) и логикой приложения (которая часто включает некоторую модель данных).
 
-A component can delegate certain tasks to services, such as fetching data from the server, validating user input, or logging directly to the console.
-By defining such processing tasks in an injectable service class, you make those tasks available to any component.
-You can also make your application more adaptable by configuring different providers of the same kind of service, as appropriate in different circumstances.
+Компонент может делегировать отдельные задачи сервисам, например получение данных с сервера, проверку пользовательского ввода или запись в консоль.
+Определяя подобные задачи в внедряемом классе сервиса, вы делаете их доступными для любого компонента.
+Кроме того, вы можете сделать приложение более гибким, настраивая различных провайдеров одного и того же типа сервиса в зависимости от обстоятельств.
 
-Angular does not enforce these principles.
-Angular helps you follow these principles by making it easy to factor your application logic into services and make those services available to components through DI.
+Angular не принуждает вас следовать этим принципам.
+Angular помогает их соблюдать, упрощая вынесение логики приложения в сервисы и их доступность для компонентов через внедрение зависимостей.
 
-## Service examples
+## Примеры сервисов {#service-examples}
 
-Here's an example of a service class that logs to the browser console:
+Вот пример класса сервиса, который выполняет запись в консоль браузера:
 
 ```ts {header: "logger.service.ts (class)"}
 export class Logger {
@@ -35,9 +35,9 @@ export class Logger {
 }
 ```
 
-Services can depend on other services.
-For example, here's a `HeroService` that depends on the `Logger` service, and also uses `BackendService` to get heroes.
-That service in turn might depend on the `HttpClient` service to fetch heroes asynchronously from a server:
+Сервисы могут зависеть от других сервисов.
+Например, вот `HeroService`, который зависит от сервиса `Logger` и использует `BackendService` для получения героев.
+В свою очередь, `BackendService` может зависеть от сервиса `HttpClient` для асинхронного получения героев с сервера:
 
 ```ts {header: "hero.service.ts", highlight="[7,8,12,13]"}
 import {inject} from '@angular/core';
@@ -58,19 +58,19 @@ export class HeroService {
 }
 ```
 
-## Creating an injectable service with the CLI
+## Создание внедряемого сервиса с помощью CLI {#creating-an-injectable-service-with-the-cli}
 
-The Angular CLI provides a command to create a new service. In the following example, you add a new service to an existing application.
+Angular CLI предоставляет команду для создания нового сервиса. В следующем примере вы добавляете новый сервис в существующее приложение.
 
-To generate a new `HeroService` class in the `src/app/heroes` folder, follow these steps:
+Чтобы сгенерировать новый класс `HeroService` в папке `src/app/heroes`, выполните следующие шаги:
 
-1. Run this [Angular CLI](/tools/cli) command:
+1. Запустите команду [Angular CLI](/tools/cli):
 
 ```sh
 ng generate service heroes/hero
 ```
 
-This command creates the following default `HeroService`:
+Эта команда создаёт следующий `HeroService` по умолчанию:
 
 ```ts {header: 'heroes/hero.service.ts (CLI-generated)'}
 import {Injectable} from '@angular/core';
@@ -81,10 +81,10 @@ import {Injectable} from '@angular/core';
 export class HeroService {}
 ```
 
-The `@Injectable()` decorator specifies that Angular can use this class in the DI system.
-The metadata, `providedIn: 'root'`, means that the `HeroService` is provided throughout the application.
+Декоратор `@Injectable()` указывает, что Angular может использовать этот класс в системе внедрения зависимостей.
+Метаданные `providedIn: 'root'` означают, что `HeroService` доступен во всём приложении.
 
-Add a `getHeroes()` method that returns the heroes from `mock.heroes.ts` to get the hero mock data:
+Добавьте метод `getHeroes()`, который возвращает героев из `mock.heroes.ts` для получения тестовых данных:
 
 ```ts {header: 'hero.service.ts'}
 import {Injectable} from '@angular/core';
@@ -102,14 +102,14 @@ export class HeroService {
 }
 ```
 
-For clarity and maintainability, it is recommended that you define components and services in separate files.
+Для ясности и удобства поддержки рекомендуется определять компоненты и сервисы в отдельных файлах.
 
-## Injecting services
+## Внедрение сервисов {#injecting-services}
 
-To inject a service as a dependency into a component, you can declare a class field representing the dependency and use Angular's [`inject`](/api/core/inject) function to initialize it.
+Чтобы внедрить сервис как зависимость в компонент, можно объявить поле класса, представляющее зависимость, и использовать функцию Angular [`inject`](/api/core/inject) для его инициализации.
 
-The following example specifies the `HeroService` in the `HeroList`.
-The type of `heroService` is `HeroService`.
+В следующем примере `HeroService` указывается в `HeroList`.
+Тип `heroService` — `HeroService`.
 
 ```ts
 import {inject} from '@angular/core';
@@ -119,18 +119,18 @@ export class HeroList {
 }
 ```
 
-It is also possible to inject a service into a component using the component's constructor:
+Также можно внедрить сервис в компонент через конструктор компонента:
 
 ```ts {header: 'hero-list.ts (constructor signature)'}
   constructor(private heroService: HeroService)
 ```
 
-The [`inject`](/api/core/inject) method can be used in both classes and functions, while the constructor method can naturally only be used in a class constructor. However, in either case a dependency may only be injected in a valid [injection context](guide/di/dependency-injection-context), usually in the construction or initialization of a component.
+Метод [`inject`](/api/core/inject) можно использовать как в классах, так и в функциях, тогда как метод конструктора, естественно, применим только в конструкторе класса. Однако в обоих случаях зависимость может быть внедрена только в допустимом [контексте внедрения](guide/di/dependency-injection-context) — обычно при создании или инициализации компонента.
 
-## Injecting services in other services
+## Внедрение сервисов в другие сервисы {#injecting-services-in-other-services}
 
-When a service depends on another service, follow the same pattern as injecting into a component.
-In the following example, `HeroService` depends on a `Logger` service to report its activities:
+Когда сервис зависит от другого сервиса, используйте тот же шаблон, что и при внедрении в компонент.
+В следующем примере `HeroService` зависит от сервиса `Logger` для записи информации о своей работе:
 
 ```ts {header: 'hero.service.ts, highlight: [[3],[9],[12]]}
 import {inject, Injectable} from '@angular/core';
@@ -150,11 +150,11 @@ export class HeroService {
 }
 ```
 
-In this example, the `getHeroes()` method uses the `Logger` service by logging a message when fetching heroes.
+В этом примере метод `getHeroes()` использует сервис `Logger`, записывая сообщение при получении героев.
 
-## What's next
+## Что дальше {#whats-next}
 
 <docs-pill-row>
-  <docs-pill href="guide/di/defining-dependency-providers" title="Configuring dependency providers"/>
+  <docs-pill href="guide/di/defining-dependency-providers" title="Настройка провайдеров зависимостей"/>
   <docs-pill href="guide/di/defining-dependency-providers#automatic-provision-for-non-class-dependencies" title="`InjectionTokens`"/>
 </docs-pill-row>

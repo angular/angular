@@ -1,93 +1,93 @@
-# Angular AI Tutor
+# Angular AI Tutor {#angular-ai-tutor}
 
-The Angular AI Tutor is designed to interactively guide you step-by-step through building a complete, modern Angular application from the ground up. You'll learn the latest patterns and best practices by building a real, tangible project: a **"Smart Recipe Box"** for creating and managing recipes.
+Angular AI Tutor создан для интерактивного пошагового руководства при создании полноценного современного Angular-приложения с нуля. Вы изучите новейшие паттерны и лучшие практики, создавая реальный, осязаемый проект: **«Smart Recipe Box»** — для создания рецептов и управления ими.
 
-Our goal is to foster critical thinking and help you retain what you learn. Instead of just giving you code, the tutor will explain concepts, show you examples, and then give you project-specific exercises to solve on your own.
+Наша цель — развивать критическое мышление и помогать запоминать изученное. Вместо того чтобы просто давать код, репетитор объясняет концепции, показывает примеры, а затем предлагает задания по проекту для самостоятельного решения.
 
-## Get Started
+## Начало работы {#get-started}
 
-You can access the AI tutor via the [Angular MCP server](ai/mcp).
+Доступ к AI-репетитору можно получить через [Angular MCP-сервер](ai/mcp).
 
-1. [Install](ai/mcp#get-started) the Angular MCP server
-2. Create a new Angular project `ng new <project-name>`
-3. Navigate to your new project (`cd <project-name>`) in an AI-powered editor or tool, like the [Gemini CLI](https://geminicli.com/)
-4. Enter a prompt like `launch the Angular AI tutor`
+1. [Установите](ai/mcp#get-started) Angular MCP-сервер
+2. Создайте новый Angular-проект `ng new <project-name>`
+3. Перейдите в новый проект (`cd <project-name>`) в редакторе или инструменте с поддержкой ИИ, например [Gemini CLI](https://geminicli.com/)
+4. Введите промпт вида `launch the Angular AI tutor`
    ![A screenshot demonstrating how to launch the Angular AI Tutor in the Gemini CLI.](assets/images/launch-ai-tutor.png 'Launch the Angular AI Tutor')
 
-## Using the AI Tutor
+## Использование AI-репетитора {#using-the-ai-tutor}
 
-Each module begins with a brief concept explanation.
+Каждый модуль начинается с краткого объяснения концепции.
 ![A screenshot of the Angular AI Tutor presenting a brief concept explanation.](assets/images/ai-tutor-preview-1.png 'Angular AI Tutor explanation')
-If applicable, the tutor will present a code example to demonstrate the concept.
+При необходимости репетитор представит пример кода для демонстрации концепции.
 ![A screenshot of the Angular AI Tutor showing a code example.](assets/images/ai-tutor-preview-2.png 'Angular AI Tutor code example')
-The tutor will also provide an open-ended exercise to test your understanding.
+Репетитор также предложит открытое задание для проверки понимания.
 ![A screenshot of the Angular AI Tutor providing an exercise.](assets/images/ai-tutor-preview-3.png 'Angular AI Tutor exercise')
-Finally, the tutor will check your work before moving onto the next module.
+Наконец, репетитор проверит вашу работу перед переходом к следующему модулю.
 ![A screenshot of the Angular AI Tutor checking the user's work.](assets/images/ai-tutor-preview-4.png 'Angular AI Tutor check')
 
-## How It Works: The Learning Cycle
+## Как это работает: цикл обучения {#how-it-works-the-learning-cycle}
 
-For each new topic, you'll follow a learning loop that emphasizes critical thinking to help you better retain what you learn.
+По каждой новой теме предусмотрен цикл обучения, акцентирующий критическое мышление для лучшего запоминания материала.
 
-1. **Learn the Concept:** The tutor will briefly explain a core Angular feature and show you a generic code example to illustrate it.
-2. **Apply Your Knowledge:** You'll immediately get a hands-on exercise. The tutor presents these exercises at a high level with objectives and expected outcomes, encouraging you to think through the solution yourself.
-3. **Get Feedback & Support:** When you're ready, let the tutor know. It will **automatically read your project files** to verify your solution is correct. If you get stuck, you are in complete control. You can ask for a **"hint"** for more guidance, or get step-by-step instructions by typing **"detailed guide"** or **"step-by-step instructions."**
+1. **Изучите концепцию:** Репетитор кратко объяснит ключевую функцию Angular и покажет общий пример кода для её иллюстрации.
+2. **Применяйте знания:** Вы сразу получите практическое задание. Репетитор представляет задания на высоком уровне с целями и ожидаемыми результатами, побуждая самостоятельно продумать решение.
+3. **Получайте обратную связь и поддержку:** Когда будете готовы, сообщите репетитору. Он **автоматически прочитает файлы проекта** для проверки правильности решения. Если застряли — вы полностью управляете процессом. Можно попросить **«подсказку»** для большего руководства или получить пошаговые инструкции, введя **«detailed guide»** или **«step-by-step instructions»**.
 
-Once you've succeeded, the tutor will move directly to the next topic. You can also ask the tutor for more information on a topic or ask any related Angular questions at any time.
+После успешного выполнения репетитор сразу перейдёт к следующей теме. Также в любое время можно попросить репетитора дать больше информации по теме или задать любые связанные вопросы об Angular.
 
 ---
 
-## **Features & Commands**
+## **Возможности и команды** {#features-commands}
 
-You are in control of your learning experience. Use these features at any time:
+Вы управляете своим учебным процессом. Используйте эти возможности в любое время:
 
-### **Leave and Come Back**
+### **Прерваться и вернуться** {#leave-and-come-back}
 
-Feel free to take a break. Your progress is tied to your project's code. When you return for a new session, the tutor will automatically analyze your files to determine exactly where you left off, allowing you to seamlessly pick up right where you were.
+Не стесняйтесь делать перерывы. Прогресс привязан к коду проекта. При возвращении на новую сессию репетитор автоматически проанализирует файлы, чтобы точно определить, где вы остановились, и позволит плавно продолжить с того же места.
 
-**Pro Tip:** We highly recommend using Git to save your progress. After completing a module, it's a great idea to commit your changes (e.g., `git commit -m "Complete Phase 1, Module 8"`). This acts as a personal checkpoint you can always return to.
+**Совет профессионала:** Настоятельно рекомендуется использовать Git для сохранения прогресса. После завершения модуля хорошей практикой является коммит изменений (например, `git commit -m "Complete Phase 1, Module 8"`). Это служит личной контрольной точкой, к которой всегда можно вернуться.
 
-### **Adjust Your Experience Level**
+### **Настройка уровня опыта** {#adjust-your-experience-level}
 
-You can set your experience level to **Beginner (1-3)**, **Intermediate (4-7)**, or **Experienced (8-10)**. You can change this setting at any time during your session, and the tutor will immediately adapt its teaching style to match.
+Можно задать уровень опыта: **Начинающий (1-3)**, **Средний (4-7)** или **Опытный (8-10)**. Это можно изменить в любой момент во время сессии, и репетитор немедленно адаптирует стиль преподавания.
 
-**Example Prompts:**
+**Примеры промптов:**
 
 - "Set my experience level to beginner."
 - "Change my rating to 8."
 
-### **See the Full Learning Plan**
+### **Просмотр полного плана обучения** {#see-the-full-learning-plan}
 
-Want to see the big picture or check how far you've come? Just ask for the table of contents.
+Хотите видеть общую картину или проверить, как далеко продвинулись? Просто попросите оглавление.
 
-**Example Prompts:**
+**Примеры промптов:**
 
 - "Where are we?"
 - "Show the table of contents."
 - "Show the plan."
 
-The tutor will display the full learning plan and mark your current location.
+Репетитор отобразит полный план обучения с отметкой текущего местоположения.
 
-### **A Note on Styling**
+### **Замечание о стилизации** {#a-note-on-styling}
 
-The tutor will apply basic styling to your application to keep things looking clean. You are highly encouraged to apply your own styling to make the app your own.
+Репетитор применит базовую стилизацию к приложению для поддержания аккуратного вида. Вам настоятельно рекомендуется применять собственную стилизацию, чтобы сделать приложение своим.
 
-### **Skip the Current Module**
+### **Пропуск текущего модуля** {#skip-the-current-module}
 
-If you'd rather move on to the next topic in the learning path, you can ask the tutor to skip the current exercise.
+Если хотите перейти к следующей теме в пути обучения, можно попросить репетитора пропустить текущее задание.
 
-**Example Prompts:**
+**Примеры промптов:**
 
 - "Skip this section."
 - "Auto-complete this step for me."
 
-The tutor will ask for confirmation and then present you with the complete code solution for the current module and attempt to automatically apply any required updates to ensure you can continue smoothly with the next module.
+Репетитор попросит подтверждения, а затем представит полное кодовое решение для текущего модуля и попытается автоматически применить все необходимые обновления, чтобы можно было плавно продолжить со следующим модулем.
 
-### **Jump to Any Topic**
+### **Переход к любой теме** {#jump-to-any-topic}
 
-If you want to learn about a specific topic out of order (e.g., jump from the basics to forms), you can. The tutor will provide the necessary code to update your project to the correct starting point for the selected module and attempt to automatically apply any required updates.
+Если хотите изучить конкретную тему вне порядка (например, перепрыгнуть с основ к формам), это возможно. Репетитор предоставит необходимый код для обновления проекта до правильной отправной точки для выбранного модуля и попытается автоматически применить все необходимые обновления.
 
-**Example Prompts:**
+**Примеры промптов:**
 
 - "Take me to the forms lesson."
 - "I want to learn about Route Guards now."
@@ -95,65 +95,65 @@ If you want to learn about a specific topic out of order (e.g., jump from the ba
 
 ---
 
-## **Troubleshooting**
+## **Устранение неполадок** {#troubleshooting}
 
-If the tutor doesn't respond correctly or you suspect an issue with your application, here are a few things to try:
+Если репетитор не отвечает корректно или вы подозреваете проблему с приложением, попробуйте следующее:
 
-1. **Type "proceed":** This can often nudge the tutor to continue to the next step in the event it gets stuck.
-2. **Correct the Tutor:** If the tutor is mistaken about your progress (e.g., it says you're on Module 3 but you've completed Module 8), just tell it. For example: _"I'm actually on Module 8."_ The tutor will re-evaluate your code and adjust.
-3. **Verify Your UI:** If you want to confirm what your application's user interface should look like, just ask the tutor. For example: _"What should I see in my UI?"_
-4. **Reload the Browser Window:** A refresh can solve many issues related to your application.
-5. **Hard Restart the Browser:** Errors are sometimes only surfaced in the browser's developer console. A hard restart can help clear underlying issues related to the application.
-6. **Start a New Chat:** You can always start a new chat to remove the existing history and begin fresh. The tutor will read your files to find the latest step you were on.
+1. **Введите "proceed":** Это часто может подтолкнуть репетитора продолжить к следующему шагу, если он застрял.
+2. **Исправьте репетитора:** Если репетитор ошибается насчёт вашего прогресса (например, говорит, что вы на Модуле 3, но вы прошли Модуль 8), просто скажите ему. Например: _«I'm actually on Module 8»_. Репетитор заново оценит код и скорректирует позицию.
+3. **Проверьте пользовательский интерфейс:** Если хотите подтвердить, как должен выглядеть пользовательский интерфейс приложения, просто спросите репетитора. Например: _«What should I see in my UI?»_
+4. **Перезагрузите окно браузера:** Обновление может решить многие проблемы, связанные с приложением.
+5. **Выполните жёсткую перезагрузку браузера:** Ошибки иногда видны только в консоли разработчика браузера. Жёсткая перезагрузка помогает устранить основные проблемы, связанные с приложением.
+6. **Начните новый чат:** Всегда можно начать новый чат для удаления существующей истории и начала с чистого листа. Репетитор прочитает файлы для определения последнего пройденного шага.
 
-## **Your Learning Journey: The Phased Path**
+## **Путь обучения: поэтапный маршрут** {#your-learning-journey-the-phased-path}
 
-You will build your application over a five-phase journey. You can follow this path from start to finish to create a complete, fully-functional Angular application. Each module builds logically upon the last, taking you from the basics to advanced, real-world features.
+Приложение строится в ходе пятиэтапного путешествия. Можно следовать этому пути от начала до конца, создавая полное, полнофункциональное Angular-приложение. Каждый модуль логически опирается на предыдущий, ведя от основ к продвинутым, реальным функциям.
 
-**A Note on Automated Setup:** Some modules require a setup step, like creating interfaces or mock data. In these cases, the tutor will present you with the code and file instructions. You will be responsible for creating and modifying these files as instructed before the exercise begins.
+**Замечание об автоматической настройке:** Некоторые модули требуют шага настройки, например создания интерфейсов или mock-данных. В таких случаях репетитор представит код и инструкции по файлам. Создание и изменение этих файлов в соответствии с инструкциями — ваша ответственность перед началом задания.
 
-### **Phase 1: Angular Fundamentals**
+### **Фаза 1: Основы Angular** {#phase-1-angular-fundamentals}
 
-- **Module 1:** Getting Started
-- **Module 2:** Dynamic Text with Interpolation
-- **Module 3:** Event Listeners (`(click)`)
+- **Модуль 1:** Начало работы
+- **Модуль 2:** Динамический текст с интерполяцией
+- **Модуль 3:** Обработчики событий (`(click)`)
 
-### **Phase 2: State and Signals**
+### **Фаза 2: Состояние и Сигналы** {#phase-2-state-and-signals}
 
-- **Module 4:** State Management with Writable Signals (Part 1: `set`)
-- **Module 5:** State Management with Writable Signals (Part 2: `update`)
-- **Module 6:** Computed Signals
+- **Модуль 4:** Управление состоянием с записываемыми Сигналами (Часть 1: `set`)
+- **Модуль 5:** Управление состоянием с записываемыми Сигналами (Часть 2: `update`)
+- **Модуль 6:** Вычисляемые Сигналы
 
-### **Phase 3: Component Architecture**
+### **Фаза 3: Архитектура компонентов** {#phase-3-component-architecture}
 
-- **Module 7:** Template Binding (Properties & Attributes)
-- **Module 8:** Creating & Nesting Components
-- **Module 9:** Component Inputs with Signals
-- **Module 10:** Styling Components
-- **Module 11:** List Rendering with `@for`
-- **Module 12:** Conditional Rendering with `@if`
+- **Модуль 7:** Привязка в шаблоне (свойства и атрибуты)
+- **Модуль 8:** Создание и вложенность компонентов
+- **Модуль 9:** Входные данные Компонента с Сигналами
+- **Модуль 10:** Стилизация компонентов
+- **Модуль 11:** Отрисовка списков с `@for`
+- **Модуль 12:** Условная отрисовка с `@if`
 
-### **Phase 4: Advanced Features & Architecture**
+### **Фаза 4: Продвинутые возможности и архитектура** {#phase-4-advanced-features-architecture}
 
-- **Module 13:** Two-Way Binding
-- **Module 14:** Services & Dependency Injection (DI)
-- **Module 15:** Basic Routing
-- **Module 16:** Introduction to Forms
-- **Module 17:** Intro to Angular Material
+- **Модуль 13:** Двусторонняя Привязка
+- **Модуль 14:** Сервисы и Внедрение зависимостей (DI)
+- **Модуль 15:** Базовая маршрутизация
+- **Модуль 16:** Введение в формы
+- **Модуль 17:** Введение в Angular Material
 
-### **Phase 5: Experimental Signal Forms (⚠️ WARNING: Subject to Change)**
+### **Фаза 5: Экспериментальные сигнальные формы (⚠️ ПРЕДУПРЕЖДЕНИЕ: возможны изменения)** {#phase-5-experimental-signal-forms}
 
-**CRITICAL NOTE FOR THIS PHASE:** Signal Forms are currently an [**EXPERIMENTAL** feature](/reference/releases#experimental). The API may change significantly in future Angular releases. Please proceed with the understanding that this section demonstrates a cutting-edge feature.
+**ВАЖНОЕ ЗАМЕЧАНИЕ ДЛЯ ЭТОЙ ФАЗЫ:** Сигнальные формы в настоящее время являются [**ЭКСПЕРИМЕНТАЛЬНОЙ** функцией](/reference/releases#experimental). API может значительно измениться в будущих выпусках Angular. Приступайте к этому разделу, понимая, что он демонстрирует передовую функциональность.
 
-- **Module 18**: **Introduction to Signal Forms**
-- **Module 19**: **Submitting & Resetting**
-- **Module 20**: **Validation in Signal Forms**
-- **Module 21**: **Field State & Error Messages**
+- **Модуль 18:** Введение в сигнальные формы
+- **Модуль 19:** Отправка и сброс
+- **Модуль 20:** Валидация в сигнальных формах
+- **Модуль 21:** Состояние поля и сообщения об ошибках
 
 ---
 
-## **A Note on AI & Feedback**
+## **Замечание об ИИ и обратной связи** {#a-note-on-ai-feedback}
 
-This tutor is powered by a Large Language Model (LLM). While we've worked hard to make it an expert, AIs can make mistakes. If you encounter an explanation or code example that seems incorrect, please let us know. You can correct the tutor, and it will use your feedback to adjust its response.
+Этот репетитор работает на базе большой языковой модели (LLM). Несмотря на то что мы приложили большие усилия, чтобы сделать его экспертом, ИИ может ошибаться. Если вы встретите объяснение или пример кода, который кажется неправильным, сообщите нам об этом. Вы можете исправить репетитора, и он использует ваш отзыв для корректировки ответа.
 
-For any technical bugs or feature requests, please [submit an issue](https://github.com/angular/angular-cli/issues).
+По техническим ошибкам или запросам на новые возможности, пожалуйста, [откройте задачу](https://github.com/angular/angular-cli/issues).

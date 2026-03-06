@@ -1,15 +1,15 @@
-# Route Loading Strategies
+# Стратегии загрузки маршрутов {#route-loading-strategies}
 
-Understanding how and when routes and components load in Angular routing is crucial for building responsive web applications. Angular offers two primary strategies to control loading behavior:
+Понимание того, как и когда маршруты и компоненты загружаются в Angular Router, имеет ключевое значение для создания отзывчивых веб-приложений. Angular предлагает две основные стратегии управления поведением загрузки:
 
-1. **Eagerly loaded**: Routes and components that are loaded immediately
-2. **Lazily loaded**: Routes and components loaded only when needed
+1. **Жадная загрузка (Eager)**: Маршруты и компоненты загружаются немедленно
+2. **Ленивая загрузка (Lazy)**: Маршруты и компоненты загружаются только по необходимости
 
-Each approach offers distinct advantages for different scenarios.
+Каждый подход имеет свои преимущества для разных сценариев.
 
-## Eagerly loaded components
+## Компоненты с жадной загрузкой {#eagerly-loaded-components}
 
-When you define a route with the [`component`](api/router/Route#component) property, the referenced component is eagerly loaded as part of the same JavaScript bundle as the route configuration.
+Когда вы определяете маршрут со свойством [`component`](api/router/Route#component), указанный компонент загружается жадно — как часть того же JavaScript-бандла, что и конфигурация маршрутов.
 
 ```ts
 import {Routes} from '@angular/router';
@@ -17,8 +17,8 @@ import {HomePage} from './components/home/home-page';
 import {LoginPage} from './components/auth/login-page';
 
 export const routes: Routes = [
-  // HomePage and LoginPage are both directly referenced in this config,
-  // so their code is eagerly included in the same JavaScript bundle as this file.
+  // HomePage и LoginPage напрямую указаны в конфигурации,
+  // поэтому их код жадно включается в тот же JavaScript-бандл, что и этот файл.
   {
     path: '',
     component: HomePage,
@@ -30,13 +30,13 @@ export const routes: Routes = [
 ];
 ```
 
-Eagerly loading route components like this means that the browser has to download and parse all of the JavaScript for these components as part of your initial page load, but the components are available to Angular immediately.
+Жадная загрузка компонентов маршрутов означает, что браузер должен скачать и разобрать весь JavaScript для этих компонентов при начальной загрузке страницы, но компоненты сразу доступны Angular.
 
-While including more JavaScript in your initial page load leads to slower initial load times, this can lead to more seamless transitions as the user navigates through an application.
+Хотя включение большего объёма JavaScript в начальную загрузку замедляет её, это может обеспечить более плавные переходы при навигации по приложению.
 
-## Lazily loaded components and routes
+## Компоненты и маршруты с ленивой загрузкой {#lazily-loaded-components-and-routes}
 
-You can use the [`loadComponent`](api/router/Route#loadComponent) property to lazily load the JavaScript for a component at the point at which that route would become active. The [`loadChildren`](api/router/Route#loadChildren) property lazily loads child routes during route matching.
+Свойство [`loadComponent`](api/router/Route#loadComponent) позволяет лениво загружать JavaScript компонента в момент активации соответствующего маршрута. Свойство [`loadChildren`](api/router/Route#loadChildren) лениво загружает дочерние маршруты при сопоставлении маршрутов.
 
 ```ts
 import {Routes} from '@angular/router';
@@ -54,15 +54,15 @@ export const routes: Routes = [
 ];
 ```
 
-The [`loadComponent`](/api/router/Route#loadComponent) and [`loadChildren`](/api/router/Route#loadChildren) properties accept a loader function that returns a Promise that resolves to an Angular component or a set of routes respectively. In most cases, this function uses the standard [JavaScript dynamic import API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import). You can, however, use any arbitrary async loader function.
+Свойства [`loadComponent`](/api/router/Route#loadComponent) и [`loadChildren`](/api/router/Route#loadChildren) принимают функцию-загрузчик, возвращающую Promise, который разрешается в Angular-компонент или набор маршрутов соответственно. В большинстве случаев эта функция использует стандартный [динамический импорт JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import). Однако можно использовать любую произвольную асинхронную функцию-загрузчик.
 
-If the lazily loaded file uses a `default` export, you can return the `import()` promise directly without an additional `.then` call to select the exported class.
+Если лениво загружаемый файл использует экспорт по умолчанию (`default`), можно возвращать промис `import()` напрямую, без дополнительного вызова `.then` для выбора экспортируемого класса.
 
-Lazily loading routes can significantly improve the load speed of your Angular application by removing large portions of JavaScript from the initial bundle. These portions of your code compile into separate JavaScript "chunks" that the router requests only when the user visits the corresponding route.
+Ленивая загрузка маршрутов может значительно улучшить скорость загрузки Angular-приложения за счёт исключения больших фрагментов JavaScript из начального бандла. Эти части кода компилируются в отдельные JavaScript-«чанки», которые Роутер запрашивает только тогда, когда пользователь переходит на соответствующий маршрут.
 
-## Injection context lazy loading
+## Ленивая загрузка в контексте внедрения зависимостей {#injection-context-lazy-loading}
 
-The Router executes [`loadComponent`](/api/router/Route#loadComponent) and [`loadChildren`](/api/router/Route#loadChildren) within the **injection context of the current route**, allowing you to call [`inject`](/api/core/inject)inside these loader functions to access providers declared on that route, inherited from parent routes through hierarchical dependency injection, or available globally. This enables context-aware lazy loading.
+Роутер выполняет [`loadComponent`](/api/router/Route#loadComponent) и [`loadChildren`](/api/router/Route#loadChildren) в **контексте внедрения зависимостей текущего маршрута**, что позволяет вызывать [`inject`](/api/core/inject) внутри этих функций-загрузчиков для доступа к провайдерам, объявленным на этом маршруте, унаследованным от родительских маршрутов через иерархическое Внедрение зависимостей, или доступным глобально. Это позволяет реализовать контекстно-зависимую ленивую загрузку.
 
 ```ts
 import {Routes} from '@angular/router';
@@ -72,7 +72,7 @@ import {FeatureFlags} from './feature-flags';
 export const routes: Routes = [
   {
     path: 'dashboard',
-    // Runs inside the route's injection context
+    // Выполняется в контексте внедрения зависимостей маршрута
     loadComponent: () => {
       const flags = inject(FeatureFlags);
       return flags.isPremium
@@ -83,14 +83,14 @@ export const routes: Routes = [
 ];
 ```
 
-## Should I use an eager or a lazy route?
+## Когда использовать жадную, а когда ленивую загрузку? {#should-i-use-an-eager-or-a-lazy-route}
 
-There are many factors to consider when deciding on whether a route should be eager or lazy.
+При выборе между жадной и ленивой загрузкой маршрута нужно учитывать множество факторов.
 
-In general, eager loading is recommended for primary landing page(s) while other pages would be lazy-loaded.
+В целом, жадная загрузка рекомендуется для основных целевых страниц, тогда как остальные страницы следует загружать лениво.
 
-NOTE: While lazy routes have the upfront performance benefit of reducing the amount of initial data requested by the user, it adds future data requests that could be undesirable. This is particularly true when dealing with nested lazy loading at multiple levels, which can significantly impact performance.
+NOTE: Хотя ленивые маршруты дают преимущество в производительности за счёт уменьшения объёма начальных данных, запрашиваемых пользователем, они добавляют будущие запросы данных, что может быть нежелательным. Особенно это проявляется при вложенной ленивой загрузке на нескольких уровнях, что может существенно влиять на производительность.
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-Learn how to [display the contents of your routes with Outlets](/guide/routing/show-routes-with-outlets).
+Узнайте, как [отображать содержимое маршрутов с помощью Outlet](/guide/routing/show-routes-with-outlets).

@@ -1,106 +1,106 @@
-# Adding a form to your Angular app
+# Добавление формы в Angular-приложение {#adding-a-form-to-your-angular-app}
 
-This tutorial lesson demonstrates how to add a form that collects user data to an Angular app.
-This lesson starts with a functional Angular app and shows how to add a form to it.
+В этом уроке показано, как добавить форму для сбора пользовательских данных в Angular-приложение.
+Урок начинается с функционального Angular-приложения и показывает, как добавить форму в него.
 
-The data that the form collects is sent only to the app's service, which writes it to the browser's console.
-Using a REST API to send and receive the form's data is not covered in this lesson.
+Данные, собранные формой, отправляются только в Сервис приложения, который записывает их в консоль браузера.
+Использование REST API для отправки и получения данных формы в этом уроке не рассматривается.
 
 <docs-video src="https://www.youtube.com/embed/kWbk-dOJaNQ?si=FYMXGdUiT-qh321h"/>
 
-IMPORTANT: We recommend using your local environment for this step of the tutorial.
+IMPORTANT: Для этого шага урока рекомендуется использовать локальную среду.
 
-## What you'll learn
+## Что вы узнаете {#what-youll-learn}
 
-- Your app has a form into which users can enter data that is sent to your app's service.
-- The service writes the data from the form to the browser's console log.
+- В вашем приложении появится форма, в которую пользователи могут вводить данные, отправляемые в Сервис приложения.
+- Сервис записывает данные из формы в журнал консоли браузера.
 
 <docs-workflow>
 
-<docs-step title="Add a method to send form data">
-This step adds a method to your app's service that receives the form data to send to the data's destination.
-In this example, the method writes the data from the form to the browser's console log.
+<docs-step title="Добавьте метод для отправки данных формы">
+На этом шаге вы добавляете в Сервис приложения метод, который получает данные формы для отправки по назначению.
+В этом примере метод записывает данные из формы в журнал консоли браузера.
 
-In the **Edit** pane of your IDE:
+В панели **Edit** вашей IDE:
 
-1.  In `src/app/housing.service.ts`, inside the `HousingService` class, paste this method at the bottom of the class definition.
+1.  В `src/app/housing.service.ts`, внутри класса `HousingService`, вставьте этот метод в конец определения класса.
 
        <docs-code header="Submit method in src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/housing.service.ts" visibleLines="[120,124]"/>
 
-1.  Confirm that the app builds without error.
-    Correct any errors before you continue to the next step.
+1.  Убедитесь, что приложение собирается без ошибок.
+    Исправьте все ошибки перед переходом к следующему шагу.
     </docs-step>
 
-<docs-step title="Add the form functions to the details page">
-This step adds the code to the details page that handles the form's interactions.
+<docs-step title="Добавьте функции формы на страницу деталей">
+На этом шаге вы добавляете код на страницу деталей, который управляет взаимодействиями формы.
 
-In the **Edit** pane of your IDE, in `src/app/details/details.ts`:
+В панели **Edit** вашей IDE, в `src/app/details/details.ts`:
 
-1.  After the `import` statements at the top of the file, add the following code to import the Angular form classes.
+1.  После инструкций `import` в верхней части файла добавьте следующий код для импорта классов Angular-форм.
 
       <docs-code header="Forms imports in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[5]"/>
 
-1.  In the `Details` decorator metadata, update the `imports` property with the following code:
+1.  В метаданных декоратора `Details` обновите свойство `imports` следующим кодом:
 
       <docs-code header="imports directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[9]"/>
 
-1.  In the `Details` class, before the `constructor()` method, add the following code to create the form object.
+1.  В классе `Details`, перед методом `constructor()`, добавьте следующий код для создания объекта формы.
 
       <docs-code header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[52,56]"/>
 
-    In Angular, `FormGroup` and `FormControl` are types that enable you to build forms. The `FormControl` type can provide a default value and shape the form data. In this example `firstName` is a `string` and the default value is empty string.
+    В Angular `FormGroup` и `FormControl` — это типы, позволяющие создавать формы. Тип `FormControl` может предоставлять значение по умолчанию и формировать данные формы. В этом примере `firstName` является строкой (`string`), а значение по умолчанию — пустая строка.
 
-1.  In the `Details` class, after the `constructor()` method, add the following code to handle the **Apply now** click.
+1.  В классе `Details`, после метода `constructor()`, добавьте следующий код для обработки нажатия кнопки **Apply now**.
 
       <docs-code header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[62,68]"/>
 
-    This button does not exist yet - you will add it in the next step. In the above code, the `FormControl`s may return `null`. This code uses the nullish coalescing operator to default to empty string if the value is `null`.
+    Эта кнопка ещё не существует — вы добавите её на следующем шаге. В приведённом выше коде `FormControl`ы могут возвращать `null`. Этот код использует оператор нулевого слияния для подстановки пустой строки в случае, если значение равно `null`.
 
-1.  Confirm that the app builds without error.
-    Correct any errors before you continue to the next step.
+1.  Убедитесь, что приложение собирается без ошибок.
+    Исправьте все ошибки перед переходом к следующему шагу.
     </docs-step>
 
-<docs-step title="Add the form's markup to the details page">
-This step adds the markup to the details page that displays the form.
+<docs-step title="Добавьте разметку формы на страницу деталей">
+На этом шаге вы добавляете разметку на страницу деталей, отображающую форму.
 
-In the **Edit** pane of your IDE, in `src/app/details/details.ts`:
+В панели **Edit** вашей IDE, в `src/app/details/details.ts`:
 
-1. In the `Details` decorator metadata, update the `template` HTML to match the following code to add the form's markup.
+1. В метаданных декоратора `Details` обновите HTML `template`, чтобы он соответствовал следующему коду с разметкой формы.
 
    <docs-code language="angular-ts" header="template directive in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/13-search/src/app/details/details.ts" visibleLines="[10,45]"/>
 
-   The template now includes an event handler `(submit)="submitApplication()"`. Angular uses parentheses syntax around the event name to define events in the template code. The code on the right hand side of the equals sign is the code that should be executed when this event is triggered. You can bind to browser events and custom events.
+   Шаблон теперь включает обработчик событий `(submit)="submitApplication()"`. Angular использует синтаксис с круглыми скобками вокруг имени события для определения событий в коде Шаблона. Код справа от знака равенства — это код, который должен выполняться при возникновении этого события. Вы можете использовать привязку как к браузерным, так и к пользовательским событиям.
 
-1. Confirm that the app builds without error.
-   Correct any errors before you continue to the next step.
+1. Убедитесь, что приложение собирается без ошибок.
+   Исправьте все ошибки перед переходом к следующему шагу.
 
    <img alt="details page with a form for applying to live at this location" src="assets/images/tutorials/first-app/homes-app-lesson-12-step-3.png">
 
 </docs-step>
 
-<docs-step title="Test your app's new form">
-This step tests the new form to see that when the form data is submitted to the app, the form data appears in the console log.
+<docs-step title="Протестируйте новую форму приложения">
+На этом шаге тестируется новая форма, чтобы убедиться, что при отправке данных формы в приложение они появляются в журнале консоли.
 
-1. In the **Terminal** pane of your IDE, run `ng serve`, if it isn't already running.
-1. In your browser, open your app at `http://localhost:4200`.
-1. Right click on the app in the browser and from the context menu, choose **Inspect**.
-1. In the developer tools window, choose the **Console** tab.
-   Make sure that the developer tools window is visible for the next steps
-1. In your app:
-   1. Select a housing location and click **Learn more**, to see details about the house.
-   1. In the house's details page, scroll to the bottom to find the new form.
-   1. Enter data into the form's fields - any data is fine.
-   1. Choose **Apply now** to submit the data.
-1. In the developer tools window, review the log output to find your form data.
+1. В панели **Терминал** вашей IDE выполните `ng serve`, если он ещё не запущен.
+1. В браузере откройте приложение по адресу `http://localhost:4200`.
+1. Щёлкните правой кнопкой мыши по приложению в браузере и в контекстном меню выберите **Inspect** (Просмотр кода).
+1. В окне инструментов разработчика выберите вкладку **Console** (Консоль).
+   Убедитесь, что окно инструментов разработчика видно на следующих шагах.
+1. В приложении:
+   1. Выберите объект жилья и нажмите **Learn more**, чтобы увидеть детали о нём.
+   1. На странице деталей прокрутите страницу вниз, чтобы найти новую форму.
+   1. Введите данные в поля формы — любые данные подойдут.
+   1. Нажмите **Apply now** для отправки данных.
+1. В окне инструментов разработчика изучите вывод журнала, чтобы найти данные формы.
    </docs-step>
 
 </docs-workflow>
 
-SUMMARY: In this lesson, you updated your app to add a form using Angular's forms feature, and connect the data captured in the form to a component using an event handler.
+SUMMARY: В этом уроке вы обновили приложение, добавив форму с использованием функциональности Angular-форм, и связали данные, введённые в форму, с Компонентом с помощью обработчика событий.
 
-For more information about the topics covered in this lesson, visit:
+Для получения дополнительной информации по темам, рассмотренным в этом уроке, посетите:
 
 <docs-pill-row>
-  <docs-pill href="guide/forms" title="Angular Forms"/>
-  <docs-pill href="guide/templates/event-listeners" title="Event Handling"/>
+  <docs-pill href="guide/forms" title="Angular-формы"/>
+  <docs-pill href="guide/templates/event-listeners" title="Обработка событий"/>
 </docs-pill-row>

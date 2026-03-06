@@ -1,27 +1,27 @@
-# Unhandled errors in Angular
+# Необработанные ошибки в Angular {#unhandled-errors-in-angular}
 
-As your Angular application runs, some of your code may throw an error. If left unhandled, these errors can lead to unexpected behavior and a nonresponsive UI. This guide covers how Angular deals with errors that are not explicitly caught by your application code. For guidance on writing your own error handling logic within your application, consult best practices for error handling in JavaScript and Angular.
+В процессе работы Angular-приложения часть кода может выбрасывать ошибки. Если их не обрабатывать, это может приводить к непредсказуемому поведению и неотзывчивому пользовательскому интерфейсу. В этом руководстве рассматривается, как Angular справляется с ошибками, не перехваченными явно кодом приложения. Рекомендации по написанию собственной логики обработки ошибок в приложении см. в лучших практиках обработки ошибок в JavaScript и Angular.
 
-A fundamental principle in Angular's error handling strategy is that errors should be surfaced to developers at the callsite whenever possible. This approach ensures that the code which initiated an operation has the context necessary to understand the error, handle it appropriately, and decide what the appropriate application state should be. By making errors visible at their origin, developers can implement error handling that is specific to the failed operation and has access to relevant information for recovery or providing informative feedback to the end-user. This also helps to avoid the "Overly general error" smell, where errors are reported without sufficient context to understand their cause.
+Фундаментальный принцип стратегии обработки ошибок в Angular состоит в том, что ошибки должны, по возможности, показываться разработчикам в месте их возникновения. Такой подход гарантирует, что код, инициировавший операцию, имеет необходимый контекст для понимания ошибки, её корректной обработки и выбора подходящего состояния приложения. Делая ошибки видимыми в месте их возникновения, разработчики могут реализовать обработку ошибок, специфичную для неудавшейся операции, с доступом к соответствующей информации для восстановления или предоставления информативной обратной связи конечному пользователю. Это также помогает избежать запаха «слишком общей ошибки», когда ошибки сообщаются без достаточного контекста для понимания их причины.
 
-For example, consider a component that fetches user data from an API. The code responsible for making the API call should include error handling (e.g., using a `try...catch` block or the `catchError` operator in RxJS) to manage potential network issues or errors returned by the API. This allows the component to display a user-friendly error message or retry the request, rather than letting the error propagate unhandled.
+Например, рассмотрим компонент, получающий данные пользователя из API. Код, выполняющий вызов API, должен включать обработку ошибок (например, с помощью блока `try...catch` или оператора `catchError` в RxJS) для управления возможными проблемами сети или ошибками, возвращаемыми API. Это позволяет компоненту отображать понятное пользователю сообщение об ошибке или повторить запрос, вместо того чтобы позволить ошибке распространиться необработанной.
 
-## Unhandled errors are reported to the `ErrorHandler`
+## Необработанные ошибки передаются в `ErrorHandler` {#unhandled-errors-are-reported-to-the-errorhandler}
 
-Angular reports unhandled errors to the application's root `ErrorHandler`. When providing a custom `ErrorHandler`, provide it in your `ApplicationConfig` as part of calling `bootstrapApplication`.
+Angular передаёт необработанные ошибки в корневой `ErrorHandler` приложения. При предоставлении пользовательского `ErrorHandler` его следует указать в `ApplicationConfig` при вызове `bootstrapApplication`.
 
-When building an Angular application, often you write code that is called automatically _by_ the framework. For example, Angular is responsible for calling a component's constructor and lifecycle methods when that component appears in a template. When the framework runs your code, there's nowhere you could reasonably add a `try` block to gracefully handle errors. In situations like this, Angular catches errors and sends them to the `ErrorHandler`.
+При разработке Angular-приложения часто пишется код, который вызывается _фреймворком_ автоматически. Например, Angular отвечает за вызов конструктора компонента и методов жизненного цикла, когда этот компонент появляется в шаблоне. Когда фреймворк выполняет ваш код, нет разумного места, куда можно было бы добавить блок `try` для корректной обработки ошибок. В таких ситуациях Angular перехватывает ошибки и отправляет их в `ErrorHandler`.
 
-Angular does _not_ catch errors inside of APIs that are called directly by your code. For example, if you have a service with a method that throws an error and you call that method in your component, Angular will not automatically catch that error. You are responsible for handling it using mechanisms like `try...catch`.
+Angular _не_ перехватывает ошибки внутри API, вызываемых непосредственно вашим кодом. Например, если у вас есть сервис с методом, который выбрасывает ошибку, и вы вызываете этот метод в компоненте, Angular не перехватит её автоматически. Обрабатывать её — ваша ответственность, с помощью таких механизмов, как `try...catch`.
 
-Angular catches _asynchronous_ errors from user promises or observables only when:
+Angular перехватывает _асинхронные_ ошибки из пользовательских промисов или наблюдаемых только когда:
 
-- There is an explicit contract for Angular to wait for and use the result of the asynchronous operation, and
-- When errors are not presented in the return value or state.
+- Существует явный контракт для ожидания Angular результата асинхронной операции и его использования, и
+- Когда ошибки не представлены в возвращаемом значении или состоянии.
 
-For example, `AsyncPipe` and `PendingTasks.run` forward errors to the `ErrorHandler`, whereas `resource` presents the error in the `status` and `error` properties.
+Например, `AsyncPipe` и `PendingTasks.run` передают ошибки в `ErrorHandler`, тогда как `resource` представляет ошибку в свойствах `status` и `error`.
 
-Errors that Angular reports to the `ErrorHandler` are _unexpected_ errors. These errors may be unrecoverable or an indication that the state of the application is corrupted. Applications should provide error handling using `try` blocks or appropriate error handling operators (like `catchError` in RxJS) where the error occurs whenever possible rather than relying on the `ErrorHandler`, which is most frequently and appropriately used only as a mechanism to report potentially fatal errors to the error tracking and logging infrastructure.
+Ошибки, которые Angular передаёт в `ErrorHandler`, — это _неожиданные_ ошибки. Такие ошибки могут быть невосстановимыми или указывать на то, что состояние приложения повреждено. Приложения должны обеспечивать обработку ошибок с помощью блоков `try` или соответствующих операторов обработки ошибок (например, `catchError` в RxJS) в месте возникновения ошибки всегда, когда это возможно, а не полагаться на `ErrorHandler`, который наиболее уместен и чаще всего используется исключительно как механизм для сообщения о потенциально фатальных ошибках в инфраструктуру отслеживания и журналирования ошибок.
 
 ```ts
 export class GlobalErrorHandler implements ErrorHandler {
@@ -42,20 +42,20 @@ export class GlobalErrorHandler implements ErrorHandler {
 }
 ```
 
-### `TestBed` rethrows errors by default
+### `TestBed` по умолчанию повторно выбрасывает ошибки {#testbed-rethrows-errors-by-default}
 
-In many cases, `ErrorHandler` may only log errors and otherwise allow the application to continue running. In tests, however, you almost always want to surface these errors. Angular's `TestBed` rethrows unexpected errors to ensure that errors caught by the framework cannot be unintentionally missed or ignored. In rare circumstances, a test may specifically attempt to ensure errors do not cause the application to be unresponsive or crash. In these situations, you can [configure `TestBed` to _not_ rethrow application errors](api/core/testing/TestModuleMetadata#rethrowApplicationErrors) with `TestBed.configureTestingModule({rethrowApplicationErrors: false})`.
+Во многих случаях `ErrorHandler` может только журналировать ошибки, позволяя приложению продолжать работу. Однако в тестах почти всегда требуется показывать эти ошибки. `TestBed` Angular повторно выбрасывает неожиданные ошибки, чтобы ошибки, перехваченные фреймворком, не могли быть случайно пропущены или проигнорированы. В редких случаях тест может специально проверять, что ошибки не вызывают неотзывчивость или сбой приложения. В таких ситуациях можно [настроить `TestBed` так, чтобы он _не_ повторно выбрасывал ошибки приложения](api/core/testing/TestModuleMetadata#rethrowApplicationErrors) с помощью `TestBed.configureTestingModule({rethrowApplicationErrors: false})`.
 
-## Global error listeners
+## Глобальные обработчики ошибок {#global-error-listeners}
 
-Errors that are caught neither by the application code nor by the framework's application instance may reach the global scope. Errors reaching the global scope can have unintended consequences if not accounted for. In non-browser environments, they may cause the process to crash. In the browser, these errors may go unreported and site visitors may see the errors in the browser console. Angular provides global listeners for both environments to account for these issues.
+Ошибки, не перехваченные ни кодом приложения, ни экземпляром приложения фреймворка, могут достичь глобальной области видимости. Ошибки в глобальной области видимости могут иметь непредвиденные последствия, если их не учитывать. В небраузерных средах они могут вызвать сбой процесса. В браузере эти ошибки могут оставаться незамеченными, и посетители сайта могут видеть ошибки в консоли браузера. Angular предоставляет глобальные обработчики для обеих сред.
 
-### Client-side rendering
+### Клиентская отрисовка {#client-side-rendering}
 
-Adding [`provideBrowserGlobalErrorListeners()`](/api/core/provideBrowserGlobalErrorListeners) to the [ApplicationConfig](guide/di/defining-dependency-providers#application-bootstrap) adds the `'error'` and `'unhandledrejection'` listeners to the browser window and forwards those errors to `ErrorHandler`. The Angular CLI generates new applications with this provider by default. The Angular team recommends handling these global errors for most applications, either with the framework's built-in listeners or with your own custom listeners. If you provide custom listeners, you can remove `provideBrowserGlobalErrorListeners`.
+Добавление [`provideBrowserGlobalErrorListeners()`](/api/core/provideBrowserGlobalErrorListeners) в [ApplicationConfig](guide/di/defining-dependency-providers#application-bootstrap) добавляет обработчики `'error'` и `'unhandledrejection'` к окну браузера и передаёт эти ошибки в `ErrorHandler`. Angular CLI генерирует новые приложения с этим провайдером по умолчанию. Команда Angular рекомендует обрабатывать эти глобальные ошибки в большинстве приложений — либо с помощью встроенных обработчиков фреймворка, либо с собственными пользовательскими обработчиками. Если вы предоставляете пользовательские обработчики, можно удалить `provideBrowserGlobalErrorListeners`.
 
-### Server-side and hybrid rendering
+### Серверная и гибридная отрисовка {#server-side-and-hybrid-rendering}
 
-When using [Angular with SSR](guide/ssr), Angular automatically adds the `'unhandledRejection'` and `'uncaughtException'` listeners to the server process. These handlers prevent the server from crashing and instead log captured errors to the console.
+При использовании [Angular с SSR](guide/ssr) Angular автоматически добавляет обработчики `'unhandledRejection'` и `'uncaughtException'` к серверному процессу. Эти обработчики предотвращают сбой сервера и вместо этого журналируют перехваченные ошибки в консоль.
 
-IMPORTANT: If the application is using Zone.js, only the `'unhandledRejection'` handler is added. When Zone.js is present, errors inside the Application's Zone are already forwarded to the application `ErrorHandler` and do not reach the server process.
+IMPORTANT: Если приложение использует Zone.js, добавляется только обработчик `'unhandledRejection'`. При наличии Zone.js ошибки внутри Zone приложения уже передаются в `ErrorHandler` приложения и не достигают серверного процесса.

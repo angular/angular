@@ -1,48 +1,48 @@
-<docs-decorative-header title="Template syntax" imgSrc="adev/src/assets/images/templates.svg"> <!-- markdownlint-disable-line -->
-In Angular, a template is a chunk of HTML.
-Use special syntax within a template to leverage many of Angular's features.
+<docs-decorative-header title="Синтаксис шаблонов" imgSrc="adev/src/assets/images/templates.svg"> <!-- markdownlint-disable-line -->
+В Angular шаблон — это фрагмент HTML.
+Используйте специальный синтаксис внутри шаблона, чтобы задействовать множество возможностей Angular.
 </docs-decorative-header>
 
-TIP: Check out Angular's [Essentials](essentials/templates) before diving into this comprehensive guide.
+TIP: Ознакомьтесь с разделом [Основы](essentials/templates) Angular, прежде чем погружаться в это подробное руководство.
 
-Every Angular component has a **template** that defines the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) that the component renders onto the page. By using templates, Angular is able to automatically keep your page up-to-date as data changes.
+Каждый компонент Angular имеет **шаблон**, определяющий [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model), который компонент рендерит на странице. Благодаря шаблонам Angular автоматически обновляет страницу при изменении данных.
 
-Templates are usually found within either the `template` property of a `*.ts` file or the `*.html` file. To learn more, check out the [in-depth components guide](/guide/components).
+Шаблоны обычно находятся либо в свойстве `template` файла `*.ts`, либо в файле `*.html`. Чтобы узнать больше, ознакомьтесь с [подробным руководством по компонентам](/guide/components).
 
-## How do templates work?
+## Как работают шаблоны {#how-do-templates-work}
 
-Templates are based on [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML) syntax, with additional features such as built-in template functions, data binding, event listening, variables, and more.
+Шаблоны основаны на синтаксисе [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML) с дополнительными возможностями, такими как встроенные функции шаблонов, привязка данных, обработка событий, переменные и многое другое.
 
-Angular compiles templates into JavaScript in order to build up an internal understanding of your application. One of the benefits of this are built-in rendering optimizations that Angular applies to your application automatically.
+Angular компилирует шаблоны в JavaScript для формирования внутреннего представления вашего приложения. Одним из преимуществ этого подхода являются встроенные оптимизации рендеринга, которые Angular автоматически применяет к вашему приложению.
 
-### Differences from standard HTML
+### Отличия от стандартного HTML {#differences-from-standard-html}
 
-Some differences between templates and standard HTML syntax include:
+Некоторые отличия между шаблонами и стандартным синтаксисом HTML:
 
-- Comments in the template source code are not included in the rendered output
-- Component and directive elements can be self-closed (e.g., `<UserProfile />`)
-- Attributes with certain characters (i.e., `[]`, `()`, etc.) have special meaning to Angular. See [binding docs](guide/templates/binding) and [adding event listeners docs](guide/templates/event-listeners) for more information.
-- The `@` character has a special meaning to Angular for adding dynamic behavior, such as [control flow](guide/templates/control-flow), to templates. You can include a literal `@` character by escaping it as an HTML entity code (`&commat;` or `&#64;`).
-- Angular ignores and collapses unnecessary whitespace characters. See [whitespace in templates](guide/templates/whitespace) for more details.
-- Angular may add comment nodes to a page as placeholders for dynamic content, but developers can ignore these.
+- Комментарии в исходном коде шаблона не включаются в отрендеренный результат
+- Элементы компонентов и директив могут быть самозакрывающимися (например, `<UserProfile />`)
+- Атрибуты с определенными символами (например, `[]`, `()` и т.д.) имеют специальное значение в Angular. См. [документацию по привязке](guide/templates/binding) и [документацию по обработчикам событий](guide/templates/event-listeners) для получения дополнительной информации.
+- Символ `@` имеет специальное значение в Angular для добавления динамического поведения, например [управления потоком](guide/templates/control-flow), в шаблоны. Вы можете включить буквальный символ `@`, экранировав его как HTML-сущность (`&commat;` или `&#64;`).
+- Angular игнорирует и сворачивает ненужные пробельные символы. Подробнее см. [Пробелы в шаблонах](guide/templates/whitespace).
+- Angular может добавлять узлы комментариев на страницу в качестве заполнителей для динамического контента, но разработчики могут их игнорировать.
 
-In addition, while most HTML syntax is valid template syntax, Angular does not support `<script>` element in templates. For more information, see the [Security](best-practices/security) page.
+Кроме того, хотя большая часть HTML-синтаксиса является допустимым синтаксисом шаблонов, Angular не поддерживает элемент `<script>` в шаблонах. Для получения дополнительной информации см. страницу [Безопасность](best-practices/security).
 
-## What's next?
+## Что дальше? {#whats-next}
 
-You might also be interested in the following:
+Вас также могут заинтересовать следующие темы:
 
-| Topics                                                                      | Details                                                                                 |
-| :-------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
-| [Binding dynamic text, properties, and attributes](guide/templates/binding) | Bind dynamic data to text, properties and attributes.                                   |
-| [Adding event listeners](guide/templates/event-listeners)                   | Respond to events in your templates.                                                    |
-| [Two-way binding](guide/templates/two-way-binding)                          | Simultaneously binds a value and propagate changes.                                     |
-| [Control flow](guide/templates/control-flow)                                | Conditionally show, hide and repeat elements.                                           |
-| [Pipes](guide/templates/pipes)                                              | Transform data declaratively.                                                           |
-| [Slotting child content with ng-content](guide/templates/ng-content)        | Control how components render content.                                                  |
-| [Create template fragments with ng-template](guide/templates/ng-template)   | Declare a template fragment.                                                            |
-| [Grouping elements with ng-container](guide/templates/ng-container)         | Group multiple elements together or mark a location for rendering.                      |
-| [Variables in templates](guide/templates/variables)                         | Learn about variable declarations.                                                      |
-| [Deferred loading with @defer](guide/templates/defer)                       | Create deferrable views with `@defer`.                                                  |
-| [Expression syntax](guide/templates/expression-syntax)                      | Learn similarities and differences between Angular expressions and standard JavaScript. |
-| [Whitespace in templates](guide/templates/whitespace)                       | Learn how Angular handles whitespace.                                                   |
+| Темы                                                                                          | Описание                                                                                                     |
+| :-------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
+| [Привязка динамического текста, свойств и атрибутов](guide/templates/binding)                  | Привязка динамических данных к тексту, свойствам и атрибутам.                                                 |
+| [Добавление обработчиков событий](guide/templates/event-listeners)                             | Реагирование на события в ваших шаблонах.                                                                    |
+| [Двусторонняя привязка](guide/templates/two-way-binding)                                      | Одновременная привязка значения и распространение изменений.                                                  |
+| [Поток управления](guide/templates/control-flow)                                              | Условное отображение, скрытие и повторение элементов.                                                        |
+| [Pipe](guide/templates/pipes)                                                                 | Декларативное преобразование данных.                                                                          |
+| [Вставка дочернего контента с ng-content](guide/templates/ng-content)                          | Управление тем, как компоненты отображают контент.                                                            |
+| [Создание фрагментов шаблона с ng-template](guide/templates/ng-template)                      | Объявление фрагмента шаблона.                                                                                |
+| [Группировка элементов с ng-container](guide/templates/ng-container)                           | Группировка нескольких элементов или пометка места для рендеринга.                                            |
+| [Переменные в шаблонах](guide/templates/variables)                                            | Объявления переменных.                                                                                       |
+| [Отложенная загрузка с @defer](guide/templates/defer)                                         | Создание отложенных представлений с помощью `@defer`.                                                         |
+| [Синтаксис выражений](guide/templates/expression-syntax)                                      | Сходства и различия между выражениями Angular и стандартным JavaScript.                                        |
+| [Пробелы в шаблонах](guide/templates/whitespace)                                              | Как Angular обрабатывает пробельные символы.                                                                   |

@@ -1,23 +1,23 @@
-# Async operations
+# Асинхронные операции {#async-operations}
 
-Some validation requires data from external sources like backend APIs or third-party services. Signal Forms provides two functions for asynchronous validation: `validateHttp()` for HTTP-based validation and `validateAsync()` for custom resource-based validation.
+Некоторая валидация требует данных из внешних источников, таких как бэкенд API или сторонние сервисы. Signal Forms предоставляет две функции для асинхронной валидации: `validateHttp()` для валидации на основе HTTP и `validateAsync()` для пользовательской валидации на основе ресурсов.
 
-## When to use async validation
+## Когда использовать асинхронную валидацию {#when-to-use-async-validation}
 
-Use async validation when your validation logic requires external data. Some common examples include:
+Используйте асинхронную валидацию, когда логика валидации требует внешних данных. Некоторые распространённые примеры:
 
-- **Uniqueness checks** - Verify usernames or emails don't already exist
-- **Database lookups** - Check values against server-side data
-- **External API validation** - Validate addresses, tax IDs, or other data with third-party services
-- **Server-side business rules** - Apply validation rules that only the server can verify
+- **Проверка уникальности** — Проверка того, что имена пользователей или адреса электронной почты ещё не используются
+- **Поиск в базе данных** — Проверка значений по серверным данным
+- **Валидация через внешний API** — Валидация адресов, ИНН или других данных с помощью сторонних сервисов
+- **Бизнес-правила на стороне сервера** — Применение правил валидации, которые может проверить только сервер
 
-Don't use async validation for checks you can perform synchronously on the client. Use synchronous validation rules like `pattern()`, `email()`, or `validate()` for format validation and static rules.
+Не используйте асинхронную валидацию для проверок, которые можно выполнить синхронно на клиенте. Используйте синхронные правила, такие как `pattern()`, `email()` или `validate()`, для валидации формата и статических правил.
 
-## How async validation works
+## Как работает асинхронная валидация {#how-async-validation-works}
 
-Async validation runs only after all synchronous validation passes. While the validation executes, the field's `pending()` signal returns `true`. The validation can target errors to specific fields, and pending requests cancel automatically when field values change.
+Асинхронная валидация запускается только после прохождения всей синхронной валидации. Пока она выполняется, сигнал `pending()` поля возвращает `true`. Валидация может направлять ошибки к конкретным полям, а ожидающие запросы автоматически отменяются при изменении значений полей.
 
-Here's an example checking username availability:
+Вот пример проверки доступности имени пользователя:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -73,22 +73,22 @@ export class Registration {
 }
 ```
 
-The validation flow works like this:
+Поток валидации работает следующим образом:
 
-1. User types a value
-2. Synchronous validation rules run first
-3. If synchronous validation fails, async validation doesn't run
-4. If synchronous validation passes, async validation starts and `pending()` becomes `true`
-5. The request completes and `pending()` becomes `false`
-6. Errors update based on the response
+1. Пользователь вводит значение
+2. Сначала выполняются синхронные правила валидации
+3. Если синхронная валидация не проходит, асинхронная не запускается
+4. Если синхронная валидация проходит, начинается асинхронная, и `pending()` становится `true`
+5. Запрос завершается, `pending()` становится `false`
+6. Ошибки обновляются на основе ответа
 
-## HTTP validation with validateHttp()
+## HTTP-валидация с validateHttp() {#http-validation-with-validatehttp}
 
-The `validateHttp()` function provides the most common form of async validation. Use it when you need to validate against a REST API or any HTTP endpoint.
+Функция `validateHttp()` обеспечивает наиболее распространённую форму асинхронной валидации. Используйте её, когда нужно выполнить валидацию через REST API или любой HTTP-эндпоинт.
 
-### Request function
+### Функция запроса {#request-function}
 
-The `request` function returns either a URL string or an `HttpResourceRequest` object. Return `undefined` to skip the validation:
+Функция `request` возвращает либо строку URL, либо объект `HttpResourceRequest`. Верните `undefined` для пропуска валидации:
 
 ```ts
 import {Component, signal} from '@angular/core';
@@ -134,7 +134,7 @@ export class Registration {
 }
 ```
 
-For POST requests or custom headers, return an `HttpResourceRequest` object:
+Для POST-запросов или пользовательских заголовков верните объект `HttpResourceRequest`:
 
 ```ts
 request: ({value}) => ({
@@ -144,9 +144,9 @@ request: ({value}) => ({
 }) // prettier-ignore
 ```
 
-### Success and error handlers
+### Обработчики успеха и ошибок {#success-and-error-handlers}
 
-The `onSuccess` function receives the HTTP response and returns validation errors or `undefined` for valid values:
+Функция `onSuccess` получает HTTP-ответ и возвращает ошибки валидации или `undefined` для действительных значений:
 
 ```ts
 onSuccess: (response) => {
@@ -159,7 +159,7 @@ onSuccess: (response) => {
 } // prettier-ignore
 ```
 
-Return multiple errors when needed:
+При необходимости верните несколько ошибок:
 
 ```ts
 onSuccess: (response) => {
@@ -180,7 +180,7 @@ onSuccess: (response) => {
 } // prettier-ignore
 ```
 
-The `onError` function handles request failures like network errors or HTTP errors:
+Функция `onError` обрабатывает сбои запросов, такие как сетевые ошибки или HTTP-ошибки:
 
 ```ts
 onError: (error) => {
@@ -192,9 +192,9 @@ onError: (error) => {
 } // prettier-ignore
 ```
 
-### HTTP options
+### Опции HTTP {#http-options}
 
-Customize the HTTP request with the `options` parameter:
+Настройте HTTP-запрос с помощью параметра `options`:
 
 ```ts
 import {HttpHeaders} from '@angular/common/http';
@@ -221,24 +221,24 @@ validateHttp(schemaPath.field, {
 });
 ```
 
-TIP: See the [httpResource API documentation](api/common/http/httpResource) for all available options.
+TIP: Все доступные опции см. в [документации API httpResource](api/common/http/httpResource).
 
-## Custom async validation with validateAsync()
+## Пользовательская асинхронная валидация с validateAsync() {#custom-async-validation-with-validateasync}
 
-Most applications should use `validateHttp()` for async validation. It handles HTTP requests with minimal configuration and covers the majority of use cases.
+Большинству приложений следует использовать `validateHttp()` для асинхронной валидации. Он обрабатывает HTTP-запросы с минимальной конфигурацией и покрывает большинство случаев.
 
-`validateAsync()` is a lower-level API that exposes Angular's resource primitive directly. It offers complete control but requires more code and familiarity with Angular's resource API.
+`validateAsync()` — это низкоуровневый API, напрямую открывающий примитив ресурса Angular. Он предлагает полный контроль, но требует больше кода и знания API ресурсов Angular.
 
-Consider `validateAsync()` only when `validateHttp()` can't meet your needs. Some examples include:
+Рассмотрите `validateAsync()` только тогда, когда `validateHttp()` не может удовлетворить ваши потребности. Некоторые примеры:
 
-- **Non-HTTP validation** - WebSocket connections, IndexedDB lookups, or Web Worker computations
-- **Custom caching strategies** - Application-specific caching beyond simple memoization
-- **Complex retry logic** - Custom backoff strategies or conditional retries
-- **Direct resource access** - When you need the full resource lifecycle
+- **Валидация не через HTTP** — WebSocket-соединения, поиск в IndexedDB или вычисления в Web Worker
+- **Пользовательские стратегии кэширования** — Специфичное для приложения кэширование, выходящее за рамки простой мемоизации
+- **Сложная логика повтора** — Пользовательские стратегии отступа или условные повторы
+- **Прямой доступ к ресурсу** — Когда нужен полный жизненный цикл ресурса
 
-### Creating a custom validation rule
+### Создание пользовательского правила валидации {#creating-a-custom-validation-rule}
 
-The `validateAsync()` function requires four properties: `params`, `factory`, `onSuccess`, and `onError`. The `params` function returns the parameters for your resource, while `factory` creates the resource:
+Функция `validateAsync()` требует четыре свойства: `params`, `factory`, `onSuccess` и `onError`. Функция `params` возвращает параметры для вашего ресурса, а `factory` создаёт ресурс:
 
 ```ts
 import {Component, inject, signal, resource, Signal} from '@angular/core';
@@ -304,11 +304,11 @@ export class Registration {
 }
 ```
 
-The `params` function runs on every value change. Return `undefined` to skip validation. The `factory` function runs once during setup and receives params as a signal. The resource updates automatically when params change.
+Функция `params` выполняется при каждом изменении значения. Верните `undefined` для пропуска валидации. Функция `factory` выполняется один раз при настройке и получает params как сигнал. Ресурс обновляется автоматически при изменении params.
 
-### Using Observable-based services
+### Использование сервисов на основе Observable {#using-observable-based-services}
 
-If your application has existing services that return Observables, use `rxResource` from `@angular/core/rxjs-interop`:
+Если в вашем приложении есть существующие сервисы, возвращающие Observable, используйте `rxResource` из `@angular/core/rxjs-interop`:
 
 ```ts
 import {Component, inject, signal, Signal} from '@angular/core';
@@ -348,18 +348,18 @@ export class Registration {
 }
 ```
 
-The `rxResource` function works directly with Observables and handles subscription cleanup automatically when the field value changes.
+Функция `rxResource` напрямую работает с Observable и автоматически обрабатывает отписку при изменении значения поля.
 
-## Understanding pending state
+## Понимание состояния ожидания {#understanding-pending-state}
 
-When async validation runs, the field's `pending()` signal returns `true`. During this time:
+Когда выполняется асинхронная валидация, сигнал `pending()` поля возвращает `true`. В это время:
 
-- `valid()` returns `false`
-- `invalid()` returns `false`
-- `errors()` returns an empty array
-- `submit()` waits for validation to complete
+- `valid()` возвращает `false`
+- `invalid()` возвращает `false`
+- `errors()` возвращает пустой массив
+- `submit()` ожидает завершения валидации
 
-Show the pending state in your template to provide feedback:
+Отображайте состояние ожидания в шаблоне для предоставления обратной связи:
 
 ```angular-html
 <input [formField]="loginForm.username" />
@@ -375,7 +375,7 @@ Show the pending state in your template to provide feedback:
 }
 ```
 
-Disable form submission while validation is pending:
+Отключайте отправку формы во время ожидания валидации:
 
 ```angular-html
 <button type="submit" [disabled]="loginForm().pending()">
@@ -387,11 +387,11 @@ Disable form submission while validation is pending:
 </button>
 ```
 
-TIP: See the [Field State Management guide](guide/forms/signals/field-state-management) for more patterns using `pending()`, `valid()`, and `invalid()` signals.
+TIP: Больше паттернов использования `pending()`, `valid()` и `invalid()` см. в [руководстве по управлению состоянием поля](guide/forms/signals/field-state-management).
 
-### Validation execution order
+### Порядок выполнения валидации {#validation-execution-order}
 
-Async validation only runs after synchronous validation passes. This prevents unnecessary server requests for invalid input:
+Асинхронная валидация запускается только после прохождения синхронной. Это предотвращает ненужные серверные запросы для недействительного ввода:
 
 ```ts
 import {form, required, minLength, validateHttp} from '@angular/forms/signals';
@@ -419,17 +419,17 @@ form(model, (schemaPath) => {
 });
 ```
 
-This execution order improves performance by reducing server load and catching format errors instantly.
+Этот порядок выполнения улучшает производительность, снижая нагрузку на сервер и мгновенно обнаруживая ошибки формата.
 
-### Request cancellation
+### Отмена запросов {#request-cancellation}
 
-When a field value changes, Signal Forms automatically cancels any pending async validation request for that field. This prevents race conditions and ensures validation always reflects the current value. You don't need to implement cancellation logic yourself.
+При изменении значения поля Signal Forms автоматически отменяет любой ожидающий асинхронный запрос валидации для этого поля. Это предотвращает гонки состояний и гарантирует, что валидация всегда отражает текущее значение. Реализовывать логику отмены самостоятельно не нужно.
 
-## Best practices
+## Лучшие практики {#best-practices}
 
-### Combine with synchronous validation
+### Сочетание с синхронной валидацией {#combine-with-synchronous-validation}
 
-Always validate format before making async requests. This catches errors instantly and prevents unnecessary server requests:
+Всегда проверяйте формат перед выполнением асинхронных запросов. Это мгновенно обнаруживает ошибки и предотвращает ненужные серверные запросы:
 
 ```ts
 import {form, required, email, validateHttp} from '@angular/forms/signals';
@@ -457,9 +457,9 @@ form(model, (schemaPath) => {
 });
 ```
 
-### Skip validation when appropriate
+### Пропуск валидации при необходимости {#skip-validation-when-appropriate}
 
-Return `undefined` from the `request` function to skip validation. Use this to avoid validating empty fields or values that don't meet minimum requirements:
+Верните `undefined` из функции `request` для пропуска валидации. Используйте это для избежания валидации пустых полей или значений, не соответствующих минимальным требованиям:
 
 ```ts
 import {validateHttp} from '@angular/forms/signals';
@@ -486,9 +486,9 @@ validateHttp(schemaPath.username, {
 });
 ```
 
-### Handle errors gracefully
+### Корректная обработка ошибок {#handle-errors-gracefully}
 
-Provide clear, user-friendly error messages. Log technical details for debugging but show simple messages to users:
+Предоставляйте чёткие, понятные пользователю сообщения об ошибках. Регистрируйте технические детали для отладки, но показывайте пользователям простые сообщения:
 
 ```ts
 import {validateHttp} from '@angular/forms/signals';
@@ -516,9 +516,9 @@ validateHttp(schemaPath.field, {
 });
 ```
 
-### Show clear feedback
+### Показывайте чёткую обратную связь {#show-clear-feedback}
 
-Use the `pending()` signal to show when validation is happening. This helps users understand delays and provides better perceived performance:
+Используйте сигнал `pending()` для отображения выполняемой валидации. Это помогает пользователям понять задержки и обеспечивает лучшее воспринимаемое быстродействие:
 
 ```angular-html
 @if (field().pending()) {
@@ -535,18 +535,18 @@ Use the `pending()` signal to show when validation is happening. This helps user
 }
 ```
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-This guide covered async validation with `validateHttp()` and `validateAsync()`. Related guides explore other aspects of Signal Forms:
+В этом руководстве рассмотрена асинхронная валидация с `validateHttp()` и `validateAsync()`. Связанные руководства охватывают другие аспекты Signal Forms:
 
 <docs-pill-row>
-  <docs-pill href="guide/forms/signals/validation" title="Validation"/>
-  <docs-pill href="guide/forms/signals/field-state-management" title="Field State Management"/>
+  <docs-pill href="guide/forms/signals/validation" title="Валидация"/>
+  <docs-pill href="guide/forms/signals/field-state-management" title="Управление состоянием поля"/>
 </docs-pill-row>
 
-For detailed API documentation, see:
+Подробную документацию API см. в:
 
-- [`validateHttp()`](api/forms/signals/validateHttp) - HTTP-based async validation
-- [`validateAsync()`](api/forms/signals/validateAsync) - Custom resource-based async validation
-- [`httpResource()`](api/common/http/httpResource) - Angular's HTTP resource API
-- [`resource()`](api/core/resource) - Angular's resource primitive
+- [`validateHttp()`](api/forms/signals/validateHttp) — Асинхронная валидация на основе HTTP
+- [`validateAsync()`](api/forms/signals/validateAsync) — Пользовательская асинхронная валидация на основе ресурсов
+- [`httpResource()`](api/common/http/httpResource) — API HTTP-ресурса Angular
+- [`resource()`](api/core/resource) — Примитив ресурса Angular

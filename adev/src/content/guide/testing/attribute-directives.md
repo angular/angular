@@ -1,12 +1,12 @@
-# Testing Attribute Directives
+# Тестирование атрибутивных директив {#testing-attribute-directives}
 
-An _attribute directive_ modifies the behavior of an element, component or another directive.
-Its name reflects the way the directive is applied: as an attribute on a host element.
+_Атрибутивная директива_ изменяет поведение элемента, компонента или другой директивы.
+Её название отражает способ применения: в виде атрибута на элементе-хосте.
 
-## Testing the `Highlight` directive
+## Тестирование директивы `Highlight` {#testing-the-highlight-directive}
 
-The sample application's `Highlight` directive sets the background color of an element based on either a data bound color or a default color \(lightgray\).
-It also sets a custom property of the element \(`customProperty`\) to `true` for no reason other than to show that it can.
+Директива `Highlight` в примере приложения устанавливает цвет фона элемента на основе привязанного значения цвета или значения по умолчанию \(lightgray\).
+Она также устанавливает пользовательское свойство элемента \(`customProperty`\) в значение `true` — просто чтобы показать, что это возможно.
 
 ```ts
 import {Directive, inject, input} from '@angular/core';
@@ -28,7 +28,7 @@ export class Highlight {
 }
 ```
 
-It's used throughout the application, perhaps most simply in the `About` component:
+Она используется во всём приложении, в том числе в компоненте `About`:
 
 ```ts
 @Component({
@@ -42,7 +42,7 @@ It's used throughout the application, perhaps most simply in the `About` compone
 export class About {}
 ```
 
-Testing the specific use of the `Highlight` directive within the `About` component requires only the techniques explored in the ["Nested component tests"](guide/testing/components-scenarios#nested-component-tests) section of [Component testing scenarios](guide/testing/components-scenarios).
+Тестирование конкретного использования директивы `Highlight` в компоненте `About` требует лишь тех техник, которые рассмотрены в разделе [«Тесты вложенных компонентов»](guide/testing/components-scenarios#nested-component-tests) руководства [Сценарии тестирования компонентов](guide/testing/components-scenarios).
 
 ```ts
 let fixture: ComponentFixture<About>;
@@ -63,13 +63,13 @@ it('should have skyblue <h2>', () => {
 });
 ```
 
-However, testing a single use case is unlikely to explore the full range of a directive's capabilities.
-Finding and testing all components that use the directive is tedious, brittle, and almost as unlikely to afford full coverage.
+Однако тестирование единственного сценария использования вряд ли охватит весь спектр возможностей директивы.
+Поиск и тестирование всех компонентов, использующих директиву, — задача утомительная, хрупкая и тоже не гарантирующая полного покрытия.
 
-_Class-only tests_ might be helpful, but attribute directives like this one tend to manipulate the DOM.
-Isolated unit tests don't touch the DOM and, therefore, do not inspire confidence in the directive's efficacy.
+_Тесты только на уровне класса_ могут помочь, но атрибутивные директивы, подобные этой, как правило, взаимодействуют с DOM.
+Изолированные юнит-тесты не касаются DOM и поэтому не дают уверенности в корректной работе директивы.
 
-A better solution is to create an artificial test component that demonstrates all ways to apply the directive.
+Лучшее решение — создать искусственный тестовый компонент, демонстрирующий все варианты применения директивы.
 
 ```angular-ts
 @Component({
@@ -86,10 +86,10 @@ class Test {}
 
 <img alt="HighlightDirective spec in action" src="assets/images/guide/testing/highlight-directive-spec.png">
 
-HELPFUL: The `<input>` case binds the `Highlight` to the name of a color value in the input box.
-The initial value is the word "cyan" which should be the background color of the input box.
+HELPFUL: Случай с `<input>` привязывает директиву `Highlight` к значению цвета в поле ввода.
+Начальное значение — слово «cyan», которое должно стать цветом фона поля.
 
-Here are some tests of this component:
+Вот несколько тестов для этого компонента:
 
 ```ts
 let fixture: ComponentFixture<Test>;
@@ -141,16 +141,16 @@ it('bare <h2> should not have a backgroundColor', () => {
 });
 ```
 
-A few techniques are noteworthy:
+Несколько примечательных приёмов:
 
-- The `By.directive` predicate is a great way to get the elements that have this directive _when their element types are unknown_
-- The [`:not` pseudo-class](https://developer.mozilla.org/docs/Web/CSS/:not) in `By.css('h2:not([highlight])')` helps find `<h2>` elements that _do not_ have the directive.
-  `By.css('*:not([highlight])')` finds _any_ element that does not have the directive.
+- Предикат `By.directive` — отличный способ найти элементы с данной директивой, _когда типы элементов неизвестны_
+- [Псевдокласс `:not`](https://developer.mozilla.org/docs/Web/CSS/:not) в `By.css('h2:not([highlight])')` помогает найти элементы `<h2>`, у которых директива _отсутствует_.
+  `By.css('*:not([highlight])')` найдёт _любой_ элемент без директивы.
 
-- `DebugElement.styles` affords access to element styles even in the absence of a real browser, thanks to the `DebugElement` abstraction.
-  But feel free to exploit the `nativeElement` when that seems easier or more clear than the abstraction.
+- `DebugElement.styles` обеспечивает доступ к стилям элементов даже в отсутствие реального браузера, благодаря абстракции `DebugElement`.
+  Тем не менее смело используйте `nativeElement`, если это удобнее или нагляднее.
 
-- Angular adds a directive to the injector of the element to which it is applied.
-  The test for the default color uses the injector of the second `<h2>` to get its `Highlight` instance and its `defaultColor`.
+- Angular добавляет директиву в инжектор элемента, к которому она применена.
+  Тест для цвета по умолчанию использует инжектор второго `<h2>`, чтобы получить экземпляр `Highlight` и его `defaultColor`.
 
-- `DebugElement.properties` affords access to the artificial custom property that is set by the directive
+- `DebugElement.properties` обеспечивает доступ к пользовательскому свойству, устанавливаемому директивой

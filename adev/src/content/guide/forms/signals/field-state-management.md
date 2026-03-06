@@ -1,14 +1,14 @@
-# Field state management
+# Управление состоянием поля {#field-state-management}
 
-Signal Forms' field state allows you to react to user interactions by providing reactive signals for validation status (such as `valid`, `invalid`, `errors`), interaction tracking (such as `touched`, `dirty`), and availability (such as `disabled`, `hidden`).
+Состояние поля в Signal Forms позволяет реагировать на взаимодействия пользователя, предоставляя реактивные сигналы для статуса валидации (такие как `valid`, `invalid`, `errors`), отслеживания взаимодействия (такие как `touched`, `dirty`) и доступности (такие как `disabled`, `hidden`).
 
-## Understanding field state
+## Понимание состояния поля {#understanding-field-state}
 
-When you create a form with the [`form()`](api/forms/signals/form) function, it returns a **field tree** - an object structure that mirrors your form model. Each field in the tree is accessible via dot notation (like [`form.email`](api/forms/signals/form#email)).
+При создании формы с помощью функции [`form()`](api/forms/signals/form) она возвращает **дерево полей** — объектную структуру, отражающую модель формы. Каждое поле дерева доступно через точечную нотацию (например, [`form.email`](api/forms/signals/form#email)).
 
-### Accessing field state
+### Доступ к состоянию поля {#accessing-field-state}
 
-When you call any field in the field tree as a function (like [`form.email()`](api/forms/signals/form#email)), it returns a `FieldState` object containing reactive signals that track the field's validation, interaction, and availability state. For example, the `invalid()` signal tells you whether the field has validation errors:
+При вызове любого поля дерева как функции (например, [`form.email()`](api/forms/signals/form#email)) возвращается объект `FieldState`, содержащий реактивные сигналы для отслеживания состояния валидации, взаимодействия и доступности поля. Например, сигнал `invalid()` сообщает, есть ли в поле ошибки валидации:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -43,42 +43,42 @@ export class Registration {
 }
 ```
 
-In this example, the template checks `registrationForm.email().invalid()` to determine whether to display an error message.
+В этом примере шаблон проверяет `registrationForm.email().invalid()`, чтобы определить, нужно ли отображать сообщение об ошибке.
 
-### Field state signals
+### Сигналы состояния поля {#field-state-signals}
 
-The most commonly used signal is `value()`, a `WritableSignal` that provides access to the field's current value:
+Наиболее часто используемый сигнал — `value()`, `WritableSignal`, предоставляющий доступ к текущему значению поля:
 
 ```ts
 const emailValue = registrationForm.email().value();
 console.log(emailValue); // Current email string
 ```
 
-Beyond `value()`, field state includes signals for validation, interaction tracking, and availability control:
+Помимо `value()`, состояние поля включает сигналы для валидации, отслеживания взаимодействия и управления доступностью:
 
-| Category                                | Signal       | Description                                                                       |
-| --------------------------------------- | ------------ | --------------------------------------------------------------------------------- |
-| **[Validation](#validation-state)**     | `valid()`    | Field passes all validation rules and has no pending validators                   |
-|                                         | `invalid()`  | Field has validation errors                                                       |
-|                                         | `errors()`   | Array of validation error objects                                                 |
-|                                         | `pending()`  | Async validation in progress                                                      |
-| **[Interaction](#interaction-state)**   | `touched()`  | User has focused and blurred the field (if interactive)                           |
-|                                         | `dirty()`    | User has modified the field (if interactive), even if value matches initial state |
-| **[Availability](#availability-state)** | `disabled()` | Field is disabled and doesn't affect parent form state                            |
-|                                         | `hidden()`   | Indicates field should be hidden; visibility in template is controlled with `@if` |
-|                                         | `readonly()` | Field is readonly and doesn't affect parent form state                            |
+| Категория                                     | Сигнал       | Описание                                                                                               |
+| --------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------ |
+| **[Валидация](#validation-state)**            | `valid()`    | Поле прошло все правила валидации и не имеет ожидающих валидаторов                                    |
+|                                               | `invalid()`  | Поле содержит ошибки валидации                                                                         |
+|                                               | `errors()`   | Массив объектов ошибок валидации                                                                       |
+|                                               | `pending()`  | Выполняется асинхронная валидация                                                                      |
+| **[Взаимодействие](#interaction-state)**      | `touched()`  | Пользователь сфокусировался на поле и потерял фокус (если поле интерактивно)                          |
+|                                               | `dirty()`    | Пользователь изменил поле (если интерактивно), даже если значение совпадает с начальным               |
+| **[Доступность](#availability-state)**        | `disabled()` | Поле отключено и не влияет на состояние родительской формы                                             |
+|                                               | `hidden()`   | Указывает, что поле должно быть скрыто; видимость в шаблоне управляется через `@if`                   |
+|                                               | `readonly()` | Поле только для чтения и не влияет на состояние родительской формы                                    |
 
-These signals enable you to build responsive form user experiences that react to user behavior. The sections below explore each category in detail.
+Эти сигналы позволяют создавать отзывчивые пользовательские интерфейсы форм, реагирующие на действия пользователя. Разделы ниже подробно рассматривают каждую категорию.
 
-## Validation state
+## Состояние валидации {#validation-state}
 
-Validation state signals tell you whether a field is valid and what errors it contains.
+Сигналы состояния валидации сообщают, является ли поле действительным и какие ошибки оно содержит.
 
-NOTE: This guide focuses on **using** validation state in your templates and logic (such as reading `valid()`, `invalid()`, `errors()` to display feedback). For information on **defining** validation rules and creating custom validators, see the [Validation guide](guide/forms/signals/validation).
+NOTE: Это руководство посвящено **использованию** состояния валидации в шаблонах и логике (чтению `valid()`, `invalid()`, `errors()` для отображения обратной связи). Информацию об **определении** правил валидации и создании пользовательских валидаторов см. в [руководстве по валидации](guide/forms/signals/validation).
 
-### Checking validity
+### Проверка валидности {#checking-validity}
 
-Use `valid()` and `invalid()` to check validation status:
+Используйте `valid()` и `invalid()` для проверки статуса валидации:
 
 ```angular-ts
 @Component({
@@ -99,26 +99,26 @@ export class Login {
 }
 ```
 
-| Signal      | Returns `true` when                                             |
-| ----------- | --------------------------------------------------------------- |
-| `valid()`   | Field passes all validation rules and has no pending validators |
-| `invalid()` | Field has validation errors                                     |
+| Сигнал      | Возвращает `true`, когда                                              |
+| ----------- | --------------------------------------------------------------------- |
+| `valid()`   | Поле прошло все правила и не имеет ожидающих валидаторов             |
+| `invalid()` | Поле содержит ошибки валидации                                        |
 
-When checking validity in code, use `invalid()` instead of `!valid()` if you want to distinguish between "has errors" and "validation pending." The reason for this is that both `valid()` and `invalid()` can be `false` simultaneously when async validation is pending because the field isn't valid yet since validation not complete and is also isn't invalid since no errors have been found yet.
+При проверке валидности в коде используйте `invalid()` вместо `!valid()`, если нужно различать «есть ошибки» и «валидация ожидается». Причина в том, что `valid()` и `invalid()` могут одновременно возвращать `false` при ожидании асинхронной валидации: поле ещё не действительно (валидация не завершена) и также не является недействительным (ошибок ещё не найдено).
 
-### Reading validation errors
+### Чтение ошибок валидации {#reading-validation-errors}
 
-Access the array of validation errors with `errors()`. Each error object contains:
+Получите доступ к массиву ошибок валидации с помощью `errors()`. Каждый объект ошибки содержит:
 
-| Property    | Description                                                     |
-| ----------- | --------------------------------------------------------------- |
-| `kind`      | The validation rule that failed (such as "required" or "email") |
-| `message`   | Optional human-readable error message                           |
-| `fieldTree` | Reference to the `FieldTree` where the error occurred           |
+| Свойство    | Описание                                                               |
+| ----------- | ---------------------------------------------------------------------- |
+| `kind`      | Правило, которое не прошло (например, "required" или "email")         |
+| `message`   | Необязательное читаемое сообщение об ошибке                            |
+| `fieldTree` | Ссылка на `FieldTree`, где произошла ошибка                            |
 
-NOTE: The `message` property is optional. Validators can provide custom error messages, but if not specified, you may need to map error `kind` values to your own messages.
+NOTE: Свойство `message` необязательно. Валидаторы могут предоставлять пользовательские сообщения, но если они не указаны, может потребоваться сопоставление значений `kind` с собственными сообщениями.
 
-Here's an example of how to display errors in your template:
+Пример отображения ошибок в шаблоне:
 
 ```angular-ts
 @Component({
@@ -136,11 +136,11 @@ Here's an example of how to display errors in your template:
 })
 ```
 
-This approach loops through all errors for a field, displaying each error message to the user.
+Этот подход перебирает все ошибки поля, отображая каждое сообщение об ошибке пользователю.
 
-### Pending validation
+### Ожидающая валидация {#pending-validation}
 
-The `pending()` signal indicates async validation is in progress:
+Сигнал `pending()` указывает на выполнение асинхронной валидации:
 
 ```angular-ts
 @Component({
@@ -158,21 +158,21 @@ The `pending()` signal indicates async validation is in progress:
 })
 ```
 
-This signal enables you to show loading states while async validation executes.
+Этот сигнал позволяет отображать состояния загрузки во время выполнения асинхронной валидации.
 
-## Interaction state
+## Состояние взаимодействия {#interaction-state}
 
-Interaction state tracks whether users have interacted with fields, enabling patterns like "show errors only after the user has touched a field."
+Состояние взаимодействия отслеживает, взаимодействовали ли пользователи с полями, реализуя паттерны типа «показывать ошибки только после того, как пользователь коснулся поля».
 
-### Touched state
+### Состояние touched {#touched-state}
 
-The `touched()` signal tracks whether a user has focused and then blurred a field. It becomes `true` when a user focuses and then blurs a field through user interaction (not programmatically). Hidden, disabled, and readonly fields are non-interactive and don't become touched from user interactions.
+Сигнал `touched()` отслеживает, сфокусировался ли пользователь на поле и потерял ли фокус. Он становится `true`, когда пользователь фокусируется на поле и затем теряет фокус через взаимодействие с пользователем (не программно). Скрытые, отключённые и поля только для чтения не являются интерактивными и не становятся touched через взаимодействие пользователя.
 
-### Dirty state
+### Состояние dirty {#dirty-state}
 
-Forms often need to detect whether data has actually changed - for example, to warn users about unsaved changes or to enable a save button only when necessary. The `dirty()` signal tracks whether the user has modified the field.
+Формам часто нужно определять, действительно ли данные изменились — например, чтобы предупреждать пользователей о несохранённых изменениях или активировать кнопку сохранения только при необходимости. Сигнал `dirty()` отслеживает, изменял ли пользователь поле.
 
-The `dirty()` signal becomes `true` when the user modifies an interactive field's value, and remains `true` even if the value is changed back to match the initial value:
+Сигнал `dirty()` становится `true`, когда пользователь изменяет значение интерактивного поля, и остаётся `true`, даже если значение возвращается к начальному:
 
 ```angular-ts
 @Component({
@@ -193,33 +193,33 @@ export class Profile {
 }
 ```
 
-Use `dirty()` for "unsaved changes" warnings or to enable save buttons only when data has changed.
+Используйте `dirty()` для предупреждений о «несохранённых изменениях» или для активации кнопок сохранения только при изменении данных.
 
-### Touched vs dirty
+### Touched vs dirty {#touched-vs-dirty}
 
-These signals track different user interactions:
+Эти сигналы отслеживают разные взаимодействия пользователя:
 
-| Signal      | When it becomes true                                                                                                            |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `touched()` | User has focused and blurred an interactive field (even if they didn't change anything)                                         |
-| `dirty()`   | User has modified an interactive field (even if they never blurred it, and even if the current value matches the initial value) |
+| Сигнал      | Когда становится true                                                                                                             |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `touched()` | Пользователь сфокусировался и потерял фокус на интерактивном поле (даже если ничего не изменил)                                  |
+| `dirty()`   | Пользователь изменил интерактивное поле (даже если никогда не терял фокус и даже если текущее значение совпадает с начальным)    |
 
-A field can be in different combinations:
+Поле может находиться в разных комбинациях:
 
-| State                  | Scenario                                                  |
-| ---------------------- | --------------------------------------------------------- |
-| Touched but not dirty  | User focused and blurred the field but made no changes    |
-| Both touched and dirty | User focused the field, changed the value, and blurred it |
+| Состояние              | Сценарий                                                              |
+| ---------------------- | --------------------------------------------------------------------- |
+| Touched, но не dirty   | Пользователь сфокусировался и потерял фокус, не внося изменений       |
+| Оба: touched и dirty   | Пользователь сфокусировался, изменил значение и потерял фокус         |
 
-NOTE: Hidden, disabled, and readonly fields are non-interactive - they don't become touched or dirty from user interactions.
+NOTE: Скрытые, отключённые и поля только для чтения не являются интерактивными — они не становятся touched или dirty через взаимодействие пользователя.
 
-## Availability state
+## Состояние доступности {#availability-state}
 
-Availability state signals control whether fields are interactive, editable, or visible. Disabled, hidden, and readonly fields are non-interactive. They don't affect whether their parent form is valid, touched, or dirty.
+Сигналы состояния доступности управляют тем, являются ли поля интерактивными, редактируемыми или видимыми. Отключённые, скрытые поля и поля только для чтения не являются интерактивными. Они не влияют на то, является ли их родительская форма действительной, touched или dirty.
 
-### Disabled fields
+### Отключённые поля {#disabled-fields}
 
-The `disabled()` signal indicates whether a field accepts user input. Disabled fields appear in the UI but users cannot interact with them.
+Сигнал `disabled()` указывает, принимает ли поле пользовательский ввод. Отключённые поля отображаются в UI, но пользователи не могут с ними взаимодействовать.
 
 ```angular-ts
 import { Component, signal } from '@angular/core'
@@ -249,20 +249,20 @@ export class Order {
 }
 ```
 
-In this example, we use `valueOf(schemaPath.total)` to check the value of the `total` field to determine whether `couponCode` should be disabled.
+В этом примере используется `valueOf(schemaPath.total)` для проверки значения поля `total` и определения, должен ли `couponCode` быть отключён.
 
-NOTE: The schema callback parameter (`schemaPath` in these examples) is a `SchemaPathTree` object that provides paths to all fields in your form. You can name this parameter anything you like.
+NOTE: Параметр обратного вызова схемы (`schemaPath` в этих примерах) — объект `SchemaPathTree`, предоставляющий пути ко всем полям формы. Его можно называть как угодно.
 
-When defining rules like `disabled()`, `hidden()`, or `readonly()`, the logic callback receives a `FieldContext` object that is typically destructured (such as `({valueOf})`). Two methods commonly used in validation rules are:
+При определении правил вроде `disabled()`, `hidden()` или `readonly()` обратный вызов логики получает объект `FieldContext`, который обычно деструктурируется (например, `({valueOf})`). Два метода, часто используемые в правилах:
 
-- `valueOf(schemaPath.otherField)` - Read the value of another field in the form
-- `value()` - A signal containing the value of the field the rule is applied to
+- `valueOf(schemaPath.otherField)` — Читать значение другого поля формы
+- `value()` — Сигнал, содержащий значение поля, к которому применяется правило
 
-Disabled fields don't contribute to the parent form's validation state. Even if a disabled field would be invalid, the parent form can still be valid. The `disabled()` state affects interactivity and validation, but does not change the field's value.
+Отключённые поля не влияют на состояние валидации родительской формы. Даже если отключённое поле было бы недействительным, родительская форма может быть действительной. Состояние `disabled()` влияет на интерактивность и валидацию, но не изменяет значение поля.
 
-### Hidden fields
+### Скрытые поля {#hidden-fields}
 
-The `hidden()` signal indicates whether a field is conditionally hidden. Use `hidden()` with `@if` to show or hide fields based on conditions:
+Сигнал `hidden()` указывает, скрыто ли поле условно. Используйте `hidden()` с `@if` для отображения или скрытия полей на основе условий:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -297,11 +297,11 @@ export class Profile {
 }
 ```
 
-Hidden fields don't participate in validation. If a required field is hidden, it won't prevent form submission. The `hidden()` state affects availability and validation, but does not change the field's value.
+Скрытые поля не участвуют в валидации. Если обязательное поле скрыто, оно не будет препятствовать отправке формы. Состояние `hidden()` влияет на доступность и валидацию, но не изменяет значение поля.
 
-### Readonly fields
+### Поля только для чтения {#readonly-fields}
 
-The `readonly()` signal indicates whether a field is readonly. Readonly fields display their value but users cannot edit them:
+Сигнал `readonly()` указывает, является ли поле только для чтения. Поля только для чтения отображают своё значение, но пользователи не могут их редактировать:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -334,23 +334,23 @@ export class Account {
 }
 ```
 
-NOTE: The `[formField]` directive automatically binds the `readonly` attribute based on the field's `readonly()` state, so you don't need to manually add `[readonly]="field().readonly()"`.
+NOTE: Директива `[formField]` автоматически привязывает атрибут `readonly` на основе состояния `readonly()` поля, поэтому не нужно вручную добавлять `[readonly]="field().readonly()"`.
 
-Like disabled and hidden fields, readonly fields are non-interactive and don't affect parent form state. The `readonly()` state affects editability and validation, but does not change the field's value.
+Как и отключённые и скрытые поля, поля только для чтения не являются интерактивными и не влияют на состояние родительской формы. Состояние `readonly()` влияет на редактируемость и валидацию, но не изменяет значение поля.
 
-### When to use each
+### Когда использовать каждое {#when-to-use-each}
 
-| State        | Use when                                                            | User can see it | User can interact | Contributes to validation |
-| ------------ | ------------------------------------------------------------------- | --------------- | ----------------- | ------------------------- |
-| `disabled()` | Field temporarily unavailable (such as based on other field values) | Yes             | No                | No                        |
-| `hidden()`   | Field not relevant in current context                               | No (with @if)   | No                | No                        |
-| `readonly()` | Value should be visible but not editable                            | Yes             | No                | No                        |
+| Состояние    | Используйте, когда                                                                 | Пользователь видит | Может взаимодействовать | Влияет на валидацию |
+| ------------ | ----------------------------------------------------------------------------------- | ------------------ | ----------------------- | ------------------- |
+| `disabled()` | Поле временно недоступно (например, на основе значений других полей)               | Да                 | Нет                     | Нет                 |
+| `hidden()`   | Поле не актуально в текущем контексте                                               | Нет (с @if)        | Нет                     | Нет                 |
+| `readonly()` | Значение должно быть видимым, но не редактируемым                                   | Да                 | Нет                     | Нет                 |
 
-## Form-level state
+## Состояние на уровне формы {#form-level-state}
 
-The root form is also a field in the field tree. When you call it as a function, it also returns a `FieldState` object that aggregates the state of all child fields.
+Корневая форма также является полем в дереве полей. При вызове как функции она возвращает объект `FieldState`, агрегирующий состояние всех дочерних полей.
 
-### Accessing form state
+### Доступ к состоянию формы {#accessing-form-state}
 
 ```angular-ts
 @Component({
@@ -369,43 +369,43 @@ export class Login {
 }
 ```
 
-In this example, the form is valid only when all child fields are valid. This allows you to enable/disable submit buttons based on overall form validity.
+В этом примере форма действительна только при действительности всех дочерних полей. Это позволяет включать/отключать кнопки отправки на основе общей валидности формы.
 
-### Form-level signals
+### Сигналы на уровне формы {#form-level-signals}
 
-Because the root form is a field, it has the same signals (such as `valid()`, `invalid()`, `touched()`, `dirty()`, etc.).
+Поскольку корневая форма является полем, она имеет те же сигналы (такие как `valid()`, `invalid()`, `touched()`, `dirty()` и т.д.).
 
-| Signal      | Form-level behavior                                            |
-| ----------- | -------------------------------------------------------------- |
-| `valid()`   | All interactive fields are valid and no validators are pending |
-| `invalid()` | At least one interactive field has validation errors           |
-| `pending()` | At least one interactive field has pending async validation    |
-| `touched()` | User has touched at least one interactive field                |
-| `dirty()`   | User has modified at least one interactive field               |
+| Сигнал      | Поведение на уровне формы                                                        |
+| ----------- | -------------------------------------------------------------------------------- |
+| `valid()`   | Все интерактивные поля действительны, ни один валидатор не ожидает              |
+| `invalid()` | По крайней мере одно интерактивное поле содержит ошибки валидации               |
+| `pending()` | По крайней мере одно интерактивное поле имеет ожидающую асинхронную валидацию   |
+| `touched()` | Пользователь затронул хотя бы одно интерактивное поле                           |
+| `dirty()`   | Пользователь изменил хотя бы одно интерактивное поле                            |
 
-### When to use form-level vs field-level
+### Когда использовать состояние формы vs поля {#when-to-use-form-level-vs-field-level}
 
-**Use form-level state for:**
+**Используйте состояние на уровне формы для:**
 
-- Submit button enabled/disabled state
-- "Save" button state
-- Overall form validity checks
-- Unsaved changes warnings
+- Состояние включения/отключения кнопки отправки
+- Состояние кнопки «Сохранить»
+- Проверки общей валидности формы
+- Предупреждения о несохранённых изменениях
 
-**Use field-level state for:**
+**Используйте состояние на уровне поля для:**
 
-- Individual field error messages
-- Field-specific styling
-- Per-field validation feedback
-- Conditional field availability
+- Сообщения об ошибках отдельного поля
+- Стилизация конкретного поля
+- Обратная связь по валидации для каждого поля
+- Условная доступность поля
 
-## State propagation
+## Распространение состояния {#state-propagation}
 
-Field state propagates from child fields up through parent field groups to the root form.
+Состояние поля распространяется от дочерних полей вверх через родительские группы полей до корневой формы.
 
-### How child state affects parent forms
+### Как состояние дочерних полей влияет на родительские формы {#how-child-state-affects-parent-forms}
 
-When a child field becomes invalid, its parent field group becomes invalid, and so does the root form. When a child becomes touched or dirty, the parent field group and root form reflect that change. This aggregation allows you to check validity at any level - field or entire form.
+Когда дочернее поле становится недействительным, его родительская группа полей становится недействительной, и корневая форма тоже. Когда дочерний элемент становится touched или dirty, родительская группа и корневая форма отражают это изменение. Такая агрегация позволяет проверять валидность на любом уровне — поля или всей формы.
 
 ```ts
 const userModel = signal({
@@ -427,9 +427,9 @@ userForm.profile.firstName().invalid() === true;
 // → userForm().invalid() === true
 ```
 
-### Hidden, disabled, and readonly fields
+### Скрытые, отключённые и поля только для чтения {#hidden-disabled-and-readonly-fields}
 
-Hidden, disabled, and readonly fields are non-interactive and don't affect parent form state:
+Скрытые, отключённые и поля только для чтения не являются интерактивными и не влияют на состояние родительской формы:
 
 ```ts
 const orderModel = signal({
@@ -443,17 +443,17 @@ const orderForm = form(orderModel, (schemaPath) => {
 });
 ```
 
-In this example, when `shippingAddress` is hidden, it doesn't affect form validity. As a result, even if `shippingAddress` is empty and required, the form can be valid.
+В этом примере когда `shippingAddress` скрыт, он не влияет на валидность формы. В результате, даже если `shippingAddress` пуст и обязателен, форма может быть действительной.
 
-This behavior prevents hidden, disabled, or readonly fields from blocking form submission or affecting validation, touched, and dirty state.
+Это поведение предотвращает блокировку отправки формы или влияние на состояния валидации, touched и dirty скрытыми, отключёнными или полями только для чтения.
 
-## Using state in templates
+## Использование состояния в шаблонах {#using-state-in-templates}
 
-Field state signals integrate seamlessly with Angular templates, enabling reactive form user experiences without manual event handling.
+Сигналы состояния поля легко интегрируются с шаблонами Angular, обеспечивая реактивный пользовательский опыт без ручной обработки событий.
 
-### Conditional error display
+### Условное отображение ошибок {#conditional-error-display}
 
-Show errors only after a user has interacted with a field:
+Показывайте ошибки только после взаимодействия пользователя с полем:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -482,11 +482,11 @@ export class Signup {
 }
 ```
 
-This pattern prevents showing errors before users have had a chance to interact with the field. Errors appear only after the user has focused and then left the field.
+Этот паттерн предотвращает отображение ошибок до того, как пользователь успел взаимодействовать с полем. Ошибки появляются только после того, как пользователь сфокусировался на поле и потерял фокус.
 
-### Conditional field availability
+### Условная доступность поля {#conditional-field-availability}
 
-Use the `hidden()` signal with `@if` to show or hide fields conditionally:
+Используйте сигнал `hidden()` с `@if` для условного отображения или скрытия полей:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -521,11 +521,11 @@ export class Order {
 }
 ```
 
-Hidden fields don't participate in validation, allowing the form to be submitted even if the hidden field would otherwise be invalid.
+Скрытые поля не участвуют в валидации, позволяя отправлять форму, даже если скрытое поле в противном случае было бы недействительным.
 
-### Tracking values for array fields
+### Отслеживание значений для полей-массивов {#tracking-values-for-array-fields}
 
-In signal forms, a `@for` block over a set of fields should be tracked by field identity.
+В сигнальных формах блок `@for` по набору полей должен отслеживаться по идентификатору поля.
 
 ```angular-ts
 @Component({
@@ -542,17 +542,17 @@ export class App {
 }
 ```
 
-The forms system is already tracking the model values within the array and maintaining a stable identity of the fields it creates automatically.
+Система форм уже отслеживает значения модели в массиве и автоматически поддерживает стабильный идентификатор создаваемых полей.
 
-When an item changes, it may represent a new logical entity even if some of its properties look the same. Tracking by identity ensures the framework treats it as a distinct item rather than reusing existing UI elements. This prevents stateful elements, like form inputs, from being incorrectly shared and keeps bindings aligned with the correct part of the model.
+При изменении элемента он может представлять новую логическую сущность, даже если некоторые его свойства выглядят одинаково. Отслеживание по идентификатору гарантирует, что фреймворк обрабатывает его как отдельный элемент, а не повторно использует существующие элементы UI. Это предотвращает некорректное совместное использование состоятельных элементов, таких как поля ввода, и обеспечивает соответствие привязок правильной части модели.
 
-## Using field state in component logic
+## Использование состояния поля в логике компонента {#using-field-state-in-component-logic}
 
-Field state signals work with Angular's reactive primitives like `computed()` and `effect()` for advanced form logic.
+Сигналы состояния поля работают с реактивными примитивами Angular, такими как `computed()` и `effect()`, для реализации продвинутой логики форм.
 
-### Validation checks before submission
+### Проверки валидации перед отправкой {#validation-checks-before-submission}
 
-Check form validity in component methods:
+Проверяйте валидность формы в методах компонента:
 
 ```ts
 export class Registration {
@@ -583,11 +583,11 @@ export class Registration {
 }
 ```
 
-This ensures only valid, fully-validated data reaches your API.
+Это гарантирует, что только действительные, полностью проверенные данные достигают вашего API.
 
-### Derived state with computed
+### Производное состояние с computed {#derived-state-with-computed}
 
-Create computed signals based on field state to automatically update when the underlying field state changes:
+Создавайте вычисляемые сигналы на основе состояния поля, автоматически обновляющиеся при изменении базового состояния:
 
 ```ts
 export class Password {
@@ -612,13 +612,13 @@ export class Password {
 }
 ```
 
-### Programmatic state changes
+### Программные изменения состояния {#programmatic-state-changes}
 
-While field state typically updates through user interactions (typing, focusing, blurring), you sometimes need to control it programmatically. Common scenarios include form submission and resetting forms.
+Хотя состояние поля обычно обновляется через взаимодействия пользователя (ввод, фокус, потеря фокуса), иногда нужно управлять им программно. Распространённые сценарии — отправка формы и её сброс.
 
-#### Form submission
+#### Отправка формы {#form-submission}
 
-Signal Forms provides a `FormRoot` directive that simplifies form submission. It automatically prevents the default browser form submission behavior and sets the `novalidate` attribute on the `<form>` element.
+Signal Forms предоставляет директиву `FormRoot`, упрощающую отправку формы. Она автоматически предотвращает стандартное поведение браузера при отправке и устанавливает атрибут `novalidate` на элемент `<form>`.
 
 ```angular-ts
 @Component({
@@ -656,13 +656,13 @@ export class Registration {
 }
 ```
 
-When you use `FormRoot`, submitting the form automatically calls the `submit()` function, which marks all fields as touched (revealing validation errors) and executes your `action` callback if the form is valid.
+При использовании `FormRoot` отправка формы автоматически вызывает функцию `submit()`, которая помечает все поля как touched (раскрывая ошибки валидации) и выполняет обратный вызов `action`, если форма действительна.
 
-You can also submit a form manually, without using the directive, by calling `submit(this.registrationForm)`. When explicitly calling the `submit` function like this, you can pass a `FormSubmitOptions` to override the default `submission` logic for the form: `submit(this.registrationForm, {action: () => /* ... */ })`.
+Также можно отправить форму вручную, без директивы, вызвав `submit(this.registrationForm)`. При явном вызове функции `submit` можно передать `FormSubmitOptions` для переопределения логики `submission` формы по умолчанию: `submit(this.registrationForm, {action: () => /* ... */ })`.
 
-#### Resetting forms after submission
+#### Сброс форм после отправки {#resetting-forms-after-submission}
 
-After successfully submitting a form, you may want to return it to its initial state - clearing both user interaction history and field values. The `reset()` method clears the touched and dirty flags. You can also pass an optional value to `reset()` to update the model data:
+После успешной отправки формы может потребоваться вернуть её в начальное состояние — очистив как историю взаимодействий пользователя, так и значения полей. Метод `reset()` сбрасывает флаги touched и dirty. Также можно передать необязательное значение в `reset()` для обновления данных модели:
 
 ```ts
 export class Contact {
@@ -680,11 +680,11 @@ export class Contact {
 }
 ```
 
-This ensures the form is ready for new input without showing stale error messages or dirty state indicators.
+Это гарантирует готовность формы к новому вводу без отображения устаревших сообщений об ошибках или индикаторов dirty-состояния.
 
-## Styling based on validation state
+## Стилизация на основе состояния валидации {#styling-based-on-validation-state}
 
-You can apply custom styles to your form by binding CSS classes based on the validation state:
+Можно применять пользовательские стили к форме, привязывая CSS-классы на основе состояния валидации:
 
 ```angular-ts
 import {Component, signal} from '@angular/core';
@@ -719,16 +719,16 @@ export class StyleExample {
 }
 ```
 
-Checking both `touched()` and validation state ensures styles only appear after the user has interacted with the field.
+Проверка как `touched()`, так и состояния валидации гарантирует, что стили появляются только после взаимодействия пользователя с полем.
 
-## Next steps
+## Следующие шаги {#next-steps}
 
-This guide covered validation and availability status handling, interaction tracking and field state propagation. Related guides explore other aspects of Signal Forms:
+В этом руководстве рассмотрены обработка статусов валидации и доступности, отслеживание взаимодействий и распространение состояния поля. Связанные руководства охватывают другие аспекты Signal Forms:
 
 <!-- TODO: UNCOMMENT WHEN THE GUIDES ARE AVAILABLE -->
 <docs-pill-row>
-  <docs-pill href="guide/forms/signals/models" title="Form models" />
-  <docs-pill href="guide/forms/signals/validation" title="Validation" />
-  <docs-pill href="guide/forms/signals/custom-controls" title="Custom controls" />
+  <docs-pill href="guide/forms/signals/models" title="Модели форм" />
+  <docs-pill href="guide/forms/signals/validation" title="Валидация" />
+  <docs-pill href="guide/forms/signals/custom-controls" title="Пользовательские элементы управления" />
   <!-- <docs-pill href="guide/forms/signals/arrays" title="Working with Arrays" /> -->
 </docs-pill-row>

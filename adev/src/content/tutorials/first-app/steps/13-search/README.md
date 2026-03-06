@@ -1,67 +1,67 @@
-# Add the search feature to your app
+# Добавление функции поиска в приложение {#add-the-search-feature-to-your-app}
 
-This tutorial lesson demonstrates how to add a search functionality to your Angular app.
+В этом уроке показано, как добавить функцию поиска в Angular-приложение.
 
-The app will enable users to search through the data provided by your app and display only the results that match the entered term.
+Приложение позволит пользователям искать по данным, предоставляемым приложением, и отображать только те результаты, которые соответствуют введённому запросу.
 
 <docs-video src="https://www.youtube.com/embed/5K10oYJ5Y-E?si=TiuNKx_teR9baO7k&amp;start=457"/>
 
-IMPORTANT: We recommend using your local environment for this step of the tutorial.
+IMPORTANT: Для этого шага урока рекомендуется использовать локальную среду.
 
-## What you'll learn
+## Что вы узнаете {#what-youll-learn}
 
-- Your app will use data from a form to search for matching housing locations
-- Your app will display only the matching housing locations
+- Приложение будет использовать данные из формы для поиска подходящих объектов жилья
+- Приложение будет отображать только совпадающие объекты жилья
 
 <docs-workflow>
 
-<docs-step title="Update the home component properties">
-In this step, you'll update the `Home` class to store data in a new array property that you will use for filtering.
+<docs-step title="Обновите свойства Компонента home">
+На этом шаге вы обновите класс `Home` для хранения данных в новом свойстве-массиве, который будет использоваться для фильтрации.
 
-1. In `src/app/home/home.ts`, add new property to the class called `filteredLocationList`.
+1. В `src/app/home/home.ts` добавьте новое свойство в класс с именем `filteredLocationList`.
 
    <docs-code header="Add the filteredLocationList property in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[27]"/>
 
-   The `filteredLocationList` hold the values that match the search criteria entered by the user.
+   `filteredLocationList` хранит значения, соответствующие критериям поиска, введённым пользователем.
 
-1. The `filteredLocationList` should contain the total set of housing locations values by default when the page loads. Update the `constructor` for the `Home` to set the value.
+1. `filteredLocationList` должен по умолчанию содержать полный набор объектов жилья при загрузке страницы. Обновите `constructor` для `Home`, чтобы установить значение.
 
    <docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[29,32]"/>
 
 </docs-step>
 
-<docs-step title="Update the home component template">
-The `Home` already contains an input field that you will use to capture input from the user. That string text will be used to filter the results.
+<docs-step title="Обновите Шаблон Компонента home">
+`Home` уже содержит поле ввода, которое будет использоваться для получения пользовательского ввода. Эта строка текста будет использоваться для фильтрации результатов.
 
-1. Update the `Home` template to include a template variable in the `input` element called `#filter`.
+1. Обновите Шаблон `Home`, включив переменную Шаблона в элемент `input` с именем `#filter`.
 
    <docs-code language="angular-ts" header="Add a template variable to the input HTML element in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[12]"/>
-   This example uses a [template reference variable](guide/templates) to get access to the `input` element as its value.
+   В этом примере используется [переменная шаблонной ссылки](guide/templates) для получения доступа к элементу `input` и его значению.
 
-1. Next, update the component template to attach an event handler to the "Search" button.
+1. Далее обновите Шаблон Компонента, привязав обработчик события к кнопке «Search».
 
    <docs-code language="angular-ts" header="Bind the button click event to a method in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[13]"/>
 
-   By binding to the `click` event on the `button` element, you are able to call the `filterResults` function. The argument to the function is the `value` property of the `filter` template variable. Specifically, the `.value` property from the `input` HTML element.
+   Привязываясь к событию `click` элемента `button`, вы можете вызвать функцию `filterResults`. Аргументом функции является свойство `value` переменной Шаблона `filter`. Конкретно — свойство `.value` HTML-элемента `input`.
 
-1. The last template update is to the `@for` directive. Update the `@for` to iterate over values from the `filteredLocationList` array.
+1. Последнее обновление Шаблона касается директивы `@for`. Обновите `@for` для итерации по значениям из массива `filteredLocationList`.
 
    <docs-code header="Update the @for template directive in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[17,19]" language="html"/>
 
 </docs-step>
 
-<docs-step title="Implement the event handler function">
-The template has been updated to bind the `filterResults` function to the `click` event. Next, your task is to implement the `filterResults` function in the `Home` class.
+<docs-step title="Реализуйте функцию обработчика событий">
+Шаблон был обновлён для привязки функции `filterResults` к событию `click`. Далее необходимо реализовать функцию `filterResults` в классе `Home`.
 
-1.  Update the `Home` class to include the implementation of the `filterResults` function.
+1.  Обновите класс `Home`, включив реализацию функции `filterResults`.
 
     <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[34,43]"/>
 
-    This function uses the `String` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
+    Эта функция использует функцию `filter` объекта `String` для сравнения значения параметра `text` со свойством `housingLocation.city`. Для интересного упражнения можно обновить эту функцию для сравнения с любым свойством или несколькими свойствами.
 
-1.  Save your code.
+1.  Сохраните код.
 
-1.  Refresh the browser and confirm that you can search the housing location data by city when you click the "Search" button after entering text.
+1.  Обновите браузер и убедитесь, что после ввода текста и нажатия кнопки «Search» можно искать данные объектов жилья по городу.
 
        <img alt="filtered search results based on user input" src="assets/images/tutorials/first-app/homes-app-lesson-13-step-3.png">
 
@@ -69,11 +69,11 @@ The template has been updated to bind the `filterResults` function to the `click
 
 </docs-workflow>
 
-SUMMARY: In this lesson, you updated your app to use template variables to interact with template values, and add search functionality using event binding and array functions.
+SUMMARY: В этом уроке вы обновили приложение для использования переменных Шаблона для взаимодействия со значениями Шаблона и добавили функцию поиска с помощью Привязки событий и функций массивов.
 
-For more information about the topics covered in this lesson, visit:
+Для получения дополнительной информации по темам, рассмотренным в этом уроке, посетите:
 
 <docs-pill-row>
-  <docs-pill href="guide/templates" title="Template Variables"/>
-  <docs-pill href="guide/templates/event-listeners" title="Event Handling"/>
+  <docs-pill href="guide/templates" title="Переменные Шаблона"/>
+  <docs-pill href="guide/templates/event-listeners" title="Обработка событий"/>
 </docs-pill-row>

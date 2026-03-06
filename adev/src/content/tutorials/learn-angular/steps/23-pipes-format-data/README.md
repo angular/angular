@@ -1,28 +1,28 @@
-# Formatting data with pipes
+# Форматирование данных с помощью Pipe {#formatting-data-with-pipes}
 
-You can take your use of pipes even further by configuring them. Pipes can be configured by passing options to them.
+Можно расширить использование Pipe, настраивая их. Pipe можно настраивать, передавая им параметры.
 
-NOTE: Learn more about [formatting data with pipes in the in-depth guide](/guide/templates/pipes).
+NOTE: Подробнее о [форматировании данных с помощью Pipe в подробном руководстве](/guide/templates/pipes).
 
-In this activity, you will work with some pipes and pipe parameters.
+В этом упражнении вы будете работать с некоторыми Pipe и их параметрами.
 
 <hr>
 
-To pass parameters to a pipe, use the `:` syntax followed by the parameter value. Here's an example:
+Чтобы передать параметры Pipe, используйте синтаксис `:` с последующим значением параметра. Пример:
 
 ```angular-html
 template: `{{ date | date: 'medium' }}`;
 ```
 
-The output is `Jun 15, 2015, 9:43:11 PM`.
+Вывод: `Jun 15, 2015, 9:43:11 PM`.
 
-Time to customize some pipe output:
+Пора настроить вывод некоторых Pipe:
 
 <docs-workflow>
 
-<docs-step title="Format a number with `DecimalPipe`">
+<docs-step title="Форматирование числа с помощью `DecimalPipe`">
 
-In `app.ts`, update the template to include parameter for the `decimal` pipe.
+В `app.ts` обновите Шаблон, включив параметр для Pipe `decimal`.
 
 ```angular-html {highlight:[3]}
 template: ` ...
@@ -30,13 +30,13 @@ template: ` ...
 `
 ```
 
-NOTE: What's that format? The parameter for the `DecimalPipe` is called `digitsInfo`, this parameter uses the format: `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`
+NOTE: Что это за формат? Параметр для `DecimalPipe` называется `digitsInfo` и использует формат: `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`
 
 </docs-step>
 
-<docs-step title="Format a date with `DatePipe`">
+<docs-step title="Форматирование даты с помощью `DatePipe`">
 
-Now, update the template to use the `date` pipe.
+Теперь обновите Шаблон, используя Pipe `date`.
 
 ```angular-html {highlight:[3]}
 template: ` ...
@@ -44,13 +44,13 @@ template: ` ...
 `
 ```
 
-For extra fun, try some different parameters for `date`. More information can be found in the [Angular docs](guide/templates/pipes).
+Для дополнительного интереса попробуйте разные параметры для `date`. Дополнительную информацию можно найти в [документации Angular](guide/templates/pipes).
 
 </docs-step>
 
-<docs-step title="Format a currency with `CurrencyPipe`">
+<docs-step title="Форматирование валюты с помощью `CurrencyPipe`">
 
-For your last task, update the template to use the `currency` pipe.
+В качестве последнего задания обновите Шаблон, используя Pipe `currency`.
 
 ```angular-html {highlight:[3]}
 template: ` ...
@@ -58,14 +58,14 @@ template: ` ...
 `
 ```
 
-You can also try different parameters for `currency`. More information can be found in the [Angular docs](guide/templates/pipes).
+Также можно попробовать разные параметры для `currency`. Дополнительную информацию можно найти в [документации Angular](guide/templates/pipes).
 
 </docs-step>
 
 </docs-workflow>
 
-Great work with pipes. You've made some great progress so far.
+Отличная работа с Pipe! Вы делаете значительные успехи.
 
-There are even more built-in pipes that you can use in your applications. You can find the list in the [Angular documentation](guide/templates/pipes).
+В Angular есть ещё больше встроенных Pipe, которые можно использовать в приложениях. Полный список доступен в [документации Angular](guide/templates/pipes).
 
-In the case that the built-in pipes don't cover your needs, you can also create a custom pipe. Check out the next lesson to find out more.
+Если встроенных Pipe недостаточно для ваших нужд, можно также создать собственный Pipe. Подробности — в следующем уроке.

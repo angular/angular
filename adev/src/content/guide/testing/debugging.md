@@ -1,20 +1,20 @@
-# Debugging tests
+# Отладка тестов {#debugging-tests}
 
-If your tests aren't working as you expect, you can debug them in both the default Node.js environment and in a real browser.
+Если тесты работают не так, как ожидается, их можно отлаживать как в стандартной среде Node.js, так и в реальном браузере.
 
-## Debugging in Node.js
+## Отладка в Node.js {#debugging-in-nodejs}
 
-Debugging in the default Node.js environment is often the quickest way to diagnose issues that are not related to browser-specific APIs or rendering.
+Отладка в стандартной среде Node.js зачастую является самым быстрым способом диагностики проблем, не связанных с браузерными API или рендерингом.
 
-1.  Run the `ng test` command with the `--debug` flag:
+1.  Запустите команду `ng test` с флагом `--debug`:
     ```shell
     ng test --debug
     ```
-2.  The test runner will start in debug mode and wait for a debugger to attach.
-3.  You can now attach your preferred debugger. For example, you can use the built-in Node.js debugger in VS Code or the Chrome DevTools for Node.js.
+2.  Тест-раннер запустится в режиме отладки и будет ждать подключения отладчика.
+3.  Теперь можно подключить предпочитаемый отладчик. Например, встроенный отладчик Node.js в VS Code или Chrome DevTools для Node.js.
 
-## Debugging in a browser
+## Отладка в браузере {#debugging-in-a-browser}
 
-The same way you start a debugging session with in Node, you can use `ng test` with the `--debug` flag with Vitest and [browser mode](/guide/testing/migrating-to-vitest#5-configure-browser-mode-optional).
+Так же, как и при запуске сеанса отладки в Node, можно использовать `ng test` с флагом `--debug` вместе с Vitest и [режимом браузера](/guide/testing/migrating-to-vitest#5-configure-browser-mode-optional).
 
-The test runner will start in debug mode and wait for you to open the browser devtools to debug the tests.
+Тест-раннер запустится в режиме отладки и будет ждать, пока вы откроете инструменты разработчика браузера для отладки тестов.

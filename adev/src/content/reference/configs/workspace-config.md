@@ -1,87 +1,87 @@
-# Angular workspace configuration
+# Конфигурация рабочего пространства Angular {#angular-workspace-configuration}
 
-The `angular.json` file at the root level of an Angular workspace provides workspace-wide and project-specific configuration defaults. These are used for build and development tools provided by the Angular CLI.
-Path values given in the configuration are relative to the root workspace directory.
+Файл `angular.json` на корневом уровне рабочего пространства Angular содержит значения конфигурации по умолчанию на уровне рабочего пространства и отдельных проектов. Они используются инструментами сборки и разработки, предоставляемыми Angular CLI.
+Значения путей в конфигурации указываются относительно корневого каталога рабочего пространства.
 
-## General JSON structure
+## Общая структура JSON {#general-json-structure}
 
-At the top-level of `angular.json`, a few properties configure the workspace and a `projects` section contains the remaining per-project configuration options.
-You can override Angular CLI defaults set at the workspace level through defaults set at the project level.
-You can also override defaults set at the project level using the command line.
+На верхнем уровне `angular.json` несколько свойств настраивают рабочее пространство, а раздел `projects` содержит остальные параметры конфигурации для каждого проекта.
+Можно переопределить значения Angular CLI по умолчанию, установленные на уровне рабочего пространства, с помощью значений на уровне проекта.
+Также можно переопределить значения по умолчанию на уровне проекта с помощью командной строки.
 
-The following properties, at the top-level of the file, configure the workspace.
+Следующие свойства на верхнем уровне файла настраивают рабочее пространство.
 
-| Properties       | Details                                                                                                                                                                                        |
-| :--------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `version`        | The configuration-file version.                                                                                                                                                                |
-| `newProjectRoot` | Path where new projects are created through tools like `ng generate application` or `ng generate library`. Path can be absolute or relative to the workspace directory. Defaults to `projects` |
-| `cli`            | A set of options that customize the [Angular CLI](tools/cli). See [Angular CLI configuration options](#angular-cli-configuration-options) below.                                               |
-| `schematics`     | A set of [schematics](tools/cli/schematics) that customize the `ng generate` sub-command option defaults for this workspace. See [schematics](#schematics) below.                              |
-| `projects`       | Contains a subsection for each application or library in the workspace, with project-specific configuration options.                                                                           |
+| Свойства         | Подробности                                                                                                                                                                                                       |
+| :--------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `version`        | Версия файла конфигурации.                                                                                                                                                                                        |
+| `newProjectRoot` | Путь, по которому создаются новые проекты с помощью инструментов вроде `ng generate application` или `ng generate library`. Путь может быть абсолютным или относительным каталогу рабочего пространства. По умолчанию: `projects` |
+| `cli`            | Набор параметров для настройки [Angular CLI](tools/cli). См. [параметры конфигурации Angular CLI](#angular-cli-configuration-options) ниже.                                                                        |
+| `schematics`     | Набор [схем](tools/cli/schematics), настраивающих значения по умолчанию для подкоманд `ng generate` в этом рабочем пространстве. См. [schemes](#schematics) ниже.                                                  |
+| `projects`       | Содержит подраздел для каждого приложения или библиотеки в рабочем пространстве со специфичными для проекта параметрами конфигурации.                                                                              |
 
-The initial application that you create with `ng new app-name` is listed under "projects":
+Исходное приложение, созданное с помощью `ng new app-name`, указывается в разделе "projects":
 
-When you create a library project with `ng generate library`, the library project is also added to the `projects` section.
+При создании библиотечного проекта с помощью `ng generate library` библиотечный проект также добавляется в раздел `projects`.
 
-HELPFUL: The `projects` section of the configuration file does not correspond exactly to the workspace file structure.
+ПОДСКАЗКА: Раздел `projects` файла конфигурации не соответствует точно структуре файлов рабочего пространства.
 
 <!-- markdownlint-disable-next-line MD032 -->
 
-- The initial application created by `ng new` is at the top level of the workspace file structure.
-- Other applications and libraries are under the `projects` directory by default.
+- Исходное приложение, созданное с помощью `ng new`, находится на верхнем уровне структуры файлов рабочего пространства.
+- Другие приложения и библиотеки по умолчанию находятся в каталоге `projects`.
 
-For more information, see [Workspace and project file structure](reference/configs/file-structure).
+Подробнее см. в разделе [Структура файлов рабочего пространства и проекта](reference/configs/file-structure).
 
-## Angular CLI configuration options
+## Параметры конфигурации Angular CLI {#angular-cli-configuration-options}
 
-The following properties are a set of options that customize the Angular CLI.
+Следующие свойства представляют набор параметров для настройки Angular CLI.
 
-| Property               | Details                                                                                                                                                                    | Value type                                  | Default value |
-| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------ | :------------ |
-| `analytics`            | Share anonymous usage data with the Angular Team. A boolean value indicates whether or not to share data, while a UUID string shares data using a pseudonymous identifier. | `boolean` \| `string`                       | `false`       |
-| `cache`                | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](tools/cli/cli-builder).                                                                          | [Cache options](#cache-options)             | `{}`          |
-| `schematicCollections` | List schematics collections to use in `ng generate`.                                                                                                                       | `string[]`                                  | `[]`          |
-| `packageManager`       | The preferred package manager tool to use.                                                                                                                                 | `npm` \| `cnpm` \| `pnpm` \| `yarn`\| `bun` | `npm`         |
-| `warnings`             | Control Angular CLI specific console warnings.                                                                                                                             | [Warnings options](#warnings-options)       | `{}`          |
+| Свойство               | Подробности                                                                                                                                                                                 | Тип значения                                | Значение по умолчанию |
+| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------ | :-------------------- |
+| `analytics`            | Передача анонимных данных об использовании команде Angular. Логическое значение указывает, передавать ли данные, а строка UUID — передавать данные с псевдонимным идентификатором. | `boolean` \| `string`                       | `false`               |
+| `cache`                | Управление [постоянным дисковым кэшем](cli/cache), используемым [сборщиками Angular CLI](tools/cli/cli-builder).                                                                            | [Параметры кэша](#cache-options)            | `{}`                  |
+| `schematicCollections` | Список коллекций схем для использования в `ng generate`.                                                                                                                                    | `string[]`                                  | `[]`                  |
+| `packageManager`       | Предпочтительный менеджер пакетов.                                                                                                                                                          | `npm` \| `cnpm` \| `pnpm` \| `yarn`\| `bun` | `npm`                 |
+| `warnings`             | Управление специфичными для Angular CLI предупреждениями консоли.                                                                                                                           | [Параметры предупреждений](#warnings-options) | `{}`                |
 
-### Cache options
+### Параметры кэша {#cache-options}
 
-| Property      | Details                                                                                                                                                                                                                                       | Value type               | Default value    |
-| :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------- | :--------------- |
-| `enabled`     | Configure whether disk caching is enabled for builds.                                                                                                                                                                                         | `boolean`                | `true`           |
-| `environment` | Configure in which environment disk cache is enabled.<br><br>_ `ci` enables caching only in continuous integration (CI) environments.<br>_ `local` enables caching only _outside_ of CI environments.<br>\* `all` enables caching everywhere. | `local` \| `ci` \| `all` | `local`          |
-| `path`        | The directory used to stored cache results.                                                                                                                                                                                                   | `string`                 | `.angular/cache` |
+| Свойство      | Подробности                                                                                                                                                                                                                                       | Тип значения             | Значение по умолчанию |
+| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------- | :-------------------- |
+| `enabled`     | Настройка включения дискового кэширования для сборок.                                                                                                                                                                                             | `boolean`                | `true`                |
+| `environment` | Настройка среды, в которой включён дисковый кэш.<br><br>_ `ci` — кэширование только в средах непрерывной интеграции (CI).<br>_ `local` — кэширование только _вне_ CI-сред.<br>\* `all` — кэширование везде. | `local` \| `ci` \| `all` | `local`               |
+| `path`        | Каталог для хранения результатов кэша.                                                                                                                                                                                                            | `string`                 | `.angular/cache`      |
 
-### Warnings options
+### Параметры предупреждений {#warnings-options}
 
-| Property          | Details                                                                         | Value type | Default value |
-| :---------------- | :------------------------------------------------------------------------------ | :--------- | :------------ |
-| `versionMismatch` | Show a warning when the global Angular CLI version is newer than the local one. | `boolean`  | `true`        |
+| Свойство          | Подробности                                                                                              | Тип значения | Значение по умолчанию |
+| :---------------- | :------------------------------------------------------------------------------------------------------- | :--------- | :-------------------- |
+| `versionMismatch` | Показывать предупреждение, когда глобальная версия Angular CLI новее локальной. | `boolean`  | `true`                |
 
-## Project configuration options
+## Параметры конфигурации проекта {#project-configuration-options}
 
-The following top-level configuration properties are available for each project, under `projects['project-name']`.
+Следующие параметры конфигурации верхнего уровня доступны для каждого проекта в разделе `projects['project-name']`.
 
-| Property      | Details                                                                                                                                                                              | Value type                                                      | Default value   |
-| :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------- | :-------------- |
-| `root`        | The root directory for this project's files, relative to the workspace directory. Empty for the initial application, which resides at the top level of the workspace.                | `string`                                                        | None (required) |
-| `projectType` | One of "application" or "library" An application can run independently in a browser, while a library cannot.                                                                         | `application` \| `library`                                      | None (required) |
-| `sourceRoot`  | The root directory for this project's source files.                                                                                                                                  | `string`                                                        | `''`            |
-| `prefix`      | A string that Angular prepends to selectors when generating new components, directives, and pipes using `ng generate`. Can be customized to identify an application or feature area. | `string`                                                        | `'app'`         |
-| `schematics`  | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See the [Generation schematics](#schematics) section.                             | See [schematics](#schematics)                                   | `{}`            |
-| `architect`   | Configuration defaults for Architect builder targets for this project.                                                                                                               | See [Configuring builder targets](#configuring-builder-targets) | `{}`            |
+| Свойство      | Подробности                                                                                                                                                                                   | Тип значения                                                    | Значение по умолчанию   |
+| :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------- | :---------------------- |
+| `root`        | Корневой каталог файлов проекта относительно каталога рабочего пространства. Пусто для исходного приложения, которое находится на верхнем уровне рабочего пространства.                       | `string`                                                        | Нет (обязательно)       |
+| `projectType` | Одно из значений: "application" или "library". Приложение может работать самостоятельно в браузере, библиотека — нет.                                                                          | `application` \| `library`                                      | Нет (обязательно)       |
+| `sourceRoot`  | Корневой каталог исходных файлов проекта.                                                                                                                                                     | `string`                                                        | `''`                    |
+| `prefix`      | Строка, которую Angular добавляет перед селекторами при генерации новых компонентов, директив и Pipe с помощью `ng generate`. Можно настроить для идентификации приложения или области функций. | `string`                                                        | `'app'`                 |
+| `schematics`  | Набор схем, настраивающих значения по умолчанию подкоманд `ng generate` для этого проекта. См. раздел [Схемы генерации](#schematics).                                                         | См. [schematics](#schematics)                                   | `{}`                    |
+| `architect`   | Значения по умолчанию конфигурации для целей сборщика Architect этого проекта.                                                                                                               | См. [Настройка целей сборщика](#configuring-builder-targets)    | `{}`                    |
 
-## Schematics
+## Схемы {#schematics}
 
-[Angular schematics](tools/cli/schematics) are instructions for modifying a project by adding new files or modifying existing files.
-These can be configured by mapping the schematic name to a set of default options.
+[Схемы Angular](tools/cli/schematics) — это инструкции по изменению проекта путём добавления новых файлов или изменения существующих.
+Их можно настроить, сопоставив имя схемы с набором параметров по умолчанию.
 
-The "name" of a schematic is in the format: `<schematic-package>:<schematic-name>`.
-Schematics for the default Angular CLI `ng generate` sub-commands are collected in the package [`@schematics/angular`](https://github.com/angular/angular-cli/blob/main/packages/schematics/angular/application/schema.json).
-For example, the schematic for generating a component with `ng generate component` is `@schematics/angular:component`.
+«Имя» схемы имеет формат: `<schematic-package>:<schematic-name>`.
+Схемы для подкоманд `ng generate` Angular CLI по умолчанию собраны в пакете [`@schematics/angular`](https://github.com/angular/angular-cli/blob/main/packages/schematics/angular/application/schema.json).
+Например, схема для генерации компонента с помощью `ng generate component` — это `@schematics/angular:component`.
 
-The fields given in the schematic's schema correspond to the allowed command-line argument values and defaults for the Angular CLI sub-command options.
-You can update your workspace schema file to set a different default for a sub-command option. For example, to disable `standalone` in `ng generate component` by default:
+Поля, указанные в схеме схемы, соответствуют допустимым значениям аргументов командной строки и значениям по умолчанию для параметров подкоманд Angular CLI.
+Вы можете обновить файл схемы рабочего пространства, чтобы задать другое значение по умолчанию для параметра подкоманды. Например, чтобы отключить `standalone` в `ng generate component` по умолчанию:
 
 ```json
 {
@@ -97,51 +97,51 @@ You can update your workspace schema file to set a different default for a sub-c
 }
 ```
 
-## Configuring CLI builders
+## Настройка сборщиков CLI {#configuring-cli-builders}
 
-Architect is the tool that the Angular CLI uses to perform complex tasks, such as compilation and test running.
-Architect is a shell that runs a specified builder to perform a given task, according to a target configuration.
-You can define and configure new builders and targets to extend the Angular CLI.
-See [Angular CLI Builders](tools/cli/cli-builder).
+Architect — это инструмент, используемый Angular CLI для выполнения сложных задач, таких как компиляция и запуск тестов.
+Architect — это оболочка, запускающая указанный сборщик для выполнения заданной задачи согласно конфигурации цели.
+Вы можете определять и настраивать новые сборщики и цели для расширения Angular CLI.
+См. раздел [Сборщики Angular CLI](tools/cli/cli-builder).
 
-### Default Architect builders and targets
+### Сборщики и цели Architect по умолчанию {#default-architect-builders-and-targets}
 
-Angular defines default builders for use with specific commands, or with the general `ng run` command.
-The JSON schemas that define the options and defaults for each of these builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/builders.json) package.
-The schemas configure options for the following builders.
+Angular определяет сборщики по умолчанию для использования с конкретными командами или с общей командой `ng run`.
+JSON-схемы, определяющие параметры и значения по умолчанию для каждого из этих сборщиков, собраны в пакете [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/build_angular/builders.json).
+Схемы настраивают параметры для следующих сборщиков.
 
-### Configuring builder targets
+### Настройка целей сборщика {#configuring-builder-targets}
 
-The `architect` section of `angular.json` contains a set of Architect targets.
-Many of the targets correspond to the Angular CLI commands that run them.
-Other targets can be executed using the `ng run` command, and you can define your own targets.
+Раздел `architect` в `angular.json` содержит набор целей Architect.
+Многие из целей соответствуют командам Angular CLI, которые их запускают.
+Другие цели можно выполнить с помощью команды `ng run`, и вы можете определять собственные цели.
 
-Each target object specifies the `builder` for that target, which is the npm package for the tool that Architect runs.
-Each target also has an `options` section that configures default options for the target, and a `configurations` section that names and specifies alternative configurations for the target.
-See the example in [Build target](#build-target) below.
+Каждый объект цели указывает `builder` для этой цели — npm-пакет инструмента, который запускает Architect.
+Каждая цель также имеет раздел `options` с параметрами по умолчанию для цели и раздел `configurations` с именованными альтернативными конфигурациями.
+См. пример в разделе [Цель сборки](#build-target) ниже.
 
-| Property       | Details                                                                                                                                                                                              |
-| :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `build`        | Configures defaults for options of the `ng build` command. See the [Build target](#build-target) section for more information.                                                                       |
-| `serve`        | Overrides build defaults and supplies extra serve defaults for the `ng serve` command. Besides the options available for the `ng build` command, it adds options related to serving the application. |
-| `e2e`          | Overrides build defaults for building end-to-end testing applications using the `ng e2e` command.                                                                                                    |
-| `test`         | Overrides build defaults for test builds and supplies extra test-running defaults for the `ng test` command.                                                                                         |
-| `lint`         | Configures defaults for options of the `ng lint` command, which performs static code analysis on project source files.                                                                               |
-| `extract-i18n` | Configures defaults for options of the `ng extract-i18n` command, which extracts localized message strings from source code and outputs translation files for internationalization.                  |
+| Свойство       | Подробности                                                                                                                                                                                                 |
+| :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `build`        | Настраивает значения по умолчанию для параметров команды `ng build`. Подробнее см. в разделе [Цель сборки](#build-target).                                                                                   |
+| `serve`        | Переопределяет значения по умолчанию сборки и добавляет значения по умолчанию обслуживания для команды `ng serve`. Помимо параметров команды `ng build`, добавляет параметры, связанные с обслуживанием приложения. |
+| `e2e`          | Переопределяет значения по умолчанию сборки для построения приложений сквозного тестирования с использованием команды `ng e2e`.                                                                              |
+| `test`         | Переопределяет значения по умолчанию сборки для тестовых сборок и добавляет значения по умолчанию запуска тестов для команды `ng test`.                                                                     |
+| `lint`         | Настраивает значения по умолчанию для параметров команды `ng lint`, которая выполняет статический анализ кода исходных файлов проекта.                                                                       |
+| `extract-i18n` | Настраивает значения по умолчанию для параметров команды `ng extract-i18n`, которая извлекает локализованные строки сообщений из исходного кода и создаёт файлы перевода для интернационализации.            |
 
-HELPFUL: All options in the configuration file must use `camelCase`, rather than `dash-case` as used on the command line.
+ПОДСКАЗКА: Все параметры в файле конфигурации должны использовать `camelCase`, а не `dash-case`, используемый в командной строке.
 
-## Build target
+## Цель сборки {#build-target}
 
-Each target under `architect` has the following properties:
+Каждая цель в разделе `architect` имеет следующие свойства:
 
-| Property         | Details                                                                                                                                                                                                                                                       |
-| :--------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `builder`        | The CLI builder used to create this target in the form of `<package-name>:<builder-name>`.                                                                                                                                                                    |
-| `options`        | Build target default options.                                                                                                                                                                                                                                 |
-| `configurations` | Alternative configurations for executing the target. Each configuration sets the default options for that intended environment, overriding the associated value under `options`. See [Alternate build configurations](#alternate-build-configurations) below. |
+| Свойство         | Подробности                                                                                                                                                                                                                                                     |
+| :--------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `builder`        | Сборщик CLI, используемый для создания этой цели, в формате `<package-name>:<builder-name>`.                                                                                                                                                                    |
+| `options`        | Параметры по умолчанию цели сборки.                                                                                                                                                                                                                             |
+| `configurations` | Альтернативные конфигурации для выполнения цели. Каждая конфигурация задаёт параметры по умолчанию для предполагаемой среды, переопределяя связанное значение в разделе `options`. См. [Альтернативные конфигурации сборки](#alternate-build-configurations) ниже. |
 
-For example, to configure a build with optimizations disabled:
+Например, для настройки сборки с отключенными оптимизациями:
 
 ```json
 {
@@ -160,20 +160,20 @@ For example, to configure a build with optimizations disabled:
 }
 ```
 
-### Alternate build configurations
+### Альтернативные конфигурации сборки {#alternate-build-configurations}
 
-Angular CLI comes with two build configurations: `production` and `development`.
-By default, the `ng build` command uses the `production` configuration, which applies several build optimizations, including:
+Angular CLI поставляется с двумя конфигурациями сборки: `production` и `development`.
+По умолчанию команда `ng build` использует конфигурацию `production`, которая применяет несколько оптимизаций сборки, включая:
 
-- Bundling files
-- Minimizing excess whitespace
-- Removing comments and dead code
-- Minifying code to use short, mangled names
+- Бандлинг файлов
+- Минимизацию лишних пробелов
+- Удаление комментариев и мёртвого кода
+- Минификацию кода с использованием коротких искажённых имён
 
-You can define and name extra alternate configurations (such as `staging`, for instance) appropriate to your development process.
-You can select an alternate configuration by passing its name to the `--configuration` command line flag.
+Можно определять и именовать дополнительные альтернативные конфигурации (например, `staging`) в соответствии с процессом разработки.
+Альтернативную конфигурацию можно выбрать, передав её имя флагу командной строки `--configuration`.
 
-For example, to configure a build where optimization is enabled only for production builds (`ng build --configuration production`):
+Например, для настройки сборки, где оптимизация включена только для продакшен-сборок (`ng build --configuration production`):
 
 ```json
 {
@@ -197,62 +197,62 @@ For example, to configure a build where optimization is enabled only for product
 }
 ```
 
-You can also pass in more than one configuration name as a comma-separated list.
-For example, to apply both `staging` and `french` build configurations, use the command `ng build --configuration staging,french`.
-In this case, the command parses the named configurations from left to right.
-If multiple configurations change the same setting, the last-set value is the final one.
-In this example, if both `staging` and `french` configurations set the output path, the value in `french` would get used.
+Также можно передать несколько имён конфигураций в виде списка, разделённого запятыми.
+Например, для применения как конфигурации `staging`, так и `french` используйте команду `ng build --configuration staging,french`.
+В этом случае команда разбирает именованные конфигурации слева направо.
+Если несколько конфигураций изменяют одну и ту же настройку, используется последнее установленное значение.
+В этом примере, если обе конфигурации `staging` и `french` задают путь вывода, будет использоваться значение из `french`.
 
-### Extra build and test options
+### Дополнительные параметры сборки и тестирования {#extra-build-and-test-options}
 
-The configurable options for a default or targeted build generally correspond to the options available for the [`ng build`](cli/build), and [`ng test`](cli/test) commands.
-For details of those options and their possible values, see the [Angular CLI Reference](cli).
+Настраиваемые параметры для сборки по умолчанию или целевой сборки в целом соответствуют параметрам, доступным для команд [`ng build`](cli/build) и [`ng test`](cli/test).
+Подробнее об этих параметрах и их возможных значениях см. в [справочнике Angular CLI](cli).
 
-| Options properties         | Details                                                                                                                                                                                                                                                                  |
-| :------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `assets`                   | An object containing paths to static assets to serve with the application. The default paths point to the project's `public` directory. See more in the [Assets configuration](#assets-configuration) section.                                                           |
-| `styles`                   | An array of CSS files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors. See more in the [Styles and scripts configuration](#styles-and-scripts-configuration) section.                                      |
-| `stylePreprocessorOptions` | An object containing option-value pairs to pass to style preprocessors. See more in the [Styles and scripts configuration](#styles-and-scripts-configuration) section.                                                                                                   |
-| `scripts`                  | An object containing JavaScript files to add to the application. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. See more in the [Styles and scripts configuration](#styles-and-scripts-configuration) section.         |
-| `budgets`                  | Default size-budget type and thresholds for all or parts of your application. You can configure the builder to report a warning or an error when the output reaches or exceeds a threshold size. See [Configure size budgets](tools/cli/build#configuring-size-budgets). |
-| `fileReplacements`         | An object containing files and their compile-time replacements. See more in [Configure target-specific file replacements](tools/cli/environments#configure-environment-specific-defaults).                                                                               |
-| `index`                    | A base HTML document which loads the application. See more in [Index configuration](#index-configuration).                                                                                                                                                               |
-| `security`                 | An object containing the key `autoCsp` that can be set to `true` or `false`                                                                                                                                                                                              |
+| Параметры свойств          | Подробности                                                                                                                                                                                                                                                                     |
+| :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `assets`                   | Объект, содержащий пути к статическим ресурсам для обслуживания вместе с приложением. Пути по умолчанию указывают на каталог `public` проекта. Подробнее см. в разделе [Конфигурация ресурсов](#assets-configuration).                                                          |
+| `styles`                   | Массив CSS-файлов для добавления в глобальный контекст проекта. Angular CLI поддерживает импорты CSS и все основные препроцессоры CSS. Подробнее см. в разделе [Конфигурация стилей и скриптов](#styles-and-scripts-configuration).                                              |
+| `stylePreprocessorOptions` | Объект, содержащий пары параметр-значение для передачи препроцессорам стилей. Подробнее см. в разделе [Конфигурация стилей и скриптов](#styles-and-scripts-configuration).                                                                                                      |
+| `scripts`                  | Объект, содержащий JavaScript-файлы для добавления в приложение. Скрипты загружаются так же, как если бы они были добавлены в тег `<script>` внутри `index.html`. Подробнее см. в разделе [Конфигурация стилей и скриптов](#styles-and-scripts-configuration).                   |
+| `budgets`                  | Тип и пороговые значения размерного бюджета по умолчанию для всего приложения или его частей. Можно настроить сборщик на вывод предупреждения или ошибки, когда вывод достигает или превышает пороговый размер. См. [Настройка бюджетов размеров](tools/cli/build#configuring-size-budgets). |
+| `fileReplacements`         | Объект, содержащий файлы и их замены во время компиляции. Подробнее см. в разделе [Настройка замен файлов для конкретных целей](tools/cli/environments#configure-environment-specific-defaults).                                                                                |
+| `index`                    | Базовый HTML-документ, загружающий приложение. Подробнее см. в разделе [Конфигурация index](#index-configuration).                                                                                                                                                               |
+| `security`                 | Объект, содержащий ключ `autoCsp`, который можно установить в `true` или `false`.                                                                                                                                                                                               |
 
-### Extra serve options
+### Дополнительные параметры обслуживания {#extra-serve-options}
 
-The dev-server comes with its own set of options that generaly correspond to the options available for the [`ng serve`](cli/serve) command.
+Сервер разработки имеет собственный набор параметров, которые в целом соответствуют параметрам команды [`ng serve`](cli/serve).
 
-| Options properties | Details                                                                                                                                                                                                                   |
-| :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `allowedHosts`     | An array of host that the development server will respond to. This option sets the Vite option of the same name. For further details [see the vite docs](https://vite.dev/config/server-options.html#server-allowedhosts) |
+| Параметры свойств | Подробности                                                                                                                                                                                                              |
+| :----------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `allowedHosts`     | Массив хостов, на которые будет отвечать сервер разработки. Этот параметр задаёт одноимённый параметр Vite. Подробнее см. в [документации vite](https://vite.dev/config/server-options.html#server-allowedhosts). |
 
-## Complex configuration values
+## Сложные значения конфигурации {#complex-configuration-values}
 
-The `assets`, `index`, `outputPath`, `styles`, and `scripts` options can have either simple path string values, or object values with specific fields.
-The `sourceMap` and `optimization` options can be set to a simple boolean value. They can also be given a complex value using the configuration file.
+Параметры `assets`, `index`, `outputPath`, `styles` и `scripts` могут принимать как простые строковые значения путей, так и объекты с конкретными полями.
+Параметры `sourceMap` и `optimization` можно задать простым логическим значением. Им также можно задать сложное значение с помощью файла конфигурации.
 
-The following sections provide more details of how these complex values are used in each case.
+Следующие разделы содержат подробности о том, как эти сложные значения используются в каждом случае.
 
-### Assets configuration
+### Конфигурация ресурсов {#assets-configuration}
 
-Each `build` target configuration can include an `assets` array that lists files or folders you want to copy as-is when building your project.
-By default, the contents of the `public/` directory are copied over.
+Каждая конфигурация цели `build` может включать массив `assets` со списком файлов или папок, которые нужно скопировать без изменений при сборке проекта.
+По умолчанию копируется содержимое каталога `public/`.
 
-To exclude an asset, you can remove it from the assets configuration.
+Для исключения ресурса можно удалить его из конфигурации ресурсов.
 
-You can further configure assets to be copied by specifying assets as objects, rather than as simple paths relative to the workspace root.
-An asset specification object can have the following fields.
+Можно настроить более детальное копирование ресурсов, указывая их как объекты, а не как простые пути относительно корня рабочего пространства.
+Объект спецификации ресурса может содержать следующие поля.
 
-| Fields           | Details                                                                                                                                   |
-| :--------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| `glob`           | A [node-glob](https://github.com/isaacs/node-glob/blob/master/README.md) using `input` as base directory.                                 |
-| `input`          | A path relative to the workspace root.                                                                                                    |
-| `output`         | A path relative to `outDir`. Because of the security implications, the Angular CLI never writes files outside of the project output path. |
-| `ignore`         | A list of globs to exclude.                                                                                                               |
-| `followSymlinks` | Allow glob patterns to follow symlink directories. This allows subdirectories of the symlink to be searched. Defaults to `false`.         |
+| Поля             | Подробности                                                                                                                                     |
+| :--------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `glob`           | [node-glob](https://github.com/isaacs/node-glob/blob/master/README.md) с использованием `input` в качестве базового каталога.                   |
+| `input`          | Путь относительно корня рабочего пространства.                                                                                                  |
+| `output`         | Путь относительно `outDir`. Из соображений безопасности Angular CLI никогда не записывает файлы за пределами пути вывода проекта.               |
+| `ignore`         | Список шаблонов glob для исключения.                                                                                                            |
+| `followSymlinks` | Разрешить шаблонам glob следовать по символическим ссылкам на каталоги. Это позволяет выполнять поиск в подкаталогах символических ссылок. По умолчанию: `false`. |
 
-For example, the default asset paths can be represented in more detail using the following objects.
+Например, пути к ресурсам по умолчанию можно представить более подробно с помощью следующих объектов.
 
 ```json
 {
@@ -282,7 +282,7 @@ For example, the default asset paths can be represented in more detail using the
 }
 ```
 
-The following example uses the `ignore` field to exclude certain files in the assets directory from being copied into the build:
+В следующем примере поле `ignore` используется для исключения определённых файлов из каталога ресурсов при копировании в сборку:
 
 ```json
 {
@@ -308,14 +308,14 @@ The following example uses the `ignore` field to exclude certain files in the as
 }
 ```
 
-### Styles and scripts configuration
+### Конфигурация стилей и скриптов {#styles-and-scripts-configuration}
 
-An array entry for the `styles` and `scripts` options can be a simple path string, or an object that points to an extra entry-point file.
-The associated builder loads that file and its dependencies as a separate bundle during the build.
-With a configuration object, you have the option of naming the bundle for the entry point, using a `bundleName` field.
+Запись массива для параметров `styles` и `scripts` может быть как простой строкой пути, так и объектом, указывающим на дополнительный файл точки входа.
+Связанный сборщик загружает этот файл и его зависимости как отдельный бандл во время сборки.
+С объектом конфигурации есть возможность задать имя бандлу для точки входа с помощью поля `bundleName`.
 
-The bundle is injected by default, but you can set `inject` to `false` to exclude the bundle from injection.
-For example, the following object values create and name a bundle that contains styles and scripts, and excludes it from injection:
+Бандл внедряется по умолчанию, но можно установить `inject` в `false` для исключения бандла из внедрения.
+Например, следующие значения объекта создают и именуют бандл, содержащий стили и скрипты, и исключают его из внедрения:
 
 ```json
 {
@@ -347,11 +347,11 @@ For example, the following object values create and name a bundle that contains 
 }
 ```
 
-#### Style preprocessor options
+#### Параметры препроцессора стилей {#style-preprocessor-options}
 
-In Sass, you can make use of the `includePaths` feature for both component and global styles. This allows you to add extra base paths that are checked for imports.
+В Sass можно использовать функцию `includePaths` как для стилей компонентов, так и для глобальных стилей. Это позволяет добавлять дополнительные базовые пути, проверяемые при импортах.
 
-To add paths, use the `stylePreprocessorOptions` option:
+Для добавления путей используйте параметр `stylePreprocessorOptions`:
 
 ```json
 {
@@ -372,54 +372,54 @@ To add paths, use the `stylePreprocessorOptions` option:
 }
 ```
 
-Files in that directory, such as `src/style-paths/_variables.scss`, can be imported from anywhere in your project without the need for a relative path:
+Файлы в этом каталоге, например `src/style-paths/_variables.scss`, можно импортировать из любого места в проекте без необходимости указывать относительный путь:
 
 ```scss
 // src/app/app.scss
-// A relative path works
+// Относительный путь работает
 @import '../style-paths/variables';
 
-// But now this works as well
+// Но теперь это тоже работает
 @import 'variables';
 ```
 
-HELPFUL: You also need to add any styles or scripts to the `test` builder if you need them for unit tests.
-See also [Using runtime-global libraries inside your application](tools/libraries/using-libraries#using-runtime-global-libraries-inside-your-app).
+ПОДСКАЗКА: Также необходимо добавить стили или скрипты в сборщик `test`, если они нужны для модульных тестов.
+См. также раздел [Использование глобальных библиотек времени выполнения в приложении](tools/libraries/using-libraries#using-runtime-global-libraries-inside-your-app).
 
-### Optimization configuration
+### Конфигурация оптимизации {#optimization-configuration}
 
-The `optimization` option can be either a boolean or an object for more fine-tune configuration.
-This option enables various optimizations of the build output, including:
+Параметр `optimization` может быть либо логическим значением, либо объектом для более тонкой настройки.
+Этот параметр включает различные оптимизации вывода сборки, включая:
 
-- Minification of scripts and styles
+- Минификацию скриптов и стилей
 - Tree-shaking
-- Dead-code elimination
-- [Inlining of critical CSS](/tools/cli/build#critical-css-inlining)
-- Fonts inlining
+- Устранение мёртвого кода
+- [Встраивание критических CSS](/tools/cli/build#critical-css-inlining)
+- Встраивание шрифтов
 
-Several options can be used to fine-tune the optimization of an application.
+Для тонкой настройки оптимизации приложения можно использовать несколько параметров.
 
-| Options   | Details                                                        | Value type                                                               | Default value |
-| :-------- | :------------------------------------------------------------- | :----------------------------------------------------------------------- | :------------ |
-| `scripts` | Enables optimization of the scripts output.                    | `boolean`                                                                | `true`        |
-| `styles`  | Enables optimization of the styles output.                     | `boolean` \| [Styles optimization options](#styles-optimization-options) | `true`        |
-| `fonts`   | Enables optimization for fonts. This requires internet access. | `boolean` \| [Fonts optimization options](#fonts-optimization-options)   | `true`        |
+| Параметры | Подробности                                                                     | Тип значения                                                              | Значение по умолчанию |
+| :-------- | :------------------------------------------------------------------------------ | :------------------------------------------------------------------------ | :-------------------- |
+| `scripts` | Включает оптимизацию вывода скриптов.                                           | `boolean`                                                                 | `true`                |
+| `styles`  | Включает оптимизацию вывода стилей.                                             | `boolean` \| [Параметры оптимизации стилей](#styles-optimization-options) | `true`                |
+| `fonts`   | Включает оптимизацию шрифтов. Требует доступа к интернету.                      | `boolean` \| [Параметры оптимизации шрифтов](#fonts-optimization-options) | `true`                |
 
-#### Styles optimization options
+#### Параметры оптимизации стилей {#styles-optimization-options}
 
-| Options                 | Details                                                                                                                  | Value type | Default value |
-| :---------------------- | :----------------------------------------------------------------------------------------------------------------------- | :--------- | :------------ |
-| `minify`                | Minify CSS definitions by removing extraneous whitespace and comments, merging identifiers, and minimizing values.       | `boolean`  | `true`        |
-| `inlineCritical`        | Extract and inline critical CSS definitions to improve [First Contentful Paint](https://web.dev/first-contentful-paint). | `boolean`  | `true`        |
-| `removeSpecialComments` | Remove comments in global CSS that contains `@license` or `@preserve` or that starts with `//!` or `/*!`.                | `boolean`  | `true`        |
+| Параметры               | Подробности                                                                                                                         | Тип значения | Значение по умолчанию |
+| :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------- | :--------- | :-------------------- |
+| `minify`                | Минификация CSS-определений путём удаления лишних пробелов и комментариев, объединения идентификаторов и минимизации значений.       | `boolean`  | `true`                |
+| `inlineCritical`        | Извлечение и встраивание критических CSS-определений для улучшения [First Contentful Paint](https://web.dev/first-contentful-paint). | `boolean`  | `true`                |
+| `removeSpecialComments` | Удаление комментариев в глобальном CSS, содержащих `@license` или `@preserve`, или начинающихся с `//!` или `/*!`.                  | `boolean`  | `true`                |
 
-#### Fonts optimization options
+#### Параметры оптимизации шрифтов {#fonts-optimization-options}
 
-| Options  | Details                                                                                                                                                                                                             | Value type | Default value |
-| :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :--------- | :------------ |
-| `inline` | Reduce [render blocking requests](https://web.dev/render-blocking-resources) by inlining external Google Fonts and Adobe Fonts CSS definitions in the application's HTML index file. This requires internet access. | `boolean`  | `true`        |
+| Параметры | Подробности                                                                                                                                                                                                               | Тип значения | Значение по умолчанию |
+| :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :--------- | :-------------------- |
+| `inline`  | Уменьшение [блокирующих рендеринг запросов](https://web.dev/render-blocking-resources) путём встраивания CSS-определений внешних шрифтов Google Fonts и Adobe Fonts в HTML-файл index приложения. Требует доступа к интернету. | `boolean`  | `true`                |
 
-You can supply a value such as the following to apply optimization to one or the other:
+Можно указать такое значение для применения оптимизации к тому или иному элементу:
 
 ```json
 {
@@ -440,19 +440,19 @@ You can supply a value such as the following to apply optimization to one or the
 }
 ```
 
-### Source map configuration
+### Конфигурация карт источников {#source-map-configuration}
 
-The `sourceMap` builder option can be either a boolean or an object for more fine-tune configuration to control the source maps of an application.
+Параметр сборщика `sourceMap` может быть либо логическим значением, либо объектом для более тонкой настройки карт источников приложения.
 
-| Options          | Details                                                      | Value type | Default value |
-| :--------------- | :----------------------------------------------------------- | :--------- | :------------ |
-| `scripts`        | Output source maps for all scripts.                          | `boolean`  | `true`        |
-| `styles`         | Output source maps for all styles.                           | `boolean`  | `true`        |
-| `vendor`         | Resolve vendor packages source maps.                         | `boolean`  | `false`       |
-| `hidden`         | Omit link to sourcemaps from the output JavaScript.          | `boolean`  | `false`       |
-| `sourcesContent` | Output original source content for files within source maps. | `boolean`  | `true`        |
+| Параметры        | Подробности                                                          | Тип значения | Значение по умолчанию |
+| :--------------- | :------------------------------------------------------------------- | :--------- | :-------------------- |
+| `scripts`        | Вывод карт источников для всех скриптов.                             | `boolean`  | `true`                |
+| `styles`         | Вывод карт источников для всех стилей.                               | `boolean`  | `true`                |
+| `vendor`         | Разрешение карт источников сторонних пакетов.                        | `boolean`  | `false`               |
+| `hidden`         | Опустить ссылку на карты источников из вывода JavaScript.            | `boolean`  | `false`               |
+| `sourcesContent` | Вывод исходного содержимого файлов в картах источников.              | `boolean`  | `true`                |
 
-The example below shows how to toggle one or more values to configure the source map outputs:
+В следующем примере показано, как переключить одно или несколько значений для настройки вывода карт источников:
 
 ```json
 {
@@ -476,16 +476,16 @@ The example below shows how to toggle one or more values to configure the source
 }
 ```
 
-HELPFUL: When using hidden source maps, source maps are not referenced in the bundle.
-These are useful if you only want source maps to map stack traces in error reporting tools without showing up in browser developer tools.
-Note that even though `hidden` prevents the source map from being linked in the output bundle, your deployment process must take care not to serve the generated sourcemaps in production, or else the information is still leaked.
+ПОДСКАЗКА: При использовании скрытых карт источников они не упоминаются в бандле.
+Это полезно, если вы хотите, чтобы карты источников использовались только для сопоставления трассировок стека в инструментах отчётов об ошибках без отображения в инструментах разработчика браузера.
+Обратите внимание, что даже если `hidden` предотвращает ссылку на карту источников в выходном бандле, процесс развёртывания должен следить за тем, чтобы не предоставлять сгенерированные карты источников в продакшене, иначе информация всё равно будет раскрыта.
 
-#### Source maps without sources content
+#### Карты источников без содержимого источников {#source-maps-without-sources-content}
 
-You can generate source maps without the `sourcesContent` field, which contains the original source code.
-This allows you to deploy source maps to production for better error reporting with original source names while protecting your source code from exposure.
+Можно генерировать карты источников без поля `sourcesContent`, содержащего исходный код.
+Это позволяет развёртывать карты источников в продакшене для улучшения отчётности об ошибках с исходными именами, защищая при этом исходный код от раскрытия.
 
-To exclude sources content from source maps, set the `sourcesContent` option to `false`:
+Для исключения содержимого источников из карт источников установите параметр `sourcesContent` в `false`:
 
 ```json
 {
@@ -508,30 +508,30 @@ To exclude sources content from source maps, set the `sourcesContent` option to 
 }
 ```
 
-### Index configuration
+### Конфигурация index {#index-configuration}
 
-Configures generation of the application's HTML index.
+Настраивает генерацию HTML-index приложения.
 
-The `index` option can be either a string or an object for more fine-tune configuration.
+Параметр `index` может быть либо строкой, либо объектом для более тонкой настройки.
 
-When supplying the value as a string the filename of the specified path will be used for the generated file and will be created in the root of the application's configured output path.
+При указании значения в виде строки имя файла указанного пути будет использоваться для сгенерированного файла и будет создано в корне настроенного пути вывода приложения.
 
-#### Index options
+#### Параметры index {#index-options}
 
-| Options  | Details                                                                                                                                                                          | Value type | Default value   |
-| :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- | :-------------- |
-| `input`  | The path of a file to use for the application's generated HTML index.                                                                                                            | `string`   | None (required) |
-| `output` | The output path of the application's generated HTML index file. The full provided path will be used and will be considered relative to the application's configured output path. | `string`   | `index.html`    |
+| Параметры | Подробности                                                                                                                                                                                      | Тип значения | Значение по умолчанию |
+| :-------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- | :-------------------- |
+| `input`   | Путь к файлу, используемому для сгенерированного HTML-index приложения.                                                                                                                          | `string`   | Нет (обязательно)     |
+| `output`  | Путь вывода сгенерированного HTML-index файла приложения. Будет использован полный указанный путь и он будет считаться относительным настроенному пути вывода приложения. | `string`   | `index.html`          |
 
-### Output path configuration
+### Конфигурация пути вывода {#output-path-configuration}
 
-The `outputPath` option can be either a String which will be used as the `base` value or an Object for more fine-tune configuration.
+Параметр `outputPath` может быть либо строкой, которая будет использоваться как значение `base`, либо объектом для более тонкой настройки.
 
-Several options can be used to fine-tune the output structure of an application.
+Для тонкой настройки структуры вывода приложения можно использовать несколько параметров.
 
-| Options   | Details                                                                                                                                                           | Value type | Default value |
-| :-------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- | :------------ |
-| `base`    | Specify the output path relative to workspace root.                                                                                                               | `string`   |               |
-| `browser` | The output directory name for your browser build is within the base output path. This can be safely served to users.                                              | `string`   | `browser`     |
-| `server`  | The output directory name of your server build within the output path base.                                                                                       | `string`   | `server`      |
-| `media`   | The output directory name for your media files located within the output browser directory. These media files are commonly referred to as resources in CSS files. | `string`   | `media`       |
+| Параметры | Подробности                                                                                                                                                                      | Тип значения | Значение по умолчанию |
+| :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- | :-------------------- |
+| `base`    | Указание пути вывода относительно корня рабочего пространства.                                                                                                                   | `string`   |                       |
+| `browser` | Имя выходного каталога для браузерной сборки находится внутри базового пути вывода. Может безопасно предоставляться пользователям.                                                | `string`   | `browser`             |
+| `server`  | Имя выходного каталога серверной сборки внутри базового пути вывода.                                                                                                             | `string`   | `server`              |
+| `media`   | Имя выходного каталога для медиафайлов, расположенных в выходном браузерном каталоге. Эти медиафайлы обычно называются ресурсами в CSS-файлах.                                   | `string`   | `media`               |

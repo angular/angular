@@ -1,62 +1,47 @@
-# Angular CLI MCP Server setup
+# Настройка Angular CLI MCP-сервера {#angular-cli-mcp-server-setup}
 
-The Angular CLI includes an experimental [Model Context Protocol (MCP) server](https://modelcontextprotocol.io/) enabling AI assistants in your development environment to interact with the Angular CLI. We've included support for CLI powered code generation, adding packages, and more.
+Angular CLI включает экспериментальный [сервер Model Context Protocol (MCP)](https://modelcontextprotocol.io/), позволяющий ИИ-ассистентам в среде разработки взаимодействовать с Angular CLI. Добавлена поддержка генерации кода на основе CLI, добавления пакетов и другого.
 
-## Available Tools
+## Доступные инструменты {#available-tools}
 
-The Angular CLI MCP server provides several tools to assist you in your development workflow. By default, the following tools are enabled:
+Angular CLI MCP-сервер предоставляет несколько инструментов для помощи в рабочем процессе разработки. По умолчанию включены следующие инструменты:
 
-| Name                        | Description                                                                                                                                                                                        | `local-only` | `read-only` |
-| :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
-| `ai_tutor`                  | Launches an interactive AI-powered Angular tutor. Recommended to run from a new Angular project using v20 or later. [Learn more](ai/ai-tutor).                                                     |      ✅      |     ✅      |
-| `find_examples`             | Finds authoritative code examples from a curated database of official, best-practice examples, focusing on **modern, new, and recently updated** Angular features.                                 |      ✅      |     ✅      |
-| `get_best_practices`        | Retrieves the Angular Best Practices Guide. This guide is essential for ensuring that all code adheres to modern standards, including standalone components, typed forms, and modern control flow. |      ✅      |     ✅      |
-| `list_projects`             | Lists the names of all applications and libraries defined within an Angular workspace. It reads the `angular.json` configuration file to identify the projects.                                    |      ✅      |     ✅      |
-| `onpush_zoneless_migration` | Analyzes Angular code and provides a step-by-step, iterative plan to migrate it to `OnPush` change detection, a prerequisite for a zoneless application.                                           |      ✅      |     ✅      |
-| `search_documentation`      | Searches the official Angular documentation at <https://angular.dev>. This tool should be used to answer any questions about Angular, such as for APIs, tutorials, and best practices.             |      ❌      |     ✅      |
+| Название                    | Описание                                                                                                                                                                                                                       | `local-only` | `read-only` |
+| :-------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
+| `ai_tutor`                  | Запускает интерактивный Angular-репетитор на основе ИИ. Рекомендуется запускать из нового Angular-проекта с версией v20 или выше. [Подробнее](ai/ai-tutor).                                                                   |      ✅      |     ✅      |
+| `find_examples`             | Находит авторитетные примеры кода из курируемой базы данных официальных, примерных примеров, акцентируя внимание на **современных, новых и недавно обновлённых** функциях Angular.                                            |      ✅      |     ✅      |
+| `get_best_practices`        | Извлекает руководство по лучшим практикам Angular. Это руководство необходимо для обеспечения соответствия всего кода современным стандартам, включая автономные компоненты, типизированные формы и современный control flow. |      ✅      |     ✅      |
+| `list_projects`             | Выводит список имён всех приложений и библиотек, определённых в рабочем пространстве Angular. Читает файл конфигурации `angular.json` для идентификации проектов.                                                              |      ✅      |     ✅      |
+| `onpush_zoneless_migration` | Анализирует Angular-код и предоставляет пошаговый итеративный план миграции на обнаружение изменений `OnPush` — предварительное требование для Zoneless-приложения.                                                           |      ✅      |     ✅      |
+| `search_documentation`      | Ищет в официальной документации Angular на <https://angular.dev>. Этот инструмент следует использовать для ответов на любые вопросы об Angular, таких как API, руководства и лучшие практики.                                 |      ❌      |     ✅      |
 
-### Experimental Tools
+### Экспериментальные инструменты {#experimental-tools}
 
-Some tools are provided in experimental / preview status since they are new or not fully tested. Enable them individually with the [`--experimental-tool`](#command-options) option and use them with caution.
+Некоторые инструменты предоставляются в экспериментальном/предварительном статусе, поскольку они новые или недостаточно протестированные. Включайте их по отдельности с помощью опции [`--experimental-tool`](#command-options) и используйте с осторожностью.
 
-| Name                       | Description                                                                                                                                                                                                                                                         | `local-only` | `read-only` |
-| :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------: | :---------: |
-| `build`                    | Perform a one-off, non-watched build using `ng build`.                                                                                                                                                                                                              |      ✅      |     ❌      |
-| `devserver.start`          | Asynchronously starts a development server that watches the workspace for changes, similar to running `ng serve`. Since this is asynchronous it returns immediately. To manage the resulting server, use the `devserver.stop` and `devserver.wait_for_build` tools. |      ✅      |     ✅      |
-| `devserver.stop`           | Stops a development server started by `devserver.start`.                                                                                                                                                                                                            |      ✅      |     ✅      |
-| `devserver.wait_for_build` | Returns the output logs of the most recent build in a running development server started by `devserver.start`. If a build is currently ongoing, it will first wait for that build to complete and then return the logs.                                             |      ✅      |     ✅      |
-| `e2e`                      | Executes the end-to-end tests configured in the project.                                                                                                                                                                                                            |      ✅      |     ✅      |
-| `modernize`                | Performs code migrations and provides further instructions on how to modernize Angular code to align with the latest best practices and syntax. [Learn more](https://angular.dev/reference/migrations)                                                              |      ✅      |     ❌      |
-| `test`                     | Runs the project's unit tests.                                                                                                                                                                                                                                      |      ✅      |     ✅      |
+| Название                   | Описание                                                                                                                                                                                                                                                                         | `local-only` | `read-only` |
+| :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
+| `build`                    | Выполняет разовую, не отслеживающую изменения сборку с помощью `ng build`.                                                                                                                                                                                                       |      ✅      |     ❌      |
+| `devserver.start`          | Асинхронно запускает сервер разработки, отслеживающий изменения в рабочем пространстве, аналогично запуску `ng serve`. Поскольку это асинхронный запуск, он возвращается немедленно. Для управления запущенным сервером используйте инструменты `devserver.stop` и `devserver.wait_for_build`. |      ✅      |     ✅      |
+| `devserver.stop`           | Останавливает сервер разработки, запущенный с помощью `devserver.start`.                                                                                                                                                                                                         |      ✅      |     ✅      |
+| `devserver.wait_for_build` | Возвращает журналы вывода последней сборки в работающем сервере разработки, запущенном с помощью `devserver.start`. Если сборка в данный момент выполняется, сначала ожидает её завершения, а затем возвращает журналы.                                                          |      ✅      |     ✅      |
+| `e2e`                      | Выполняет сквозные тесты, настроенные в проекте.                                                                                                                                                                                                                                 |      ✅      |     ✅      |
+| `modernize`                | Выполняет миграцию кода и предоставляет дальнейшие инструкции по модернизации Angular-кода в соответствии с новейшими лучшими практиками и синтаксисом. [Подробнее](https://angular.dev/reference/migrations)                                                                   |      ✅      |     ❌      |
+| `test`                     | Запускает модульные тесты проекта.                                                                                                                                                                                                                                               |      ✅      |     ✅      |
 
-## Get Started
+## Начало работы {#get-started}
 
-To get started, run the following command in your terminal:
+Для начала работы выполните следующую команду в терминале:
 
 ```bash
 ng mcp
 ```
 
-When run from an interactive terminal, this command displays instructions on how to configure a host environment to use the MCP server. The following sections provide example configurations for several popular editors and tools.
+При запуске из интерактивного терминала эта команда отображает инструкции по настройке хост-среды для использования MCP-сервера. В следующих разделах приведены примеры конфигураций для нескольких популярных редакторов и инструментов.
 
-### Cursor
+### Cursor {#cursor}
 
-Create a file named `.cursor/mcp.json` in your project's root and add the following configuration. You can also configure it globally in `~/.cursor/mcp.json`.
-
-```json
-{
-  "mcpServers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
-```
-
-### Firebase Studio
-
-Create a file named `.idx/mcp.json` in your project's root and add the following configuration:
+Создайте файл с именем `.cursor/mcp.json` в корне проекта и добавьте следующую конфигурацию. Можно также настроить её глобально в `~/.cursor/mcp.json`.
 
 ```json
 {
@@ -69,24 +54,9 @@ Create a file named `.idx/mcp.json` in your project's root and add the following
 }
 ```
 
-### Gemini CLI
+### Firebase Studio {#firebase-studio}
 
-Create a file named `.gemini/settings.json` in your project's root and add the following configuration:
-
-```json
-{
-  "mcpServers": {
-    "angular-cli": {
-      "command": "npx",
-      "args": ["-y", "@angular/cli", "mcp"]
-    }
-  }
-}
-```
-
-### JetBrains IDEs
-
-In JetBrains IDEs (like IntelliJ IDEA or WebStorm), after installing the JetBrains AI Assistant plugin, go to `Settings | Tools | AI Assistant | Model Context Protocol (MCP)`. Add a new server (`+`) and select `As JSON`. Then paste the following configuration:
+Создайте файл с именем `.idx/mcp.json` в корне проекта и добавьте следующую конфигурацию:
 
 ```json
 {
@@ -99,11 +69,41 @@ In JetBrains IDEs (like IntelliJ IDEA or WebStorm), after installing the JetBrai
 }
 ```
 
-For the most up-to-date instructions on configuring MCP servers, please refer to the JetBrains documentation: [Connect to an MCP server](https://www.jetbrains.com/help/ai-assistant/mcp.html#connect-to-an-mcp-server).
+### Gemini CLI {#gemini-cli}
 
-### VS Code
+Создайте файл с именем `.gemini/settings.json` в корне проекта и добавьте следующую конфигурацию:
 
-In your project's root, create a file named `.vscode/mcp.json` and add the following configuration. Note the use of the `servers` property.
+```json
+{
+  "mcpServers": {
+    "angular-cli": {
+      "command": "npx",
+      "args": ["-y", "@angular/cli", "mcp"]
+    }
+  }
+}
+```
+
+### JetBrains IDEs {#jetbrains-ides}
+
+В JetBrains IDE (например, IntelliJ IDEA или WebStorm) после установки плагина JetBrains AI Assistant перейдите в `Settings | Tools | AI Assistant | Model Context Protocol (MCP)`. Добавьте новый сервер (`+`) и выберите `As JSON`. Затем вставьте следующую конфигурацию:
+
+```json
+{
+  "mcpServers": {
+    "angular-cli": {
+      "command": "npx",
+      "args": ["-y", "@angular/cli", "mcp"]
+    }
+  }
+}
+```
+
+Актуальные инструкции по настройке MCP-серверов см. в документации JetBrains: [Connect to an MCP server](https://www.jetbrains.com/help/ai-assistant/mcp.html#connect-to-an-mcp-server).
+
+### VS Code {#vs-code}
+
+В корне проекта создайте файл с именем `.vscode/mcp.json` и добавьте следующую конфигурацию. Обратите внимание на использование свойства `servers`.
 
 ```json
 {
@@ -116,9 +116,9 @@ In your project's root, create a file named `.vscode/mcp.json` and add the follo
 }
 ```
 
-### Other IDEs
+### Другие IDE {#other-ides}
 
-For other IDEs, check your IDE's documentation for the proper location of the MCP configuration file (often `mcp.json`). The configuration should contain the following snippet.
+Для других IDE обратитесь к документации IDE за правильным расположением файла конфигурации MCP (обычно `mcp.json`). Конфигурация должна содержать следующий фрагмент.
 
 ```json
 {
@@ -131,17 +131,17 @@ For other IDEs, check your IDE's documentation for the proper location of the MC
 }
 ```
 
-## Command Options
+## Параметры команды {#command-options}
 
-The `mcp` command can be configured with the following options passed as arguments in your IDE's MCP configuration:
+Команда `mcp` может быть настроена с помощью следующих параметров, передаваемых в качестве аргументов в конфигурации MCP вашей IDE:
 
-| Option                        | Type      | Description                                                                                                                                                               | Default |
-| :---------------------------- | :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------ |
-| `--read-only`                 | `boolean` | Only register tools that do not make changes to the project. Your editor or coding agent may still perform edits.                                                         | `false` |
-| `--local-only`                | `boolean` | Only register tools that do not require an internet connection. Your editor or coding agent may still send data over the network.                                         | `false` |
-| `--experimental-tool`<br>`-E` | `string`  | Enable an [experimental tool](#experimental-tools). Separate multiple options by spaces, e.g. `-E tool_a tool_b`. Enable all `devserver.x` tools by using `-E devserver`. |         |
+| Параметр                      | Тип       | Описание                                                                                                                                                                                                         | По умолчанию |
+| :---------------------------- | :-------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------- |
+| `--read-only`                 | `boolean` | Регистрировать только инструменты, не вносящие изменений в проект. Ваш редактор или агент кодирования всё равно может выполнять правки.                                                                          | `false`      |
+| `--local-only`                | `boolean` | Регистрировать только инструменты, не требующие подключения к интернету. Ваш редактор или агент кодирования всё равно может отправлять данные по сети.                                                           | `false`      |
+| `--experimental-tool`<br>`-E` | `string`  | Включить [экспериментальный инструмент](#experimental-tools). Разделяйте несколько параметров пробелами, например `-E tool_a tool_b`. Включите все инструменты `devserver.x`, используя `-E devserver`.          |              |
 
-For example, to run the server in read-only mode in VS Code, you would update your `mcp.json` like this:
+Например, для запуска сервера в режиме только для чтения в VS Code обновите `mcp.json` следующим образом:
 
 ```json
 {
@@ -154,6 +154,6 @@ For example, to run the server in read-only mode in VS Code, you would update yo
 }
 ```
 
-## Feedback and New Ideas
+## Обратная связь и новые идеи {#feedback-and-new-ideas}
 
-The Angular team welcomes your feedback on the existing MCP capabilities and any ideas you have for new tools or features. Please share your thoughts by opening an issue on the [angular/angular GitHub repository](https://github.com/angular/angular/issues).
+Команда Angular приветствует обратную связь по существующим возможностям MCP и любые идеи о новых инструментах или функциях. Поделитесь своими мыслями, открыв задачу в [репозитории angular/angular на GitHub](https://github.com/angular/angular/issues).
