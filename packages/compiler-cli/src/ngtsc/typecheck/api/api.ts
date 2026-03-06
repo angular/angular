@@ -8,22 +8,11 @@
 
 import {
   AbsoluteSourceSpan,
-  AST,
   BoundTarget,
   DirectiveMeta,
-  DirectiveOwner,
   LegacyAnimationTriggerNames,
   ParseSourceSpan,
   SchemaMetadata,
-  TemplateEntity,
-  TmplAstBoundAttribute,
-  TmplAstBoundEvent,
-  TmplAstComponent,
-  TmplAstDirective,
-  TmplAstElement,
-  TmplAstReference,
-  TmplAstTemplate,
-  TmplAstTextAttribute,
 } from '@angular/compiler';
 import ts from 'typescript';
 

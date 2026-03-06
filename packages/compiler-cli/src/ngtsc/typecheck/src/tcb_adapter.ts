@@ -15,7 +15,6 @@ import {
   TcbInputMapping,
   TcbPipeMetadata,
   TypeCheckableDirectiveMeta,
-  TcbTypeParameter,
 } from '../api';
 import {Environment} from './environment';
 import {ImportFlags, ReferenceEmitKind, Reference} from '../../imports';
@@ -24,9 +23,7 @@ import {
   ExternalExpr,
   TransplantedType,
   BoundTarget,
-  DirectiveOwner,
   ReferenceTarget,
-  TmplAstReference,
   TmplAstElement,
   TmplAstTemplate,
   WrappedNodeExpr,

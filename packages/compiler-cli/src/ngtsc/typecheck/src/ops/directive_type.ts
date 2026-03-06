@@ -7,11 +7,10 @@
  */
 
 import {DirectiveOwner, ParseSourceSpan, TmplAstHostElement} from '@angular/compiler';
-import ts from 'typescript';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TcbOp} from './base';
-import {declareVariable, TcbExpr, tempPrint} from './codegen';
+import {declareVariable, TcbExpr} from './codegen';
 import {TcbDirectiveMetadata} from '../../api';
 import {ExpressionIdentifier} from '../comments';
 
@@ -37,7 +36,7 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
   }
 
   override execute(): TcbExpr {
-    const rawType = this.tcb.env.referenceTcbType(this.dir.ref);
+    const rawType = this.tcb.env.referenceTcbValue(this.dir.ref);
 
     let type: TcbExpr;
     let span: ParseSourceSpan;
@@ -46,20 +45,12 @@ export abstract class TcbDirectiveTypeOpBase extends TcbOp {
       this.dir.typeParameters === null ||
       this.dir.typeParameters.length === 0
     ) {
-      type = new TcbExpr(tempPrint(rawType, this.tcb.env.contextFile));
+      type = rawType;
     } else {
-      if (!ts.isTypeReferenceNode(rawType)) {
-        throw new Error(
-          `Expected TypeReferenceNode when referencing the type for ${this.dir.ref.name}`,
-        );
-      }
-      const typeName = ts.isIdentifier(rawType.typeName)
-        ? rawType.typeName.text
-        : tempPrint(rawType.typeName, this.tcb.env.contextFile);
       const typeArguments = Array(this.dir.typeParameters?.length ?? 0)
         .fill('any')
         .join(', ');
-      type = new TcbExpr(`${typeName}<${typeArguments}>`);
+      type = new TcbExpr(`${rawType.print()}<${typeArguments}>`);
     }
 
     if (this.node instanceof TmplAstHostElement) {
