@@ -82,6 +82,7 @@ import {ViewRef} from './view_ref';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
 import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynamic_bindings';
 import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
+import {TracingService} from '../application/tracing';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -169,6 +170,7 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
 
   const sanitizer = rootLViewInjector.get(Sanitizer, null);
   const changeDetectionScheduler = rootLViewInjector.get(ChangeDetectionScheduler, null);
+  const tracingService = rootLViewInjector.get(TracingService, null, {optional: true});
 
   let ngReflect = false;
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
@@ -180,6 +182,7 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
     sanitizer,
     changeDetectionScheduler,
     ngReflect,
+    tracingService,
   };
 }
 
