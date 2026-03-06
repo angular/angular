@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ResourceLoader} from '@angular/compiler';
 import {
   Compiler,
   Component,
@@ -15,11 +14,10 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import {fakeAsync, inject, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting} from '../testing';
-import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {isBrowser} from '@angular/private/testing';
+import {BrowserDynamicTestingModule, platformBrowserDynamicTesting} from '../testing';
 @NgModule({
   providers: [provideZonelessChangeDetection()],
 })
@@ -54,13 +52,6 @@ if (isBrowser) {
       afterEach(() => {
         expect(actuallyDone).toEqual(true);
       });
-
-      it('should run async tests with ResourceLoaders', waitForAsync(() => {
-        const resourceLoader = new ResourceLoaderImpl();
-        resourceLoader.get('/packages/platform-browser/test/static_assets/test.html').then(() => {
-          actuallyDone = true;
-        });
-      }), 10000); // Long timeout here because this test makes an actual ResourceLoader.
     });
 
     describe('using the test injector with the inject helper', () => {
@@ -79,13 +70,6 @@ if (isBrowser) {
             providers: [{provide: FancyService, useValue: new FancyService()}],
           });
         });
-
-        it('provides a real ResourceLoader instance', inject(
-          [ResourceLoader],
-          (resourceLoader: ResourceLoader) => {
-            expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
-          },
-        ));
 
         it('should allow the use of fakeAsync', fakeAsync(
           inject([FancyService], (service: FancyService) => {

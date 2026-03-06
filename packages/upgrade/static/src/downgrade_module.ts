@@ -122,8 +122,7 @@ let moduleUid = 0;
  *   module. See `downgradeComponent()` and `downgradeInjectable()` for more details.
  *
  * - If you want some injectables to be shared among all downgraded modules, you can provide them as
- *   `StaticProvider`s, when creating the `PlatformRef` (e.g. via `platformBrowser` or
- *   `platformBrowserDynamic`).
+ *   `StaticProvider`s, when creating the `PlatformRef` (e.g. via `platformBrowser`).
  *
  * - When using {@link PlatformRef#bootstrapmodule `bootstrapModule()`} or
  *   {@link PlatformRef#bootstrapmodulefactory `bootstrapModuleFactory()`} to bootstrap the
@@ -239,7 +238,7 @@ export function downgradeModule<T>(
  *
  * - If you want some injectables to be shared among all downgraded modules, you can provide them as
  *   `StaticProvider`s, when creating the `PlatformRef` (e.g. via `platformBrowser` or
- *   `platformBrowserDynamic`).
+ *   `platformBrowser`).
  *
  * - When using {@link PlatformRef#bootstrapmodule `bootstrapModule()`} or
  *   {@link PlatformRef#bootstrapmodulefactory `bootstrapModuleFactory()`} to bootstrap the
@@ -356,7 +355,7 @@ export function downgradeModule<T>(moduleOrBootstrapFn: NgModuleFactory<T>): str
  *
  * - If you want some injectables to be shared among all downgraded modules, you can provide them as
  *   `StaticProvider`s, when creating the `PlatformRef` (e.g. via `platformBrowser` or
- *   `platformBrowserDynamic`).
+ *   `platformBrowser`).
  *
  * - When using {@link PlatformRef#bootstrapmodule `bootstrapModule()`} or
  *   {@link PlatformRef#bootstrapmodulefactory `bootstrapModuleFactory()`} to bootstrap the

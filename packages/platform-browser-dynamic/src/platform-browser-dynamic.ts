@@ -6,6 +6,4 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export {VERSION} from './version';
-export {JitCompilerFactory} from './compiler_factory';
-export {platformBrowserDynamic} from './platform_providers';
+export const IS_A_MODULE = true;
