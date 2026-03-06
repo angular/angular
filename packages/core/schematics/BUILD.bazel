@@ -125,6 +125,10 @@ bundle_entrypoints = [
         "http-xhr-backend",
         "packages/core/schematics/migrations/http-xhr-backend/index.js",
     ],
+    [
+        "model-output",
+        "packages/core/schematics/migrations/model-output/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -138,6 +142,7 @@ rollup.rollup(
         "//packages/core/schematics:tsconfig_build",
         "//packages/core/schematics/migrations/change-detection-eager",
         "//packages/core/schematics/migrations/http-xhr-backend",
+        "//packages/core/schematics/migrations/model-output",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",
         "//packages/core/schematics/ng-generate/common-to-standalone-migration",
         "//packages/core/schematics/ng-generate/control-flow-migration",
