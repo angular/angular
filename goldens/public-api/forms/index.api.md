@@ -820,7 +820,9 @@ export class PatternValidator extends AbstractValidatorDirective {
 
 // @public
 export class PristineChangeEvent extends ControlEvent {
-    constructor(pristine: boolean, source: AbstractControl);
+    constructor(pristine: boolean, source: AbstractControl, all?: boolean);
+    // (undocumented)
+    readonly all: boolean;
     // (undocumented)
     readonly pristine: boolean;
     // (undocumented)
@@ -918,7 +920,9 @@ export class StatusChangeEvent extends ControlEvent {
 
 // @public
 export class TouchedChangeEvent extends ControlEvent {
-    constructor(touched: boolean, source: AbstractControl);
+    constructor(touched: boolean, source: AbstractControl, all?: boolean);
+    // (undocumented)
+    readonly all: boolean;
     // (undocumented)
     readonly source: AbstractControl;
     // (undocumented)
