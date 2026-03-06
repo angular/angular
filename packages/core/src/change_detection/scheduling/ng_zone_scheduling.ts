@@ -134,8 +134,7 @@ export function internalProvideZoneChangeDetection({
  * Provides `NgZone`-based change detection for the application bootstrapped using
  * `bootstrapApplication`.
  *
- * In Angular v21+, zoneless change detection is the default for new applications. Add this
- * provider to use `NgZone`/ZoneJS-based change detection, or to configure options like
+ * Add this provider to use `NgZone`/ZoneJS-based change detection and configure options like
  * `eventCoalescing` in the `NgZone`.
  *
  * If you need this provider function in an NgModule-based application, pass it as `applicationProviders` to `bootstrapModule()`.
