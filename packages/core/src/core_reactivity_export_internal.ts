@@ -14,6 +14,7 @@ export {
   CreateSignalOptions,
   signal,
   WritableSignal,
+  ɵassertWritableTwoWayBinding,
   ɵunwrapWritableSignal,
 } from './render3/reactivity/signal';
 export {linkedSignal} from './render3/reactivity/linked_signal';

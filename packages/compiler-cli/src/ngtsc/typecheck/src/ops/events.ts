@@ -21,7 +21,11 @@ import {quoteAndEscape, getStatementsBlock, TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TcbDirectiveMetadata} from '../../api';
-import {TcbExpressionTranslator, unwrapWritableSignal} from './expression';
+import {
+  TcbExpressionTranslator,
+  assertWritableTwoWayBinding,
+  unwrapWritableSignal,
+} from './expression';
 import {ExpressionIdentifier} from '../comments';
 import {checkSplitTwoWayBinding} from './bindings';
 import {LocalSymbol} from './references';
@@ -302,6 +306,14 @@ function tcbCreateEventHandler(
 
   if (assertionExpression !== undefined) {
     statements.push(assertionExpression);
+  }
+
+  if (event.type === ParsedEventType.TwoWay && tcb.env.config.allowSignalsInTwoWayBindings) {
+    const assertTarget = tcb.allocateId();
+    statements.push(
+      new TcbExpr(`var ${assertTarget} = ${assertWritableTwoWayBinding(handler, tcb).print()}`),
+      new TcbExpr(`${assertTarget} = ${handler.print()}`),
+    );
   }
 
   // TODO(crisbeto): remove the `checkTwoWayBoundEvents` check in v20.

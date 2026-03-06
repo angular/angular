@@ -51,6 +51,24 @@ export function ɵunwrapWritableSignal<T>(value: T | {[ɵWRITABLE_SIGNAL]: T}): 
 }
 
 /**
+ * Utility used during template type-checking for two-way bindings.
+ *
+ * Overloads are used to differentiate writable and readonly signals:
+ * - `WritableSignal<T>` remains writable.
+ * - `Signal<T>` (readonly) resolves to `WritableSignal<T>`, producing a type error
+ *   when assigned back to the original expression.
+ * - Any other type `T` is returned unchanged.
+ *
+ * @codeGenApi
+ */
+export function ɵassertWritableTwoWayBinding<T>(value: WritableSignal<T>): WritableSignal<T>;
+export function ɵassertWritableTwoWayBinding<T>(value: Signal<T>): WritableSignal<T>;
+export function ɵassertWritableTwoWayBinding<T>(value: T): T;
+export function ɵassertWritableTwoWayBinding(value: unknown): unknown {
+  return null!;
+}
+
+/**
  * Options passed to the `signal` creation function.
  */
 export interface CreateSignalOptions<T> {

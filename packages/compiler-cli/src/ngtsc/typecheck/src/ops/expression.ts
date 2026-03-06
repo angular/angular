@@ -20,7 +20,6 @@ import {
   ThisReceiver,
   TmplAstLetDeclaration,
 } from '@angular/compiler';
-import ts from 'typescript';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import type {Context} from './context';
@@ -47,6 +46,17 @@ export function unwrapWritableSignal(expression: TcbExpr, tcb: Context): TcbExpr
     R3Identifiers.unwrapWritableSignal.name,
   );
   return new TcbExpr(`${unwrapRef.print()}(${expression.print()})`);
+}
+
+/**
+ * Ensures two-way bindings are writable or non-signal values.
+ */
+export function assertWritableTwoWayBinding(expression: TcbExpr, tcb: Context): TcbExpr {
+  const assertRef = tcb.env.referenceExternalSymbol(
+    R3Identifiers.assertWritableTwoWayBinding.moduleName,
+    R3Identifiers.assertWritableTwoWayBinding.name,
+  );
+  return new TcbExpr(`${assertRef.print()}(${expression.print()})`);
 }
 
 /**
