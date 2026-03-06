@@ -211,6 +211,29 @@ function applyCodeActionCommand(ngClient: AngularLanguageClient): Command {
   };
 }
 
+function getServerCapabilities(ngClient: AngularLanguageClient): Command {
+  return {
+    id: 'angular.getServerCapabilities',
+    isTextEditorCommand: false,
+    async execute() {
+      const result = ngClient.initializeResult;
+      return {
+        diagnosticProvider: result?.capabilities?.diagnosticProvider ?? null,
+      };
+    },
+  };
+}
+
+function getPushDiagnosticsCount(ngClient: AngularLanguageClient): Command {
+  return {
+    id: 'angular.getPushDiagnosticsCount',
+    isTextEditorCommand: false,
+    async execute() {
+      return ngClient.getPushDiagnosticsCount();
+    },
+  };
+}
+
 /**
  * Register all supported vscode commands for the Angular extension.
  * @param client language client
@@ -228,6 +251,8 @@ export function registerCommands(
     goToTemplateForComponent(client),
     openJsDocLinkCommand(),
     applyCodeActionCommand(client),
+    getServerCapabilities(client),
+    getPushDiagnosticsCount(client),
   ];
 
   for (const command of commands) {

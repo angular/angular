@@ -43,6 +43,7 @@ export class AngularLanguageClient implements vscode.Disposable {
   private readonly virtualDocumentContents = new Map<string, string>();
   /** A map that indicates whether Angular could be found in the file's project. */
   private readonly fileToIsInAngularProjectMap = new Map<string, boolean>();
+  private pushDiagnosticsCount = 0;
 
   constructor(private readonly context: vscode.ExtensionContext) {
     vscode.workspace.registerTextDocumentContentProvider('angular-embedded-content', {
@@ -85,6 +86,12 @@ export class AngularLanguageClient implements vscode.Disposable {
         isTrusted: true,
       },
       middleware: {
+        handleDiagnostics: (uri, diagnostics, next) => {
+          // Count push-based diagnostics (textDocument/publishDiagnostics).
+          // In pull mode, this should never be called by the Angular LS.
+          this.pushDiagnosticsCount++;
+          next(uri, diagnostics);
+        },
         provideCodeActions: async (
           document: vscode.TextDocument,
           range: vscode.Range,
@@ -516,6 +523,10 @@ export class AngularLanguageClient implements vscode.Disposable {
 
   get initializeResult(): lsp.InitializeResult | undefined {
     return this.client?.initializeResult;
+  }
+
+  getPushDiagnosticsCount(): number {
+    return this.pushDiagnosticsCount;
   }
 
   async getComponentsForOpenExternalTemplate(
