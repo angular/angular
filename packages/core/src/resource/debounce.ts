@@ -65,7 +65,6 @@ export function debounced<T>(
   effect(
     () => {
       // Enter error state if the source throws.
-      // TODO: does this make sense?
       let value: T;
       try {
         setInParamsFunction(true);
