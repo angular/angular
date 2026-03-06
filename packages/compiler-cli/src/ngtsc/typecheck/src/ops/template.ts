@@ -6,14 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {TmplAstBoundAttribute, TmplAstDirective, TmplAstTemplate} from '@angular/compiler';
-import ts from 'typescript';
 import {TcbOp} from './base';
 import {declareVariable, getStatementsBlock, TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {TcbDirectiveMetadata} from '../../api';
-import {Reference} from '../../../imports';
-import {ClassDeclaration} from '../../../reflection';
 import {tcbExpression} from './expression';
 
 /**
