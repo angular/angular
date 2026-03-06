@@ -12,6 +12,7 @@ import {
   TmplAstDeferredBlock,
   TmplAstDeferredTrigger,
   TmplAstHoverDeferredTrigger,
+  TmplAstIdleDeferredTrigger,
   TmplAstImmediateDeferredTrigger,
   TmplAstInteractionDeferredTrigger,
   TmplAstTimerDeferredTrigger,
@@ -58,6 +59,26 @@ function areLiteralMapsEqual(a: LiteralMap | null, b: LiteralMap | null): boolea
   }
 
   return true;
+}
+
+function getTimedTriggerValue(
+  trigger: TmplAstTimerDeferredTrigger | TmplAstIdleDeferredTrigger,
+): number | null {
+  if (trigger instanceof TmplAstTimerDeferredTrigger) {
+    return trigger.delay;
+  }
+
+  return trigger.timeout;
+}
+
+function formatTimedTrigger(
+  trigger: TmplAstTimerDeferredTrigger | TmplAstIdleDeferredTrigger,
+): string {
+  if (trigger instanceof TmplAstTimerDeferredTrigger) {
+    return `timer(${trigger.delay}ms)`;
+  }
+
+  return trigger.timeout === null ? 'idle' : `idle(${trigger.timeout}ms)`;
 }
 
 /**
@@ -119,21 +140,36 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
       const main = mains[0];
 
       for (const pre of prefetches) {
-        // Timer vs Timer: warn when prefetch delay >= main delay
-        const isTimerTriggger =
+        // Delay-based pairs (timer/idle): warn when prefetch fires no sooner than main.
+
+        const isTimerPair =
           main instanceof TmplAstTimerDeferredTrigger && pre instanceof TmplAstTimerDeferredTrigger;
-        if (isTimerTriggger) {
-          const mainDelay = main.delay;
-          const preDelay = pre.delay;
-          if (preDelay >= mainDelay) {
-            const msg = `The Prefetch 'timer(${preDelay}ms)' is not scheduled before the main 'timer(${mainDelay}ms)', so it won’t run prior to rendering. Lower the prefetch delay or remove it.`;
-            diags.push(
-              ctx.makeTemplateDiagnostic(
-                pre.sourceSpan ?? node.sourceSpan,
-                formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
-              ),
-            );
+
+        const isIdlePair =
+          main instanceof TmplAstIdleDeferredTrigger && pre instanceof TmplAstIdleDeferredTrigger;
+
+        if (isTimerPair || isIdlePair) {
+          const mainVal = getTimedTriggerValue(main);
+          const preVal = getTimedTriggerValue(pre);
+          const sameUntimedIdle = mainVal == null && preVal == null;
+          const comparableTimedPair = mainVal != null && preVal != null && preVal >= mainVal;
+
+          if (!sameUntimedIdle && !comparableTimedPair) {
+            continue;
           }
+
+          const msg =
+            `The Prefetch '${formatTimedTrigger(pre)}' is not scheduled before the main '${formatTimedTrigger(main)}',` +
+            ` so it won't run prior to rendering. Lower the prefetch timing or remove it.`;
+
+          diags.push(
+            ctx.makeTemplateDiagnostic(
+              pre.sourceSpan ?? node.sourceSpan,
+              formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+            ),
+          );
+
+          continue;
         }
 
         // Reference-based triggers (hover/interaction/viewport): warn if both
