@@ -64,3 +64,4 @@ export {TcbGenericContextBehavior} from '../src/ngtsc/typecheck/src/ops/context'
 export {ImportManager} from '../src/ngtsc/translator';
 export type {ReferenceEmitter} from '../src/ngtsc/imports';
 export type {ReflectionHost, ClassDeclaration} from '../src/ngtsc/reflection';
+export {ClassPropertyMapping} from '../src/ngtsc/metadata/src/property_mapping';
