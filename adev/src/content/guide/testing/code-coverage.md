@@ -86,6 +86,7 @@ Now, if your coverage drops below 80% when you run your tests, the command will 
 You can configure several other coverage options in your `angular.json` file:
 
 - `coverageInclude`: Glob patterns of files to include in the coverage report.
+- `coverageExclude`: Glob patterns of files to exclude in the coverage report.
 - `coverageReporters`: An array of reporters to use (e.g., `html`, `lcov`, `json`).
 - `coverageWatermarks`: An object specifying `[low, high]` watermarks for the HTML reporter, which can affect the color-coding of the report.
 
