@@ -24,11 +24,11 @@ import {
   CanActivateChildFn,
   CanActivateFn,
   CanDeactivateFn,
-  GuardResult,
   CanLoadFn,
   CanMatchFn,
-  Route,
+  GuardResult,
   PartialMatchRouteSnapshot,
+  Route,
 } from '../models';
 import {redirectingNavigationError} from '../navigation_canceling_error';
 import type {NavigationTransition} from '../navigation_transition';
@@ -50,8 +50,8 @@ import {
   isCanMatch,
 } from '../utils/type_guards';
 
-import {prioritizedGuardValue} from './prioritized_guard_value';
 import {takeUntilAbort} from '../utils/abort_signal_to_observable';
+import {prioritizedGuardValue} from './prioritized_guard_value';
 
 export function checkGuards(
   forwardEvent?: (evt: Event) => void,
@@ -188,8 +188,8 @@ function runCanActivateChild(
       const guardsMapped = d.guards.map(
         (canActivateChild: CanActivateChildFn | ProviderToken<unknown>) => {
           const closestInjector = d.node._environmentInjector;
-          const guard = getTokenOrFunctionIdentity<{canActivateChild: CanActivateChildFn}>(
-            canActivateChild,
+          const guard = getTokenOrFunctionIdentity(
+            canActivateChild as ProviderToken<CanActivateChildFn>,
             closestInjector,
           );
           const guardVal = isCanActivateChild(guard)
