@@ -1062,6 +1062,11 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
     target: TmplAstLetDeclaration,
   ): void {}
   conflictingDeclaration(id: TypeCheckId, current: TmplAstLetDeclaration): void {}
+  multipleMatchingComponents(
+    id: TypeCheckId,
+    element: TmplAstElement,
+    componentNames: string[],
+  ): void {}
   missingNamedTemplateDependency(
     id: TypeCheckId,
     node: TmplAstComponent | TmplAstDirective,
