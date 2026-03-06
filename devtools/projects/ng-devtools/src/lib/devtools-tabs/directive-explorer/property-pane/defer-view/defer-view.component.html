@@ -1,5 +1,5 @@
-<mat-toolbar>Rendered block</mat-toolbar>
-<div class="defer-details">
+<mat-toolbar class="section-heading">Rendered block</mat-toolbar>
+<div class="details">
   @if (defer().renderedBlock) {
     <span class="pill"> &#64;{{ defer().renderedBlock }}</span>
   } @else {
@@ -9,8 +9,8 @@
 
 @if (hasDeclaredBlocks()) {
   @let blocks = defer().blocks;
-  <mat-toolbar>Declared blocks</mat-toolbar>
-  <div class="defer-details">
+  <mat-toolbar class="section-heading">Declared blocks</mat-toolbar>
+  <div class="details">
     @if (blocks.placeholderBlock.exists) {
       <span class="pill">
         &#64;placeholder<!--
@@ -31,8 +31,8 @@
 }
 
 @let triggers = defer().triggers;
-<mat-toolbar>Triggers</mat-toolbar>
-<div class="defer-details">
+<mat-toolbar class="section-heading">Triggers</mat-toolbar>
+<div class="details">
   <h3>Defer triggers</h3>
   @for (trigger of triggers.defer; track $index) {
     <span class="trigger">{{ trigger }}</span>

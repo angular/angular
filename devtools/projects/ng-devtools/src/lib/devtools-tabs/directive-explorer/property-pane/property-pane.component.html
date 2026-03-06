@@ -26,8 +26,12 @@
       <div class="dehydrated-component">This component is dehydrated</div>
     }
 
-    @if (currentSelectedElement.defer) {
-      <ng-defer-view [defer]="currentSelectedElement.defer" />
+    @let block = currentSelectedElement.controlFlowBlock;
+
+    @if (BlockType.isDeferBlock(block)) {
+      <ng-defer-view [defer]="block" />
+    } @else if (BlockType.isForLoopBlock(block)) {
+      <ng-for-loop-view [forLoop]="block" />
     }
   </div>
 }

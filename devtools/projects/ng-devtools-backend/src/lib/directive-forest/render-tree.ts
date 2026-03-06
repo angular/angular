@@ -8,32 +8,46 @@
 
 import {
   ɵFrameworkAgnosticGlobalUtils as FrameworkAgnosticGlobalUtils,
-  ɵDeferBlockData as DeferBlockData,
   ɵHydratedNode as HydrationNode,
 } from '@angular/core';
-import {RenderedDeferBlock, HydrationStatus} from '../../../../protocol';
+import {HydrationStatus} from '../../../../protocol';
 
 import {ComponentTreeNode} from '../interfaces';
 import {ngDebugClient} from '../ng-debug-api/ng-debug-api';
 import {isCustomElement} from '../utils';
+import {
+  ControlFlowBlocksIterator,
+  createControlFlowTreeNode,
+  isControlFlowBlock,
+} from './control-flow';
 
-const extractViewTree = (
+interface TreeExtractionContext {
+  blocksIterator: ControlFlowBlocksIterator;
+  rootId: number;
+  getComponent?: FrameworkAgnosticGlobalUtils['getComponent'];
+  getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'];
+  getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'];
+}
+
+function extractViewTree(
   domNode: Node | Element,
   result: ComponentTreeNode[],
-  deferBlocks: DeferBlocksIterator,
-  rootId: number,
-  getComponent?: FrameworkAgnosticGlobalUtils['getComponent'],
-  getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'],
-  getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'],
-): ComponentTreeNode[] => {
+  ctx: TreeExtractionContext,
+  nodesToSkip = new Set<Node>(),
+): void {
   // Ignore DOM Node if it came from a different frame. Use instanceof Node to check this.
   if (!(domNode instanceof Node)) {
-    return result;
+    return;
   }
 
-  const directives = getDirectives?.(domNode) ?? [];
+  if (isControlFlowBlock(domNode, ctx.blocksIterator)) {
+    groupControlFlowBlocksChildren(ctx, result, nodesToSkip);
+    return;
+  }
+
+  const directives = ctx.getDirectives?.(domNode) ?? [];
   if (!directives.length && !(domNode instanceof Element)) {
-    return result;
+    return;
   }
   const componentTreeNode: ComponentTreeNode = {
     children: [],
@@ -47,22 +61,22 @@ const extractViewTree = (
     element: domNode.nodeName.toLowerCase(),
     nativeElement: domNode,
     hydration: hydrationStatus(domNode),
-    defer: null,
+    controlFlowBlock: null,
   };
 
   if (!(domNode instanceof Element)) {
     // In case we show the Comment nodes
     result.push(componentTreeNode);
-    return result;
+    return;
   }
 
   const isDehydratedElement = componentTreeNode.hydration?.status === 'dehydrated';
-  const component = getComponent?.(domNode);
+  const component = ctx.getComponent?.(domNode);
   if (component) {
     componentTreeNode.component = {
       instance: component,
       isElement: isCustomElement(domNode),
-      name: getDirectiveMetadata?.(component)?.name ?? domNode.nodeName.toLowerCase(),
+      name: ctx.getDirectiveMetadata?.(component)?.name ?? domNode.nodeName.toLowerCase(),
     };
   }
 
@@ -71,108 +85,52 @@ const extractViewTree = (
     result.push(componentTreeNode);
   }
 
-  // Nodes that are part of a defer block will be added as children of the defer block
-  // and should be skipped from the regular code path
-  const deferredNodesToSkip = new Set<Node>();
-  const appendTo = isDisplayableNode ? componentTreeNode.children : result;
+  const childrenResult = isDisplayableNode ? componentTreeNode.children : result;
 
-  domNode.childNodes.forEach((node) => {
-    groupDeferChildrenIfNeeded(
-      node,
-      deferredNodesToSkip,
-      appendTo,
-      deferBlocks,
-      rootId,
-      getComponent,
-      getDirectives,
-      getDirectiveMetadata,
-    );
-
-    if (!deferredNodesToSkip.has(node)) {
-      extractViewTree(
-        node,
-        appendTo,
-        deferBlocks,
-        rootId,
-        getComponent,
-        getDirectives,
-        getDirectiveMetadata,
-      );
+  for (const node of domNode.childNodes) {
+    if (!nodesToSkip.has(node)) {
+      extractViewTree(node, childrenResult, ctx, nodesToSkip);
     }
-  });
-
-  return result;
-};
+  }
+}
 
 /**
- * Group Nodes under a defer block if they are part of it.
- *
- * @param node
- * @param deferredNodesToSkip Will mutate the set with the nodes that are grouped into the created deferblock.
- * @param deferBlocks
- * @param appendTo
- * @param getComponent
- * @param getDirectives
- * @param getDirectiveMetadata
+ * Groups nodes under a @defer block if the given node is the first child of one.
+ * @returns true if a defer block was created, false otherwise.
  */
-function groupDeferChildrenIfNeeded(
-  node: Node,
-  deferredNodesToSkip: Set<Node>,
-  appendTo: ComponentTreeNode[],
-  deferBlocks: DeferBlocksIterator,
-  rootId: number,
-  getComponent?: FrameworkAgnosticGlobalUtils['getComponent'],
-  getDirectives?: FrameworkAgnosticGlobalUtils['getDirectives'],
-  getDirectiveMetadata?: FrameworkAgnosticGlobalUtils['getDirectiveMetadata'],
+function groupControlFlowBlocksChildren(
+  ctx: TreeExtractionContext,
+  result: ComponentTreeNode[],
+  nodesToSkip: Set<Node>,
 ) {
-  const currentDeferBlock = deferBlocks.currentBlock;
-  const isFirstDeferredChild = node === currentDeferBlock?.rootNodes[0];
-  // Handles the case where the @defer is still unresolved but doesn't
-  // have a placeholder, for instance, by which children we mark
-  // the position of the block normally. In this case, we use the host.
-  const isHostNode = node === currentDeferBlock?.hostNode;
-
-  if (isFirstDeferredChild || isHostNode) {
-    deferBlocks.advance();
-
-    // When encountering the first child of a defer block (or the host node),
-    // we create a synthetic TreeNode representing the defer block.
-    const childrenTree: ComponentTreeNode[] = [];
-    for (const child of currentDeferBlock.rootNodes) {
-      extractViewTree(
-        child,
-        childrenTree,
-        deferBlocks,
-        rootId,
-        getComponent,
-        getDirectives,
-        getDirectiveMetadata,
-      );
-    }
-
-    const deferBlockTreeNode = {
-      children: childrenTree,
-      component: null,
-      directives: [],
-      element: '@defer',
-      nativeElement: undefined,
-      hydration: null,
-      defer: {
-        id: `deferId-${rootId}-${deferBlocks.currentIndex}`,
-        state: currentDeferBlock.state,
-        renderedBlock: getRenderedBlock(currentDeferBlock),
-        triggers: groupTriggers(currentDeferBlock.triggers),
-        blocks: {
-          hasErrorBlock: currentDeferBlock.hasErrorBlock,
-          placeholderBlock: currentDeferBlock.placeholderBlock,
-          loadingBlock: currentDeferBlock.loadingBlock,
-        },
-      },
-    } satisfies ComponentTreeNode;
-
-    currentDeferBlock?.rootNodes.forEach((child) => deferredNodesToSkip.add(child));
-    appendTo.push(deferBlockTreeNode);
+  const currentBlock = ctx.blocksIterator.currentBlock;
+  if (!currentBlock) {
+    throw new Error('There is no current block in the control flow block iterator.');
   }
+
+  ctx.blocksIterator.advance();
+  // It's important to store the here index before the recursive call.
+  const iteratorCurrentIdx = ctx.blocksIterator.currentIndex;
+
+  const childrenTree: ComponentTreeNode[] = [];
+  // Extract children
+  for (const child of currentBlock.rootNodes) {
+    if (!nodesToSkip.has(child)) {
+      extractViewTree(child, childrenTree, ctx, nodesToSkip);
+    }
+  }
+
+  const blockTreeNode = createControlFlowTreeNode(
+    currentBlock,
+    childrenTree,
+    iteratorCurrentIdx,
+    ctx.rootId,
+  );
+
+  for (const child of currentBlock.rootNodes) {
+    nodesToSkip.add(child);
+  }
+  result.push(blockTreeNode);
 }
 
 function hydrationStatus(element: Node): HydrationStatus {
@@ -201,33 +159,6 @@ function hydrationStatus(element: Node): HydrationStatus {
   }
 }
 
-function groupTriggers(triggers: string[]) {
-  const defer: string[] = [];
-  const hydrate: string[] = [];
-  const prefetch: string[] = [];
-
-  for (let trigger of triggers) {
-    if (trigger.startsWith('hydrate')) {
-      hydrate.push(trigger);
-    } else if (trigger.startsWith('prefetch')) {
-      prefetch.push(trigger);
-    } else {
-      defer.push(trigger);
-    }
-  }
-  return {defer, hydrate, prefetch};
-}
-
-function getRenderedBlock(deferBlock: DeferBlockData): RenderedDeferBlock | null {
-  if (['placeholder', 'loading', 'error'].includes(deferBlock.state)) {
-    return deferBlock.state as 'placeholder' | 'loading' | 'error';
-  }
-  if (deferBlock.state === 'complete') {
-    return 'defer';
-  }
-  return null;
-}
-
 export class RTreeStrategy {
   supports(): boolean {
     return (['getDirectiveMetadata', 'getComponent'] as const).every(
@@ -237,32 +168,18 @@ export class RTreeStrategy {
 
   build(element: Element, rootId: number = 0): ComponentTreeNode[] {
     const ng = ngDebugClient();
-    const deferBlocks = ng.ɵgetDeferBlocks?.(element) ?? [];
-
-    return extractViewTree(
-      element,
-      [],
-      new DeferBlocksIterator(deferBlocks),
+    const controlFlowBlocks = ng.ɵgetControlFlowBlocks?.(element) ?? [];
+    const ctx: TreeExtractionContext = {
+      blocksIterator: new ControlFlowBlocksIterator(controlFlowBlocks),
       rootId,
-      ng.getComponent,
-      ng.getDirectives,
-      ng.getDirectiveMetadata,
-    );
-  }
-}
+      getComponent: ng.getComponent,
+      getDirectives: ng.getDirectives,
+      getDirectiveMetadata: ng.getDirectiveMetadata,
+    };
 
-class DeferBlocksIterator {
-  public currentIndex = 0;
-  private blocks: DeferBlockData[] = [];
-  constructor(blocks: DeferBlockData[]) {
-    this.blocks = blocks;
-  }
+    const tree: ComponentTreeNode[] = [];
+    extractViewTree(element, tree, ctx);
 
-  advance() {
-    this.currentIndex++;
-  }
-
-  get currentBlock(): DeferBlockData | undefined {
-    return this.blocks[this.currentIndex];
+    return tree;
   }
 }

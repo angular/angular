@@ -25,8 +25,8 @@ import {
   publishGlobalUtil,
 } from '../../src/render3/util/global_utils';
 import {setProfiler} from '../../src/render3/profiler';
-import {getDeferBlocks} from '../../src/render3/util/defer';
 import {global} from '../../src/util/global';
+import {getControlFlowBlocks} from '../../src/render3/util/control_flow';
 
 type GlobalUtilFunctions = keyof GlobalDevModeUtils['ng'];
 
@@ -89,8 +89,8 @@ describe('global utils', () => {
       assertPublished('ɵsetProfiler', setProfiler);
     });
 
-    it('should publish ɵgetDeferBlocks', () => {
-      assertPublished('ɵgetDeferBlocks', getDeferBlocks);
+    it('should publish ɵgetControlFlowBlocks', () => {
+      assertPublished('ɵgetControlFlowBlocks', getControlFlowBlocks);
     });
   });
 });
