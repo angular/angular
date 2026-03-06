@@ -501,7 +501,7 @@ export abstract class AssetGroup {
    * Create a new `Request` based on the specified URL and `RequestInit` options, preserving only
    * metadata that are known to be safe.
    *
-   * Currently, only headers are preserved.
+   * Currently, only headers and redirect policy are preserved.
    *
    * NOTE:
    *   Things like credential inclusion are intentionally omitted to avoid issues with opaque
@@ -512,7 +512,10 @@ export abstract class AssetGroup {
    *   https://github.com/angular/angular/issues/41931#issuecomment-1227601347
    */
   private newRequestWithMetadata(url: string, options: RequestInit): Request {
-    return this.adapter.newRequest(url, {headers: options.headers});
+    return this.adapter.newRequest(url, {
+      headers: options.headers,
+      redirect: options.redirect,
+    });
   }
 
   /**
