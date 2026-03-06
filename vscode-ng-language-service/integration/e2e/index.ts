@@ -38,6 +38,9 @@ async function main() {
         PROJECT_PATH,
         // This disables all extensions except the one being tested
         '--disable-extensions',
+        // Avoid macOS Keychain prompts that can freeze Extension Development Host in local e2e runs.
+        '--password-store=basic',
+        '--use-mock-keychain',
         '--disable-gpu',
         '--no-sandbox',
         '--disable-dev-shm-usage',
