@@ -24,14 +24,17 @@ npm_sass_library = _npm_sass_library
 http_server = _http_server
 js_library = _js_library
 
-def esbuild(minify = None, sourcemap = "linked", sources_content = True, **kwargs):
+def esbuild(minify = None, **kwargs):
     _esbuild(
         minify = minify if minify != None else select({
             "//devtools:debug_build": False,
             "//conditions:default": True,
         }),
-        sourcemap = sourcemap,
-        sources_content = sources_content,
+        # Do not change this as otherwise the sourcemaps will cause the build not to be reproducable and firefox will not publish the extension.
+        # NB: Do not use `select` here either as this option is not configurable and bazel doesn't resolve to a value.
+        # TODO: Remove this once aspect_rules_esbuild supports sourcemap = False
+        # See: https://github.com/aspect-build/rules_esbuild/pull/264
+        sourcemap = "external",
         **kwargs
     )
 
