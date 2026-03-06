@@ -23,6 +23,7 @@ import {
   EventEmitter,
   inject,
   Input,
+  ɵViewRef as InternalViewRef,
   OnInit,
   Output,
   provideCheckNoChangesConfig,
@@ -1398,7 +1399,7 @@ describe('change detection', () => {
         const fixture = TestBed.createComponent(NoChangesComp);
 
         expect(() => {
-          fixture.componentInstance.cdr.checkNoChanges();
+          (fixture.componentInstance.cdr as InternalViewRef<unknown>).checkNoChanges();
         }).toThrowError(
           /ExpressionChangedAfterItHasBeenCheckedError: .+ Previous value: '.*undefined'. Current value: '.*1'/gi,
         );
@@ -1411,7 +1412,9 @@ describe('change detection', () => {
         });
         const fixture = TestBed.createComponent(AppComp);
 
-        expect(() => fixture.componentInstance.cdr.checkNoChanges()).toThrowError(
+        expect(() =>
+          (fixture.componentInstance.cdr as InternalViewRef<unknown>).checkNoChanges(),
+        ).toThrowError(
           /ExpressionChangedAfterItHasBeenCheckedError: .+ Previous value: '.*undefined'. Current value: '.*1'/gi,
         );
       });
@@ -1433,7 +1436,9 @@ describe('change detection', () => {
         });
         const fixture = TestBed.createComponent(EmbeddedViewApp);
 
-        expect(() => fixture.componentInstance.cdr.checkNoChanges()).toThrowError(
+        expect(() =>
+          (fixture.componentInstance.cdr as InternalViewRef<unknown>).checkNoChanges(),
+        ).toThrowError(
           /ExpressionChangedAfterItHasBeenCheckedError: .+ Previous value: '.*undefined'. Current value: '.*true'/gi,
         );
       });
@@ -1452,7 +1457,9 @@ describe('change detection', () => {
         expect(comp.viewCheckCount).toEqual(1);
 
         comp.value = 2;
-        expect(() => fixture.componentInstance.cdr.checkNoChanges()).toThrow();
+        expect(() =>
+          (fixture.componentInstance.cdr as InternalViewRef<unknown>).checkNoChanges(),
+        ).toThrow();
         expect(comp.doCheckCount).toEqual(1);
         expect(comp.contentCheckCount).toEqual(1);
         expect(comp.viewCheckCount).toEqual(1);
