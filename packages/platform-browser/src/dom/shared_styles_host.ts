@@ -236,6 +236,28 @@ export class SharedStylesHost implements OnDestroy {
     }
   }
 
+  /**
+   * Fully removes style elements from the DOM and clears their usage records.
+   * Used during HMR to clean up styles from replaced components.
+   */
+  removeUsagesAndElements(styles: string[], urls?: string[]): void {
+    for (const value of styles) {
+      this.removeUsageAndElement(value, this.inline);
+    }
+    urls?.forEach((value) => this.removeUsageAndElement(value, this.external));
+  }
+
+  protected removeUsageAndElement<T extends HTMLLinkElement | HTMLStyleElement>(
+    value: string,
+    usages: Map<string, UsageRecord<T>>,
+  ): void {
+    const record = usages.get(value);
+    if (record) {
+      removeElements(record.elements);
+      usages.delete(value);
+    }
+  }
+
   ngOnDestroy(): void {
     for (const [, {elements}] of [...this.inline, ...this.external]) {
       removeElements(elements);

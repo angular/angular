@@ -252,6 +252,10 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
    * @param componentId ID of the component that is being replaced.
    */
   protected componentReplaced(componentId: string) {
+    const renderer = this.rendererByCompId.get(componentId);
+    if (renderer instanceof NoneEncapsulationDomRenderer) {
+      renderer.removeStyles();
+    }
     this.rendererByCompId.delete(componentId);
   }
 }
@@ -604,6 +608,10 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
 
   applyStyles(): void {
     this.sharedStylesHost.addStyles(this.styles, this.styleUrls);
+  }
+
+  removeStyles(): void {
+    this.sharedStylesHost.removeUsagesAndElements(this.styles, this.styleUrls);
   }
 
   override destroy(): void {
