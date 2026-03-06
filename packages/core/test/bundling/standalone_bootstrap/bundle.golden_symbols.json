@@ -365,6 +365,7 @@
       "getComponentDef",
       "getComponentId",
       "getComponentLViewByIndex",
+      "getComponentName",
       "getConstant",
       "getCurrentDirectiveIndex",
       "getCurrentInjector",

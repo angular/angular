@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ComponentDef} from '../render3';
+import type {ComponentDef} from '../render3';
 import {readPatchedLView} from '../render3/context_discovery';
 import {isComponentHost, isLContainer, isLView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, HOST, TVIEW} from '../render3/interfaces/view';
@@ -36,11 +36,11 @@ export function getClosestComponentName(node: Node): string | null {
         const tNode = getTNode(tView, i);
         if (isComponentHost(tNode)) {
           const def = tView.data[tNode.directiveStart + tNode.componentOffset] as ComponentDef<{}>;
-          const name = def.debugInfo?.className || def.type.name;
+          const name = getComponentName(def);
 
           // Note: the name may be an empty string if the class name is
           // dropped due to minification. In such cases keep going up the tree.
-          if (name) {
+          if (name !== null) {
             return name;
           } else {
             break;
@@ -53,4 +53,16 @@ export function getClosestComponentName(node: Node): string | null {
   }
 
   return null;
+}
+
+/**
+ * Gets the class name of a component from its definition.
+ * Warning! this function will return minified names if the name of the component is minified. The
+ * consumer of the function is responsible for resolving the minified name to its original name.
+ * @param tView TView that the node belongs to.
+ * @param tNode TNode from which to extract the component name.
+ */
+export function getComponentName(def: ComponentDef<unknown>): string | null {
+  // Note: the name may be an empty string if the class name is dropped due to minification.
+  return def.debugInfo?.className || def.type.name || null;
 }
