@@ -175,7 +175,7 @@ export interface TestBed {
    * Returns the most recently created `ComponentFixture`, or throws an error if one has not
    * yet been created.
    */
-  getFixture<T = unknown>(): ComponentFixture<T>;
+  getLastFixture<T = unknown>(): ComponentFixture<T>;
 
   /**
    * Execute any pending effects.
@@ -420,8 +420,8 @@ export class TestBedImpl implements TestBed {
     return TestBedImpl.INSTANCE.createComponent(component, options);
   }
 
-  static getFixture<T = unknown>(): ComponentFixture<T> {
-    return TestBedImpl.INSTANCE.getFixture();
+  static getLastFixture<T = unknown>(): ComponentFixture<T> {
+    return TestBedImpl.INSTANCE.getLastFixture();
   }
 
   static resetTestingModule(): TestBed {
@@ -719,17 +719,11 @@ export class TestBedImpl implements TestBed {
     return fixture;
   }
 
-  getFixture<T = unknown>(): ComponentFixture<T> {
+  getLastFixture<T = unknown>(): ComponentFixture<T> {
     if (this._activeFixtures.length === 0) {
       throw new Error('No fixture has been created yet.');
     }
-    if (this._activeFixtures.length > 1) {
-      throw new Error(
-        `More than one component fixture has been created. Use \`TestBed.createComponent\` ` +
-          `and store the fixture on the test context, rather than using \`TestBed.getFixture\`.`,
-      );
-    }
-    return this._activeFixtures[0];
+    return this._activeFixtures[this._activeFixtures.length - 1];
   }
 
   /**
