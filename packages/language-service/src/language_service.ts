@@ -41,6 +41,7 @@ import {getOutliningSpans} from './outlining_spans';
 import {QuickInfoBuilder} from './quick_info';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
 import {createLocationKey} from './references_and_rename_utils';
+import {getSelectionRangeAtPosition} from './selection_range';
 import {getSignatureHelp} from './signature_help';
 import {
   getTargetAtPosition,
@@ -309,6 +310,12 @@ export class LanguageService {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
       const result = getLinkedEditingRangeAtPosition(compiler, fileName, position);
       return result ?? undefined;
+    });
+  }
+
+  getSelectionRangeAtPosition(fileName: string, position: number): ts.SelectionRange | undefined {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
+      return getSelectionRangeAtPosition(compiler, fileName, position);
     });
   }
 
