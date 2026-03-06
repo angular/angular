@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.29.0",
-    "@rollup/plugin-babel": "^6.0.0",
+    "@rollup/plugin-babel": "^7.0.0",
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@types/jasmine": "^6.0.0",
     "@types/jasminewd2": "^2.0.8",
