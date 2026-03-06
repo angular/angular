@@ -8,18 +8,23 @@
 
 import {
   ApplicationRef,
+  Component,
   computed,
   createEnvironmentInjector,
   effect,
   EnvironmentInjector,
   Injector,
+  Input,
+  inputBinding,
+  makeStateKey,
   resource,
   ResourceRef,
   ResourceStatus,
   signal,
+  TransferState,
 } from '../../src/core';
-import {TestBed} from '../../testing';
 import {promiseWithResolvers} from '../../src/util/promise_with_resolvers';
+import {TestBed} from '../../testing';
 
 abstract class MockBackend<T, R> {
   protected pending = new Map<
@@ -744,15 +749,98 @@ describe('resource', () => {
   });
 
   it('should allow streaming', async () => {
+    const res = resource({
+      stream: () => signal({value: 'done'}),
+      injector: TestBed.inject(Injector),
+    });
+
+    // We rely an a synchronous tick to ensure that the stream is properly initialized, as it runs inside an effect.
+    TestBed.tick();
+
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe('done');
+  });
+
+  it('should allow streaming with param & sync stream', async () => {
+    const param = signal('a');
+    const res = resource({
+      params: param,
+      stream: ({params}) => signal({value: params + ' done'}),
+      injector: TestBed.inject(Injector),
+    });
+
+    // We rely an a synchronous tick to ensure that the stream is properly initialized, as it runs inside an effect.
+    TestBed.tick();
+
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe('a done');
+  });
+
+  it('should allow async streaming', async () => {
     const appRef = TestBed.inject(ApplicationRef);
     const res = resource({
       stream: async () => signal({value: 'done'}),
       injector: TestBed.inject(Injector),
     });
 
+    expect(res.status()).toBe('loading');
+    TestBed.tick();
+    // We're still loading, the promise hasn't resolved yet.
+    expect(res.status()).toBe('loading');
+
     await appRef.whenStable();
     expect(res.status()).toBe('resolved');
     expect(res.value()).toBe('done');
+  });
+
+  it('should allow streaming & cancelling with param & sync stream', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const param = signal('a');
+    let streamCount = 0;
+    const res = resource({
+      params: param,
+      stream: ({params}) => {
+        streamCount++;
+        return signal({value: params + ' done'});
+      },
+      injector: TestBed.inject(Injector),
+    });
+
+    // The stream is not evaluated eagerly, because we have to wait for init (in case we read inputs)
+    expect(streamCount).toBe(0);
+
+    TestBed.tick();
+
+    expect(streamCount).toBe(1);
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe('a done');
+    param.set('b');
+    await appRef.whenStable();
+    expect(streamCount).toBe(2);
+    expect(res.status()).toBe('resolved');
+    expect(res.value()).toBe('b done');
+  });
+
+  it('should allow stream from input()', async () => {
+    @Component({
+      selector: 'test',
+      template: `{{ res.value() }}`,
+    })
+    class TestComponent {
+      @Input() value = '';
+      res = resource({
+        params: () => this.value,
+        stream: ({params}) => signal({value: params + ' done'}),
+      });
+    }
+
+    const fixture = TestBed.createComponent(TestComponent, {
+      bindings: [inputBinding('value', signal('a'))],
+    });
+
+    TestBed.tick();
+
+    expect(fixture.componentInstance.res.value()).toEqual('a done');
   });
 
   it('should error via error()', async () => {
@@ -1031,3 +1119,67 @@ function extractError(fn: () => unknown): Error | undefined {
     return err as Error;
   }
 }
+
+describe('with TransferState', () => {
+  let transferState: TransferState;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({providers: [TransferState]});
+    transferState = TestBed.inject(TransferState);
+  });
+
+  it('should read from TransferState if a key is present', async () => {
+    const key = makeStateKey<number>('test-key');
+    transferState.set(key, 123);
+
+    const testResource = resource({
+      loader: async () => 456,
+      transferCacheKey: () => key,
+      injector: TestBed.inject(Injector),
+    });
+
+    // Should be synchronously resolved from cache
+    expect(testResource.status()).toBe('resolved');
+    expect(testResource.value()).toBe(123);
+
+    // Should prevent loader from running
+    await flushMicrotasks();
+    expect(testResource.value()).toBe(123);
+  });
+
+  it('should write to TransferState on server when resolved', async () => {
+    (globalThis as any).ngServerMode = true;
+    const key = makeStateKey<number>('server-key');
+
+    const testResource = resource({
+      loader: async () => 789,
+      transferCacheKey: () => key,
+      injector: TestBed.inject(Injector),
+    });
+
+    expect(testResource.status()).toBe('loading');
+
+    await flushMicrotasks();
+
+    expect(testResource.status()).toBe('resolved');
+    expect(testResource.value()).toBe(789);
+    expect(transferState.get(key, null!)).toBe(789);
+    (globalThis as any).ngServerMode = undefined;
+  });
+
+  it('should not write to TransferState on client when resolved', async () => {
+    const key = makeStateKey<number>('client-key');
+
+    const testResource = resource({
+      loader: async () => 101112,
+      transferCacheKey: () => key,
+      injector: TestBed.inject(Injector),
+    });
+
+    await flushMicrotasks();
+
+    expect(testResource.status()).toBe('resolved');
+    expect(testResource.value()).toBe(101112);
+    expect(transferState.hasKey(key)).toBeFalse();
+  });
+});

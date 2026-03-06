@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
+import {isSignal, Signal, ValueEqualityFn} from '../render3/reactivity/api';
 import {computed} from '../render3/reactivity/computed';
 import {effect, EffectRef} from '../render3/reactivity/effect';
 import {signal, signalAsReadonlyFn, WritableSignal} from '../render3/reactivity/signal';
@@ -14,7 +14,6 @@ import {untracked} from '../render3/reactivity/untracked';
 import {
   Resource,
   ResourceDependencyError,
-  ResourceLoaderParams,
   ResourceOptions,
   ResourceParamsStatus,
   ResourceRef,
@@ -33,6 +32,7 @@ import {inject} from '../di/injector_compatibility';
 import {DestroyRef} from '../linker/destroy_ref';
 import {PendingTasks} from '../pending_tasks';
 import {linkedSignal} from '../render3/reactivity/linked_signal';
+import {StateKey, TransferState} from '../transfer_state';
 
 /**
  * Constructs a `Resource` that projects a reactive request to an asynchronous operation defined by
@@ -78,6 +78,7 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
     options.equal ? wrapEqualityFn(options.equal) : undefined,
     options.debugName,
     options.injector ?? inject(Injector),
+    options.transferCacheKey,
   );
 }
 
@@ -195,6 +196,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
   override readonly status: Signal<ResourceStatus>;
   override readonly error: Signal<Error | undefined>;
+  private readonly transferState: TransferState | undefined;
 
   constructor(
     request: (ctx: ResourceParamsContext) => R,
@@ -203,6 +205,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     private readonly equal: ValueEqualityFn<T> | undefined,
     private readonly debugName: string | undefined,
     injector: Injector,
+    private transferCacheKey: ((request: R) => StateKey<T>) | undefined,
     getInitialStream?: (request: R) => Signal<ResourceStreamItem<T>> | undefined,
   ) {
     super(
@@ -231,6 +234,8 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       ),
       debugName,
     );
+
+    this.transferState = injector.get(TransferState, undefined, {optional: true}) ?? undefined;
 
     this.extRequest = linkedSignal<WrappedRequest>(
       () => {
@@ -266,7 +271,19 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
           );
         } else if (!status) {
           if (!previous) {
-            stream = getInitialStream?.(extRequest.request as R);
+            if (this.transferCacheKey && this.transferState && request !== undefined) {
+              const key = this.transferCacheKey(request as R);
+              if (this.transferState.hasKey(key)) {
+                stream = signal(
+                  {value: this.transferState.get(key, null!)},
+                  ngDevMode ? createDebugNameObject(this.debugName, 'stream') : undefined,
+                );
+              }
+            }
+
+            if (!stream) {
+              stream = getInitialStream?.(extRequest.request as R);
+            }
             // Clear getInitialStream so it doesn't hold onto memory
             getInitialStream = undefined;
             status = request === undefined ? 'idle' : stream ? 'resolved' : 'loading';
@@ -413,30 +430,70 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       // The actual loading is run through `untracked` - only the request side of `resource` is
       // reactive. This avoids any confusion with signals tracking or not tracking depending on
       // which side of the `await` they are.
-      const stream = await untracked(() => {
+      const stream = untracked(() => {
         return this.loaderFn({
           params: extRequest.request as Exclude<R, undefined>,
-          // TODO(alxhub): cleanup after g3 removal of `request` alias.
-          request: extRequest.request as Exclude<R, undefined>,
           abortSignal,
           previous: {
             status: previousStatus,
           },
-        } as ResourceLoaderParams<R>);
+        });
       });
 
       // If this request has been aborted, or the current request no longer
       // matches this load, then we should ignore this resolution.
-      if (abortSignal.aborted || untracked(this.extRequest) !== extRequest) {
-        return;
-      }
+      const shouldDiscard = () => abortSignal.aborted || untracked(this.extRequest) !== extRequest;
 
-      this.state.set({
-        extRequest,
-        status: 'resolved',
-        previousStatus: 'resolved',
-        stream,
-      });
+      if (isSignal(stream)) {
+        if (shouldDiscard()) {
+          return;
+        }
+
+        this.state.set({
+          extRequest,
+          status: 'resolved',
+          previousStatus: 'resolved',
+          stream,
+        });
+
+        const result = untracked(stream);
+        if (
+          typeof ngServerMode !== 'undefined' &&
+          ngServerMode &&
+          this.transferCacheKey &&
+          this.transferState &&
+          isResolved(result)
+        ) {
+          const key = this.transferCacheKey(extRequest.request as R);
+          this.transferState.set(key, result.value);
+        }
+      } else {
+        const resolvedStream = await stream;
+        if (shouldDiscard()) {
+          return;
+        }
+
+        this.state.set({
+          extRequest,
+          status: 'resolved',
+          previousStatus: 'resolved',
+          stream: resolvedStream,
+        });
+
+        // Use a local variable for the result so TypeScript can narrow `resolvedStream` correctly.
+        const result = resolvedStream ? untracked(resolvedStream) : undefined;
+        if (
+          typeof ngServerMode !== 'undefined' &&
+          ngServerMode &&
+          this.transferCacheKey &&
+          this.transferState &&
+          result &&
+          isResolved(result)
+        ) {
+          const key = this.transferCacheKey(extRequest.request as R);
+          this.transferState.set(key, result.value);
+        }
+      }
     } catch (err) {
       if (abortSignal.aborted || untracked(this.extRequest) !== extRequest) {
         return;

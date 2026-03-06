@@ -186,6 +186,7 @@ export interface BaseResourceOptions<T, R> {
     equal?: ValueEqualityFn<T>;
     injector?: Injector;
     params?: (ctx: ResourceParamsContext) => R;
+    transferCacheKey?: (params: R) => StateKey<T>;
 }
 
 // @public
@@ -1722,7 +1723,7 @@ export type ResourceSnapshot<T> = {
 export type ResourceStatus = 'idle' | 'error' | 'loading' | 'reloading' | 'resolved' | 'local';
 
 // @public
-export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<Signal<ResourceStreamItem<T>>>;
+export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => Signal<ResourceStreamItem<T>> | PromiseLike<Signal<ResourceStreamItem<T>>> | undefined;
 
 // @public (undocumented)
 export type ResourceStreamItem<T> = {
