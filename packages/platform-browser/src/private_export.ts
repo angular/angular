@@ -11,7 +11,6 @@ export {BrowserDomAdapter as ɵBrowserDomAdapter} from './browser/browser_adapte
 export {BrowserGetTestability as ɵBrowserGetTestability} from './browser/testability';
 export {DomRendererFactory2 as ɵDomRendererFactory2} from './dom/dom_renderer';
 export {DomEventsPlugin as ɵDomEventsPlugin} from './dom/events/dom_events';
-export {HammerGesturesPlugin as ɵHammerGesturesPlugin} from './dom/events/hammer_gestures';
 export {KeyEventsPlugin as ɵKeyEventsPlugin} from './dom/events/key_events';
 export {SharedStylesHost as ɵSharedStylesHost} from './dom/shared_styles_host';
 export {RuntimeErrorCode as ɵRuntimeErrorCode} from './errors';

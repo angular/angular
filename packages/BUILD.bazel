@@ -31,7 +31,6 @@ ts_project(
     ),
     deps = [
         ":goog_types",
-        "//:node_modules/@types/hammerjs",
         "//:node_modules/tslib",
         "//:node_modules/zone.js",
     ],
