@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, linkedSignal, type Signal, untracked, type WritableSignal} from '@angular/core';
+import {
+  computed,
+  linkedSignal,
+  type Signal,
+  untracked,
+  type WritableSignal,
+  type Resource,
+  type WritableResource,
+} from '@angular/core';
 import {
   MAX,
   MAX_LENGTH,
@@ -15,6 +23,7 @@ import {
   MIN_LENGTH,
   PATTERN,
   REQUIRED,
+  IS_ASYNC_VALIDATION_RESOURCE,
 } from '../api/rules/metadata';
 import type {ValidationError} from '../api/rules/validation/validation_errors';
 import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
@@ -290,6 +299,28 @@ export class FieldNode implements FieldState<unknown> {
 
     for (const child of this.structure.children()) {
       child._reset();
+    }
+  }
+
+  /**
+   * Reloads all asynchronous validators for this field and its descendants.
+   */
+  reloadValidation(): void {
+    untracked(() => this._reloadValidation());
+  }
+
+  private _reloadValidation(): void {
+    const keys = this.logicNode.logic.getMetadataKeys();
+    for (const key of keys) {
+      if (key[IS_ASYNC_VALIDATION_RESOURCE]) {
+        const resource = this.metadata(key)! as Resource<unknown> &
+          Partial<Pick<WritableResource<unknown>, 'reload'>>;
+        resource.reload?.();
+      }
+    }
+
+    for (const child of this.structure.children()) {
+      child._reloadValidation();
     }
   }
 
