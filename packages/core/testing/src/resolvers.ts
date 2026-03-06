@@ -11,8 +11,8 @@ import {
   Directive,
   NgModule,
   Pipe,
-  Type,
   ɵReflectionCapabilities as ReflectionCapabilities,
+  Type,
 } from '../../src/core';
 
 import {MetadataOverride} from './metadata_override';
@@ -26,6 +26,9 @@ const reflection = new ReflectionCapabilities();
 export interface Resolver<T> {
   addOverride(type: Type<any>, override: MetadataOverride<T>): void;
   setOverrides(overrides: Array<[Type<any>, MetadataOverride<T>]>): void;
+  getOverrides(type: Type<any>): MetadataOverride<T>[] | null;
+  hasOverrides(type: Type<any>): boolean;
+  hasTemplateOverrides(type: Type<any>): boolean;
   resolve(type: Type<any>): T | null;
 }
 
@@ -49,6 +52,28 @@ abstract class OverrideResolver<T> implements Resolver<T> {
     this.overrides.clear();
     overrides.forEach(([type, override]) => {
       this.addOverride(type, override);
+    });
+  }
+
+  getOverrides(type: Type<any>): MetadataOverride<T>[] | null {
+    return this.overrides.get(type) || null;
+  }
+
+  hasOverrides(type: Type<any>): boolean {
+    return this.overrides.has(type);
+  }
+
+  hasTemplateOverrides(type: Type<any>): boolean {
+    const overrides = this.overrides.get(type);
+    if (!overrides) {
+      return false;
+    }
+    return overrides.some((override: any) => {
+      return (
+        (override.set && 'template' in override.set) ||
+        (override.remove && 'template' in override.remove) ||
+        (override.add && 'template' in override.add)
+      );
     });
   }
 
