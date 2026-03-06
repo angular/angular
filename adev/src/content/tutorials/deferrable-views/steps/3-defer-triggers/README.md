@@ -1,45 +1,49 @@
-# Defer triggers
+# Триггеры defer {#defer-triggers}
 
-While the default options for `@defer` offer great options for lazy loading parts of your components it may still be desirable to further customize the deferred loading experience.
+Хотя настройки `@defer` по умолчанию предлагают отличные возможности для отложенной загрузки частей компонентов, иногда
+может потребоваться дополнительная настройка поведения загрузки.
 
-By default, deferred content loads when the browser is idle. You can, however, customize when this loading occurs by specifying a **trigger**. This lets you pick the loading behavior best suited to your component.
+По умолчанию отложенный контент загружается, когда браузер находится в состоянии простоя. Однако вы можете настроить
+момент загрузки, указав **триггер**. Это позволяет выбрать поведение загрузки, наиболее подходящее для вашего компонента.
 
-Deferrable views offer two types of loading trigger:
+Откладываемые представления поддерживают два типа триггеров загрузки:
 
 <div class="docs-table docs-scroll-track-transparent">
   <table>
     <tr>
       <td><code>on</code></td>
       <td>
-        A trigger condition using a trigger from the list of built-in triggers.<br/>
-        For example: <code>@defer (on viewport)</code>
+        Условие триггера, использующее один из встроенных триггеров.<br/>
+        Например: <code>@defer (on viewport)</code>
       </td>
     </tr>
     <tr>
       <td><code>when</code></td>
       <td>
-        A condition as an expression which is evaluated for truthiness. When the expression is truthy, the placeholder is swapped with the lazily loaded content.<br/>
-        For example: <code>@defer (when customizedCondition)</code>
+        Условие в виде выражения, которое вычисляется на истинность. Когда выражение истинно, заполнитель заменяется
+        лениво загруженным контентом.<br/>
+        Например: <code>@defer (when customizedCondition)</code>
       </td>
     </tr>
   </table>
 </div>
 
-If the `when` condition evaluates to `false`, the `defer` block is not reverted back to the placeholder. The swap is a one-time operation.
+Если условие `when` принимает значение `false`, блок `defer` не возвращается к заполнителю. Замена выполняется
+единожды.
 
-You can define multiple event triggers at once, these triggers will be evaluated as OR conditions.
+Вы можете определить несколько триггеров событий одновременно — они будут вычисляться как условия ИЛИ.
 
-- Ex: `@defer (on viewport; on timer(2s))`
-- Ex: `@defer (on viewport; when customizedCondition)`
+- Пример: `@defer (on viewport; on timer(2s))`
+- Пример: `@defer (on viewport; when customizedCondition)`
 
-In this activity, you'll learn how to use triggers to specify the condition to load the deferrable views.
+В этом упражнении вы узнаете, как использовать триггеры для задания условий загрузки откладываемых представлений.
 
 <hr>
 
 <docs-workflow>
 
-<docs-step title="Add `on hover` trigger">
-In your `app.ts`,  add an `on hover` trigger to the `@defer` block.
+<docs-step title="Добавление триггера `on hover`">
+В файле `app.ts` добавьте триггер `on hover` к блоку `@defer`.
 
 ```angular-html {highlight:[1]}
 @defer (on hover) {
@@ -53,11 +57,12 @@ In your `app.ts`,  add an `on hover` trigger to the `@defer` block.
 }
 ```
 
-Now, the page will not render the comments section until you hover its placeholder.
+Теперь страница не будет отображать секцию комментариев до тех пор, пока вы не наведёте курсор на заполнитель.
 </docs-step>
 
-<docs-step title="Add a 'Show all comments' button">
-Next, update the template to include a button with the label "Show all comments". Include a template variable called `#showComments` with the button.
+<docs-step title="Добавление кнопки 'Показать все комментарии'">
+Затем обновите шаблон, добавив кнопку с надписью «Show all comments». Добавьте к кнопке переменную шаблона
+`#showComments`.
 
 ```angular-html {highlight:[1]}
 <button type="button" #showComments>Show all comments</button>
@@ -73,12 +78,13 @@ Next, update the template to include a button with the label "Show all comments"
 }
 ```
 
-NOTE: for more information on [template variables check the documentation](/guide/templates/variables#declaring-a-template-reference-variable).
+ПРИМЕЧАНИЕ: подробнее о [переменных шаблона можно прочитать в документации](/guide/templates/variables#declaring-a-template-reference-variable).
 
 </docs-step>
 
-<docs-step title="Add `on interaction` trigger">
-Update the `@defer` block in the template to use the `on interaction` trigger. Provide the `showComments` template variable as the parameter to `interaction`.
+<docs-step title="Добавление триггера `on interaction`">
+Обновите блок `@defer` в шаблоне, добавив триггер `on interaction`. Передайте переменную шаблона `showComments` в
+качестве параметра для `interaction`.
 
 ```angular-html {highlight:[3]}
 <button type="button" #showComments>Show all comments</button>
@@ -94,14 +100,14 @@ Update the `@defer` block in the template to use the `on interaction` trigger. P
 }
 ```
 
-With these changes, the page will wait for one of the following conditions before rendering the comments section:
+После этих изменений страница будет ожидать одного из следующих условий перед отображением секции комментариев:
 
-- User hovers the comments section’s placeholder
-- User clicks on the “Show all comments" button
+- пользователь наводит курсор на заполнитель секции комментариев;
+- пользователь нажимает кнопку «Show all comments».
 
-You can reload the page to try out different triggers to render the comments section.
+Вы можете перезагрузить страницу и попробовать различные триггеры для отображения секции комментариев.
 </docs-step>
 </docs-workflow>
 
-If you would like to learn more, check out the documentation for [Deferrable View](/guide/templates/defer).
-Keep learning to unlock more of Angular's great features.
+Если вы хотите узнать больше, ознакомьтесь с документацией по [откладываемым представлениям](/guide/templates/defer).
+Продолжайте изучение, чтобы открыть для себя другие полезные возможности Angular.

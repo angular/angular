@@ -11,10 +11,13 @@
 ng generate @angular/core:control-flow
 ```
 
-## Breaking changes
+## Критические изменения {#breaking-changes}
 
-### `@for` view reuse
+### Повторное использование представлений в `@for` {#for-view-reuse}
 
-Using `@for` block if a property used in the `track` expression changes but the object reference remains the same (in-place modification), Angular updates the view's bindings (including component inputs) instead of destroying and recreating the element.
+При использовании блока `@for`, если свойство, задействованное в выражении `track`, изменяется, но ссылка на объект
+остаётся прежней (изменение на месте), Angular обновляет привязки представления (включая входные данные компонента)
+вместо того, чтобы уничтожать и воссоздавать элемент.
 
-This differs from `*ngFor`, which would execute a remount (destroy and recreate) of the element in a similar scenario if the `trackBy` function returned a different value.
+Это отличается от поведения `*ngFor`, который при аналогичном сценарии (если функция `trackBy` возвращала другое
+значение) выполнял переустановку (уничтожение и воссоздание) элемента.

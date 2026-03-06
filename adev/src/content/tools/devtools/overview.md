@@ -1,4 +1,4 @@
-# Обзор DevTools
+# Обзор DevTools {#devtools-overview}
 
 Angular DevTools — это расширение для браузера, которое предоставляет возможности отладки и профилирования для
 приложений Angular.
@@ -20,7 +20,7 @@ DevTools. Перейдите на любую другую страницу, чт
 
 <img src="assets/images/guide/devtools/devtools.png" alt="Обзор Angular DevTools, показывающий дерево компонентов приложения.">
 
-## Откройте ваше приложение
+## Откройте ваше приложение {#open-your-application}
 
 При открытии расширения вы увидите три дополнительные вкладки:
 
@@ -41,14 +41,14 @@ HELPFUL: Пользователям браузеров на базе Chromium м
 В правом верхнем углу Angular DevTools находится кнопка информации, открывающая всплывающее окно.
 В этом окне, среди прочего, указана версия Angular, запущенная на странице, а также версия devtools.
 
-### Приложение Angular не обнаружено
+### Приложение Angular не обнаружено {#angular-application-not-detected}
 
 Если при открытии Angular DevTools вы видите сообщение об ошибке "Angular application not detected" (Приложение Angular
 не обнаружено), это означает, что расширение не может установить связь с приложением Angular на странице.
 Наиболее частая причина — на проверяемой веб-странице нет приложения Angular.
 Убедитесь, что вы проверяете нужную веб-страницу и что приложение Angular запущено.
 
-### Обнаружено приложение, собранное с конфигурацией для продакшена
+### Обнаружено приложение, собранное с конфигурацией для продакшена {#detected-application-built-with-production-configuration}
 
 Если вы видите сообщение об ошибке "We detected an application built with production configuration. Angular DevTools
 only supports development builds." (Мы обнаружили приложение, собранное с конфигурацией для продакшена. Angular DevTools

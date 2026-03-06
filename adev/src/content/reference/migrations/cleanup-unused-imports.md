@@ -11,7 +11,7 @@
 ng generate @angular/core:cleanup-unused-imports
 ```
 
-#### До
+#### До {#before}
 
 ```angular-ts
 import {Component} from '@angular/core';
@@ -24,7 +24,7 @@ import {UnusedDirective} from './unused';
 export class MyComp {}
 ```
 
-#### После
+#### После {#after}
 
 ```angular-ts
 import {Component} from '@angular/core';

@@ -9,23 +9,23 @@
 ng generate @angular/core:ngstyle-to-style
 ```
 
-#### До
+#### До {#before}
 
 ```html
 <div [ngStyle]="{'background-color': 'red'}"></div>
 ```
 
-#### После
+#### После {#after}
 
 ```html
 <div [style]="{'background-color': 'red'}"></div>
 ```
 
-## Параметры конфигурации
+## Параметры конфигурации {#configuration-options}
 
 Процесс миграции поддерживает несколько параметров для точной настройки под ваши конкретные нужды.
 
-### `--best-effort-mode`
+### `--best-effort-mode` {#best-effort-mode}
 
 По умолчанию миграция не затрагивает случаи использования ссылок на объекты в `NgStyle`.
 При включении флага `--best-effort-mode` экземпляры `ngStyle`, привязанные к ссылкам на объекты, также будут перенесены.

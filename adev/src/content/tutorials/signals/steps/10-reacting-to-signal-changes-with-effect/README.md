@@ -1,4 +1,4 @@
-# Reacting to signal changes with effect
+# Реакция на изменения сигналов с помощью effect {#reacting-to-signal-changes-with-effect}
 
 Теперь, когда вы
 изучили [запрос дочерних элементов с помощью сигнальных запросов](/tutorials/signals/9-query-child-elements-with-signal-queries),

@@ -1,4 +1,4 @@
-# Отписка с помощью `takeUntilDestroyed`
+# Отписка с помощью `takeUntilDestroyed` {#takeuntildestroyed}
 
 СОВЕТ: Это руководство предполагает, что вы знакомы
 с [жизненным циклом компонентов и директив](guide/components/lifecycle).

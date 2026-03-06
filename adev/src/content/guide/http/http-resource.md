@@ -1,4 +1,4 @@
-# Реактивное получение данных с помощью `httpResource`
+# Реактивное получение данных с помощью `httpResource` {#reactive-data-fetching-with-httpresource}
 
 ВАЖНО: `httpResource` является [экспериментальным](reference/releases#experimental). Он готов к использованию, но может
 измениться до того, как станет стабильным.
@@ -11,7 +11,7 @@ interceptors (перехватчики).
 Подробнее о паттерне `resource` в Angular см. в разделе [Асинхронная реактивность с
 `resource`](/guide/signals/resource).
 
-## Использование `httpResource`
+## Использование `httpResource` {#using-httpresource}
 
 СОВЕТ: Убедитесь, что вы включили `provideHttpClient` в провайдеры вашего приложения. Подробнее см. в
 разделе [Настройка HttpClient](/guide/http/setup).
@@ -76,7 +76,7 @@ user = httpResource(() => ({
 ПОЛЕЗНО: Чтение сигнала `value` у `resource`, находящегося в состоянии ошибки, вызывает исключение во время выполнения.
 Рекомендуется защищать чтение `value` с помощью проверки `hasValue()`.
 
-### Типы ответов
+### Типы ответов {#response-types}
 
 По умолчанию `httpResource` возвращает и парсит ответ как JSON. Однако вы можете указать альтернативный вариант возврата
 с помощью дополнительных функций в `httpResource`:
@@ -89,7 +89,7 @@ httpResource.blob(() => ({ … })); // возвращает объект Blob в
 httpResource.arrayBuffer(() => ({ … })); // возвращает ArrayBuffer в value()
 ```
 
-## Парсинг и валидация ответов
+## Парсинг и валидация ответов {#parsing-and-validating-responses}
 
 При получении данных может потребоваться валидация ответов по заранее определенной схеме, часто с использованием
 популярных open-source библиотек, таких как [Zod](https://zod.dev) или [Valibot](https://valibot.dev). Вы можете
@@ -116,7 +116,7 @@ export class CharacterViewer {
 }
 ```
 
-## Тестирование httpResource
+## Тестирование httpResource {#testing-httpresource}
 
 Поскольку `httpResource` является оберткой вокруг `HttpClient`, вы можете тестировать `httpResource` с помощью тех же
 API, что и `HttpClient`. Подробнее см. в разделе [Тестирование HttpClient](/guide/http/testing).

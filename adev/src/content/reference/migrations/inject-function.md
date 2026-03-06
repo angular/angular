@@ -11,7 +11,7 @@
 ng generate @angular/core:inject
 ```
 
-#### До (Before)
+#### До {#before}
 
 ```typescript
 import {Component, Inject, Optional} from '@angular/core';
@@ -27,7 +27,7 @@ export class MyComp {
 }
 ```
 
-#### После (After)
+#### После {#after}
 
 ```typescript
 import {Component, inject} from '@angular/core';
@@ -41,29 +41,29 @@ export class MyComp {
 }
 ```
 
-## Опции миграции
+## Опции миграции {#migration-options}
 
 Миграция включает несколько опций для настройки результата.
 
-### `path`
+### `path` {#path}
 
 Определяет, какой подпуть в вашем проекте следует мигрировать. Передайте `.` или оставьте поле пустым, чтобы мигрировать
 весь каталог.
 
-### `migrateAbstractClasses`
+### `migrateAbstractClasses` {#migrate-abstract-classes}
 
 Angular не проверяет, что параметры абстрактных классов доступны для внедрения. Это означает, что миграция не может
 надежно перевести их на `inject` без риска поломок, поэтому по умолчанию эта опция отключена. Включите эту опцию, если
 хотите мигрировать абстрактные классы, но учтите, что вам, возможно, придется **исправлять некоторые ошибки вручную**.
 
-### `backwardsCompatibleConstructors`
+### `backwardsCompatibleConstructors` {#backwards-compatible-constructors}
 
 По умолчанию миграция пытается максимально очистить код, что включает удаление параметров из конструктора или даже всего
 конструктора, если он не содержит кода. В некоторых случаях это может привести к ошибкам компиляции, когда классы с
 декораторами Angular наследуются от других классов с декораторами Angular. Если вы включите эту опцию, миграция
 сгенерирует дополнительную сигнатуру конструктора для сохранения обратной совместимости ценой увеличения объема кода.
 
-#### До (Before)
+#### До {#before-backwards-compatible}
 
 ```typescript
 import {Component} from '@angular/core';
@@ -75,7 +75,7 @@ export class MyComp {
 }
 ```
 
-#### После (After)
+#### После {#after-backwards-compatible}
 
 ```typescript
 import { Component } from '@angular/core';
@@ -92,7 +92,7 @@ constructor() {}
 }
 ```
 
-### `nonNullableOptional`
+### `nonNullableOptional` {#non-nullable-optional}
 
 Если внедрение не удается для параметра с декоратором `@Optional`, Angular возвращает `null`, что означает, что реальный
 тип любого параметра `@Optional` будет `| null`. Однако, поскольку декораторы не могут влиять на свои типы, существует
@@ -103,7 +103,7 @@ constructor() {}
 **ПРИМЕЧАНИЕ:** Утверждения non-null не будут добавлены к параметрам, которые уже типизированы как допускающие null,
 поскольку код, зависящий от них, вероятно, уже учитывает их возможность быть null.
 
-#### До (Before)
+#### До {#before-non-nullable}
 
 ```typescript
 import {Component, Inject, Optional} from '@angular/core';
@@ -118,7 +118,7 @@ export class MyComp {
 }
 ```
 
-#### После (After)
+#### После {#after-non-nullable}
 
 ```typescript
 import {Component, inject} from '@angular/core';

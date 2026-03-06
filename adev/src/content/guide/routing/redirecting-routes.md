@@ -1,10 +1,10 @@
-# Перенаправление маршрутов
+# Перенаправление маршрутов {#redirecting-routes}
 
 Перенаправление маршрутов (Route redirects) позволяет автоматически переводить пользователей с одного маршрута на
 другой. Представьте это как переадресацию почты, когда письма, предназначенные для одного адреса, отправляются на
 другой. Это полезно для обработки устаревших URL, реализации маршрутов по умолчанию или управления контролем доступа.
 
-## Как настроить перенаправления
+## Как настроить перенаправления {#configuring-redirects}
 
 Вы можете определить перенаправления в конфигурации маршрута с помощью свойства `redirectTo`. Это свойство принимает
 строку.
@@ -19,7 +19,7 @@ const routes: Routes = [
   // Redirect with path parameters
   {path: 'legacy-user/:id', redirectTo: 'users/:id'},
 
-  // Redirect any other URLs that don’t match
+  // Redirect any other URLs that don't match
   // (also known as a "wildcard" redirect)
   {path: '**', redirectTo: '/login'},
 ];
@@ -32,7 +32,7 @@ const routes: Routes = [
 3. Когда пользователь посещает любой путь, не определенный в роутере, он перенаправляется на страницу входа из-за
    определения wildcard-пути `**`.
 
-## Понимание `pathMatch`
+## Понимание `pathMatch` {#understanding-pathmatch}
 
 Свойство `pathMatch` в маршрутах позволяет разработчикам контролировать, как Angular сопоставляет URL с маршрутами.
 
@@ -45,7 +45,7 @@ const routes: Routes = [
 
 По умолчанию все перенаправления используют стратегию `prefix`.
 
-### `pathMatch: 'prefix'`
+### `pathMatch: 'prefix'` {#pathmatch-prefix}
 
 `pathMatch: 'prefix'` — это стратегия по умолчанию, идеально подходящая, когда вы хотите, чтобы роутер Angular
 сопоставлял все последующие маршруты при запуске перенаправления.
@@ -67,7 +67,7 @@ export const routes: Routes = [
 - `/news/article` перенаправляется на `/blog/article`
 - `/news/article/:id` перенаправляется на `/blog/article/:id`
 
-### `pathMatch: 'full'`
+### `pathMatch: 'full'` {#pathmatch-full}
 
 С другой стороны, `pathMatch: 'full'` полезен, когда вы хотите, чтобы роутер Angular перенаправлял только конкретный
 путь.
@@ -98,7 +98,7 @@ export const routes: Routes = [{path: 'news', redirectTo: '/blog', pathMatch: 'f
 2. Любые последующие сегменты, такие как `/news/articles` или `/news/articles/1`, не будут перенаправлены с новым
    префиксом `/blog`.
 
-## Условные перенаправления
+## Условные перенаправления {#conditional-redirects}
 
 Свойство `redirectTo` также может принимать функцию для добавления логики в процесс перенаправления пользователей.
 
@@ -149,7 +149,7 @@ export const routes: Routes = [
 
 Чтобы узнать больше, ознакомьтесь с [документацией API для RedirectFunction](api/router/RedirectFunction).
 
-## Дальнейшие действия
+## Дальнейшие действия {#next-steps}
 
 Для получения дополнительной информации о свойстве `redirectTo` ознакомьтесь
 с [документацией API](api/router/Route#redirectTo).

@@ -1,4 +1,4 @@
-# Группировка элементов с помощью ng-container
+# Группировка элементов с помощью ng-container {#grouping-elements-with-ng-container}
 
 `<ng-container>` — это специальный элемент в Angular, который группирует несколько элементов вместе или помечает место в
 шаблоне без рендеринга реального элемента в DOM.
@@ -26,11 +26,11 @@
 Angular игнорирует все привязки атрибутов и слушатели событий, примененные к `<ng-container>`, включая те, что
 применяются через директиву.
 
-## Использование `<ng-container>` для отображения динамического контента
+## Использование `<ng-container>` для отображения динамического контента {#using-ng-container-for-dynamic-content}
 
 `<ng-container>` может выступать в качестве заполнителя (placeholder) для рендеринга динамического контента.
 
-### Рендеринг компонентов
+### Рендеринг компонентов {#rendering-components}
 
 Вы можете использовать встроенную директиву Angular `NgComponentOutlet` для динамического рендеринга компонента в месте
 расположения `<ng-container>`.
@@ -51,7 +51,7 @@ export class UserProfile {
 В приведенном выше примере директива `NgComponentOutlet` динамически рендерит `AdminProfile` или `BasicUserProfile` в
 месте расположения элемента `<ng-container>`.
 
-### Рендеринг фрагментов шаблона
+### Рендеринг фрагментов шаблона {#rendering-template-fragments}
 
 Вы можете использовать встроенную директиву Angular `NgTemplateOutlet` для динамического рендеринга фрагмента шаблона в
 месте расположения `<ng-container>`.
@@ -80,7 +80,7 @@ export class UserProfile {
 Для получения дополнительной информации о NgTemplateOutlet
 см. [страницу документации API NgTemplateOutlet](/api/common/NgTemplateOutlet).
 
-## Использование `<ng-container>` со структурными директивами
+## Использование `<ng-container>` со структурными директивами {#using-ng-container-with-structural-directives}
 
 Вы также можете применять структурные директивы к элементам `<ng-container>`. Распространенными примерами являются
 `ngIf` и `ngFor`.
@@ -97,7 +97,7 @@ export class UserProfile {
 </ng-container>
 ```
 
-## Использование `<ng-container>` для внедрения зависимостей
+## Использование `<ng-container>` для внедрения зависимостей {#using-ng-container-for-dependency-injection}
 
 См. руководство по Внедрению зависимостей (Dependency Injection) для получения дополнительной информации о системе DI в
 Angular.

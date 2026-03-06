@@ -9,23 +9,23 @@
 ng generate @angular/core:ngclass-to-class
 ```
 
-#### До
+#### До {#before}
 
 ```html
 <div [ngClass]="{admin: isAdmin, dense: density === 'high'}"></div>
 ```
 
-#### После
+#### После {#after}
 
 ```html
 <div [class]="{admin: isAdmin, dense: density === 'high'}"></div>
 ```
 
-## Параметры конфигурации
+## Параметры конфигурации {#configuration-options}
 
 Миграция поддерживает несколько опций для точной настройки процесса под ваши конкретные нужды.
 
-### `--migrate-space-separated-key`
+### `--migrate-space-separated-key` {#migrate-space-separated-key}
 
 По умолчанию миграция пропускает случаи использования `NgClass`, в которых ключи объектного литерала содержат имена
 классов, разделенные пробелами.

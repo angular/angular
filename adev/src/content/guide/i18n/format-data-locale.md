@@ -1,4 +1,4 @@
-# Форматирование данных на основе локали
+# Форматирование данных на основе локали {#format-data-based-on-locale}
 
 Angular предоставляет следующие встроенные [Pipe-ы](guide/templates/pipes) для преобразования данных.
 Эти Pipe-ы используют токен [`LOCALE_ID`][ApiCoreLocaleId] для форматирования данных на основе правил каждой локали.
@@ -10,7 +10,7 @@ Angular предоставляет следующие встроенные [Pipe
 | [`DecimalPipe`][ApiCommonDecimalpipe]   | Преобразует число в строку десятичного числа. |
 | [`PercentPipe`][ApiCommonPercentpipe]   | Преобразует число в строку процентов.         |
 
-## Использование DatePipe для отображения текущей даты
+## Использование DatePipe для отображения текущей даты {#use-datepipe-to-display-the-current-date}
 
 Чтобы отобразить текущую дату в формате для текущей локали, используйте следующий формат для `DatePipe`.
 
@@ -18,7 +18,7 @@ Angular предоставляет следующие встроенные [Pipe
 {{ today | date }}
 ```
 
-## Переопределение текущей локали для CurrencyPipe
+## Переопределение текущей локали для CurrencyPipe {#override-the-current-locale-for-currencypipe}
 
 Добавьте параметр `locale` в Pipe, чтобы переопределить текущее значение токена `LOCALE_ID`.
 
@@ -31,7 +31,7 @@ Angular предоставляет следующие встроенные [Pipe
 
 HELPFUL: Локаль, указанная для `CurrencyPipe`, переопределяет глобальный токен `LOCALE_ID` вашего приложения.
 
-## Что дальше
+## Что дальше {#whats-next}
 
 <docs-pill-row>
   <docs-pill href="guide/i18n/prepare" title="Подготовка компонента к переводу"/>
