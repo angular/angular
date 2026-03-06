@@ -162,6 +162,27 @@ export class QuickInfoBuilder {
   }
 
   private getQuickInfoForLetDeclarationSymbol(symbol: LetDeclarationSymbol): ts.QuickInfo {
+    // Try to get the type at the usage location in the TCB where flow narrowing applies.
+    const tcbLocation = this.compiler
+      .getTemplateTypeChecker()
+      .getTcbLocationOfNode(this.node, this.component);
+    if (tcbLocation !== null) {
+      const quickInfo = this.getQuickInfoAtTcbLocation(tcbLocation);
+      if (quickInfo !== undefined) {
+        // Replace the internal TCB variable name with the actual template variable name.
+        if (quickInfo.displayParts !== undefined && symbol.tsSymbol !== null) {
+          const variableName = symbol.declaration.name;
+          for (const part of quickInfo.displayParts) {
+            if (part.text === symbol.tsSymbol.name) {
+              part.text = variableName;
+            }
+          }
+        }
+        return updateQuickInfoKind(quickInfo, DisplayInfoKind.LET);
+      }
+    }
+
+    // Fall back to declaration location if usage location is not available.
     const info = this.getQuickInfoFromTypeDefAtLocation(symbol.initializerLocation);
     return createQuickInfo(
       symbol.declaration.name,
