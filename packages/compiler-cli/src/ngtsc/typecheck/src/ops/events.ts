@@ -20,7 +20,7 @@ import {TcbOp} from './base';
 import {quoteAndEscape, getStatementsBlock, TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 import {TcbExpressionTranslator, unwrapWritableSignal} from './expression';
 import {ExpressionIdentifier} from '../comments';
 import {checkSplitTwoWayBinding} from './bindings';
@@ -59,7 +59,7 @@ export class TcbDirectiveOutputsOp extends TcbOp {
     private node: DirectiveOwner,
     private inputs: TmplAstBoundAttribute[] | null,
     private outputs: TmplAstBoundEvent[],
-    private dir: TypeCheckableDirectiveMeta,
+    private dir: TcbDirectiveMetadata,
   ) {
     super();
   }

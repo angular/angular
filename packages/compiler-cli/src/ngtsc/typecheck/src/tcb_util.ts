@@ -12,12 +12,19 @@ import ts from 'typescript';
 import {ClassDeclaration, ReflectionHost} from '../../../../src/ngtsc/reflection';
 import {Reference} from '../../imports';
 import {getTokenAtPosition} from '../../util/src/typescript';
-import {FullSourceMapping, SourceLocation, TypeCheckId, SourceMapping} from '../api';
+import {
+  FullSourceMapping,
+  SourceLocation,
+  TypeCheckId,
+  SourceMapping,
+  TcbTypeParameter,
+} from '../api';
 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeParameterEmitter} from './type_parameter_emitter';
 import {isHostBindingsBlockGuard} from './host_bindings';
+import {tempPrint} from './ops/codegen';
 
 /**
  * External modules/identifiers that always should exist for type check
@@ -295,4 +302,18 @@ export function findNodeInFile(
     return ts.forEachChild(node, visit) ?? null;
   };
   return ts.forEachChild(file, visit) ?? null;
+}
+
+export function generateTcbTypeParameters(
+  typeParameters: ReadonlyArray<ts.TypeParameterDeclaration>,
+  sourceFile: ts.SourceFile,
+): TcbTypeParameter[] {
+  return typeParameters.map((p) => {
+    const representation = tempPrint(p, sourceFile);
+    return {
+      name: p.name.text,
+      representation,
+      representationWithDefault: p.default ? representation : `${representation} = any`,
+    };
+  });
 }

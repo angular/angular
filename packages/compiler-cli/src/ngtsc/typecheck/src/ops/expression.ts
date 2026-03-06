@@ -204,9 +204,7 @@ export class TcbExpressionTranslator {
         pipe = new TcbExpr('(0 as any)');
       } else {
         // Use a variable declared as the pipe's type.
-        pipe = this.tcb.env.pipeInst(
-          pipeMeta.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>,
-        );
+        pipe = this.tcb.env.pipeInst(pipeMeta);
       }
       const args = ast.args.map((arg) => this.translate(arg).print());
       let methodAccess = new TcbExpr(`${pipe.print()}.transform`).addParseSpanInfo(ast.nameSpan);
