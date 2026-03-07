@@ -869,7 +869,6 @@
       "isType",
       "isTypeProvider",
       "isUrlTree",
-      "isValidLink",
       "isValueProvider",
       "isWrappedDefaultExport",
       "iterator",
