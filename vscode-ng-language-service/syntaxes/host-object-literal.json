@@ -1,6 +1,6 @@
 {
   "scopeName": "host-object-literal.ng",
-  "injectionSelector": "L:meta.decorator.ts -comment -text.html -expression.ng",
+  "injectionSelector": "L:meta.decorator.ts -comment -text.html -expression.ng, L:meta.embedded.block.angular-ts meta.decorator.ts -comment -expression.ng",
   "patterns": [
     {
       "include": "#hostObjectLiteral"
@@ -21,7 +21,16 @@
       "end": "}",
       "patterns": [
         {
+          "include": "#ngHostStyleDeclarationBinding"
+        },
+        {
+          "include": "#ngHostStylePropertyBinding"
+        },
+        {
           "include": "#ngHostBindingDynamic"
+        },
+        {
+          "include": "#ngHostStyleStaticBinding"
         },
         {
           "include": "#ngHostBindingStatic"
@@ -30,6 +39,111 @@
           "include": "source.ts"
         }
       ]
+    },
+    "ngHostStyleDeclarationBinding": {
+      "begin": "\\s*('|\")(\\[\\s*(?:style|attr\\.style)\\s*])(\\1)(:)",
+      "beginCaptures": {
+        "1": {
+          "name": "string"
+        },
+        "2": {
+          "name": "entity.other.attribute-name.html"
+        },
+        "3": {
+          "name": "string"
+        },
+        "4": {
+          "name": "meta.object-literal.key.ts punctuation.separator.key-value.ts"
+        }
+      },
+      "contentName": "hostbinding.dynamic.ng",
+      "patterns": [
+        {
+          "include": "#ngHostStyleDeclarationValue"
+        }
+      ],
+      "end": "(?=,|})"
+    },
+    "ngHostStyleDeclarationValue": {
+      "begin": "\\s*(`|'|\")",
+      "beginCaptures": {
+        "1": {
+          "name": "string"
+        }
+      },
+      "patterns": [
+        {
+          "include": "template.tag.ng#embeddedCssDeclarationInTsString"
+        },
+        {
+          "include": "template.tag.ng#embeddedCssStyleObject"
+        },
+        {
+          "include": "expression.ng"
+        }
+      ],
+      "end": "\\1",
+      "endCaptures": {
+        "0": {
+          "name": "string"
+        }
+      }
+    },
+    "ngHostStylePropertyBinding": {
+      "begin": "\\s*('|\")(\\[\\s*style(?:\\.[-_a-zA-Z0-9%]+)+\\s*])(\\1)(:)",
+      "beginCaptures": {
+        "1": {
+          "name": "string"
+        },
+        "2": {
+          "name": "entity.other.attribute-name.html",
+          "patterns": [
+            {
+              "match": "(?<=\\.)(px|em|rem|vh|vw|vmin|vmax|pt|pc|cm|mm|in|ch|ex|s|ms|deg|rad|turn|grad|dpi|dpcm|dppx|fr|%)(?=\\s*\\])",
+              "name": "keyword.other.unit.css"
+            },
+            {
+              "match": "(?<=style\\.)([-a-zA-Z]+)",
+              "name": "support.type.property-name.css"
+            }
+          ]
+        },
+        "3": {
+          "name": "string"
+        },
+        "4": {
+          "name": "meta.object-literal.key.ts punctuation.separator.key-value.ts"
+        }
+      },
+      "contentName": "hostbinding.dynamic.ng",
+      "patterns": [
+        {
+          "include": "#ngHostStylePropertyValue"
+        }
+      ],
+      "end": "(?=,|})"
+    },
+    "ngHostStylePropertyValue": {
+      "begin": "\\s*(`|'|\")",
+      "beginCaptures": {
+        "1": {
+          "name": "string"
+        }
+      },
+      "patterns": [
+        {
+          "include": "template.tag.ng#embeddedCssInTsString"
+        },
+        {
+          "include": "expression.ng"
+        }
+      ],
+      "end": "\\1",
+      "endCaptures": {
+        "0": {
+          "name": "string"
+        }
+      }
     },
     "ngHostBindingDynamic": {
       "begin": "\\s*('|\")([\\[(].*?[\\])])(\\1)(:)",
@@ -74,8 +188,52 @@
         }
       }
     },
+    "ngHostStyleStaticBinding": {
+      "begin": "\\s*('|\")?(style)(\\1)?\\s*(:)",
+      "beginCaptures": {
+        "1": {
+          "name": "string"
+        },
+        "2": {
+          "name": "meta.object-literal.key.ts"
+        },
+        "3": {
+          "name": "string"
+        },
+        "4": {
+          "name": "meta.object-literal.key.ts punctuation.separator.key-value.ts"
+        }
+      },
+      "contentName": "hostbinding.static.ng",
+      "patterns": [
+        {
+          "include": "#ngHostStyleStaticValue"
+        }
+      ],
+      "end": "(?=,|})"
+    },
+    "ngHostStyleStaticValue": {
+      "begin": "\\s*(`|'|\")",
+      "beginCaptures": {
+        "1": {
+          "name": "string"
+        }
+      },
+      "patterns": [
+        {
+          "include": "template.tag.ng#cssDeclarationPatterns"
+        }
+      ],
+      "contentName": "meta.property-list.css source.css",
+      "end": "\\1",
+      "endCaptures": {
+        "0": {
+          "name": "string"
+        }
+      }
+    },
     "ngHostBindingStatic": {
-      "begin": "\\s*('|\")?(.*?)(\\1)?\\s*:",
+      "begin": "\\s*('|\")?(.*?)(\\1)?\\s*(:)",
       "end": "(?=,|})",
       "beginCaptures": {
         "1": {

@@ -76,5 +76,14 @@
     '[id]': '_id',
     '(click)': 'handleClick($event)',
   },
+
+  //// Style bindings
+  host: {
+    style: 'display: block; border: 1px solid black',
+    '[style]': "'width: 200px; height: 50px'",
+    '[style.padding.px]': '"8"',
+    '[style.border-color]': "'red'",
+    '[style]': "{ 'border-color': 'red', width: 'calc(100% - 20px)' }",
+  },
 })
 export class TMComponent{}

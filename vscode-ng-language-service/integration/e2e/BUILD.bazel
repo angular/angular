@@ -18,6 +18,7 @@ ts_project(
         "//vscode-ng-language-service:node_modules/@types/node",
         "//vscode-ng-language-service:node_modules/@types/vscode",
         "//vscode-ng-language-service:node_modules/@vscode/test-electron",
+        "//vscode-ng-language-service:node_modules/vscode-textmate-languageservice",
         "//vscode-ng-language-service:node_modules/xvfb",
         "//vscode-ng-language-service/integration",
     ],
@@ -30,6 +31,7 @@ js_test(
         "//vscode-ng-language-service:development_package",
         "//vscode-ng-language-service:node_modules/@angular/language-service",
         "//vscode-ng-language-service:node_modules/typescript",
+        "//vscode-ng-language-service:node_modules/vscode-textmate-languageservice",
     ],
     entry_point = ":index.js",
     env = {
