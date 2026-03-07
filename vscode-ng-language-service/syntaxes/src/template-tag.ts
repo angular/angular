@@ -10,7 +10,12 @@ import {GrammarDefinition} from './types';
 
 export const TemplateTag: GrammarDefinition = {
   scopeName: 'template.tag.ng',
-  injectionSelector: 'L:text.html#meta.tag -comment',
+  // `-text.html.markdown` in the first alternative prevents Angular binding bleed
+  // into non-fenced markdown HTML, but also blocks matching inside fences (the root
+  // scope is always `text.html.markdown`). The embedded-block alternatives provide
+  // positive matches that ensure bindings fire inside fenced code blocks.
+  injectionSelector:
+    'L:meta.tag -comment -text.html.markdown, L:meta.embedded.block.angular-ts meta.tag -comment, L:meta.embedded.block.angular-html meta.tag -comment',
   patterns: [
     {include: '#twoWayBinding'},
     {include: '#propertyBinding'},

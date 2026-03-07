@@ -10,7 +10,10 @@ import {GrammarDefinition} from './types';
 
 export const InlineTemplate: GrammarDefinition = {
   scopeName: 'inline-template.ng',
-  injectionSelector: 'L:meta.decorator.ts -comment -text.html',
+  // The second alternative is needed because the original `-text.html` exclusion
+  // also blocks `text.html.markdown` (TextMate prefix-matches scope exclusions).
+  injectionSelector:
+    'L:meta.decorator.ts -comment -text.html, L:meta.embedded.block.angular-ts meta.decorator.ts -comment',
   patterns: [{include: '#inlineTemplate'}],
   repository: {
     inlineTemplate: {
@@ -38,7 +41,15 @@ export const InlineTemplate: GrammarDefinition = {
       end: /\1/,
       endCaptures: {0: {name: 'string'}},
       contentName: 'text.html.derivative',
-      patterns: [{include: 'text.html.derivative'}, {include: 'template.ng'}],
+      // Direct includes required: inside fenced `angular-ts` blocks, the injections
+      // into `text.html.derivative` (via injectTo) don't fire for these grammars.
+      patterns: [
+        {include: 'template.blocks.ng'},
+        {include: 'template.let.ng'},
+        {include: 'template.tag.ng'},
+        {include: 'template.ng'},
+        {include: 'text.html.derivative'},
+      ],
     },
   },
 };
