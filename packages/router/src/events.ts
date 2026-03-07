@@ -30,6 +30,8 @@ export const IMPERATIVE_NAVIGATION = 'imperative';
  *
  * @publicApi
  */
+// TODO(atscott): This enum provides no value other than allowing a switch over the type on Event
+// That is not worth the ~200 bytes we pay in bundle size cost. Consider deprecating and removing.
 export enum EventType {
   NavigationStart,
   NavigationEnd,
@@ -126,7 +128,7 @@ export class NavigationStart extends RouterEvent {
     /** @docsNotRequired */
     url: string,
     /** @docsNotRequired */
-    navigationTrigger: NavigationTrigger = 'imperative',
+    navigationTrigger: NavigationTrigger = IMPERATIVE_NAVIGATION,
     /** @docsNotRequired */
     restoredState: {[k: string]: any; navigationId: number} | null = null,
   ) {
@@ -137,7 +139,10 @@ export class NavigationStart extends RouterEvent {
 
   /** @docs-private */
   override toString(): string {
-    return `NavigationStart(id: ${this.id}, url: '${this.url}')`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -166,7 +171,10 @@ export class NavigationEnd extends RouterEvent {
 
   /** @docs-private */
   override toString(): string {
-    return `NavigationEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}')`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -257,7 +265,10 @@ export class NavigationCancel extends RouterEvent {
 
   /** @docs-private */
   override toString(): string {
-    return `NavigationCancel(id: ${this.id}, url: '${this.url}')`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -333,7 +344,10 @@ export class NavigationError extends RouterEvent {
 
   /** @docs-private */
   override toString(): string {
-    return `NavigationError(id: ${this.id}, url: '${this.url}', error: ${this.error})`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -360,7 +374,10 @@ export class RoutesRecognized extends RouterEvent {
 
   /** @docs-private */
   override toString(): string {
-    return `RoutesRecognized(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -389,7 +406,10 @@ export class GuardsCheckStart extends RouterEvent {
 
   /** @docs-private */
   override toString(): string {
-    return `GuardsCheckStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -420,7 +440,10 @@ export class GuardsCheckEnd extends RouterEvent {
 
   /** @docs-private */
   override toString(): string {
-    return `GuardsCheckEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state}, shouldActivate: ${this.shouldActivate})`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -452,7 +475,10 @@ export class ResolveStart extends RouterEvent {
 
   /** @docs-private */
   override toString(): string {
-    return `ResolveStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -480,7 +506,10 @@ export class ResolveEnd extends RouterEvent {
 
   /** @docs-private */
   override toString(): string {
-    return `ResolveEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -501,7 +530,10 @@ export class RouteConfigLoadStart {
 
   /** @docs-private */
   toString(): string {
-    return `RouteConfigLoadStart(path: ${this.route.path})`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -522,7 +554,10 @@ export class RouteConfigLoadEnd {
 
   /** @docs-private */
   toString(): string {
-    return `RouteConfigLoadEnd(path: ${this.route.path})`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -544,8 +579,10 @@ export class ChildActivationStart {
 
   /** @docs-private */
   toString(): string {
-    const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
-    return `ChildActivationStart(path: '${path}')`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -566,8 +603,10 @@ export class ChildActivationEnd {
 
   /** @docs-private */
   toString(): string {
-    const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
-    return `ChildActivationEnd(path: '${path}')`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -589,8 +628,10 @@ export class ActivationStart {
 
   /** @docs-private */
   toString(): string {
-    const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
-    return `ActivationStart(path: '${path}')`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -612,8 +653,10 @@ export class ActivationEnd {
 
   /** @docs-private */
   toString(): string {
-    const path = (this.snapshot.routeConfig && this.snapshot.routeConfig.path) || '';
-    return `ActivationEnd(path: '${path}')`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
@@ -641,8 +684,10 @@ export class Scroll {
 
   /** @docs-private */
   toString(): string {
-    const pos = this.position ? `${this.position[0]}, ${this.position[1]}` : null;
-    return `Scroll(anchor: '${this.anchor}', position: '${pos}')`;
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      return stringifyEvent(this);
+    }
+    return '';
   }
 }
 
