@@ -14,6 +14,7 @@ import {
   defaultEquals,
   setPostProducerCreatedFn,
 } from '../../primitives/signals';
+import {flushEffects, testingEffect} from './effect_util';
 
 describe('computed', () => {
   it('should create computed', () => {
@@ -338,5 +339,51 @@ describe('computed', () => {
 
     expect(producerKindsCreated).toEqual(['signal', 'computed']);
     setPostProducerCreatedFn(prev);
+  });
+
+  it('should keep links alive in a dynamic graph', () => {
+    // This test verifies that reactive links between producer <> consumers are correctly maintained in a dynamic graph.
+    const decoy = signal(0);
+    const dynamic = signal(0);
+    const trigger = signal(false);
+
+    let executed = 0;
+    testingEffect(() => {
+      // Let the initial execution of the effect evaluate the decoy signal, incurring a consumer edge in the graph.
+      if (executed == 0) {
+        decoy();
+      }
+
+      // Evaluate a second signal; in the first execution this is the second consumer while it will be the first
+      // consumer in subsequent executions. The dynamic nature of this consumer means that its reactive link from the
+      // initial execution is not being reused in the second execution, as it is masked by the presence of the by-then
+      // stale link of `decoy`. Since the decoy is set to be unlinked, so will its followers as a mismatch in
+      // consumer ordering cause the entire chain of consumers to become invalid.
+      dynamic();
+
+      // Evaluate another signal last such that `dynamic` is not at the tail end of the effect's producer links, as that
+      // would also allow the consumer link of `dynamic` to be found and reused.
+      trigger();
+
+      executed++;
+    });
+    flushEffects();
+    expect(executed).toEqual(1);
+
+    // Initiate a change through the trigger signal, causing the removal of `decoy` to be noticed without touching the
+    // value of `dynamic`.
+    trigger.set(true);
+    flushEffects();
+    expect(executed).toEqual(2);
+
+    // Verify that updates to the decoy no longer cause the effect to run.
+    decoy.update((v) => v + 1);
+    flushEffects();
+    expect(executed).toEqual(2);
+
+    // Also verify that updates of the dynamic consumer are still tracked, causing the effect to rerun.
+    dynamic.update((v) => v + 1);
+    flushEffects();
+    expect(executed).toEqual(3);
   });
 });

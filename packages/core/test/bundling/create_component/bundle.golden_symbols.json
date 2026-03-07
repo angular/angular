@@ -541,7 +541,6 @@
       "isSubscription",
       "isTemplateNode",
       "isTypeProvider",
-      "isValidLink",
       "isValueProvider",
       "lastNodeWasCreated",
       "lastSelectedElementIdx",

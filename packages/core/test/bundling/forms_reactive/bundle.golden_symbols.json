@@ -781,7 +781,6 @@
       "isSubscription",
       "isTemplateNode",
       "isTypeProvider",
-      "isValidLink",
       "isValidatorFn",
       "isValueProvider",
       "iterateListLike",

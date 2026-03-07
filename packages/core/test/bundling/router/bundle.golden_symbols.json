@@ -862,7 +862,6 @@
       "isTemplateNode",
       "isTypeProvider",
       "isUrlTree",
-      "isValidLink",
       "isValueProvider",
       "isWrappedDefaultExport",
       "iterator",
