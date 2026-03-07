@@ -200,6 +200,52 @@ ageForm = form(this.ageModel, (schemaPath) => {
 });
 ```
 
+#### Date and time inputs
+
+The `min()` and `max()` validators also support string values for date and time inputs. This works with `<input type="date">`, `<input type="time">`, `<input type="datetime-local">`, and similar inputs that produce ISO-formatted string values:
+
+```angular-ts
+import {Component, signal} from '@angular/core';
+import {form, FormField, min, max} from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-booking-form',
+  imports: [FormField],
+  template: `
+    <form novalidate>
+      <label>
+        Check-in Date
+        <input type="date" [formField]="bookingForm.checkIn" />
+      </label>
+
+      <label>
+        Appointment Time
+        <input type="time" [formField]="bookingForm.appointmentTime" />
+      </label>
+    </form>
+  `,
+})
+export class BookingFormComponent {
+  bookingModel = signal({
+    checkIn: '',
+    appointmentTime: '',
+  });
+
+  bookingForm = form(this.bookingModel, (schemaPath) => {
+    // Date must be today or later (YYYY-MM-DD format)
+    min(schemaPath.checkIn, new Date().toISOString().split('T')[0], {
+      message: 'Check-in date cannot be in the past',
+    });
+
+    // Appointment must be during business hours (HH:MM format)
+    min(schemaPath.appointmentTime, '09:00', {message: 'Appointments start at 9 AM'});
+    max(schemaPath.appointmentTime, '17:00', {message: 'Appointments end at 5 PM'});
+  });
+}
+```
+
+String comparison uses lexicographic ordering, which correctly handles ISO date/time formats where alphabetical order matches chronological order.
+
 ### minLength() and maxLength()
 
 The `minLength()` and `maxLength()` validation rules work with strings and arrays:

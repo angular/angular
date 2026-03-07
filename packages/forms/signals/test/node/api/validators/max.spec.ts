@@ -328,4 +328,120 @@ describe('max validator', () => {
     f().value.set(4);
     expect(f().errors()).toEqual([jasmine.objectContaining({kind: 'max'})]);
   });
+
+  describe('string date paths', () => {
+    it('returns max error when date is after the maximum', () => {
+      const model = signal({date: '2025-12-31'});
+      const f = form(
+        model,
+        (p) => {
+          max(p.date, '2025-06-01');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([jasmine.objectContaining({kind: 'max'})]);
+    });
+
+    it('returns no error when date equals the maximum', () => {
+      const model = signal({date: '2025-06-01'});
+      const f = form(
+        model,
+        (p) => {
+          max(p.date, '2025-06-01');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([]);
+    });
+
+    it('returns no error when date is before the maximum', () => {
+      const model = signal({date: '2025-01-01'});
+      const f = form(
+        model,
+        (p) => {
+          max(p.date, '2025-06-01');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([]);
+    });
+
+    it('treats empty string as valid (no error)', () => {
+      const model = signal({date: ''});
+      const f = form(
+        model,
+        (p) => {
+          max(p.date, '2025-06-01');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([]);
+    });
+
+    it('supports dynamic string max value via LogicFn', () => {
+      const model = signal({date: '2025-12-31', endDate: '2025-06-01'});
+      const f = form(
+        model,
+        (p) => {
+          max(p.date, ({valueOf}) => valueOf(p.endDate));
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([jasmine.objectContaining({kind: 'max'})]);
+      f.endDate().value.set('2026-01-01');
+      expect(f.date().errors()).toEqual([]);
+    });
+
+    it('supports custom error messages for string dates', () => {
+      const model = signal({date: '2025-12-31'});
+      const f = form(
+        model,
+        (p) => {
+          max(p.date, '2025-06-01', {message: 'Date must not be in the future'});
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([
+        jasmine.objectContaining({kind: 'max', message: 'Date must not be in the future'}),
+      ]);
+    });
+
+    it('supports custom error function for string dates', () => {
+      const model = signal({date: '2025-12-31'});
+      const f = form(
+        model,
+        (p) => {
+          max(p.date, '2025-06-01', {
+            error: ({value}) => ({kind: 'custom-max-date', message: `${value()} is too late`}),
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([
+        jasmine.objectContaining({kind: 'custom-max-date', message: '2025-12-31 is too late'}),
+      ]);
+    });
+
+    it('revalidates when the date value changes', () => {
+      const model = signal({date: '2025-12-31'});
+      const f = form(
+        model,
+        (p) => {
+          max(p.date, '2025-06-01');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([jasmine.objectContaining({kind: 'max'})]);
+      f.date().value.set('2025-01-01');
+      expect(f.date().errors()).toEqual([]);
+    });
+  });
 });

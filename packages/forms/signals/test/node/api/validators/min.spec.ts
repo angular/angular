@@ -337,4 +337,120 @@ describe('min validator', () => {
     f().value.set(4);
     expect(f().errors()).toEqual([jasmine.objectContaining({kind: 'min'})]);
   });
+
+  describe('string date paths', () => {
+    it('returns min error when date is before the minimum', () => {
+      const model = signal({name: 'pirojok-the-cat', date: '2025-01-01'});
+      const f = form(
+        model,
+        (p) => {
+          min(p.date, '2025-06-01');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([jasmine.objectContaining({kind: 'min'})]);
+    });
+
+    it('returns no error when date equals the minimum', () => {
+      const model = signal({name: 'pirojok-the-cat', date: '2025-06-01'});
+      const f = form(
+        model,
+        (p) => {
+          min(p.date, '2025-06-01');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([]);
+    });
+
+    it('returns no error when date is after the minimum', () => {
+      const model = signal({name: 'pirojok-the-cat', date: '2025-12-31'});
+      const f = form(
+        model,
+        (p) => {
+          min(p.date, '2025-06-01');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([]);
+    });
+
+    it('treats empty string as valid (no error)', () => {
+      const model = signal({name: 'pirojok-the-cat', date: ''});
+      const f = form(
+        model,
+        (p) => {
+          min(p.date, '2025-06-01');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([]);
+    });
+
+    it('supports dynamic string min value via LogicFn', () => {
+      const model = signal({date: '2025-01-01', startDate: '2025-06-01'});
+      const f = form(
+        model,
+        (p) => {
+          min(p.date, ({valueOf}) => valueOf(p.startDate));
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([jasmine.objectContaining({kind: 'min'})]);
+      f.startDate().value.set('2024-01-01');
+      expect(f.date().errors()).toEqual([]);
+    });
+
+    it('supports custom error messages for string dates', () => {
+      const model = signal({date: '2025-01-01'});
+      const f = form(
+        model,
+        (p) => {
+          min(p.date, '2025-06-01', {message: 'Date must not be in the past'});
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([
+        jasmine.objectContaining({kind: 'min', message: 'Date must not be in the past'}),
+      ]);
+    });
+
+    it('supports custom error function for string dates', () => {
+      const model = signal({date: '2025-01-01'});
+      const f = form(
+        model,
+        (p) => {
+          min(p.date, '2025-06-01', {
+            error: ({value}) => ({kind: 'custom-min-date', message: `${value()} is too early`}),
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([
+        jasmine.objectContaining({kind: 'custom-min-date', message: '2025-01-01 is too early'}),
+      ]);
+    });
+
+    it('revalidates when the date value changes', () => {
+      const model = signal({date: '2025-01-01'});
+      const f = form(
+        model,
+        (p) => {
+          min(p.date, '2025-06-01');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.date().errors()).toEqual([jasmine.objectContaining({kind: 'min'})]);
+      f.date().value.set('2025-07-01');
+      expect(f.date().errors()).toEqual([]);
+    });
+  });
 });
