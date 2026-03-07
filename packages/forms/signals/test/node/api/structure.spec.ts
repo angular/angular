@@ -84,4 +84,50 @@ describe('structure APIs', () => {
       expect(f.b().errors()).toEqual([jasmine.objectContaining({message: 'each'})]);
     });
   });
+
+  describe('lazy materialization', () => {
+    it('should stay unmaterialized when children have no schema logic', () => {
+      const s = schema<{a: {b: string}}>((p) => {
+        // No logic applied
+      });
+
+      const data = signal({a: {b: 'test'}});
+      const f = form(data, s, {injector: TestBed.inject(Injector)});
+
+      // Cast to any to access the private helper method
+      expect((f() as any).structure._areChildrenMaterialized()).toBeFalse();
+    });
+
+    it('should materialize children when explicitly accessed', () => {
+      const s = schema<{a: {b: string}}>((p) => {
+        // No logic applied
+      });
+
+      const data = signal({a: {b: 'test'}});
+      const f = form(data, s, {injector: TestBed.inject(Injector)});
+
+      // Initially false
+      expect((f() as any).structure._areChildrenMaterialized()).toBeFalse();
+
+      // Accessing 'a' forces materialization of root's children
+      const childA = f.a;
+      expect((f() as any).structure._areChildrenMaterialized()).toBeTrue();
+
+      // 'a' itself should not have materialized its children ('b') yet
+      expect((childA() as any).structure._areChildrenMaterialized()).toBeFalse();
+    });
+
+    it('should eagerly materialize children when they have schema logic', () => {
+      const s = schema<{a: {b: string}}>((p) => {
+        required(p.a.b, {message: 'required'});
+      });
+
+      const data = signal({a: {b: 'test'}});
+      const f = form(data, s, {injector: TestBed.inject(Injector)});
+
+      // Because 'a.b' has rules, 'a' and 'b' must be materialized up the tree
+      expect((f() as any).structure._areChildrenMaterialized()).toBeTrue();
+      expect((f.a() as any).structure._areChildrenMaterialized()).toBeTrue();
+    });
+  });
 });

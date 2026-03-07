@@ -62,6 +62,18 @@ export abstract class AbstractLogicNodeBuilder {
   abstract hasLogic(builder: AbstractLogicNodeBuilder): boolean;
 
   /**
+   * Checks whether this builder or any of its children have any logic rules defined.
+   * @returns True if rules exist, false otherwise.
+   */
+  abstract hasLogicRules(): boolean;
+
+  /**
+   * Checks whether any of the children of this builder have any logic rules defined.
+   * @returns True if rules exist on any child, false otherwise.
+   */
+  abstract anyChildHasLogic(): boolean;
+
+  /**
    * Builds the `LogicNode` from the accumulated rules and child builders.
    * @returns The constructed `LogicNode`.
    */
@@ -153,6 +165,14 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
       return true;
     }
     return this.all.some(({builder: subBuilder}) => subBuilder.hasLogic(builder));
+  }
+
+  override hasLogicRules(): boolean {
+    return this.all.length > 0;
+  }
+
+  override anyChildHasLogic(): boolean {
+    return this.all.some(({builder}) => builder.anyChildHasLogic());
   }
 
   /**
@@ -266,6 +286,19 @@ class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
   override hasLogic(builder: AbstractLogicNodeBuilder): boolean {
     return this === builder;
   }
+
+  override hasLogicRules(): boolean {
+    return this.logic.hasAnyLogic() || this.children.size > 0;
+  }
+
+  override anyChildHasLogic(): boolean {
+    for (const child of this.children.values()) {
+      if (child.hasLogicRules()) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 /**
@@ -291,6 +324,18 @@ export interface LogicNode {
    * @returns True if the builder has been merged, false otherwise.
    */
   hasLogic(builder: AbstractLogicNodeBuilder): boolean;
+
+  /**
+   * Checks whether this node or any of its children have any logic rules defined.
+   * @returns True if rules exist, false otherwise.
+   */
+  hasLogicRules(): boolean;
+
+  /**
+   * Checks whether any of the children of this node have any logic rules defined.
+   * @returns True if rules exist on any child, false otherwise.
+   */
+  anyChildHasLogic(): boolean;
 }
 
 /**
@@ -349,14 +394,19 @@ class LeafLogicNode implements LogicNode {
     }
   }
 
-  /**
-   * Checks whether the logic from a particular `AbstractLogicNodeBuilder` has been merged into this
-   * node.
-   * @param builder The builder to check for.
-   * @returns True if the builder has been merged, false otherwise.
-   */
   hasLogic(builder: AbstractLogicNodeBuilder): boolean {
-    return this.builder?.hasLogic(builder) ?? false;
+    if (!this.builder) {
+      return false;
+    }
+    return this.builder.hasLogic(builder);
+  }
+
+  hasLogicRules(): boolean {
+    return this.builder ? this.builder.hasLogicRules() : false;
+  }
+
+  anyChildHasLogic(): boolean {
+    return this.builder ? this.builder.anyChildHasLogic() : false;
   }
 }
 
@@ -398,6 +448,14 @@ class CompositeLogicNode implements LogicNode {
    */
   hasLogic(builder: AbstractLogicNodeBuilder): boolean {
     return this.all.some((node) => node.hasLogic(builder));
+  }
+
+  hasLogicRules(): boolean {
+    return this.all.some((node) => node.hasLogicRules());
+  }
+
+  anyChildHasLogic(): boolean {
+    return this.all.some((child) => child.anyChildHasLogic());
   }
 }
 
