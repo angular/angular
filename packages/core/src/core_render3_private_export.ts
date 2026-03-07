@@ -18,7 +18,6 @@ export {
 export {compileNgModuleFactory as ɵcompileNgModuleFactory} from './application/application_ngmodule_factory_compiler';
 export {isBoundToModule as ɵisBoundToModule} from './application/application_ref';
 export {injectChangeDetectorRef as ɵinjectChangeDetectorRef} from './change_detection/change_detector_ref';
-export {getDebugNode as ɵgetDebugNode} from './debug/debug_node';
 export {createInjector as ɵcreateInjector} from './di/create_injector';
 export {
   isInjectable as ɵisInjectable,
