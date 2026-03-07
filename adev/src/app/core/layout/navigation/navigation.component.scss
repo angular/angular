@@ -100,7 +100,6 @@
   &.adev-nav-primary--next,
   &.adev-nav-primary--rc {
     // change nav background to indicate this is the rc docs
-    position: relative;
     background: linear-gradient(
       140deg,
       color-mix(in srgb, var(--orange-red), transparent 60%) 0%,
@@ -116,6 +115,7 @@
       width: 100%;
       height: 100%;
       background-color: var(--octonary-contrast);
+      z-index: -1;
     }
     .adev-version-button {
       border: 1px solid var(--quinary-contrast);
