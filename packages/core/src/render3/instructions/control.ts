@@ -20,9 +20,9 @@ import {
   isInCheckNoChangesMode,
 } from '../state';
 import {debugStringifyTypeForError} from '../util/stringify_utils';
-import {listenToOutput} from '../view/directive_outputs';
+import {listenToDirectiveOutput} from '../view/directive_outputs';
 import {listenToDomEvent, wrapListener} from '../view/listeners';
-import {writeToDirectiveInput} from './write_to_directive_input';
+import {setAllInputsForProperty, setDirectiveInput} from './shared';
 
 /**
  * Possibly sets up a {@link ɵFormFieldDirective} to manage a native or custom form control.
@@ -113,20 +113,11 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
   }
 
   listenToCustomControlOutput(outputName: string, callback: (event: Event) => void): void {
-    if (
-      !hasOutput(
-        this.tView.data[this.tNode.customControlIndex] as DirectiveDef<unknown>,
-        outputName,
-      )
-    ) {
-      return;
-    }
-
-    listenToOutput(
+    const directiveDef = this.tView.data[this.tNode.customControlIndex] as DirectiveDef<unknown>;
+    listenToDirectiveOutput(
       this.tNode,
       this.lView,
-      this.tNode.customControlIndex,
-      outputName,
+      directiveDef,
       outputName,
       wrapListener(this.tNode, this.lView, callback),
     );
@@ -135,11 +126,11 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
   listenToCustomControlModel(listener: (value: unknown) => void): void {
     const modelName =
       this.tNode.flags & TNodeFlags.isFormValueControl ? 'valueChange' : 'checkedChange';
-    listenToOutput(
+    const directiveDef = this.tView.data[this.tNode.customControlIndex] as DirectiveDef<unknown>;
+    listenToDirectiveOutput(
       this.tNode,
       this.lView,
-      this.tNode.customControlIndex,
-      modelName,
+      directiveDef,
       modelName,
       wrapListener(this.tNode, this.lView, listener),
     );
@@ -159,46 +150,83 @@ class ControlDirectiveHostImpl implements ControlDirectiveHost {
   }
 
   setInputOnDirectives(inputName: string, value: unknown): boolean {
-    const directiveIndices = this.tNode.inputs?.[inputName];
-    const hostDirectiveInputs = this.tNode.hostDirectiveInputs?.[inputName];
-    if (!directiveIndices && !hostDirectiveInputs) {
-      return false;
-    }
-
-    if (directiveIndices) {
-      for (const index of directiveIndices) {
-        const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
-        const directive = this.lView[index];
-        writeToDirectiveInput(directiveDef, directive, inputName, value);
-      }
-    }
-
-    if (hostDirectiveInputs) {
-      for (let i = 0; i < hostDirectiveInputs.length; i += 2) {
-        const index = hostDirectiveInputs[i] as number;
-        const internalName = hostDirectiveInputs[i + 1] as string;
-        const directiveDef = this.tView.data[index] as DirectiveDef<unknown>;
-        const directive = this.lView[index];
-        writeToDirectiveInput(directiveDef, directive, internalName, value);
-      }
-    }
-
-    return true;
+    return setAllInputsForProperty(
+      this.tNode,
+      this.tView,
+      this.lView,
+      inputName,
+      value,
+      // Might be -1, but that's fine to pass for exclusion.
+      this.tNode.controlDirectiveIndex,
+    );
   }
 
   setCustomControlModelInput(value: unknown): void {
-    const directive = this.lView[this.tNode.customControlIndex];
     const directiveDef = this.tView.data[this.tNode.customControlIndex] as DirectiveDef<{}>;
     const modelName = this.tNode.flags & TNodeFlags.isFormValueControl ? 'value' : 'checked';
-    writeToDirectiveInput(directiveDef, directive, modelName, value);
+    setDirectiveInput(this.tNode, this.tView, this.lView, directiveDef, modelName, value);
   }
 
+  private _hasInputCache: {[key: string]: boolean} | undefined;
+
   customControlHasInput(inputName: string): boolean {
+    this._hasInputCache ??= this._buildCustomControlInputCache();
+    return this._hasInputCache[inputName] === true;
+  }
+
+  private _buildCustomControlInputCache(): {[key: string]: boolean} {
+    const cache: {[key: string]: boolean} = {};
     if (this.tNode.customControlIndex === -1) {
-      return false;
+      return cache;
     }
     const directiveDef = this.tView.data[this.tNode.customControlIndex] as DirectiveDef<unknown>;
-    return directiveDef.inputs[inputName] != undefined;
+
+    // First, add all inputs defined directly on the custom control directive.
+    for (const key in directiveDef.inputs) {
+      cache[key] = true;
+    }
+
+    // Next, gather inputs exposed by host directives recursively.
+    if (directiveDef.hostDirectives !== null) {
+      const queue = [...directiveDef.hostDirectives];
+      while (queue.length > 0) {
+        const hostDir = queue.shift()!;
+        if (typeof hostDir === 'function') {
+          // Factory function returning HostDirectiveConfig[]
+          for (const config of hostDir()) {
+            if (typeof config !== 'function') {
+              if (config.inputs) {
+                for (let i = 0; i < config.inputs.length; i += 2) {
+                  const exposedName = config.inputs[i + 1] || config.inputs[i];
+                  cache[exposedName] = true;
+                }
+              }
+              const innerDef =
+                typeof config.directive === 'function' && 'ɵdir' in config.directive
+                  ? ((config.directive as any).ɵdir as DirectiveDef<unknown>)
+                  : null;
+              if (innerDef?.hostDirectives) {
+                queue.push(...innerDef.hostDirectives);
+              }
+            }
+          }
+        } else {
+          // HostDirectiveDef object
+          for (const key in hostDir.inputs) {
+            cache[hostDir.inputs[key]] = true;
+          }
+          const innerDef =
+            typeof hostDir.directive === 'function' && 'ɵdir' in hostDir.directive
+              ? ((hostDir.directive as any).ɵdir as DirectiveDef<unknown>)
+              : null;
+          if (innerDef?.hostDirectives) {
+            queue.push(...innerDef.hostDirectives);
+          }
+        }
+      }
+    }
+
+    return cache;
   }
 }
 
@@ -245,6 +273,11 @@ function initializeControlFirstCreatePass(tView: TView, tNode: TNode, lView: LVi
 function initializeCustomControlStatus(tView: TView, tNode: TNode): void {
   for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
     const directiveDef = tView.data[i] as DirectiveDef<unknown>;
+    // Host directives shouldn't be matched directly since their types are not in
+    // `directiveToIndex`. We match them through their host component's `hostDirectiveInputs` instead.
+    if (tNode.directiveToIndex && !tNode.directiveToIndex.has(directiveDef.type)) {
+      continue;
+    }
     if (hasModelInput(directiveDef, 'value')) {
       tNode.flags |= TNodeFlags.isFormValueControl;
       tNode.customControlIndex = i;
@@ -253,6 +286,47 @@ function initializeCustomControlStatus(tView: TView, tNode: TNode): void {
     if (hasModelInput(directiveDef, 'checked')) {
       tNode.flags |= TNodeFlags.isFormCheckboxControl;
       tNode.customControlIndex = i;
+      return;
+    }
+  }
+
+  if (
+    tNode.hostDirectiveInputs !== null &&
+    tNode.hostDirectiveOutputs !== null &&
+    tNode.directiveToIndex !== null
+  ) {
+    const checkModel = (modelName: string, flag: TNodeFlags) => {
+      const inputs = tNode.hostDirectiveInputs![modelName];
+      const outputs = tNode.hostDirectiveOutputs![modelName + 'Change'];
+      if (!inputs || !outputs) {
+        return false;
+      }
+
+      for (let i = 0; i < inputs.length; i += 2) {
+        const inputIndex = inputs[i] as number;
+        for (let j = 0; j < outputs.length; j += 2) {
+          const outputIndex = outputs[j] as number;
+          if (inputIndex === outputIndex) {
+            for (const data of tNode.directiveToIndex!.values()) {
+              if (Array.isArray(data)) {
+                const [hostIndex, start, end] = data;
+                if (inputIndex >= start && inputIndex <= end) {
+                  tNode.flags |= flag;
+                  tNode.customControlIndex = hostIndex;
+                  return true;
+                }
+              }
+            }
+          }
+        }
+      }
+      return false;
+    };
+
+    if (checkModel('value', TNodeFlags.isFormValueControl)) {
+      return;
+    }
+    if (checkModel('checked', TNodeFlags.isFormCheckboxControl)) {
       return;
     }
   }
