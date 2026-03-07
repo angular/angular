@@ -751,7 +751,6 @@
       "isTemplateNode",
       "isType",
       "isTypeProvider",
-      "isValidLink",
       "isValidatorFn",
       "isValueProvider",
       "iterateListLike",
