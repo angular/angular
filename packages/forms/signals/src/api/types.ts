@@ -198,28 +198,19 @@ export type Field<TValue, TKey extends string | number = string | number> = () =
  * @category types
  * @experimental 21.0.0
  */
-export type FieldTree<TModel, TKey extends string | number = string | number> =
-  // Note: We use `[TModel]` in several places below to avoid the condition from being distributed
-  // over a recursive union type, which seems to result in infinite type recursion. By adding the
-  // tuple we're not testing a naked type parameter, and thus the condition is not distributed.
-  // (See https://typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types)
-  // The example below demonstrates the problematic situation we want to avoid:
-  //
-  // ```
-  // type RecursiveType = (number | RecursiveType)[]
-  // type Test = FieldTree<RecursiveType> // Infinite type recursion if condition distributes.
-  // ```
-  (() => [TModel] extends [AbstractControl]
-    ? CompatFieldState<TModel, TKey>
-    : FieldState<TModel, TKey>) &
-    // Children:
-    ([TModel] extends [AbstractControl]
-      ? object
-      : [TModel] extends [ReadonlyArray<infer U>]
-        ? ReadonlyArrayLike<MaybeFieldTree<U, number>>
-        : TModel extends Record<string, any>
-          ? Subfields<TModel>
-          : object);
+export type FieldTree<TModel, TKey extends string | number = string | number> = (() => [
+  TModel,
+] extends [AbstractControl]
+  ? CompatFieldState<TModel, TKey>
+  : FieldState<TModel, TKey>) &
+  // Children:
+  (TModel extends AbstractControl
+    ? object
+    : TModel extends ReadonlyArray<infer U>
+      ? ReadonlyArrayLike<MaybeFieldTree<U, number>>
+      : TModel extends Record<string, any>
+        ? Subfields<TModel>
+        : object);
 
 /**
  * The sub-fields that a user can navigate to from a `FieldTree<TModel>`.
@@ -244,10 +235,11 @@ export type Subfields<TModel> = {
  *
  * @experimental 21.0.0
  */
-export type ReadonlyArrayLike<T> = Pick<
-  ReadonlyArray<T>,
-  number | 'length' | typeof Symbol.iterator
->;
+export interface ReadonlyArrayLike<T> {
+  readonly [n: number]: T;
+  readonly length: number;
+  [Symbol.iterator](): IterableIterator<T>;
+}
 
 /**
  * Helper type for defining `FieldTree`. Given a type `TValue` that may include `undefined`, it extracts
@@ -549,10 +541,10 @@ export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> =
     ? CompatSchemaPath<TModel, TPathKind>
     : SchemaPath<TModel, SchemaPathRules.Supported, TPathKind>) &
     // Subpaths
-    (TModel extends AbstractControl
+    ([TModel] extends [AbstractControl]
       ? unknown
       : // Array paths have no subpaths
-        TModel extends ReadonlyArray<any>
+        [TModel] extends [ReadonlyArray<any>]
         ? unknown
         : // Object subfields
           TModel extends Record<string, any>
@@ -755,13 +747,25 @@ export interface RootFieldContext<TValue> {
   /** Gets the value of the field represented by the given path. */
   valueOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): PValue;
 
+  // Note: These methods use a tautological conditional type (`[P] extends [any] ? ... : never`).
+  // This is required because the `FieldNodeContext` implementation returns a deferred conditional
+  // type from `FieldTreeBase` (e.g. `[P] extends [AbstractControl] ? ...`).
+  // TypeScript is strictly invariant when matching generic method signatures and will throw an
+  // assignability error if the interface signature is fully resolved while the implementation
+  // signature is a deferred conditional. This tautological wrapper mimics the deferred
+  // structure so that TypeScript accepts the assignment gracefully.
   /** Gets the state of the field represented by the given path. */
   stateOf<PControl extends AbstractControl>(
     p: CompatSchemaPath<PControl>,
-  ): CompatFieldState<PControl>;
-  stateOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): FieldState<PValue>;
+  ): [PControl] extends [any] ? CompatFieldState<PControl> : never;
+  stateOf<PValue>(
+    p: SchemaPath<PValue, SchemaPathRules>,
+  ): [PValue] extends [any] ? FieldState<PValue> : never;
   /** Gets the field represented by the given path. */
-  fieldTreeOf<PModel>(p: SchemaPathTree<PModel>): FieldTree<PModel>;
+  fieldTreeOf<PModel>(
+    p: SchemaPathTree<PModel>,
+  ): [PModel] extends [any] ? FieldTree<PModel> : never;
+
   /** The list of keys that lead from the root field to the current field. */
   readonly pathKeys: Signal<readonly string[]>;
 }
