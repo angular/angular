@@ -8,7 +8,11 @@
 
 import * as ts from 'typescript';
 
-import {getHTMLVirtualContent, getSCSSVirtualContent} from '../embedded_support';
+import {
+  getCSSVirtualContent,
+  getHTMLVirtualContent,
+  getSCSSVirtualContent,
+} from '../embedded_support';
 
 function assertEmbeddedHTMLContent(value: string, expectedContent: string): void {
   const sf = ts.createSourceFile('temp', value, ts.ScriptTarget.ESNext, true /* setParentNodes */);
@@ -20,6 +24,13 @@ function assertEmbeddedHTMLContent(value: string, expectedContent: string): void
 function assertEmbeddedSCSSContent(value: string, expectedContent: string): void {
   const sf = ts.createSourceFile('temp', value, ts.ScriptTarget.ESNext, true /* setParentNodes */);
   const virtualContent = getSCSSVirtualContent(sf);
+
+  expect(virtualContent).toEqual(expectedContent);
+}
+
+function assertEmbeddedCSSContent(value: string, expectedContent: string): void {
+  const sf = ts.createSourceFile('temp', value, ts.ScriptTarget.ESNext, true /* setParentNodes */);
+  const virtualContent = getCSSVirtualContent(sf);
 
   expect(virtualContent).toEqual(expectedContent);
 }
@@ -66,6 +77,22 @@ describe('server embedded support', () => {
 
     it('can locate direct assignment to styles', () => {
       assertEmbeddedSCSSContent(`@Component({styles: 'abc123'})`, `                     abc123   `);
+    });
+  });
+
+  describe('CSS support in templates', () => {
+    it('can locate style bindings in template', () => {
+      const input___ = `@Component({template: \`<div [style]="{color: 'red', 'font-weight': 'bold'}"></div>\`})`;
+      const expected = `                                   * {color:  red ;  font-weight :  bold }           `;
+      // note: the shift is due to the escaped backticks.
+      assertEmbeddedCSSContent(input___, expected);
+    });
+
+    it('ignores regular templates in SCSS content', () => {
+      // styles should be processed by SCSS, template ignored
+      const input_______ = `@Component({styles: ['a { }'], template: '<div [style]="{}"></div>'})`;
+      const expectedSCSS = `                      a { }                                          `;
+      assertEmbeddedSCSSContent(input_______, expectedSCSS);
     });
   });
 });
