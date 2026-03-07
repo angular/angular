@@ -41,7 +41,9 @@ export type ɵɵComponentDeclaration<
   Selector extends String,
   ExportAs extends string[],
   // `string` keys are for backwards compatibility with pre-16 versions.
-  InputMap extends {[key: string]: string | {alias: string | null; required: boolean}},
+  InputMap extends {
+    [key: string]: string | {alias: string | null; required: boolean; isSignal?: boolean};
+  },
   OutputMap extends {[key: string]: string},
   QueryFields extends string[],
   NgContentSelectors extends string[],
