@@ -43,6 +43,7 @@ export function maybeReturnReactiveLViewConsumer(consumer: ReactiveLViewConsumer
 export const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'> = {
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
+  impureReactivity: true,
   kind: 'template',
   consumerMarkedDirty: (node: ReactiveLViewConsumer) => {
     markAncestorsForTraversal(node.lView!);
@@ -73,6 +74,7 @@ export function getOrCreateTemporaryConsumer(lView: LView): ReactiveLViewConsume
 export const TEMPORARY_CONSUMER_NODE: ReactiveNode = {
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
+  impureReactivity: true,
   kind: 'template',
   consumerMarkedDirty: (node: ReactiveLViewConsumer) => {
     let parent = getLViewParent(node.lView!);

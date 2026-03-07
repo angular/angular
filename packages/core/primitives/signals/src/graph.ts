@@ -72,6 +72,7 @@ export const REACTIVE_NODE: ReactiveNode = {
   recomputing: false,
   consumerAllowSignalWrites: false,
   consumerIsAlwaysLive: false,
+  impureReactivity: false,
   kind: 'unknown',
   producerMustRecompute: () => false,
   producerRecomputeValue: () => {},
@@ -82,6 +83,23 @@ export const REACTIVE_NODE: ReactiveNode = {
 interface ReactiveLink {
   producer: ReactiveNode;
   consumer: ReactiveNode;
+
+  /**
+   * Stores the epoch that holds when this link was observed, allowing subsequent observations of the same producer to
+   * realize that there's an existing link, avoiding the creation of a new, redundant link. A value of `null` indicates
+   * that the link cannot be assumed to be valid based on the epoch counter.
+   *
+   * For reactive nodes that may execute multiple times during the same epoch (`ReactiveNode.impureReactivity: true`),
+   * this field is reset to `null` at the start of their computation. Pure reactive nodes don't do this as a
+   * performance optimization.
+   *
+   * For the optimization for pure reactive nodes to be sound, this field will not be assigned the current epoch when
+   * observing the link if the consumer has been marked dirty (i.e. a signal write has occurred during the
+   * consumer's evaluation, incrementing epoch E to E+1). The dirty state causes the consumer to be recomputed again,
+   * and the epoch E+1 must not have been captured in any link as the reevaluation may also execute during epoch E+1, at
+   * which point the links from the evaluation that started in epoch E must not be assumed valid.
+   */
+  knownValidAtEpoch: Version | null;
   lastReadVersion: number;
   prevConsumer: ReactiveLink | undefined;
   nextConsumer: ReactiveLink | undefined;
@@ -170,6 +188,12 @@ export interface ReactiveNode {
   readonly consumerIsAlwaysLive: boolean;
 
   /**
+   * Whether this node is guaranteed to only be evaluated because one of its producers changes. Defaults to `false` in
+   * `REACTIVE_NODE` prototype.
+   */
+  readonly impureReactivity: boolean;
+
+  /**
    * Tracks whether producers need to recompute their value independently of the reactive graph (for
    * example, if no initial value has been computed).
    */
@@ -240,6 +264,10 @@ export function producerAccessed(node: ReactiveNode): void {
       // last read version, update the tail of the producers list of this rerun, and return.
       activeConsumer.producersTail = nextProducerLink;
       nextProducerLink.lastReadVersion = node.version;
+
+      if (!activeConsumer.dirty) {
+        nextProducerLink.knownValidAtEpoch = epoch;
+      }
       return;
     }
   }
@@ -247,20 +275,18 @@ export function producerAccessed(node: ReactiveNode): void {
   const prevConsumerLink = node.consumersTail;
 
   // If the producer we're accessing already has a link to this consumer, we can skip adding a new
-  // link. This can short circuit the creation of a new link in the case where the consumer reads alternating ReeactiveNodes
+  // link. This can short circuit the creation of a new link in the case where the consumer reads alternating ReactiveNodes
   if (
     prevConsumerLink !== undefined &&
     prevConsumerLink.consumer === activeConsumer &&
-    // However, we have to make sure that the link we've discovered isn't from a node that is incrementally rebuilding its producer list
-    (!isRecomputing || isValidLink(prevConsumerLink, activeConsumer))
+    (!isRecomputing || prevConsumerLink.knownValidAtEpoch === epoch)
   ) {
-    // If we found an existing link to the consumer we can just return.
     return;
   }
 
   // If we got here, it means that we need to create a new link between the producer and the consumer.
   const isLive = consumerIsLive(activeConsumer);
-  const newLink = {
+  const newLink: ReactiveLink = {
     producer: node,
     consumer: activeConsumer,
     // instead of eagerly destroying the previous link, we delay until we've finished recomputing
@@ -271,6 +297,10 @@ export function producerAccessed(node: ReactiveNode): void {
     // the link is actually inserted. Setting it eagerly would create a dangling
     // reference into the consumer list that prevents GC of removed entries.
     prevConsumer: undefined,
+    // If a signal write has occurred that has marked the consumer dirty, subsequent reads of the same consumer cannot
+    // be considered valid as the active consumer may rerun from scratch while still on the same epoch. During that
+    // rerun, the link can therefore not be assumed to be valid based on the epoch counter.
+    knownValidAtEpoch: activeConsumer.dirty ? null : epoch,
     lastReadVersion: node.version,
     nextConsumer: undefined,
   };
@@ -395,6 +425,16 @@ export function consumerBeforeComputation(node: ReactiveNode | null): ReactiveNo
 export function resetConsumerBeforeComputation(node: ReactiveNode): void {
   node.producersTail = undefined;
   node.recomputing = true;
+
+  // Impure reactive nodes may reevaluate multiple times during the same epoch, so the epoch counter cannot be used to
+  // determine whether a producer link is valid during an evaluation. As such, reset link validity.
+  if (node.impureReactivity) {
+    let producer = node.producers;
+    while (producer !== undefined) {
+      producer.knownValidAtEpoch = null;
+      producer = producer.nextProducer;
+    }
+  }
 }
 
 /**
@@ -561,23 +601,4 @@ export function setPostProducerCreatedFn(fn: ReactiveHookFn | null): ReactiveHoo
   const prev = postProducerCreatedFn;
   postProducerCreatedFn = fn;
   return prev;
-}
-
-// While a ReactiveNode is recomputing, it may not have destroyed previous links
-// This allows us to check if a given link will be destroyed by a reactivenode if it were to finish running immediately without accesing any more producers
-function isValidLink(checkLink: ReactiveLink, consumer: ReactiveNode): boolean {
-  const producersTail = consumer.producersTail;
-  if (producersTail !== undefined) {
-    let link = consumer.producers!;
-    do {
-      if (link === checkLink) {
-        return true;
-      }
-      if (link === producersTail) {
-        break;
-      }
-      link = link.nextProducer!;
-    } while (link !== undefined);
-  }
-  return false;
 }

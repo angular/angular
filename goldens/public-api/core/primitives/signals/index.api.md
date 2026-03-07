@@ -147,6 +147,7 @@ export interface ReactiveNode {
     consumersTail: ReactiveLink | undefined;
     debugName?: string;
     dirty: boolean;
+    readonly impureReactivity: boolean;
     kind: ReactiveNodeKind;
     lastCleanEpoch: Version;
     producerMustRecompute(node: unknown): boolean;
