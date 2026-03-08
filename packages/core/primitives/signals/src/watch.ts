@@ -140,7 +140,7 @@ const NOOP_CLEANUP_FN: WatchCleanupFn = () => {};
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.
-const WATCH_NODE: Partial<WatchNode> = /* @__PURE__ */ (() => {
+const WATCH_NODE: Omit<WatchNode, 'fn' | 'schedule' | 'ref'> = /* @__PURE__ */ (() => {
   return {
     ...REACTIVE_NODE,
     consumerIsAlwaysLive: true,

@@ -124,7 +124,10 @@ export function linkedSignalUpdateFn<S, D>(
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
 // a side-effect, ending up preserving `LINKED_SIGNAL_NODE` and `REACTIVE_NODE`.
-export const LINKED_SIGNAL_NODE: object = /* @__PURE__ */ (() => {
+export const LINKED_SIGNAL_NODE: Omit<
+  LinkedSignalNode<unknown, unknown>,
+  'computation' | 'source' | 'sourceValue'
+> = /* @__PURE__ */ (() => {
   return {
     ...REACTIVE_NODE,
     value: UNSET,
