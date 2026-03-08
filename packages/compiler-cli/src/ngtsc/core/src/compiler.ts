@@ -423,7 +423,6 @@ export class NgCompiler {
           ticket.programDriver,
           ticket.incrementalBuildStrategy,
           IncrementalCompilation.fresh(
-            ticket.tsProgram,
             versionMapFromProgram(ticket.tsProgram, ticket.programDriver),
           ),
           ticket.enableTemplateTypeChecker,
