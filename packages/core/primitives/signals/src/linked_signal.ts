@@ -17,6 +17,7 @@ import {
   REACTIVE_NODE,
   ReactiveNode,
   runPostProducerCreatedFn,
+  setActiveConsumer,
   SIGNAL,
 } from './graph';
 import {signalSetFn, signalUpdateFn} from './signal';
@@ -151,17 +152,22 @@ export const LINKED_SIGNAL_NODE: object = /* @__PURE__ */ (() => {
 
       const prevConsumer = consumerBeforeComputation(node);
       let newValue: unknown;
+      let wasEqual = false;
       try {
         const newSourceValue = node.source();
-        const prev =
-          oldValue === UNSET || oldValue === ERRORED
-            ? undefined
-            : {
-                source: node.sourceValue,
-                value: oldValue,
-              };
+        const oldValueValid = oldValue !== UNSET && oldValue !== ERRORED;
+        const prev = oldValueValid
+          ? {
+              source: node.sourceValue,
+              value: oldValue,
+            }
+          : undefined;
         newValue = node.computation(newSourceValue, prev);
         node.sourceValue = newSourceValue;
+        // We want to mark this node as errored if calling `equal` throws; however, we don't want
+        // to track any reactive reads inside `equal`.
+        setActiveConsumer(null);
+        wasEqual = oldValueValid && newValue !== ERRORED && node.equal(oldValue, newValue);
       } catch (err) {
         newValue = ERRORED;
         node.error = err;
@@ -169,7 +175,7 @@ export const LINKED_SIGNAL_NODE: object = /* @__PURE__ */ (() => {
         consumerAfterComputation(node, prevConsumer);
       }
 
-      if (oldValue !== UNSET && newValue !== ERRORED && node.equal(oldValue, newValue)) {
+      if (wasEqual) {
         // No change to `valueVersion` - old and new values are
         // semantically equivalent.
         node.value = oldValue;

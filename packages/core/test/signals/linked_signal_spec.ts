@@ -7,7 +7,7 @@
  */
 
 import {isSignal, linkedSignal, signal, computed} from '../../src/core';
-import {setPostProducerCreatedFn} from '../../primitives/signals';
+import {defaultEquals, setPostProducerCreatedFn} from '../../primitives/signals';
 import {testingEffect} from './effect_util';
 
 describe('linkedSignal', () => {
@@ -318,5 +318,126 @@ describe('linkedSignal', () => {
 
     expect(producers).toBe(2);
     setPostProducerCreatedFn(prev);
+  });
+
+  describe('with custom equal', () => {
+    it('should cache exceptions thrown by equal', () => {
+      const s = signal(0);
+
+      let computedRunCount = 0;
+      let equalRunCount = 0;
+      const c = linkedSignal(
+        () => {
+          computedRunCount++;
+          return s();
+        },
+        {
+          equal: () => {
+            equalRunCount++;
+            throw new Error('equal');
+          },
+        },
+      );
+
+      // equal() isn't run for the initial computation.
+      expect(c()).toBe(0);
+      expect(computedRunCount).toBe(1);
+      expect(equalRunCount).toBe(0);
+
+      s.set(1);
+
+      // Error is thrown by equal().
+      expect(() => c()).toThrowError('equal');
+      expect(computedRunCount).toBe(2);
+      expect(equalRunCount).toBe(1);
+
+      // Error is cached; c throws again without needing to rerun computation or equal().
+      expect(() => c()).toThrowError('equal');
+      expect(computedRunCount).toBe(2);
+      expect(equalRunCount).toBe(1);
+    });
+
+    it('should not track signal reads inside equal', () => {
+      const value = signal(1);
+      const epsilon = signal(0.5);
+
+      let innerRunCount = 0;
+      let equalRunCount = 0;
+      const inner = linkedSignal(
+        () => {
+          innerRunCount++;
+          return value();
+        },
+        {
+          equal: (a, b) => {
+            equalRunCount++;
+            return Math.abs(a - b) < epsilon();
+          },
+        },
+      );
+
+      let outerRunCount = 0;
+      const outer = linkedSignal(() => {
+        outerRunCount++;
+        return inner();
+      });
+
+      // Everything runs the first time.
+      expect(outer()).toBe(1);
+      expect(innerRunCount).toBe(1);
+      expect(outerRunCount).toBe(1);
+
+      // Difference is less than epsilon().
+      value.set(1.2);
+
+      // `inner` reruns because `value` was changed, and `equal` is called for the first time.
+      expect(outer()).toBe(1);
+      expect(innerRunCount).toBe(2);
+      expect(equalRunCount).toBe(1);
+      // `outer does not rerun because `equal` determined that `inner` had not changed.
+      expect(outerRunCount).toBe(1);
+
+      // Previous difference is now greater than epsilon().
+      epsilon.set(0.1);
+
+      // While changing `epsilon` would change the outcome of the `inner`, we don't rerun it
+      // because we intentionally don't track reactive reads in `equal`.
+      expect(outer()).toBe(1);
+      expect(innerRunCount).toBe(2);
+      expect(equalRunCount).toBe(1);
+      // Equally important is that the signal read in `equal` doesn't leak into the outer reactive
+      // context either.
+      expect(outerRunCount).toBe(1);
+    });
+
+    it('should recover from exception', () => {
+      let shouldThrow = true;
+      const source = signal(0);
+      const derived = linkedSignal({
+        source,
+        computation: (value, previous) => {
+          return `${value}, hasPrevious: ${previous !== undefined}`;
+        },
+        equal: (a, b) => {
+          if (shouldThrow) {
+            throw new Error('equal');
+          }
+          return defaultEquals(a, b);
+        },
+      });
+
+      // Initial read doesn't throw because it doesn't call `equal`.
+      expect(derived()).toBe('0, hasPrevious: false');
+
+      // Update `source` to begin throwing.
+      source.set(1);
+      expect(() => derived()).toThrowError('equal');
+
+      // Stop throwing and update `source` to cause `derived` to recompute. No previous value
+      // should be made available as the linked signal transitions from an error state.
+      shouldThrow = false;
+      source.set(2);
+      expect(derived()).toBe('2, hasPrevious: false');
+    });
   });
 });
