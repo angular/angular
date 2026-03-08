@@ -14,9 +14,9 @@ import {
   producerUpdateValueVersion,
   REACTIVE_NODE,
   ReactiveNode,
+  runPostProducerCreatedFn,
   setActiveConsumer,
   SIGNAL,
-  runPostProducerCreatedFn,
 } from './graph';
 
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
@@ -83,8 +83,8 @@ export function createComputed<T>(
 
   (computed as ComputedGetter<T>)[SIGNAL] = node;
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    const debugName = node.debugName ? ' (' + node.debugName + ')' : '';
-    computed.toString = () => `[Computed${debugName}: ${String(node.value)}]`;
+    computed.toString = () =>
+      `[Computed${node.debugName ? ' (' + node.debugName + ')' : ''}: ${String(node.value)}]`;
   }
 
   runPostProducerCreatedFn(node);

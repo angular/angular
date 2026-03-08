@@ -55,7 +55,7 @@ describe('linkedSignal', () => {
     });
 
     expect(choice()).toBe('apple');
-    expect(choice.toString()).toBe('[LinkedSignal: apple]');
+    expect(choice.toString()).toBe('[LinkedSignal (TestChoice): apple]');
   });
 
   it('should update when the source changes', () => {

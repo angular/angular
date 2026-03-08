@@ -62,8 +62,8 @@ export function createSignal<T>(
   const getter = (() => signalGetFn(node)) as SignalGetter<T>;
   (getter as any)[SIGNAL] = node;
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    const debugName = node.debugName ? ' (' + node.debugName + ')' : '';
-    getter.toString = () => `[Signal${debugName}: ${String(node.value)}]`;
+    getter.toString = () =>
+      `[Signal${node.debugName ? ' (' + node.debugName + ')' : ''}: ${String(node.value)}]`;
   }
 
   runPostProducerCreatedFn(node);
