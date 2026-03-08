@@ -93,8 +93,8 @@ export function createLinkedSignal<S, D>(
   const getter = linkedSignalGetter as LinkedSignalGetter<S, D>;
   getter[SIGNAL] = node;
   if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-    const debugName = node.debugName ? ' (' + node.debugName + ')' : '';
-    getter.toString = () => `[LinkedSignal${debugName}: ${String(node.value)}]`;
+    getter.toString = () =>
+      `[LinkedSignal${node.debugName ? ' (' + node.debugName + ')' : ''}: ${String(node.value)}]`;
   }
 
   runPostProducerCreatedFn(node);
