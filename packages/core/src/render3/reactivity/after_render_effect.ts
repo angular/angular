@@ -77,7 +77,10 @@ export interface AfterRenderPhaseEffectNode extends SignalNode<unknown> {
   phaseFn(previousValue?: unknown): unknown;
 }
 
-const AFTER_RENDER_PHASE_EFFECT_NODE = /* @__PURE__ */ (() => ({
+const AFTER_RENDER_PHASE_EFFECT_NODE: Omit<
+  AfterRenderPhaseEffectNode,
+  'phase' | 'sequence' | 'userFn' | 'signal' | 'registerCleanupFn'
+> = /* @__PURE__ */ (() => ({
   ...SIGNAL_NODE,
   kind: 'afterRenderEffectPhase',
   consumerIsAlwaysLive: true,
