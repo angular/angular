@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "esbuild", "extension_package", "ng_project", "sass_binary", "string_flag", "ts_project")
+load("//devtools/tools:defaults.bzl", "copy_to_directory", "esbuild", "extension_package", "ng_project", "sass_binary", "string_flag", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,6 +8,18 @@ sass_binary(
     include_paths = ["external/_main/node_modules"],
     sourcemap = False,
     deps = ["//devtools/projects/ng-devtools/src/styles:global"],
+)
+
+copy_to_directory(
+    name = "browser_specific_styles",
+    srcs = [
+        "//devtools/projects/ng-devtools/src/styles:chrome",
+        "//devtools/projects/ng-devtools/src/styles:firefox",
+    ],
+    out = "styles",
+    replace_prefixes = {
+        "devtools/projects/ng-devtools/src/styles": "",
+    },
 )
 
 ts_project(
@@ -72,6 +84,7 @@ exports_files(["index.html"])
 filegroup(
     name = "prod_app_static_files",
     srcs = [
+        ":browser_specific_styles",
         ":index.html",
         ":shell_common_styles",
     ],
