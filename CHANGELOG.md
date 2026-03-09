@@ -1,3 +1,21 @@
+<a name="21.2.2"></a>
+# 21.2.2 (2026-03-09)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1df1697c6e](https://github.com/angular/angular/commit/1df1697c6e3a6b1d302f7692b495146943faa12f) | fix | prevent mutation of children array in RecursiveVisitor |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c822bf8e76](https://github.com/angular/angular/commit/c822bf8e76611afde332b6625f5e7bae2fe9c3f3) | fix | always parenthesize object literals in TCB |
+| [05d022d5e6](https://github.com/angular/angular/commit/05d022d5e61cca7ac90d5b2b2ba3fc738b364ad9) | fix | ignore generated ngDevMode signal branch for code coverage |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [670d1660c4](https://github.com/angular/angular/commit/670d1660c40504e3f55e094c3ebbcccad14163f3) | feat | add 'blur' option to debounce rule |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.0-next.1"></a>
 # 22.0.0-next.1 (2026-03-05)
 ### compiler
