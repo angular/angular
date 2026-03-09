@@ -499,6 +499,15 @@ export const CSP_NONCE: InjectionToken<string | null>;
 // @public
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
+// @public
+export function debounced<T>(source: () => T, wait: NoInfer<number | ((value: T, lastValue: ResourceSnapshot<T>) => Promise<void> | void)>, options?: NoInfer<DebouncedOptions<T>>): Resource<T>;
+
+// @public
+export interface DebouncedOptions<T> {
+    equal?: ValueEqualityFn<T>;
+    injector?: Injector;
+}
+
 // @public (undocumented)
 export class DebugElement extends DebugNode {
     constructor(nativeNode: Element);
