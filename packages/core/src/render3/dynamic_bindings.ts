@@ -27,6 +27,8 @@ export const BINDING: unique symbol = /* @__PURE__ */ Symbol('BINDING');
 /**
  * A dynamically-defined binding targeting.
  * For example, `inputBinding('value', () => 123)` creates an input binding.
+ *
+ * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export interface Binding {
   readonly [BINDING]: unknown;
@@ -50,6 +52,8 @@ export interface BindingInternal extends Binding {
 
 /**
  * Represents a dynamically-created directive with bindings targeting it specifically.
+ *
+ * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export interface DirectiveWithBindings<T> {
   /** Directive type that should be created. */

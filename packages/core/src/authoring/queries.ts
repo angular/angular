@@ -97,7 +97,7 @@ export interface ViewChildFunction {
  *
  * ```angular-ts
  * @Component({template: '<div #el></div><my-component #cmp />'})
- * export class TestComponent {
+ * export class Card {
  *   divEl = viewChild<ElementRef>('el');                   // Signal<ElementRef|undefined>
  *   divElRequired = viewChild.required<ElementRef>('el');  // Signal<ElementRef>
  *   cmp = viewChild(MyComponent);                          // Signal<MyComponent|undefined>
@@ -255,7 +255,7 @@ export interface ContentChildFunction {
  *
  * ```ts
  * @Component({...})
- * export class TestComponent {
+ * export class Card {
  *   headerEl = contentChild<ElementRef>('h');                    // Signal<ElementRef|undefined>
  *   headerElElRequired = contentChild.required<ElementRef>('h'); // Signal<ElementRef>
  *   header = contentChild(MyHeader);                             // Signal<MyHeader|undefined>
@@ -263,10 +263,12 @@ export interface ContentChildFunction {
  * }
  * ```
  *
- * Note: By default `descendants` is `true` which means the query will traverse all descendants in the same template.
+ * NOTE: By default `descendants` is `true` which means the query will traverse all descendants in the same template.
  *
  * @initializerApiFunction
  * @publicApi 19.0
+ *
+ * @See [Content queries](guide/components/queries#content-queries)
  */
 export const contentChild: ContentChildFunction = (() => {
   // Note: This may be considered a side-effect, but nothing will depend on
