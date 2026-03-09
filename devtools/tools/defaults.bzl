@@ -1,9 +1,9 @@
 # Re-export of Bazel rules with devtools-wide defaults
 
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory = "copy_to_directory")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
 load("@aspect_rules_js//js:defs.bzl", _js_library = "js_library")
+load("@bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
+load("@bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory = "copy_to_directory")
 load("@bazel_skylib//rules:common_settings.bzl", _string_flag = "string_flag")
 load(
     "//tools:defaults.bzl",

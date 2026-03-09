@@ -22,7 +22,7 @@ export function getAngularPackagesFromRunfiles() {
   const runfilesManifestPath = process.env['RUNFILES_MANIFEST_FILE'];
 
   if (!runfilesManifestPath) {
-    const packageRunfilesDir = path.join(process.env['RUNFILES']!, '_main/packages');
+    const packageRunfilesDir = path.join(process.env['JS_BINARY__RUNFILES']!, '_main/packages');
 
     return fs
       .readdirSync(packageRunfilesDir)
@@ -43,5 +43,5 @@ export function getAngularPackagesFromRunfiles() {
 
 /** Resolves a file or directory from the Bazel runfiles. */
 export function resolveFromRunfiles(manifestPath: string) {
-  return path.resolve(process.env['RUNFILES']!, manifestPath);
+  return path.resolve(process.env['JS_BINARY__RUNFILES']!, manifestPath);
 }

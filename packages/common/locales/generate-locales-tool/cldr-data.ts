@@ -61,7 +61,7 @@ export type CldrLocaleAliasReason =
 export class CldrData {
   /** Path to the CLDR JSON data Bazel repository. i.e. `@cldr_json_data//`. */
   readonly cldrDataDir = dirname(
-    resolve(process.env['RUNFILES']!, process.env['CLDR_JSON_DATA_RUNFILES_PATH']!),
+    resolve(process.env['JS_BINARY__RUNFILES']!, process.env['CLDR_JSON_DATA_RUNFILES_PATH']!),
   );
 
   /** List of all available locales CLDR provides data for. */
