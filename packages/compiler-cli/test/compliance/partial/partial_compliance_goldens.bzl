@@ -1,4 +1,4 @@
-load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_file")
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_file")
 load("//tools:defaults.bzl", "js_binary", "js_run_binary")
 
 def partial_compliance_golden(filePath):

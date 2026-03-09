@@ -1,4 +1,4 @@
-load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_file")
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_file")
 load("@cldr_json_data//:index.bzl", _ALL_CLDR_LOCALES = "LOCALES")
 load("//tools:defaults.bzl", "js_run_binary")
 
