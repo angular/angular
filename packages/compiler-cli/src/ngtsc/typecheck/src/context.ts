@@ -669,7 +669,7 @@ class InlineTcbOp implements Op {
 
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter): string {
     const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
-    const fnName = ts.factory.createIdentifier(`_tcb_${this.ref.node.pos}`);
+    const fnName = `_tcb_${this.ref.node.pos}`;
 
     const {tcbMeta, component} = adaptTypeCheckBlockMetadata(this.ref, this.meta, env);
 
