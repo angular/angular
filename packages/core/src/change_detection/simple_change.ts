@@ -19,7 +19,7 @@ import type {ɵINPUT_SIGNAL_BRAND_READ_TYPE} from '../authoring/input/input_sign
  */
 export class SimpleChange<T = any> {
   constructor(
-    public previousValue: T,
+    public previousValue: T | undefined,
     public currentValue: T,
     public firstChange: boolean,
   ) {}
