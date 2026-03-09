@@ -1,8 +1,8 @@
-load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template_rule")
-load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_file")
 load("@aspect_rules_js//js:defs.bzl", "js_library", "js_run_binary")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
+load("@bazel_lib//lib:expand_template.bzl", "expand_template_rule")
+load("@bazel_lib//lib:write_source_files.bzl", "write_source_file")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@npm//vscode-ng-language-service:@vscode/vsce/package_json.bzl", vsce_bin = "bin")
 

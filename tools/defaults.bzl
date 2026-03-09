@@ -1,6 +1,6 @@
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 load("@aspect_rules_js//js:defs.bzl", _js_library = "js_library")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
+load("@bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@devinfra//bazel/api-golden:index.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")

@@ -1,6 +1,6 @@
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory = "copy_to_directory")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
+load("@bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
+load("@bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory = "copy_to_directory")
 load("@devinfra//bazel/private:path_relative_to_label.bzl", _path_relative_to_label = "path_relative_to_label")
 load(
     "//tools:defaults.bzl",
