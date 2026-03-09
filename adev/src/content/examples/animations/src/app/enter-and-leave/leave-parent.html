@@ -1,13 +1,12 @@
 <!-- #docplaster -->
-<h2><code>animate.leave</code> Parent Sub-tree No Animation Example</h2>
+<h2><code>animate.leave</code> Parent Sub-tree Animation Example</h2>
 
 <button type="button" class="toggle-btn" (click)="toggle()">Toggle Element</button>
 
 @if (isShown()) {
-  <!-- the child node with `animate.leave` will not animate out because the
-       parent node removal happens first and will take the child dom tree
-       with it. -->
   <div class="leave-parent">
+    <!-- the child node with `animate.leave` will animate first
+         before the parent node is removed from the DOM. -->
     <div class="leave-container" animate.leave="leaving">
       <p>Goodbye</p>
     </div>
