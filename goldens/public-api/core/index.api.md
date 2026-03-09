@@ -1799,16 +1799,20 @@ export type Signal<T> = (() => T) & {
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T>;
 
 // @public
-export class SimpleChange<T = any> {
-    constructor(previousValue: T, currentValue: T, firstChange: boolean);
-    // (undocumented)
-    currentValue: T;
-    // (undocumented)
-    firstChange: boolean;
-    isFirstChange(): boolean;
-    // (undocumented)
+export type SimpleChange<T = any> = {
     previousValue: T;
-}
+    currentValue: T;
+    firstChange: false;
+    isFirstChange(): false;
+} | {
+    previousValue: T | undefined;
+    currentValue: T;
+    firstChange: true;
+    isFirstChange(): boolean;
+};
+
+// @public (undocumented)
+export const SimpleChange: ɵSimpleChangeCtor;
 
 // @public
 export type SimpleChanges<T = unknown> = T extends object ? {

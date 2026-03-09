@@ -17,19 +17,35 @@ import type {ɵINPUT_SIGNAL_BRAND_READ_TYPE} from '../authoring/input/input_sign
  *
  * @publicApi
  */
-export class SimpleChange<T = any> {
+export type SimpleChange<T = any> =
+  | {
+      previousValue: T;
+      currentValue: T;
+      firstChange: false;
+      isFirstChange(): false;
+    }
+  | {
+      previousValue: T | undefined;
+      currentValue: T;
+      firstChange: true;
+      isFirstChange(): boolean;
+    };
+
+export interface ɵSimpleChangeCtor {
+  new (previousValue: unknown, currentValue: unknown, firstChange: boolean): SimpleChange<any>;
+}
+
+export const SimpleChange: ɵSimpleChangeCtor = class SimpleChange {
   constructor(
-    public previousValue: T,
-    public currentValue: T,
+    public previousValue: unknown,
+    public currentValue: unknown,
     public firstChange: boolean,
   ) {}
-  /**
-   * Check whether the new value is the first value assigned.
-   */
+
   isFirstChange(): boolean {
     return this.firstChange;
   }
-}
+} as ɵSimpleChangeCtor;
 
 /**
  * A hashtable of changes represented by {@link SimpleChange} objects stored
