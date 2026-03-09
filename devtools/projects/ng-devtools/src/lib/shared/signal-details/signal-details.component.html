@@ -36,7 +36,7 @@
       (click)="highlightDeps.emit({node, direction: 'down'})"
       matTooltip="Highlight downstream dependents path"
     >
-      <mat-icon> swipe_down_alt </mat-icon>
+      <ng-icon name="graph_downstream" />
     </button>
     <button
       ng-button
@@ -46,7 +46,7 @@
       (click)="highlightDeps.emit({node, direction: 'up'})"
       matTooltip="Highlight upstream dependencies path"
     >
-      <mat-icon> swipe_up_alt </mat-icon>
+      <ng-icon name="graph_upstream" />
     </button>
   </div>
   <button
