@@ -43,25 +43,3 @@ export const constructorParametersDownlevelTransform = (
 ): ts.TransformerFactory<ts.SourceFile> => {
   return angularJitApplicationTransform(program, isCore);
 };
-
-// TCB generation exports for ng-hybrid-preprocessor
-export {generateTypeCheckBlock} from '../src/ngtsc/typecheck/src/type_check_block';
-export type {
-  TypeCheckingConfig,
-  TcbComponentMetadata,
-  TcbTypeCheckBlockMetadata,
-  TcbTypeParameter,
-  TypeCheckId,
-  TcbDirectiveMetadata,
-  TcbPipeMetadata,
-  TemplateDiagnostic,
-  TcbReferenceMetadata,
-} from '../src/ngtsc/typecheck/api';
-export type {DomSchemaChecker} from '../src/ngtsc/typecheck/src/dom';
-export {Environment} from '../src/ngtsc/typecheck/src/environment';
-export type {OutOfBandDiagnosticRecorder} from '../src/ngtsc/typecheck/src/oob';
-export {TcbGenericContextBehavior} from '../src/ngtsc/typecheck/src/ops/context';
-export {ImportManager} from '../src/ngtsc/translator';
-export type {ReferenceEmitter} from '../src/ngtsc/imports';
-export type {ReflectionHost, ClassDeclaration} from '../src/ngtsc/reflection';
-export {ClassPropertyMapping} from '../src/ngtsc/metadata/src/property_mapping';
