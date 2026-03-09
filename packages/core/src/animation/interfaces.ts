@@ -50,6 +50,8 @@ const MAX_ANIMATION_TIMEOUT_DEFAULT = 4000;
  * function callbacks.
  *
  * @publicApi 20.2
+ *
+ * @see [Animating your applications with animate.enter and animate.leave](guide/animations)
  */
 export type AnimationFunction = (event: AnimationCallbackEvent) => void;
 
