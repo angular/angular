@@ -20,14 +20,11 @@ import {
   ThisReceiver,
   TmplAstLetDeclaration,
 } from '@angular/compiler';
-import ts from 'typescript';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {astToTcbExpr} from '../expression';
-import {Reference} from '../../../imports';
-import {ClassDeclaration} from '../../../reflection';
 
 /**
  * Process an `AST` expression and convert it into a `ts.Expression`, generating references to the

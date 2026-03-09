@@ -7,7 +7,7 @@
  */
 import ts from 'typescript';
 
-import {AbsoluteFsPath, join} from '../../file_system';
+import {AbsoluteFsPath} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
@@ -69,7 +69,7 @@ export class TypeCheckFile extends Environment {
     oobRecorder: OutOfBandDiagnosticRecorder,
     genericContextBehavior: TcbGenericContextBehavior,
   ): void {
-    const fnId = ts.factory.createIdentifier(`_tcb${this.nextTcbId++}`);
+    const fnId = `_tcb${this.nextTcbId++}`;
     const {tcbMeta, component} = adaptTypeCheckBlockMetadata(ref, meta, this);
     const fn = generateTypeCheckBlock(
       this,
@@ -127,9 +127,4 @@ export class TypeCheckFile extends Environment {
   override getPreludeStatements(): TcbExpr[] {
     return [];
   }
-}
-
-export function typeCheckFilePath(rootDirs: AbsoluteFsPath[]): AbsoluteFsPath {
-  const shortest = rootDirs.concat([]).sort((a, b) => a.length - b.length)[0];
-  return join(shortest, '__ng_typecheck__.ts');
 }

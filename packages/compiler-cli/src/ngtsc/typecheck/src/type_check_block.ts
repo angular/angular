@@ -31,7 +31,7 @@ import {getStatementsBlock} from './ops/codegen';
  *
  * @param env an `Environment` into which type-checking code will be generated.
  * @param ref a `Reference` to the component class which should be type-checked.
- * @param name a `ts.Identifier` to use for the generated `ts.FunctionDeclaration`.
+ * @param name Name of the generated function.
  * @param meta metadata about the component's template and the function being generated.
  * @param domSchemaChecker used to check and record errors regarding improper usage of DOM elements
  * and bindings.
@@ -43,7 +43,7 @@ import {getStatementsBlock} from './ops/codegen';
 export function generateTypeCheckBlock(
   env: Environment,
   component: TcbComponentMetadata,
-  name: ts.Identifier,
+  name: string,
   meta: TcbTypeCheckBlockMetadata,
   domSchemaChecker: DomSchemaChecker,
   oobRecorder: OutOfBandDiagnosticRecorder,
@@ -121,7 +121,7 @@ export function generateTypeCheckBlock(
   }
 
   const bodyStr = `{\n${statements.join('\n')}\n}`;
-  const funcDeclStr = `function ${name.text}${typeParamsStr}(${thisParamStr}) ${bodyStr}`;
+  const funcDeclStr = `function ${name}${typeParamsStr}(${thisParamStr}) ${bodyStr}`;
 
   return `/*${meta.id}*/\n${funcDeclStr}`;
 }
