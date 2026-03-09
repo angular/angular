@@ -22,6 +22,7 @@ import {
   DevtoolsSignalGraph,
 } from '../signal-graph';
 import {MatTooltip} from '@angular/material/tooltip';
+import {IconComponent} from '../icon/icon.component';
 
 const TYPE_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
   'signal': 'type-signal',
@@ -49,7 +50,7 @@ interface ResourceCluster {
   templateUrl: './signal-details.component.html',
   styleUrl: './signal-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SignalValueTreeComponent, MatIcon, ButtonComponent, MatTooltip],
+  imports: [SignalValueTreeComponent, MatIcon, ButtonComponent, MatTooltip, IconComponent],
 })
 export class SignalDetailsComponent {
   protected readonly node = input.required<DevtoolsSignalGraphNode>();

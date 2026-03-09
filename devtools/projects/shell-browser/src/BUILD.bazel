@@ -81,10 +81,22 @@ esbuild(
 
 exports_files(["index.html"])
 
+copy_to_directory(
+    name = "devtools_assets",
+    srcs = [
+        "//devtools/projects/ng-devtools/src/assets",
+    ],
+    out = "assets",
+    replace_prefixes = {
+        "devtools/projects/ng-devtools/src/assets": "",
+    },
+)
+
 filegroup(
     name = "prod_app_static_files",
     srcs = [
         ":browser_specific_styles",
+        ":devtools_assets",
         ":index.html",
         ":shell_common_styles",
     ],
