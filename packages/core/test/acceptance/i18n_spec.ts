@@ -3534,6 +3534,71 @@ describe('runtime i18n', () => {
       'translatedText value',
     );
   });
+
+  describe('attribute sanitization', () => {
+    @Component({template: ''})
+    class SanitizeAppComp {
+      url = 'javascript:alert("oh no")';
+      count = 0;
+    }
+
+    it('should sanitize translated attribute binding', () => {
+      const fixture = initWithTemplate(SanitizeAppComp, '<a [attr.href]="url" i18n-href></a>');
+      const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+      expect(link.getAttribute('href')).toMatch(/^unsafe:/);
+    });
+
+    it('should sanitize translated property binding', () => {
+      const fixture = initWithTemplate(SanitizeAppComp, '<a [href]="url" i18n-href></a>');
+      const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+      expect(link.getAttribute('href')).toMatch(/^unsafe:/);
+    });
+
+    it('should sanitize translated interpolation', () => {
+      const fixture = initWithTemplate(SanitizeAppComp, '<a href="{{url}}" i18n-href></a>');
+      const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+      expect(link.getAttribute('href')).toMatch(/^unsafe:/);
+    });
+
+    it('should sanitize interpolation inside translated element', () => {
+      const fixture = initWithTemplate(SanitizeAppComp, `<div i18n><a href="{{url}}"></a></div>`);
+      const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+      expect(link.getAttribute('href')).toMatch(/^unsafe:/);
+    });
+
+    it('should sanitize attribute binding inside translated element', () => {
+      const fixture = initWithTemplate(
+        SanitizeAppComp,
+        `<div i18n><a [attr.href]="url"></a></div>`,
+      );
+      const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+      expect(link.getAttribute('href')).toMatch(/^unsafe:/);
+    });
+
+    it('should sanitize property binding inside translated element', () => {
+      const fixture = initWithTemplate(SanitizeAppComp, `<div i18n><a [href]="url"></a></div>`);
+      const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+      expect(link.getAttribute('href')).toMatch(/^unsafe:/);
+    });
+
+    it('should sanitize property binding inside an ICU', () => {
+      const fixture = initWithTemplate(
+        SanitizeAppComp,
+        `<div i18n>{count, plural,
+            =0 {no <strong>link</strong> yet}
+            other {{{count}} Here is the <a href="{{url}}">link</a>!}
+        }</div>`,
+      );
+
+      expect(fixture.nativeElement.querySelector('a')).toBeFalsy();
+
+      fixture.componentInstance.count = 1;
+      fixture.detectChanges();
+      const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a');
+      expect(link).toBeTruthy();
+      expect(link.getAttribute('href')).toMatch(/^unsafe:/);
+    });
+  });
 });
 
 function initWithTemplate(compType: Type<any>, template: string) {
