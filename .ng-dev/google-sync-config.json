@@ -10,6 +10,7 @@
     "packages/compiler-cli/private/bazel.ts",
     "packages/compiler-cli/private/localize.ts",
     "packages/compiler-cli/private/tooling.ts",
+    "packages/compiler-cli/private/hybrid_analysis.ts",
     "packages/compiler-cli/private/babel.d.ts",
     "packages/compiler-cli/src/bin/**",
     "packages/core/schematics/utils/tsurge/helpers/angular_devkit/**",
