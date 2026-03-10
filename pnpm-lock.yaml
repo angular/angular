@@ -829,6 +829,9 @@ importers:
       '@angular/forms':
         specifier: workspace:*
         version: link:../packages/forms
+      '@angular/localize':
+        specifier: workspace:*
+        version: link:../packages/localize
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:../packages/platform-browser
