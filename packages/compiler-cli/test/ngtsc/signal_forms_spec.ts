@@ -446,7 +446,7 @@ runInEachFileSystem(() => {
           @Component({selector: 'custom-control', template: ''})
           export class CustomControl implements FormValueControl<number> {
             readonly value = model<number>(0);
-            readonly max = input<number | undefined>(1);
+            readonly max = input<string | number | undefined>(1);
           }
 
           @Component({

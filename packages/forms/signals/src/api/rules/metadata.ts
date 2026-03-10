@@ -92,6 +92,32 @@ export const MetadataReducer = {
     };
   },
 
+  /** Creates a reducer that accumulates the min of its individual comparable item values using `<` operator. Works for both numbers and strings.  */
+  minComparable<T extends string | number>(): MetadataReducer<T | undefined, T | undefined> {
+    return {
+      reduce: (acc, item) => {
+        if (acc === undefined || item === undefined) {
+          return acc ?? item;
+        }
+        return acc < item ? acc : item;
+      },
+      getInitial: () => undefined,
+    };
+  },
+
+  /** Creates a reducer that accumulates the max of its individual comparable item values using `>` operator. Works for both numbers and strings. */
+  maxComparable<T extends string | number>(): MetadataReducer<T | undefined, T | undefined> {
+    return {
+      reduce: (prev, next) => {
+        if (prev === undefined || next === undefined) {
+          return prev ?? next;
+        }
+        return prev > next ? prev : next;
+      },
+      getInitial: () => undefined,
+    };
+  },
+
   /** Creates a reducer that logically or's its accumulated value with each individual item value. */
   or(): MetadataReducer<boolean, boolean> {
     return {
@@ -259,10 +285,10 @@ export const REQUIRED: MetadataKey<Signal<boolean>, boolean, boolean> = createMe
  * @experimental 21.0.0
  */
 export const MIN: MetadataKey<
-  Signal<number | undefined>,
-  number | undefined,
-  number | undefined
-> = createMetadataKey(MetadataReducer.max());
+  Signal<string | number | undefined>,
+  string | number | undefined,
+  string | number | undefined
+> = createMetadataKey(MetadataReducer.maxComparable<string | number>());
 
 /**
  * A {@link MetadataKey} representing the max value of the field.
@@ -271,10 +297,10 @@ export const MIN: MetadataKey<
  * @experimental 21.0.0
  */
 export const MAX: MetadataKey<
-  Signal<number | undefined>,
-  number | undefined,
-  number | undefined
-> = createMetadataKey(MetadataReducer.min());
+  Signal<string | number | undefined>,
+  string | number | undefined,
+  string | number | undefined
+> = createMetadataKey(MetadataReducer.minComparable<string | number>());
 
 /**
  * A {@link MetadataKey} representing the min length of the field.

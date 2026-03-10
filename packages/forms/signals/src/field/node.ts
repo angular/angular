@@ -224,7 +224,7 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.name;
   }
 
-  get max(): Signal<number | undefined> | undefined {
+  get max(): Signal<string | number | undefined> | undefined {
     return this.metadata(MAX);
   }
 
@@ -232,7 +232,7 @@ export class FieldNode implements FieldState<unknown> {
     return this.metadata(MAX_LENGTH);
   }
 
-  get min(): Signal<number | undefined> | undefined {
+  get min(): Signal<string | number | undefined> | undefined {
     return this.metadata(MIN);
   }
 
