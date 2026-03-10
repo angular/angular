@@ -4,6 +4,7 @@
 
 ```ts
 
+import * as _angular_core from '@angular/core';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';

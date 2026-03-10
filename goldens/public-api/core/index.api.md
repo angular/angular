@@ -4,6 +4,7 @@
 
 ```ts
 
+import * as _angular_core from '@angular/core';
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
 import { Subscription } from 'rxjs';
@@ -989,7 +990,7 @@ export abstract class Injector {
     // (undocumented)
     static THROW_IF_NOT_FOUND: {};
     // (undocumented)
-    static ɵprov: unknown;
+    static ɵprov: _angular_core.ɵɵInjectableDeclaration<Injector>;
 }
 
 // @public
@@ -1118,7 +1119,7 @@ export class IterableDiffers {
     // (undocumented)
     find(iterable: any): IterableDifferFactory;
     // (undocumented)
-    static ɵprov: unknown;
+    static ɵprov: _angular_core.ɵɵInjectableDeclaration<IterableDiffers>;
 }
 
 // @public
@@ -1160,7 +1161,7 @@ export class KeyValueDiffers {
     // (undocumented)
     find(kv: any): KeyValueDifferFactory;
     // (undocumented)
-    static ɵprov: unknown;
+    static ɵprov: _angular_core.ɵɵInjectableDeclaration<KeyValueDiffers>;
 }
 
 // @public
@@ -1417,7 +1418,7 @@ export class PendingTasks {
     add(): () => void;
     run(fn: () => Promise<unknown>): void;
     // (undocumented)
-    static ɵprov: unknown;
+    static ɵprov: _angular_core.ɵɵInjectableDeclaration<PendingTasks>;
 }
 
 // @public
@@ -1757,7 +1758,7 @@ export abstract class Sanitizer {
     // (undocumented)
     abstract sanitize(context: SecurityContext, value: {} | string | null): string | null;
     // (undocumented)
-    static ɵprov: unknown;
+    static ɵprov: _angular_core.ɵɵInjectableDeclaration<null>;
 }
 
 // @public
@@ -1918,7 +1919,7 @@ export class TransferState {
     set<T>(key: StateKey<T>, value: T): void;
     toJson(): string;
     // (undocumented)
-    static ɵprov: unknown;
+    static ɵprov: _angular_core.ɵɵInjectableDeclaration<TransferState>;
 }
 
 // @public
