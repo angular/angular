@@ -12,6 +12,13 @@ copy_to_bin(
     ],
 )
 
+copy_to_bin(
+    name = "hybrid_analysis",
+    srcs = [
+        "hybrid_analysis.ts",
+    ],
+)
+
 ts_project(
     name = "private",
     srcs = glob(["*.ts"]),
