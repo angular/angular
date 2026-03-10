@@ -167,14 +167,14 @@ export interface InjectorTypeWithProviders<T> {
 export function ɵɵdefineInjectable<T>(opts: {
   token: unknown;
   providedIn?: Type<any> | 'root' | 'platform' | 'any' | 'environment' | null;
-  factory: () => T;
-}): unknown {
+  factory: (parent?: Type<any>) => T;
+}): ɵɵInjectableDeclaration<T> {
   return {
     token: opts.token,
     providedIn: (opts.providedIn as any) || null,
     factory: opts.factory,
     value: undefined,
-  } as ɵɵInjectableDeclaration<T>;
+  };
 }
 
 /**

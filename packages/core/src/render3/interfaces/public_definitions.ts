@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {Type} from '../../interface/type';
+
 // This file contains types that will be published to npm in library typings files.
 
 // Formatting does horrible things to these declarations.
@@ -78,7 +80,9 @@ export type ɵɵInjectorDeclaration<T> = unknown;
 /**
  * @publicApi
  */
-export type ɵɵFactoryDeclaration<T, CtorDependencies extends CtorDependency[]> = unknown;
+export type ɵɵFactoryDeclaration<T, CtorDependencies extends CtorDependency[]> = (
+  parent?: Type<any>,
+) => T;
 
 /**
  * An object literal of this type is used to represent the metadata of a constructor dependency.
