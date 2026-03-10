@@ -69,7 +69,7 @@ describe('diff', () => {
     expect(host).toEqual(newArr);
   });
 
-  it('should add remove an item', () => {
+  it('should add remove an item (1)', () => {
     const newArr = [host[0], host[2]];
     const output = diff(differ, host, newArr);
 
@@ -82,7 +82,7 @@ describe('diff', () => {
     expect(host).toEqual(newArr);
   });
 
-  it('should add remove an item', () => {
+  it('should add remove an item (2)', () => {
     // Note that an item will be marked as
     // updated only if its reference changes.
     const newArr = [

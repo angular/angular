@@ -1219,61 +1219,6 @@ describe('Animation', () => {
       cmp.show.set(true);
       fixture.detectChanges();
       tickAnimationFrames(1);
-      const paragraph = fixture.debugElement.query(By.css('p'));
-      expect(cmp.show()).toBeTruthy();
-      expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
-      fixture.detectChanges();
-      paragraph.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
-      paragraph.nativeElement.dispatchEvent(
-        new AnimationEvent('animationend', {animationName: 'fade-in'}),
-      );
-      expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
-    }));
-
-    it('should support multiple classes as a single string separated by a space', fakeAsync(() => {
-      const multiple = `
-      .slide-in {
-        animation: slide-in 1ms;
-      }
-      .fade-in {
-        animation: fade-in 2ms;
-      }
-      @keyframes slide-in {
-        from {
-          transform: translateX(-10px);
-        }
-        to {
-          transform: translateX(0);
-        }
-      }
-      @keyframes fade-in {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      `;
-      @Component({
-        selector: 'test-cmp',
-        styles: multiple,
-        template:
-          '<div>@if (show()) {<p animate.enter="slide-in fade-in" #el>I should slide in</p>}</div>',
-        encapsulation: ViewEncapsulation.None,
-      })
-      class TestComponent {
-        show = signal(false);
-        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
-      }
-      TestBed.configureTestingModule({animationsEnabled: true});
-
-      const fixture = TestBed.createComponent(TestComponent);
-      const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
       expect(cmp.show()).toBeTruthy();
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
       const paragraph = fixture.debugElement.query(By.css('p'));
