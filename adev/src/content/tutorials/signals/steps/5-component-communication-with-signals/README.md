@@ -47,6 +47,7 @@ Input signals work just like regular signals in templates - call them as functio
 
 <docs-step title="Connect parent signals to child inputs">
 Update the `product-card` usage in `app.ts` to pass dynamic signal values instead of static ones.
+import signals to `app.ts` and add parent signals `productName = signal('Demo Product');` `productPrice = signal(99);` `productAvailable = signal(true);`
 
 ```html
 <!-- Change from static values: -->
