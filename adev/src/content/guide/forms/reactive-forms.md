@@ -379,6 +379,26 @@ The `@for` block iterates over each form control instance provided by the aliase
 
 Each time a new alias instance is added, the new form array instance is provided its control based on the index. This lets you track each individual control when calculating the status and value of the root control.
 
+NOTE: In zoneless applications, mutating a reactive forms model (for example calling `FormArray.push()`) does not automatically schedule component change detection. If your template depends on structural model changes such as `aliases.controls`, make sure the component notifies Angular to run change detection, for example by bridging a forms observable to `ChangeDetectorRef.markForCheck()`:
+
+```ts
+import {ChangeDetectorRef, Component, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+
+@Component({
+  /* ... */
+})
+export class ProfileEditor {
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  constructor() {
+    this.profileForm.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.cdr.markForCheck());
+  }
+}
+```
+
 </docs-step>
 
 ### Using `FormArrayDirective` for top-level form arrays
