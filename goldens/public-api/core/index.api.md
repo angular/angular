@@ -1156,8 +1156,8 @@ export interface KeyValueDifferFactory {
 export class KeyValueDiffers {
     constructor(factories: KeyValueDifferFactory[]);
     // (undocumented)
-    static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
-    static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
+    static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
+    static extend(factories: KeyValueDifferFactory[]): StaticProvider;
     // (undocumented)
     find(kv: any): KeyValueDifferFactory;
     // (undocumented)
