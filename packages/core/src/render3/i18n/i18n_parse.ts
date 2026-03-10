@@ -388,7 +388,7 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
           previousElementIndex,
           attrName,
           countBindings(updateOpCodes),
-          null,
+          URI_ATTRS[attrName.toLowerCase()] ? _sanitizeUrl : null,
         );
       }
     }
@@ -810,18 +810,14 @@ function walkIcuTree(
             const hasBinding = !!attr.value.match(BINDING_REGEXP);
             if (hasBinding) {
               if (VALID_ATTRS.hasOwnProperty(lowerAttrName)) {
-                if (URI_ATTRS[lowerAttrName]) {
-                  generateBindingUpdateOpCodes(
-                    update,
-                    attr.value,
-                    newIndex,
-                    attr.name,
-                    0,
-                    _sanitizeUrl,
-                  );
-                } else {
-                  generateBindingUpdateOpCodes(update, attr.value, newIndex, attr.name, 0, null);
-                }
+                generateBindingUpdateOpCodes(
+                  update,
+                  attr.value,
+                  newIndex,
+                  attr.name,
+                  0,
+                  URI_ATTRS[lowerAttrName] ? _sanitizeUrl : null,
+                );
               } else {
                 ngDevMode &&
                   console.warn(
