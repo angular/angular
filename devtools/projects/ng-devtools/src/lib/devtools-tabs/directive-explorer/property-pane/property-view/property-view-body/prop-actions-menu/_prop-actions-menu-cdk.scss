@@ -1,0 +1,32 @@
+@use '../../../../../../../styles/typography';
+
+/*
+ * The file contains the styles intended for the CDK Overlay content
+ * meaning they should be loaded in the global styles file.
+ */
+
+.ng-ctx-menu-item {
+  @extend %body-01;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+  background: transparent;
+  border: none;
+  gap: 0.25rem;
+  text-align: left;
+  white-space: nowrap;
+  padding: 0.2rem 0.25rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--quinary-contrast);
+  }
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+}
