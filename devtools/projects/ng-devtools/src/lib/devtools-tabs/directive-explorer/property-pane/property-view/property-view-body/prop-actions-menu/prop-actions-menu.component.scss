@@ -1,0 +1,25 @@
+@use '../../../../../../shared/object-tree-explorer/prop-action-btn';
+
+/* IMPORTANT: The width is based on the current longest menu item. */
+$ctx-menu-width: 145px;
+
+:host {
+  display: inline;
+
+  .show-signal {
+    mat-icon {
+      width: 14px;
+      height: 14px;
+      font-size: 14px;
+    }
+  }
+
+  .ctx-menu {
+    border: 1px solid var(--quinary-contrast);
+    background-color: var(--senary-contrast);
+    box-shadow: 0 0 5px var(--transparent-03);
+    border-radius: 0.25rem;
+    overflow: hidden;
+    min-width: $ctx-menu-width;
+  }
+}

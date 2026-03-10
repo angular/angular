@@ -59,6 +59,7 @@
     "@angular-devkit/core": "22.0.0-next.1",
     "@angular-devkit/schematics": "22.0.0-next.1",
     "@angular/animations": "workspace:*",
+    "@angular/aria": "21.3.0-next.0",
     "@angular/benchpress": "workspace: *",
     "@angular/build": "22.0.0-next.1",
     "@angular/cdk": "22.0.0-next.0",

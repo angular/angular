@@ -21,6 +21,7 @@ sass_library(
         ":tables",
         ":theme",
         ":typography",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-pane/property-view/property-view-body/prop-actions-menu:prop-actions-menu-cdk-styles",
     ],
 )
 

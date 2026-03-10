@@ -1,5 +1,4 @@
 @use '../../../../../../styles/typography';
-@use '../../../../../shared/object-tree-explorer/prop-action-btn';
 
 :host {
   ng-docs-ref-button {
@@ -20,14 +19,6 @@
 
     ng-object-tree-explorer {
       --ote-row-indent: 0.25rem;
-
-      .show-signal {
-        mat-icon {
-          width: 14px;
-          height: 14px;
-          font-size: 14px;
-        }
-      }
     }
   }
 

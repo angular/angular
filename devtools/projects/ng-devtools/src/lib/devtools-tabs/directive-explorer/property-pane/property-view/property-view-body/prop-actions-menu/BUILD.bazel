@@ -1,0 +1,43 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "sass_library")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "prop-actions-menu_styles",
+    src = "prop-actions-menu.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:prop-action-btn",
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "prop-actions-menu",
+    srcs = [
+        "prop-actions-menu.component.ts",
+    ],
+    angular_assets = [
+        "prop-actions-menu.component.html",
+        ":prop-actions-menu_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/aria",
+        "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:supported_apis",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph-manager",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
+        "//devtools/projects/ng-devtools/src/lib/shared/signal-graph",
+        "//devtools/projects/protocol",
+    ],
+)
+
+sass_library(
+    name = "prop-actions-menu-cdk-styles",
+    srcs = ["_prop-actions-menu-cdk.scss"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
