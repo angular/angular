@@ -20,7 +20,7 @@ In this step, you'll update the `Home` class to store data in a new array proper
 
 1. In `src/app/home/home.ts`, add new property to the class called `filteredLocationList`.
 
-   <docs-code header="Add the filteredLocationList property in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[27]"/>
+   <docs-code header="Add the filteredLocationList property in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[28]"/>
 
    The `filteredLocationList` hold the values that match the search criteria entered by the user.
 
@@ -55,7 +55,7 @@ The template has been updated to bind the `filterResults` function to the `click
 
 1.  Update the `Home` class to include the implementation of the `filterResults` function.
 
-    <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[34,43]"/>
+    <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.ts" visibleLines="[35,44]"/>
 
     This function uses the `String` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
 
