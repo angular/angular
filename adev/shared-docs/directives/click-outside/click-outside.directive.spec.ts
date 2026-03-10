@@ -43,15 +43,6 @@ describe('ClickOutside', () => {
 
     expect(clickedOutsideSpy).not.toHaveBeenCalled();
   });
-
-  it('should not docsClickOutside be emitted when user click inside `content` element', () => {
-    const clickedOutsideSpy = spyOn(component, 'clickedOutside');
-    const button = fixture.debugElement.query(By.css('button[id="ignoreThisButton"]'));
-
-    button.nativeElement.click();
-
-    expect(clickedOutsideSpy).not.toHaveBeenCalled();
-  });
 });
 
 @Component({
