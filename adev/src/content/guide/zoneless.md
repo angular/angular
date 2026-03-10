@@ -123,6 +123,12 @@ readonly myObservableState = someObservable.pipe(pendingUntilEvent());
 The framework uses this service internally as well to prevent serialization until asynchronous tasks are complete. These include, but are not limited to,
 an ongoing Router navigation and an incomplete `HttpClient` request.
 
+### Reactive forms in zoneless applications
+
+Reactive forms model updates (`setValue`, `patchValue`, `FormArray.push`, and similar APIs) update form state and emit forms observables, but they do not automatically schedule component change detection.
+
+If a template depends on reactive forms state, connect forms observables to a change-detection notification (for example `ChangeDetectorRef.markForCheck()`), or reflect the data through signals consumed by the template.
+
 ## Testing and Debugging
 
 ### Using Zoneless in `TestBed`
