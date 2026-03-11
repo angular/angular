@@ -10,9 +10,11 @@ import * as o from '@angular/compiler';
 import {
   AstFactory,
   BinaryOperator,
+  BuiltInType,
   ObjectLiteralAssignment,
   ObjectLiteralProperty,
   ObjectLiteralSpread,
+  Parameter,
   SourceMapRange,
   TemplateElement,
   TemplateLiteral,
@@ -98,6 +100,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
         stmt.name,
         stmt.value?.visitExpression(this, context.withExpressionMode),
         varType,
+        stmt.type?.visitType(this, context),
       ),
       stmt.leadingComments,
     );
@@ -107,7 +110,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
     return this.attachComments(
       this.factory.createFunctionDeclaration(
         stmt.name,
-        stmt.params.map((param) => param.name),
+        this.translateParams(stmt.params, context),
         this.factory.createBlock(this.visitStatements(stmt.statements, context.withStatementMode)),
       ),
       stmt.leadingComments,
@@ -231,24 +234,59 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
     );
   }
 
-  visitBuiltinType(type: o.BuiltinType, context: Context): TType {
-    throw new Error('Method not implemented');
+  visitBuiltinType(ast: o.BuiltinType): TType | null {
+    let builtInType: BuiltInType;
+
+    switch (ast.name) {
+      case o.BuiltinTypeName.Bool:
+        builtInType = 'boolean';
+        break;
+      case o.BuiltinTypeName.String:
+        builtInType = 'string';
+        break;
+      case o.BuiltinTypeName.Dynamic:
+        builtInType = 'any';
+        break;
+      case o.BuiltinTypeName.Number:
+      case o.BuiltinTypeName.Int:
+        builtInType = 'number';
+        break;
+      case o.BuiltinTypeName.Function:
+        builtInType = 'function';
+        break;
+      case o.BuiltinTypeName.None:
+        builtInType = 'never';
+        break;
+      case o.BuiltinTypeName.Inferred:
+        return null;
+    }
+
+    return this.factory.createBuiltInType(builtInType);
   }
 
-  visitExpressionType(type: o.ExpressionType, context: Context): TType {
-    throw new Error('Method not implemented');
+  visitExpressionType(ast: o.ExpressionType, context: Context): TType {
+    return this.factory.createExpressionType(
+      ast.value.visitExpression(this, context),
+      ast.typeParams === null || ast.typeParams.length === 0
+        ? null
+        : ast.typeParams.map((param) => param.visitType(this, context)),
+    );
   }
 
-  visitArrayType(type: o.ArrayType, context: Context): TType {
-    throw new Error('Method not implemented');
+  visitArrayType(ast: o.ArrayType, context: Context): TType {
+    return this.factory.createArrayType(ast.of.visitType(this, context));
   }
 
-  visitMapType(type: o.MapType, context: Context): TType {
-    throw new Error('Method not implemented');
+  visitMapType(ast: o.MapType, context: Context): TType {
+    const valueType =
+      ast.valueType === null
+        ? this.factory.createBuiltInType('unknown')
+        : ast.valueType.visitType(this, context);
+    return this.factory.createMapType(valueType);
   }
 
-  visitTransplantedType(type: o.TransplantedType<TType>, context: Context): TType {
-    throw new Error('Method not implemented');
+  visitTransplantedType(type: o.TransplantedType<TType>): TType {
+    return this.factory.transplantType(type.type);
   }
 
   private createTaggedTemplateExpression(
@@ -356,14 +394,14 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
   visitFunctionExpr(ast: o.FunctionExpr, context: Context): TExpression {
     return this.factory.createFunctionExpression(
       ast.name ?? null,
-      ast.params.map((param) => param.name),
+      this.translateParams(ast.params, context),
       this.factory.createBlock(this.visitStatements(ast.statements, context)),
     );
   }
 
   visitArrowFunctionExpr(ast: o.ArrowFunctionExpr, context: any) {
     return this.factory.createArrowFunctionExpression(
-      ast.params.map((param) => param.name),
+      this.translateParams(ast.params, context),
       Array.isArray(ast.body)
         ? this.factory.createBlock(this.visitStatements(ast.body, context))
         : ast.body.visitExpression(this, context),
@@ -506,6 +544,13 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
       ),
       expressions: ast.expressions.map((e) => e.visitExpression(this, context)),
     };
+  }
+
+  private translateParams(params: o.outputAst.FnParam[], context: Context): Parameter<TType>[] {
+    return params.map((param) => ({
+      name: param.name,
+      type: param.type?.visitType(this, context),
+    }));
   }
 }
 
