@@ -218,6 +218,9 @@ export type RestoredState = {
   // The `ɵ` prefix is there to reduce the chance of colliding with any existing user properties on
   // the history state.
   ɵrouterPageId?: number;
+  // When `browserUrl` is used, the actual route URL is stored here so that popstate events
+  // can use it for route matching instead of the displayed browser URL.
+  ɵrouterUrl?: string;
 };
 
 /**
