@@ -24,14 +24,11 @@ export const ANIMATION_QUEUE = new InjectionToken<AnimationQueue>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'AnimationQueue' : '',
   {
     factory: () => {
-      const injector = inject(EnvironmentInjector);
-      const queue = new Set<VoidFunction>();
-      injector.onDestroy(() => queue.clear());
       return {
-        queue,
+        queue: new Set(),
         isScheduled: false,
         scheduler: null,
-        injector,
+        injector: inject(EnvironmentInjector), // should be the root injector
       };
     },
   },
