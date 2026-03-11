@@ -318,18 +318,27 @@ export class Router {
     // position for the page.
     const restoredState = state?.navigationId ? state : null;
 
+    // When `browserUrl` was used during the original navigation, the actual route URL
+    // was stored in history state as `ɵrouterUrl`. Use it for route matching and
+    // preserve the browser URL as the displayed URL.
+    const routerUrl = state?.ɵrouterUrl ?? url;
+    if (state?.ɵrouterUrl) {
+      extras = {...extras, browserUrl: url};
+    }
+
     // Separate to NavigationStart.restoredState, we must also restore the state to
     // history.state and generate a new navigationId, since it will be overwritten
     if (state) {
       const stateCopy = {...state} as Partial<RestoredState>;
       delete stateCopy.navigationId;
       delete stateCopy.ɵrouterPageId;
+      delete stateCopy.ɵrouterUrl;
       if (Object.keys(stateCopy).length !== 0) {
         extras.state = stateCopy;
       }
     }
 
-    const urlTree = this.parseUrl(url);
+    const urlTree = this.parseUrl(routerUrl);
     this.scheduleNavigation(urlTree, source, restoredState, extras).catch((e) => {
       if (this.disposed) {
         return;

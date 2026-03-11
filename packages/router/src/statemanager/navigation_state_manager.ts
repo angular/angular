@@ -268,8 +268,7 @@ export class NavigationStateManager extends StateManager {
     // Prepare the state to be stored in the NavigationHistoryEntry.
     const state = {
       ...transition.extras.state,
-      // Include router's navigationId for tracking. Required for in-memory scroll restoration
-      navigationId: transition.id,
+      ...this.generateNgRouterState(transition),
     };
 
     const info: NavigationInfo = {ɵrouterInfo: {intercept: true}};
@@ -489,7 +488,7 @@ export class NavigationStateManager extends StateManager {
               : 'push';
           const state = {
             ...transition.extras.state,
-            navigationId: transition.id,
+            ...this.generateNgRouterState(transition),
           };
           // this might be a path or an actual URL depending on the baseHref
           const pathOrUrl = this.location.prepareExternalUrl(internalPath);
@@ -542,6 +541,14 @@ export class NavigationStateManager extends StateManager {
     // this might be a path or an actual URL depending on the baseHref
     const routerDestination = this.location.prepareExternalUrl(internalPath);
     return new URL(routerDestination, eventDestination.origin).href === eventDestination.href;
+  }
+
+  private generateNgRouterState(transition: RouterNavigation) {
+    return {
+      ...this.routerUrlState(transition),
+      // Include router's navigationId for tracking. Required for in-memory scroll restoration
+      navigationId: transition.id,
+    };
   }
 
   private deferredCommitSupported(event: NavigateEvent): boolean {

@@ -73,6 +73,7 @@ import {eagerUrlUpdateStrategyIntegrationSuite} from './eager_url_update_strateg
 import {duplicateInFlightNavigationsIntegrationSuite} from './duplicate_in_flight_navigations.spec';
 import {navigationErrorsIntegrationSuite} from './navigation_errors.spec';
 import {useAutoTick} from '@angular/private/testing';
+import {RouterTestingHarness} from '../../testing';
 
 for (const browserAPI of ['navigation', 'history'] as const) {
   describe(`${browserAPI}-based routing`, () => {
@@ -391,6 +392,33 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(location.path()).toEqual('/team/22/user/victor');
       expect(event!.navigationTrigger).toEqual('popstate');
       expect(event!.restoredState!.navigationId).toEqual(userVictorNavStart.id);
+    });
+
+    it('should restore internal route on popstate when browserUrl is used', async () => {
+      const router: Router = TestBed.inject(Router);
+      const location: Location = TestBed.inject(Location);
+
+      router.resetConfig([
+        {path: 'home', component: SimpleCmp},
+        {path: 'one', component: SimpleCmp},
+      ]);
+
+      const harness = await RouterTestingHarness.create('/home');
+      router.setUpLocationChangeListener();
+
+      await router.navigateByUrl('/one', {browserUrl: '/display-one'});
+      expect(location.path()).toEqual('/display-one');
+      expect(router.url).toEqual('/one');
+
+      location.back();
+      await advance(harness.fixture);
+      expect(location.path()).toEqual('/home');
+      expect(router.url).toEqual('/home');
+
+      location.forward();
+      await advance(harness.fixture);
+      expect(router.url).toEqual('/one');
+      expect(location.path()).toEqual('/display-one');
     });
 
     it('should navigate to the same url when config changes', async () => {
