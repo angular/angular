@@ -9,7 +9,7 @@
 import {ApplicationRef, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {SignalGraphManager} from './signal-graph-manager';
-import {DevtoolsSignalGraph} from './signal-graph-types';
+import {DevtoolsSignalGraph} from '../../../shared/signal-graph/signal-graph-types';
 import {ElementPosition, Events, MessageBus} from '../../../../../../protocol';
 
 type PartialRecord<K extends keyof any, T> = {

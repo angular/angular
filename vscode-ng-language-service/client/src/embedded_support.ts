@@ -35,6 +35,25 @@ export function isNotTypescriptOrSupportedDecoratorField(
 }
 
 /**
+ * Determines if a range is eligible for Angular language-service requests.
+ *
+ * For TypeScript files this is true when either range endpoint is within a
+ * supported decorator field. Non-TypeScript documents are always eligible.
+ */
+export function isNotTypescriptOrSupportedDecoratorRange(
+  document: vscode.TextDocument,
+  range: vscode.Range,
+): boolean {
+  if (document.languageId !== 'typescript') {
+    return true;
+  }
+  return (
+    isNotTypescriptOrSupportedDecoratorField(document, range.start) ||
+    isNotTypescriptOrSupportedDecoratorField(document, range.end)
+  );
+}
+
+/**
  * Determines if the position is inside a string literal. Returns `true` if the document language is
  * not TypeScript.
  */

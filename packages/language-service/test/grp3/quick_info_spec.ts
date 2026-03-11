@@ -734,6 +734,14 @@ describe('quick info', () => {
             });
           });
 
+          it('idle with timeout', () => {
+            expectQuickInfo({
+              templateOverride: `@defer (on i¦dle(500ms)) { } `,
+              expectedSpanText: 'idle',
+              expectedDisplayString: '(trigger) idle',
+            });
+          });
+
           it('hover', () => {
             expectQuickInfo({
               templateOverride: `@defer (on hov¦er(x)) { } <div #x></div> `,

@@ -255,6 +255,13 @@ export function elementHasClassList(element: HTMLElement, classList: string[]): 
   return false;
 }
 
+/** Gets the target of an event while accounting for Shadow DOM. */
+export function getEventTarget<T extends EventTarget>(event: Event): T | null {
+  // If an event is bound outside the Shadow DOM, the `event.target` will
+  // point to the shadow root so we have to use `composedPath` instead.
+  return (event.composedPath ? event.composedPath()[0] : event.target) as T | null;
+}
+
 /**
  * Determines if the animation or transition event is currently the expected longest animation
  * based on earlier determined data in `longestAnimations`
@@ -272,11 +279,12 @@ export function isLongestAnimation(
   // block the animationend/transitionend event from doing its work.
   if (longestAnimation === undefined) return true;
   return (
-    nativeElement === event.target &&
+    nativeElement === getEventTarget(event) &&
     ((longestAnimation.animationName !== undefined &&
       (event as AnimationEvent).animationName === longestAnimation.animationName) ||
       (longestAnimation.propertyName !== undefined &&
-        (event as TransitionEvent).propertyName === longestAnimation.propertyName))
+        (longestAnimation.propertyName === 'all' ||
+          (event as TransitionEvent).propertyName === longestAnimation.propertyName)))
   );
 }
 

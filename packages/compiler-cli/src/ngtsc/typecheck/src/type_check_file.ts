@@ -7,7 +7,7 @@
  */
 import ts from 'typescript';
 
-import {AbsoluteFsPath, join} from '../../file_system';
+import {AbsoluteFsPath} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
@@ -18,6 +18,7 @@ import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {ensureTypeCheckFilePreparationImports} from './tcb_util';
 import {generateTypeCheckBlock} from './type_check_block';
+import {adaptTypeCheckBlockMetadata} from './tcb_adapter';
 import {TcbGenericContextBehavior} from './ops/context';
 import {getStatementsBlock, TcbExpr} from './ops/codegen';
 
@@ -30,6 +31,7 @@ import {getStatementsBlock, TcbExpr} from './ops/codegen';
  * hoists them to the top of the generated `ts.SourceFile`.
  */
 export class TypeCheckFile extends Environment {
+  readonly isTypeCheckFile = true;
   private nextTcbId = 1;
   private tcbStatements: string[] = [];
 
@@ -67,12 +69,13 @@ export class TypeCheckFile extends Environment {
     oobRecorder: OutOfBandDiagnosticRecorder,
     genericContextBehavior: TcbGenericContextBehavior,
   ): void {
-    const fnId = ts.factory.createIdentifier(`_tcb${this.nextTcbId++}`);
+    const fnId = `_tcb${this.nextTcbId++}`;
+    const {tcbMeta, component} = adaptTypeCheckBlockMetadata(ref, meta, this);
     const fn = generateTypeCheckBlock(
       this,
-      ref,
+      component,
       fnId,
-      meta,
+      tcbMeta,
       domSchemaChecker,
       oobRecorder,
       genericContextBehavior,
@@ -124,9 +127,4 @@ export class TypeCheckFile extends Environment {
   override getPreludeStatements(): TcbExpr[] {
     return [];
   }
-}
-
-export function typeCheckFilePath(rootDirs: AbsoluteFsPath[]): AbsoluteFsPath {
-  const shortest = rootDirs.concat([]).sort((a, b) => a.length - b.length)[0];
-  return join(shortest, '__ng_typecheck__.ts');
 }

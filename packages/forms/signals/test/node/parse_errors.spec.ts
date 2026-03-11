@@ -324,6 +324,59 @@ describe('parse errors', () => {
     await act(() => input.dispatchEvent(new Event('input')));
     expect(comp.f().errors()).toEqual([jasmine.objectContaining({kind: 'max'})]);
   });
+
+  it('should expose parseErrors when transformedValue is used without FormField', async () => {
+    @Component({
+      template: `
+        <input [value]="raw()" (input)="raw.set($event.target.value)" />
+
+        @for (e of raw.parseErrors(); track $index) {
+          <div class="error">{{ e.message }}</div>
+        }
+      `,
+    })
+    class TestCmp {
+      readonly value = model<number | null>(5);
+
+      protected readonly raw = transformedValue(this.value, {
+        parse: (rawValue: string) => {
+          if (rawValue === '') return {value: null};
+          const num = Number(rawValue);
+          if (Number.isNaN(num)) {
+            return {error: {kind: 'parse', message: `${rawValue} is not numeric`}};
+          }
+          return {value: num};
+        },
+        format: (val) => (val == null ? '' : String(val)),
+      });
+    }
+
+    const fixture = await act(() => TestBed.createComponent(TestCmp));
+    const testEl = fixture.nativeElement as HTMLElement;
+    const comp = fixture.componentInstance;
+
+    const input = testEl.querySelector('input') as HTMLInputElement;
+
+    // Invalid input: model unchanged, parse error exposed.
+    input.value = 'abc';
+    await act(() => input.dispatchEvent(new Event('input')));
+
+    expect(comp.value()).toBe(5);
+
+    let errors = Array.from(testEl.querySelectorAll('.error')).map((e) =>
+      (e.textContent ?? '').trim(),
+    );
+    expect(errors).toEqual(['abc is not numeric']);
+
+    // Valid input: model updated, parse errors cleared.
+    input.value = '42';
+    await act(() => input.dispatchEvent(new Event('input')));
+
+    expect(comp.value()).toBe(42);
+
+    errors = Array.from(testEl.querySelectorAll('.error')).map((e) => (e.textContent ?? '').trim());
+    expect(errors).toEqual([]);
+  });
 });
 
 @Component({

@@ -8,6 +8,7 @@
 
 import {
   DirectiveOwner,
+  ExternalExpr,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstBoundText,
@@ -36,7 +37,7 @@ import {
 import ts from 'typescript';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 import {Context} from './context';
 import {TcbTemplateBodyOp, TcbTemplateContextOp} from './template';
 import {TcbElementOp} from './element';
@@ -59,7 +60,7 @@ import {
   TcbNativeFieldOp,
   TcbNativeRadioButtonFieldOp,
 } from './signal_forms';
-import {Reference} from '../../../imports';
+import {ImportFlags, Reference, ReferenceEmitKind} from '../../../imports';
 import {ClassDeclaration} from '../../../reflection';
 import {
   TcbGenericDirectiveTypeWithAnyParamsOp,
@@ -120,7 +121,7 @@ export class Scope {
    * A map of maps which tracks the index of `TcbDirectiveCtorOp`s in the `opQueue` for each
    * directive on a `TmplAstElement` or `TmplAstTemplate` node.
    */
-  private directiveOpMap = new Map<DirectiveOwner, Map<TypeCheckableDirectiveMeta, number>>();
+  private directiveOpMap = new Map<DirectiveOwner, Map<TcbDirectiveMetadata, number>>();
 
   /**
    * A map of `TmplAstReference`s to the index of their `TcbReferenceOp` in the `opQueue`
@@ -299,7 +300,7 @@ export class Scope {
    * @param directive if present, a directive type on a `TmplAstElement` or `TmplAstTemplate` to
    * look up instead of the default for an element or template node.
    */
-  resolve(node: LocalSymbol, directive?: TypeCheckableDirectiveMeta): TcbExpr {
+  resolve(node: LocalSymbol, directive?: TcbDirectiveMetadata): TcbExpr {
     // Attempt to resolve the operation locally.
     const res = this.resolveLocal(node, directive);
     if (res !== null) {
@@ -395,7 +396,7 @@ export class Scope {
     return Scope.forNodes(this.tcb, parentScope, scopedNode, children, guard);
   }
 
-  private resolveLocal(ref: LocalSymbol, directive?: TypeCheckableDirectiveMeta): TcbExpr | null {
+  private resolveLocal(ref: LocalSymbol, directive?: TcbDirectiveMetadata): TcbExpr | null {
     if (ref instanceof TmplAstReference && this.referenceOpMap.has(ref)) {
       return this.resolveOp(this.referenceOpMap.get(ref)!);
     } else if (ref instanceof TmplAstLetDeclaration && this.letDeclOpMap.has(ref.name)) {
@@ -593,7 +594,7 @@ export class Scope {
       }
     }
 
-    const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
+    const dirMap = new Map<TcbDirectiveMetadata, number>();
     for (const dir of directives) {
       this.appendDirectiveInputs(dir, node, dirMap, directives);
     }
@@ -670,7 +671,7 @@ export class Scope {
     const claimedInputs = new Set<string>();
 
     if (directives !== null && directives.length > 0) {
-      const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
+      const dirMap = new Map<TcbDirectiveMetadata, number>();
       for (const dir of directives) {
         this.appendDirectiveInputs(dir, node, dirMap, directives);
 
@@ -735,10 +736,10 @@ export class Scope {
   }
 
   private appendDirectiveInputs(
-    dir: TypeCheckableDirectiveMeta,
+    dir: TcbDirectiveMetadata,
     node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
-    dirMap: Map<TypeCheckableDirectiveMeta, number>,
-    allDirectiveMatches: TypeCheckableDirectiveMeta[],
+    dirMap: Map<TcbDirectiveMetadata, number>,
+    allDirectiveMatches: TcbDirectiveMetadata[],
   ): void {
     const nodeIsFormControl = isFormControl(allDirectiveMatches);
     const customFormControlType = nodeIsFormControl ? getCustomFieldDirectiveType(dir) : null;
@@ -765,20 +766,15 @@ export class Scope {
   }
 
   private getDirectiveOp(
-    dir: TypeCheckableDirectiveMeta,
+    dir: TcbDirectiveMetadata,
     node: DirectiveOwner,
     customFieldType: CustomFormControlType | null,
   ): TcbOp {
-    const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
-
     if (!dir.isGeneric) {
       // The most common case is that when a directive is not generic, we use the normal
       // `TcbNonDirectiveTypeOp`.
       return new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir);
-    } else if (
-      !requiresInlineTypeCtor(dirRef.node, this.tcb.env.reflector, this.tcb.env) ||
-      this.tcb.env.config.useInlineTypeConstructors
-    ) {
+    } else if (!dir.hasRequiresInlineTypeCtor || this.tcb.env.config.useInlineTypeConstructors) {
       // For generic directives, we use a type constructor to infer types. If a directive requires
       // an inline type constructor, then inlining must be available to use the
       // `TcbDirectiveCtorOp`. If not we, we fallback to using `any` – see below.
@@ -967,7 +963,7 @@ export class Scope {
     const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
 
     if (directives !== null && directives.length > 0) {
-      const directiveOpMap = new Map<TypeCheckableDirectiveMeta, number>();
+      const directiveOpMap = new Map<TcbDirectiveMetadata, number>();
 
       for (const directive of directives) {
         const directiveOp = this.getDirectiveOp(directive, node, null);

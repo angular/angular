@@ -15,8 +15,7 @@ jobs:
     if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: angular/dev-infra/github-actions/labeling/pull-request@7ed27f5935d1358e9ddbf54bc0748e0c3dc164fc
+      - uses: angular/dev-infra/github-actions/labeling/pull-request@9a88f495971c09574545e0ea0c2f6228b851e77a
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
           labels: '{"requires: TGP": ["packages/core/primitives/**/{*,.*}"]}'
@@ -24,15 +23,14 @@ jobs:
     if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: angular/dev-infra/github-actions/post-approval-changes@7ed27f5935d1358e9ddbf54bc0748e0c3dc164fc
+      - uses: angular/dev-infra/github-actions/post-approval-changes@9a88f495971c09574545e0ea0c2f6228b851e77a
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
   issue_labels:
     if: github.event_name == 'issues'
     runs-on: ubuntu-latest
     steps:
-      - uses: angular/dev-infra/github-actions/labeling/issue@7ed27f5935d1358e9ddbf54bc0748e0c3dc164fc
+      - uses: angular/dev-infra/github-actions/labeling/issue@9a88f495971c09574545e0ea0c2f6228b851e77a
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
           google-generative-ai-key: ${{ secrets.GOOGLE_GENERATIVE_AI_KEY }}

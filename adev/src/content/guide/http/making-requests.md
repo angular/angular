@@ -210,7 +210,7 @@ In addition to the response body or response object, `HttpClient` can also retur
 
 Progress events are disabled by default (as they have a performance cost) but can be enabled with the `reportProgress` option.
 
-NOTE: The optional `fetch` implementation of `HttpClient` does not report _upload_ progress events.
+NOTE: The default fetch backend of `HttpClient` does not report _upload_ progress events. If your app needs upload progress events, configure `HttpClient` with `withXhr()` in `provideHttpClient(...)`.
 
 To observe the event stream, set the `observe` option to `'events'`:
 
@@ -288,7 +288,7 @@ http
 
 ## Advanced fetch options
 
-When using the `withFetch()` provider, Angular's `HttpClient` provides access to advanced fetch API options that can improve performance and user experience. These options are only available when using the fetch backend.
+Angular's `HttpClient` supports advanced fetch API options that can improve performance and user experience. These options are available when using the fetch backend, which is the default.
 
 ### Fetch options
 

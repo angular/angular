@@ -23,9 +23,9 @@ ng_project(
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph-pane/signal-details/signal-value-tree",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/ng-devtools/src/lib/shared/signal-details/signal-value-tree",
+        "//devtools/projects/ng-devtools/src/lib/shared/signal-graph",
         "//devtools/projects/protocol",
     ],
 )

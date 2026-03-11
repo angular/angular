@@ -23,7 +23,23 @@ export class AppComponent {
     'Episode III - Revenge of the Sith',
   ];
 
+  showFallback = true;
+
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.movies, event.previousIndex, event.currentIndex);
+  }
+
+  hideAndIntercept() {
+    const el = document.querySelector('.fallback-el');
+    if (el) {
+      el.addEventListener(
+        'animationend',
+        (e) => {
+          e.stopImmediatePropagation();
+        },
+        true,
+      );
+    }
+    this.showFallback = false;
   }
 }

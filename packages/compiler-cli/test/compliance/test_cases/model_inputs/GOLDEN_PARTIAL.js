@@ -4,8 +4,8 @@
 import { Directive, model } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestDir {
-    counter = model(0, ...(ngDevMode ? [{ debugName: "counter" }] : []));
-    name = model.required(...(ngDevMode ? [{ debugName: "name" }] : []));
+    counter = model(0, ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ []));
+    name = model.required(...(ngDevMode ? [{ debugName: "name" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, inputs: { counter: { classPropertyName: "counter", publicName: "counter", isSignal: true, isRequired: false, transformFunction: null }, name: { classPropertyName: "name", publicName: "name", isSignal: true, isRequired: true, transformFunction: null } }, outputs: { counter: "counterChange", name: "nameChange" }, ngImport: i0 });
 }
@@ -31,8 +31,8 @@ export declare class TestDir {
 import { Component, model } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestComp {
-    counter = model(0, ...(ngDevMode ? [{ debugName: "counter" }] : []));
-    name = model.required(...(ngDevMode ? [{ debugName: "name" }] : []));
+    counter = model(0, ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ []));
+    name = model.required(...(ngDevMode ? [{ debugName: "name" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", inputs: { counter: { classPropertyName: "counter", publicName: "counter", isSignal: true, isRequired: false, transformFunction: null }, name: { classPropertyName: "name", publicName: "name", isSignal: true, isRequired: true, transformFunction: null } }, outputs: { counter: "counterChange", name: "nameChange" }, ngImport: i0, template: 'Works', isInline: true });
 }
@@ -60,8 +60,8 @@ export declare class TestComp {
 import { Directive, EventEmitter, Input, model, Output } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestDir {
-    counter = model(0, ...(ngDevMode ? [{ debugName: "counter" }] : []));
-    modelWithAlias = model(false, { ...(ngDevMode ? { debugName: "modelWithAlias" } : {}), alias: 'alias' });
+    counter = model(0, ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ []));
+    modelWithAlias = model(false, { ...(ngDevMode ? { debugName: "modelWithAlias" } : /* istanbul ignore next */ {}), alias: 'alias' });
     decoratorInput = true;
     decoratorInputWithAlias = true;
     decoratorOutput = new EventEmitter();

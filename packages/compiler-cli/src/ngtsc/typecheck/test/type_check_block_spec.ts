@@ -8,9 +8,17 @@
 
 import ts from 'typescript';
 
+import {WrappedNodeExpr} from '@angular/compiler';
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {initMockFileSystem} from '../../file_system/testing';
-import {Reference} from '../../imports';
+import {
+  ImportFlags,
+  LocalIdentifierStrategy,
+  Reference,
+  ReferenceEmitKind,
+  ReferenceEmitResult,
+  ReferenceEmitter,
+} from '../../imports';
 import {OptimizeFor, TypeCheckingConfig} from '../api';
 import {ALL_ENABLED_CONFIG, diagnose, setup, tcb, TestDeclaration, TestDirective} from '../testing';
 
@@ -31,12 +39,17 @@ describe('type check blocks', () => {
 
   it('should generate literal map expressions', () => {
     const TEMPLATE = '{{ method({foo: a, bar: b}) }}';
-    expect(tcb(TEMPLATE)).toContain('(this).method({ "foo": ((this).a), "bar": ((this).b) })');
+    expect(tcb(TEMPLATE)).toContain('(this).method(({ "foo": ((this).a), "bar": ((this).b) }))');
   });
 
   it('should generate literal array expressions', () => {
     const TEMPLATE = '{{ method([a, b]) }}';
     expect(tcb(TEMPLATE)).toContain('(this).method([((this).a), ((this).b)])');
+  });
+
+  it('should parenthesize literal maps bound to DOM properties', () => {
+    const TEMPLATE = '<div [class]="{foo: true, bar: false}"></div>';
+    expect(tcb(TEMPLATE)).toContain('if (true) { ({ "foo": true, "bar": false }); }');
   });
 
   it('should handle non-null assertions', () => {
@@ -112,8 +125,8 @@ describe('type check blocks', () => {
   });
 
   it('should handle "in" expressions', () => {
-    expect(tcb(`{{'bar' in {bar: 'bar'} }}`)).toContain(`(("bar") in ({ "bar": "bar" }))`);
-    expect(tcb(`{{!('bar' in {bar: 'bar'}) }}`)).toContain(`!((("bar") in ({ "bar": "bar" })))`);
+    expect(tcb(`{{'bar' in {bar: 'bar'} }}`)).toContain(`(("bar") in (({ "bar": "bar" })))`);
+    expect(tcb(`{{!('bar' in {bar: 'bar'}) }}`)).toContain(`!((("bar") in (({ "bar": "bar" }))))`);
   });
 
   it('should handle "instanceof" expressions', () => {
@@ -1401,6 +1414,22 @@ describe('type check blocks', () => {
         expect(block).toContain('var _pipe1 = null! as i0.TestPipe;');
         expect(block).toContain('((_pipe1.transform as any)(((this).a), ((this).b), ((this).c))');
       });
+
+      it('should preserve type inference without explicitly filling generic arguments', () => {
+        const GENERIC_PIPES: TestDeclaration[] = [
+          {
+            type: 'pipe',
+            name: 'GenericPipe',
+            pipeName: 'generic',
+            isGeneric: true,
+          },
+        ];
+        // Test that generic pipes are instantiated like `var _pipe1 = null! as i0.GenericPipe;`
+        // instead of getting artificial padded `any` type arguments `i0.GenericPipe<any>`.
+        const block = tcb(`{{a | generic}}`, GENERIC_PIPES);
+        expect(block).toContain('var _pipe1 = null! as i0.GenericPipe;');
+        expect(block).not.toContain('var _pipe1 = null! as i0.GenericPipe<any>;');
+      });
     });
 
     describe('config.strictSafeNavigationTypes', () => {
@@ -1878,7 +1907,7 @@ describe('type check blocks', () => {
       `;
 
       expect(tcb(TEMPLATE)).toContain(
-        'new IntersectionObserver(null!, { "rootMargin": "123px" }); "" + ((this).main()); "" + ((this).placeholder());',
+        'new IntersectionObserver(null!, ({ "rootMargin": "123px" })); "" + ((this).main()); "" + ((this).placeholder());',
       );
     });
   });
@@ -2773,12 +2802,14 @@ describe('type check blocks', () => {
 
       FieldMock = {
         type: 'directive',
+        // Note: We don't use `bestGuessOwningModule` here because the test setup evaluates
+        // this mock via a local shim file (`/synthetic.ngtypecheck.ts`), forcing the reference
+        // emitter to resolve it as a relative local import (`./synthetic`). This completely
+        // overwrites any pseudo-module specifier we pass in, meaning `isFieldDirective` will
+        // ALWAYS fall back to scanning for the `ɵNgFieldDirective` property.
         name: 'FormField',
         selector: '[formField]',
-        bestGuessOwningModule: {
-          specifier: '@angular/forms/signals',
-          resolutionContext: '',
-        },
+        hasNgFieldDirective: true,
         inputs: {
           field: 'formField',
         },
@@ -3015,6 +3046,96 @@ describe('type check blocks', () => {
       );
       expect(block).toContain('var _t2 = null! as i0.FormField;');
       expect(block).toContain('_t2.field = (((this).f));');
+    });
+
+    it('should not report diagnostics for aliased directive references via PropertyAccessExpression', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const source = `
+      import {Directive, Input} from '@angular/core';
+
+      @Directive({
+        selector: '[dir]',
+        standalone: true
+      })
+      export class OriginalDir {
+         @Input() input: string = '';
+      }
+
+      export const ns = {
+        AliasedDir: OriginalDir
+      };
+
+      @Directive({
+        selector: 'test-cmp',
+        standalone: true,
+        imports: [ns.AliasedDir]
+      })
+      export class TestCmp {}
+
+      // Shadow the original class name to induce a diagnostic error if the
+      // type checking block generator falls back to using 'OriginalDir'
+      // instead of the aliased 'ns.AliasedDir'.
+      const OriginalDir = null;
+    `;
+
+      // We need a custom emitter to force the usage of the alias `ns.AliasedDir`.
+      // The standard LocalIdentifierStrategy would just return `OriginalDir` since it is exported.
+      const localIdStrategy = new LocalIdentifierStrategy();
+      const mockRefEmitter = {
+        emit(ref: Reference, context: ts.SourceFile, flags: ImportFlags): ReferenceEmitResult {
+          if (ts.isClassDeclaration(ref.node) && ref.node.name?.text === 'OriginalDir') {
+            return {
+              kind: ReferenceEmitKind.Success,
+              expression: new WrappedNodeExpr(
+                ts.factory.createPropertyAccessExpression(
+                  ts.factory.createIdentifier('ns'),
+                  'AliasedDir',
+                ),
+              ),
+              importedFile: null,
+            } as any;
+          }
+          const fallback = localIdStrategy.emit(ref, context, flags);
+          return fallback ?? {kind: ReferenceEmitKind.Failed, reason: 'mock', context, ref};
+        },
+      } as unknown as ReferenceEmitter;
+
+      const {program, templateTypeChecker} = setup(
+        [
+          {
+            fileName,
+            source,
+            templates: {
+              TestCmp: '<div dir [input]="\'value\'"></div>',
+            },
+            declarations: [
+              {
+                type: 'directive',
+                name: 'OriginalDir',
+                selector: '[dir]',
+                isStandalone: true,
+                inputs: {input: 'input'},
+              },
+            ],
+          },
+        ],
+        {
+          // Use our mock emitter
+          referenceEmitter: mockRefEmitter,
+        },
+      );
+
+      const sf = getSourceFileOrError(program, fileName);
+      const testCmp = sf.statements.find(
+        (s) => ts.isClassDeclaration(s) && s.name?.text === 'TestCmp',
+      ) as ts.ClassDeclaration;
+
+      if (!testCmp) {
+        throw new Error('Could not find class');
+      }
+
+      const diagnostics = templateTypeChecker.getDiagnosticsForComponent(testCmp);
+      expect(diagnostics.map((d) => d.messageText)).toEqual([]);
     });
   });
 });

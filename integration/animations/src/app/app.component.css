@@ -80,3 +80,16 @@
     height: 0;
   }
 }
+
+.short-animation {
+  animation: short-animation 50ms;
+}
+
+@keyframes short-animation {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

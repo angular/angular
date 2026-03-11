@@ -18,28 +18,28 @@ bazel_dep(name = "yq.bzl", version = "0.3.5")
 bazel_dep(name = "rules_angular")
 git_override(
     module_name = "rules_angular",
-    commit = "d746c4f75e42cffe389d1ab077f4639be2bc78d1",
+    commit = "804515937593ca742f5f119a20774f55a08e70ad",
     remote = "https://github.com/angular/rules_angular.git",
 )
 
 bazel_dep(name = "devinfra")
 git_override(
     module_name = "devinfra",
-    commit = "7ed27f5935d1358e9ddbf54bc0748e0c3dc164fc",
+    commit = "9a88f495971c09574545e0ea0c2f6228b851e77a",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
 bazel_dep(name = "rules_sass")
 git_override(
     module_name = "rules_sass",
-    commit = "1184a80751a21af8348f308abc5b38a41f26850e",
+    commit = "781c41bf7a48147bb20103e250f7215475e915a1",
     remote = "https://github.com/angular/rules_sass.git",
 )
 
 bazel_dep(name = "rules_browsers")
 git_override(
     module_name = "rules_browsers",
-    commit = "8231142fc5516323b040883bf774ba8362645387",
+    commit = "c8408e457f5938e6e80af3f7fb9985ac5137494b",
     remote = "https://github.com/angular/rules_browsers.git",
 )
 
@@ -49,15 +49,15 @@ use_repo(yq, "yq_toolchains")
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
 node.toolchain(
     node_repositories = {
-        "22.22.0-darwin_arm64": ("node-v22.22.0-darwin-arm64.tar.gz", "node-v22.22.0-darwin-arm64", "5ed4db0fcf1eaf84d91ad12462631d73bf4576c1377e192d222e48026a902640"),
-        "22.22.0-darwin_amd64": ("node-v22.22.0-darwin-x64.tar.gz", "node-v22.22.0-darwin-x64", "5ea50c9d6dea3dfa3abb66b2656f7a4e1c8cef23432b558d45fb538c7b5dedce"),
-        "22.22.0-linux_arm64": ("node-v22.22.0-linux-arm64.tar.xz", "node-v22.22.0-linux-arm64", "1bf1eb9ee63ffc4e5d324c0b9b62cf4a289f44332dfef9607cea1a0d9596ba6f"),
-        "22.22.0-linux_ppc64le": ("node-v22.22.0-linux-ppc64le.tar.xz", "node-v22.22.0-linux-ppc64le", "d83b9957431cc18e1fc143a4b99f89cde7b8a18f53ef392231b4336afd058865"),
-        "22.22.0-linux_s390x": ("node-v22.22.0-linux-s390x.tar.xz", "node-v22.22.0-linux-s390x", "5aa0e520689448c4233e8d73f284e8e0634fdcd32b479735698494be5641f3e4"),
-        "22.22.0-linux_amd64": ("node-v22.22.0-linux-x64.tar.xz", "node-v22.22.0-linux-x64", "9aa8e9d2298ab68c600bd6fb86a6c13bce11a4eca1ba9b39d79fa021755d7c37"),
-        "22.22.0-windows_amd64": ("node-v22.22.0-win-x64.zip", "node-v22.22.0-win-x64", "c97fa376d2becdc8863fcd3ca2dd9a83a9f3468ee7ccf7a6d076ec66a645c77a"),
+        "22.22.1-darwin_arm64": ("node-v22.22.1-darwin-arm64.tar.gz", "node-v22.22.1-darwin-arm64", "679ad4966339e4ef4900f57996714864e4211b898825bb840c3086c419fbcef2"),
+        "22.22.1-darwin_amd64": ("node-v22.22.1-darwin-x64.tar.gz", "node-v22.22.1-darwin-x64", "07b13722d558790fca20bb1ecf61bde24b7a4863111f7be77fc57251a407359a"),
+        "22.22.1-linux_arm64": ("node-v22.22.1-linux-arm64.tar.xz", "node-v22.22.1-linux-arm64", "0f3550d58d45e5d3cf7103d9e3f69937f09fe82fb5dd474c66a5d816fa58c9ee"),
+        "22.22.1-linux_ppc64le": ("node-v22.22.1-linux-ppc64le.tar.xz", "node-v22.22.1-linux-ppc64le", "a65a44cf0224505f052b90357b763dbc1ea9148f4f5f2284f0596cf2000f819b"),
+        "22.22.1-linux_s390x": ("node-v22.22.1-linux-s390x.tar.xz", "node-v22.22.1-linux-s390x", "e08b3a73d0bd840e008f589e4be4a2ef3d4a0c59015f4f20a04ed7fc968042a2"),
+        "22.22.1-linux_amd64": ("node-v22.22.1-linux-x64.tar.xz", "node-v22.22.1-linux-x64", "9a6bc82f9b491279147219f6a18add1e18424dce90d41d2a5fcd69d4924ba3aa"),
+        "22.22.1-windows_amd64": ("node-v22.22.1-win-x64.zip", "node-v22.22.1-win-x64", "877cb93829e14fffbbc7903e7d8037336c9a79f3ea43c5d0b8c2379b79da56de"),
     },
-    node_version = "22.22.0",
+    node_version = "22.22.1",
 )
 use_repo(node, "nodejs_toolchains")
 use_repo(node, "nodejs_darwin_amd64")
@@ -71,8 +71,8 @@ use_repo(node, "nodejs_windows_amd64")
 pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
 pnpm.pnpm(
     name = "pnpm",
-    pnpm_version = "10.30.3",
-    pnpm_version_integrity = "sha512-yWHR4KLY41TsqlFmuCJRZmi39Ey1vZUSLVkN2Bki9gb1RzttI+xKW+Bef80Y6EiNR9l4u+mBhy8RRdBumnQAFw==",
+    pnpm_version = "10.31.0",
+    pnpm_version_integrity = "sha512-45JziL+qgHjOt5t0j/wegnToTXUWPme8IuBsDTrtQ90VMVHL8R1/gwH/SsuYxovcXK32mJUygB/6/js+SmPCaA==",
 )
 use_repo(pnpm, "pnpm")
 
@@ -117,9 +117,9 @@ use_repo(npm, "npm")
 rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext")
 rules_ts_ext.deps(
     name = "angular_npm_typescript",
-    # Obtained by: curl --silent https://registry.npmjs.org/typescript/6.0.0-beta | jq -r '.dist.integrity'
-    ts_integrity = "sha512-CldZdztDpQRLM1HC6WDQjQkQN5Ub5zRau737a1diGh3lPmb9oRsaWHk1y5iqK0o7+1bNJ0oXfEGRkAogFZBL+Q==",
-    ts_version = "6.0.0-beta",
+    # Obtained by: curl --silent https://registry.npmjs.org/typescript/6.0.1-rc | jq -r '.dist.integrity'
+    ts_integrity = "sha512-7XlzYb+p/7YxX6qSOzwB4mxVFRdAgWWkj1PgAZ+jzldeuFV6Z77vwFbNxHsUXAL/bhlWY2jCT8shLwDJR8337g==",
+    ts_version = "6.0.1-rc",
 )
 use_repo(rules_ts_ext, **{"npm_typescript": "angular_npm_typescript"})
 

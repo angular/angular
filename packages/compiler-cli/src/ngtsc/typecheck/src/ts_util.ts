@@ -17,20 +17,6 @@ export function isAccessExpression(
 }
 
 /**
- * Creates a TypeScript node representing a numeric value.
- */
-export function tsNumericExpression(value: number): ts.NumericLiteral | ts.PrefixUnaryExpression {
-  // As of TypeScript 5.3 negative numbers are represented as `prefixUnaryOperator` and passing a
-  // negative number (even as a string) into `createNumericLiteral` will result in an error.
-  if (value < 0) {
-    const operand = ts.factory.createNumericLiteral(Math.abs(value));
-    return ts.factory.createPrefixUnaryExpression(ts.SyntaxKind.MinusToken, operand);
-  }
-
-  return ts.factory.createNumericLiteral(value);
-}
-
-/**
  * Check if a node represents a directive declaration in a TypeCheck Block.
  * Directive declarations can be either:
  * - var _t1: TestDir /*T:D*\/ = null! as TestDir;

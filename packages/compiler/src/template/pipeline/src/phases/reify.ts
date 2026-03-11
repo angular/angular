@@ -383,8 +383,12 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         let args: o.Expression[] = [];
         switch (op.trigger.kind) {
           case ir.DeferTriggerKind.Never:
-          case ir.DeferTriggerKind.Idle:
           case ir.DeferTriggerKind.Immediate:
+            break;
+          case ir.DeferTriggerKind.Idle:
+            if (op.trigger.timeout != null) {
+              args = [o.literal(op.trigger.timeout)];
+            }
             break;
           case ir.DeferTriggerKind.Timer:
             args = [o.literal(op.trigger.delay)];

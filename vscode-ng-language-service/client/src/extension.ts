@@ -10,6 +10,7 @@ import * as vscode from 'vscode';
 
 import {AngularLanguageClient} from './client';
 import {registerCommands} from './commands';
+import {shouldRestartOnConfigurationChange} from './config_change';
 
 export function activate(context: vscode.ExtensionContext) {
   const client = new AngularLanguageClient(context);
@@ -18,10 +19,10 @@ export function activate(context: vscode.ExtensionContext) {
   // client can be deactivated on extension deactivation
   registerCommands(client, context);
 
-  // Restart the server on configuration change.
+  // Restart the server on configuration changes that affect startup/session state.
   const disposable = vscode.workspace.onDidChangeConfiguration(
     async (e: vscode.ConfigurationChangeEvent) => {
-      if (!e.affectsConfiguration('angular')) {
+      if (!shouldRestartOnConfigurationChange(e)) {
         return;
       }
       await client.stop();

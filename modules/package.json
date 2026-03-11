@@ -2,7 +2,7 @@
   "dependencies": {
     "@angular/animations": "workspace:*",
     "@angular/benchpress": "workspace:*",
-    "@angular/build": "21.2.0-rc.2",
+    "@angular/build": "22.0.0-next.0",
     "@angular/common": "workspace:*",
     "@angular/compiler": "workspace:*",
     "@angular/compiler-cli": "workspace:*",
@@ -15,7 +15,7 @@
     "@angular/upgrade": "workspace:*",
     "@types/jasmine": "6.0.0",
     "@types/jasminewd2": "2.0.13",
-    "@types/node": "24.10.13",
+    "@types/node": "24.12.0",
     "@types/selenium-webdriver": "3.0.7",
     "angular-1.8": "npm:angular@1.8",
     "protractor": "7.0.0",

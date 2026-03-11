@@ -15,14 +15,12 @@ import {
   TmplAstDirective,
   TmplAstElement,
   TmplAstTemplate,
-  TransplantedType,
 } from '@angular/compiler';
-import ts from 'typescript';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TypeCheckableDirectiveMeta} from '../../api';
+import {TcbDirectiveMetadata} from '../../api';
 import {TcbOp} from './base';
-import {declareVariable, quoteAndEscape, TcbExpr, tempPrint} from './codegen';
+import {declareVariable, quoteAndEscape, TcbExpr} from './codegen';
 import {BindingPropertyName, ClassPropertyName} from '../../../metadata';
 import {REGISTRY} from '../dom';
 import {tcbExpression, unwrapWritableSignal} from './expression';
@@ -59,7 +57,7 @@ export class TcbDirectiveInputsOp extends TcbOp {
     private tcb: Context,
     private scope: Scope,
     private node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
-    private dir: TypeCheckableDirectiveMeta,
+    private dir: TcbDirectiveMetadata,
     private isFormControl: boolean = false,
     private customFormControlType: CustomFormControlType | null,
   ) {
@@ -118,29 +116,15 @@ export class TcbDirectiveInputsOp extends TcbOp {
         if (this.dir.coercedInputFields.has(fieldName)) {
           let type: TcbExpr;
 
-          if (transformType !== null) {
-            const tsType = this.tcb.env.referenceTransplantedType(
-              new TransplantedType(transformType),
-            );
-            type = new TcbExpr(tempPrint(tsType, transformType.node.getSourceFile()));
+          if (transformType !== undefined) {
+            type = new TcbExpr(transformType);
           } else {
             // The input has a coercion declaration which should be used instead of assigning the
             // expression into the input field directly. To achieve this, a variable is declared
             // with a type of `typeof Directive.ngAcceptInputType_fieldName` which is then used as
             // target of the assignment.
-            const dirTypeRef: ts.TypeNode = this.tcb.env.referenceType(this.dir.ref);
-
-            if (!ts.isTypeReferenceNode(dirTypeRef)) {
-              throw new Error(
-                `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`,
-              );
-            }
-
-            const typeName = ts.isIdentifier(dirTypeRef.typeName)
-              ? dirTypeRef.typeName.text
-              : tempPrint(dirTypeRef.typeName, dirTypeRef.typeName.getSourceFile());
-
-            type = new TcbExpr(`typeof ${typeName}.ngAcceptInputType_${fieldName}`);
+            const dirTypeRef = this.tcb.env.referenceTcbValue(this.dir.ref);
+            type = new TcbExpr(`typeof ${dirTypeRef.print()}.ngAcceptInputType_${fieldName}`);
           }
 
           const id = new TcbExpr(this.tcb.allocateId());
@@ -165,12 +149,6 @@ export class TcbDirectiveInputsOp extends TcbOp {
           }
 
           const id = new TcbExpr(this.tcb.allocateId());
-          const dirTypeRef = this.tcb.env.referenceType(this.dir.ref);
-          if (!ts.isTypeReferenceNode(dirTypeRef)) {
-            throw new Error(
-              `Expected TypeReferenceNode from reference to ${this.dir.ref.debugName}`,
-            );
-          }
           const type = new TcbExpr(`(typeof ${dirId.print()})[${quoteAndEscape(fieldName)}]`);
           const temp = declareVariable(id, type);
           this.scope.addStatement(temp);

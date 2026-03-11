@@ -42,6 +42,7 @@ esbuild(
         "//packages/compiler-cli/linker:files",
         "//packages/compiler-cli/linker/babel:files",
         "//packages/compiler-cli/private:files",
+        "//packages/compiler-cli/private:hybrid_analysis",
     ],
     external = [
         "@angular/compiler",

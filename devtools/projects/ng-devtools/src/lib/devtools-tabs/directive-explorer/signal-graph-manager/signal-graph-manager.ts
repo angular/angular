@@ -8,8 +8,8 @@
 
 import {effect, inject, Injectable, Injector, Signal, signal} from '@angular/core';
 import {DebugSignalGraph, ElementPosition, MessageBus} from '../../../../../../protocol';
-import {DevtoolsSignalGraph} from './signal-graph-types';
-import {convertToDevtoolsSignalGraph} from './devtools-signal-graph';
+import {DevtoolsSignalGraph} from '../../../shared/signal-graph/signal-graph-types';
+import {convertToDevtoolsSignalGraph} from '../../../shared/signal-graph/devtools-signal-graph';
 
 /**
  * Keeps the signal graph of a provided element/component.

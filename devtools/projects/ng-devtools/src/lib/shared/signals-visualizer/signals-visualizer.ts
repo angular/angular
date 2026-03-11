@@ -16,8 +16,8 @@ import {
   DevtoolsClusterNodeType,
   DevtoolsSignalNode,
   getNodeLabel,
-} from '../../signal-graph';
-import {DebugSignalGraphNode} from '../../../../../../../protocol';
+} from '../signal-graph';
+import {DebugSignalGraphNode} from '../../../../../protocol';
 import type {DagreCluster, DagreEdge, DagreNode, DagreRegularNode} from './visualizer-types';
 
 export type DependenciesHighlightEvent =
@@ -745,7 +745,12 @@ function getBodyText(node: DevtoolsSignalGraphNode, graph: DevtoolsSignalGraph):
     return '[nodes]';
   }
 
-  if (node.kind === 'signal' || node.kind === 'computed' || node.kind === 'linkedSignal') {
+  if (
+    node.kind === 'signal' ||
+    node.kind === 'computed' ||
+    node.kind === 'linkedSignal' ||
+    node.kind === 'childSignalProp'
+  ) {
     return node.preview.preview;
   }
 

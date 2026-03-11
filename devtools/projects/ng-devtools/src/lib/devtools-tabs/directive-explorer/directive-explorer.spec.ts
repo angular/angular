@@ -22,7 +22,7 @@ import {Component, CUSTOM_ELEMENTS_SCHEMA, output, input} from '@angular/core';
 import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {PropertyPaneComponent} from './property-pane/property-pane.component';
-import {SignalGraphManager} from './signal-graph/signal-graph-manager';
+import {SignalGraphManager} from './signal-graph-manager/signal-graph-manager';
 import {FlatNode} from '../../shared/object-tree-explorer/object-tree-types';
 
 @Component({

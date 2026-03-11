@@ -1042,7 +1042,7 @@ export abstract class ViewportScroller {
     abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
     abstract setOffset(offset: [number, number] | (() => [number, number])): void;
     // (undocumented)
-    static ɵprov: unknown;
+    static ɵprov: i0.ɵɵInjectableDeclaration<NullViewportScroller | BrowserViewportScroller>;
 }
 
 // @public @deprecated

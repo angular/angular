@@ -9,7 +9,7 @@
 import {resource, ɵisPromise} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../../field/validation';
-import type {FieldTree, LogicFn, SchemaPath, SchemaPathTree} from '../../types';
+import type {LogicFn, ReadonlyFieldTree, SchemaPath, SchemaPathTree} from '../../types';
 import {createMetadataKey, metadata} from '../metadata';
 import {validateAsync} from './validate_async';
 import {validateTree} from './validate_tree';
@@ -159,13 +159,13 @@ export function standardSchemaError(
  * @returns A `ValidationError` representing the issue.
  */
 function standardIssueToFormTreeError(
-  fieldTree: FieldTree<unknown>,
+  fieldTree: ReadonlyFieldTree<unknown>,
   issue: StandardSchemaV1.Issue,
 ): StandardSchemaValidationError {
-  let target = fieldTree as FieldTree<Record<PropertyKey, unknown>>;
+  let target = fieldTree as ReadonlyFieldTree<Record<PropertyKey, unknown>>;
   for (const pathPart of issue.path ?? []) {
     const pathKey = typeof pathPart === 'object' ? pathPart.key : pathPart;
-    target = target[pathKey] as FieldTree<Record<PropertyKey, unknown>>;
+    target = target[pathKey] as ReadonlyFieldTree<Record<PropertyKey, unknown>>;
   }
   return addDefaultField(standardSchemaError(issue, {message: issue.message}), target);
 }

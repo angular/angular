@@ -419,7 +419,7 @@ export function ɵɵdefineNgModule<T>(def: {
 
   /** Unique ID for the module that is used with `getModuleFactory`. */
   id?: string | null;
-}): unknown {
+}): NgModuleDef<T> {
   return noSideEffects(() => {
     const res: NgModuleDef<T> = {
       type: def.type,
@@ -608,8 +608,8 @@ export function ɵɵdefinePipe<T>(pipeDef: {
    * Whether the pipe is standalone.
    */
   standalone?: boolean;
-}): unknown {
-  return <PipeDef<T>>{
+}): PipeDef<T> {
+  return {
     type: pipeDef.type,
     name: pipeDef.name,
     factory: null,

@@ -35,6 +35,7 @@ import {
   clearLViewNodeAnimationResolvers,
   enterClassMap,
   getClassListFromValue,
+  getEventTarget,
   getLViewEnterAnimations,
   getLViewLeaveAnimations,
   isLongestAnimation,
@@ -106,6 +107,7 @@ export function runEnterAnimation(
   // bindings.
   const activeClasses = getClassListFromValue(value);
   const cleanupFns: VoidFunction[] = [];
+  let hasCompleted = false;
 
   // In the case where multiple animations are happening on the element, we need
   // to get the longest animation to ensure we don't complete animations early.
@@ -113,7 +115,7 @@ export function runEnterAnimation(
   // gets removed early.
   const handleEnterAnimationStart = (event: AnimationEvent | TransitionEvent) => {
     // this early exit case is to prevent issues with bubbling events that are from child element animations
-    if (event.target !== nativeElement) return;
+    if (getEventTarget(event) !== nativeElement) return;
 
     const eventName = event instanceof AnimationEvent ? 'animationend' : 'transitionend';
     ngZone.runOutsideAngular(() => {
@@ -124,8 +126,11 @@ export function runEnterAnimation(
   // When the longest animation ends, we can remove all the classes
   const handleEnterAnimationEnd = (event: AnimationEvent | TransitionEvent) => {
     // this early exit case is to prevent issues with bubbling events that are from child element animations
-    if (event.target !== nativeElement) return;
+    if (getEventTarget(event) !== nativeElement) return;
 
+    if (isLongestAnimation(event, nativeElement)) {
+      hasCompleted = true;
+    }
     enterAnimationEnd(event, nativeElement, renderer);
   };
 
@@ -147,6 +152,7 @@ export function runEnterAnimation(
     // preventing an animation via selector specificity.
     ngZone.runOutsideAngular(() => {
       requestAnimationFrame(() => {
+        if (hasCompleted) return;
         determineLongestAnimation(nativeElement, longestAnimations, areAnimationSupported);
         if (!longestAnimations.has(nativeElement)) {
           for (const klass of activeClasses) {
@@ -166,13 +172,13 @@ function enterAnimationEnd(
 ) {
   const elementData = enterClassMap.get(nativeElement);
   // this event.target check is to prevent issues with bubbling events that are from child element animations
-  if (event.target !== nativeElement || !elementData) return;
+  if (getEventTarget(event) !== nativeElement || !elementData) return;
   if (isLongestAnimation(event, nativeElement)) {
     // Now that we've found the longest animation, there's no need
     // to keep bubbling up this event as it's not going to apply to
     // other elements further up. We don't want it to inadvertently
     // affect any other animations on the page.
-    event.stopImmediatePropagation();
+    event.stopPropagation();
     for (const klass of elementData.classList) {
       renderer.removeClass(nativeElement, klass);
     }
@@ -317,17 +323,26 @@ function animateLeaveClassRunner(
 ) {
   cancelAnimationsIfRunning(el, renderer);
   const cleanupFns: VoidFunction[] = [];
-  const resolvers = getLViewLeaveAnimations(lView).get(tNode.index)?.resolvers;
+  const componentResolvers = getLViewLeaveAnimations(lView).get(tNode.index)?.resolvers;
+  let fallbackTimeoutId: number | undefined;
+  let hasCompleted = false;
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent | CustomEvent) => {
-    // this early exit case is to prevent issues with bubbling events that are from child element animations
-    if (event.target !== el) return;
-    if (event instanceof CustomEvent || isLongestAnimation(event, el)) {
+    const target = getEventTarget(event as Event);
+    // Custom fallback events don't have a target, so we bypass this check for them.
+    if (target !== el && event.type !== 'animation-fallback') return;
+
+    if (
+      event.type === 'animation-fallback' ||
+      isLongestAnimation(event as TransitionEvent | AnimationEvent, el)
+    ) {
+      hasCompleted = true;
       // Now that we've found the longest animation, there's no need
       // to keep bubbling up this event as it's not going to apply to
       // other elements further up. We don't want it to inadvertently
       // affect any other animations on the page.
-      event.stopImmediatePropagation();
+      if (fallbackTimeoutId) clearTimeout(fallbackTimeoutId);
+      if (event.type !== 'animation-fallback') event.stopPropagation();
       longestAnimations.delete(el);
       clearLeavingNodes(tNode, el);
 
@@ -339,7 +354,7 @@ function animateLeaveClassRunner(
           renderer.removeClass(el, item);
         }
       }
-      cleanupAfterLeaveAnimations(resolvers, cleanupFns);
+      cleanupAfterLeaveAnimations(componentResolvers, cleanupFns);
       clearLViewNodeAnimationResolvers(lView, tNode);
     }
   };
@@ -349,19 +364,34 @@ function animateLeaveClassRunner(
     cleanupFns.push(renderer.listen(el, 'transitionend', handleOutAnimationEnd));
   });
   trackLeavingNodes(tNode, el);
+
   for (const item of classList) {
     renderer.addClass(el, item);
   }
+
+  // Force a reflow to ensure the browser registers the class addition and triggers the transition
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _reflow = el.offsetWidth;
+
   // In the case that the classes added have no animations, we need to remove
   // the element right away. This could happen because someone is intentionally
   // preventing an animation via selector specificity.
   ngZone.runOutsideAngular(() => {
     requestAnimationFrame(() => {
+      if (hasCompleted) return;
       determineLongestAnimation(el, longestAnimations, areAnimationSupported);
-      if (!longestAnimations.has(el)) {
+      const longest = longestAnimations.get(el);
+      if (!longest) {
         clearLeavingNodes(tNode, el);
-        cleanupAfterLeaveAnimations(resolvers, cleanupFns);
+        cleanupAfterLeaveAnimations(componentResolvers, cleanupFns);
         clearLViewNodeAnimationResolvers(lView, tNode);
+      } else {
+        // Fallback cleanup if the browser drops the transitionend/animationend event
+        // entirely due to off-screen optimizations or rapid DOM teardown.
+        fallbackTimeoutId = setTimeout(() => {
+          handleOutAnimationEnd(new CustomEvent('animation-fallback'));
+        }, longest.duration + 50) as unknown as number;
+        cleanupFns.push(() => clearTimeout(fallbackTimeoutId));
       }
     });
   });

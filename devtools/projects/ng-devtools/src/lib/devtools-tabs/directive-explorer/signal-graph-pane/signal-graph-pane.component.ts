@@ -21,11 +21,11 @@ import {MatIcon} from '@angular/material/icon';
 
 import {ApplicationOperations} from '../../../application-operations/index';
 import {FrameManager} from '../../../application-services/frame_manager';
-import {SignalDetailsComponent} from './signal-details/signal-details.component';
+import {SignalDetailsComponent} from '../../../shared/signal-details/signal-details.component';
 import {ButtonComponent} from '../../../shared/button/button.component';
-import {SignalGraphManager} from '../signal-graph/signal-graph-manager';
-import {DevtoolsSignalGraphNode} from '../signal-graph';
-import {SignalsVisualizerComponent} from './signals-visualizer/signals-visualizer.component';
+import {SignalGraphManager} from '../signal-graph-manager/signal-graph-manager';
+import {DevtoolsSignalGraphNode} from '../../../shared/signal-graph';
+import {SignalsVisualizerComponent} from '../../../shared/signals-visualizer/signals-visualizer.component';
 import {ElementPosition} from '../../../../../../protocol';
 
 type SelectedNodeSource = {

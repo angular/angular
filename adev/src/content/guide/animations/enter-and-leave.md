@@ -55,9 +55,9 @@ NOTE: When using multiple keyframe animations or transition properties on an ele
     <docs-code header="leave-binding.css" path="adev/src/content/examples/animations/src/app/enter-and-leave/leave-binding.css"/>
 </docs-code-multifile>
 
-### Element removal order matters
+### Element removal order
 
-There is some nuance to how `animate.leave` animations are run and when an animation will occur. `animate.leave` works if it is placed on the element that is being removed. However, `animate.leave` will **not** animate if it is on an element that is a _descendent_ of the element being removed. This is because when a parent node is removed, it takes the entire sub tree with it, and since there are no animations on that parent node, it will be removed immediately. This means there's no element to animate away with `animate.leave`. You will need to consider this in your usage of `animate.leave`.
+There is some nuance to how `animate.leave` animations are run and when an animation will occur. `animate.leave` works if it is placed on the element that is being removed, and if `animate.leave` is placed on an element that is a _descendent_ of the element being removed, those child animations will happen _before_ the parent node is removed from the DOM. This ensures that you can confidently animate away child elements without the parent node disappearing prematurely.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/enter-and-leave/leave-parent.ts">
     <docs-code header="leave.ts" path="adev/src/content/examples/animations/src/app/enter-and-leave/leave-parent.ts" />

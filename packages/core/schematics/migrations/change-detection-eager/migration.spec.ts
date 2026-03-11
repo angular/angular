@@ -106,7 +106,7 @@ describe('ChangeDetectionEager migration', () => {
 
     const content = fs.readFile(absoluteFrom('/index.ts'));
     expect(content).toMatch(
-      /standalone: true,\n\s+changeDetection: ChangeDetectionStrategy\.Eager/,
+      /template: '',\n\s+changeDetection: ChangeDetectionStrategy\.Eager,\n\s+standalone: true/,
     );
   });
 

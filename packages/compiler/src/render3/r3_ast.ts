@@ -208,7 +208,18 @@ export class BoundDeferredTrigger extends DeferredTrigger {
 
 export class NeverDeferredTrigger extends DeferredTrigger {}
 
-export class IdleDeferredTrigger extends DeferredTrigger {}
+export class IdleDeferredTrigger extends DeferredTrigger {
+  constructor(
+    nameSpan: ParseSourceSpan,
+    sourceSpan: ParseSourceSpan,
+    prefetchSpan: ParseSourceSpan | null,
+    onSourceSpan: ParseSourceSpan | null,
+    hydrateSpan: ParseSourceSpan | null,
+    public timeout: number | null,
+  ) {
+    super(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
+  }
+}
 
 export class ImmediateDeferredTrigger extends DeferredTrigger {}
 
@@ -803,9 +814,8 @@ export class RecursiveVisitor implements Visitor<void> {
     visitAll(this, block.branches);
   }
   visitIfBlockBranch(block: IfBlockBranch): void {
-    const blockItems = block.children;
-    block.expressionAlias && blockItems.push(block.expressionAlias);
-    visitAll(this, blockItems);
+    visitAll(this, block.children);
+    block.expressionAlias?.visit(this);
   }
   visitContent(content: Content): void {
     visitAll(this, content.children);

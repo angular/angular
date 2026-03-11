@@ -22,6 +22,7 @@
             "externalDependencies": ["xhr2"],
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
+            "polyfills": ["@angular/localize/init"],
             "assets": [
               {
                 "glob": "**/*",

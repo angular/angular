@@ -137,6 +137,13 @@ export class UserDetail {
     // To:   /users
     this.router.navigate(['..'], {relativeTo: this.route});
   }
+
+  navigateToList() {
+    // Angular resolves the commands array as a single navigation path relative to the current route.
+    // From: /users/123
+    // Result: /users/list
+    this.router.navigate(['..', 'list'], {relativeTo: this.route});
+  }
 }
 ```
 ### `router.navigateByUrl()`
@@ -167,6 +174,53 @@ In the event you need to replace the current URL in history, `navigateByUrl` als
 router.navigateByUrl('/checkout', {
   replaceUrl: true,
 });
+```
+
+### Display a different URL in the address bar
+
+You can pass a browserUrl option to navigateByUrl to display a different URL in the browser's address bar than the one used for route matching.
+
+This is useful when you want to redirect a user to a different route—such as an error page—without changing the URL that the user originally tried to visit.
+
+```ts
+router.navigateByUrl('/not-found', {browserUrl: '/products/missing-item'});
+```
+
+Angular navigates to and renders the `/not-found` route, but the browser address bar shows `/products/missing-item`.
+
+NOTE: `browserUrl` only affects what appears in the browser's address bar.
+
+## Customizing the browser URL with RouterLink
+
+The `RouterLink` directive also supports a `browserUrl` input, which lets you control the URL displayed in the browser's address bar when a link is clicked, independently of the route Angular navigates to.
+
+```angular-html
+<!-- Navigates to /dashboard, but the address bar shows /home -->
+<a [routerLink]="['/dashboard']" [browserUrl]="'/home'">Go to Dashboard</a>
+```
+
+You can also bind a `UrlTree` for more dynamic use cases:
+
+```angular-ts
+import {Component, inject} from '@angular/core';
+import {Router, RouterLink, UrlTree} from '@angular/router';
+
+@Component({
+  template: `
+    <a [routerLink]="['/products', product.id]" [browserUrl]="displayUrl">
+      {{ product.name }}
+    </a>
+  `,
+  imports: [RouterLink],
+})
+export class ProductList {
+  private router = inject(Router);
+
+  product = {id: 42, name: 'Widget'};
+
+  // Create a UrlTree to display in the address bar
+  displayUrl: UrlTree = this.router.createUrlTree(['/products', 'widget']);
+}
 ```
 
 ## Next steps

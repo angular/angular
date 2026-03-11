@@ -6,15 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ExpressionType,
-  ExternalExpr,
-  TransplantedType,
-  Type,
-  TypeModifier,
-} from '@angular/compiler';
+import {ExpressionType, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
+import {ErrorCode, FatalDiagnosticError, makeDiagnosticChain} from '../../diagnostics';
 import {
   assertSuccessfulReferenceEmit,
   ImportFlags,
@@ -24,6 +19,7 @@ import {
 } from '../../imports';
 import {ReflectionHost} from '../../reflection';
 import {ImportManager, translateType} from '../../translator';
+import {TcbReferenceMetadata} from '../api';
 import {TcbExpr} from './ops/codegen';
 
 /**
@@ -35,7 +31,7 @@ import {TcbExpr} from './ops/codegen';
 export class ReferenceEmitEnvironment {
   constructor(
     readonly importManager: ImportManager,
-    protected refEmitter: ReferenceEmitter,
+    public refEmitter: ReferenceEmitter,
     readonly reflector: ReflectionHost,
     public contextFile: ts.SourceFile,
   ) {}
@@ -75,6 +71,25 @@ export class ReferenceEmitEnvironment {
     );
   }
 
+  /**
+   * Generates a `TcbExpr` from a `TcbReferenceMetadata` object.
+   */
+  referenceTcbValue(ref: TcbReferenceMetadata): TcbExpr {
+    if (ref.unexportedDiagnostic !== null || ref.isLocal || ref.moduleName === null) {
+      if (ref.unexportedDiagnostic !== null) {
+        throw new FatalDiagnosticError(
+          ErrorCode.IMPORT_GENERATION_FAILURE,
+          this.contextFile,
+          makeDiagnosticChain(`Unable to import symbol ${ref.name}.`, [
+            makeDiagnosticChain(ref.unexportedDiagnostic),
+          ]),
+        );
+      }
+      return new TcbExpr(ref.name);
+    }
+    return this.referenceExternalSymbol(ref.moduleName, ref.name);
+  }
+
   referenceExternalSymbol(moduleName: string, name: string): TcbExpr {
     const importResult = this.importManager.addImport({
       exportModuleSpecifier: moduleName,
@@ -89,23 +104,6 @@ export class ReferenceEmitEnvironment {
     }
 
     throw new Error('Unexpected value returned by import manager');
-  }
-
-  /**
-   * Generate a `ts.TypeNode` that references a given type from the provided module.
-   *
-   * This will involve importing the type into the file, and will also add type parameters if
-   * provided.
-   */
-  referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
-    const external = new ExternalExpr({moduleName, name});
-    return translateType(
-      new ExpressionType(external, TypeModifier.None, typeParams),
-      this.contextFile,
-      this.reflector,
-      this.refEmitter,
-      this.importManager,
-    );
   }
 
   /**

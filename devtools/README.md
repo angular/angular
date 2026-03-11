@@ -84,6 +84,10 @@ have sourcemaps loaded and be unminified.
 - The background service worker is found at `chrome://extensions`.
   - Click on the "Angular DevTools" extension and the "Inspect Views > service worker" button to open a debugger.
 
+### Enabling sourcemaps
+
+To enable sourcemaps you need to add the `sourcemap = "inline"` flag to the `esbuild` macro located in `tools/defaults.bzl`.
+
 ### Running End-to-End Tests
 
 Before running end-to-end tests, you need to start the development server using:

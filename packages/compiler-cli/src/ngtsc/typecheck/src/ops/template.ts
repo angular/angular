@@ -6,14 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {TmplAstBoundAttribute, TmplAstDirective, TmplAstTemplate} from '@angular/compiler';
-import ts from 'typescript';
 import {TcbOp} from './base';
 import {declareVariable, getStatementsBlock, TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
-import {TypeCheckableDirectiveMeta} from '../../api';
-import {Reference} from '../../../imports';
-import {ClassDeclaration} from '../../../reflection';
+import {TcbDirectiveMetadata} from '../../api';
 import {tcbExpression} from './expression';
 
 /**
@@ -135,7 +132,7 @@ export class TcbTemplateBodyOp extends TcbOp {
   private addDirectiveGuards(
     guards: TcbExpr[],
     hostNode: TmplAstTemplate | TmplAstDirective,
-    directives: TypeCheckableDirectiveMeta[] | null,
+    directives: TcbDirectiveMetadata[] | null,
   ) {
     if (directives === null || directives.length === 0) {
       return;
@@ -145,9 +142,7 @@ export class TcbTemplateBodyOp extends TcbOp {
 
     for (const dir of directives) {
       const dirInstId = this.scope.resolve(hostNode, dir);
-      const dirId = this.tcb.env.reference(
-        dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      );
+      const dirId = this.tcb.env.referenceTcbValue(dir.ref);
 
       // There are two kinds of guards. Template guards (ngTemplateGuards) allow type narrowing of
       // the expression passed to an @Input of the directive. Scan the directive to see if it has

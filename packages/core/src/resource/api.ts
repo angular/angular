@@ -297,3 +297,11 @@ export type ResourceSnapshot<T> =
   | {readonly status: 'loading' | 'reloading'; readonly value: T}
   | {readonly status: 'resolved' | 'local'; readonly value: T}
   | {readonly status: 'error'; readonly error: Error};
+
+/** Options for `debounced`. */
+export interface DebouncedOptions<T> {
+  /** The `Injector` to use for the debounced resource. */
+  injector?: Injector;
+  /** The equality function to use for comparing values. */
+  equal?: ValueEqualityFn<T>;
+}

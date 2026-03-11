@@ -247,6 +247,30 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('infers generic pipe return types correctly and avoids expanding to strict undefined errors', () => {
+      const messages = diagnose(
+        `<div>{{ person?.name | pipe:person?.age }}</div>`,
+        `
+        class Pipe<T> {
+          transform(value: T, a: number | undefined): T { return value; }
+        }
+        class TestComponent {
+          person?: {
+            name: string;
+            age: number;
+          };
+        }`,
+        [{type: 'pipe', name: 'Pipe', pipeName: 'pipe', isGeneric: true}],
+      );
+
+      // If the pipe was instantiated with explicit \`any\` generic bounds (e.g. \`var _pipe1 = null! as i0.Pipe<any>\`),
+      // the \`transform\` method evaluates the \`value: T\` parameter as \`value: any\`. This would break strict null
+      // checking against the optional chaining \`person?.name\` -> \`string | undefined\`.
+      // Instead, by dropping the generic arguments, TS evaluates the \`transform\` bound lazily, allowing the pipe to
+      // successfully extract \`string | undefined\` out of the first argument without union conflicts.
+      expect(messages).toEqual([]);
+    });
+
     it('does not repeat diagnostics for missing pipes in directive inputs', () => {
       // The directive here is structured so that a type constructor is used, which results in each
       // input binding being processed twice. This results in the 'uppercase' pipe being resolved

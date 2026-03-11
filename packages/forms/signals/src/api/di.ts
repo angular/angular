@@ -7,8 +7,8 @@
  */
 
 import {type Provider} from '@angular/core';
+import type {FormFieldBinding} from '../api/types';
 import {SIGNAL_FORMS_CONFIG} from '../field/di';
-import type {FormField} from '../directive/form_field_directive';
 
 /**
  * Configuration options for signal forms.
@@ -17,7 +17,9 @@ import type {FormField} from '../directive/form_field_directive';
  */
 export interface SignalFormsConfig {
   /** A map of CSS class names to predicate functions that determine when to apply them. */
-  classes?: {[className: string]: (state: FormField<unknown>) => boolean};
+  classes?: {
+    [className: string]: (formField: FormFieldBinding) => boolean;
+  };
 }
 
 /**

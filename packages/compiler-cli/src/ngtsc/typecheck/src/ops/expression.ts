@@ -20,14 +20,11 @@ import {
   ThisReceiver,
   TmplAstLetDeclaration,
 } from '@angular/compiler';
-import ts from 'typescript';
 import {TcbOp} from './base';
 import {TcbExpr} from './codegen';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {astToTcbExpr} from '../expression';
-import {Reference} from '../../../imports';
-import {ClassDeclaration} from '../../../reflection';
 
 /**
  * Process an `AST` expression and convert it into a `ts.Expression`, generating references to the
@@ -204,9 +201,7 @@ export class TcbExpressionTranslator {
         pipe = new TcbExpr('(0 as any)');
       } else {
         // Use a variable declared as the pipe's type.
-        pipe = this.tcb.env.pipeInst(
-          pipeMeta.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>,
-        );
+        pipe = this.tcb.env.pipeInst(pipeMeta);
       }
       const args = ast.args.map((arg) => this.translate(arg).print());
       let methodAccess = new TcbExpr(`${pipe.print()}.transform`).addParseSpanInfo(ast.nameSpan);
