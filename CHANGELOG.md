@@ -1,3 +1,14 @@
+<a name="21.2.3"></a>
+# 21.2.3 (2026-03-11)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [62a97f7e4b](https://github.com/angular/angular/commit/62a97f7e4b896b4b03a1ef25764db387ffecebe1) | fix | ensure definitions compile |
+| [21b1c3b2ee](https://github.com/angular/angular/commit/21b1c3b2ee2c8423782b111b93bd60eb6b453259) | fix | include signal debug names in their `toString()` representation |
+| [224e60ecb1](https://github.com/angular/angular/commit/224e60ecb1b90115baa702f1c06edc1d64d86187) | fix | sanitize translated attribute bindings with interpolations |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.2"></a>
 # 21.2.2 (2026-03-09)
 ### compiler
