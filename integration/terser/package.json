@@ -14,5 +14,5 @@
     "typescript": "5.9.3",
     "zone.js": "0.16.1"
   },
-  "packageManager": "pnpm@10.31.0"
+  "packageManager": "pnpm@10.32.0"
 }
