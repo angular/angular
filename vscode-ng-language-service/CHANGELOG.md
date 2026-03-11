@@ -1,3 +1,9 @@
+## 21.2.3 (2026-03-11)
+
+This release contains internal refactorings only.
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 21.2.2 (2026-03-04)
 
 - fix(extension): bundle TypeScript 5.9 internally ([da57d1af73](https://github.com/angular/angular/commit/da57d1af732292823b1ea187b6e9cd9f6b4eca39))
