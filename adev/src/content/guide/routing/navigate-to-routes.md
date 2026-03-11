@@ -137,7 +137,11 @@ export class UserDetail {
     // To:   /users
     this.router.navigate(['..'], {relativeTo: this.route});
   }
+```
 
+When passing multiple segments in the commands array, Angular resolves them together as a single navigation path relative to the current route.
+
+```ts
   navigateToList() {
     // Angular resolves the commands array as a single navigation path relative to the current route.
     // From: /users/123
