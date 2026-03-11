@@ -390,7 +390,14 @@ describe('AstValue', () => {
 
   describe('getFunctionParameters', () => {
     it('should return the parameters of a function expression', () => {
-      const funcExpr = factory.createFunctionExpression('foo', ['a', 'b'], factory.createBlock([]));
+      const funcExpr = factory.createFunctionExpression(
+        'foo',
+        [
+          {name: 'a', type: null},
+          {name: 'b', type: null},
+        ],
+        factory.createBlock([]),
+      );
       expect(createAstValue<Function>(funcExpr).getFunctionParameters()).toEqual(
         ['a', 'b'].map((name) => createAstValue(factory.createIdentifier(name))),
       );
