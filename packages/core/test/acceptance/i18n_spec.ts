@@ -13,6 +13,7 @@ import {CommonModule, DOCUMENT, registerLocaleData} from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import localeRo from '@angular/common/locales/ro';
 import {computeMsgId} from '@angular/compiler';
+import {isBrowser} from '@angular/private/testing';
 import {
   Attribute,
   Component,
@@ -3598,6 +3599,27 @@ describe('runtime i18n', () => {
       expect(link).toBeTruthy();
       expect(link.getAttribute('href')).toMatch(/^unsafe:/);
     });
+
+    it('should sanitize action binding', () => {
+      const fixture = initWithTemplate(
+        SanitizeAppComp,
+        '<form action="{{url}}" i18n-action></form>',
+      );
+      const form: HTMLFormElement = fixture.nativeElement.querySelector('form');
+      expect(form.getAttribute('action')).toMatch(/^unsafe:/);
+    });
+
+    // Skip this test in Node, because Domino doesn't support `formAction`.
+    if (isBrowser) {
+      it('should sanitize formaction binding', () => {
+        const fixture = initWithTemplate(
+          SanitizeAppComp,
+          '<input type="text" formaction="{{url}}" i18n-formaction>',
+        );
+        const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+        expect(input.getAttribute('formaction')).toMatch(/^unsafe:/);
+      });
+    }
   });
 });
 

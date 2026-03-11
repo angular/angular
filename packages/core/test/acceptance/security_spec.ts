@@ -752,3 +752,19 @@ describe('SVG animation processing', () => {
     );
   });
 });
+
+describe('innerHTML processing', () => {
+  it('should drop risky attributes from elements created with innerHTML', () => {
+    @Component({
+      template: '<div [innerHTML]="html"></div>',
+    })
+    class App {
+      html = '<div action="abc"></div>';
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).not.toContain('action');
+  });
+});
