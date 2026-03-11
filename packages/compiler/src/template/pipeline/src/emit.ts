@@ -247,7 +247,7 @@ function emitView(view: ViewCompilationUnit): o.FunctionExpr {
   const createCond = maybeGenerateRfBlock(1, createStatements);
   const updateCond = maybeGenerateRfBlock(2, updateStatements);
   return o.fn(
-    [new o.FnParam(RENDER_FLAGS), new o.FnParam(CONTEXT_NAME)],
+    [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, o.DYNAMIC_TYPE)],
     [...createCond, ...updateCond],
     /* type */ undefined,
     /* sourceSpan */ undefined,
@@ -307,7 +307,7 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
   const createCond = maybeGenerateRfBlock(1, createStatements);
   const updateCond = maybeGenerateRfBlock(2, updateStatements);
   return o.fn(
-    [new o.FnParam(RENDER_FLAGS), new o.FnParam(CONTEXT_NAME)],
+    [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, o.DYNAMIC_TYPE)],
     [...createCond, ...updateCond],
     /* type */ undefined,
     /* sourceSpan */ undefined,
