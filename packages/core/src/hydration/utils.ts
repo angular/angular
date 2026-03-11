@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -532,7 +532,7 @@ export function canHydrateNode(lView: LView, tNode: TNode): boolean {
 
 /**
  * Helper function to prepare text nodes for serialization by ensuring
- * that seperate logical text blocks in the DOM remain separate after
+ * that separate logical text blocks in the DOM remain separate after
  * serialization.
  */
 export function processTextNodeBeforeSerialization(context: HydrationContext, node: RNode) {
