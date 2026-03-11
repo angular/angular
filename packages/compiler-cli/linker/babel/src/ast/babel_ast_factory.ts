@@ -28,10 +28,14 @@ export class BabelAstFactory implements AstFactory<
   t.Expression | t.SpreadElement,
   t.TSType
 > {
+  private readonly typesEnabled: boolean;
+
   constructor(
     /** The absolute path to the source file being compiled. */
-    private sourceUrl: string,
-  ) {}
+    private sourcePath: string,
+  ) {
+    this.typesEnabled = sourcePath.endsWith('.ts') || sourcePath.endsWith('.mts');
+  }
 
   attachComments(statement: t.Statement | t.Expression, leadingComments: LeadingComment[]): void {
     // We must process the comments in reverse because `t.addComment()` will add new ones in front.
@@ -112,7 +116,7 @@ export class BabelAstFactory implements AstFactory<
     assert(body, t.isBlockStatement, 'a block');
     return t.functionDeclaration(
       t.identifier(functionName),
-      parameters.map((param) => identifierWithType(param.name, param.type)),
+      parameters.map((param) => this.identifierWithType(param.name, param.type)),
       body,
     );
   }
@@ -125,7 +129,7 @@ export class BabelAstFactory implements AstFactory<
       assert(body, t.isBlockStatement, 'a block');
     }
     return t.arrowFunctionExpression(
-      parameters.map((param) => identifierWithType(param.name, param.type)),
+      parameters.map((param) => this.identifierWithType(param.name, param.type)),
       body,
     );
   }
@@ -139,7 +143,7 @@ export class BabelAstFactory implements AstFactory<
     const name = functionName !== null ? t.identifier(functionName) : null;
     return t.functionExpression(
       name,
-      parameters.map((param) => identifierWithType(param.name, param.type)),
+      parameters.map((param) => this.identifierWithType(param.name, param.type)),
       body,
     );
   }
@@ -234,7 +238,7 @@ export class BabelAstFactory implements AstFactory<
     type: t.TSType | null,
   ): t.Statement {
     return t.variableDeclaration(variableType, [
-      t.variableDeclarator(identifierWithType(variableName, type), initializer),
+      t.variableDeclarator(this.identifierWithType(variableName, type), initializer),
     ]);
   }
 
@@ -253,7 +257,7 @@ export class BabelAstFactory implements AstFactory<
       // Add in the filename so that we can map to external template files.
       // Note that Babel gets confused if you specify a filename when it is the original source
       // file. This happens when the template is inline, in which case just use `undefined`.
-      filename: sourceMapRange.url !== this.sourceUrl ? sourceMapRange.url : undefined,
+      filename: sourceMapRange.url !== this.sourcePath ? sourceMapRange.url : undefined,
       start: {
         line: sourceMapRange.start.line + 1, // lines are 1-based in Babel.
         column: sourceMapRange.start.column,
@@ -301,7 +305,7 @@ export class BabelAstFactory implements AstFactory<
   }
 
   createMapType(valueType: t.TSType): t.TSType {
-    const keySignature = identifierWithType('key', this.createBuiltInType('string'));
+    const keySignature = this.identifierWithType('key', this.createBuiltInType('string'));
     return t.tsTypeLiteral([t.tsIndexSignature([keySignature], t.tsTypeAnnotation(valueType))]);
   }
 
@@ -310,6 +314,16 @@ export class BabelAstFactory implements AstFactory<
       return type;
     }
     throw new Error('Attempting to transplant a type node from a non-Babel AST: ' + type);
+  }
+
+  private identifierWithType(name: string, type: t.TSType | null): t.Identifier {
+    const node = t.identifier(name);
+
+    if (this.typesEnabled && type != null) {
+      node.typeAnnotation = t.tsTypeAnnotation(type);
+    }
+
+    return node;
   }
 }
 
@@ -331,16 +345,6 @@ function getEntityTypeFromExpression(expression: t.Expression): t.Identifier | t
   }
 
   throw new Error(`Unsupported expression for type reference: ${expression.type}`);
-}
-
-function identifierWithType(name: string, type: t.TSType | null): t.Identifier {
-  const node = t.identifier(name);
-
-  if (type !== null) {
-    node.typeAnnotation = t.tsTypeAnnotation(type);
-  }
-
-  return node;
 }
 
 function isLExpression(expr: t.Expression): expr is Extract<t.LVal, t.Expression> {
