@@ -11,7 +11,7 @@ import '../../util/ng_i18n_closure_mode';
 import {XSS_SECURITY_URL} from '../../error_details_base_url';
 import {
   getTemplateContent,
-  URI_ATTRS,
+  SENSITIVE_ATTRS,
   VALID_ATTRS,
   VALID_ELEMENTS,
 } from '../../sanitization/html_sanitizer';
@@ -388,7 +388,7 @@ export function i18nAttributesFirstPass(tView: TView, index: number, values: str
           previousElementIndex,
           attrName,
           countBindings(updateOpCodes),
-          URI_ATTRS[attrName.toLowerCase()] ? _sanitizeUrl : null,
+          SENSITIVE_ATTRS[attrName.toLowerCase()] ? _sanitizeUrl : null,
         );
       }
     }
@@ -816,7 +816,7 @@ function walkIcuTree(
                   newIndex,
                   attr.name,
                   0,
-                  URI_ATTRS[lowerAttrName] ? _sanitizeUrl : null,
+                  SENSITIVE_ATTRS[lowerAttrName] ? _sanitizeUrl : null,
                 );
               } else {
                 ngDevMode &&
@@ -827,7 +827,7 @@ function walkIcuTree(
                   );
               }
             } else if (VALID_ATTRS[lowerAttrName]) {
-              if (URI_ATTRS[lowerAttrName]) {
+              if (SENSITIVE_ATTRS[lowerAttrName]) {
                 // Don't sanitize, because no value is acceptable in sensitive attributes.
                 // Translators are not allowed to create URIs.
                 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
