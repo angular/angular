@@ -1,3 +1,9 @@
+## 21.2.3 (2026-03-11)
+
+This release contains internal refactorings only.
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 ## 21.2.1 (2026-02-25)
 
 - perf(language-service): use lightweight project warmup for Angular analysis ([d2137928e8](https://github.com/angular/angular/commit/d2137928e8f075527016a3c011dd8efc4d4e1ebd))
