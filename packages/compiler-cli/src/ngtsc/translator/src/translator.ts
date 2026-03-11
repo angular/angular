@@ -69,15 +69,15 @@ export interface TranslatorOptions<TExpression> {
   annotateForClosureCompiler?: boolean;
 }
 
-export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
-  implements o.ExpressionVisitor, o.StatementVisitor
+export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression, TType>
+  implements o.ExpressionVisitor, o.StatementVisitor, o.TypeVisitor
 {
   private downlevelTaggedTemplates: boolean;
   private downlevelVariableDeclarations: boolean;
   private recordWrappedNode: RecordWrappedNodeFn<TExpression>;
 
   constructor(
-    private factory: AstFactory<TStatement, TExpression>,
+    private factory: AstFactory<TStatement, TExpression, TType>,
     private imports: ImportGenerator<TFile, TExpression>,
     private contextFile: TFile,
     options: TranslatorOptions<TExpression>,
@@ -229,6 +229,26 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
       this.createTaggedTemplateExpression(localizeTag, {elements, expressions}),
       ast.sourceSpan,
     );
+  }
+
+  visitBuiltinType(type: o.BuiltinType, context: Context): TType {
+    throw new Error('Method not implemented');
+  }
+
+  visitExpressionType(type: o.ExpressionType, context: Context): TType {
+    throw new Error('Method not implemented');
+  }
+
+  visitArrayType(type: o.ArrayType, context: Context): TType {
+    throw new Error('Method not implemented');
+  }
+
+  visitMapType(type: o.MapType, context: Context): TType {
+    throw new Error('Method not implemented');
+  }
+
+  visitTransplantedType(type: o.TransplantedType<TType>, context: Context): TType {
+    throw new Error('Method not implemented');
   }
 
   private createTaggedTemplateExpression(

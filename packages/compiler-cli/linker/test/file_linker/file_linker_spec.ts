@@ -264,22 +264,23 @@ describe('FileLinker', () => {
 
   function createFileLinker(code = '// test code'): {
     host: AstHost<ts.Expression>;
-    fileLinker: FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression>;
+    fileLinker: FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression, ts.TypeNode>;
   } {
     const fs = new MockFileSystemNative();
     const logger = new MockLogger();
-    const linkerEnvironment = LinkerEnvironment.create<ts.Statement, ts.Expression>(
+    const linkerEnvironment = LinkerEnvironment.create<ts.Statement, ts.Expression, ts.TypeNode>(
       fs,
       logger,
       new TypeScriptAstHost(),
       new TypeScriptAstFactory(/* annotateForClosureCompiler */ false),
       DEFAULT_LINKER_OPTIONS,
     );
-    const fileLinker = new FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression>(
-      linkerEnvironment,
-      fs.resolve('/test.js'),
-      code,
-    );
+    const fileLinker = new FileLinker<
+      MockConstantScopeRef,
+      ts.Statement,
+      ts.Expression,
+      ts.TypeNode
+    >(linkerEnvironment, fs.resolve('/test.js'), code);
     return {host: linkerEnvironment.host, fileLinker};
   }
 });
