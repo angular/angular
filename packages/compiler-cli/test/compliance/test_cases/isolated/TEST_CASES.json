@@ -19,6 +19,74 @@
           ]
         }
       ]
+    },
+    {
+      "description": "component with an embedded view",
+      "inputFiles": ["embedded_view/test.ts"],
+      "compilationModeFilter": [],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "embedded_view/test_transformed.ts",
+              "generated": "embedded_view/test.ts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "component with an event listener",
+      "inputFiles": ["event_listener/test.ts"],
+      "compilationModeFilter": [],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "event_listener/test_transformed.ts",
+              "generated": "event_listener/test.ts"
+            },
+            {
+              "expected": "event_listener/test.ngtypecheck.ts",
+              "generated": "event_listener/test.ngtypecheck.ts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "component with an arrow function",
+      "inputFiles": ["arrow_function/test.ts"],
+      "compilationModeFilter": [],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "arrow_function/test_transformed.ts",
+              "generated": "arrow_function/test.ts"
+            },
+            {
+              "expected": "arrow_function/test.ngtypecheck.ts",
+              "generated": "arrow_function/test.ngtypecheck.ts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "component using queries",
+      "inputFiles": ["queries/test.ts"],
+      "compilationModeFilter": [],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "queries/test_transformed.ts",
+              "generated": "queries/test.ts"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

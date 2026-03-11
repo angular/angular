@@ -863,7 +863,7 @@ function reifyListenerHandler(
   const params: o.FnParam[] = [];
   if (consumesDollarEvent) {
     // We need the `$event` parameter.
-    params.push(new o.FnParam('$event'));
+    params.push(new o.FnParam('$event', o.DYNAMIC_TYPE));
   }
 
   return o.fn(params, handlerStmts, undefined, undefined, name);
@@ -876,7 +876,10 @@ function reifyTrackBy(unit: CompilationUnit, op: ir.RepeaterCreateOp): o.Express
     return op.trackByFn;
   }
 
-  const params: o.FnParam[] = [new o.FnParam('$index'), new o.FnParam('$item')];
+  const params: o.FnParam[] = [
+    new o.FnParam('$index', o.NUMBER_TYPE),
+    new o.FnParam('$item', o.DYNAMIC_TYPE),
+  ];
   let fn: o.FunctionExpr | o.ArrowFunctionExpr;
 
   if (op.trackByOps === null) {
@@ -936,7 +939,10 @@ function getArrowFunctionFactory(
       : statements;
 
   return o.arrowFn(
-    [new o.FnParam(expr.contextName), new o.FnParam(expr.currentViewName)],
+    [
+      new o.FnParam(expr.contextName, o.DYNAMIC_TYPE),
+      new o.FnParam(expr.currentViewName, o.DYNAMIC_TYPE),
+    ],
     o.arrowFn(expr.parameters, body),
   );
 }
