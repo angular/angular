@@ -21,7 +21,11 @@ import {
 /**
  * A Babel flavored implementation of the AstFactory.
  */
-export class BabelAstFactory implements AstFactory<t.Statement, t.Expression | t.SpreadElement> {
+export class BabelAstFactory implements AstFactory<
+  t.Statement,
+  t.Expression | t.SpreadElement,
+  t.TSType
+> {
   constructor(
     /** The absolute path to the source file being compiled. */
     private sourceUrl: string,

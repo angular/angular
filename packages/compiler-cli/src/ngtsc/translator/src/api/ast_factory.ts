@@ -13,7 +13,7 @@
  * It is up to the caller to do this - e.g. only call `createTaggedTemplate()` or pass `let`|`const`
  * to `createVariableDeclaration()` if the final JS will allow it.
  */
-export interface AstFactory<TStatement, TExpression> {
+export interface AstFactory<TStatement, TExpression, TType> {
   /**
    * Attach the `leadingComments` to the given `statement` node.
    *

@@ -37,7 +37,7 @@ enum PureAnnotation {
 /**
  * A TypeScript flavoured implementation of the AstFactory.
  */
-export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Expression> {
+export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Expression, ts.TypeNode> {
   private externalSourceFiles = new Map<string, ts.SourceMapSource>();
 
   private readonly UNARY_OPERATORS: Record<UnaryOperator, ts.PrefixUnaryOperator> =
