@@ -11,8 +11,10 @@ import {assert} from '../../../../linker';
 import {
   AstFactory,
   BinaryOperator,
+  BuiltInType,
   LeadingComment,
   ObjectLiteralProperty,
+  Parameter,
   SourceMapRange,
   TemplateLiteral,
   VariableDeclarationType,
@@ -104,40 +106,40 @@ export class BabelAstFactory implements AstFactory<
 
   createFunctionDeclaration(
     functionName: string,
-    parameters: string[],
+    parameters: Parameter<t.TSType>[],
     body: t.Statement,
   ): t.Statement {
     assert(body, t.isBlockStatement, 'a block');
     return t.functionDeclaration(
       t.identifier(functionName),
-      parameters.map((param) => t.identifier(param)),
+      parameters.map((param) => identifierWithType(param.name, param.type)),
       body,
     );
   }
 
   createArrowFunctionExpression(
-    parameters: string[],
+    parameters: Parameter<t.TSType>[],
     body: t.Statement | t.Expression,
   ): t.Expression {
     if (t.isStatement(body)) {
       assert(body, t.isBlockStatement, 'a block');
     }
     return t.arrowFunctionExpression(
-      parameters.map((param) => t.identifier(param)),
+      parameters.map((param) => identifierWithType(param.name, param.type)),
       body,
     );
   }
 
   createFunctionExpression(
     functionName: string | null,
-    parameters: string[],
+    parameters: Parameter<t.TSType>[],
     body: t.Statement,
   ): t.Expression {
     assert(body, t.isBlockStatement, 'a block');
     const name = functionName !== null ? t.identifier(functionName) : null;
     return t.functionExpression(
       name,
-      parameters.map((param) => t.identifier(param)),
+      parameters.map((param) => identifierWithType(param.name, param.type)),
       body,
     );
   }
@@ -228,10 +230,11 @@ export class BabelAstFactory implements AstFactory<
   createVariableDeclaration(
     variableName: string,
     initializer: t.Expression | null,
-    type: VariableDeclarationType,
+    variableType: VariableDeclarationType,
+    type: t.TSType | null,
   ): t.Statement {
-    return t.variableDeclaration(type, [
-      t.variableDeclarator(t.identifier(variableName), initializer),
+    return t.variableDeclaration(variableType, [
+      t.variableDeclarator(identifierWithType(variableName, type), initializer),
     ]);
   }
 
@@ -265,6 +268,79 @@ export class BabelAstFactory implements AstFactory<
 
     return node;
   }
+
+  createBuiltInType(type: BuiltInType): t.TSType {
+    switch (type) {
+      case 'any':
+        return t.tsAnyKeyword();
+      case 'boolean':
+        return t.tsBooleanKeyword();
+      case 'number':
+        return t.tsNumberKeyword();
+      case 'string':
+        return t.tsStringKeyword();
+      case 'function':
+        return t.tsTypeReference(t.identifier('Function'));
+      case 'never':
+        return t.tsNeverKeyword();
+      case 'unknown':
+        return t.tsUnknownKeyword();
+    }
+  }
+
+  createExpressionType(expression: t.Expression, typeParams: t.TSType[] | null): t.TSType {
+    const typeName = getEntityTypeFromExpression(expression);
+    return t.tsTypeReference(
+      typeName,
+      typeParams ? t.tsTypeParameterInstantiation(typeParams) : null,
+    );
+  }
+
+  createArrayType(elementType: t.TSType): t.TSType {
+    return t.tsArrayType(elementType);
+  }
+
+  createMapType(valueType: t.TSType): t.TSType {
+    const keySignature = identifierWithType('key', this.createBuiltInType('string'));
+    return t.tsTypeLiteral([t.tsIndexSignature([keySignature], t.tsTypeAnnotation(valueType))]);
+  }
+
+  transplantType(type: t.TSType): t.TSType {
+    if (t.isNode(type) && t.isTSType(type)) {
+      return type;
+    }
+    throw new Error('Attempting to transplant a type node from a non-Babel AST: ' + type);
+  }
+}
+
+function getEntityTypeFromExpression(expression: t.Expression): t.Identifier | t.TSQualifiedName {
+  if (t.isIdentifier(expression)) {
+    return expression;
+  }
+
+  if (t.isMemberExpression(expression)) {
+    const left = getEntityTypeFromExpression(expression.object);
+
+    if (!t.isIdentifier(expression.property)) {
+      throw new Error(
+        `Unsupported property access for type reference: ${expression.property.type}`,
+      );
+    }
+
+    return t.tsQualifiedName(left, expression.property);
+  }
+
+  throw new Error(`Unsupported expression for type reference: ${expression.type}`);
+}
+
+function identifierWithType(name: string, type: t.TSType | null): t.Identifier {
+  const node = t.identifier(name);
+
+  if (type !== null) {
+    node.typeAnnotation = t.tsTypeAnnotation(type);
+  }
+
+  return node;
 }
 
 function isLExpression(expr: t.Expression): expr is Extract<t.LVal, t.Expression> {
