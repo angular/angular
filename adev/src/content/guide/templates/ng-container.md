@@ -75,7 +75,7 @@ For more information regarding NgTemplateOutlet, see the [NgTemplateOutlets API 
 
 ## Using `<ng-container>` with structural directives
 
-You can also apply structural directives to `<ng-container>` elements. Common examples of this include `ngIf`and `ngFor`.
+You can also apply structural directives to `<ng-container>` elements. Common examples of this include `ngIf` and `ngFor`.
 
 ```angular-html
 <ng-container *ngIf="permissions == 'admin'">
