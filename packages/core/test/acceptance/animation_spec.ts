@@ -2315,6 +2315,59 @@ describe('Animation', () => {
 
       expect(errorHandler.handleError).not.toHaveBeenCalled();
     }));
+
+    it('should not wait for child component leave animations when host is inside an ng-container', fakeAsync(() => {
+      const animateStyles = `
+        .fade-out {
+          animation: fade-out 5000ms;
+        }
+        @keyframes fade-out {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+      `;
+
+      @Component({
+        selector: 'child-cmp',
+        template: '<div class="child" animate.leave="fade-out">Child</div>',
+        styles: [animateStyles],
+      })
+      class ChildCmp {}
+
+      @Component({
+        selector: 'test-cmp',
+        imports: [ChildCmp],
+        template: `
+          <ng-container>
+            @if (show()) {
+              <child-cmp></child-cmp>
+            }
+          </ng-container>
+        `,
+      })
+      class TestCmp {
+        show = signal(true);
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(TestCmp);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.query(By.css('.child'))).not.toBeNull();
+
+      cmp.show.set(false);
+      fixture.detectChanges();
+
+      // If the bounding logic works, the ng-container (TNodeType.ElementContainer)
+      // containing the child component will NOT recurse into the child component's
+      // views, so the parent host will be removed immediately without waiting
+      // for the child's 5000ms animation.
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.query(By.css('.child'))).toBeNull();
+    }));
   });
 
   describe('animation element duplication', () => {
