@@ -285,7 +285,7 @@
           "aliases": [
             "c"
           ],
-          "default": "Eager",
+          "default": "OnPush",
           "enum": [
             "Eager",
             "OnPush"
