@@ -1,3 +1,17 @@
+<a name="22.0.0-next.3"></a>
+# 22.0.0-next.3 (2026-03-12)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [78dea55351](https://github.com/angular/angular/commit/78dea55351fb305b33a919c43a6b363137eca166) | fix | disallow translations of iframe src |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [999c14eaab](https://github.com/angular/angular/commit/999c14eaab981d12bf2b1d9b1fd6766157f7b1cc) | fix | reverts "feat(core): add support for nested animations" |
+| [de0eb4c656](https://github.com/angular/angular/commit/de0eb4c6566011e1a34d529a273ec3d5b6bf17d5) | fix | sanitize translated form attributes |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.4"></a>
 # 21.2.4 (2026-03-12)
 ### compiler
