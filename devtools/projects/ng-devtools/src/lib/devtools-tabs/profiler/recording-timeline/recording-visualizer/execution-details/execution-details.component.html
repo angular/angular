@@ -1,0 +1,18 @@
+<table class="ng-table">
+  <thead>
+    <tr>
+      <th>Directive</th>
+      <th>Method</th>
+      <th>Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (entry of data(); track $index) {
+      <tr>
+        <td>{{ entry.directive }}</td>
+        <td>{{ entry.method }}</td>
+        <td>{{ entry.value }} ms</td>
+      </tr>
+    }
+  </tbody>
+</table>

@@ -1,0 +1,127 @@
+@mixin xterm() {
+  .xterm-viewport,
+  .xterm-screen {
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0);
+      cursor: pointer;
+      margin: 2px;
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--senary-contrast);
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--quaternary-contrast);
+    }
+  }
+
+  // Override terminal styles
+  .xterm {
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .xterm-viewport {
+    overflow-y: auto !important;
+    height: 100% !important;
+    width: 100% !important;
+    background-color: var(--octonary-contrast) !important;
+    transition: background-color 0.3s ease;
+  }
+
+  .xterm-screen {
+    box-sizing: border-box;
+    overflow: visible !important;
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+  .xterm-rows {
+    height: 100% !important;
+    overflow: visible !important;
+    color: var(--primary-contrast) !important;
+    transition: color 0.3s ease;
+    // It is important to not alter the font-size or the selection would lose in precision
+
+    .xterm-cursor {
+      &.xterm-cursor-outline {
+        outline-color: var(--primary-contrast) !important;
+      }
+      &.xterm-cursor-block {
+        background: var(--primary-contrast) !important;
+      }
+    }
+  }
+
+  .xterm-selection {
+    top: 10px !important;
+    left: 10px !important;
+    div {
+      background-color: transparent !important;
+    }
+  }
+
+  .xterm-decoration-top {
+    background-color: var(--quinary-contrast) !important;
+  }
+
+  .xterm-dim {
+    color: var(--primary-contrast) !important;
+  }
+
+  .xterm-fg-11 {
+    color: var(--electric-violet) !important;
+  }
+
+  .xterm-fg-4 {
+    color: var(--bright-blue) !important;
+  }
+
+  // progress ###
+  .xterm-fg-15 {
+    color: var(--secondary-contrast) !important;
+  }
+
+  .xterm-fg-14 {
+    color: var(--vivid-pink) !important;
+  }
+
+  // > in terminal
+  .xterm-fg-5 {
+    color: var(--electric-violet) !important;
+  }
+
+  // error text, warning text
+  .xterm-fg-9,
+  .xterm-fg-3 {
+    color: var(--vivid-pink) !important;
+  }
+
+  .xterm-fg-10,
+  .xterm-fg-2 {
+    color: var(--symbolic-green) !important;
+  }
+
+  // error bg
+  .xterm-bg-1 {
+    background-color: var(--orange-red) !important;
+  }
+
+  // error text
+  .xterm-fg-257 {
+    color: var(--octonary-contrast) !important;
+  }
+
+  .xterm-fg-8 {
+    color: var(--tertiary-contrast) !important;
+  }
+}

@@ -1,0 +1,9 @@
+@use './styles/xterm';
+@use './styles/resets';
+
+@include resets.resets();
+@include xterm.xterm();
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

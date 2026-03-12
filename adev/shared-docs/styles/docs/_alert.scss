@@ -1,0 +1,123 @@
+// Alert
+
+@mixin docs-alert() {
+  .docs-alert {
+    // Default theme is purple to blue
+    --alert-gradient: var(--purple-to-blue-vertical-gradient);
+    --alert-accent: var(--bright-blue);
+    border-width: 0;
+    border-inline-start-width: 3px;
+    border-style: solid;
+    background: color-mix(in srgb, var(--alert-accent) 5%, transparent);
+    color: var(--primary-contrast);
+    border-image: var(--alert-gradient) 1;
+    padding: 1.5rem;
+    font-weight: 400;
+    transition: color 0.3s ease;
+    margin-block: 1rem;
+    position: relative;
+
+    &::before {
+      font-family: var(--icons);
+      // content: icon is defined in each docs-alert class below...
+      position: absolute;
+      margin-top: -0.05rem;
+      color: var(--alert-accent);
+      font-size: 1.3rem;
+    }
+
+    p, header {
+      margin-inline-start: 1.65rem;
+    }
+
+    p {
+      &:first-child {
+        margin-block-start: 0;
+      }
+
+      &:last-child {
+        margin-block-end: 0;
+      }
+    }
+
+    .docs-dark-mode & {
+      background: color-mix(in srgb, var(--alert-accent) 10%, transparent);
+    }
+
+    .docs-pill-row {
+      margin-block-end: 0;
+    }
+  }
+
+  .docs-alert-note {
+    --alert-gradient: var(--blue-to-teal-vertical-gradient);
+    --alert-accent: var(--bright-blue);
+    &::before {
+      content: 'bookmark';
+    }
+  }
+
+  .docs-alert-tip {
+    --alert-gradient: var(--green-to-cyan-vertical-gradient);
+    --alert-accent: var(--symbolic-cyan);
+    &::before {
+      content: 'star';
+    }
+  }
+
+  .docs-alert-todo {
+    --alert-gradient: var(--black-to-gray-vertical-gradient);
+    --alert-accent: var(--quaternary-contrast);
+    &::before {
+      content: 'error';
+    }
+  }
+
+  .docs-alert-question {
+    --alert-gradient: var(--blue-to-cyan-vertical-gradient);
+    --alert-accent: var(--symbolic-cyan);
+    &::before {
+      content: 'help';
+    }
+  }
+
+  .docs-alert-summary {
+    --alert-gradient: var(--purple-to-light-purple-vertical-gradient);
+    --alert-accent: var(--electric-violet);
+    &::before {
+      content: 'sms';
+    }
+  }
+
+  .docs-alert-tldr {
+    --alert-gradient: var(--pink-to-purple-vertical-gradient);
+    --alert-accent: var(--vivid-pink);
+    &::before {
+      content: 'speaker_notes';
+    }
+  }
+
+  .docs-alert-critical {
+    --alert-gradient: var(--red-to-orange-vertical-gradient);
+    --alert-accent: var(--orange-red);
+    &::before {
+      content: 'warning';
+    }
+  }
+
+  .docs-alert-important {
+    --alert-gradient: var(--red-to-pink-vertical-gradient);
+    --alert-accent: var(--hot-red);
+    &::before {
+      content: 'priority_high';
+    }
+  }
+
+  .docs-alert-helpful {
+    --alert-gradient: var(--orange-to-pink-vertical-gradient);
+    --alert-accent: var(--vivid-pink);
+    &::before {
+      content: 'check_circle';
+    }
+  }
+}

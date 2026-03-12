@@ -1,0 +1,12 @@
+load("//adev/shared-docs:defaults.bzl", "sass_library")
+
+package(default_visibility = ["//visibility:private"])
+
+sass_library(
+    name = "styles",
+    srcs = glob(["**/*.scss"]),
+    visibility = [
+        "//adev/shared-docs:__pkg__",
+        "//adev/shared-docs/components:__subpackages__",
+    ],
+)

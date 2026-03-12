@@ -1,0 +1,95 @@
+<div
+  ngMenu
+  class="material-menu"
+  (mouseover)="hasInteracted.set(true)"
+  (focusin)="hasInteracted.set(true)"
+>
+  <ng-template ngMenuContent>
+    <span id="security-label" class="heading">SECURITY</span>
+
+    <div role="group" aria-labelledby="security-label">
+      <div ngMenuItem value="Change password">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >lock_open</span
+        >
+        <span class="label">Change password</span>
+      </div>
+
+      <div ngMenuItem value="Two-factor authentication">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >security_key</span
+        >
+        <span class="label">Two-factor authentication</span>
+      </div>
+
+      <div ngMenuItem value="Reset" #resetItem [submenu]="updateMenu()">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >refresh</span
+        >
+        <span class="label">Reset</span>
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >arrow_right</span
+        >
+      </div>
+
+      <ng-template
+        [cdkConnectedOverlayOpen]="hasInteracted()"
+        [cdkConnectedOverlay]="{origin: resetItem, usePopover: 'inline'}"
+        [cdkConnectedOverlayPositions]="[
+          {originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: 6},
+        ]"
+        cdkAttachPopoverAsChild
+      >
+        <div ngMenu #updateMenu="ngMenu">
+          <ng-template ngMenuContent>
+            <div ngMenuItem value="Email address">
+              <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                >email</span
+              >
+              <span class="label">Email address</span>
+            </div>
+
+            <div ngMenuItem value="Phone number">
+              <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                >phone</span
+              >
+              <span class="label">Phone number</span>
+            </div>
+
+            <div ngMenuItem value="Password">
+              <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+                >vpn_key</span
+              >
+              <span class="label">Password</span>
+            </div>
+          </ng-template>
+        </div>
+      </ng-template>
+    </div>
+
+    <div role="separator" class="separator"></div>
+
+    <span id="help-label" class="heading">HELP</span>
+
+    <div role="group" aria-labelledby="help-label">
+      <div ngMenuItem value="Support">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">help</span>
+        <span class="label">Support</span>
+      </div>
+
+      <div ngMenuItem value="Feedback">
+        <span class="icon material-symbols-outlined" translate="no" aria-hidden="true"
+          >feedback</span
+        >
+        <span class="label">Feedback</span>
+      </div>
+    </div>
+
+    <div role="separator" class="separator"></div>
+
+    <div ngMenuItem value="Logout">
+      <span class="icon material-symbols-outlined" translate="no" aria-hidden="true">logout</span>
+      <span class="label">Logout</span>
+    </div>
+  </ng-template>
+</div>

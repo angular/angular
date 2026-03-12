@@ -1,0 +1,46 @@
+<div ngCombobox class="retro-select" readonly>
+  <div #origin class="select">
+    <span class="combobox-label">
+      <span
+        class="selected-label-icon material-symbols-outlined"
+        translate="no"
+        aria-hidden="true"
+        >{{ displayIcon() }}</span
+      >
+      <span class="selected-label-text">{{ displayValue() }}</span>
+    </span>
+    <input aria-label="Label dropdown" placeholder="Select a label" ngComboboxInput />
+    <span class="example-arrow material-symbols-outlined" translate="no" aria-hidden="true"
+      >arrow_drop_down</span
+    >
+  </div>
+
+  <ng-template ngComboboxPopupContainer>
+    <ng-template
+      [cdkConnectedOverlay]="{origin, usePopover: 'inline', matchWidth: true}"
+      [cdkConnectedOverlayOpen]="true"
+    >
+      <div class="example-popup-container">
+        <div ngListbox multi>
+          @for (label of labels; track label.value) {
+            <div ngOption [value]="label.value" [label]="label.value">
+              <span
+                class="example-option-icon material-symbols-outlined"
+                translate="no"
+                aria-hidden="true"
+                >{{ label.icon }}</span
+              >
+              <span class="example-option-text">{{ label.value }}</span>
+              <span
+                class="example-option-check material-symbols-outlined"
+                translate="no"
+                aria-hidden="true"
+                >check</span
+              >
+            </div>
+          }
+        </div>
+      </div>
+    </ng-template>
+  </ng-template>
+</div>

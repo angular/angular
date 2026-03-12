@@ -1,0 +1,430 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import type ts from 'typescript';
+
+import {
+  ApplyRefactoringProgressFn,
+  ApplyRefactoringResult,
+  GetComponentLocationsForTemplateResponse,
+  GetTcbResponse,
+  GetTemplateLocationForComponentResponse,
+  isNgLanguageService,
+  LinkedEditingRanges,
+  NgLanguageService,
+  AngularInlayHint,
+  InlayHintsConfig,
+} from '../api';
+
+import {LanguageService} from './language_service';
+import {isTypeScriptFile} from './utils';
+
+export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
+  const {project, languageService, config} = info;
+  const tsLS = isNgLanguageService(languageService)
+    ? languageService.getTypescriptLanguageService()
+    : languageService;
+  const angularOnly = config?.angularOnly === true;
+
+  const ngLS = new LanguageService(project, tsLS, config);
+
+  function withFallback<Result>(
+    fileName: string,
+    cb: (ls: ts.LanguageService | LanguageService) => Result | undefined,
+  ): Result | undefined {
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return cb(ngLS);
+    }
+    return cb(tsLS) ?? cb(ngLS);
+  }
+
+  function getSyntacticDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
+    if (!angularOnly && isTypeScriptFile(fileName)) {
+      return tsLS.getSyntacticDiagnostics(fileName);
+    }
+
+    // Template files do not currently produce separate syntactic diagnostics and
+    // are instead produced during the semantic diagnostic analysis.
+    return [];
+  }
+
+  function getSuggestionDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
+    const diagnostics: ts.DiagnosticWithLocation[] = [];
+    if (!angularOnly && isTypeScriptFile(fileName)) {
+      diagnostics.push(...tsLS.getSuggestionDiagnostics(fileName));
+    }
+    diagnostics.push(...ngLS.getSuggestionDiagnostics(fileName));
+    return diagnostics;
+  }
+
+  function getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
+    const diagnostics: ts.Diagnostic[] = [];
+    if (!angularOnly && isTypeScriptFile(fileName)) {
+      diagnostics.push(...tsLS.getSemanticDiagnostics(fileName));
+    }
+    diagnostics.push(...ngLS.getSemanticDiagnostics(fileName));
+    return diagnostics;
+  }
+
+  function getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo | undefined {
+    return withFallback(fileName, (ls) => ls.getQuickInfoAtPosition(fileName, position));
+  }
+
+  function getTypeDefinitionAtPosition(
+    fileName: string,
+    position: number,
+  ): readonly ts.DefinitionInfo[] | undefined {
+    return withFallback(fileName, (ls) => ls.getTypeDefinitionAtPosition(fileName, position));
+  }
+
+  function getDefinitionAndBoundSpan(
+    fileName: string,
+    position: number,
+  ): ts.DefinitionInfoAndBoundSpan | undefined {
+    return withFallback(fileName, (ls) => ls.getDefinitionAndBoundSpan(fileName, position));
+  }
+
+  function getDefinitionAtPosition(
+    fileName: string,
+    position: number,
+  ): readonly ts.DefinitionInfo[] | undefined {
+    return getDefinitionAndBoundSpan(fileName, position)?.definitions;
+  }
+
+  function getReferencesAtPosition(
+    fileName: string,
+    position: number,
+  ): ts.ReferenceEntry[] | undefined {
+    return ngLS.getReferencesAtPosition(fileName, position);
+  }
+
+  function findRenameLocations(
+    fileName: string,
+    position: number,
+  ): readonly ts.RenameLocation[] | undefined {
+    // Most operations combine results from all extensions. However, rename locations are exclusive
+    // (results from only one extension are used) so our rename locations are a superset of the TS
+    // rename locations. As a result, we do not check the `angularOnly` flag here because we always
+    // want to include results at TS locations as well as locations in templates.
+    return ngLS.findRenameLocations(fileName, position);
+  }
+
+  function getRenameInfo(fileName: string, position: number): ts.RenameInfo {
+    // See the comment in `findRenameLocations` explaining why we don't check the `angularOnly`
+    // flag.
+    return ngLS.getRenameInfo(fileName, position);
+  }
+
+  function getEncodedSemanticClassifications(
+    fileName: string,
+    span: ts.TextSpan,
+    format?: ts.SemanticClassificationFormat,
+  ): ts.Classifications {
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getEncodedSemanticClassifications(fileName, span, format);
+    } else {
+      const ngClassifications = ngLS.getEncodedSemanticClassifications(fileName, span, format);
+      const tsClassifications = tsLS.getEncodedSemanticClassifications(fileName, span, format);
+      const spans = [...ngClassifications.spans, ...tsClassifications.spans];
+      return {
+        spans,
+        endOfLineState: tsClassifications.endOfLineState,
+      };
+    }
+  }
+
+  function getTokenTypeFromClassification(classification: number): number | undefined {
+    return ngLS.getTokenTypeFromClassification(classification);
+  }
+  function getTokenModifierFromClassification(classification: number): number {
+    return ngLS.getTokenModifierFromClassification(classification);
+  }
+
+  function getCompletionsAtPosition(
+    fileName: string,
+    position: number,
+    options: ts.GetCompletionsAtPositionOptions,
+  ): ts.WithMetadata<ts.CompletionInfo> | undefined {
+    return withFallback(fileName, (ls) => ls.getCompletionsAtPosition(fileName, position, options));
+  }
+
+  function getCompletionEntryDetails(
+    fileName: string,
+    position: number,
+    entryName: string,
+    formatOptions: ts.FormatCodeOptions | ts.FormatCodeSettings | undefined,
+    source: string | undefined,
+    preferences: ts.UserPreferences | undefined,
+    data: ts.CompletionEntryData | undefined,
+  ): ts.CompletionEntryDetails | undefined {
+    return withFallback(fileName, (ls) => {
+      if (ls === tsLS) {
+        return tsLS.getCompletionEntryDetails(
+          fileName,
+          position,
+          entryName,
+          formatOptions,
+          source,
+          preferences,
+          data,
+        );
+      }
+      return ngLS.getCompletionEntryDetails(
+        fileName,
+        position,
+        entryName,
+        formatOptions,
+        preferences,
+        data,
+      );
+    });
+  }
+
+  function getCompletionEntrySymbol(
+    fileName: string,
+    position: number,
+    name: string,
+    source: string | undefined,
+  ): ts.Symbol | undefined {
+    return withFallback(fileName, (ls) => {
+      if (ls === tsLS) {
+        return tsLS.getCompletionEntrySymbol(fileName, position, name, source);
+      }
+      return ngLS.getCompletionEntrySymbol(fileName, position, name);
+    });
+  }
+  /**
+   * Gets global diagnostics related to the program configuration and compiler options.
+   */
+  function getCompilerOptionsDiagnostics(): ts.Diagnostic[] {
+    const diagnostics: ts.Diagnostic[] = [];
+    if (!angularOnly) {
+      diagnostics.push(...tsLS.getCompilerOptionsDiagnostics());
+    }
+    diagnostics.push(...ngLS.getCompilerOptionsDiagnostics());
+    return diagnostics;
+  }
+
+  function getSignatureHelpItems(
+    fileName: string,
+    position: number,
+    options: ts.SignatureHelpItemsOptions,
+  ): ts.SignatureHelpItems | undefined {
+    return withFallback(fileName, (ls) => ls.getSignatureHelpItems(fileName, position, options));
+  }
+
+  function getOutliningSpans(fileName: string): ts.OutliningSpan[] {
+    return withFallback(fileName, (ls) => ls.getOutliningSpans(fileName)) ?? [];
+  }
+
+  function getTcb(fileName: string, position: number): GetTcbResponse | undefined {
+    return ngLS.getTcb(fileName, position);
+  }
+
+  /**
+   * Given an external template, finds the associated components that use it as a `templateUrl`.
+   */
+  function getComponentLocationsForTemplate(
+    fileName: string,
+  ): GetComponentLocationsForTemplateResponse {
+    return ngLS.getComponentLocationsForTemplate(fileName);
+  }
+
+  /**
+   * Given a location inside a component, finds the location of the inline template or the file for
+   * the `templateUrl`.
+   */
+  function getTemplateLocationForComponent(
+    fileName: string,
+    position: number,
+  ): GetTemplateLocationForComponentResponse {
+    return ngLS.getTemplateLocationForComponent(fileName, position);
+  }
+
+  function getApplicableRefactors(
+    fileName: string,
+    positionOrRange: number | ts.TextRange,
+  ): ts.ApplicableRefactorInfo[] {
+    // We never forward to TS for refactors because those are not handled
+    // properly by the LSP server implementation of the extension. The extension
+    // will only take care of refactorings from Angular language service.
+    // Code actions are tied to their provider, so this is unproblematic and will
+    // not hide built-in TypeScript refactorings:
+    // https://github.com/microsoft/vscode/blob/ea4d99921cc790d49194e897021faee02a1847f7/src/vs/editor/contrib/codeAction/codeAction.ts#L30-L31
+    return ngLS.getPossibleRefactorings(fileName, positionOrRange);
+  }
+
+  function applyRefactoring(
+    fileName: string,
+    positionOrRange: number | ts.TextRange,
+    refactorName: string,
+    reportProgress: ApplyRefactoringProgressFn,
+  ): Promise<ApplyRefactoringResult | undefined> {
+    return ngLS.applyRefactoring(fileName, positionOrRange, refactorName, reportProgress);
+  }
+
+  function getCodeFixesAtPosition(
+    fileName: string,
+    start: number,
+    end: number,
+    errorCodes: readonly number[],
+    formatOptions: ts.FormatCodeSettings,
+    preferences: ts.UserPreferences,
+  ): readonly ts.CodeFixAction[] {
+    if (angularOnly || !isTypeScriptFile(fileName)) {
+      return ngLS.getCodeFixesAtPosition(
+        fileName,
+        start,
+        end,
+        errorCodes,
+        formatOptions,
+        preferences,
+      );
+    } else {
+      const tsLsCodeFixes = tsLS.getCodeFixesAtPosition(
+        fileName,
+        start,
+        end,
+        errorCodes,
+        formatOptions,
+        preferences,
+      );
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLsCodeFixes.length > 0
+        ? tsLsCodeFixes
+        : ngLS.getCodeFixesAtPosition(fileName, start, end, errorCodes, formatOptions, preferences);
+    }
+  }
+
+  function getCombinedCodeFix(
+    scope: ts.CombinedCodeFixScope,
+    fixId: string,
+    formatOptions: ts.FormatCodeSettings,
+    preferences: ts.UserPreferences,
+  ): ts.CombinedCodeActions {
+    if (angularOnly) {
+      return ngLS.getCombinedCodeFix(scope, fixId, formatOptions, preferences);
+    } else {
+      const tsLsCombinedCodeFix = tsLS.getCombinedCodeFix(scope, fixId, formatOptions, preferences);
+      // If TS could answer the query, then return that result. Otherwise, return from Angular LS.
+      return tsLsCombinedCodeFix.changes.length > 0
+        ? tsLsCombinedCodeFix
+        : ngLS.getCombinedCodeFix(scope, fixId, formatOptions, preferences);
+    }
+  }
+
+  function getTypescriptLanguageService() {
+    return tsLS;
+  }
+
+  function getLinkedEditingRangeAtPosition(
+    fileName: string,
+    position: number,
+  ): LinkedEditingRanges | undefined {
+    // Only handle inline templates in TypeScript files.
+    // For external HTML template files, VS Code's built-in HTML language support
+    // provides linked editing, so we don't need to handle them here.
+    if (!isTypeScriptFile(fileName)) {
+      return undefined;
+    }
+
+    // Try Angular's implementation first for inline templates
+    const ngResult = ngLS.getLinkedEditingRangeAtPosition(fileName, position);
+    if (ngResult) {
+      return ngResult;
+    }
+
+    // Fall back to TypeScript for JSX/TSX files
+    if (!angularOnly) {
+      const tsResult = tsLS.getLinkedEditingRangeAtPosition(fileName, position);
+      return tsResult ?? undefined;
+    }
+
+    return undefined;
+  }
+
+  function ensureProjectAnalyzed(): void {
+    ngLS.ensureProjectAnalyzed();
+  }
+
+  function getAngularInlayHints(
+    fileName: string,
+    span: ts.TextSpan,
+    config?: InlayHintsConfig,
+  ): AngularInlayHint[] {
+    return ngLS.provideInlayHints(fileName, span, config);
+  }
+
+  return {
+    ...tsLS,
+    ensureProjectAnalyzed,
+    getSyntacticDiagnostics,
+    getSemanticDiagnostics,
+    getSuggestionDiagnostics,
+    getTypeDefinitionAtPosition,
+    getQuickInfoAtPosition,
+    getDefinitionAtPosition,
+    getDefinitionAndBoundSpan,
+    getReferencesAtPosition,
+    findRenameLocations,
+    getRenameInfo,
+    getEncodedSemanticClassifications,
+    getTokenTypeFromClassification,
+    getTokenModifierFromClassification,
+    getCompletionsAtPosition,
+    getCompletionEntryDetails,
+    getCompletionEntrySymbol,
+    getTcb,
+    getCompilerOptionsDiagnostics,
+    getComponentLocationsForTemplate,
+    getSignatureHelpItems,
+    getOutliningSpans,
+    getTemplateLocationForComponent,
+    hasCodeFixesForErrorCode: ngLS.hasCodeFixesForErrorCode.bind(ngLS),
+    getCodeFixesAtPosition,
+    getCombinedCodeFix,
+    getTypescriptLanguageService,
+    getApplicableRefactors,
+    applyRefactoring,
+    getLinkedEditingRangeAtPosition,
+    getAngularInlayHints,
+  };
+}
+
+function getExternalFiles(tsModule: typeof ts, project: ts.server.Project): string[] {
+  if (!project.hasRoots()) {
+    return []; // project has not been initialized
+  }
+  const typecheckFiles: string[] = [];
+  const resourceFiles: string[] = [];
+  for (const scriptInfo of project.getScriptInfos()) {
+    if (scriptInfo.scriptKind === tsModule.ScriptKind.External) {
+      // script info for typecheck file is marked as external, see
+      // getOrCreateTypeCheckScriptInfo() in
+      // packages/language-service/src/language_service.ts
+      typecheckFiles.push(scriptInfo.fileName);
+    }
+    if (scriptInfo.scriptKind === tsModule.ScriptKind.Unknown) {
+      // script info for resource file is marked as unknown.
+      // Including these as external files is necessary because otherwise they will get removed from
+      // the project when `updateNonInferredProjectFiles` is called as part of the
+      // `updateProjectIfDirty` cycle.
+      // https://sourcegraph.com/github.com/microsoft/TypeScript@c300fea3250abd7f75920d95a58d9e742ac730ee/-/blob/src/server/editorServices.ts?L2363
+      resourceFiles.push(scriptInfo.fileName);
+    }
+  }
+  return [...typecheckFiles, ...resourceFiles];
+}
+
+/** Implementation of a ts.server.PluginModuleFactory */
+export function initialize(mod: {typescript: typeof ts}): ts.server.PluginModule {
+  return {
+    create,
+    getExternalFiles: getExternalFiles.bind(undefined, mod.typescript),
+  };
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AngularNgStyleToStyleMigration",
+  "title": "Angular ngStyle to style Migration Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Path to the directory where all templates should be migrated.",
+      "x-prompt": "Which directory do you want to migrate?",
+      "default": "./"
+    },
+    "bestEffortMode": {
+      "type": "boolean",
+      "description": "Enables the migration of object references",
+      "x-prompt": "Should the migration also migrate object references?",
+      "default": false
+    }
+  }
+}

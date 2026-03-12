@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "@angular/animations": "workspace:*",
+    "@angular/benchpress": "workspace: *",
+    "@angular/common": "workspace:*",
+    "@angular/compiler-cli": "workspace:*",
+    "@angular/compiler": "workspace:*",
+    "@angular/core": "workspace:*",
+    "@angular/elements": "workspace:*",
+    "@angular/forms": "workspace:*",
+    "@angular/localize": "workspace: *",
+    "@angular/platform-browser-dynamic": "workspace:*",
+    "@angular/platform-browser": "workspace:*",
+    "@angular/platform-server": "workspace:*",
+    "@angular/router": "workspace:*",
+    "@angular/upgrade": "workspace: *"
+  }
+}

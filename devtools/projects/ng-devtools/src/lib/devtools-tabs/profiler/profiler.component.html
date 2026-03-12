@@ -1,0 +1,69 @@
+<div class="recorder-controls">
+  @switch (state()) {
+    @case ('idle') {
+      <button
+        ng-button
+        btnType="icon"
+        (click)="startRecording()"
+        matTooltip="Start recording"
+        aria-label="Start recording"
+      >
+        <mat-icon> radio_button_checked </mat-icon>
+      </button>
+
+      <p class="instructions">
+        <span>
+          Click the record button to start a new recording, or upload a JSON file containing
+          profiler data.
+        </span>
+        <br />
+        <input
+          type="file"
+          class="ng-input size-mid"
+          (change)="importProfilerResults($event)"
+          placeholder="Upload file"
+          accept=".json"
+        />
+      </p>
+    }
+    @case ('recording') {
+      <button
+        ng-button
+        btnType="icon"
+        (click)="stopRecording()"
+        class="recording-button"
+        matTooltip="Stop recording"
+        aria-label="Stop recording"
+      >
+        <mat-icon> stop_circle </mat-icon>
+      </button>
+
+      <p class="instructions">
+        Interact to preview change detection. Clicking stop ends this Profiler recording.
+      </p>
+
+      <mat-progress-bar color="accent" mode="indeterminate" />
+    }
+    @case ('visualizing') {
+      <button
+        ng-button
+        btnType="icon"
+        (click)="discardRecording()"
+        matTooltip="Clear recording"
+        aria-label="Clear recording"
+      >
+        <mat-icon> not_interested </mat-icon>
+      </button>
+
+      <p class="instructions">
+        Click Save Profile to save your recording or click refresh to clear the current recording.
+      </p>
+    }
+  }
+</div>
+
+@if (state() !== 'idle') {
+  <div class="recording">
+    <ng-recording-timeline [stream]="stream" (exportProfile)="exportProfilerResults()" />
+  </div>
+}

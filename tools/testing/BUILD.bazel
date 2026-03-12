@@ -1,0 +1,81 @@
+load("//tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "zone_base_setup_lib",
+    testonly = 1,
+    srcs = ["zone_base_setup.mts"],
+    deps = [
+        "//:node_modules/reflect-metadata",
+        "//:node_modules/zone.js",
+    ],
+)
+
+ts_project(
+    name = "browser",
+    testonly = 1,
+    srcs = ["browser_tests.init.mts"],
+    deps = [
+        ":zone_base_setup_lib",
+        "//:node_modules/zone.js",
+        "//packages/compiler",
+        "//packages/core/testing",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+    ],
+)
+
+ts_project(
+    name = "browser_zoneless",
+    testonly = 1,
+    srcs = ["browser_zoneless_tests.init.mts"],
+    deps = [
+        "//:node_modules/reflect-metadata",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+    ],
+)
+
+ts_project(
+    name = "node_zoneless",
+    testonly = 1,
+    srcs = ["node_zoneless_tests.init.mts"],
+    deps = [
+        "//:node_modules/reflect-metadata",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-server",
+        "//packages/platform-server:bundled_domino_lib",
+        "//packages/platform-server/testing",
+    ],
+)
+
+ts_project(
+    name = "node",
+    testonly = 1,
+    srcs = ["node_tests.init.mts"],
+    deps = [
+        ":zone_base_setup_lib",
+        "//:node_modules/reflect-metadata",
+        "//:node_modules/zone.js",
+        "//packages/compiler",
+        "//packages/core/testing",
+        "//packages/platform-server",
+        "//packages/platform-server:bundled_domino_lib",
+        "//packages/platform-server/testing",
+    ],
+)
+
+ts_project(
+    name = "node_no_angular",
+    testonly = 1,
+    srcs = ["node_no_angular_tests.init.mts"],
+    deps = [
+        "//packages:types",
+    ],
+)

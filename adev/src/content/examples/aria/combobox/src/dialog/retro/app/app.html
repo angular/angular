@@ -1,0 +1,42 @@
+<div ngCombobox #combobox="ngCombobox" [readonly]="true" class="retro-combobox">
+  <div class="combobox-input-container">
+    <input ngComboboxInput placeholder="Select a country..." [value]="value()" />
+    <span class="material-symbols-outlined icon arrow-icon" translate="no" aria-hidden="true"
+      >arrow_drop_down</span
+    >
+  </div>
+
+  <ng-template ngComboboxPopupContainer>
+    <dialog ngComboboxDialog class="dialog">
+      <div ngCombobox #combobox="ngCombobox" filterMode="manual" [alwaysExpanded]="true">
+        <div class="combobox-input-container">
+          <span class="material-symbols-outlined icon search-icon" translate="no" aria-hidden="true"
+            >search</span
+          >
+          <input
+            ngComboboxInput
+            class="combobox-input"
+            placeholder="Search..."
+            [(value)]="searchString"
+          />
+        </div>
+
+        <ng-template ngComboboxPopupContainer>
+          <div ngListbox [(values)]="selectedCountries">
+            @for (option of options(); track option) {
+              <div ngOption [value]="option" [label]="option">
+                <span>{{ option }}</span>
+                <span
+                  class="material-symbols-outlined icon selected-icon"
+                  translate="no"
+                  aria-hidden="true"
+                  >check</span
+                >
+              </div>
+            }
+          </div>
+        </ng-template>
+      </div>
+    </dialog>
+  </ng-template>
+</div>

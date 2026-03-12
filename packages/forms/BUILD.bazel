@@ -1,0 +1,96 @@
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_examples_db", "ng_package", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "forms",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/common",
+        "//packages/core",
+    ],
+)
+
+ng_examples_db(
+    name = "forms_example_database",
+    srcs = glob(
+        include = [
+            "examples/**/*.md",
+        ],
+        allow_empty = True,
+    ),
+    out = "resources/code-examples.db",
+    path = "packages/forms/examples",
+)
+
+ng_package(
+    srcs = [
+        "package.json",
+    ],
+    data = [
+        "resources/code-examples.db",
+    ],
+    package = "@angular/forms",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//adev:__pkg__",
+        "//integration:__subpackages__",
+        "//modules/ssr-benchmarks:__pkg__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/test/diagnostics:__pkg__",
+        "//packages/language-service/test:__pkg__",
+    ],
+    deps = [
+        "//packages/forms",
+        "//packages/forms/signals",
+        "//packages/forms/signals/compat",
+    ],
+)
+
+api_golden_test_npm_package(
+    name = "forms_api",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    golden_dir = "goldens/public-api/forms",
+    npm_package = "packages/forms/npm_package",
+)
+
+api_golden_test(
+    name = "forms_errors",
+    data = [
+        "//goldens:public-api",
+        "//packages/forms",
+    ],
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/forms/errors.api.md",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "forms_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/forms",
+)

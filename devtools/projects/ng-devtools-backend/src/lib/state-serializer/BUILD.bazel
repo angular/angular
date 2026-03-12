@@ -1,0 +1,34 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "state-serializer",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "test_lib",
+    srcs = [
+        "prop-type.spec.ts",
+        "state-serializer.spec.ts",
+    ],
+    deps = [
+        ":state-serializer",
+        "//devtools/projects/protocol",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

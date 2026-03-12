@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "packages/**/*",
+    "modules/**/*",
+    "tools/**/*",
+    "scripts/**/*",
+    "devtools/**/*",
+    "adev/**/*"
+  ],
+  "exclude": [
+    "adev/src/content/api-examples/**",
+    "adev/src/content/examples/**",
+    "adev/src/content/tutorials/**",
+  ]
+}

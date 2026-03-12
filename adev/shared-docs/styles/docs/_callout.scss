@@ -1,0 +1,74 @@
+// Callout
+
+@mixin docs-callout() {
+  .docs-callout {
+    // Default theme is purple to blue
+    --callout-theme: var(--purple-to-blue-horizontal-gradient);
+    border-width: 0;
+    border-block-start-width: 2px;
+    border-block-end-width: 1px;
+    border-style: solid;
+    margin-block: 1.5rem;
+    border-image: var(--callout-theme) 1;
+
+    // Removes bottom line if followed by another callout
+    // Prevents too many lines/visual noise
+    &:has(+ .docs-callout) {
+      border-block-end-width: 0;
+    }
+
+    &::before {
+      font-family: var(--icons);
+      // content: icon is defined in each docs-alert class below...
+      float: right;
+      margin-top: 1.35rem;
+      color: var(--alert-accent);
+      font-size: 1.3rem;
+    }
+
+    // Callout heading
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      background-image: var(--callout-theme);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      max-width: fit-content;
+    }
+  }
+
+  .docs-viewer .docs-callout h3 {
+    font-size: 0.875rem;
+    margin-block: 1.6rem;
+  }
+
+  .docs-callout-helpful {
+    --callout-theme: var(--purple-to-blue-horizontal-gradient);
+
+    &::before {
+      content: 'check_circle';
+      color: var(--bright-blue);
+    }
+  }
+
+  .docs-callout-critical {
+    --callout-theme: var(--red-to-orange-horizontal-gradient);
+
+    &::before {
+      content: 'warning';
+      color: var(--orange-red);
+    }
+  }
+
+  .docs-callout-important {
+    --callout-theme: var(--pink-to-purple-horizontal-gradient);
+
+    &::before {
+      content: 'priority_high';
+      color: var(--electric-violet);
+    }
+  }
+}

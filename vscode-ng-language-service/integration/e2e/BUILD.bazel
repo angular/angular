@@ -1,0 +1,44 @@
+load("@aspect_rules_js//js:defs.bzl", "js_test")
+load("//tools:defaults.bzl", "ts_project")
+
+ts_project(
+    name = "e2e",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    data = [
+        "//vscode-ng-language-service:node_modules/jasmine",
+        "//vscode-ng-language-service:node_modules/jasmine-reporters",
+    ],
+    visibility = [
+        "//vscode-ng-language-service/integration:__subpackages__",
+    ],
+    deps = [
+        "//vscode-ng-language-service:node_modules/@types/jasmine",
+        "//vscode-ng-language-service:node_modules/@types/jasmine-reporters",
+        "//vscode-ng-language-service:node_modules/@types/node",
+        "//vscode-ng-language-service:node_modules/@types/vscode",
+        "//vscode-ng-language-service:node_modules/@vscode/test-electron",
+        "//vscode-ng-language-service:node_modules/xvfb",
+        "//vscode-ng-language-service/integration",
+    ],
+)
+
+js_test(
+    name = "test",
+    data = [
+        ":e2e",
+        "//vscode-ng-language-service:development_package",
+        "//vscode-ng-language-service:node_modules/@angular/language-service",
+        "//vscode-ng-language-service:node_modules/typescript",
+    ],
+    entry_point = ":index.js",
+    env = {
+        "DBUS_SESSION_BUS_ADDRESS": "/dev/null",
+    },
+    tags = [
+        "e2e",
+        # Cannot use RBE as Xvfb is not available.
+        "no-remote-exec",
+        "requires-network",
+    ],
+)

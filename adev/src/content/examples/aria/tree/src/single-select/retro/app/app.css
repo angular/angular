@@ -1,0 +1,216 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+@import url('https://fonts.googleapis.com/css2?family=Jersey+20&display=swap');
+
+:host {
+  display: flex;
+  justify-content: center;
+  user-select: none;
+
+  --win95-gray: #c0c0c0;
+  --win95-dark-gray: #808080;
+  --win95-light: #ffffff;
+  --win95-shadow: #000000;
+  --win95-blue: #000080;
+  --win95-active-blue: linear-gradient(to right, #000080, #1084d0);
+  --win95-font: "Jersey 20", sans-serif;
+
+  font-family: var(--win95-font);
+  font-size: 1.1rem;
+}
+
+.win95-file-explorer {
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--win95-light) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-light);
+  box-shadow: 1px 1px 0 var(--win95-shadow);
+  background-color: var(--win95-gray);
+  min-width: 350px;
+}
+
+.win95-btn {
+  background-color: var(--win95-gray);
+  padding: 3px 8px;
+  cursor: pointer;
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--win95-light) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-light);
+  box-shadow: 1px 1px 0 var(--win95-shadow);
+}
+
+.win95-btn:active {
+  box-shadow: 1px 1px 0 var(--win95-shadow) inset;
+  padding: 4px 7px 2px 9px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--win95-dark-gray) var(--win95-light) var(--win95-light) var(--win95-dark-gray);
+}
+
+.title-bar {
+  background: var(--win95-active-blue);
+  color: var(--win95-light);
+  padding: 3px 6px;
+  height: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title-bar-text {
+  font-weight: bold;
+}
+
+.title-bar-controls button {
+  background: var(--win95-gray);
+  border: 1px solid var(--win95-light);
+  color: var(--win95-shadow);
+  width: 16px;
+  height: 14px;
+  line-height: 8px;
+  font-size: 14px;
+  padding: 0;
+  margin-left: 1px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--win95-light) var(--win95-dark-gray) var(--win95-dark-gray) var(--win95-light);
+  box-shadow: 1px 1px 0 var(--win95-shadow);
+}
+
+.title-bar-controls button span {
+  display: block;
+  margin-top: -3px;
+}
+
+.menu-bar {
+  display: flex;
+  background-color: var(--win95-gray);
+  border-bottom: 1px solid var(--win95-dark-gray);
+  padding: 1px 2px;
+}
+
+.menu-item {
+  padding: 0 6px;
+  cursor: default;
+  margin-right: 4px;
+}
+
+.menu-item:hover {
+  background-color: var(--win95-blue);
+  color: var(--win95-light);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-top: 1px solid var(--win95-light);
+  border-bottom: 1px solid var(--win95-dark-gray);
+}
+
+.toolbar .win95-btn {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.toolbar .icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-right: 4px;
+}
+
+.tree-view {
+  background-color: var(--win95-light);
+  min-height: 300px;
+  padding: 4px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--win95-dark-gray) var(--win95-light) var(--win95-light) var(--win95-dark-gray);
+  color: var(--win95-shadow);
+}
+
+.status-bar {
+  margin-top: 2px;
+}
+
+.status-panel-grow {
+  flex-grow: 1;
+}
+
+.status-panel-right {
+  text-align: right;
+}
+
+.status-bar {
+  height: 18px;
+  background-color: var(--win95-gray);
+  border-top: 1px solid var(--win95-light);
+  border-left: 1px solid var(--win95-light);
+  border-right: 1px solid var(--win95-dark-gray);
+  border-bottom: 1px solid var(--win95-dark-gray);
+  display: flex;
+  font-size: 14px;
+}
+
+.status-panel {
+  padding: 0 4px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  margin-right: 1px;
+  border-style: solid;
+  border-color: var(--win95-dark-gray) var(--win95-light) var(--win95-light) var(--win95-dark-gray);
+  border-width: 1px;
+  flex-grow: 1;
+}
+
+.status-panel:last-child {
+  flex-grow: 0;
+  width: 120px;
+}
+
+[ngTree] {
+  padding: 0;
+  margin: 0;
+}
+
+[ngTreeItem] {
+  cursor: pointer;
+  list-style: none;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.25rem 0.75rem;
+}
+
+[ngTreeItem][aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+[ngTreeItem]:focus,
+[ngTreeItem]:hover {
+  background-color: var(--senary-contrast);
+  color: var(--primary-contrast);
+  outline: none;
+}
+
+[ngTreeItem][aria-selected='true'] {
+  background-color: var(--win95-blue);
+  color: var(--win95-light);
+}
+
+.selected-icon {
+  visibility: hidden;
+  margin-left: auto;
+}
+
+[ngTreeItem][aria-current] .selected-icon,
+[ngTreeItem][aria-selected='true'] .selected-icon {
+  visibility: visible;
+}
+
+li[aria-expanded='false'] + ul[role='group'] {
+  display: none;
+}
+

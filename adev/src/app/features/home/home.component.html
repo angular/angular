@@ -1,0 +1,242 @@
+<main class="adev-home" #home>
+  <section class="logo-section">
+    <div class="pattern"></div>
+    <div class="content">
+      <div class="adev-banner-container">
+        <a href="events/v21" class="adev-banner" target="_blank">
+          <h1 tabindex="-1">Angular v21 is here!</h1>
+          <p class="adev-banner-cta">🕹️ Start your adventure</p>
+        </a>
+
+        <div class="search-field">
+          <docs-text-field placeholder="search" (click)="openSearch()" />
+        </div>
+      </div>
+
+      @if (!isUwu) {
+        <div class="title">
+          <h2>Productivity<br />Meets scalability</h2>
+          <h3>The framework for building scalable web apps with confidence</h3>
+        </div>
+      } @else {
+        <!-- UwU logo -->
+        <div class="uwu">
+          <img src="assets/images/uwu.png" alt="Angular logo" />
+        </div>
+      }
+
+      <div class="learn-angular">
+        <a href="#learn-more" class="adev-cta">
+          <button class="docs-primary-btn" [attr.text]="'Get Started'" aria-label="Get Started">
+            Get Started
+          </button>
+        </a>
+        <div class="adev-arrow"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-section" #featuresSection>
+    <h2 id="features">Features that actually <br />help you solve problems</h2>
+
+    <div ngTabs class="material-tabs">
+      <div ngTabList selectionMode="follow" [(selectedTab)]="selectedFeatureTab">
+        <div class="tab-background"></div>
+        <div ngTab [value]="FEATURE_TAB.signals">Signals</div>
+        <div ngTab [value]="FEATURE_TAB.controlFlow">Control Flow</div>
+        <div ngTab [value]="FEATURE_TAB.deferrableViews">Deferrable Views</div>
+        <div ngTab [value]="FEATURE_TAB.hydration">Hydration</div>
+      </div>
+
+      <div class="sliding-window">
+        <div ngTabPanel [preserveContent]="true" [value]="FEATURE_TAB.signals">
+          @defer (on idle) {
+            <ng-template ngTabContent>
+              <adev-signals-demo />
+            </ng-template>
+          }
+        </div>
+
+        <div ngTabPanel [preserveContent]="true" [value]="FEATURE_TAB.controlFlow">
+          @defer (on idle) {
+            <ng-template ngTabContent>
+              <adev-control-flow-example />
+            </ng-template>
+          }
+        </div>
+
+        <div ngTabPanel [preserveContent]="true" [value]="FEATURE_TAB.deferrableViews">
+          @defer (on idle) {
+            <ng-template ngTabContent>
+              <adev-defer-example />
+            </ng-template>
+          }
+        </div>
+
+        <div ngTabPanel [preserveContent]="true" [value]="FEATURE_TAB.hydration">
+          @defer (on idle) {
+            <ng-template ngTabContent>
+              <adev-hydration-example />
+            </ng-template>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="selling-points">
+    <h2>Enabling you to build<br />smarter and faster</h2>
+    <div class="cards">
+      <a class="card" routerLink="/ai/develop-with-ai">
+        <div class="icon-wrapper">
+          <docs-icon>auto_awesome</docs-icon>
+        </div>
+        <div class="card-content">
+          <h3>
+            <strong>AI-forward</strong> resources and integrations to supercharge your development
+            with AI
+          </h3>
+        </div>
+      </a>
+
+      <a class="card" routerLink="/essentials">
+        <div class="icon-wrapper">
+          <docs-icon>grid_view</docs-icon>
+        </div>
+        <div class="card-content">
+          <h3>
+            <strong>Opinionated & versatile,</strong> organized yet modular thanks to Angular
+            components and dependency injection
+          </h3>
+        </div>
+      </a>
+
+      <a class="card" routerLink="/essentials/signals">
+        <div class="icon-wrapper">
+          <docs-icon>sensors</docs-icon>
+        </div>
+        <div class="card-content">
+          <h3>
+            <strong>Reactive</strong> and fast state updates with fine-grained reactivity based on
+            Angular Signals
+          </h3>
+        </div>
+      </a>
+
+      <a class="card" routerLink="/overview">
+        <div class="icon-wrapper">
+          <docs-icon>layers</docs-icon>
+        </div>
+        <div class="card-content">
+          <h3>
+            <strong>Fully featured</strong> platform where everything works together with Angular's
+            first-party modules for forms, routing, and more
+          </h3>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="performance-section" id="performance">
+    <div class="wrapper">
+      <div class="pattern"></div>
+      <div class="content">
+        <h2>Where performance matters</h2>
+        <h3>
+          Trusted by millions to build fast, reliable applications that scale with the size of your
+          team
+        </h3>
+        <button
+          class="docs-primary-btn"
+          [attr.text]="'Get started'"
+          routerLink="/guide/performance"
+        >
+          <!-- TODO: LINK -->
+          Get started
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="explore-section" id="learn-more">
+    <div class="title">
+      <h2>What to learn more about Angular?</h2>
+      <div class="pattern"></div>
+    </div>
+
+    <div class="cards-grid">
+      <!-- Card 1: Tutorials -->
+      <a routerLink="/tutorials/learn-angular" class="explore-card">
+        <div class="card-content">
+          <p>
+            <span class="emphasis">New to Angular?</span>
+            Try our completely in browser tutorial lessons designed to give you hands on experience
+            with Angular.
+          </p>
+          <span class="fake-button">Start coding <docs-icon>arrow_forward</docs-icon></span>
+          <div class="editor-background"></div>
+        </div>
+      </a>
+
+      <!-- Card 2: AI -->
+      <a routerLink="/ai" class="explore-card">
+        <div class="card-content">
+          <p>
+            <span class="emphasis">Are you an LLM or curious about AI in Angular?</span>
+            Head over to our AI section to find prompts, strategies, best practices, examples, and
+            more.
+          </p>
+          <span class="fake-button">Angular + AI <docs-icon>arrow_forward</docs-icon></span>
+          <div class="angular-mcp-container">
+            <div class="mcp-content">
+              <div class="mcp-label">Angular MCP</div>
+              <div class="mcp-pills">
+                <span class="mcp-pill">get_best_practices</span>
+                <span class="mcp-pill">ai_tutor</span>
+                <span class="mcp-pill">find_examples</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 3: Overview -->
+      <a routerLink="/overview" class="explore-card">
+        <div class="card-content">
+          <p>
+            <span class="emphasis">Why Angular?</span>
+            Learn about Angular, its benefits, and if it's right for you.
+          </p>
+          <div class="logo-background"></div>
+        </div>
+      </a>
+
+      <!-- Card 4: Essentials -->
+      <a routerLink="/essentials" class="explore-card">
+        <div class="card-content">
+          <p>
+            <span class="emphasis">More of a reader?</span>
+            Our essentials guides are designed to help you understand Angular fundamentals in the
+            time it would take to finish a cup of coffee (or a tea).
+          </p>
+          <span class="fake-button">Angular concepts <docs-icon>arrow_forward</docs-icon></span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="learn-more-bottom-section" id="bottom">
+    <div class="pattern"></div>
+    <div class="content">
+      <h2>Want to learn more about Angular ?</h2>
+      <button
+        class="docs-primary-btn"
+        [attr.text]="'Learn more'"
+        aria-label="Learn more"
+        routerLink="/overview"
+      >
+        Learn more
+      </button>
+    </div>
+  </section>
+</main>

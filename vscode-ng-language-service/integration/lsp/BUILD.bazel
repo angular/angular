@@ -1,0 +1,31 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob([
+        "*.ts",
+    ]),
+    data = [
+        "//vscode-ng-language-service/integration",
+        "//vscode-ng-language-service/server:index",
+    ],
+    deps = [
+        "//vscode-ng-language-service:node_modules/@types/jasmine",
+        "//vscode-ng-language-service:node_modules/@types/node",
+        "//vscode-ng-language-service:node_modules/vscode-jsonrpc",
+        "//vscode-ng-language-service:node_modules/vscode-languageserver-protocol",
+        "//vscode-ng-language-service:node_modules/vscode-uri",
+        "//vscode-ng-language-service/common",
+        "//vscode-ng-language-service/integration",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib",
+    ],
+    flaky = True,
+    shard_count = 2,
+)

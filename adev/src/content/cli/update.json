@@ -1,0 +1,76 @@
+{
+  "name": "update",
+  "command": "ng update [packages..]",
+  "shortDescription": "Updates your workspace and its dependencies. See https://update.angular.dev/.",
+  "longDescriptionRelativePath": "@angular/cli/src/commands/update/long-description.md",
+  "longDescription": "Perform a basic update to the current stable release of the core framework and CLI by running the following command.\n\n```\nng update @angular/cli @angular/core\n```\n\nTo update to the next beta or pre-release version, use the `--next` option.\n\nTo update from one major version to another, use the format\n\n```\nng update @angular/cli@^<major_version> @angular/core@^<major_version>\n```\n\nWe recommend that you always update to the latest patch version, as it contains fixes we released since the initial major release.\nFor example, use the following command to take the latest 10.x.x version and use that to update.\n\n```\nng update @angular/cli@^10 @angular/core@^10\n```\n\nFor detailed information and guidance on updating your application, see the interactive [Angular Update Guide](https://update.angular.dev/).\n",
+  "aliases": [],
+  "deprecated": false,
+  "options": [
+    {
+      "name": "allow-dirty",
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to allow updating when the repository contains modified or untracked files."
+    },
+    {
+      "name": "create-commits",
+      "type": "boolean",
+      "aliases": [
+        "C"
+      ],
+      "default": false,
+      "description": "Create source control commits for updates and migrations."
+    },
+    {
+      "name": "force",
+      "type": "boolean",
+      "default": false,
+      "description": "Ignore peer dependency version mismatches."
+    },
+    {
+      "name": "from",
+      "type": "string",
+      "description": "Version from which to migrate from. Only available when a single package is updated, and only with 'migrate-only'."
+    },
+    {
+      "name": "help",
+      "type": "boolean",
+      "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "migrate-only",
+      "type": "boolean",
+      "description": "Only perform a migration, do not update the installed version."
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "description": "The name of the migration to run. Only available when a single package is updated."
+    },
+    {
+      "name": "next",
+      "type": "boolean",
+      "default": false,
+      "description": "Use the prerelease version, including beta and RCs."
+    },
+    {
+      "name": "packages",
+      "type": "array",
+      "default": [],
+      "description": "The names of package(s) to update.",
+      "positional": 0
+    },
+    {
+      "name": "to",
+      "type": "string",
+      "description": "Version up to which to apply migrations. Only available when a single package is updated, and only with 'migrate-only' option. Requires 'from' to be specified. Default to the installed version detected."
+    },
+    {
+      "name": "verbose",
+      "type": "boolean",
+      "default": false,
+      "description": "Display additional details about internal operations during execution."
+    }
+  ]
+}

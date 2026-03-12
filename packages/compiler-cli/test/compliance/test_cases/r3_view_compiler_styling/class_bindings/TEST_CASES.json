@@ -1,0 +1,120 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should create class styling instructions on the element",
+      "inputFiles": [
+        "class_binding.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "class_binding.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should place initial, multi, singular and application followed by attribute class instructions in the template code in that order",
+      "inputFiles": [
+        "class_ordering.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "class_ordering.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not generate the styling apply instruction if there are only static style/class attributes",
+      "inputFiles": [
+        "static_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "static_bindings.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not create instructions for empty class bindings",
+      "inputFiles": [
+        "empty_class_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "empty_class_bindings.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support class bindings on structural elements",
+      "inputFiles": [
+        "class_binding_on_structural.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "class_binding_on_structural.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle class that shares its name with other const array items",
+      "inputFiles": [
+        "shared_name_with_consts.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "shared_name_with_consts_template.js",
+              "generated": "shared_name_with_consts.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should handle bindings to classes with special characters in a template",
+      "inputFiles": [
+        "class_binding_special_chars.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "class_binding_special_chars.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle bindings to classes with special characters in a host context",
+      "inputFiles": [
+        "host_class_binding_special_chars.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "host_class_binding_special_chars.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

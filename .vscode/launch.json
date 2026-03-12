@@ -1,0 +1,84 @@
+// A launch configuration that compiles the extension and then opens it inside a new window
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "extensionHost",
+      "request": "launch",
+      "name": "VSCE: Launch Dev Client",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--disable-extensions",
+        "--extensionDevelopmentPath=${workspaceFolder}/vscode-ng-language-service"
+      ],
+      "preLaunchTask": "VSCE: watch bundles"
+    },
+    {
+      "type": "extensionHost",
+      "request": "launch",
+      "name": "VSCE: Launch Prod Client",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--disable-extensions",
+        "--extensionDevelopmentPath=${workspaceFolder}/dist/bin/vscode-ng-language-service/development_package"
+      ],
+      "preLaunchTask": "VSCE: package"
+    },
+    {
+      "name": "VSCE: Attach to Server",
+      "type": "node",
+      "request": "attach",
+      "port": 6009,
+      "restart": true,
+      "sourceMaps": true,
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMapPathOverrides": {
+        "?:*/bin/*": "${workspaceFolder}/*"
+      },
+      "resolveSourceMapLocations": ["!**/node_modules/**"]
+    },
+    {
+      "name": "DEBUG: Attach to bazel test",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "timeout": 600000,
+      "sourceMaps": true,
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMapPathOverrides": {
+        "?:*/bin/*": "${workspaceFolder}/*"
+      },
+      "resolveSourceMapLocations": ["!**/node_modules/**"]
+    },
+    {
+      "name": "DEBUG: Run bazel test (Custom Target)",
+      "type": "node",
+      "request": "launch",
+      "restart": true,
+      "timeout": 600000,
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["bazel", "test", "${input:bazelTarget}", "--config=debug"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "VSCE: Dev Client + Attach to Server",
+      "configurations": ["VSCE: Launch Dev Client", "VSCE: Attach to Server"]
+    },
+    {
+      "name": "DEBUG: Run bazel test (Custom Target) + Attach",
+      "configurations": ["DEBUG: Attach to bazel test", "DEBUG: Run bazel test (Custom Target)"]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "bazelTarget",
+      "type": "promptString",
+      "description": "Enter the Bazel test target (e.g., //path/to/my:unit_test)",
+      "default": "//packages/..."
+    }
+  ]
+}

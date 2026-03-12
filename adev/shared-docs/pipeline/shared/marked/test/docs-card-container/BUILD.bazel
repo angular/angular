@@ -1,0 +1,23 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_jasmine_test")
+
+ts_project(
+    name = "docs-card-container",
+    testonly = True,
+    srcs = glob([
+        "**/*.spec.mts",
+    ]),
+    deps = [
+        "//adev:node_modules/@types/jsdom",
+        "//adev:node_modules/jsdom",
+        "//adev/shared-docs/pipeline/shared/marked",
+        "//adev/shared-docs/pipeline/shared/marked/test:renderer_context",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "test",
+    data = [
+        "docs-card-container.md",
+        ":docs-card-container",
+    ],
+)

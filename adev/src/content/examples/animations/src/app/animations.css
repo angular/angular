@@ -1,0 +1,60 @@
+/* #docregion animation-shared */
+@keyframes sharedAnimation {
+  to {
+    height: 0;
+    opacity: 1;
+    background-color: 'red';
+  }
+}
+
+.animated-class {
+  animation: sharedAnimation 1s;
+}
+/* #enddocregion animation-shared */
+
+/* #docregion animation-states */
+
+.open {
+  height: '200px';
+  opacity: 1;
+  background-color: 'yellow';
+  transition: all 1s;
+}
+
+.closed {
+  height: '100px';
+  opacity: 0.8;
+  background-color: 'blue';
+  transition: all 1s;
+}
+
+/* #enddocregion animation-states */
+
+/* #docregion animation-timing */
+
+.example-element {
+  animation-duration: 1s;
+  animation-delay: 500ms;
+  animation-timing-function: ease-in-out;
+}
+
+.example-shorthand {
+  animation: exampleAnimation 1s ease-in-out 500ms;
+}
+
+/* #enddocregion animation-timing */
+
+/* #docregion transition-timing */
+
+.example-element {
+  transition-duration: 1s;
+  transition-delay: 500ms;
+  transition-timing-function: ease-in-out;
+  transition-property: margin-right;
+}
+
+.example-shorthand {
+  transition: margin-right 1s ease-in-out 500ms;
+}
+
+/* #enddocregion transition-timing */

@@ -1,0 +1,41 @@
+<div class="adev-embedded-editor-preview-container">
+  @if (loadingProgressValue() !== loadingEnum.ERROR) {
+    <iframe
+      class="adev-embedded-editor-preview"
+      allow="cross-origin-isolated"
+      title="Editor preview"
+      [src]="previewUrlForIFrame()"
+    ></iframe>
+  } @else {
+    <docs-tutorial-preview-error />
+  }
+
+  @if (loadingProgressValue() < loadingEnum.READY && loadingProgressValue() !== loadingEnum.ERROR) {
+    <div class="adev-embedded-editor-preview-loading">
+      @switch (loadingProgressValue()) {
+        @case (loadingEnum.NOT_STARTED) {
+          <span class="adev-embedded-editor-preview-loading-starting">Starting</span>
+        }
+        @case (loadingEnum.BOOT) {
+          <span class="adev-embedded-editor-preview-loading-boot">Booting</span>
+        }
+        @case (loadingEnum.LOAD_FILES) {
+          <span class="adev-embedded-editor-preview-loading-load-files">Creating project</span>
+        }
+        @case (loadingEnum.INSTALL) {
+          <span class="adev-embedded-editor-preview-loading-install">Installing packages</span>
+        }
+        @case (loadingEnum.START_DEV_SERVER) {
+          <span class="adev-embedded-editor-preview-loading-start-dev-server">
+            Initializing dev server
+          </span>
+        }
+      }
+      <progress
+        title="Preview progress"
+        [value]="loadingProgressValue()"
+        [max]="loadingEnum.READY"
+      ></progress>
+    </div>
+  }
+</div>

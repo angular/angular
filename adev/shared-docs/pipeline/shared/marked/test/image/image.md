@@ -1,0 +1,6 @@
+![New Logo!](https://angular.dev/favicon.ico 'Our new icon')
+![New Logo!](./some-image.png 'Local Image')
+![Lazy Image](https://angular.dev/assets/logo.svg {loading: 'lazy'})
+![Async Decoded Image](https://angular.dev/assets/logo.svg {decoding: 'async'} 'Async Image')
+![High Priority Image](https://angular.dev/assets/logo.svg {fetchpriority: 'high'})
+![Combined Attributes](https://angular.dev/assets/logo.svg {loading: 'eager', decoding: 'sync', fetchpriority: 'high'} 'Hero Image')

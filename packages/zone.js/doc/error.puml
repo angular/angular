@@ -1,0 +1,9 @@
+@startuml
+scheduling --> unknown: zoneSpec.onScheduleTask\nor task.scheduleFn\nthrow error
+running --> scheduled: error in \ntask.callback\nand task is\nperiodical\ntask
+running --> notScheduled: error in\ntask.callback\nand\ntask is not\nperiodical
+running: zoneSpec.onHandleError
+running --> throw: error in\n task.callback\n and \nzoneSpec.onHandleError\n return true
+canceling --> unknown: zoneSpec.onCancelTask\n or task.cancelFn\n throw error
+unknown --> throw
+@enduml

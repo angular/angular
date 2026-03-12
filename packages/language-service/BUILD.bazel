@@ -1,0 +1,67 @@
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "npm_package", "ts_config", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_project(
+    name = "api",
+    srcs = [
+        "api.ts",
+    ],
+    deps = [
+        "//:node_modules/typescript",
+    ],
+)
+
+ts_project(
+    name = "factory_lib",
+    srcs = ["plugin-factory.ts"],
+    deps = [
+        ":api",
+        "//:node_modules/typescript",
+    ],
+)
+
+esbuild(
+    name = "factory_bundle",
+    entry_point = ":plugin-factory.ts",
+    external = ["@angular/language-service/bundles/language-service.js"],
+    format = "cjs",
+    deps = [":factory_lib"],
+)
+
+esbuild(
+    name = "api_bundle",
+    entry_point = ":api.ts",
+    format = "cjs",
+    deps = [":api"],
+)
+
+npm_package(
+    srcs = [
+        "index.d.ts",
+        "index.js",
+        "package.json",
+        ":api_bundle",
+        ":api_types",
+        ":factory_bundle",
+        ":factory_lib_types",
+        "//packages/language-service/bundles:language-service.js",
+    ],
+    package = "@angular/language-service",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [],
+)

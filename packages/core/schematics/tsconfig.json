@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "sourceMap": true,
+    // Schematics are bundled into CommonJS for shipping.
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "es2022",
+    "lib": ["es2019"],
+    "types": ["node"],
+    "paths": {
+      "@angular/core": ["../"],
+      "@angular/compiler": ["../../compiler"],
+      "@angular/compiler-cli": ["../../compiler-cli"],
+      "@angular/compiler-cli/*": ["../../compiler-cli/*"]
+    }
+  }
+}

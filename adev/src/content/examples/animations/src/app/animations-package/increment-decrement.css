@@ -1,0 +1,33 @@
+:host {
+  display: block;
+  font-size: 32px;
+  margin: 20px;
+  text-align: center;
+}
+
+section {
+  border: 1px solid lightgray;
+  border-radius: 50px;
+}
+
+p {
+  display: inline-block;
+  margin: 2rem 0;
+  text-transform: uppercase;
+}
+
+.controls {
+  padding-bottom: 2rem;
+}
+
+button {
+  font: inherit;
+  border: 0;
+  background: lightgray;
+  width: 50px;
+  border-radius: 10px;
+}
+
+button + button {
+  margin-left: 10px;
+}

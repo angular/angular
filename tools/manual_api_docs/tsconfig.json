@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    // Note: We use `bundler` here because compiler-cli is understood as ESM, but
+    // there are no explicit extensions. This is invalid. For our type-only usage this
+    // is fine.
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@angular/compiler-cli/*": ["../../packages/compiler-cli/*"]
+    }
+  }
+}

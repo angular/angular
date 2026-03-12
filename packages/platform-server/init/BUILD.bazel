@@ -1,0 +1,61 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@npm//:rollup/package_json.bzl", rollup = "bin")
+load("//tools:defaults.bzl", "ng_project", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "init",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+        exclude = ["src/bundled-domino.d.ts"],
+    ),
+    deps = [
+        ":bundled_domino_lib",
+    ],
+)
+
+rollup.rollup(
+    name = "bundled_domino",
+    srcs = [
+        "//:node_modules/@rollup/plugin-commonjs",
+        "//:node_modules/domino",
+    ],
+    outs = [
+        "src/bundled-domino.mjs",
+    ],
+    args = [
+        "--format=esm",
+        "--plugin=@rollup/plugin-commonjs",
+        "--input=node_modules/domino/lib/index.js",
+        "--sourcemap=false",
+        "--file=packages/platform-server/init/src/bundled-domino.mjs",
+    ],
+    progress_message = "Bundling domino",
+    silent_on_success = True,
+)
+
+js_library(
+    name = "bundled_domino_lib",
+    srcs = [
+        "src/bundled-domino.d.ts",
+        ":bundled_domino",
+    ],
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = ":init",
+    tsconfig = "//packages:tsconfig_build",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)

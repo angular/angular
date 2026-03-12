@@ -1,0 +1,70 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_test_library")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "router_tree_styles",
+    src = "router-tree.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "router-tree-fns",
+    srcs = ["router-tree-fns.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ng_project(
+    name = "router-tree",
+    srcs = [
+        "router-tree.component.ts",
+    ],
+    angular_assets = [
+        ":router-tree.component.html",
+        ":router_tree_styles",
+    ],
+    deps = [
+        ":router-tree-fns",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree/router-details-row",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/ng-devtools/src/lib/shared/split",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer",
+        "//devtools/projects/ng-devtools/src/lib/shared/utils",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "router_tree_test",
+    srcs = [
+        "router-tree.component.spec.ts",
+        "router-tree-fns.spec.ts",
+    ],
+    visibility = [
+        "//visibility:private",
+    ],
+    deps = [
+        ":router-tree",
+        ":router-tree-fns",
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":router_tree_test",
+    ],
+)

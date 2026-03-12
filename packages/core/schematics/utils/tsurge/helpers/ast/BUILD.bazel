@@ -1,0 +1,14 @@
+load("//tools:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//packages/core/schematics/utils/tsurge:users"])
+
+ts_project(
+    name = "ast",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli/private",
+        "//packages/core/schematics/utils/tsurge",
+    ],
+)

@@ -1,0 +1,38 @@
+load("//tools:defaults.bzl", "generate_api_docs", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "signals",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@standard-schema/spec",
+        "//packages/common/http",
+        "//packages/core",
+        "//packages/forms",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "forms_signals_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/forms/signals",
+)

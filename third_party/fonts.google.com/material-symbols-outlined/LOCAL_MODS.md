@@ -1,0 +1,1 @@
+- `outlined.css` has been modified to only declare `font-weight: 400`

@@ -1,0 +1,33 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "ts_test_library", "zoneless_web_test_suite")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "ng-debug-api",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:core-enums",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:get-roots",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_test_library(
+    name = "ng-debug-api_test_lib",
+    srcs = ["ng-debug-api.spec.ts"],
+    deps = [
+        ":ng-debug-api",
+        "//:node_modules/@angular/core",
+        "//:node_modules/jasmine",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:core-enums",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "ng-debug-api_test",
+    deps = [":ng-debug-api_test_lib"],
+)

@@ -1,0 +1,164 @@
+@use '../../../../../styles/typography';
+
+:host {
+  position: relative;
+  color: var(--color-tree-node-element-name);
+  cursor: default;
+  @extend %monospaced;
+  white-space: nowrap;
+  display: block;
+
+  &:hover {
+    background-color: var(--color-tree-node-hovered);
+
+    .tree-node-info > .hydration {
+      background-color: var(--color-tree-node-hovered);
+    }
+  }
+
+  &.selected,
+  &.highlighted {
+    background-color: var(--color-tree-node-highlighted);
+
+    .tree-node-info > .hydration {
+      background-color: var(--color-tree-node-highlighted);
+    }
+  }
+
+  &.new-node {
+    animation: appear 1.5s;
+
+    .tree-node-info > .hydration {
+      animation: appear 1.5s;
+    }
+  }
+
+  .non-element {
+    color: var(--color-tree-node-non-element-name);
+  }
+
+  .tree-node-info {
+    display: flex;
+    align-items: center;
+
+    & > button {
+      $size: 12px;
+      width: $size;
+      height: $size;
+      outline: none;
+      border: 0;
+      padding: 0;
+      position: absolute;
+      background-color: transparent;
+      margin-left: 3px;
+
+      mat-icon {
+        font-size: $size;
+        width: $size;
+        height: $size;
+        color: var(--primary-contrast);
+      }
+    }
+
+    .node-name {
+      position: relative;
+
+      .angular-element {
+        content: '';
+        color: var(--color-tree-node-ng-element);
+
+        &::before {
+          content: '<';
+        }
+
+        &::after {
+          content: '/>';
+        }
+      }
+
+      .dir-names {
+        color: var(--color-tree-node-dir-name);
+      }
+
+      .matched-text {
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: transparent;
+        pointer-events: none;
+
+        mark {
+          background: var(--color-tree-node-matched);
+          color: var(--full-contrast);
+          border-radius: 2px;
+        }
+      }
+    }
+
+    .console-reference {
+      display: none;
+    }
+
+    .trait {
+      color: var(--color-tree-node-console-ref);
+      padding-left: 8px;
+      font-style: italic;
+    }
+
+    .hydration {
+      $size: 14px;
+      margin-left: auto;
+      padding: 0 0.375rem 0 0.125rem;
+      font-size: $size;
+      width: $size;
+      height: $size;
+      color: var(--blue-02);
+      background-color: var(--color-background);
+      border-radius: 20%;
+
+      position: sticky;
+      right: 0;
+
+      &.skipped {
+        color: var(--quinary-contrast);
+      }
+
+      &.mismatched {
+        color: var(--red-04);
+      }
+    }
+  }
+
+  &.selected .console-reference {
+    display: block !important;
+  }
+
+  .hydration-error {
+    color: var(--dynamic-red-01);
+    margin-left: 16px;
+    padding: 0 8px 8px 0px;
+
+    pre {
+      margin: 0;
+      background: var(--dynamic-transparent-01);
+      padding: 8px;
+      border-radius: 8px;
+
+      &:not(:last-child) {
+        margin-bottom: 16px;
+      }
+    }
+  }
+}
+
+@keyframes appear {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: var(--blue-04);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
