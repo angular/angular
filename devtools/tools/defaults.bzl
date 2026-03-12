@@ -32,9 +32,7 @@ def esbuild(minify = None, **kwargs):
         }),
         # Do not change this as otherwise the sourcemaps will cause the build not to be reproducable and firefox will not publish the extension.
         # NB: Do not use `select` here either as this option is not configurable and bazel doesn't resolve to a value.
-        # TODO: Remove this once aspect_rules_esbuild supports sourcemap = False
-        # See: https://github.com/aspect-build/rules_esbuild/pull/264
-        sourcemap = "external",
+        sourcemap = False,
         **kwargs
     )
 
