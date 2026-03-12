@@ -159,3 +159,6 @@ export function installDevToolsSignalFormatter() {
     globalThis.devtoolsFormatters.push(formatter);
   }
 }
+
+// This fixes the RollupError: Exported variable "global" is not defined.
+export {};
