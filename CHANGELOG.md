@@ -1,3 +1,22 @@
+<a name="19.2.20"></a>
+
+# 19.2.20 (2026-03-12)
+
+### compiler
+
+| Commit                                                                                           | Type | Description                         |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------- |
+| [5be912eb55](https://github.com/angular/angular/commit/5be912eb55fe88e8621e2ce82470d51b7d950ceb) | fix  | disallow translations of iframe src |
+
+### core
+
+| Commit                                                                                           | Type | Description                                                |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------------- |
+| [b89b0a83a4](https://github.com/angular/angular/commit/b89b0a83a4d21bbb6f8534bbf56aece12af24595) | fix  | sanitize translated attribute bindings with interpolations |
+| [621c7071ad](https://github.com/angular/angular/commit/621c7071adffbe5dd45a5c954b6b6138e0870844) | fix  | sanitize translated form attributes                        |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.19"></a>
 
 # 19.2.19 (2026-02-25)
