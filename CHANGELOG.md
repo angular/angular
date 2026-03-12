@@ -1,3 +1,17 @@
+<a name="20.3.18"></a>
+# 20.3.18 (2026-03-12)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [02fbf08890](https://github.com/angular/angular/commit/02fbf08890ec6ac2efb6c2ec4f17e56497cb81d2) | fix | disallow translations of iframe src |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [72126f9a08](https://github.com/angular/angular/commit/72126f9a08c185a9b93461bab67841c4e84c9b17) | fix | sanitize translated attribute bindings with interpolations |
+| [626bc8bc20](https://github.com/angular/angular/commit/626bc8bc20e485cad2094c4a5d9417fb9a71dda8) | fix | sanitize translated form attributes |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="22.0.0-next.3"></a>
 # 22.0.0-next.3 (2026-03-12)
 ### compiler
