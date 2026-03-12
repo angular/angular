@@ -299,7 +299,7 @@ function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
  * @param dir Directive that provides view validators.
  */
 export function setUpFormContainer(
-  control: FormGroup | FormArray,
+  control: AbstractControl,
   dir: AbstractFormGroupDirective | FormArrayName,
 ) {
   if (control == null && (typeof ngDevMode === 'undefined' || ngDevMode))
@@ -315,7 +315,7 @@ export function setUpFormContainer(
  * @returns true if a control was updated as a result of this action.
  */
 export function cleanUpFormContainer(
-  control: FormGroup | FormArray,
+  control: AbstractControl,
   dir: AbstractFormGroupDirective | FormArrayName,
 ): boolean {
   return cleanUpValidators(control, dir);

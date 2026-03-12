@@ -15,6 +15,7 @@ import {
   OnDestroy,
   OnInit,
   Optional,
+  Provider,
   Self,
   SkipSelf,
 } from '@angular/core';
@@ -27,7 +28,7 @@ import {NgForm} from './ng_form';
 import {modelGroupParentException} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
-export const modelGroupProvider: any = {
+export const modelGroupProvider: Provider = {
   provide: ControlContainer,
   useExisting: forwardRef(() => NgModelGroup),
 };

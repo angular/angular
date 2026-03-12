@@ -348,7 +348,7 @@ export abstract class AbstractFormDirective
   }
 
   private _setUpFormContainer(dir: FormArrayName | FormGroupName): void {
-    const ctrl: any = this.form.get(dir.path);
+    const ctrl = this.form.get(dir.path)!;
     setUpFormContainer(ctrl, dir);
     // NOTE: this operation looks unnecessary in case no new validators were added in
     // `setUpFormContainer` call. Consider updating this code to match the logic in
@@ -357,7 +357,7 @@ export abstract class AbstractFormDirective
   }
 
   private _cleanUpFormContainer(dir: FormArrayName | FormGroupName): void {
-    const ctrl: any = this.form?.get(dir.path);
+    const ctrl = this.form?.get(dir.path);
     if (ctrl) {
       const isControlUpdated = cleanUpFormContainer(ctrl, dir);
       if (isControlUpdated) {

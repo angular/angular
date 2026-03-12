@@ -38,6 +38,7 @@ import {
 import {_ngModelWarning, controlPath, isPropertyUpdated, selectValueAccessor} from '../shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../validators';
 
+import {Form} from '../form_interface';
 import {NG_MODEL_WITH_FORM_CONTROL_WARNING} from './form_control_directive';
 import {FormArrayName, FormGroupName} from './form_group_name';
 import {AbstractFormDirective} from './abstract_form.directive';
@@ -173,7 +174,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
         _ngModelWarning('formControlName', FormControlName, this, this._ngModelWarningConfig);
       }
       this.viewModel = this.model;
-      this.formDirective.updateModel(this, this.model);
+      this.formDirective?.updateModel(this, this.model);
     }
   }
 
@@ -206,7 +207,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  get formDirective(): any {
+  get formDirective(): Form | null {
     return this._parent ? this._parent.formDirective : null;
   }
 
@@ -214,7 +215,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       checkParentType(this._parent, this.name);
     }
-    (this as Writable<this>).control = this.formDirective.addControl(this);
+    (this as Writable<this>).control = this.formDirective?.addControl(this)!;
     this._added = true;
   }
 }

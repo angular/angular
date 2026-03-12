@@ -121,7 +121,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
   }
 }
 
-export const formArrayNameProvider: any = {
+export const formArrayNameProvider: Provider = {
   provide: ControlContainer,
   useExisting: forwardRef(() => FormArrayName),
 };
