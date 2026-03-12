@@ -47,6 +47,7 @@ minimumReleaseAgeExclude:
   - '@angular/*'
   - '@ngtools/webpack'
   - '@schematics/*'
+  - 'domino'
   - 'ng-packagr'
   - 'zone.js'
 
