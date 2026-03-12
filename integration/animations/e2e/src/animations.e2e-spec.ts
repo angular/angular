@@ -91,4 +91,27 @@ describe('Animations Integration', () => {
     fallbackEls = await page.$$('.fallback-el');
     expect(fallbackEls.length).toBe(0);
   });
+
+  it('should immediately remove routed component without waiting for its inner component leave animations', async () => {
+    // Navigate to the nested route
+    await page.click('#nested-link');
+    await page.waitForSelector('.nested-parent');
+
+    let childEls = await page.$$('.child-target');
+    expect(childEls.length).toBe(2);
+
+    // Trigger a route navigation back to home
+    await page.click('#home-link');
+
+    // Given the child animation is 800ms long, if we don't wait for it across component boundaries,
+    // the previous component should be destroyed almost immediately.
+    // Wait just a short amount (100ms) and verify the nested component and its children are completely gone.
+    await new Promise((res) => setTimeout(res, 100));
+
+    childEls = await page.$$('.child-target');
+    expect(childEls.length).toBe(
+      0,
+      'Nested child component should have been removed immediately during routing',
+    );
+  });
 });
