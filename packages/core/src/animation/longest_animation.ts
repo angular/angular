@@ -131,6 +131,12 @@ function determineLongestAnimationFromElementAnimations(
     const animDuration = typeof timing?.duration === 'number' ? timing.duration : 0;
     let duration = (timing?.delay ?? 0) + animDuration;
 
+    // Account for playback rate if it is set
+    const playbackRate = animation.playbackRate;
+    if (playbackRate !== undefined && playbackRate !== 0 && playbackRate !== 1) {
+      duration /= Math.abs(playbackRate);
+    }
+
     let propertyName: string | undefined;
     let animationName: string | undefined;
 
