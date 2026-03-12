@@ -156,7 +156,7 @@ export function retrieveTransferredState(
   if (script?.textContent) {
     try {
       // Avoid using any here as it triggers lint errors in google3 (any is not allowed).
-      // Decoding of `<` is done of the box by browsers and node.js, same behaviour as G3
+      // Decoding of `<` is done out of the box by browsers and node.js, same behaviour as G3
       // script_builders.
       return JSON.parse(script.textContent) as {};
     } catch (e) {

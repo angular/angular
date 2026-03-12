@@ -45,7 +45,7 @@ const TAG_TO_PLACEHOLDER_NAMES: {[k: string]: string} = {
  * Returns the same placeholder name when the content is identical.
  */
 export class PlaceholderRegistry {
-  // Count the occurrence of the base name top generate a unique name
+  // Count the occurrence of the base name to generate a unique name
   private _placeHolderNameCounts: {[k: string]: number} = {};
   // Maps signature to placeholder names
   private _signatureToName: {[k: string]: string} = {};

@@ -14,7 +14,7 @@ import type {CompilationJob} from '../compilation';
 
 /**
  * `track` functions in `for` repeaters can sometimes be "optimized," i.e. transformed into inline
- * expressions, in lieu of an external function call. For example, tracking by `$index` can be be
+ * expressions, in lieu of an external function call. For example, tracking by `$index` can be
  * optimized into an inline `trackByIndex` reference. This phase checks track expressions for
  * optimizable cases.
  */

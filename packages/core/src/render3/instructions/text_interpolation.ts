@@ -29,7 +29,7 @@ import {
  *
  * Update text content with a lone bound value
  *
- * Used when a text node has 1 interpolated value in it, an no additional text
+ * Used when a text node has 1 interpolated value in it, and no additional text
  * surrounds that interpolated value:
  *
  * ```html

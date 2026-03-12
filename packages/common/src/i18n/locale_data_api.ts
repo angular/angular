@@ -56,7 +56,7 @@ export enum Plural {
 }
 
 /**
- * Context-dependant translation forms for strings.
+ * Context-dependent translation forms for strings.
  * Typically the standalone version is for the nominative form of the word,
  * and the format version is used for the genitive case.
  * @see [CLDR website](http://cldr.unicode.org/translation/date-time-1/date-time#TOC-Standalone-vs.-Format-Styles)
