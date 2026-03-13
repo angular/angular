@@ -8,7 +8,6 @@
 
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {CssSelector} from '../../directive_matching';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {ShadowCss} from '../../shadow_css';
@@ -193,28 +192,6 @@ export function compileComponentFromMetadata(
 ): R3CompiledExpression {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
-
-  const selector = meta.selector && CssSelector.parse(meta.selector);
-  const firstSelector = selector && selector[0];
-
-  // e.g. `attr: ["class", ".my.app"]`
-  // This is optional an only included if the first selector of a component specifies attributes.
-  if (firstSelector) {
-    const selectorAttributes = firstSelector.getAttrs();
-    if (selectorAttributes.length) {
-      definitionMap.set(
-        'attrs',
-        constantPool.getConstLiteral(
-          o.literalArr(
-            selectorAttributes.map((value) =>
-              value != null ? o.literal(value) : o.literal(undefined),
-            ),
-          ),
-          /* forceShared */ true,
-        ),
-      );
-    }
-  }
 
   // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
   const templateTypeName = meta.name;
