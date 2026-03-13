@@ -342,7 +342,12 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         ir.OpList.replace<ir.CreateOp>(
           op,
           ir.createStatementOp(
-            new o.DeclareVarStmt(op.variable.name, op.initializer, undefined, o.StmtModifier.Final),
+            new o.DeclareVarStmt(
+              op.variable.name,
+              op.initializer,
+              o.DYNAMIC_TYPE,
+              o.StmtModifier.Final,
+            ),
           ),
         );
         break;
@@ -693,7 +698,12 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
         ir.OpList.replace<ir.UpdateOp>(
           op,
           ir.createStatementOp(
-            new o.DeclareVarStmt(op.variable.name, op.initializer, undefined, o.StmtModifier.Final),
+            new o.DeclareVarStmt(
+              op.variable.name,
+              op.initializer,
+              o.DYNAMIC_TYPE,
+              o.StmtModifier.Final,
+            ),
           ),
         );
         break;
