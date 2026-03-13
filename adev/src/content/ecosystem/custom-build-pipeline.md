@@ -10,7 +10,7 @@ There are some niche use cases when you may want to maintain a custom build pipe
 
 - You have an existing app using a different toolchain and you’d like to add Angular to it
 - You’re strongly coupled to [module federation](https://module-federation.io/) and unable to adopt bundler-agnostic [native federation](https://www.npmjs.com/package/@angular-architects/native-federation)
-- You’d like to create an short-lived experiment using your favorite build tool
+- You’d like to create a short-lived experiment using your favorite build tool
 
 ## What are the options?
 

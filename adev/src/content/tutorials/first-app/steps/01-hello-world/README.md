@@ -14,7 +14,7 @@ When working in the browser playground, you do not need to `ng serve` to run the
 <docs-workflow>
 
 <docs-step title="Download the default app">
-Start by clicking the "Download" icon in the top right pan of the code editor. This will download a `.zip` file containing the source code for this tutorial. Open this in your local Terminal and IDE then move on to testing the default app.
+Start by clicking the "Download" icon in the top right pane of the code editor. This will download a `.zip` file containing the source code for this tutorial. Open this in your local Terminal and IDE then move on to testing the default app.
 
 At any step in the tutorial, you can click this icon to download the step's source code and start from there.
 </docs-step>
