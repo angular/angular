@@ -66,7 +66,7 @@ export type ɵɵNgModuleDeclaration<T, Declarations, Imports, Exports> = unknown
  */
 export type ɵɵPipeDeclaration<
   T,
-  Name extends string,
+  Name extends string | null,
   // Optional as this was added in Angular v14. All pre-existing directives
   // are not standalone.
   IsStandalone extends boolean = false,

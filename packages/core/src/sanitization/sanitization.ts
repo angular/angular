@@ -305,11 +305,7 @@ const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlySet<string>>>
  * @param tagName The name of the tag.
  * @param attributeName The name of the attribute.
  */
-export function ɵɵvalidateAttribute(
-  value: unknown,
-  tagName: string,
-  attributeName: string,
-): unknown {
+export function ɵɵvalidateAttribute<T = any>(value: T, tagName: string, attributeName: string): T {
   const lowerCaseTagName = tagName.toLowerCase();
   const lowerCaseAttrName = attributeName.toLowerCase();
   if (!SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.has(lowerCaseAttrName)) {

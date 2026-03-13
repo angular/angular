@@ -118,7 +118,7 @@ interface DirectiveDefinition<T> {
   type: Type<T>;
 
   /** The selectors that will be used to match nodes to this directive. */
-  selectors?: CssSelectorList;
+  selectors?: (string | number)[][];
 
   /**
    * A map of input names.
@@ -270,7 +270,7 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
    * Constants for the nodes in the component's view.
    * Includes attribute arrays, local definition arrays etc.
    */
-  consts?: TConstantsOrFactory;
+  consts?: any[] | (() => any[]);
 
   /**
    * An array of `ngContent[selector]` values that were found in the template.

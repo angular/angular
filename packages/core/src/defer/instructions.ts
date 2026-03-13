@@ -131,7 +131,7 @@ export function ɵɵdefer(
   errorTmplIndex?: number | null,
   loadingConfigIndex?: number | null,
   placeholderConfigIndex?: number | null,
-  enableTimerScheduling?: typeof ɵɵdeferEnableTimerScheduling,
+  enableTimerScheduling?: typeof ɵɵdeferEnableTimerScheduling | null,
   flags?: TDeferDetailsFlags | null,
 ) {
   const lView = getLView();
