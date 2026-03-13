@@ -22,7 +22,7 @@ $r3$.ɵɵdefineComponent({
       /**
        * @suppress {msgDescriptions}
        */
-      const $MSG_ID_WITH_SUFFIX$ = goog.getMsg("{$startTagNgTemplate}The result is {$interpolation}{$closeTagNgTemplate}", {
+      const $MSG_ID_WITH_SUFFIX$ = /* @ts-ignore */ goog.getMsg("{$startTagNgTemplate}The result is {$interpolation}{$closeTagNgTemplate}", {
         "closeTagNgTemplate": "\uFFFD/*3:1\uFFFD",
         "interpolation": "\uFFFD0:1\uFFFD",
         "startTagNgTemplate": "\uFFFD*3:1\uFFFD"
@@ -35,6 +35,7 @@ $r3$.ɵɵdefineComponent({
       });
       $i18n_0$ = $MSG_ID_WITH_SUFFIX$;
     } else {
+      /* @ts-ignore */
       $i18n_0$ = $localize `${"\uFFFD*3:1\uFFFD"}:START_TAG_NG_TEMPLATE:The result is ${"\uFFFD0:1\uFFFD"}:INTERPOLATION:${"\uFFFD/*3:1\uFFFD"}:CLOSE_TAG_NG_TEMPLATE:`;
     }
     return [$i18n_0$];

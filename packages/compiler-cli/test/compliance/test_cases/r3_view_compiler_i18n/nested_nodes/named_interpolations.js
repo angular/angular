@@ -7,7 +7,7 @@ consts: () => {
       /**
        * @suppress {msgDescriptions}
        */
-      const $MSG_EXTERNAL_7597881511811528589$$APP_SPEC_TS_0$ = goog.getMsg(" Named interpolation: {$phA} Named interpolation with spaces: {$phB} ", {
+      const $MSG_EXTERNAL_7597881511811528589$$APP_SPEC_TS_0$ = /* @ts-ignore */ goog.getMsg(" Named interpolation: {$phA} Named interpolation with spaces: {$phB} ", {
         "phB": "\uFFFD1\uFFFD",
         "phA": "\uFFFD0\uFFFD"
       }, {
@@ -19,6 +19,7 @@ consts: () => {
       $I18N_0$ = $MSG_EXTERNAL_7597881511811528589$$APP_SPEC_TS_0$;
   }
   else {
+      /* @ts-ignore */
       $I18N_0$ = $localize ` Named interpolation: ${"\uFFFD0\uFFFD"}:PH_A: Named interpolation with spaces: ${"\uFFFD1\uFFFD"}:PH_B: `;
   }
   return [

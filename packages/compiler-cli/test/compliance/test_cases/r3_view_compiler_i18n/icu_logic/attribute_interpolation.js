@@ -4,9 +4,10 @@ consts: () => {
     /**
      * @suppress {msgDescriptions}
      */
-    const $MSG_EXTERNAL_6301050568345677976__ATTRIBUTE_INTERPOLATION_TS_2$ = goog.getMsg("{VAR_SELECT, select, other {{START_TAG_SPAN}foo{CLOSE_TAG_SPAN}}}");
+    const $MSG_EXTERNAL_6301050568345677976__ATTRIBUTE_INTERPOLATION_TS_2$ = /* @ts-ignore */ goog.getMsg("{VAR_SELECT, select, other {{START_TAG_SPAN}foo{CLOSE_TAG_SPAN}}}");
     $i18n_1$ = $MSG_EXTERNAL_6301050568345677976__ATTRIBUTE_INTERPOLATION_TS_2$;
   } else {
+    /* @ts-ignore */
     $i18n_1$ = $localize`{VAR_SELECT, select, other {{START_TAG_SPAN}foo{CLOSE_TAG_SPAN}}}`;
   }
   $i18n_1$ = $r3$.ɵɵi18nPostprocess($i18n_1$, {
@@ -19,9 +20,10 @@ consts: () => {
     /**
      * @suppress {msgDescriptions}
      */
-    const $MSG_EXTERNAL_369205108016154659__ATTRIBUTE_INTERPOLATION_TS_4$ = goog.getMsg("{VAR_SELECT, select, other {{INTERPOLATION}-{INTERPOLATION}}}");
+    const $MSG_EXTERNAL_369205108016154659__ATTRIBUTE_INTERPOLATION_TS_4$ = /* @ts-ignore */ goog.getMsg("{VAR_SELECT, select, other {{INTERPOLATION}-{INTERPOLATION}}}");
     $i18n_3$ = $MSG_EXTERNAL_369205108016154659__ATTRIBUTE_INTERPOLATION_TS_4$;
   } else {
+    /* @ts-ignore */
     $i18n_3$ = $localize`{VAR_SELECT, select, other {{INTERPOLATION}-{INTERPOLATION}}}`;
   }
   $i18n_3$ = $r3$.ɵɵi18nPostprocess($i18n_3$, {
@@ -33,7 +35,7 @@ consts: () => {
     /**
      * @suppress {msgDescriptions}
      */
-    const $MSG_EXTERNAL_6009429127580785009__ATTRIBUTE_INTERPOLATION_TS_5$ = goog.getMsg(
+    const $MSG_EXTERNAL_6009429127580785009__ATTRIBUTE_INTERPOLATION_TS_5$ = /* @ts-ignore */ goog.getMsg(
         "{$startTagSpan}{$closeTagSpan}{$startTagSpan_1}{$icu}{$closeTagSpan}{$startTagSpan_1}{$icu_1}{$closeTagSpan}",
         {
           "closeTagSpan": "[\uFFFD/#2\uFFFD|\uFFFD/#3\uFFFD|\uFFFD/#4\uFFFD]",
@@ -52,6 +54,7 @@ consts: () => {
         });
     $i18n_0$ = $MSG_EXTERNAL_6009429127580785009__ATTRIBUTE_INTERPOLATION_TS_5$;
   } else {
+    /* @ts-ignore */
     $i18n_0$ = $localize`${"\uFFFD#2\uFFFD"}:START_TAG_SPAN:${"[\uFFFD/#2\uFFFD|\uFFFD/#3\uFFFD|\uFFFD/#4\uFFFD]"}:CLOSE_TAG_SPAN:${"[\uFFFD#3\uFFFD|\uFFFD#4\uFFFD]"}:START_TAG_SPAN_1:${$i18n_1$}:ICU@@6051755734147382484:${"[\uFFFD/#2\uFFFD|\uFFFD/#3\uFFFD|\uFFFD/#4\uFFFD]"}:CLOSE_TAG_SPAN:${"[\uFFFD#3\uFFFD|\uFFFD#4\uFFFD]"}:START_TAG_SPAN_1:${$i18n_3$}:ICU_1@@7593934392904803263:${"[\uFFFD/#2\uFFFD|\uFFFD/#3\uFFFD|\uFFFD/#4\uFFFD]"}:CLOSE_TAG_SPAN:`;
   }
   $i18n_0$ = $r3$.ɵɵi18nPostprocess($i18n_0$);

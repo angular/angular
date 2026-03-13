@@ -13,7 +13,7 @@ import {NgtscTestEnvironment} from './env';
 const testFiles = loadStandardTestFiles();
 
 function cleanNewLines(contents: string) {
-  return contents.replace(/\n/g, ' ').replace(/\s+/g, ' ');
+  return contents.replace(/\s*\n\s*/g, ' ');
 }
 
 runInEachFileSystem(() => {

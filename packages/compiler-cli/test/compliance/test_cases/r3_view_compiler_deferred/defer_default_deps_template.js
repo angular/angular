@@ -1,4 +1,8 @@
-const $TestCmp_Defer_1_DepsFn$ = () => [import("./defer_default_deps_ext").then(m => m.default), LocalDep];
+const $TestCmp_Defer_1_DepsFn$ = () => [
+  /* @ts-ignore */
+  import("./defer_default_deps_ext").then(m => m.default),
+  LocalDep
+];
 
 function TestCmp_Defer_0_Template(rf, ctx) {
   if (rf & 1) {
@@ -23,7 +27,10 @@ function TestCmp_Template(rf, ctx) {
 …
 
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵsetClassMetadataAsync(TestCmp, () => [import("./defer_default_deps_ext").then(m => m.default)], CmpA => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵsetClassMetadataAsync(TestCmp, () => [
+      /* @ts-ignore */
+      import("./defer_default_deps_ext").then(m => m.default)
+    ], CmpA => {
     $r3$.ɵsetClassMetadata(TestCmp, [{
       type: Component,
       args: [{

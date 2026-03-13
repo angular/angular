@@ -5,7 +5,7 @@ consts: () => {
     /**
      * @suppress {msgDescriptions}
      */
-    const $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$ = goog.getMsg("{$startTagXhtmlDiv} Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}{$closeTagXhtmlDiv}", {
+    const $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$ = /* @ts-ignore */ goog.getMsg("{$startTagXhtmlDiv} Count: {$startTagXhtmlSpan}5{$closeTagXhtmlSpan}{$closeTagXhtmlDiv}", {
       "closeTagXhtmlDiv": "\uFFFD/#3\uFFFD",
       "closeTagXhtmlSpan": "\uFFFD/#4\uFFFD",
       "startTagXhtmlDiv": "\uFFFD#3\uFFFD",
@@ -21,6 +21,7 @@ consts: () => {
     $I18N_0$ = $MSG_EXTERNAL_7128002169381370313$$APP_SPEC_TS_1$;
   }
   else {
+    /* @ts-ignore */
     $I18N_0$ = $localize `${"\uFFFD#3\uFFFD"}:START_TAG__XHTML_DIV: Count: ${"\uFFFD#4\uFFFD"}:START_TAG__XHTML_SPAN:5${"\uFFFD/#4\uFFFD"}:CLOSE_TAG__XHTML_SPAN:${"\uFFFD/#3\uFFFD"}:CLOSE_TAG__XHTML_DIV:`;
   }
   return [

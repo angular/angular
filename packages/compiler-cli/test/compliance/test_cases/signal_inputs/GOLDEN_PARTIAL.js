@@ -4,8 +4,10 @@
 import { Directive, input } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestDir {
-    counter = input(0, ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ []));
-    name = input.required(...(ngDevMode ? [{ debugName: "name" }] : /* istanbul ignore next */ []));
+    counter = input(0, /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ []));
+    name = input.required(/* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "name" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
     static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: TestDir, isStandalone: true, inputs: { counter: { classPropertyName: "counter", publicName: "counter", isSignal: true, isRequired: false, transformFunction: null }, name: { classPropertyName: "name", publicName: "name", isSignal: true, isRequired: true, transformFunction: null } }, ngImport: i0 });
 }
@@ -31,8 +33,10 @@ export declare class TestDir {
 import { Component, input } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestComp {
-    counter = input(0, ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ []));
-    name = input.required(...(ngDevMode ? [{ debugName: "name" }] : /* istanbul ignore next */ []));
+    counter = input(0, /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ []));
+    name = input.required(/* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "name" }] : /* istanbul ignore next */ []));
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
     static ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.1.0", version: "0.0.0-PLACEHOLDER", type: TestComp, isStandalone: true, selector: "ng-component", inputs: { counter: { classPropertyName: "counter", publicName: "counter", isSignal: true, isRequired: false, transformFunction: null }, name: { classPropertyName: "name", publicName: "name", isSignal: true, isRequired: true, transformFunction: null } }, ngImport: i0, template: 'Works', isInline: true });
 }
@@ -63,7 +67,8 @@ function convertToBoolean(value) {
     return value === true || value !== '';
 }
 export class TestDir {
-    counter = input(0, ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ []));
+    counter = input(0, /* @ts-ignore */
+    ...(ngDevMode ? [{ debugName: "counter" }] : /* istanbul ignore next */ []));
     signalWithTransform = input(false, { ...(ngDevMode ? { debugName: "signalWithTransform" } : /* istanbul ignore next */ {}), transform: convertToBoolean });
     signalWithTransformAndAlias = input(false, { ...(ngDevMode ? { debugName: "signalWithTransformAndAlias" } : /* istanbul ignore next */ {}), alias: 'publicNameSignal', transform: convertToBoolean });
     decoratorInput = true;

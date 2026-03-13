@@ -33,10 +33,11 @@ export function i18nMsg(
     let ${varName};
     if (typeof ngI18nClosureMode !== "undefined" && ngI18nClosureMode) {
         ${i18nMsgClosureMeta(meta)}
-        const $MSG_EXTERNAL_${msgIndex}$ = goog.getMsg("${message}"${closurePlaceholders}${closureOptions});
+        const $MSG_EXTERNAL_${msgIndex}$ = /* @ts-ignore */ goog.getMsg("${message}"${closurePlaceholders}${closureOptions});
         ${varName} = $MSG_EXTERNAL_${msgIndex}$;
     }
     else {
+      /* @ts-ignore */
       ${varName} = $localize \`${i18nMsgLocalizeMeta(meta)}${locMessageWithPlaceholders}\`;
     }`;
 }
