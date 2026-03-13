@@ -232,12 +232,13 @@ import * as i0 from "@angular/core";
 class SomeDep {
 }
 class MyAlternateService {
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyAlternateService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+    constructor(dep) { }
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyAlternateService, deps: [{ token: SomeDep }], target: i0.ɵɵFactoryTarget.Injectable });
     static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyAlternateService });
 }
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyAlternateService, decorators: [{
             type: Injectable
-        }] });
+        }], ctorParameters: () => [{ type: SomeDep }] });
 export class MyService {
     static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
     static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, providedIn: 'root', useClass: MyAlternateService, deps: [{ token: SomeDep }] });

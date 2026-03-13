@@ -42,7 +42,7 @@ export class MyApp {
         /**
          * @suppress {msgDescriptions}
          */
-        const $MSG_ID_WITH_SUFFIX$ = goog.getMsg(" Content: {$startBlockDefer} before{$startTagSpan}middle{$closeTagSpan}after {$closeBlockDefer}{$startBlockPlaceholder} before{$startTagDiv}placeholder{$closeTagDiv}after {$closeBlockPlaceholder}{$startBlockLoading} before{$startTagButton}loading{$closeTagButton}after {$closeBlockLoading}{$startBlockError} before{$startHeadingLevel1}error{$closeHeadingLevel1}after {$closeBlockError}", {
+        const $MSG_ID_WITH_SUFFIX$ = /* @ts-ignore */ goog.getMsg(" Content: {$startBlockDefer} before{$startTagSpan}middle{$closeTagSpan}after {$closeBlockDefer}{$startBlockPlaceholder} before{$startTagDiv}placeholder{$closeTagDiv}after {$closeBlockPlaceholder}{$startBlockLoading} before{$startTagButton}loading{$closeTagButton}after {$closeBlockLoading}{$startBlockError} before{$startHeadingLevel1}error{$closeHeadingLevel1}after {$closeBlockError}", {
           "closeBlockDefer": "\uFFFD/*2:1\uFFFD",
           "closeBlockError": "\uFFFD/*5:4\uFFFD",
           "closeBlockLoading": "\uFFFD/*3:2\uFFFD",
@@ -81,6 +81,7 @@ export class MyApp {
         });
         i18n_0 = $MSG_ID_WITH_SUFFIX$;
       } else {
+        /* @ts-ignore */
         i18n_0 = $localize ` Content: ${"\uFFFD*2:1\uFFFD"}:START_BLOCK_DEFER: before${"\uFFFD#1:1\uFFFD"}:START_TAG_SPAN:middle${"\uFFFD/#1:1\uFFFD"}:CLOSE_TAG_SPAN:after ${"\uFFFD/*2:1\uFFFD"}:CLOSE_BLOCK_DEFER:${"\uFFFD*4:3\uFFFD"}:START_BLOCK_PLACEHOLDER: before${"\uFFFD#1:3\uFFFD"}:START_TAG_DIV:placeholder${"\uFFFD/#1:3\uFFFD"}:CLOSE_TAG_DIV:after ${"\uFFFD/*4:3\uFFFD"}:CLOSE_BLOCK_PLACEHOLDER:${"\uFFFD*3:2\uFFFD"}:START_BLOCK_LOADING: before${"\uFFFD#1:2\uFFFD"}:START_TAG_BUTTON:loading${"\uFFFD/#1:2\uFFFD"}:CLOSE_TAG_BUTTON:after ${"\uFFFD/*3:2\uFFFD"}:CLOSE_BLOCK_LOADING:${"\uFFFD*5:4\uFFFD"}:START_BLOCK_ERROR: before${"\uFFFD#1:4\uFFFD"}:START_HEADING_LEVEL1:error${"\uFFFD/#1:4\uFFFD"}:CLOSE_HEADING_LEVEL1:after ${"\uFFFD/*5:4\uFFFD"}:CLOSE_BLOCK_ERROR:`;
       }
       return [i18n_0];

@@ -21,10 +21,11 @@ consts: () => {
       /**
        * @suppress {msgDescriptions}
        */
-      const $MSG_APP_SPEC_TS_1$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+      const $MSG_APP_SPEC_TS_1$ = /* @ts-ignore */ goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
       $I18N_1$ = $MSG_APP_SPEC_TS_1$;
   }
   else {
+      /* @ts-ignore */
       $I18N_1$ = $localize `{VAR_SELECT, select, male {male} female {female} other {other}}`;
   }
   $I18N_1$ = $r3$.ɵɵi18nPostprocess($I18N_1$, {
@@ -36,10 +37,11 @@ consts: () => {
       /**
        * @suppress {msgDescriptions}
        */
-      const $MSG_APP_SPEC_TS_2$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+      const $MSG_APP_SPEC_TS_2$ = /* @ts-ignore */ goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
       $I18N_2$ = $MSG_APP_SPEC_TS_2$;
   }
   else {
+      /* @ts-ignore */
       $I18N_2$ = $localize `{VAR_SELECT, select, male {male} female {female} other {other}}`;
   }
   $I18N_2$ = $r3$.ɵɵi18nPostprocess($I18N_2$, {
@@ -51,10 +53,11 @@ consts: () => {
       /**
        * @suppress {msgDescriptions}
        */
-      const $MSG_APP_SPEC_TS__4$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
+      const $MSG_APP_SPEC_TS__4$ = /* @ts-ignore */ goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
       $I18N_4$ = $MSG_APP_SPEC_TS__4$;
   }
   else {
+      /* @ts-ignore */
       $I18N_4$ = $localize `{VAR_SELECT, select, male {male} female {female} other {other}}`;
   }
   $I18N_4$ = $r3$.ɵɵi18nPostprocess($I18N_4$, {
@@ -66,7 +69,7 @@ consts: () => {
       /**
        * @suppress {msgDescriptions}
        */
-      const $MSG_APP_SPEC_TS_0$ = goog.getMsg(" {$icu} {$startTagDiv} {$icu} {$closeTagDiv}{$startTagDiv_1} {$icu} {$closeTagDiv}", {
+      const $MSG_APP_SPEC_TS_0$ = /* @ts-ignore */ goog.getMsg(" {$icu} {$startTagDiv} {$icu} {$closeTagDiv}{$startTagDiv_1} {$icu} {$closeTagDiv}", {
         "closeTagDiv": "[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]",
         "icu": "\uFFFDI18N_EXP_ICU\uFFFD",
         "startTagDiv": "\uFFFD#2\uFFFD",
@@ -82,6 +85,7 @@ consts: () => {
       $I18N_0$ = $MSG_APP_SPEC_TS_0$;
   }
   else {
+      /* @ts-ignore */
       $I18N_0$ = $localize ` ${"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU@@7670372064920373295: ${"\uFFFD#2\uFFFD"}:START_TAG_DIV: ${"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU@@7670372064920373295: ${"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:CLOSE_TAG_DIV:${"\uFFFD*3:1\uFFFD\uFFFD#1:1\uFFFD"}:START_TAG_DIV_1: ${"\uFFFDI18N_EXP_ICU\uFFFD"}:ICU@@7670372064920373295: ${"[\uFFFD/#2\uFFFD|\uFFFD/#1:1\uFFFD\uFFFD/*3:1\uFFFD]"}:CLOSE_TAG_DIV:`;
   }
 

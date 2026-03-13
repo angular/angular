@@ -4,7 +4,7 @@ consts: () => {
 		/**
 		 * @desc someText1
 		 */
-		const $MSG_EXTERNAL_4505060179465988919ICU_WHITESPACE_TS_1$ = goog.getMsg("{VAR_SELECT, select, WEBSITE {{START_TAG_STRONG}someText{CLOSE_TAG_STRONG}\n      }}");
+		const $MSG_EXTERNAL_4505060179465988919ICU_WHITESPACE_TS_1$ = /* @ts-ignore */ goog.getMsg("{VAR_SELECT, select, WEBSITE {{START_TAG_STRONG}someText{CLOSE_TAG_STRONG}\n      }}");
 		i18n_0 = $MSG_EXTERNAL_4505060179465988919ICU_WHITESPACE_TS_1$;
 	} else {
         …
@@ -14,7 +14,7 @@ consts: () => {
 		/**
 		 * @suppress {msgDescriptions}
 		 */
-		const $MSG_EXTERNAL_4505060179465988919ICU_WHITESPACE_TS_3$ = goog.getMsg("{VAR_SELECT, select, WEBSITE {{START_TAG_STRONG}someText{CLOSE_TAG_STRONG}\n      }}");
+		const $MSG_EXTERNAL_4505060179465988919ICU_WHITESPACE_TS_3$ = /* @ts-ignore */ goog.getMsg("{VAR_SELECT, select, WEBSITE {{START_TAG_STRONG}someText{CLOSE_TAG_STRONG}\n      }}");
 		i18n_1 = $MSG_EXTERNAL_4505060179465988919ICU_WHITESPACE_TS_3$;
 	} else {
         …

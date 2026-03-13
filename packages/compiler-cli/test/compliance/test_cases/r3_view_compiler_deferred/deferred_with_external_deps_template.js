@@ -2,7 +2,10 @@ import {EagerDep} from './deferred_with_external_deps_eager';
 import {LoadingDep} from './deferred_with_external_deps_loading';
 import * as $r3$ from "@angular/core";
 
-const $MyApp_Defer_4_DepsFn$ = () => [import("./deferred_with_external_deps_lazy").then(m => m.LazyDep)];
+const $MyApp_Defer_4_DepsFn$ = () => [
+  /* @ts-ignore */
+  import("./deferred_with_external_deps_lazy").then(m => m.LazyDep)
+];
 
 function MyApp_Defer_2_Template(rf, ctx) {
   if (rf & 1) {
@@ -38,7 +41,10 @@ export class MyApp {
 …
 
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵsetClassMetadataAsync(MyApp, () => [import("./deferred_with_external_deps_lazy").then(m => m.LazyDep)], LazyDep => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵsetClassMetadataAsync(MyApp, () => [
+    /* @ts-ignore */
+    import("./deferred_with_external_deps_lazy").then(m => m.LazyDep)
+  ], LazyDep => {
     $r3$.ɵsetClassMetadata(MyApp, [{
       type: Component,
       args: [{

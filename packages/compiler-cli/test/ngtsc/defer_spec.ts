@@ -16,7 +16,7 @@ import {NgtscTestEnvironment} from './env';
 const testFiles = loadStandardTestFiles();
 
 function cleanNewLines(contents: string) {
-  return contents.replace(/\n/g, ' ').replace(/\s+/g, ' ');
+  return contents.replace(/\s*\n\s*/g, ' ');
 }
 
 runInEachFileSystem(() => {
@@ -687,7 +687,9 @@ runInEachFileSystem(() => {
 
         const jsContents = env.getContents('test.js');
         expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
-        expect(cleanNewLines(jsContents)).toContain('() => [/* @ts-ignore */ import("./cmp").then(m => m.Cmp)]');
+        expect(cleanNewLines(jsContents)).toContain(
+          '() => [/* @ts-ignore */ import("./cmp").then(m => m.Cmp)]',
+        );
         expect(jsContents).not.toContain('import { Cmp }');
       });
 
