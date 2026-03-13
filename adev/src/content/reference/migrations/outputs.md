@@ -17,7 +17,7 @@ ng generate @angular/core:output-migration
 
 1. `@Output()` class members are updated to their `output()` equivalent.
 2. Imports in the file of components or directives, at Typescript module level, are updated as well.
-3. Migrates the APIs functions like `event.next()`, which use is not recommended, to `event.emit()` and removes `event.complete()` calls.
+3. Migrates API calls like `event.next()`, whose use is not recommended, to `event.emit()` and removes `event.complete()` calls.
 
 **Before**
 

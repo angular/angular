@@ -329,7 +329,7 @@ Combining `cdkDropListHasAnchor` with `cdkDropListSortingDisabled` makes it poss
 
 Drag and drop supports animations for both:
 
-- Sorting an draggable element inside a list
+- Sorting a draggable element inside a list
 - Moving the draggable element from the position that the user dropped it to the final position inside the list
 
 To set up your animations, define a CSS transition that targets the transform property. The following classes can be used for animations:
