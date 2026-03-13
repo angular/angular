@@ -3,7 +3,7 @@ load("//tools:defaults.bzl", "jasmine_test", "ts_project")
 ts_project(
     name = "test_lib",
     testonly = True,
-    srcs = ["isolated_compile_spec.ts"],
+    srcs = ["codegen_compile_spec.ts"],
     deps = [
         "//:node_modules/typescript",
         "//packages/compiler-cli",
@@ -14,7 +14,7 @@ ts_project(
 )
 
 jasmine_test(
-    name = "isolated",
+    name = "codegen",
     data = [
         ":test_lib",
         "//packages/compiler-cli/test/compliance/test_cases",
