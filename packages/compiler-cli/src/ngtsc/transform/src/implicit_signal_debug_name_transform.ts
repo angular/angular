@@ -68,15 +68,24 @@ function insertDebugNameIntoCallExpression(
 
     spreadArgs.push(ts.factory.createObjectLiteralExpression([debugNameProperty]));
 
-    newArgs = [
-      ...node.arguments,
-      ts.factory.createSpreadElement(
-        createNgDevModeConditional(
-          ts.factory.createArrayLiteralExpression(spreadArgs),
-          ts.factory.createArrayLiteralExpression(),
-        ),
+    const spread = ts.factory.createSpreadElement(
+      createNgDevModeConditional(
+        ts.factory.createArrayLiteralExpression(spreadArgs),
+        ts.factory.createArrayLiteralExpression(),
       ),
-    ];
+    );
+
+    // Add a `ts-ignore` on the spread, because it may raise an error that we don't
+    // have a spread argument in the signature for the specific signal. We don't update
+    // the source to add the signature to avoid making it harder to read.
+    ts.addSyntheticLeadingComment(
+      spread,
+      ts.SyntaxKind.MultiLineCommentTrivia,
+      ' @ts-ignore ',
+      true,
+    );
+
+    newArgs = [...node.arguments, spread];
   }
 
   return ts.factory.updateCallExpression(node, node.expression, node.typeArguments, newArgs);
