@@ -2,11 +2,11 @@
   "name": "@angular/docs",
   "version": "0.0.0-PLACEHOLDER",
   "peerDependencies": {
-    "@angular/cdk": "^21.3.0-next",
+    "@angular/cdk": "^22.0.0-next",
     "@angular/common": "^22.0.0-next",
     "@angular/core": "^22.0.0-next",
     "@angular/forms": "^22.0.0-next",
-    "@angular/material": "^21.3.0-next",
+    "@angular/material": "^22.0.0-next",
     "@angular/platform-browser": "^22.0.0-next",
     "@angular/router": "^22.0.0-next",
     "@angular/ssr": "^22.0.0-next",
