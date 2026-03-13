@@ -349,7 +349,7 @@ class IvyTransformationVisitor extends Visitor {
         node,
         combinedModifiers,
         node.name,
-        node.questionToken,
+        node.questionToken || node.exclamationToken,
         node.type,
         node.initializer,
       ) as T & ts.PropertyDeclaration;
