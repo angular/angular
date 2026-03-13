@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  https-proxy-agent: 7.0.6
+  https-proxy-agent: 8.0.0
   saucelabs: 9.0.2
   typescript: 6.0.1-rc
 
@@ -5611,6 +5611,10 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
+  agent-base@8.0.0:
+    resolution: {integrity: sha512-QT8i0hCz6C/KQ+KTAbSNwCHDGdmUJl2tp2ZpNlGSWCfhUNVbYG2WLE3MdZGBAgXPV4GAvjGMxo+C1hroyxmZEg==}
+    engines: {node: '>= 14'}
+
   aggregate-error@3.1.0:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
@@ -8370,8 +8374,8 @@ packages:
     resolution: {integrity: sha512-V+23sDMr12Wnz7iTcDeJr3O6AIxlnvT/bmaAAAP/Xda35C90p9599p0F1eHR/N1KILWSoWVAiOMFjBBXaXSMxg==}
     engines: {node: '>=10.19.0'}
 
-  https-proxy-agent@7.0.6:
-    resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
+  https-proxy-agent@8.0.0:
+    resolution: {integrity: sha512-YYeW+iCnAS3xhvj2dvVoWgsbca3RfQy/IlaNHHOtDmU0jMqPI9euIq3Y9BJETdxk16h9NHHCKqp/KB9nIMStCQ==}
     engines: {node: '>= 14'}
 
   human-signals@1.1.1:
@@ -13370,7 +13374,7 @@ snapshots:
       beasties: 0.4.1
       browserslist: 4.28.1
       esbuild: 0.27.3
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       istanbul-lib-instrument: 6.0.3
       jsonc-parser: 3.3.1
       listr2: 10.1.2
@@ -13429,7 +13433,7 @@ snapshots:
       beasties: 0.4.1
       browserslist: 4.28.1
       esbuild: 0.27.3
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       istanbul-lib-instrument: 6.0.3
       jsonc-parser: 3.3.1
       listr2: 10.1.2
@@ -13488,7 +13492,7 @@ snapshots:
       beasties: 0.4.1
       browserslist: 4.28.1
       esbuild: 0.27.3
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       istanbul-lib-instrument: 6.0.3
       jsonc-parser: 3.3.1
       listr2: 10.1.2
@@ -16596,7 +16600,7 @@ snapshots:
     dependencies:
       agent-base: 7.1.4
       http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       lru-cache: 11.2.6
       socks-proxy-agent: 8.0.5
     transitivePeerDependencies:
@@ -17975,7 +17979,7 @@ snapshots:
   '@typespec/ts-http-runtime@0.3.4':
     dependencies:
       http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
@@ -18111,7 +18115,7 @@ snapshots:
   '@vscode/test-electron@2.5.2':
     dependencies:
       http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       jszip: 3.10.1
       ora: 8.2.0
       semver: 7.7.4
@@ -18348,6 +18352,8 @@ snapshots:
       - supports-color
 
   agent-base@7.1.4: {}
+
+  agent-base@8.0.0: {}
 
   aggregate-error@3.1.0:
     dependencies:
@@ -18975,7 +18981,7 @@ snapshots:
 
   browserstack@1.6.1:
     dependencies:
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -21170,7 +21176,7 @@ snapshots:
   gaxios@6.7.1(encoding@0.1.13):
     dependencies:
       extend: 3.0.2
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       is-stream: 2.0.1
       node-fetch: 2.7.0(encoding@0.1.13)
       uuid: 9.0.1
@@ -21181,7 +21187,7 @@ snapshots:
   gaxios@7.1.3(supports-color@10.2.2):
     dependencies:
       extend: 3.0.2
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       node-fetch: 3.3.2
       rimraf: 5.0.10
     transitivePeerDependencies:
@@ -21190,7 +21196,7 @@ snapshots:
   gaxios@7.1.4(supports-color@10.2.2):
     dependencies:
       extend: 3.0.2
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       node-fetch: 3.3.2
     transitivePeerDependencies:
       - supports-color
@@ -21809,9 +21815,9 @@ snapshots:
       quick-lru: 5.1.1
       resolve-alpn: 1.2.1
 
-  https-proxy-agent@7.0.6(supports-color@10.2.2):
+  https-proxy-agent@8.0.0(supports-color@10.2.2):
     dependencies:
-      agent-base: 7.1.4
+      agent-base: 8.0.0
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
@@ -22649,7 +22655,7 @@ snapshots:
       decimal.js: 10.6.0
       html-encoding-sniffer: 4.0.0
       http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       is-potential-custom-element-name: 1.0.1
       nwsapi: 2.2.23
       parse5: 7.3.0
@@ -22680,7 +22686,7 @@ snapshots:
       decimal.js: 10.6.0
       html-encoding-sniffer: 6.0.0
       http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       is-potential-custom-element-name: 1.0.1
       parse5: 8.0.0
       saxes: 6.0.0
@@ -24058,7 +24064,7 @@ snapshots:
       debug: 4.4.3(supports-color@10.2.2)
       get-uri: 6.0.5
       http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       pac-resolver: 7.0.1
       socks-proxy-agent: 8.0.5
     transitivePeerDependencies:
@@ -24542,7 +24548,7 @@ snapshots:
       agent-base: 7.1.4
       debug: 4.4.3(supports-color@10.2.2)
       http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       lru-cache: 7.18.3
       pac-proxy-agent: 7.2.0
       proxy-from-env: 1.1.0
@@ -24609,7 +24615,7 @@ snapshots:
       debug: 4.4.3(supports-color@10.2.2)
       devtools-protocol: 0.0.818844
       extract-zip: 2.0.1
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       node-fetch: 2.7.0(encoding@0.1.13)
       pkg-dir: 4.2.0
       progress: 2.0.3
@@ -25985,7 +25991,7 @@ snapshots:
   teeny-request@10.1.0(supports-color@10.2.2):
     dependencies:
       http-proxy-agent: 5.0.0(supports-color@10.2.2)
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      https-proxy-agent: 8.0.0(supports-color@10.2.2)
       node-fetch: 3.3.2
       stream-events: 1.0.5
     transitivePeerDependencies:

@@ -206,7 +206,7 @@
     "zod": "^4.0.10"
   },
   "resolutions": {
-    "https-proxy-agent": "7.0.6",
+    "https-proxy-agent": "8.0.0",
     "saucelabs": "9.0.2",
     "typescript": "6.0.1-rc"
   },
