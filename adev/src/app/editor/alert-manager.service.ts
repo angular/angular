@@ -94,12 +94,22 @@ export class AlertManager {
         break;
     }
 
-    this.snackBar.openFromComponent(ErrorSnackBar, {
+    const snackBarRef = this.snackBar.openFromComponent(ErrorSnackBar, {
       panelClass: 'docs-invert-mode',
       data: {
         message,
         actionText: 'I understand',
       } satisfies ErrorSnackBarData,
     });
+
+    if (reason === AlertReason.OUT_OF_MEMORY) {
+      snackBarRef.onAction().subscribe(() => {
+        this.resetInstancesCounter();
+      });
+    }
+  }
+
+  private resetInstancesCounter(): void {
+    this.localStorage?.setItem(WEBCONTAINERS_COUNTER_KEY, '0');
   }
 }
