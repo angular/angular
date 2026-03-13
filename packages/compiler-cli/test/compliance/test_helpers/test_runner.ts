@@ -52,6 +52,7 @@ export function runTests(
     isLocalCompilation?: boolean;
     emitDeclarationOnly?: boolean;
     skipMappingChecks?: boolean;
+    checkErrorsOnly?: boolean;
   } = {},
 ) {
   describe(`compliance tests (${type})`, () => {
@@ -85,6 +86,8 @@ export function runTests(
                 expectation.expectedErrors,
                 errors,
               );
+            } else if (options.checkErrorsOnly) {
+              checkNoUnexpectedErrors(test.relativePath, errors);
             } else if (!!options.emitDeclarationOnly) {
               checkNoUnexpectedErrors(test.relativePath, errors);
               checkTypeDeclarations(fs, emittedFiles);

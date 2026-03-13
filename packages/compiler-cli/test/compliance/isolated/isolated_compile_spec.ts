@@ -7,51 +7,29 @@
  */
 
 import ts from 'typescript';
-import {checkExpectations} from '../test_helpers/check_expectations';
-import {checkNoUnexpectedErrors} from '../test_helpers/check_errors';
 import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {NgtscTestCompilerHost} from '../../../src/ngtsc/testing';
 import {
   getBuildOutputDirectory,
-  initMockTestFileSystem,
   getOptions,
   getRootDirectory,
+  CompileResult,
 } from '../test_helpers/compile_test';
-import {ComplianceTest, getAllComplianceTests} from '../test_helpers/get_compliance_tests';
+import {ComplianceTest} from '../test_helpers/get_compliance_tests';
 import {NgtscIsolatedPreprocessor} from '@angular/compiler-cli/src/ngtsc/preprocessor';
+import {runTests} from '../test_helpers/test_runner';
 
-describe('isolated compliance tests', () => {
-  for (const test of getAllComplianceTests()) {
-    if (!test.relativePath.includes('isolated')) {
-      continue;
-    }
-    describe(`[${test.description}]`, () => {
-      (test.focusTest ? fit : it)(test.description, () => {
-        const fs = initMockTestFileSystem(test.realTestPath);
-        const {errors} = compileTests(fs, test);
-        for (const expectation of test.expectations) {
-          checkExpectations(
-            fs,
-            test.relativePath,
-            expectation.failureMessage,
-            expectation.files,
-            expectation.extraChecks,
-          );
-          checkNoUnexpectedErrors(test.relativePath, errors);
-        }
-      });
-    });
-  }
+runTests('instruction compile', compileTests, {
+  checkErrorsOnly: true,
 });
 
-function compileTests(fs: FileSystem, test: ComplianceTest): {errors: string[]} {
+function compileTests(fs: FileSystem, test: ComplianceTest): CompileResult {
   const rootDir = getRootDirectory(fs);
   const outDir = getBuildOutputDirectory(fs);
   const compilerOptions = test.compilerOptions;
   const angularCompilerOptions = test.angularCompilerOptions;
 
   const options = getOptions(rootDir, outDir, compilerOptions, angularCompilerOptions);
-  // Resolve inputs relative to rootDir.
   const rootNames = test.inputFiles.map((f) => fs.resolve(rootDir, f));
 
   const host = new NgtscTestCompilerHost(fs, options);
@@ -63,6 +41,10 @@ function compileTests(fs: FileSystem, test: ComplianceTest): {errors: string[]} 
   const validFiles = new Set<AbsoluteFsPath>();
 
   for (const file of transformedFiles) {
+    if (file.fileName.includes('ngtypecheck.ts')) {
+      continue;
+    }
+
     const relativePath = fs.relative(rootDir, fs.resolve(file.fileName));
     const path = fs.resolve(outDir, relativePath);
     fs.ensureDir(fs.dirname(path));
@@ -72,6 +54,9 @@ function compileTests(fs: FileSystem, test: ComplianceTest): {errors: string[]} 
   }
 
   const verifyHost = new NgtscTestCompilerHost(fs, options);
+  const extraPaths = test.compilerOptions?.['paths'] as unknown as
+    | Record<string, string[]>
+    | undefined;
   const verifyProgram = ts.createProgram({
     rootNames: [...emittedFiles],
     options: {
@@ -80,6 +65,7 @@ function compileTests(fs: FileSystem, test: ComplianceTest): {errors: string[]} 
       skipLibCheck: true,
       paths: {
         '*': ['./node_modules/*'],
+        ...extraPaths,
       },
       // Use classic Node resolution which works better with the simple mock FS structure
       // than 'Bundler' or 'NodeNext' which expect specific package.json exports.
@@ -87,6 +73,7 @@ function compileTests(fs: FileSystem, test: ComplianceTest): {errors: string[]} 
       module: ts.ModuleKind.Node16,
       strict: true,
       target: ts.ScriptTarget.ES2015,
+      experimentalDecorators: true,
       types: [],
     },
     host: verifyHost,
@@ -95,11 +82,12 @@ function compileTests(fs: FileSystem, test: ComplianceTest): {errors: string[]} 
   const verifyDiags = ts.getPreEmitDiagnostics(verifyProgram);
 
   return {
-    errors: verifyDiags.map((d) => {
-      let message = ts.flattenDiagnosticMessageText(d.messageText, '\n');
-      if (d.file) {
-        const {line, character} = d.file.getLineAndCharacterOfPosition(d.start!);
-        message = `${d.file.fileName} (${line + 1},${character + 1}): ${message}`;
+    emittedFiles: [],
+    errors: verifyDiags.map((diagnostic) => {
+      let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+      if (diagnostic.file) {
+        const {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
+        message = `${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`;
       }
       return message;
     }),
