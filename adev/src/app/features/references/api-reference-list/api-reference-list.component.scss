@@ -90,8 +90,9 @@
       display: flex;
       gap: 1.5rem;
       flex-wrap: wrap;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
+      row-gap: 0.5rem;
     }
   }
 
