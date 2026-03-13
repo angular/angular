@@ -93,7 +93,7 @@ export function matchingProjectionSlotIndex(
  *
  * @codeGenApi
  */
-export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
+export function ɵɵprojectionDef(projectionSlots?: (string | (string | number)[][])[]): void {
   const componentNode = getLView()[DECLARATION_COMPONENT_VIEW][T_HOST] as TElementNode;
 
   if (!componentNode.projection) {
@@ -112,7 +112,7 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
       // Do not project let declarations so they don't occupy a slot.
       if (componentChild.type !== TNodeType.LetDeclaration) {
         const slotIndex = projectionSlots
-          ? matchingProjectionSlotIndex(componentChild, projectionSlots)
+          ? matchingProjectionSlotIndex(componentChild, projectionSlots as ProjectionSlots)
           : 0;
 
         if (slotIndex !== null) {
@@ -149,7 +149,7 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
 export function ɵɵprojection(
   nodeIndex: number,
   selectorIndex: number = 0,
-  attrs?: TAttributes,
+  attrs?: TAttributes | null,
   fallbackTemplateFn?: ComponentTemplate<unknown>,
   fallbackDecls?: number,
   fallbackVars?: number,
