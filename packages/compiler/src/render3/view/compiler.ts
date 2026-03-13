@@ -16,7 +16,7 @@ import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template
 import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {Identifiers as R3} from '../r3_identifiers';
-import {R3CompiledExpression, typeWithParameters} from '../util';
+import {R3CompiledExpression, tsIgnoreComment, typeWithParameters} from '../util';
 
 import {
   DeclarationListEmitMode,
@@ -746,7 +746,13 @@ export function compileDeferResolverFunction(
         );
 
         // Dynamic import, e.g. `import('./a').then(...)`.
-        const importExpr = new o.DynamicImportExpr(dep.importPath!).prop('then').callFn([innerFn]);
+        const importExpr = new o.DynamicImportExpr(dep.importPath!)
+          .prop('then')
+          .callFn([innerFn], undefined, undefined, [
+            // Necessary, because we might not generate extensions for the path
+            // and TS may try to enforce it based on the compiler options.
+            tsIgnoreComment(),
+          ]);
         depExpressions.push(importExpr);
       } else {
         // Non-deferrable symbol, just use a reference to the type. Note that it's important to
@@ -764,7 +770,13 @@ export function compileDeferResolverFunction(
       );
 
       // Dynamic import, e.g. `import('./a').then(...)`.
-      const importExpr = new o.DynamicImportExpr(importPath).prop('then').callFn([innerFn]);
+      const importExpr = new o.DynamicImportExpr(importPath)
+        .prop('then')
+        .callFn([innerFn], undefined, undefined, [
+          // Necessary, because we might not generate extensions for the path
+          // and TS may try to enforce it based on the compiler options.
+          tsIgnoreComment(),
+        ]);
       depExpressions.push(importExpr);
     }
   }
