@@ -195,7 +195,11 @@ export abstract class Expression {
   public type: Type | null;
   public sourceSpan: ParseSourceSpan | null;
 
-  constructor(type: Type | null | undefined, sourceSpan?: ParseSourceSpan | null) {
+  constructor(
+    type: Type | null | undefined,
+    sourceSpan?: ParseSourceSpan | null,
+    public leadingComments?: LeadingComment[],
+  ) {
     this.type = type || null;
     this.sourceSpan = sourceSpan || null;
   }
@@ -227,14 +231,16 @@ export abstract class Expression {
     params: Expression[],
     sourceSpan?: ParseSourceSpan | null,
     pure?: boolean,
+    leadingComments?: LeadingComment[],
   ): InvokeFunctionExpr {
-    return new InvokeFunctionExpr(this, params, null, sourceSpan, pure);
+    return new InvokeFunctionExpr(this, params, null, sourceSpan, pure, leadingComments);
   }
 
   instantiate(
     params: Expression[],
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ): InstantiateExpr {
     return new InstantiateExpr(this, params, type, sourceSpan);
   }
@@ -243,6 +249,7 @@ export abstract class Expression {
     trueCase: Expression,
     falseCase: Expression | null = null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ): ConditionalExpr {
     return new ConditionalExpr(this, trueCase, falseCase, null, sourceSpan);
   }
@@ -320,8 +327,9 @@ export class ReadVarExpr extends Expression {
     public name: string,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -350,8 +358,9 @@ export class TypeofExpr extends Expression {
     public expr: Expression,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override visitExpression(visitor: ExpressionVisitor, context: any) {
@@ -376,8 +385,9 @@ export class VoidExpr extends Expression {
     public expr: Expression,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override visitExpression(visitor: ExpressionVisitor, context: any) {
@@ -402,8 +412,9 @@ export class WrappedNodeExpr<T> extends Expression {
     public node: T,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -430,8 +441,9 @@ export class InvokeFunctionExpr extends Expression {
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
     public pure = false,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   // An alias for fn, which allows other logic to handle calls and property reads together.
@@ -473,8 +485,9 @@ export class TaggedTemplateLiteralExpr extends Expression {
     public template: TemplateLiteralExpr,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -509,8 +522,9 @@ export class InstantiateExpr extends Expression {
     public args: Expression[],
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -544,8 +558,9 @@ export class RegularExpressionLiteralExpr extends Expression {
     public body: string,
     public flags: string | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(null, sourceSpan);
+    super(null, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -572,8 +587,9 @@ export class LiteralExpr extends Expression {
     public value: number | string | boolean | null | undefined,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -598,8 +614,9 @@ export class TemplateLiteralExpr extends Expression {
     public elements: TemplateLiteralElementExpr[],
     public expressions: Expression[],
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(null, sourceSpan);
+    super(null, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -632,8 +649,9 @@ export class TemplateLiteralElementExpr extends Expression {
     readonly text: string,
     sourceSpan?: ParseSourceSpan | null,
     rawText?: string,
+    leadingComments?: LeadingComment[],
   ) {
-    super(STRING_TYPE, sourceSpan);
+    super(STRING_TYPE, sourceSpan, leadingComments);
 
     // If `rawText` is not provided, "fake" the raw string by escaping the following sequences:
     // - "\" would otherwise indicate that the next character is a control character.
@@ -699,8 +717,9 @@ export class LocalizedString extends Expression {
     readonly placeHolderNames: PlaceholderPiece[],
     readonly expressions: Expression[],
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(STRING_TYPE, sourceSpan);
+    super(STRING_TYPE, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -851,8 +870,9 @@ export class ExternalExpr extends Expression {
     type?: Type | null,
     public typeParams: Type[] | null = null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -893,8 +913,9 @@ export class ConditionalExpr extends Expression {
     public falseCase: Expression | null = null,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type || trueCase.type, sourceSpan);
+    super(type || trueCase.type, sourceSpan, leadingComments);
     this.trueCase = trueCase;
   }
 
@@ -931,8 +952,9 @@ export class DynamicImportExpr extends Expression {
     public url: string | Expression,
     sourceSpan?: ParseSourceSpan | null,
     public urlComment?: string,
+    leadingComments?: LeadingComment[],
   ) {
-    super(null, sourceSpan);
+    super(null, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -960,8 +982,9 @@ export class NotExpr extends Expression {
   constructor(
     public condition: Expression,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(BOOL_TYPE, sourceSpan);
+    super(BOOL_TYPE, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -1003,8 +1026,9 @@ export class FunctionExpr extends Expression {
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
     public name?: string | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression | Statement): boolean {
@@ -1055,8 +1079,9 @@ export class ArrowFunctionExpr extends Expression {
     public body: Expression | Statement[],
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -1105,8 +1130,9 @@ export class UnaryOperatorExpr extends Expression {
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
     public parens: boolean = true,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type || NUMBER_TYPE, sourceSpan);
+    super(type || NUMBER_TYPE, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -1141,8 +1167,9 @@ export class ParenthesizedExpr extends Expression {
     public expr: Expression,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override visitExpression(visitor: ExpressionVisitor, context: any) {
@@ -1171,8 +1198,9 @@ export class BinaryOperatorExpr extends Expression {
     public rhs: Expression,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type || lhs.type, sourceSpan);
+    super(type || lhs.type, sourceSpan, leadingComments);
     this.lhs = lhs;
   }
 
@@ -1226,8 +1254,9 @@ export class ReadPropExpr extends Expression {
     public name: string,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   // An alias for name, which allows other logic to handle property reads and keyed reads together.
@@ -1270,8 +1299,9 @@ export class ReadKeyExpr extends Expression {
     public index: Expression,
     type?: Type | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -1307,8 +1337,13 @@ export class ReadKeyExpr extends Expression {
 
 export class LiteralArrayExpr extends Expression {
   public entries: Expression[];
-  constructor(entries: Expression[], type?: Type | null, sourceSpan?: ParseSourceSpan | null) {
-    super(type, sourceSpan);
+  constructor(
+    entries: Expression[],
+    type?: Type | null,
+    sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
+  ) {
+    super(type, sourceSpan, leadingComments);
     this.entries = entries;
   }
 
@@ -1376,8 +1411,9 @@ export class LiteralMapExpr extends Expression {
     public entries: LiteralMapEntry[],
     type?: MapType | null,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(type, sourceSpan);
+    super(type, sourceSpan, leadingComments);
     if (type) {
       this.valueType = type.valueType;
     }
@@ -1405,8 +1441,9 @@ export class CommaExpr extends Expression {
   constructor(
     public parts: Expression[],
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(parts[parts.length - 1].type, sourceSpan);
+    super(parts[parts.length - 1].type, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -1430,8 +1467,9 @@ export class SpreadElementExpr extends Expression {
   constructor(
     public expression: Expression,
     sourceSpan?: ParseSourceSpan | null,
+    leadingComments?: LeadingComment[],
   ) {
-    super(null, sourceSpan);
+    super(null, sourceSpan, leadingComments);
   }
 
   override isEquivalent(e: Expression): boolean {
@@ -1858,8 +1896,9 @@ export function variable(
   name: string,
   type?: Type | null,
   sourceSpan?: ParseSourceSpan | null,
+  leadingComments?: LeadingComment[],
 ): ReadVarExpr {
-  return new ReadVarExpr(name, type, sourceSpan);
+  return new ReadVarExpr(name, type, sourceSpan, leadingComments);
 }
 
 export function importExpr(

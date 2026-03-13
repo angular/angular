@@ -216,19 +216,22 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
 
   constructor(private _escapeDollarInStrings: boolean) {}
 
-  protected printLeadingComments(stmt: o.Statement, ctx: EmitterVisitorContext): void {
-    if (stmt.leadingComments === undefined) {
+  protected printLeadingComments(
+    node: o.Expression | o.Statement,
+    ctx: EmitterVisitorContext,
+  ): void {
+    if (node.leadingComments === undefined) {
       return;
     }
-    for (const comment of stmt.leadingComments) {
+    for (const comment of node.leadingComments) {
       if (comment instanceof o.JSDocComment) {
-        ctx.print(stmt, `/*${comment.toString()}*/`, comment.trailingNewline);
+        ctx.print(node, `/*${comment.toString()}*/`, comment.trailingNewline);
       } else {
         if (comment.multiline) {
-          ctx.print(stmt, `/* ${comment.text} */`, comment.trailingNewline);
+          ctx.print(node, `/* ${comment.text} */`, comment.trailingNewline);
         } else {
           comment.text.split('\n').forEach((line) => {
-            ctx.println(stmt, `// ${line}`);
+            ctx.println(node, `// ${line}`);
           });
         }
       }
@@ -282,6 +285,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any;
 
   visitInvokeFunctionExpr(expr: o.InvokeFunctionExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(expr, ctx);
     const shouldParenthesize = expr.fn instanceof o.ArrowFunctionExpr;
 
     if (shouldParenthesize) {
@@ -300,11 +304,13 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     expr: o.TaggedTemplateLiteralExpr,
     ctx: EmitterVisitorContext,
   ): any {
+    this.printLeadingComments(expr, ctx);
     expr.tag.visitExpression(this, ctx);
     expr.template.visitExpression(this, ctx);
     return null;
   }
   visitTemplateLiteralExpr(expr: o.TemplateLiteralExpr, ctx: EmitterVisitorContext) {
+    this.printLeadingComments(expr, ctx);
     ctx.print(expr, '`');
     for (let i = 0; i < expr.elements.length; i++) {
       expr.elements[i].visitExpression(this, ctx);
@@ -318,24 +324,29 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ctx.print(expr, '`');
   }
   visitTemplateLiteralElementExpr(expr: o.TemplateLiteralElementExpr, ctx: EmitterVisitorContext) {
+    this.printLeadingComments(expr, ctx);
     ctx.print(expr, expr.rawText);
   }
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
     throw new Error('Abstract emitter cannot visit WrappedNodeExpr.');
   }
   visitTypeofExpr(expr: o.TypeofExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(expr, ctx);
     ctx.print(expr, 'typeof ');
     expr.expr.visitExpression(this, ctx);
   }
   visitVoidExpr(expr: o.VoidExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(expr, ctx);
     ctx.print(expr, 'void ');
     expr.expr.visitExpression(this, ctx);
   }
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     ctx.print(ast, ast.name);
     return null;
   }
   visitInstantiateExpr(ast: o.InstantiateExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     ctx.print(ast, `new `);
     ast.classExpr.visitExpression(this, ctx);
     ctx.print(ast, `(`);
@@ -345,6 +356,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
 
   visitLiteralExpr(ast: o.LiteralExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     const value = ast.value;
     if (typeof value === 'string') {
       ctx.print(ast, escapeIdentifier(value, this._escapeDollarInStrings));
@@ -358,11 +370,13 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     ast: o.RegularExpressionLiteralExpr,
     ctx: EmitterVisitorContext,
   ): any {
+    this.printLeadingComments(ast, ctx);
     ctx.print(ast, `/${ast.body}/${ast.flags || ''}`);
     return null;
   }
 
   visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     const head = ast.serializeI18nHead();
     ctx.print(ast, '$localize `' + head.raw);
     for (let i = 1; i < ast.messageParts.length; i++) {
@@ -377,6 +391,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any;
 
   visitConditionalExpr(ast: o.ConditionalExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     ctx.print(ast, `(`);
     ast.condition.visitExpression(this, ctx);
     ctx.print(ast, '? ');
@@ -388,10 +403,12 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
 
   visitDynamicImportExpr(ast: o.DynamicImportExpr, ctx: EmitterVisitorContext) {
+    this.printLeadingComments(ast, ctx);
     ctx.print(ast, `import(${ast.url})`);
   }
 
   visitNotExpr(ast: o.NotExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     ctx.print(ast, '!');
     ast.condition.visitExpression(this, ctx);
     return null;
@@ -401,6 +418,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   abstract visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, context: any): any;
 
   visitUnaryOperatorExpr(ast: o.UnaryOperatorExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     let opStr: string;
     switch (ast.operator) {
       case o.UnaryOperator.Plus:
@@ -421,6 +439,7 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
 
   visitBinaryOperatorExpr(ast: o.BinaryOperatorExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     const operator = BINARY_OPERATORS.get(ast.operator);
     if (!operator) {
       throw new Error(`Unknown operator ${ast.operator}`);
@@ -435,12 +454,14 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
   }
 
   visitReadPropExpr(ast: o.ReadPropExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     ast.receiver.visitExpression(this, ctx);
     ctx.print(ast, `.`);
     ctx.print(ast, ast.name);
     return null;
   }
   visitReadKeyExpr(ast: o.ReadKeyExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     ast.receiver.visitExpression(this, ctx);
     ctx.print(ast, `[`);
     ast.index.visitExpression(this, ctx);
@@ -448,12 +469,14 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     ctx.print(ast, `[`);
     this.visitAllExpressions(ast.entries, ctx, ',');
     ctx.print(ast, `]`);
     return null;
   }
   visitLiteralMapExpr(ast: o.LiteralMapExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     ctx.print(ast, `{`);
     this.visitAllObjects(
       (entry) => {
@@ -476,18 +499,21 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
   visitCommaExpr(ast: o.CommaExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     ctx.print(ast, '(');
     this.visitAllExpressions(ast.parts, ctx, ',');
     ctx.print(ast, ')');
     return null;
   }
   visitParenthesizedExpr(ast: o.ParenthesizedExpr, ctx: EmitterVisitorContext): any {
+    this.printLeadingComments(ast, ctx);
     // We parenthesize everything regardless of an explicit ParenthesizedExpr, so we can just visit
     // the inner expression.
     // TODO: Do we *need* to parenthesize everything?
     ast.expr.visitExpression(this, ctx);
   }
   visitSpreadElementExpr(ast: o.SpreadElementExpr, ctx: EmitterVisitorContext) {
+    this.printLeadingComments(ast, ctx);
     ctx.print(ast, '...');
     ast.expression.visitExpression(this, ctx);
   }
