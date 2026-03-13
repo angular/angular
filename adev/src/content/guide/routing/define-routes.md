@@ -211,7 +211,7 @@ const routes: Routes = [
 ];
 ```
 
-The page `title` property can be set dynamincally to a resolver function using [`ResolveFn`](/api/router/ResolveFn).
+The page `title` property can be set dynamically to a resolver function using [`ResolveFn`](/api/router/ResolveFn).
 
 ```ts
 const titleResolver: ResolveFn<string> = (route) => route.queryParams['id'];
