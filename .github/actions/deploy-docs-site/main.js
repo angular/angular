@@ -33081,7 +33081,10 @@ var Label = class {
       ManagedRepositories.ANGULAR,
       ManagedRepositories.ANGULAR_CLI,
       ManagedRepositories.COMPONENTS,
-      ManagedRepositories.DEV_INFRA
+      ManagedRepositories.DEV_INFRA,
+      ManagedRepositories.RULES_ANGULAR,
+      ManagedRepositories.RULES_BROWSERS,
+      ManagedRepositories.RULES_SASS
     ];
     this.name = this.params.name;
     this.description = this.params.description;
@@ -33094,6 +33097,9 @@ var ManagedRepositories;
   ManagedRepositories2["ANGULAR"] = "angular";
   ManagedRepositories2["ANGULAR_CLI"] = "angular-cli";
   ManagedRepositories2["DEV_INFRA"] = "dev-infra";
+  ManagedRepositories2["RULES_ANGULAR"] = "rules_angular";
+  ManagedRepositories2["RULES_BROWSERS"] = "rules_browsers";
+  ManagedRepositories2["RULES_SASS"] = "rules_sass";
 })(ManagedRepositories || (ManagedRepositories = {}));
 var TargetLabel = class extends Label {
   constructor() {
@@ -33536,7 +33542,7 @@ tmp/lib/tmp.js:
      *)
   *)
 
-@angular/ng-dev/bundles/chunk-34WCNHIG.mjs:
+@angular/ng-dev/bundles/chunk-QJDA6FUA.mjs:
   (*! Bundled license information:
   
   @octokit/request-error/dist-src/index.js:
