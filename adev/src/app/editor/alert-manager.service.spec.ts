@@ -77,7 +77,7 @@ describe('AlertManager', () => {
   it('should reset instances counter after dismissing out-of-memory warning', () => {
     storageMap.set(
       WEBCONTAINERS_COUNTER_KEY,
-      (MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES).toString(),
+      MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES.toString(),
     );
 
     service.init();
