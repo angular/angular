@@ -34,6 +34,7 @@ import {
   TVIEW,
 } from './interfaces/view';
 import {assertTNodeType} from './node_assert';
+import {cleanupLView as cleanupDehydratedLView} from '../hydration/cleanup';
 import {destroyLView, removeViewFromDOM} from './node_manipulation';
 import {RendererFactory} from './interfaces/renderer';
 import {NgZone} from '../zone';
@@ -278,6 +279,12 @@ function recreateLView(
 
     // Destroy the detached LView.
     destroyLView(lView[TVIEW], lView);
+
+    // Clean up any dehydrated views left over from SSR hydration.
+    // Neither destroyLView nor removeViewFromDOM handle DOM nodes
+    // stored in LContainer[DEHYDRATED_VIEWS], which causes duplicated
+    // content when the view is re-rendered during HMR.
+    cleanupDehydratedLView(lView);
 
     // Always force the creation of a new renderer to ensure state captured during construction
     // stays consistent with the new component definition by clearing any old ached factories.
