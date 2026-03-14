@@ -12,14 +12,17 @@ import {
   AnimationLViewData,
 } from '../animation/interfaces';
 import {allLeavingAnimations} from '../animation/longest_animation';
-import {queueEnterAnimations, addToAnimationQueue} from '../animation/queue';
+import {
+  queueEnterAnimations,
+  addToAnimationQueue,
+  removeAnimationsFromQueue,
+} from '../animation/queue';
 import {Injector, INJECTOR} from '../di';
 import {CONTAINER_HEADER_OFFSET} from './interfaces/container';
 import {TNode, TNodeType} from './interfaces/node';
 import {RElement} from './interfaces/renderer_dom';
-import {isComponentHost, isLContainer} from './interfaces/type_checks';
-import {ANIMATIONS, ID, LView, TVIEW} from './interfaces/view';
-import {getComponentLViewByIndex} from './util/view_utils';
+import {isLContainer} from './interfaces/type_checks';
+import {ANIMATIONS, ID, LView, TVIEW, TViewType} from './interfaces/view';
 
 export function maybeQueueEnterAnimation(
   parentLView: LView | undefined,
@@ -50,6 +53,11 @@ export function runLeaveAnimationsWithCallback(
   }
 
   const animations = lView?.[ANIMATIONS];
+
+  // regarding the TNode index to see if it is the same element.
+  if (animations?.enter?.has(tNode.index)) {
+    removeAnimationsFromQueue(injector, animations.enter.get(tNode.index)!.animateFns);
+  }
 
   // get all nodes in the current view that are descendants of tNode and have leave animations
   const nodesWithExitAnimations = aggregateDescendantAnimations(lView, tNode, animations);
@@ -93,7 +101,7 @@ export function runLeaveAnimationsWithCallback(
 // map. This map contains all pending leave animations in the current LView and is typically
 // very small.
 //
-// Note: Animations across LView boundaries (e.g., in child components or embedded views)
+// Note: Animations across LView boundaries (e.g., in embedded views)
 // are collected separately via `collectNestedViewAnimations`.
 function aggregateDescendantAnimations(
   lView: LView | undefined,
@@ -185,7 +193,7 @@ function executeLeaveAnimations(
 }
 
 /**
- * Collects leave animations from nested views (components and containers)
+ * Collects leave animations from nested views (containers only, NOT child components)
  * starting from the given TNode's children.
  */
 function collectNestedViewAnimations(
@@ -193,15 +201,17 @@ function collectNestedViewAnimations(
   tNode: TNode,
   collectedPromises: Promise<unknown>[],
 ) {
-  if (isComponentHost(tNode)) {
-    const componentView = getComponentLViewByIndex(tNode.index, lView);
-    collectAllViewLeaveAnimations(componentView, collectedPromises);
-  } else if (tNode.type & TNodeType.AnyContainer) {
+  // We explicitly DO NOT check for isComponentHost(tNode) and traverse into it here.
+  // This scopes the nested leave animations to the current component template only.
+
+  if (tNode.type & TNodeType.AnyContainer) {
     const lContainer = lView[tNode.index];
     if (isLContainer(lContainer)) {
       for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
         const subView = lContainer[i] as LView;
-        collectAllViewLeaveAnimations(subView, collectedPromises);
+        if (subView[TVIEW].type === TViewType.Embedded) {
+          collectAllViewLeaveAnimations(subView, collectedPromises);
+        }
       }
     }
   }
@@ -215,6 +225,8 @@ function collectNestedViewAnimations(
 
 /**
  * Recursively collects all leave animations from a view and its children.
+ * This is meant to only be called on embedded views stemming from the same
+ * component template.
  */
 function collectAllViewLeaveAnimations(view: LView, collectedPromises: Promise<unknown>[]) {
   const animations = view[ANIMATIONS];

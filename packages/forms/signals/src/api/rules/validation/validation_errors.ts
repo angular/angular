@@ -25,8 +25,6 @@ export interface ValidationErrorOptions {
  * @experimental 21.0.0
  */
 export type WithFieldTree<T> = T & {fieldTree: ReadonlyFieldTree<unknown>};
-/** @deprecated Use `WithFieldTree` instead  */
-export type WithField<T> = WithFieldTree<T>;
 
 /**
  * A type that allows the given type `T` to optionally have a `field` property.
@@ -37,8 +35,6 @@ export type WithField<T> = WithFieldTree<T>;
 export type WithOptionalFieldTree<T> = Omit<T, 'fieldTree'> & {
   fieldTree?: ReadonlyFieldTree<unknown>;
 };
-/** @deprecated Use `WithOptionalFieldTree` instead  */
-export type WithOptionalField<T> = WithOptionalFieldTree<T>;
 
 /**
  * A type that ensures the given type `T` does not have a `field` property.
@@ -47,8 +43,6 @@ export type WithOptionalField<T> = WithOptionalFieldTree<T>;
  * @experimental 21.0.0
  */
 export type WithoutFieldTree<T> = T & {fieldTree: never};
-/** @deprecated Use `WithoutFieldTree` instead  */
-export type WithoutField<T> = WithoutFieldTree<T>;
 
 /**
  * Create a required error associated with the target field

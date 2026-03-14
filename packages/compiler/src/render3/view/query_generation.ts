@@ -217,7 +217,7 @@ export function createViewQueriesFunction(
 
   const viewQueryFnName = name ? `${name}_Query` : null;
   return o.fn(
-    [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)],
+    [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, o.DYNAMIC_TYPE)],
     [
       renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
       renderFlagCheckIfStmt(core.RenderFlags.Update, collapseAdvanceStatements(updateStatements)),
@@ -282,8 +282,8 @@ export function createContentQueriesFunction(
   return o.fn(
     [
       new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE),
-      new o.FnParam(CONTEXT_NAME, null),
-      new o.FnParam('dirIndex', null),
+      new o.FnParam(CONTEXT_NAME, o.DYNAMIC_TYPE),
+      new o.FnParam('dirIndex', o.NUMBER_TYPE),
     ],
     [
       renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),

@@ -245,7 +245,7 @@ export async function expectText(
   text: string | RegExp,
   options: ExpectTextOptions = {},
 ): Promise<void> {
-  const container = options.container || TestBed.getFixture().nativeElement;
+  const container = options.container || TestBed.getLastFixture().nativeElement;
   await waitFor(() => {
     const content = container.textContent || '';
     if (typeof text === 'string') {

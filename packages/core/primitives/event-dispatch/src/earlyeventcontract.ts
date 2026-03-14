@@ -140,3 +140,6 @@ function removeEventListeners(
     container.removeEventListener(eventTypes[i], earlyEventHandler, /* useCapture */ capture);
   }
 }
+
+// This fixes the RollupError: Exported variable "global" is not defined.
+export {};

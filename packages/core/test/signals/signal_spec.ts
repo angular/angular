@@ -133,6 +133,11 @@ describe('signals', () => {
     expect(state + '').toBe('[Signal: false]');
   });
 
+  it('should have a toString implementation with debugName', () => {
+    const state = signal(false, {debugName: 'state'});
+    expect(state + '').toBe('[Signal (state): false]');
+  });
+
   it('should set debugName when a debugName is provided', () => {
     const node = signal(false, {debugName: 'falseSignal'})[SIGNAL] as ReactiveNode;
     expect(node.debugName).toBe('falseSignal');

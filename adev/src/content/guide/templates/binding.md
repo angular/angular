@@ -1,4 +1,4 @@
-# Binding dynamic text, properties and attributes
+﻿# Binding dynamic text, properties and attributes
 
 In Angular, a **binding** creates a dynamic connection between a component's template and its data. This connection ensures that changes to the component's data automatically update the rendered template.
 
@@ -60,7 +60,7 @@ All expression values are converted to a string. Objects and arrays are converte
 
 Angular supports binding dynamic values into object properties and HTML attributes with square brackets.
 
-You can bind to properties on an HTML element's DOM instance, a [component](guide/components) instance, or a [directive](guide/directives) instance.
+You can bind to properties on an HTML element's DOM instance, a [component](/guide/components) instance, or a [directive](/guide/directives) instance.
 
 ### Native element properties
 
@@ -192,7 +192,7 @@ When binding `class` to an array or an object, Angular compares the previous val
 
 If an element has multiple bindings for the same CSS class, Angular resolves collisions by following its style precedence order.
 
-NOTE: Class bindings do not support space-separated class names in a single key. They also don't support mutations on objects as the reference of the binding remains the same. If you need one or the other, use the [ngClass](/api/common/NgClass) directive.
+> **Note:** Class bindings do not support space-separated class names in a single key. They also don't support mutations on objects as the reference of the binding remains the same. If you need one or the other, use the [ngClass](/api/common/NgClass) directive.
 
 ### CSS style properties
 
@@ -244,7 +244,7 @@ The above example renders the following DOM.
 <section style="border: 1px solid black; font-weight: bold"> ... </section>
 ```
 
-When binding `style` to an object, Angular compares the previous value to the current value with the triple-equals operator (`===`). You must create a new object instance when you modify these values in order to Angular to apply any updates.
+When binding `style` to an object, Angular compares the previous value to the current value with the triple-equals operator (`===`). You must create a new object instance when you modify these values in order for Angular to apply any updates.
 
 If an element has multiple bindings for the same style property, Angular resolves collisions by following its style precedence order.
 
@@ -260,4 +260,4 @@ Angular supports binding string values to ARIA attributes.
 
 Angular writes the string value to the element’s `aria-label` attribute and removes it when the bound value is `null`.
 
-Some ARIA features expose DOM properties or directive inputs that accept structured values (such as element references). Use standard property bindings for those cases. See the [accessibility guide](best-practices/a11y#aria-attributes-and-properties) for examples and additional guidance.
+Some ARIA features expose DOM properties or directive inputs that accept structured values (such as element references). Use standard property bindings for those cases. See the [accessibility guide](/best-practices/a11y#aria-attributes-and-properties) for examples and additional guidance.

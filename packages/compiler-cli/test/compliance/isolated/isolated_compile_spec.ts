@@ -9,7 +9,7 @@
 import ts from 'typescript';
 import {checkExpectations} from '../test_helpers/check_expectations';
 import {checkNoUnexpectedErrors} from '../test_helpers/check_errors';
-import {FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 import {NgtscTestCompilerHost} from '../../../src/ngtsc/testing';
 import {
   getBuildOutputDirectory,
@@ -25,8 +25,8 @@ describe('isolated compliance tests', () => {
     if (!test.relativePath.includes('isolated')) {
       continue;
     }
-    describe(`[${test.relativePath}]`, () => {
-      it(test.description, () => {
+    describe(`[${test.description}]`, () => {
+      (test.focusTest ? fit : it)(test.description, () => {
         const fs = initMockTestFileSystem(test.realTestPath);
         const {errors} = compileTests(fs, test);
         for (const expectation of test.expectations) {
@@ -59,8 +59,8 @@ function compileTests(fs: FileSystem, test: ComplianceTest): {errors: string[]} 
 
   const transformedFiles = preprocessor.transformAndPrint();
 
-  const emittedFiles: string[] = [];
-  const validFiles = new Set<string>();
+  const emittedFiles: AbsoluteFsPath[] = [];
+  const validFiles = new Set<AbsoluteFsPath>();
 
   for (const file of transformedFiles) {
     const relativePath = fs.relative(rootDir, fs.resolve(file.fileName));
@@ -86,8 +86,6 @@ function compileTests(fs: FileSystem, test: ComplianceTest): {errors: string[]} 
       moduleResolution: ts.ModuleResolutionKind.Node16,
       module: ts.ModuleKind.Node16,
       strict: true,
-      // TODO: enable once we fix the generated code
-      noImplicitAny: false,
       target: ts.ScriptTarget.ES2015,
       types: [],
     },

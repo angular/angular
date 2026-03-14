@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -264,7 +264,7 @@ export interface LDeferBlockDetails extends Array<unknown> {
 
   /**
    * Timestamp indicating when the current state can be switched to
-   * the next one, in case teh current state has `minimum` parameter.
+   * the next one, in case the current state has `minimum` parameter.
    */
   [STATE_IS_FROZEN_UNTIL]: number | null;
 

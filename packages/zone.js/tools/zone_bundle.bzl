@@ -1,5 +1,5 @@
-load("@aspect_bazel_lib//lib:copy_file.bzl", "copy_file")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
+load("@bazel_lib//lib:copy_file.bzl", "copy_file")
 load("@npm//:typescript/package_json.bzl", tsc = "bin")
 
 def zone_bundle(

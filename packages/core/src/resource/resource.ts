@@ -425,8 +425,6 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       const stream = await untracked(() => {
         return this.loaderFn({
           params: extRequest.request as Exclude<R, undefined>,
-          // TODO(alxhub): cleanup after g3 removal of `request` alias.
-          request: extRequest.request as Exclude<R, undefined>,
           abortSignal,
           previous: {
             status: previousStatus,

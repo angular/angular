@@ -31,7 +31,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
 import {tickAnimationFrames} from '../animation_utils/tick_animation_frames';
@@ -169,6 +169,68 @@ describe('Animation', () => {
       fixture.detectChanges();
       expect(cmp.show()).toBeFalsy();
       expect(cmp.el).toBeUndefined();
+    }));
+
+    it('should fire the fallback timer and clean up if the animationend event is not dispatched', fakeAsync(() => {
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        template: '<div>@if (show()) {<p animate.leave="fade" #el>I should fade</p>}</div>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.innerHTML).toContain('I should fade');
+      cmp.show.set(false);
+      fixture.detectChanges();
+
+      tickAnimationFrames(1);
+
+      // Now we step the tick so the macro-task setup timeout executes and queues our fallback.
+      tick(1);
+
+      // Wait for duration + 50ms buffer time for fallback
+      tick(10 + 50);
+
+      // Assert that cleanup occurred successfully without needing to artificially dispatch the event
+      expect(fixture.nativeElement.innerHTML).not.toContain('I should fade');
+      expect(cmp.el).toBeUndefined();
+    }));
+
+    it('should prevent leaking fallback timeout if view is destroyed early', fakeAsync(() => {
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        template: '<div>@if (show()) {<p animate.leave="fade" #el>I should fade</p>}</div>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      cmp.show.set(false);
+      fixture.detectChanges();
+
+      // We explicitly destroy the fixture right after triggering the leave,
+      // imitating the situation where the view goes away before the next macro-task.
+      fixture.destroy();
+
+      // Flush all tasks, expecting no errors with our cleanup flag guarding the timeout.
+      flush();
     }));
 
     it('should support string arrays', fakeAsync(() => {
@@ -1168,61 +1230,6 @@ describe('Animation', () => {
       const paragraph = fixture.debugElement.query(By.css('p'));
       expect(cmp.show()).toBeTruthy();
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
-      paragraph.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
-      paragraph.nativeElement.dispatchEvent(
-        new AnimationEvent('animationend', {animationName: 'fade-in'}),
-      );
-      expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
-    }));
-
-    it('should support multiple classes as a single string separated by a space', fakeAsync(() => {
-      const multiple = `
-      .slide-in {
-        animation: slide-in 1ms;
-      }
-      .fade-in {
-        animation: fade-in 2ms;
-      }
-      @keyframes slide-in {
-        from {
-          transform: translateX(-10px);
-        }
-        to {
-          transform: translateX(0);
-        }
-      }
-      @keyframes fade-in {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      `;
-      @Component({
-        selector: 'test-cmp',
-        styles: multiple,
-        template:
-          '<div>@if (show()) {<p animate.enter="slide-in fade-in" #el>I should slide in</p>}</div>',
-        encapsulation: ViewEncapsulation.None,
-      })
-      class TestComponent {
-        show = signal(false);
-        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
-      }
-      TestBed.configureTestingModule({animationsEnabled: true});
-
-      const fixture = TestBed.createComponent(TestComponent);
-      const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      cmp.show.set(true);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
-      const paragraph = fixture.debugElement.query(By.css('p'));
-      expect(cmp.show()).toBeTruthy();
-      expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
-      fixture.detectChanges();
       paragraph.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
       paragraph.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-in'}),
@@ -2369,6 +2376,59 @@ describe('Animation', () => {
       tickAnimationFrames(1);
 
       expect(errorHandler.handleError).not.toHaveBeenCalled();
+    }));
+
+    it('should not wait for child component leave animations when host is inside an ng-container', fakeAsync(() => {
+      const animateStyles = `
+        .fade-out {
+          animation: fade-out 5000ms;
+        }
+        @keyframes fade-out {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+      `;
+
+      @Component({
+        selector: 'child-cmp',
+        template: '<div class="child" animate.leave="fade-out">Child</div>',
+        styles: [animateStyles],
+      })
+      class ChildCmp {}
+
+      @Component({
+        selector: 'test-cmp',
+        imports: [ChildCmp],
+        template: `
+          <ng-container>
+            @if (show()) {
+              <child-cmp></child-cmp>
+            }
+          </ng-container>
+        `,
+      })
+      class TestCmp {
+        show = signal(true);
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(TestCmp);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.query(By.css('.child'))).not.toBeNull();
+
+      cmp.show.set(false);
+      fixture.detectChanges();
+
+      // If the bounding logic works, the ng-container (TNodeType.ElementContainer)
+      // containing the child component will NOT recurse into the child component's
+      // views, so the parent host will be removed immediately without waiting
+      // for the child's 5000ms animation.
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.query(By.css('.child'))).toBeNull();
     }));
   });
 

@@ -133,7 +133,7 @@ export class KeyValueDiffers {
     this.factories = factories;
   }
 
-  static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
+  static create(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers {
     if (parent) {
       const copied = parent.factories.slice();
       factories = factories.concat(copied);
@@ -161,7 +161,7 @@ export class KeyValueDiffers {
    * })
    * ```
    */
-  static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider {
+  static extend(factories: KeyValueDifferFactory[]): StaticProvider {
     return {
       provide: KeyValueDiffers,
       useFactory: () => {

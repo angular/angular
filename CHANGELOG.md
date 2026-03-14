@@ -1,3 +1,94 @@
+<a name="19.2.20"></a>
+# 19.2.20 (2026-03-12)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5be912eb55](https://github.com/angular/angular/commit/5be912eb55fe88e8621e2ce82470d51b7d950ceb) | fix | disallow translations of iframe src |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b89b0a83a4](https://github.com/angular/angular/commit/b89b0a83a4d21bbb6f8534bbf56aece12af24595) | fix | sanitize translated attribute bindings with interpolations |
+| [621c7071ad](https://github.com/angular/angular/commit/621c7071adffbe5dd45a5c954b6b6138e0870844) | fix | sanitize translated form attributes |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="20.3.18"></a>
+# 20.3.18 (2026-03-12)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [02fbf08890](https://github.com/angular/angular/commit/02fbf08890ec6ac2efb6c2ec4f17e56497cb81d2) | fix | disallow translations of iframe src |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [72126f9a08](https://github.com/angular/angular/commit/72126f9a08c185a9b93461bab67841c4e84c9b17) | fix | sanitize translated attribute bindings with interpolations |
+| [626bc8bc20](https://github.com/angular/angular/commit/626bc8bc20e485cad2094c4a5d9417fb9a71dda8) | fix | sanitize translated form attributes |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="22.0.0-next.3"></a>
+# 22.0.0-next.3 (2026-03-12)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [78dea55351](https://github.com/angular/angular/commit/78dea55351fb305b33a919c43a6b363137eca166) | fix | disallow translations of iframe src |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [999c14eaab](https://github.com/angular/angular/commit/999c14eaab981d12bf2b1d9b1fd6766157f7b1cc) | fix | reverts "feat(core): add support for nested animations" |
+| [de0eb4c656](https://github.com/angular/angular/commit/de0eb4c6566011e1a34d529a273ec3d5b6bf17d5) | fix | sanitize translated form attributes |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="21.2.4"></a>
+# 21.2.4 (2026-03-12)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ed2d324f9c](https://github.com/angular/angular/commit/ed2d324f9cc12aab6cfa0569ef10b73243a62c65) | fix | disallow translations of iframe src |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [abbd8797bb](https://github.com/angular/angular/commit/abbd8797bbd3ae53a10033c39bd895b5b85a4fae) | fix | reverts "feat(core): add support for nested animations" |
+| [d1dcd16c5b](https://github.com/angular/angular/commit/d1dcd16c5b40291aa3fa2dc84d22842cd657b201) | fix | sanitize translated form attributes |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="22.0.0-next.2"></a>
+# 22.0.0-next.2 (2026-03-11)
+## Breaking Changes
+### core
+- `createNgModuleRef` was removed, use `createNgModule` instead
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b918beda32](https://github.com/angular/angular/commit/b918beda323eefef17bf1de03fde3d402a3d4af0) | feat | allow debouncing signals |
+| [f9ede9ec98](https://github.com/angular/angular/commit/f9ede9ec98ad233c4bbddf268cce8a647333ebfc) | fix | ensure definitions compile |
+| [b401c18674](https://github.com/angular/angular/commit/b401c18674f16bceeaf7c9babcb4b4d70f29be4f) | fix | include signal debug names in their `toString()` representation |
+| [8630319f74](https://github.com/angular/angular/commit/8630319f74c9575a21693d875cc7d5252516146d) | fix | sanitize translated attribute bindings with interpolations |
+| [36936872c9](https://github.com/angular/angular/commit/36936872c962b2073c8f44080684701068866691) | refactor | remove `createNgModuleRef` |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3e7ce0dafc](https://github.com/angular/angular/commit/3e7ce0dafcf1c0b9ed7a8c528f7120f5c796a668) | fix | restrict `SignalFormsConfig` to a readonly API |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5a6d88626b](https://github.com/angular/angular/commit/5a6d88626b604db937287a501cb723c088412a7e) | feat | add angular template inlay hints support |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="21.2.3"></a>
+# 21.2.3 (2026-03-11)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [62a97f7e4b](https://github.com/angular/angular/commit/62a97f7e4b896b4b03a1ef25764db387ffecebe1) | fix | ensure definitions compile |
+| [21b1c3b2ee](https://github.com/angular/angular/commit/21b1c3b2ee2c8423782b111b93bd60eb6b453259) | fix | include signal debug names in their `toString()` representation |
+| [224e60ecb1](https://github.com/angular/angular/commit/224e60ecb1b90115baa702f1c06edc1d64d86187) | fix | sanitize translated attribute bindings with interpolations |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.2.2"></a>
 # 21.2.2 (2026-03-09)
 ### compiler

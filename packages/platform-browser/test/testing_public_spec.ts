@@ -1104,29 +1104,26 @@ Did you run and wait for 'resolveComponentResources()'?`);
       expect(componentFixture.nativeElement).toHaveText('injected value: mocked out value');
     }));
 
-    describe('getFixture', () => {
+    describe('getLastFixture', () => {
       it('should return the last created fixture', () => {
         const fixture = TestBed.createComponent(ChildComp);
-        expect(TestBed.getFixture()).toBe(fixture);
+        expect(TestBed.getLastFixture()).toBe(fixture);
       });
 
       it('should throw if no fixture has been created', () => {
-        expect(() => TestBed.getFixture()).toThrowError('No fixture has been created yet.');
+        expect(() => TestBed.getLastFixture()).toThrowError('No fixture has been created yet.');
       });
 
-      it('should throw an error if multiple fixtures are present', () => {
+      it('should return the last fixture when multiple fixtures are present', () => {
         TestBed.createComponent(ChildComp);
-        TestBed.createComponent(ParentComp);
-        expect(() => TestBed.getFixture()).toThrowError(
-          `More than one component fixture has been created. Use \`TestBed.createComponent\` ` +
-            `and store the fixture on the test context, rather than using \`TestBed.getFixture\`.`,
-        );
+        const parentFixture = TestBed.createComponent(ParentComp);
+        expect(TestBed.getLastFixture()).toBe(parentFixture);
       });
 
       it('should clear the fixture after reset', () => {
         TestBed.createComponent(ChildComp);
         TestBed.resetTestingModule();
-        expect(() => TestBed.getFixture()).toThrowError('No fixture has been created yet.');
+        expect(() => TestBed.getLastFixture()).toThrowError('No fixture has been created yet.');
       });
     });
   });

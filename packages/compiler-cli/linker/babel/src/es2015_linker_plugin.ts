@@ -29,7 +29,8 @@ export function createEs2015LinkerPlugin({
   let fileLinker: FileLinker<
     ConstantScopePath,
     t.Statement,
-    t.Expression | t.SpreadElement
+    t.Expression | t.SpreadElement,
+    t.TSType
   > | null = null;
 
   return {
@@ -53,7 +54,8 @@ export function createEs2015LinkerPlugin({
 
           const linkerEnvironment = LinkerEnvironment.create<
             t.Statement,
-            t.Expression | t.SpreadElement
+            t.Expression | t.SpreadElement,
+            t.TSType
           >(fileSystem, logger, new BabelAstHost(), new BabelAstFactory(sourceUrl), options);
           fileLinker = new FileLinker(linkerEnvironment, sourceUrl, file.code);
         },

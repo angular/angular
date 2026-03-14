@@ -625,6 +625,7 @@
       "relativePath",
       "rememberChangeHistoryAndInvokeOnChangesHook",
       "remove",
+      "removeAnimationsFromQueue",
       "removeElements",
       "removeFromArray",
       "removeLViewOnDestroy",

@@ -1,4 +1,4 @@
-# Grouping elements with ng-container
+﻿# Grouping elements with ng-container
 
 `<ng-container>` is a special element in Angular that groups multiple elements together or marks a location in a template without rendering a real element in the DOM.
 
@@ -71,11 +71,11 @@ export class UserProfile {
 
 In the example above, the `ngTemplateOutlet` directive dynamically renders one of two template fragments in the location of the `<ng-container>` element.
 
-For more information regarding NgTemplateOutlet, see the [NgTemplateOutlets API documentation page](/api/common/NgTemplateOutlet).
+For more information regarding `NgTemplateOutlet`, see the [NgTemplateOutlet API documentation page](/api/common/NgTemplateOutlet).
 
 ## Using `<ng-container>` with structural directives
 
-You can also apply structural directives to `<ng-container>` elements. Common examples of this include `ngIf`and `ngFor`.
+You can also apply structural directives to `<ng-container>` elements. Common examples of this include `ngIf` and `ngFor`.
 
 ```angular-html
 <ng-container *ngIf="permissions == 'admin'">
@@ -91,7 +91,7 @@ You can also apply structural directives to `<ng-container>` elements. Common ex
 
 ## Using `<ng-container>` for injection
 
-See the Dependency Injection guide for more information on Angular's dependency injection system.
+See the [Dependency Injection guide](/guide/di) for more information on Angular's dependency injection system.
 
 When you apply a directive to `<ng-container>`, descendant elements can inject the directive or anything that the directive provides. Use this when you want to declaratively provide a value to a specific part of your template.
 

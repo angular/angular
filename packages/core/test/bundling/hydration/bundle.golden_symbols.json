@@ -706,6 +706,7 @@
       "relativePath",
       "rememberChangeHistoryAndInvokeOnChangesHook",
       "remove",
+      "removeAnimationsFromQueue",
       "removeDehydratedView",
       "removeDehydratedViews",
       "removeElements",

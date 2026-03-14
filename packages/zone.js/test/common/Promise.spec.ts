@@ -882,17 +882,6 @@ describe(
         it('should ignore second resolve', (done) => {
           const nested = new Promise((res) => setTimeout(() => res('nested')));
           const p = new Promise((res) => {
-            res(nested);
-            res(1);
-          });
-          p.then((v) => {
-            expect(v).toBe('nested');
-            done();
-          });
-        });
-        it('should ignore second resolve', (done) => {
-          const nested = new Promise((res) => setTimeout(() => res('nested')));
-          const p = new Promise((res) => {
             res(1);
             res(nested);
           });
