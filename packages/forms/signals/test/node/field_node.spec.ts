@@ -1207,6 +1207,47 @@ describe('FieldNode', () => {
         expect(f.age().errors()).toEqual([]);
       });
     });
+
+    describe('hasError', () => {
+      it('should return true when the field has an error of the given kind', () => {
+        const f = form(
+          signal({a: ''}),
+          (p) => {
+            required(p.a);
+          },
+          {injector: TestBed.inject(Injector)},
+        );
+
+        expect(f.a().hasError('required')).toBe(true);
+        expect(f.a().hasError('email')).toBe(false);
+      });
+
+      it('should return false when the field does not have an error of the given kind', () => {
+        const f = form(
+          signal({a: 'hello'}),
+          (p) => {
+            required(p.a);
+          },
+          {injector: TestBed.inject(Injector)},
+        );
+
+        expect(f.a().hasError('required')).toBe(false);
+      });
+
+      it('should return true for any matching error kind when multiple errors are present', () => {
+        const f = form(
+          signal({a: ''}),
+          (p) => {
+            validate(p.a, () => [{kind: 'first'}, {kind: 'second'}]);
+          },
+          {injector: TestBed.inject(Injector)},
+        );
+
+        expect(f.a().hasError('first')).toBe(true);
+        expect(f.a().hasError('second')).toBe(true);
+        expect(f.a().hasError('third')).toBe(false);
+      });
+    });
   });
 
   describe('errorSummary', () => {
