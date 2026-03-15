@@ -387,6 +387,45 @@ Array items containing objects automatically receive tracking identities, which 
 
 <!-- TBD: For dynamic arrays and complex array operations, see the [Working with arrays guide](guide/forms/signals/arrays). -->
 
+## Designing large Signal Form architectures
+
+In larger applications, it is often helpful to separate the **domain model** from the **form model**.
+
+The domain model usually represents business data, while the form model represents the editable state used by the UI.
+
+### Mapping domain models to form models
+
+In larger applications, a common pattern is to introduce mapping functions between the domain model and the form model.
+
+```ts
+interface User {
+  name: string;
+  address: Address;
+}
+
+interface UserForm {
+  name: string;
+  address: AddressForm;
+}
+
+function mapUserToForm(user: User): UserForm {
+  return {
+    name: user.name,
+    address: mapAddressToForm(user.address),
+  };
+}
+```
+
+### Avoid circular synchronization
+
+When synchronizing domain data and form state, prefer a **one-way data flow**.
+
+```
+domain model → form model → form fields → updated value
+```
+
+Avoid keeping both models synchronized in both directions continuously, as this can lead to circular updates and unpredictable state changes.
+
 ## Next steps
 
 This guide covered creating models and updating values. Related guides explore other aspects of Signal Forms:
