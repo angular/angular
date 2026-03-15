@@ -34,6 +34,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
   action: (
     field: FieldTree<TRootModel & TSubmittedModel>,
     detail: {root: FieldTree<TRootModel>; submitted: FieldTree<TSubmittedModel>},
+    event?: Event,
   ) => Promise<TreeValidationResult>;
   /**
    * Function to run when attempting to submit the form data but validation is failing.
@@ -47,6 +48,7 @@ export interface FormSubmitOptions<TRootModel, TSubmittedModel> {
   onInvalid?: (
     field: FieldTree<TRootModel & TSubmittedModel>,
     detail: {root: FieldTree<TRootModel>; submitted: FieldTree<TSubmittedModel>},
+    event?: Event,
   ) => void;
   /**
    * Whether to ignore any of the validators when submitting:

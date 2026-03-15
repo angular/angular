@@ -42,6 +42,6 @@ export class FormRoot<T> {
 
   protected onSubmit(event: Event): void {
     event.preventDefault();
-    submit(this.fieldTree());
+    submit(this.fieldTree(), undefined, event);
   }
 }
