@@ -351,17 +351,19 @@ class TcbExprTranslator implements AstVisitor {
     let result: string;
 
     if (length === 1) {
-      result = `\`${head.text}\``;
+      result = `\`${this.escapeTemplateLiteral(head.text)}\``;
     } else {
-      let parts = [`\`${head.text}`];
+      let parts = [`\`${this.escapeTemplateLiteral(head.text)}`];
       const tailIndex = length - 1;
 
       for (let i = 1; i < tailIndex; i++) {
         const expr = this.translate(ast.expressions[i - 1]);
-        parts.push(`\${${expr.print()}}${ast.elements[i].text}`);
+        parts.push(`\${${expr.print()}}${this.escapeTemplateLiteral(ast.elements[i].text)}`);
       }
       const resolvedExpression = this.translate(ast.expressions[tailIndex - 1]);
-      parts.push(`\${${resolvedExpression.print()}}${ast.elements[tailIndex].text}\``);
+      parts.push(
+        `\${${resolvedExpression.print()}}${this.escapeTemplateLiteral(ast.elements[tailIndex].text)}\``,
+      );
       result = parts.join('');
     }
     return new TcbExpr(result);
@@ -445,6 +447,10 @@ class TcbExprTranslator implements AstVisitor {
 
     // (a!.method(...) as any)
     return new TcbExpr(`(${expr}!(${args}) as any)`);
+  }
+
+  private escapeTemplateLiteral(value: string) {
+    return value.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\${/g, '$\\{');
   }
 }
 

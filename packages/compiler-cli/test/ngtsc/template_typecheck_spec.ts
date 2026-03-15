@@ -3484,6 +3484,31 @@ runInEachFileSystem(() => {
           `Argument of type 'number' is not assignable to parameter of type 'string'.`,
         );
       });
+
+      it('should check template literals with escaped characters', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '{{\\\`Hello \\\\\`\${check(name)}\\\\\`\\\`}}',
+          })
+          export class Main {
+            name = 'test';
+            check(input: number): string {
+              return String(input);
+            }
+          }
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`,
+        );
+      });
     });
 
     describe('tagged template literals', () => {
