@@ -144,7 +144,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
 
 1. In your web browser, navigate to the `http://localhost:3000/locations` and confirm that the response includes the data stored in `db.json`.
 
-If you have any trouble with your configuration, you can find more details in the [official documentation](https://www.npmjs.com/package/json-server).
+If you have any trouble with your configuration, you can find more details in the [official documentation](https://npmx.dev/package/json-server).
 </docs-step>
 
 <docs-step title="Update service to use web server instead of local array">

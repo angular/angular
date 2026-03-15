@@ -27,7 +27,7 @@ To check your application's version of Angular use the `ng version` command from
 
 ## Finding the current version of Angular
 
-The most recent stable released version of Angular appears [on npm](https://www.npmjs.com/package/@angular/core 'Angular on npm') under "Version." For example, `16.2.4`.
+The most recent stable released version of Angular appears [on npmx](https://npmx.dev/package/@angular/core 'Angular on npmx') under "Versions" For example, `16.2.4`.
 
 You can also find the most current version of Angular by using the CLI command [`ng update`](cli/update).
 By default, [`ng update`](cli/update)(without additional arguments) lists the updates that are available to you.

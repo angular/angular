@@ -24,7 +24,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/@angular/core">
+  <a href="https://npmx.dev/@angular/core">
     <img src="https://img.shields.io/npm/v/@angular/core.svg?logo=npm&logoColor=fff&label=NPM+package&color=limegreen" alt="Angular on npm" />
   </a>
 </p>

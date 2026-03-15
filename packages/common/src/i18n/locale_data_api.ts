@@ -377,7 +377,7 @@ export function getLocaleEraNames(
  * Intl's [`getWeekInfo`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/getWeekInfo) has partial support (Chromium M99 & Safari 17).
  * You may want to rely on the following alternatives:
  * - Libraries like [`Luxon`](https://moment.github.io/luxon/#/) rely on `Intl` but fallback on the ISO 8601 definition (monday) if `getWeekInfo` is not supported.
- * - Other librairies like [`date-fns`](https://date-fns.org/), [`day.js`](https://day.js.org/en/) or [`weekstart`](https://www.npmjs.com/package/weekstart) library provide their own locale based data for the first day of the week.
+ * - Other librairies like [`date-fns`](https://date-fns.org/), [`day.js`](https://day.js.org/en/) or [`weekstart`](https://npmx.dev/package/weekstart) library provide their own locale based data for the first day of the week.
  */
 export function getLocaleFirstDayOfWeek(locale: string): WeekDay {
   const data = ɵfindLocaleData(locale);
@@ -695,7 +695,7 @@ export function getLocaleExtraDayPeriods(
  * For dates and numbers, let `Intl.DateTimeFormat()` and `Intl.NumberFormat()` determine the writing direction.
  * The `Intl` alternative [`getTextInfo`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/getTextInfo).
  * has only partial support (Chromium M99 & Safari 17).
- * 3rd party alternatives like [`rtl-detect`](https://www.npmjs.com/package/rtl-detect) can work around this issue.
+ * 3rd party alternatives like [`rtl-detect`](https://npmx.dev/package/rtl-detect) can work around this issue.
  */
 export function getLocaleDirection(locale: string): 'ltr' | 'rtl' {
   const data = ɵfindLocaleData(locale);

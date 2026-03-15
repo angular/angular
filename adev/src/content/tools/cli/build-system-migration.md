@@ -522,7 +522,7 @@ However, to allow TypeScript to accept the correct usage, a TypeScript option mu
 When enabled, the [`esModuleInterop`](https://www.typescriptlang.org/tsconfig#esModuleInterop) option provides better alignment with the ECMAScript specification and is also recommended by the TypeScript team.
 Once enabled, you can update package imports where applicable to an ECMAScript conformant form.
 
-Using the [`moment`](https://npmjs.com/package/moment) package as an example, the following application code will cause runtime errors:
+Using the [`moment`](https://npmx.dev/package/moment) package as an example, the following application code will cause runtime errors:
 
 ```ts
 import * as moment from 'moment';

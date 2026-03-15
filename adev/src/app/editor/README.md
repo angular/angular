@@ -27,7 +27,7 @@
 
 - [WebContainers API](https://webcontainers.io/)
 - [CodeMirror](https://codemirror.net/)
-- [@typescript/vfs](https://www.npmjs.com/package/@typescript/vfs)
+- [@typescript/vfs](https://npmx.dev/package/@typescript/vfs)
 - [Xterm.js](https://xtermjs.org/)
 
 ## Notes

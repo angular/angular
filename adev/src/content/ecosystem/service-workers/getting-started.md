@@ -45,7 +45,7 @@ ng serve --configuration=production
 
 ```
 
-Alternatively, you can use the [`http-server package`](https://www.npmjs.com/package/http-server) from
+Alternatively, you can use the [`http-server package`](https://npmx.dev/package/http-server) from
 npm, which supports service worker applications. Run it without installation using:
 
 ```shell
