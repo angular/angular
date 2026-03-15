@@ -244,6 +244,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.metadataState.has(key);
   }
 
+  hasError(kind: string): boolean {
+    return this.errors().some((error) => error.kind === kind);
+  }
+
   markAsTouched(options?: MarkAsTouchedOptions): void {
     untracked(() => {
       this.markAsTouchedInternal(options);

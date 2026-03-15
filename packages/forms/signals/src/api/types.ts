@@ -480,6 +480,43 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
   hasMetadata(key: MetadataKey<any, any, any>): boolean;
 
   /**
+   * @description
+   *
+   * Reports whether this field currently has a validation error of the given kind.
+   *
+   * This is a helper similar to `FormControl.hasError` for Signal Forms field state.
+   * It provides a direct way to check for a specific validation error without depending on the
+   * position of an item in the array returned by `errors()`.
+   *
+   * @param kind The kind of validation error to check, for example `'required'`, `'email'`,
+   *   or a custom validation error kind.
+   * @returns `true` if an error with the given kind is currently present on this field,
+   *   otherwise `false`.
+   *
+   * @usageNotes
+   *
+   * Use this helper in templates when rendering validation messages for specific errors.
+   *
+   * ```angular-html
+   * @if (loginForm.email().hasError('required')) {
+   *   <div>Email is required.</div>
+   * }
+   *
+   * @if (loginForm.email().hasError('email')) {
+   *   <div>Please enter a valid email address.</div>
+   * }
+   *
+   * @if (addressForm.postalCode().hasError('invalidPostalCode')) {
+   *   <div>Please enter a valid postal code.</div>
+   * }
+   * ```
+   *
+   * This is especially useful when a field may have multiple validation errors, since it avoids
+   * hard-coded positional access patterns such as `errors()[0]` or `errors()[1]`.
+   */
+  hasError(kind: string): boolean;
+
+  /**
    * Focuses the first UI control in the DOM that is bound to this field state.
    * If no UI control is bound, does nothing.
    * @param options Optional focus options to pass to the native focus() method.

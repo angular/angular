@@ -501,6 +501,7 @@ export interface ReadonlyFieldState<TValue, TKey extends string | number = strin
     readonly fieldTree: ReadonlyFieldTree<unknown, TKey>;
     focusBoundControl(options?: FocusOptions): void;
     readonly formFieldBindings: Signal<readonly FormFieldBinding[]>;
+    hasError(kind: string): boolean;
     hasMetadata(key: MetadataKey<any, any, any>): boolean;
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
