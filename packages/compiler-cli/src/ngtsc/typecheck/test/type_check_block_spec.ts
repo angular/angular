@@ -220,6 +220,7 @@ describe('type check blocks', () => {
     expect(tcb('{{ `${a} - ${b} - ${c}` }}')).toContain(
       '"" + (`${((this).a)} - ${((this).b)} - ${((this).c)}`);',
     );
+    expect(tcb('{{ `a${`hello ${name}`}b` }}')).toContain('(`a${`hello ${((this).name)}`}b`)');
   });
 
   it('should handle tagged template literals', () => {
@@ -230,6 +231,13 @@ describe('type check blocks', () => {
     expect(tcb('{{ tag`${a} - ${b} - ${c}` }}')).toContain(
       '"" + (((this).tag)`${((this).a)} - ${((this).b)} - ${((this).c)}`);',
     );
+  });
+
+  it('should escape characters in template literals', () => {
+    expect(tcb('{{ `a\\`b` }}')).toContain('(`a\\`b`)');
+    expect(tcb('{{ `a\\${b}` }}')).toContain('(`a$\\{b}`)');
+    expect(tcb('{{ `a\\\\b` }}')).toContain('(`a\\\\b`)');
+    expect(tcb('{{ `a\\\`${middle}\\\`b` }}')).toContain('(`a\\\`${((this).middle)}\\\`b`)');
   });
 
   it('should generate regular expressions', () => {
