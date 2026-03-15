@@ -426,6 +426,14 @@
       .docs-ref-content {
         padding: 1rem 0;
 
+        .docs-ref-option-and-description {
+          .docs-reference-option {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+        }
+
         &:not(:first-child) {
           border-block-start: 1px solid var(--senary-contrast);
         }
