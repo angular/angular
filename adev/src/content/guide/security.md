@@ -376,7 +376,7 @@ The validation rules are:
 - `Host` and `X-Forwarded-Host` headers are validated against a strict allowlist and cannot contain path separators.
 - `X-Forwarded-Port` header must be numeric.
 - `X-Forwarded-Proto` header must be `http` or `https`.
-- `X-Forwarded-Prefix` header must not start with multiple `/` or `\` or contain `.`, `..` path segments.
+- `X-Forwarded-Prefix` header must not start with `\` or multiple `/` or contain `.`, `..` path segments.
 
 Invalid or disallowed headers now trigger an error log. Requests with unrecognized hostnames will result in a Client-Side Rendered (CSR) page if `allowedHosts` is defined; if not, a `400 Bad Request` is issued. Note that in a future major release, all unrecognized hostnames will default to a `400 Bad Request` regardless of `allowedHosts` settings.
 
