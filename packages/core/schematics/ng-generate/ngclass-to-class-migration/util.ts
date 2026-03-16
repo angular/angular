@@ -179,10 +179,6 @@ function getPropertyRemovalRange(property: ts.ObjectLiteralElementLike): {
   const properties = parent.properties;
   const propertyIndex = properties.indexOf(property);
 
-  if (propertyIndex === 0) {
-    return {start: property.getFullStart(), end: properties[1].getFullStart()};
-  }
-
   if (properties.length === 1) {
     const sourceFile = property.getSourceFile();
     let end = property.getEnd();
@@ -192,6 +188,10 @@ function getPropertyRemovalRange(property: ts.ObjectLiteralElementLike): {
       end += commaIndex + 1;
     }
     return {start: property.getFullStart(), end};
+  }
+
+  if (propertyIndex === 0) {
+    return {start: property.getFullStart(), end: properties[1].getFullStart()};
   }
 
   return {start: properties[propertyIndex - 1].getEnd(), end: property.getEnd()};
