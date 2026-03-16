@@ -671,7 +671,12 @@ class InlineTcbOp implements Op {
     const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
     const fnName = `_tcb_${this.ref.node.pos}`;
 
-    const {tcbMeta, component} = adaptTypeCheckBlockMetadata(this.ref, this.meta, env);
+    const {tcbMeta, component} = adaptTypeCheckBlockMetadata(
+      this.ref,
+      this.meta,
+      env,
+      TcbGenericContextBehavior.CopyClassNodes,
+    );
 
     // Inline TCBs should copy any generic type parameter nodes directly, as the TCB code is
     // inlined into the class in a context where that will always be legal.
@@ -682,7 +687,6 @@ class InlineTcbOp implements Op {
       tcbMeta,
       this.domSchemaChecker,
       this.oobRecorder,
-      TcbGenericContextBehavior.CopyClassNodes,
     );
 
     return fn;
