@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import ts from 'typescript';
-import {TcbComponentMetadata, TcbTypeCheckBlockMetadata, TcbTypeParameter} from '../api';
+import {TcbComponentMetadata, TcbTypeCheckBlockMetadata} from '../api';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {createHostBindingsBlockGuard} from './host_bindings';
-import {Context, TcbGenericContextBehavior} from './ops/context';
+import {Context} from './ops/context';
 import {Scope} from './ops/scope';
 import {getStatementsBlock} from './ops/codegen';
 
@@ -47,7 +46,6 @@ export function generateTypeCheckBlock(
   meta: TcbTypeCheckBlockMetadata,
   domSchemaChecker: DomSchemaChecker,
   oobRecorder: OutOfBandDiagnosticRecorder,
-  genericContextBehavior: TcbGenericContextBehavior,
 ): string {
   const tcb = new Context(
     env,
@@ -61,42 +59,14 @@ export function generateTypeCheckBlock(
     meta.preserveWhitespaces,
   );
   const ctxRawType = env.referenceTcbValue(component.ref);
-  let typeParameters: TcbTypeParameter[] | undefined = undefined;
-  let typeArguments: string[] | undefined = undefined;
-
-  if (component.typeParameters !== undefined) {
-    if (!env.config.useContextGenericType) {
-      genericContextBehavior = TcbGenericContextBehavior.FallbackToAny;
-    }
-
-    switch (genericContextBehavior) {
-      case TcbGenericContextBehavior.UseEmitter:
-        // Guaranteed to emit type parameters since we checked that the class has them above.
-        const emittedParams = component.typeParameters || [];
-        typeParameters = emittedParams;
-        typeArguments = typeParameters!.map((param) => param.name);
-        break;
-      case TcbGenericContextBehavior.CopyClassNodes:
-        const copiedParams = component.typeParameters ? [...component.typeParameters] : [];
-        typeParameters = copiedParams;
-        typeArguments = typeParameters!.map((param) => param.name);
-        break;
-      case TcbGenericContextBehavior.FallbackToAny:
-        typeArguments = Array.from({length: component.typeParameters?.length ?? 0}).map(
-          () => 'any',
-        );
-        break;
-    }
-  }
+  const {typeParameters, typeArguments} = component;
 
   const typeParamsStr =
-    typeParameters === undefined || typeParameters.length === 0
+    !env.config.useContextGenericType || typeParameters === null || typeParameters.length === 0
       ? ''
       : `<${typeParameters.map((p) => p.representation).join(', ')}>`;
   const typeArgsStr =
-    typeArguments === undefined || typeArguments.length === 0
-      ? ''
-      : `<${typeArguments.join(', ')}>`;
+    typeArguments === null || typeArguments.length === 0 ? '' : `<${typeArguments.join(', ')}>`;
 
   const thisParamStr = `this: ${ctxRawType.print()}${typeArgsStr}`;
   const statements: string[] = [];

@@ -89,7 +89,7 @@ export interface TcbDirectiveMetadata {
   typeParameters: TcbTypeParameter[] | null;
   inputs: ClassPropertyMapping<TcbInputMapping>;
   outputs: ClassPropertyMapping;
-  hasRequiresInlineTypeCtor: boolean;
+  requiresInlineTypeCtor: boolean;
   ngTemplateGuards: TemplateGuardMeta[];
   hasNgTemplateContextGuard: boolean;
   hasNgFieldDirective: boolean;
@@ -105,6 +105,7 @@ export interface TcbDirectiveMetadata {
 export interface TcbComponentMetadata {
   ref: TcbReferenceMetadata;
   typeParameters: TcbTypeParameter[] | null;
+  typeArguments: string[] | null;
 }
 
 export interface TcbTypeCheckBlockMetadata {

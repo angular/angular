@@ -774,7 +774,7 @@ export class Scope {
       // The most common case is that when a directive is not generic, we use the normal
       // `TcbNonDirectiveTypeOp`.
       return new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir);
-    } else if (!dir.hasRequiresInlineTypeCtor || this.tcb.env.config.useInlineTypeConstructors) {
+    } else if (!dir.requiresInlineTypeCtor || this.tcb.env.config.useInlineTypeConstructors) {
       // For generic directives, we use a type constructor to infer types. If a directive requires
       // an inline type constructor, then inlining must be available to use the
       // `TcbDirectiveCtorOp`. If not we, we fallback to using `any` – see below.

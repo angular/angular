@@ -70,7 +70,12 @@ export class TypeCheckFile extends Environment {
     genericContextBehavior: TcbGenericContextBehavior,
   ): void {
     const fnId = `_tcb${this.nextTcbId++}`;
-    const {tcbMeta, component} = adaptTypeCheckBlockMetadata(ref, meta, this);
+    const {tcbMeta, component} = adaptTypeCheckBlockMetadata(
+      ref,
+      meta,
+      this,
+      genericContextBehavior,
+    );
     const fn = generateTypeCheckBlock(
       this,
       component,
@@ -78,7 +83,6 @@ export class TypeCheckFile extends Environment {
       tcbMeta,
       domSchemaChecker,
       oobRecorder,
-      genericContextBehavior,
     );
     this.tcbStatements.push(fn);
   }
