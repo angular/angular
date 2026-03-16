@@ -1,6 +1,6 @@
 {
   "scopeName": "host-object-literal.ng",
-  "injectionSelector": "L:meta.decorator.ts -comment -text.html -expression.ng",
+  "injectionSelector": "L:meta.decorator.ts -comment -text.html -expression.ng, L:meta.embedded.block.angular-ts meta.decorator.ts -comment -expression.ng",
   "patterns": [
     {
       "include": "#hostObjectLiteral"
