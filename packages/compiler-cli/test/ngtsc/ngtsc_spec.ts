@@ -10788,6 +10788,27 @@ runInEachFileSystem((os: string) => {
       expect(codes).toEqual([ngErrorCode(ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE)]);
     });
 
+    it('should compile a component with a complex generic', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'app-root',
+            template: '',
+          })
+          export class App<
+            T extends object = object,
+            TOptions extends { [K in keyof T]?: T[K] } = object
+          > {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     describe('InjectorDef emit optimizations for standalone', () => {
       it('should not filter components out of NgModule.imports', () => {
         env.write(

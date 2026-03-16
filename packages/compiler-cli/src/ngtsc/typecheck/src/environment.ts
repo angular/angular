@@ -69,7 +69,7 @@ export class Environment extends ReferenceEmitEnvironment {
       return new TcbExpr(this.typeCtors.get(key)!);
     }
 
-    if (dir.hasRequiresInlineTypeCtor) {
+    if (dir.requiresInlineTypeCtor) {
       // The constructor has already been created inline, we just need to construct a reference to
       // it.
       const typeCtorExpr = `${this.referenceTcbValue(dir.ref).print()}.ngTypeCtor`;
