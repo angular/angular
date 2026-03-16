@@ -5987,7 +5987,7 @@ runInEachFileSystem((os: string) => {
       expect(messageText).toContain("Value is of type 'string'.");
     });
 
-    it('should handle `changeDetection` field', () => {
+    it('should handle `changeDetection` field with the "default" value: OnPush', () => {
       env.write(
         `test.ts`,
         `
@@ -6003,7 +6003,27 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('changeDetection: 0');
+      // because this default value is implicit
+      expect(jsContents).not.toContain('changeDetection: 0');
+    });
+
+    it('should handle `changeDetection` field', () => {
+      env.write(
+        `test.ts`,
+        `
+      import {Component, ChangeDetectionStrategy} from '@angular/core';
+      @Component({
+        selector: 'comp-a',
+        template: '...',
+        changeDetection: ChangeDetectionStrategy.Eager
+      })
+      class CompA {}
+    `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('changeDetection: 1');
     });
 
     it('should throw if `changeDetection` contains invalid value', () => {

@@ -13,6 +13,7 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
@@ -21,6 +22,8 @@ describe('TemplateRef', () => {
     @Component({
       template: `<ng-template #templateRef></ng-template>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
@@ -64,6 +67,8 @@ describe('TemplateRef', () => {
         `,
         exportAs: 'menuContent',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MenuContent {
         @ViewChild(TemplateRef, {static: true}) template!: TemplateRef<any>;
@@ -78,6 +83,8 @@ describe('TemplateRef', () => {
           </menu-content>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         @ViewChild(MenuContent) content!: MenuContent;
@@ -196,6 +203,8 @@ describe('TemplateRef', () => {
         selector: 'dynamic',
         template: '',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class DynamicCmp {
         @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
@@ -205,6 +214,8 @@ describe('TemplateRef', () => {
         selector: 'test',
         template: '',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmp {
         constructor(public vcr: ViewContainerRef) {}
@@ -275,6 +286,8 @@ describe('TemplateRef', () => {
         <ng-container #containerRef></ng-container>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild('templateRef') templateRef!: TemplateRef<any>;
@@ -327,6 +340,8 @@ describe('TemplateRef', () => {
           <ng-container #containerRef></ng-container>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ListenerTest {
         @ViewChild('templateRef') templateRef!: TemplateRef<any>;

@@ -6,15 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ChangeDetectionStrategy} from '@angular/compiler';
+import {dispatchEvent, isNode} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 import {
   ApplicationRef,
   Component,
+  createComponent,
   EnvironmentInjector,
   ErrorHandler,
   Injectable,
   Input,
   NgZone,
-  createComponent,
   provideZoneChangeDetection,
   provideZonelessChangeDetection,
   signal,
@@ -28,8 +31,6 @@ import {
   waitForAsync,
   withModule,
 } from '../testing';
-import {dispatchEvent, isNode} from '@angular/private/testing';
-import {expect} from '@angular/private/testing/matchers';
 
 @Component({
   selector: 'simple-comp',
@@ -60,6 +61,7 @@ class SecondDeferredComp {}
   selector: 'my-if-comp',
   template: `MyIf(<span *ngIf="showMore">More</span>)`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 @Injectable()
 class MyIfComp {
@@ -98,6 +100,7 @@ class AsyncComp {
   selector: 'async-child-comp',
   template: '<span>{{localText}}</span>',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AsyncChildComp {
   localText: string = '';
@@ -114,6 +117,7 @@ class AsyncChildComp {
   selector: 'async-change-comp',
   template: `<async-child-comp (click)="click()" [text]="text"></async-child-comp>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AsyncChangeComp {
   text: string = '1';
@@ -127,6 +131,7 @@ class AsyncChangeComp {
   selector: 'async-timeout-comp',
   template: `<span (click)="click()">{{ text }}</span>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AsyncTimeoutComp {
   text: string = '1';
@@ -142,6 +147,7 @@ class AsyncTimeoutComp {
   selector: 'nested-async-timeout-comp',
   template: `<span (click)="click()">{{ text }}</span>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedAsyncTimeoutComp {
   text: string = '1';
@@ -527,6 +533,7 @@ describe('ComponentFixture', () => {
     @Component({
       template: '',
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       ngDoCheck() {
@@ -550,6 +557,7 @@ describe('ComponentFixture', () => {
     @Component({
       template: '{{thing}}',
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       thing = 'initial';
@@ -581,7 +589,10 @@ describe('ComponentFixture with zoneless', () => {
   });
 
   it('will not refresh CheckAlways views when detectChanges is called if not marked dirty', () => {
-    @Component({template: '{{signalThing()}}|{{regularThing}}'})
+    @Component({
+      template: '{{signalThing()}}|{{regularThing}}',
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
     class CheckAlwaysCmp {
       regularThing = 'initial';
       signalThing = signal('initial');
@@ -631,6 +642,7 @@ describe('ComponentFixture with zoneless', () => {
   it('can disable checkNoChanges', () => {
     @Component({
       template: '{{thing}}',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       thing = 1;

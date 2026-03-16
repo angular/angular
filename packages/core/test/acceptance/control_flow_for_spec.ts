@@ -34,6 +34,8 @@ describe('control flow - for', () => {
     @Component({
       template: '@for ((item of items); track item; let idx = $index) {{{item}}({{idx}})|}',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       items = [1, 2, 3];
@@ -61,6 +63,8 @@ describe('control flow - for', () => {
     @Component({
       template: '@for ((item of items.keys()); track $index) {{{item}}|}',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       items = new Map([
@@ -79,6 +83,8 @@ describe('control flow - for', () => {
     @Component({
       template: '@for ((item of items); track idx; let idx = $index) {{{item}}({{idx}})|}',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       items = [1, 2, 3];
@@ -106,6 +112,8 @@ describe('control flow - for', () => {
     @Component({
       template: '@for ((item of items); track idx; let idx = $index) {|} @empty {Empty}',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       items: number[] | null | undefined = [1, 2, 3];
@@ -149,6 +157,8 @@ describe('control flow - for', () => {
     @Component({
       template: '@for (item of items | test; track item;) {{{item}}|}',
       imports: [TestPipe],
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       items = [1, 2, 3];
@@ -182,6 +192,8 @@ describe('control flow - for', () => {
           {{ x }}
         }
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {}
 
@@ -195,6 +207,8 @@ describe('control flow - for', () => {
       template:
         '@for ((item of items); track item; let idx = $index) {{{item}}({{$index}}/{{idx}})|}',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       items = [1, 2, 3];
@@ -216,6 +230,8 @@ describe('control flow - for', () => {
       @Component({
         template: '@for ((item of items); track $index + offset) {{{item}}}',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = ['a', 'b', 'c'];
@@ -249,6 +265,8 @@ describe('control flow - for', () => {
           {{ item }}
         }`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = ['a', 'b'];
@@ -281,6 +299,8 @@ describe('control flow - for', () => {
           }
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = ['a', 'b'];
@@ -305,6 +325,8 @@ describe('control flow - for', () => {
           {{ item }}
         }`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = ['a', 'b'];
@@ -326,6 +348,8 @@ describe('control flow - for', () => {
           {{ item }}
         }`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = ['a', 'b', 'a', 'c', 'a'];
@@ -361,6 +385,8 @@ describe('control flow - for', () => {
           {{ item }}
         }`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = new Map([
@@ -402,6 +428,8 @@ describe('control flow - for', () => {
       @Component({
         template: `@for (item of items.values(); track item) {}`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = new Map([
@@ -423,6 +451,8 @@ describe('control flow - for', () => {
       @Component({
         template: `@for (item of items; track item) {}`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = [1, 2, 3];
@@ -446,6 +476,8 @@ describe('control flow - for', () => {
           >)
         }`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = [{value: 0}, {value: 1}];
@@ -472,6 +504,8 @@ describe('control flow - for', () => {
           ({{ item.value }})
         }`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = [{value: 0}, {value: 1}];
@@ -498,6 +532,8 @@ describe('control flow - for', () => {
           ({{ item.value }})
         }`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = [{value: 0}, {value: 1}];
@@ -524,6 +560,8 @@ describe('control flow - for', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = [1, 2, 3];
@@ -543,6 +581,8 @@ describe('control flow - for', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = [1, 3];
@@ -562,6 +602,8 @@ describe('control flow - for', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = [1, 2, 3];
@@ -581,6 +623,8 @@ describe('control flow - for', () => {
       @Component({
         template: '@for (item of items; track item; let idx = $index) {{{item}}({{idx}})|}',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         items = [1, 2, 3, 4, 5, 6];
@@ -613,6 +657,8 @@ describe('control flow - for', () => {
       @Component({
         template: ``,
         selector: 'child-cmp',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ChildCmp {}
 
@@ -623,6 +669,8 @@ describe('control flow - for', () => {
             <child-cmp />
           }
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         tasks = BEFORE;
@@ -644,6 +692,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -658,6 +708,8 @@ describe('control flow - for', () => {
             After</test
           >
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1, 2, 3];
@@ -673,6 +725,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -688,6 +742,8 @@ describe('control flow - for', () => {
             After</test
           >
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [];
@@ -704,6 +760,8 @@ describe('control flow - for', () => {
         selector: 'test',
         template:
           'Main: <ng-content/> Loop slot: <ng-content select="[loop]"/> Empty slot: <ng-content select="[empty]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -720,6 +778,8 @@ describe('control flow - for', () => {
             After</test
           >
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1, 2, 3];
@@ -743,6 +803,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -758,6 +820,8 @@ describe('control flow - for', () => {
             After</test
           >
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1, 2];
@@ -784,6 +848,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -798,6 +864,8 @@ describe('control flow - for', () => {
             After</test
           >
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1, 2, 3];
@@ -814,6 +882,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -831,6 +901,8 @@ describe('control flow - for', () => {
             After</test
           >
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1, 2, 3];
@@ -848,6 +920,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -864,6 +938,8 @@ describe('control flow - for', () => {
             After</test
           >
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1, 2, 3];
@@ -879,6 +955,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -888,6 +966,8 @@ describe('control flow - for', () => {
         // Note the whitespace due to the indentation inside @for.
         template:
           '<test>Before @for (item of items; track $index) {<span foo>{{item}}</span>} After</test>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1, 2, 3];
@@ -902,6 +982,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -918,6 +1000,8 @@ describe('control flow - for', () => {
             After</test
           >
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1, 2, 3];
@@ -932,6 +1016,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -948,6 +1034,8 @@ describe('control flow - for', () => {
             After</test
           >
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1, 2];
@@ -962,6 +1050,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -974,6 +1064,8 @@ describe('control flow - for', () => {
           }
           After</test
         >`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1, 2];
@@ -994,6 +1086,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -1015,6 +1109,8 @@ describe('control flow - for', () => {
           }
           After</test
         > `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1];
@@ -1033,6 +1129,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -1062,6 +1160,8 @@ describe('control flow - for', () => {
           }
           After</test
         > `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1];
@@ -1080,6 +1180,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -1109,6 +1211,8 @@ describe('control flow - for', () => {
           }
           After</test
         > `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1];
@@ -1125,6 +1229,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -1137,6 +1243,8 @@ describe('control flow - for', () => {
             }
           </test>
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1];
@@ -1151,6 +1259,8 @@ describe('control flow - for', () => {
       @Component({
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {}
 
@@ -1167,6 +1277,8 @@ describe('control flow - for', () => {
             After</test
           >
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         items = [1];

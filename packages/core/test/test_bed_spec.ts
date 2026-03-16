@@ -11,6 +11,7 @@ import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 import {
   APP_INITIALIZER,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Compiler,
   Component,
@@ -80,6 +81,7 @@ class SimpleService {
   selector: 'hello-world',
   template: '<greeting-cmp></greeting-cmp>',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class HelloWorld {}
 
@@ -88,6 +90,7 @@ export class HelloWorld {}
   selector: 'greeting-cmp',
   template: 'Hello {{ name }}',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class GreetingCmp {
   name: string;

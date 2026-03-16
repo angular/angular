@@ -24,6 +24,7 @@ import {
   TemplateRef,
   ViewChild,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
@@ -41,6 +42,8 @@ describe('onChanges', () => {
       selector: 'child-comp',
       template: 'child',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ChildComp implements OnChanges {
       @Input() a: number = 0;
@@ -59,6 +62,8 @@ describe('onChanges', () => {
       selector: 'app-comp',
       template: '<child-comp [a]="a" [b]="b" [c]="c"></child-comp>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class AppComp {
       a = 0;
@@ -95,6 +100,8 @@ describe('onChanges', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() val1 = 'a';
@@ -109,6 +116,8 @@ describe('onChanges', () => {
     @Component({
       template: `<comp [val1]="val1" [publicVal2]="val2"></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val1 = 'a2';
@@ -155,6 +164,8 @@ describe('onChanges', () => {
       selector: 'parent',
       template: `<child [val]="val"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @Input() val = '';
@@ -168,6 +179,8 @@ describe('onChanges', () => {
       selector: 'child',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() val = '';
@@ -180,6 +193,8 @@ describe('onChanges', () => {
     @Component({
       template: `<parent [val]="val"></parent>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'foo';
@@ -233,6 +248,8 @@ describe('onChanges', () => {
       selector: 'parent',
       template: `<child [name]="name" [val]="val"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @Input() val = '';
@@ -248,6 +265,8 @@ describe('onChanges', () => {
       selector: 'child',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() val = '';
@@ -265,6 +284,8 @@ describe('onChanges', () => {
         <parent name="2" [val]="val"></parent>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'foo';
@@ -346,6 +367,8 @@ describe('onChanges', () => {
       selector: 'comp',
       template: `<p>{{ val }}</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() val = '';
@@ -358,6 +381,8 @@ describe('onChanges', () => {
     @Component({
       template: `<comp *ngIf="show" [val]="val"></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -407,6 +432,8 @@ describe('onChanges', () => {
       selector: 'projected',
       template: `<p>{{ val }}</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
       @Input() val = '';
@@ -420,6 +447,8 @@ describe('onChanges', () => {
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() val = '';
@@ -432,6 +461,8 @@ describe('onChanges', () => {
     @Component({
       template: `<comp [val]="val"><projected [val]="val"></projected></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
@@ -484,6 +515,8 @@ describe('onChanges', () => {
       selector: 'projected',
       template: `<p>{{ val }}</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
       @Input() val = '';
@@ -499,6 +532,8 @@ describe('onChanges', () => {
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() val = '';
@@ -520,6 +555,8 @@ describe('onChanges', () => {
         </comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
@@ -613,6 +650,8 @@ describe('onChanges', () => {
       selector: 'comp',
       template: `<p>{{ val }}</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() val = '';
@@ -625,6 +664,8 @@ describe('onChanges', () => {
     @Component({
       template: `<comp [dir]="val" [val]="val"></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
@@ -690,6 +731,8 @@ describe('onChanges', () => {
       selector: 'comp',
       template: `<p>{{ val }}</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() val = '';
@@ -704,6 +747,8 @@ describe('onChanges', () => {
     @Component({
       template: `<comp [dir]="val" [val]="val"></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
@@ -782,6 +827,8 @@ describe('onChanges', () => {
     @Component({
       template: `<div [injectionDir]="val" [dir]="val"></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
@@ -829,6 +876,8 @@ describe('onChanges', () => {
     @Component({
       template: `<div [dir]="val1" [dir-val]="val2"></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val1 = 'a';
@@ -873,6 +922,8 @@ describe('onChanges', () => {
       selector: 'comp',
       template: `<p>{{ val }}</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() val = '';
@@ -891,6 +942,8 @@ describe('onChanges', () => {
         <comp name="1" [val]="val"></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
@@ -988,6 +1041,8 @@ describe('onChanges', () => {
       selector: 'child',
       template: `<p>{{ val }}</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() val = '';
@@ -1003,6 +1058,8 @@ describe('onChanges', () => {
       selector: 'parent',
       template: `<child [name]="name" [val]="val"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @Input() val = '';
@@ -1021,6 +1078,8 @@ describe('onChanges', () => {
         <parent name="1" [val]="val"></parent>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
@@ -1181,6 +1240,8 @@ describe('onChanges', () => {
     @Component({
       template: `<p>{{ value }}</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       value = 'a';
@@ -1216,6 +1277,8 @@ describe('meta-programming', () => {
     @Component({
       template: `<child name="value"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -1223,6 +1286,8 @@ describe('meta-programming', () => {
       selector: 'child',
       template: `empty`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name: string = '';
@@ -1268,6 +1333,8 @@ describe('meta-programming', () => {
     @Component({
       template: `<child name="value"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -1277,6 +1344,8 @@ describe('meta-programming', () => {
       selector: 'child',
       template: `empty`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child extends BaseChild {
       @Input() name: string = '';
@@ -1393,6 +1462,8 @@ describe('hooks order', () => {
       selector: 'app-comp',
       template: '<div [a]="1" [b]="2" [c]="3"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class AppComp {}
 
@@ -1471,6 +1542,8 @@ describe('hooks order', () => {
       selector: 'app-comp',
       template: '<div [a]="id" [b]="id" [c]="id"></div><div [a]="id" [b]="id" [c]="id"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class AppComp {
       id = 0;
@@ -1514,6 +1587,8 @@ describe('onInit', () => {
       selector: 'my-comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComponent {
       @Input() input1 = '';
@@ -1529,6 +1604,8 @@ describe('onInit', () => {
     @Component({
       template: ` <my-comp [input1]="value1" [input2]="value2"></my-comp> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       value1 = 'a';
@@ -1559,6 +1636,8 @@ describe('onInit', () => {
     @Component({
       template: ``,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngOnInit() {
@@ -1582,6 +1661,8 @@ describe('onInit', () => {
       selector: `child-comp`,
       template: `<p>child</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ChildComp {
       ngOnInit() {
@@ -1592,6 +1673,8 @@ describe('onInit', () => {
     @Component({
       template: `<child-comp></child-comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ParentComp {
       ngOnInit() {
@@ -1615,6 +1698,8 @@ describe('onInit', () => {
       selector: `child-comp`,
       template: `<p>child</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ChildComp {
       @Input() name = '';
@@ -1628,6 +1713,8 @@ describe('onInit', () => {
       selector: 'parent-comp',
       template: `<child-comp [name]="name"></child-comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ParentComp {
       @Input() name = '';
@@ -1643,6 +1730,8 @@ describe('onInit', () => {
         <parent-comp name="2"></parent-comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -1662,6 +1751,8 @@ describe('onInit', () => {
       selector: 'my-comp',
       template: '<p>test</p>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       ngOnInit() {
@@ -1672,6 +1763,8 @@ describe('onInit', () => {
     @Component({
       template: ` <div *ngIf="show"><my-comp></my-comp></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -1700,6 +1793,8 @@ describe('onInit', () => {
       selector: 'my-comp',
       template: '<p>test</p>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       onInitCalled = false;
@@ -1713,12 +1808,16 @@ describe('onInit', () => {
       selector: 'dynamic-comp',
       template: ` <my-comp></my-comp> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class DynamicComp {}
 
     @Component({
       template: ` <div #container></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild('container', {read: ViewContainerRef}) viewContainerRef!: ViewContainerRef;
@@ -1747,6 +1846,8 @@ describe('onInit', () => {
       selector: 'projected',
       template: '',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
       ngOnInit() {
@@ -1758,6 +1859,8 @@ describe('onInit', () => {
       selector: 'comp',
       template: `<ng-content></ng-content>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngOnInit() {
@@ -1772,6 +1875,8 @@ describe('onInit', () => {
         </comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngOnInit() {
@@ -1795,6 +1900,8 @@ describe('onInit', () => {
       selector: 'projected',
       template: '',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
       @Input() name = '';
@@ -1808,6 +1915,8 @@ describe('onInit', () => {
       selector: 'comp',
       template: `<ng-content></ng-content>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -1827,6 +1936,8 @@ describe('onInit', () => {
         </comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngOnInit() {
@@ -1862,6 +1973,8 @@ describe('onInit', () => {
       selector: 'comp',
       template: `<p></p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -1877,6 +1990,8 @@ describe('onInit', () => {
         <comp name="2" dir dir-name="2"></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngOnInit() {
@@ -1925,6 +2040,8 @@ describe('onInit', () => {
     @Component({
       template: `<div [injectionDir]="val" [dir]="val"></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
@@ -1962,6 +2079,8 @@ describe('onInit', () => {
       selector: 'comp',
       template: `<p></p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -1979,6 +2098,8 @@ describe('onInit', () => {
         <comp name="2" dir dir-name="2"></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngOnInit() {
@@ -2016,6 +2137,8 @@ describe('onInit', () => {
         <p name="2" dir dir-name="2"></p>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngOnInit() {
@@ -2039,6 +2162,8 @@ describe('onInit', () => {
       selector: 'comp',
       template: `<p></p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2055,6 +2180,8 @@ describe('onInit', () => {
         <comp name="1"></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       numbers = [2, 3, 4, 5, 6];
@@ -2085,6 +2212,8 @@ describe('onInit', () => {
       selector: 'child',
       template: `<p></p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -2098,6 +2227,8 @@ describe('onInit', () => {
       selector: 'parent',
       template: '<child [name]="name"></child>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @Input() name = '';
@@ -2114,6 +2245,8 @@ describe('onInit', () => {
         <parent name="1"></parent>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       numbers = [2, 3, 4, 5, 6];
@@ -2162,6 +2295,8 @@ describe('doCheck', () => {
     @Component({
       template: ``,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngDoCheck() {
@@ -2189,6 +2324,8 @@ describe('doCheck', () => {
       selector: 'parent',
       template: `<child></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       ngDoCheck() {
@@ -2200,6 +2337,8 @@ describe('doCheck', () => {
       selector: 'child',
       template: ``,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       ngDoCheck() {
@@ -2210,6 +2349,8 @@ describe('doCheck', () => {
     @Component({
       template: `<parent></parent>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngDoCheck() {
@@ -2231,6 +2372,8 @@ describe('doCheck', () => {
     @Component({
       template: ``,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngOnInit() {
@@ -2269,6 +2412,8 @@ describe('doCheck', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2284,6 +2429,8 @@ describe('doCheck', () => {
         <comp name="2" dir="2"></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngDoCheck() {
@@ -2318,6 +2465,8 @@ describe('doCheck', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2335,6 +2484,8 @@ describe('doCheck', () => {
         <comp name="2" dir="2"></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngDoCheck() {
@@ -2383,6 +2534,8 @@ describe('doCheck', () => {
     @Component({
       template: `<div [injectionDir]="val" [dir]="val"></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       val = 'a';
@@ -2422,6 +2575,8 @@ describe('doCheck', () => {
         <p dir="2"></p>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngDoCheck() {
@@ -2452,6 +2607,8 @@ describe('afterContentinit', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngAfterContentInit() {
@@ -2461,6 +2618,8 @@ describe('afterContentinit', () => {
     @Component({
       template: `<comp></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -2483,6 +2642,8 @@ describe('afterContentinit', () => {
     @Component({
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterContentInit() {
@@ -2510,6 +2671,8 @@ describe('afterContentinit', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngAfterContentInit() {
@@ -2520,6 +2683,8 @@ describe('afterContentinit', () => {
     @Component({
       template: `<comp *ngIf="show"></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -2560,6 +2725,8 @@ describe('afterContentinit', () => {
       selector: 'parent',
       template: `<child [name]="name"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @Input() name = '';
@@ -2573,6 +2740,8 @@ describe('afterContentinit', () => {
       selector: 'child',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -2588,6 +2757,8 @@ describe('afterContentinit', () => {
         <parent name="2"></parent>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterContentInit() {
@@ -2617,6 +2788,8 @@ describe('afterContentinit', () => {
       selector: 'projected-child',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ProjectedChild {
       @Input() name = '';
@@ -2630,6 +2803,8 @@ describe('afterContentinit', () => {
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2643,6 +2818,8 @@ describe('afterContentinit', () => {
       selector: 'projected',
       template: `<projected-child [name]="name"></projected-child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
       @Input() name = '';
@@ -2664,6 +2841,8 @@ describe('afterContentinit', () => {
         </comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterContentInit() {
@@ -2705,6 +2884,8 @@ describe('afterContentinit', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2721,6 +2902,8 @@ describe('afterContentinit', () => {
         <comp name="5"></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -2747,6 +2930,8 @@ describe('afterContentinit', () => {
       selector: 'parent',
       template: `<child [name]="name"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @Input() name = '';
@@ -2760,6 +2945,8 @@ describe('afterContentinit', () => {
       selector: 'child',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -2776,6 +2963,8 @@ describe('afterContentinit', () => {
         <parent name="5"></parent>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -2829,6 +3018,8 @@ describe('afterContentinit', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -2844,6 +3035,8 @@ describe('afterContentinit', () => {
         <comp name="2" dir="2"></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterContentInit() {
@@ -2874,6 +3067,8 @@ describe('afterContentChecked', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngAfterContentInit() {
@@ -2888,6 +3083,8 @@ describe('afterContentChecked', () => {
     @Component({
       template: `<comp></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterContentInit() {
@@ -2927,6 +3124,8 @@ describe('afterViewInit', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngAfterViewInit() {
@@ -2937,6 +3136,8 @@ describe('afterViewInit', () => {
     @Component({
       template: `<comp></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -2959,6 +3160,8 @@ describe('afterViewInit', () => {
     @Component({
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterViewInit() {
@@ -2986,6 +3189,8 @@ describe('afterViewInit', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngAfterViewInit() {
@@ -2996,6 +3201,8 @@ describe('afterViewInit', () => {
     @Component({
       template: `<comp *ngIf="show"></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -3031,6 +3238,8 @@ describe('afterViewInit', () => {
       selector: 'parent',
       template: `<child [name]="name"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @Input() name = '';
@@ -3044,6 +3253,8 @@ describe('afterViewInit', () => {
       selector: 'child',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -3059,6 +3270,8 @@ describe('afterViewInit', () => {
         <parent name="2"></parent>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterViewInit() {
@@ -3088,6 +3301,8 @@ describe('afterViewInit', () => {
       selector: 'projected',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
       @Input() name = '';
@@ -3101,6 +3316,8 @@ describe('afterViewInit', () => {
       selector: 'comp',
       template: `<ng-content></ng-content>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3116,6 +3333,8 @@ describe('afterViewInit', () => {
         <comp name="2"><projected name="2"></projected></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterViewInit() {
@@ -3139,6 +3358,8 @@ describe('afterViewInit', () => {
       selector: 'projected-child',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ProjectedChild {
       @Input() name = '';
@@ -3152,6 +3373,8 @@ describe('afterViewInit', () => {
       selector: 'projected',
       template: `<projected-child [name]="name"></projected-child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
       @Input() name = '';
@@ -3165,6 +3388,8 @@ describe('afterViewInit', () => {
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3180,6 +3405,8 @@ describe('afterViewInit', () => {
         <comp name="2"><projected name="2"></projected></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterViewInit() {
@@ -3211,6 +3438,8 @@ describe('afterViewInit', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3227,6 +3456,8 @@ describe('afterViewInit', () => {
         <comp name="5"></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -3253,6 +3484,8 @@ describe('afterViewInit', () => {
       selector: 'child',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -3265,6 +3498,8 @@ describe('afterViewInit', () => {
       selector: 'parent',
       template: `<child [name]="name"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @Input() name = '';
@@ -3281,6 +3516,8 @@ describe('afterViewInit', () => {
         <parent name="5"></parent>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -3333,6 +3570,8 @@ describe('afterViewInit', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3348,6 +3587,8 @@ describe('afterViewInit', () => {
         <comp name="2" dir="2"></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterViewInit() {
@@ -3385,6 +3626,8 @@ describe('afterViewInit', () => {
         <div dir="2"></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterViewInit() {
@@ -3415,6 +3658,8 @@ describe('afterViewChecked', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngAfterViewChecked() {
@@ -3425,6 +3670,8 @@ describe('afterViewChecked', () => {
     @Component({
       template: `<comp></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -3449,6 +3696,8 @@ describe('afterViewChecked', () => {
     @Component({
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterViewChecked() {
@@ -3478,6 +3727,8 @@ describe('afterViewChecked', () => {
       selector: 'comp',
       template: `<p>{{ value }}</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() value = '';
@@ -3489,6 +3740,8 @@ describe('afterViewChecked', () => {
     @Component({
       template: `<comp [value]="value"></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       value = 1;
@@ -3513,6 +3766,8 @@ describe('afterViewChecked', () => {
       selector: 'child',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -3526,6 +3781,8 @@ describe('afterViewChecked', () => {
       selector: 'parent',
       template: `<child [name]="name"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @Input() name = '';
@@ -3542,6 +3799,8 @@ describe('afterViewChecked', () => {
         <parent name="5"></parent>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       numbers = [0, 1, 2, 3];
@@ -3593,6 +3852,8 @@ describe('afterViewChecked', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3608,6 +3869,8 @@ describe('afterViewChecked', () => {
         <comp name="2" dir="2"></comp>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterViewChecked() {
@@ -3645,6 +3908,8 @@ describe('afterViewChecked', () => {
         <div dir="2"></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       ngAfterViewChecked() {
@@ -3675,6 +3940,8 @@ describe('onDestroy', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngOnDestroy() {
@@ -3685,6 +3952,8 @@ describe('onDestroy', () => {
     @Component({
       template: `<comp *ngIf="show"></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -3722,6 +3991,8 @@ describe('onDestroy', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3739,6 +4010,8 @@ describe('onDestroy', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -3766,6 +4039,8 @@ describe('onDestroy', () => {
       selector: 'child',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -3779,6 +4054,8 @@ describe('onDestroy', () => {
       selector: 'parent',
       template: `<child [name]="name"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @Input() name = '';
@@ -3795,6 +4072,8 @@ describe('onDestroy', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -3822,6 +4101,8 @@ describe('onDestroy', () => {
       selector: 'child',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {
       @Input() name = '';
@@ -3835,6 +4116,8 @@ describe('onDestroy', () => {
       selector: 'parent',
       template: `<child [name]="name"></child>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @Input() name = '';
@@ -3847,6 +4130,8 @@ describe('onDestroy', () => {
       selector: 'grandparent',
       template: `<parent [name]="name"></parent>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Grandparent {
       @Input() name = '';
@@ -3863,6 +4148,8 @@ describe('onDestroy', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -3897,6 +4184,8 @@ describe('onDestroy', () => {
       selector: 'projected',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Projected {
       @Input() name = '';
@@ -3910,6 +4199,8 @@ describe('onDestroy', () => {
       selector: 'comp',
       template: `<div><ng-content></ng-content></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3931,6 +4222,8 @@ describe('onDestroy', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -3957,6 +4250,8 @@ describe('onDestroy', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -3975,6 +4270,8 @@ describe('onDestroy', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       showAll = true;
@@ -4015,6 +4312,8 @@ describe('onDestroy', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -4031,6 +4330,8 @@ describe('onDestroy', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -4080,6 +4381,8 @@ describe('onDestroy', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       ngOnDestroy() {
@@ -4095,6 +4398,8 @@ describe('onDestroy', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -4140,6 +4445,8 @@ describe('onDestroy', () => {
       selector: 'child',
       template: `<ng-content></ng-content>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Child {}
 
@@ -4147,6 +4454,8 @@ describe('onDestroy', () => {
       selector: 'parent',
       template: `<ng-content></ng-content>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Parent {
       @ContentChildren(Child, {descendants: true}) child!: QueryList<Child>;
@@ -4163,6 +4472,8 @@ describe('onDestroy', () => {
         <div #container dir></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild('container', {read: ViewContainerRef, static: true}) container!: ViewContainerRef;
@@ -4218,6 +4529,8 @@ describe('onDestroy', () => {
       selector: 'comp',
       template: `<p>test</p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() name = '';
@@ -4235,6 +4548,8 @@ describe('onDestroy', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -4271,6 +4586,8 @@ describe('onDestroy', () => {
     @Component({
       template: `<p *ngIf="show" dir></p>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -4307,6 +4624,8 @@ describe('hook order', () => {
     template: `{{ value }}
       <div><ng-content></ng-content></div>`,
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class Comp {
     @Input() value = '';
@@ -4352,6 +4671,8 @@ describe('hook order', () => {
       ><ng-content></ng-content
     ></comp>`,
     standalone: false,
+
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class Parent extends Comp {}
 
@@ -4359,6 +4680,8 @@ describe('hook order', () => {
     @Component({
       template: `<comp *ngIf="show" name="comp" [value]="value"></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       value = 'a';
@@ -4412,6 +4735,8 @@ describe('hook order', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       value = 'a';
@@ -4506,6 +4831,8 @@ describe('hook order', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       value = 'a';
@@ -4629,6 +4956,8 @@ describe('non-regression', () => {
         <ng-template onDestroyDir>content</ng-template>
       </ng-template>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       show = true;
@@ -4674,6 +5003,8 @@ describe('non-regression', () => {
     @Component({
       template: `<div [testDir]="value">{{ value }}</div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       value = 1;
@@ -4714,6 +5045,8 @@ describe('non-regression', () => {
     @Component({
       template: `<div [testDir]="value">{{ value }}</div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       value = 1;

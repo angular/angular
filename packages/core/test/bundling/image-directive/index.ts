@@ -7,9 +7,14 @@
  */
 
 import '@angular/compiler';
-import {Component, importProvidersFrom, provideZoneChangeDetection} from '../../../src/core';
 import {bootstrapApplication, provideProtractorTestingSupport} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  importProvidersFrom,
+  provideZoneChangeDetection,
+} from '../../../src/core';
 
 import {BasicComponent} from './e2e/basic/basic';
 import {FillModeFailingComponent, FillModePassingComponent} from './e2e/fill-mode/fill-mode';
@@ -20,6 +25,7 @@ import {
 import {ImagePerfWarningsLazyComponent} from './e2e/image-perf-warnings-lazy/image-perf-warnings-lazy';
 import {ImagePerfWarningsOversizedComponent} from './e2e/image-perf-warnings-oversized/image-perf-warnings-oversized';
 import {SvgNoOversizedPerfWarningsComponent} from './e2e/image-perf-warnings-oversized/svg-no-perf-oversized-warnings';
+import {LcpCheckDuplicate} from './e2e/lcp-check-duplicate/lcp-check-duplicate';
 import {LcpCheckComponent} from './e2e/lcp-check/lcp-check';
 import {
   OversizedImageComponentFailing,
@@ -27,12 +33,12 @@ import {
 } from './e2e/oversized-image/oversized-image';
 import {PreconnectCheckComponent} from './e2e/preconnect-check/preconnect-check';
 import {PlaygroundComponent} from './playground';
-import {LcpCheckDuplicate} from './e2e/lcp-check-duplicate/lcp-check-duplicate';
 
 @Component({
   selector: 'app-root',
   imports: [RouterModule],
   template: '<router-outlet></router-outlet>',
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class RootComponent {}
 

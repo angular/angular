@@ -7,6 +7,7 @@
  */
 
 import {
+  ChangeDetectionStrategy,
   Component,
   Directive,
   inject,
@@ -56,6 +57,7 @@ describe('ControlValueAccessor', () => {
       />
     `,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CustomControl, multi: true}],
+    changeDetection: ChangeDetectionStrategy.Eager,
   })
   class CustomControl implements ControlValueAccessor {
     value = '';

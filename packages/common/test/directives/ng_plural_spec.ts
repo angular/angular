@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgLocalization, NgPlural, NgPluralCase} from '../../index';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component, Injectable} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
+import {CommonModule, NgLocalization, NgPlural, NgPluralCase} from '../../index';
 
 describe('ngPlural', () => {
   let fixture: ComponentFixture<any>;
@@ -184,6 +185,7 @@ class TestLocalization extends NgLocalization {
   selector: 'test-cmp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   switchValue: number | null = null;

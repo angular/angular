@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgSwitch, NgSwitchCase, NgSwitchDefault} from '../../index';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Attribute, Component, Directive, TemplateRef, ViewChild} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
+import {CommonModule, NgSwitch, NgSwitchCase, NgSwitchDefault} from '../../index';
 
 describe('NgSwitch', () => {
   let fixture: ComponentFixture<any>;
@@ -151,6 +152,7 @@ describe('NgSwitch', () => {
         '<li *ngSwitchCase="\'a\'">when a</li>' +
         '<li *ngSwitchDefault>when default</li>' +
         '</ul>',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       switchValue = 'a';
@@ -268,6 +270,7 @@ describe('NgSwitch', () => {
   selector: 'test-cmp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   switchValue: any = null;
@@ -301,6 +304,7 @@ class TestComponent {
     </ng-template>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ComplexComponent {
   @ViewChild('foo', {static: true}) foo!: TemplateRef<any>;

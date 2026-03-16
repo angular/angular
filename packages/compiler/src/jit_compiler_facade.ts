@@ -666,7 +666,7 @@ function convertDeclareComponentFacadeToMetadata(
       decl.viewProviders !== undefined ? new WrappedNodeExpr(decl.viewProviders) : null,
     animations: decl.animations !== undefined ? new WrappedNodeExpr(decl.animations) : null,
     defer,
-    changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.Default,
+    changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.OnPush,
     encapsulation: decl.encapsulation ?? ViewEncapsulation.Emulated,
     declarationListEmitMode: DeclarationListEmitMode.ClosureResolved,
     relativeContextFilePath: '',

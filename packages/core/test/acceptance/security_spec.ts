@@ -17,6 +17,7 @@ import {
   Type,
   ViewChild,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from '../../src/core';
 import {RuntimeErrorCode} from '../../src/errors';
 import {global} from '../../src/util/global';
@@ -39,6 +40,8 @@ describe('comment node text escaping', () => {
             <div></div>
           </div>`,
           standalone: false,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class XSSComp {
           // ngIf serializes the `xssValue` into a comment for debugging purposes.
@@ -151,6 +154,8 @@ describe('iframe processing', () => {
               @Component({
                 selector: 'my-comp',
                 template: ` <iframe ${srcAttr}="${TEST_IFRAME_URL}" ${securityAttr}=""> </iframe>`,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -170,6 +175,8 @@ describe('iframe processing', () => {
                   ${securityAttr.toUpperCase()}=""
                 >
                 </iframe>`,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -187,6 +194,8 @@ describe('iframe processing', () => {
                   ${srcAttr}="${TEST_IFRAME_URL}"
                   [${securityAttr}]="''"
                 ></iframe>`,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -204,6 +213,8 @@ describe('iframe processing', () => {
                   ${srcAttr}="${TEST_IFRAME_URL}"
                   ${securityAttr}="{{ '' }}"
                 ></iframe>`,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -224,6 +235,8 @@ describe('iframe processing', () => {
                     [${securityAttr.toUpperCase()}]="''"
                   ></iframe>
                 `,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -240,6 +253,8 @@ describe('iframe processing', () => {
                 template: `
                   <iframe ${srcAttr}="${TEST_IFRAME_URL}" [attr.${securityAttr}]="''"></iframe>
                 `,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -260,6 +275,8 @@ describe('iframe processing', () => {
                     [attr.${securityAttr.toUpperCase()}]="''"
                   ></iframe>
                 `,
+
+                changeDetection: ChangeDetectionStrategy.Eager,
               })
               class IframeComp {}
 
@@ -271,6 +288,8 @@ describe('iframe processing', () => {
             @Component({
               selector: 'my-comp',
               template: ` <iframe ${securityAttr}="allow-forms" [${srcAttr}]="src"> </iframe> `,
+
+              changeDetection: ChangeDetectionStrategy.Eager,
             })
             class IframeComp {
               private sanitizer = inject(DomSanitizer);
@@ -308,6 +327,8 @@ describe('iframe processing', () => {
           imports: [IframeDir],
           selector: 'my-comp',
           template: '<iframe dir></iframe>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class IframeComp {}
 
@@ -328,6 +349,8 @@ describe('iframe processing', () => {
           imports: [Dir],
           selector: 'my-comp',
           template: '<img dir>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class NonIframeComp {}
 
@@ -345,6 +368,8 @@ describe('iframe processing', () => {
             imports: [NgIf],
             selector: 'my-comp',
             template: `<iframe *ngIf="visible" src="${TEST_IFRAME_URL}" sandbox=""></iframe>`,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {
             visible = true;
@@ -358,6 +383,8 @@ describe('iframe processing', () => {
         @Component({
           selector: 'my-comp',
           template: `<iframe src="${TEST_IFRAME_URL}" sandbox srcdoc="Hi!"></iframe>`,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class IframeComp {}
 
@@ -378,6 +405,8 @@ describe('iframe processing', () => {
           imports: [IframeDir],
           selector: 'my-comp',
           template: '<iframe dir></iframe>',
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class IframeComp {}
 
@@ -401,6 +430,8 @@ describe('iframe processing', () => {
             imports: [IframeDir],
             selector: 'my-comp',
             template: '<iframe sandbox dir></iframe>',
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -424,6 +455,8 @@ describe('iframe processing', () => {
             imports: [IframeDir],
             selector: 'my-comp',
             template: `<IFRAME dir src="${TEST_IFRAME_URL}"></IFRAME>`,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -448,6 +481,8 @@ describe('iframe processing', () => {
             imports: [IframeDir],
             selector: 'my-comp',
             template: '<iframe dir sandbox></iframe>',
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -472,6 +507,8 @@ describe('iframe processing', () => {
             imports: [IframeDir],
             selector: 'my-comp',
             template: `<iframe src="${TEST_IFRAME_URL}" dir></iframe>`,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -483,6 +520,8 @@ describe('iframe processing', () => {
         @Component({
           selector: 'my-comp',
           template: ` <iframe referrerPolicy="no-referrer" src="${TEST_IFRAME_URL}"></iframe> `,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class IframeComp {}
 
@@ -501,6 +540,8 @@ describe('iframe processing', () => {
             template: ` <section>
               <iframe src="${TEST_IFRAME_URL}" [referrerPolicy]="'no-referrer'"></iframe>
             </section>`,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -525,6 +566,8 @@ describe('iframe processing', () => {
             imports: [IframeDir],
             selector: 'my-comp',
             template: `<iframe dir src="${TEST_IFRAME_URL}"></iframe>`,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -559,6 +602,8 @@ describe('iframe processing', () => {
             // the directive matching order (thus the order of host attributes) is
             // based on the imports order, so the `sandbox` gets set first and the `src` second.
             template: '<iframe set-src set-sandbox></iframe>',
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -591,6 +636,8 @@ describe('iframe processing', () => {
             imports: [DirThatSetsSandbox],
             selector: 'my-comp',
             template: '<iframe dir></iframe>',
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -623,6 +670,8 @@ describe('iframe processing', () => {
             imports: [DirThatSetsSrc],
             selector: 'my-comp',
             template: '<iframe dir></iframe>',
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -642,6 +691,8 @@ describe('iframe processing', () => {
                 <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"></iframe>
               </ng-template>
             `,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {
             @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
@@ -676,6 +727,8 @@ describe('iframe processing', () => {
                   <iframe src="${TEST_IFRAME_URL}" [sandbox]="''"> </iframe>
                 </section>
               `,
+
+              changeDetection: ChangeDetectionStrategy.Eager,
             })
             class IframeComp {}
 
@@ -690,6 +743,8 @@ describe('iframe processing', () => {
             @Component({
               selector: 'my-comp',
               template: ` <iframe i18n src="${TEST_IFRAME_URL}" [sandbox]="''"> </iframe> `,
+
+              changeDetection: ChangeDetectionStrategy.Eager,
             })
             class IframeComp {}
 
@@ -701,6 +756,8 @@ describe('iframe processing', () => {
           @Component({
             selector: 'my-comp',
             template: ` <iframe src="${TEST_IFRAME_URL}" i18n-sandbox sandbox=""> </iframe> `,
+
+            changeDetection: ChangeDetectionStrategy.Eager,
           })
           class IframeComp {}
 
@@ -715,6 +772,8 @@ describe('SVG animation processing', () => {
   it('should error when `attributeName` is bound', () => {
     @Component({
       template: '<svg><animate [attr.attributeName]="attr"></animate></svg>',
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       attr = 'href';
@@ -741,6 +800,8 @@ describe('SVG animation processing', () => {
       imports: [animateAttrDir],
       selector: 'my-comp',
       template: '<svg><animate dir></animate></svg>',
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {}
 
@@ -757,6 +818,8 @@ describe('innerHTML processing', () => {
   it('should drop risky attributes from elements created with innerHTML', () => {
     @Component({
       template: '<div [innerHTML]="html"></div>',
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       html = '<div action="abc"></div>';

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {
   Component,
   ContentChildren,
@@ -426,6 +427,7 @@ describe('NgTemplateOutlet', () => {
         <ng-template #tpl let-name>Name:{{ name }}</ng-template>
         <ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="ctx"></ng-template>
       `,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       ctx: {$implicit: string} | undefined = undefined;
@@ -477,6 +479,7 @@ class CaptureTplRefs {
   selector: 'test-cmp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   currentTplRef?: TemplateRef<any>;
@@ -490,6 +493,7 @@ class TestComponent {
   template: '<ng-content />',
   providers: [{provide: templateToken, useValue: 'provide-value'}],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ProvideValueComponent {}
 
@@ -497,6 +501,7 @@ class ProvideValueComponent {}
   selector: 'inject-value',
   template: 'Hello {{tokenValue}}',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class InjectValueComponent {
   constructor(@Inject(templateToken) public tokenValue: string) {}
@@ -510,6 +515,7 @@ class InjectValueComponent {
     <ng-template [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context2"></ng-template>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MultiContextComponent {
   context1: {name: string} | undefined;
@@ -529,6 +535,7 @@ const NESTING_DEPTH = new InjectionToken<number>('NESTING_DEPTH');
     },
   ],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestingCounter {
   depth = inject(NESTING_DEPTH);

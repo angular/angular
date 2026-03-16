@@ -7,8 +7,20 @@
  */
 
 import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
-import {Component, Directive, ElementRef, forwardRef, Input, Type, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Directive,
+  ElementRef,
+  forwardRef,
+  Input,
+  Type,
+  ViewChild,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {dispatchEvent, sortedClassList, timeout, useAutoTick} from '@angular/private/testing';
+import {merge} from 'rxjs';
 import {
   AbstractControl,
   AsyncValidator,
@@ -25,9 +37,6 @@ import {
   NgModel,
   Validator,
 } from '../index';
-import {By} from '@angular/platform-browser';
-import {dispatchEvent, useAutoTick, timeout, sortedClassList} from '@angular/private/testing';
-import {merge} from 'rxjs';
 
 import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
 
@@ -82,6 +91,7 @@ describe('template-driven forms integration tests', () => {
         selector: 'app-root',
         template: `<input type="radio" value="one" [(ngModel)]="active" />`,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         active = 'one';
@@ -351,6 +361,7 @@ describe('template-driven forms integration tests', () => {
           </form>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         private _counter = 0;
@@ -413,6 +424,7 @@ describe('template-driven forms integration tests', () => {
           </form>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         private _counter = 0;
@@ -2112,6 +2124,7 @@ describe('template-driven forms integration tests', () => {
           <my-custom-component name="max" ngModel [max]="max"></my-custom-component>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {}
 
@@ -2134,6 +2147,7 @@ describe('template-driven forms integration tests', () => {
       @Component({
         template: '<input type="range" min="10" max="20">',
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {}
 
@@ -2160,6 +2174,7 @@ describe('template-driven forms integration tests', () => {
           template:
             '<form><input name="amount" ngModel [minlength]="minlen" [maxlength]="maxlen"></form>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MinLengthMaxLengthComponent {
           minlen: number | null = null;
@@ -2249,6 +2264,7 @@ describe('template-driven forms integration tests', () => {
           template:
             '<form><input type="number" name="minmaxinput" ngModel [min]="minlen" [max]="maxlen"></form>',
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MinLengthMaxLengthComponent {
           minlen: number | null = null;
@@ -2609,6 +2625,7 @@ describe('template-driven forms integration tests', () => {
           </form>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NgModelNoOpValidation {
         validatorInput = 'foo';
@@ -2764,6 +2781,7 @@ describe('template-driven forms integration tests', () => {
   selector: 'standalone-ng-model',
   template: ` <input type="text" [(ngModel)]="name" /> `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class StandaloneNgModel {
   name!: string;
@@ -2777,6 +2795,7 @@ class StandaloneNgModel {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelForm {
   name!: string | null;
@@ -2790,6 +2809,7 @@ class NgModelForm {
   selector: 'ng-model-native-validate-form',
   template: `<form ngNativeValidate></form>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNativeValidateForm {}
 
@@ -2805,6 +2825,7 @@ class NgModelNativeValidateForm {}
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelGroupForm {
   first!: string;
@@ -2825,6 +2846,7 @@ class NgModelGroupForm {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelValidBinding {
   first!: string;
@@ -2841,6 +2863,7 @@ class NgModelValidBinding {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNgIfForm {
   first!: string;
@@ -2862,6 +2885,7 @@ class NgModelNgIfForm {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNestedForm {
   first!: string;
@@ -2876,6 +2900,7 @@ class NgModelNestedForm {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgNoFormComp {}
 
@@ -2887,6 +2912,7 @@ class NgNoFormComp {}
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class InvalidNgModelNoName {}
 
@@ -2899,6 +2925,7 @@ class InvalidNgModelNoName {}
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelOptionsStandalone {
   one!: string;
@@ -2918,6 +2945,7 @@ class NgModelOptionsStandalone {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelValidationBindings {
   required!: boolean;
@@ -2940,6 +2968,7 @@ class NgModelValidationBindings {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMultipleValidators {
   required!: boolean;
@@ -2953,6 +2982,7 @@ class NgModelMultipleValidators {
     <input type="checkbox" [(ngModel)]="accepted" [required]="required" name="checkbox" />
   </form>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelCheckboxRequiredValidator {
   accepted: boolean = false;
@@ -2963,6 +2993,7 @@ class NgModelCheckboxRequiredValidator {
   selector: 'ng-model-email',
   template: `<form><input type="email" ngModel [email]="validatorEnabled" name="email" /></form>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelEmailValidator {
   validatorEnabled: boolean = false;
@@ -2985,6 +3016,7 @@ class NgAsyncValidator implements AsyncValidator {
   selector: 'ng-model-async-validation',
   template: `<input name="async" ngModel ng-async-validator />`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelAsyncValidation {}
 
@@ -2996,6 +3028,7 @@ class NgModelAsyncValidation {}
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelChangesForm {
   name!: string;
@@ -3013,6 +3046,7 @@ class NgModelChangesForm {
     <input #ngModel="ngModel" ngModel [maxlength]="4" (ngModelChange)="onNgModelChange(ngModel)" />
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelChangeState {
   onNgModelChange = () => {};
@@ -3022,6 +3056,7 @@ class NgModelChangeState {
   selector: 'ng-model-max',
   template: `<form><input name="max" type="number" ngModel [max]="max" /></form>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMaxValidator {
   max!: number;
@@ -3031,6 +3066,7 @@ class NgModelMaxValidator {
   selector: 'ng-model-min',
   template: `<form><input name="min" type="number" ngModel [min]="min" /></form>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMinValidator {
   min!: number;
@@ -3040,6 +3076,7 @@ class NgModelMinValidator {
   selector: 'ng-model-min-max',
   template: ` <form><input name="min_max" type="number" ngModel [min]="min" [max]="max" /></form>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelMinMaxValidator {
   min!: number | string;
@@ -3064,6 +3101,7 @@ class CustomDirective {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelNoMinMaxValidator {
   min!: number;
@@ -3081,6 +3119,7 @@ class NgModelNoMinMaxValidator {
     </dialog>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NativeDialogForm {
   @ViewChild('form') form!: ElementRef<HTMLFormElement>;

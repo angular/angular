@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterOutlet, Routes} from '@angular/router';
 
 import * as animationDslExample from './animation/ts/dsl/module';
@@ -20,6 +20,7 @@ import * as testabilityWhenStableExample from './testability/ts/whenStable/modul
   selector: 'example-app',
   imports: [RouterOutlet],
   template: '<router-outlet />',
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class TestsAppComponent {}
 

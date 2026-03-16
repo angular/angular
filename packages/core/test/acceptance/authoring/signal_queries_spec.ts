@@ -7,6 +7,7 @@
  */
 
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   contentChild,
@@ -20,9 +21,9 @@ import {
   ViewChildren,
   viewChildren,
 } from '@angular/core';
+import {By} from '@angular/platform-browser';
 import {SIGNAL} from '../../../primitives/signals';
 import {TestBed} from '../../../testing';
-import {By} from '@angular/platform-browser';
 
 describe('queries as signals', () => {
   describe('view', () => {
@@ -91,6 +92,7 @@ describe('queries as signals', () => {
             <div #el></div>
           }
         `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         show = false;
@@ -298,6 +300,7 @@ describe('queries as signals', () => {
             }
           </query-cmp>
         `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         show = false;
@@ -346,6 +349,7 @@ describe('queries as signals', () => {
             }
           </div>
         `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         show = false;
@@ -589,6 +593,7 @@ describe('queries as signals', () => {
             <div #el></div>
           }
         `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         show = false;
@@ -624,6 +629,7 @@ describe('queries as signals', () => {
             <div #el></div>
           }
         `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class BaseComponent {
         show = false;
@@ -637,6 +643,7 @@ describe('queries as signals', () => {
             <div #el></div>
           }
         `,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent extends BaseComponent {
         @ViewChildren('el') divElsDecorator!: QueryList<ElementRef<HTMLDivElement>>;

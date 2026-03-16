@@ -7,19 +7,26 @@
  */
 
 import {animate, style, transition, trigger} from '@angular/animations';
-import {DOCUMENT, isPlatformBrowser, ɵgetDOM as getDOM} from '@angular/common';
+import {DOCUMENT, ɵgetDOM as getDOM, isPlatformBrowser} from '@angular/common';
 import {
+  inject as _inject,
   ANIMATION_MODULE_TYPE,
+  APP_ID,
   APP_INITIALIZER,
+  ApplicationRef,
+  ChangeDetectionStrategy,
   Compiler,
   Component,
+  ComponentRef,
+  ɵConsole as Console,
+  ɵcreateOrReusePlatformInjector as createOrReusePlatformInjector,
   createPlatformFactory,
   CUSTOM_ELEMENTS_SCHEMA,
+  destroyPlatform,
   Directive,
   ErrorHandler,
   importProvidersFrom,
   Inject,
-  inject as _inject,
   InjectionToken,
   Injector,
   LOCALE_ID,
@@ -29,6 +36,7 @@ import {
   OnDestroy,
   PLATFORM_ID,
   PLATFORM_INITIALIZER,
+  providePlatformInitializer,
   Provider,
   provideZoneChangeDetection,
   Sanitizer,
@@ -38,20 +46,12 @@ import {
   TransferState,
   Type,
   VERSION,
-  EnvironmentProviders,
-  ApplicationRef,
-  ɵConsole as Console,
-  ComponentRef,
-  destroyPlatform,
-  providePlatformInitializer,
-  ɵcreateOrReusePlatformInjector as createOrReusePlatformInjector,
-  APP_ID,
 } from '@angular/core';
-import {ɵLog as Log, inject, TestBed} from '@angular/core/testing';
-import {BrowserModule} from '../../index';
-import {provideAnimations, provideNoopAnimations} from '../../animations';
-import {expect} from '@angular/private/testing/matchers';
+import {inject, ɵLog as Log, TestBed} from '@angular/core/testing';
 import {isNode, withBody} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
+import {provideAnimations, provideNoopAnimations} from '../../animations';
+import {BrowserModule} from '../../index';
 
 import {bootstrapApplication, platformBrowser} from '../../src/browser';
 
@@ -224,6 +224,7 @@ describe('bootstrap factory method', () => {
     @Component({
       selector: 'hello-app',
       template: 'Hello from {{ name }}!',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SimpleComp {
       name = 'SimpleComp';
@@ -232,6 +233,7 @@ describe('bootstrap factory method', () => {
     @Component({
       selector: 'hello-app-2',
       template: 'Hello from {{ name }}!',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SimpleComp2 {
       name = 'SimpleComp2';
@@ -240,6 +242,7 @@ describe('bootstrap factory method', () => {
     @Component({
       selector: 'hello-app',
       template: 'Hello from {{ name }}!',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ComponentWithDeps {
       constructor(@Inject(NAME) public name: string) {}
@@ -249,6 +252,7 @@ describe('bootstrap factory method', () => {
       selector: 'hello-app-2',
       template: 'Hello from {{ name }}!',
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class NonStandaloneComp {
       name = 'NonStandaloneComp';
@@ -820,6 +824,7 @@ describe('bootstrap factory method', () => {
       selector: 'hello-app',
       template: '<div id="button-a" (click)="onClick()">{{title}}</div>',
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CompA {
       title: string = '';
@@ -838,6 +843,7 @@ describe('bootstrap factory method', () => {
       selector: 'hello-app-2',
       template: '<div id="button-b" (click)="onClick()">{{title}}</div>',
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CompB {
       title: string = '';

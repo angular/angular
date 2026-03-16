@@ -8,6 +8,7 @@
 
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   Directive,
   ElementRef,
@@ -23,8 +24,8 @@ import {
   dispatchEvent,
   isNode,
   sortedClassList,
-  useAutoTick,
   timeout,
+  useAutoTick,
 } from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {merge, NEVER, Observable, of, Subject, Subscription, timer} from 'rxjs';
@@ -395,6 +396,7 @@ describe('reactive forms integration tests', () => {
           </form>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         form: FormGroup;
@@ -843,6 +845,8 @@ describe('reactive forms integration tests', () => {
             </form>
           `,
           standalone: false,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
           showAsGroup = false;
@@ -906,6 +910,8 @@ describe('reactive forms integration tests', () => {
             </form>
           `,
           standalone: false,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
           showAsArray = false;
@@ -971,6 +977,8 @@ describe('reactive forms integration tests', () => {
             </form>
           `,
           standalone: false,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App {
           showAsArray = false;
@@ -1564,6 +1572,7 @@ describe('reactive forms integration tests', () => {
           }
         </form>`,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormArrayComp {
         controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
@@ -1687,6 +1696,7 @@ describe('reactive forms integration tests', () => {
         selector: 'form-comp',
         template: ` <form></form> `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormComp {}
 
@@ -1708,6 +1718,7 @@ describe('reactive forms integration tests', () => {
           </form>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormComp {
         control = new FormControl('abc');
@@ -2216,6 +2227,8 @@ describe('reactive forms integration tests', () => {
             </form>
           `,
           standalone: false,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class App implements OnDestroy {
           private _subscription: Subscription;
@@ -3608,6 +3621,8 @@ describe('reactive forms integration tests', () => {
             </form>
           `,
           standalone: false,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MinMaxLengthComponent {
           control: FormControl = new FormControl();
@@ -3706,6 +3721,8 @@ describe('reactive forms integration tests', () => {
             </form>
           `,
           standalone: false,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MinMaxComponent {
           control: FormControl = new FormControl();
@@ -4160,6 +4177,8 @@ describe('reactive forms integration tests', () => {
             </form>
           `,
           standalone: false,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class NgModelNoOpValidation {
           validatorInput = 'bar';
@@ -4910,6 +4929,7 @@ describe('reactive forms integration tests', () => {
           <input *ngIf="visible" type="text" [formControl]="control" cva-a validators-a />
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -4990,6 +5010,7 @@ describe('reactive forms integration tests', () => {
           <input type="text" [formControl]="control" cva-b />
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5067,6 +5088,7 @@ describe('reactive forms integration tests', () => {
           </div>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5149,6 +5171,7 @@ describe('reactive forms integration tests', () => {
           </ng-container>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5252,6 +5275,7 @@ describe('reactive forms integration tests', () => {
           </div>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5335,6 +5359,7 @@ describe('reactive forms integration tests', () => {
           </div>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5449,6 +5474,7 @@ describe('reactive forms integration tests', () => {
           </div>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5548,6 +5574,7 @@ describe('reactive forms integration tests', () => {
           </div>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5673,6 +5700,7 @@ describe('reactive forms integration tests', () => {
           </div>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5806,6 +5834,7 @@ describe('reactive forms integration tests', () => {
           </div>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -5951,6 +5980,7 @@ describe('reactive forms integration tests', () => {
           </div>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -6048,6 +6078,7 @@ describe('reactive forms integration tests', () => {
           </div>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         visible = true;
@@ -6122,6 +6153,7 @@ describe('reactive forms integration tests', () => {
           </form>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NoCVAComponent {
         form = new FormGroup({control: new FormControl()});
@@ -6150,6 +6182,7 @@ describe('reactive forms integration tests', () => {
           }
         </form>`,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class FormArrayComp {
         controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
@@ -6254,6 +6287,8 @@ describe('reactive forms integration tests', () => {
             </form>
           `,
           standalone: false,
+
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class FormWithFormArrayName {
           public form = new FormArray([
@@ -6340,6 +6375,7 @@ class UniqLoginValidator implements AsyncValidator {
   selector: 'form-control-comp',
   template: `<input type="text" [formControl]="control" />`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlComp {
   control!: FormControl;
@@ -6351,6 +6387,7 @@ class FormControlComp {
     <input type="text" formControlName="login" />
   </form>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormGroupComp {
   control!: FormControl;
@@ -6368,6 +6405,7 @@ class FormGroupComp {
     <input *ngIf="form.contains('email')" formControlName="email" />
   </form>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedFormGroupNameComp {
   form!: FormGroup;
@@ -6383,6 +6421,7 @@ class NestedFormGroupNameComp {
     </div>
   </form>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormArrayComp {
   form!: FormGroup;
@@ -6399,6 +6438,7 @@ class FormArrayComp {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NestedFormArrayNameComp {
   form!: FormGroup;
@@ -6415,6 +6455,7 @@ class NestedFormArrayNameComp {
     </div>
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormArrayNestedGroup {
   form!: FormGroup;
@@ -6428,6 +6469,7 @@ class FormArrayNestedGroup {
     <input type="text" formControlName="password" [(ngModel)]="password" />
   </form>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormGroupNgModel {
   form!: FormGroup;
@@ -6442,6 +6484,7 @@ class FormGroupNgModel {
     <input type="text" [formControl]="passwordControl" [(ngModel)]="password" />
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlNgModel {
   control!: FormControl;
@@ -6459,6 +6502,7 @@ class FormControlNgModel {
     <input type="text" formControlName="pattern" pattern=".{3,}" />
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class LoginIsEmptyWrapper {
   form!: FormGroup;
@@ -6473,6 +6517,7 @@ class LoginIsEmptyWrapper {
     <input name="pattern" type="text" formControlName="pattern" [pattern]="pattern" />
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ValidationBindingsForm {
   form!: FormGroup;
@@ -6486,6 +6531,7 @@ class ValidationBindingsForm {
   selector: 'form-control-checkbox-validator',
   template: `<input type="checkbox" [formControl]="control" />`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlCheckboxRequiredValidator {
   control!: FormControl;
@@ -6497,6 +6543,7 @@ class FormControlCheckboxRequiredValidator {
     <input type="text" formControlName="login" uniq-login-validator="expected" />
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class UniqLoginWrapper {
   form!: FormGroup;
@@ -6510,6 +6557,7 @@ class UniqLoginWrapper {
     </div>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormGroupWithValidators {
   form = new FormGroup({login: new FormControl('INITIAL')});
@@ -6523,6 +6571,7 @@ class FormGroupWithValidators {
     </div>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlWithAsyncValidatorFn {
   control = new FormControl('INITIAL');
@@ -6543,6 +6592,7 @@ class FormControlWithAsyncValidatorFn {
     </div>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlWithValidators {
   form: FormGroup = new FormGroup({login: new FormControl('INITIAL')});
@@ -6559,6 +6609,7 @@ class FormControlWithValidators {
     </div>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MultipleFormControls {
   control = new FormControl('a');
@@ -6576,6 +6627,7 @@ class MultipleFormControls {
     </div>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgForFormControlWithValidators {
   form: FormGroup = new FormGroup({login: new FormControl('a')});
@@ -6588,6 +6640,7 @@ class NgForFormControlWithValidators {
     <input type="number" formControlName="pin" [max]="max" [min]="min" />
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MinMaxFormControlNameComp {
   control!: FormControl;
@@ -6602,6 +6655,7 @@ class MinMaxFormControlNameComp {
     <input type="number" [formControl]="control" [max]="max" [min]="min" />
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MinMaxFormControlComp {
   control!: FormControl;
@@ -6619,6 +6673,7 @@ class MinMaxFormControlComp {
     </dialog>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NativeDialogForm {
   @ViewChild('form') form!: ElementRef<HTMLFormElement>;
@@ -6634,6 +6689,7 @@ class NativeDialogForm {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class RadioForm {
   form = new FormGroup({

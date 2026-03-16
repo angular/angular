@@ -695,6 +695,7 @@ describe('Image directive', () => {
             [loaderParams]="loaderParams"
           />`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestComponent {
           width = 100;
@@ -1873,6 +1874,7 @@ describe('Image directive', () => {
         selector: 'test-cmp',
         template: `<img [ngSrc]="ngSrc" width="300" height="300" />`,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         ngSrc = `img.png`;
@@ -1897,6 +1899,7 @@ describe('Image directive', () => {
         selector: 'test-cmp',
         template: `<img [ngSrc]="ngSrc" width="300" height="300" sizes="100vw" />`,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         ngSrc = `img.png`;

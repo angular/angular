@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgClass} from '../../index';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {NgClass} from '../../index';
 
 describe('binding to CSS class list', () => {
   let fixture: ComponentFixture<any> | null;
@@ -450,6 +451,7 @@ describe('binding to CSS class list', () => {
           <div trailing-space [ngClass]="{'foo ': applyClasses}"></div>
         `,
         standalone: false,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         applyClasses = true;
@@ -470,6 +472,7 @@ describe('binding to CSS class list', () => {
         selector: 'test-component',
         imports: [NgClass],
         template: `<div class="{{ 'option-' + level }}" [ngClass]="'option-' + level"></div>`,
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         level = 1;
@@ -508,6 +511,7 @@ describe('binding to CSS class list', () => {
   selector: 'test-cmp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   condition: boolean = true;

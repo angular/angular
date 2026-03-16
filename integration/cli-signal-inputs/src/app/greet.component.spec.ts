@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 import {GreetComponent} from './greet.component';
@@ -38,6 +38,7 @@ describe('greet component', () => {
     />
   `,
   imports: [GreetComponent],
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestCmp {
   clickCount = 0;

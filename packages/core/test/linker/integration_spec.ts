@@ -2491,6 +2491,7 @@ class PushCmpWithAsyncPipe {
   selector: 'my-comp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MyComp {
   readonly ctxProp = signal<string | undefined>(undefined);
@@ -2989,6 +2990,7 @@ function createParentBus(peb: EventBus) {
   providers: [{provide: EventBus, useFactory: createParentBus, deps: [[EventBus, new SkipSelf()]]}],
   template: `<child-consuming-event-bus></child-consuming-event-bus>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ParentProvidingEventBus {
   bus: EventBus;
@@ -3100,6 +3102,7 @@ class DirectiveThrowingAnError {
   template: `No View Decorator:
     <div *ngFor="let item of items">{{ item }}</div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ComponentWithTemplate {
   items = [1, 2, 3];
@@ -3129,6 +3132,7 @@ class DirectiveWithPropDecorators {
 @Component({
   selector: 'some-cmp',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SomeCmp {
   value: any;
@@ -3138,6 +3142,7 @@ class SomeCmp {
   selector: 'parent-cmp',
   template: `<cmp [test$]="name"></cmp>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class ParentCmp {
   name: string = 'hello';
@@ -3147,6 +3152,7 @@ export class ParentCmp {
   selector: 'cmp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SomeCmpWithInput {
   @Input() test$: any;

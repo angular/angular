@@ -349,7 +349,7 @@ export function ɵɵdefineComponent<T>(
       template: componentDefinition.template,
       consts: componentDefinition.consts || null,
       ngContentSelectors: componentDefinition.ngContentSelectors,
-      onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
+      onPush: componentDefinition.changeDetection !== ChangeDetectionStrategy.Eager,
       directiveDefs: null!, // assigned in noSideEffects
       pipeDefs: null!, // assigned in noSideEffects
       dependencies: (baseDef.standalone && componentDefinition.dependencies) || null,

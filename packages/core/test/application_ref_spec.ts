@@ -13,7 +13,6 @@ import {
   ɵDomRendererFactory2 as DomRendererFactory2,
 } from '@angular/platform-browser';
 import type {ServerModule} from '@angular/platform-server';
-import {ERROR_DETAILS_PAGE_BASE_URL} from '../src/error_details_base_url';
 import {createTemplate, dispatchEvent, getContent, isNode} from '@angular/private/testing';
 import {expect} from '@angular/private/testing/matchers';
 import {
@@ -30,13 +29,14 @@ import {
   NgModule,
   NgZone,
   PlatformRef,
+  provideZoneChangeDetection,
   RendererFactory2,
   TemplateRef,
   Type,
   ViewChild,
   ViewContainerRef,
-  provideZoneChangeDetection,
 } from '../src/core';
+import {ERROR_DETAILS_PAGE_BASE_URL} from '../src/error_details_base_url';
 import {ErrorHandler} from '../src/error_handler';
 import {ComponentRef} from '../src/linker/component_factory';
 import {createEnvironmentInjector, getLocaleId} from '../src/render3';
@@ -879,6 +879,7 @@ describe('AppRef', () => {
       selector: 'micro-task-comp',
       template: `<span>{{ text }}</span>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MicroTaskComp {
       text: string = '1';
@@ -894,6 +895,7 @@ describe('AppRef', () => {
       selector: 'macro-task-comp',
       template: `<span>{{ text }}</span>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MacroTaskComp {
       text: string = '1';
@@ -909,6 +911,7 @@ describe('AppRef', () => {
       selector: 'micro-macro-task-comp',
       template: `<span>{{ text }}</span>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MicroMacroTaskComp {
       text: string = '1';
@@ -927,6 +930,7 @@ describe('AppRef', () => {
       selector: 'macro-micro-task-comp',
       template: `<span>{{ text }}</span>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MacroMicroTaskComp {
       text: string = '1';

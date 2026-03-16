@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -69,6 +70,7 @@ class LifecycleDir implements DoCheck {
   inputs: ['field'],
   template: `<div lifecycle-dir></div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class LifecycleCmp
   implements
@@ -115,5 +117,6 @@ class LifecycleCmp
 @Component({
   selector: 'my-comp',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class MyComp5 {}

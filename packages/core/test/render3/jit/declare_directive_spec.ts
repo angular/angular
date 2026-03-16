@@ -15,8 +15,8 @@ import {
   ɵɵNgOnChangesFeature,
 } from '../../../src/render3';
 
-import {functionContaining} from './matcher';
 import {InputFlags} from '../../../src/render3/interfaces/input_flags';
+import {functionContaining} from './matcher';
 
 describe('directive declaration jit compilation', () => {
   it('should compile a minimal directive declaration', () => {

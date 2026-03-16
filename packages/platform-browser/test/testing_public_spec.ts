@@ -8,6 +8,7 @@
 
 import {ResourceLoader} from '@angular/compiler';
 import {
+  ChangeDetectionStrategy,
   Compiler,
   Component,
   ComponentFactoryResolver,
@@ -21,8 +22,8 @@ import {
   NgModule,
   Optional,
   Pipe,
-  TransferState,
   SkipSelf,
+  TransferState,
   Type,
 } from '@angular/core';
 import {
@@ -34,8 +35,8 @@ import {
   waitForAsync,
   withModule,
 } from '@angular/core/testing';
-import {expect} from '@angular/private/testing/matchers';
 import {isBrowser} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 
 // Services, and components for the tests.
 
@@ -72,6 +73,7 @@ class ParentComp {}
   selector: 'my-if-comp',
   template: `MyIf(<span *ngIf="showMore">More</span>)`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 @Injectable()
 class MyIfComp {

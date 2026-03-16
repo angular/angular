@@ -19,6 +19,7 @@ import {
   Renderer2,
   ViewChild,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from '../../src/core';
 import {bypassSanitizationTrustStyle} from '../../src/sanitization/bypass';
 import {TestBed} from '../../testing';
@@ -40,6 +41,8 @@ describe('styling', () => {
       @Component({
         template: `<div class="STATIC" style="color: blue"></div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -59,6 +62,8 @@ describe('styling', () => {
           [style.width.px]="100"
         ></div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -75,6 +80,8 @@ describe('styling', () => {
       @Component({
         template: `<div [class]="{dynamic: true}" [style]="{color: 'blue', width: '100px'}"></div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -95,6 +102,8 @@ describe('styling', () => {
           style="width: {{ '100' }}px"
         ></div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -116,6 +125,8 @@ describe('styling', () => {
           style="color: blue"
         ></div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
       @Directive({
@@ -156,6 +167,8 @@ describe('styling', () => {
       @Component({
         template: `<div my-host-bindings class="STATIC" style="color: blue;"></div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
       @Directive({
@@ -192,6 +205,8 @@ describe('styling', () => {
           <div style="content: 'foo'"></div>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -216,6 +231,8 @@ describe('styling', () => {
           ></div>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -238,6 +255,8 @@ describe('styling', () => {
           ></div>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -255,6 +274,8 @@ describe('styling', () => {
       @Component({
         template: `<div [ngClass]="['dynamic']" [ngStyle]="{'font-family': 'dynamic'}"></div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -287,6 +308,8 @@ describe('styling', () => {
           </div>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -306,6 +329,8 @@ describe('styling', () => {
       @Component({
         template: `<h1 style="width: var(--my-1337-var)">Hello</h1>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {
         @HostBinding('style') style = '--my-1337-var: 100px;';
@@ -331,6 +356,8 @@ describe('styling', () => {
           </div>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -346,6 +373,8 @@ describe('styling', () => {
     it('should allow null in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', null, 'c']" [class.extra]="true"></div>`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -358,6 +387,8 @@ describe('styling', () => {
     it('should allow undefined in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', undefined, 'c']" [class.extra]="true"></div>`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -370,6 +401,8 @@ describe('styling', () => {
     it('should allow zero in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', 0, 'c']" [class.extra]="true"></div>`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -382,6 +415,8 @@ describe('styling', () => {
     it('should allow false in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', false, 'c']" [class.extra]="true"></div>`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -394,6 +429,8 @@ describe('styling', () => {
     it('should ignore an empty string in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', '', 'c']" [class.extra]="true"></div>`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -406,6 +443,8 @@ describe('styling', () => {
     it('should ignore a string containing spaces in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', 'hello there', 'c']" [class.extra]="true"></div>`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -421,6 +460,8 @@ describe('styling', () => {
           [class]="{a: true, 'hello there': true, c: true}"
           [class.extra]="true"
         ></div>`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -433,6 +474,8 @@ describe('styling', () => {
     it('should ignore an object literal in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', {foo: true}, 'c']" [class.extra]="true"></div>`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -445,6 +488,8 @@ describe('styling', () => {
     it('should handle a string array in a class array binding', () => {
       @Component({
         template: `<div [class]="['a', ['foo', 'bar'], 'c']" [class.extra]="true"></div>`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class Cmp {}
 
@@ -462,6 +507,8 @@ describe('styling', () => {
         <div class="s2 {{ 'd2' }}" dir-shadows-class-input></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -502,6 +549,8 @@ describe('styling', () => {
         <div class="s1" [class]="'d1'" dir-shadows-class-input></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -542,6 +591,8 @@ describe('styling', () => {
         <div style="width: 1px;" [style]="'height:1px;'" dir-shadows-class-input></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -579,6 +630,8 @@ describe('styling', () => {
     @Component({
       template: ` <div class="s1" [class]="classBinding" dir-shadows-class-input></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       classBinding: any = undefined;
@@ -626,6 +679,8 @@ describe('styling', () => {
         <div style="color: red;" [style]="'width: 100px;'" dir-shadows-style-input></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -654,6 +709,8 @@ describe('styling', () => {
     @Component({
       template: `<div class="s1" dir-shadows-class-input></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -686,6 +743,8 @@ describe('styling', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       id = 'throw_id';
@@ -750,6 +809,8 @@ describe('styling', () => {
     @Component({
       template: ` <div directive-expecting-styling style="width:200px" class="abc xyz"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -780,6 +841,8 @@ describe('styling', () => {
     @Component({
       template: ` <div directive-expecting-styling style="width:200px" class="abc"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -813,6 +876,8 @@ describe('styling', () => {
         </project>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyApp {}
 
@@ -827,6 +892,8 @@ describe('styling', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ProjectCmp {}
 
@@ -846,6 +913,8 @@ describe('styling', () => {
       selector: '[comp]',
       template: '',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
@@ -856,6 +925,8 @@ describe('styling', () => {
         </ng-template>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       items = [1, 2, 3];
@@ -874,6 +945,8 @@ describe('styling', () => {
     @Component({
       template: '<div [style.color]></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -888,6 +961,8 @@ describe('styling', () => {
     @Component({
       template: '<div [class.is-open]></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -902,6 +977,8 @@ describe('styling', () => {
     @Component({
       template: '<div #div [style.opacity]="opacity"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild('div') div!: ElementRef<HTMLElement>;
@@ -919,6 +996,8 @@ describe('styling', () => {
     @Component({
       template: '<div [style.backgroundImage]="image"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       image!: SafeStyle;
@@ -939,6 +1018,8 @@ describe('styling', () => {
     @Component({
       template: '<div [style.width]="width"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       width!: string;
@@ -959,6 +1040,8 @@ describe('styling', () => {
     @Component({
       template: '<div [style.width]="width"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       width!: string;
@@ -979,6 +1062,8 @@ describe('styling', () => {
     @Component({
       template: '<div [style.margin-right]="marginRight"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       marginRight!: string;
@@ -999,6 +1084,8 @@ describe('styling', () => {
     @Component({
       template: '<div [style]="styles"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       styles!: string;
@@ -1019,6 +1106,8 @@ describe('styling', () => {
     @Component({
       template: '<div [style]="styles"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       styles!: string;
@@ -1052,6 +1141,8 @@ describe('styling', () => {
       selector: 'app-comp',
       template: `<ng-template styleDir></ng-template>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyApp {}
 
@@ -1063,6 +1154,8 @@ describe('styling', () => {
     @Component({
       template: '<div [style.clip-path]="path"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       path!: SafeStyle;
@@ -1107,6 +1200,8 @@ describe('styling', () => {
         <div class="{{ one }}"></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       one = '1';
@@ -1195,6 +1290,8 @@ describe('styling', () => {
         <div style="{{ self }}"></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       self = 'content: "self"';
@@ -1256,6 +1353,8 @@ describe('styling', () => {
     @Component({
       template: '<div class="zero i-{{one}} {{two}} three"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       one = 'one';
@@ -1307,6 +1406,8 @@ describe('styling', () => {
         <div style.width="{{ singleBinding }}"></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       singleBinding: string | null = '1337px';
@@ -1368,6 +1469,8 @@ describe('styling', () => {
     @Component({
       template: '<div style.width.px="{{one}}{{three}}{{three}}7"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       one = 1;
@@ -1397,6 +1500,8 @@ describe('styling', () => {
     @Component({
       template: '<div [class]="c" [my-class-dir]="x"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       c: any = null;
@@ -1462,6 +1567,8 @@ describe('styling', () => {
     @Component({
       template: '<div [class]="c" my-class-dir></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       c: any = 'bar';
@@ -1503,6 +1610,8 @@ describe('styling', () => {
     @Component({
       template: '<div class="static-val" [my-class-dir]="x"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       x = 'foo';
@@ -1541,6 +1650,8 @@ describe('styling', () => {
       selector: 'comp',
       template: `{{ className }}`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input() className: string = '';
@@ -1548,6 +1659,8 @@ describe('styling', () => {
     @Component({
       template: `<comp [className]="'my-className'"></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -1562,6 +1675,8 @@ describe('styling', () => {
       selector: 'comp',
       template: `{{ className }}`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       @Input('class') className: string = '';
@@ -1570,6 +1685,8 @@ describe('styling', () => {
     @Component({
       template: `<comp class="static" [class]="'my-className'"></comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -1588,6 +1705,8 @@ describe('styling', () => {
     @Component({
       template: '<div class="static-val" [class]="c" [my-class-dir]="x"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       c: any = null;
@@ -1646,6 +1765,8 @@ describe('styling', () => {
     @Component({
       template: ` <div dir-one dir-two></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -1685,6 +1806,8 @@ describe('styling', () => {
         ></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -1723,6 +1846,8 @@ describe('styling', () => {
           </div>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class AppComponent {
         classMap = {'with-button': true};
@@ -1760,6 +1885,8 @@ describe('styling', () => {
     @Component({
       template: '<span dir [classesInSchool]="classes" [styleOfClothing]="style"></span>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(Dir) dir!: Dir;
@@ -1781,6 +1908,8 @@ describe('styling', () => {
     @Component({
       template: '',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @HostBinding('className') klass = 'one two';
@@ -1808,6 +1937,8 @@ describe('styling', () => {
         ></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       w: string | null | undefined = '100px';
@@ -1873,6 +2004,8 @@ describe('styling', () => {
         <div [style.width]="w0" [dir-that-sets-width]="w1" [another-dir-that-sets-width]="w2"></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       w0: string | null | undefined = null;
@@ -1931,6 +2064,8 @@ describe('styling', () => {
     @Component({
       selector: 'comp-with-styling',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CompWithStyling {
       @HostBinding('style.width') public width = '900px';
@@ -1943,6 +2078,8 @@ describe('styling', () => {
         <comp-with-styling [style.opacity]="opacity" dir-with-styling>...</comp-with-styling>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       opacity: string | null = '0.5';
@@ -1990,6 +2127,8 @@ describe('styling', () => {
     @Component({
       selector: 'comp-with-styling',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CompWithStyling {
       @HostBinding('style.width') public width = '900px';
@@ -2010,6 +2149,8 @@ describe('styling', () => {
         >
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       opacity: string | null | undefined = '0.5';
@@ -2071,6 +2212,8 @@ describe('styling', () => {
     @Component({
       selector: '[sub-class-dir]',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SubClassDirective extends SuperClassDirective {
       @HostBinding('style.width') public w2 = '200px';
@@ -2079,6 +2222,8 @@ describe('styling', () => {
     @Component({
       template: ` <div sub-class-dir [style.width]="w3"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       w3: string | null | undefined = '300px';
@@ -2111,6 +2256,8 @@ describe('styling', () => {
     @Component({
       template: '<div [style]="s" [class]="c"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       public c: {[key: string]: any} | null = null;
@@ -2179,6 +2326,8 @@ describe('styling', () => {
         ></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       map: any = {width: '111px', opacity: '0.5'};
@@ -2249,6 +2398,8 @@ describe('styling', () => {
         ></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       width: string | null | undefined = '111px';
@@ -2352,6 +2503,8 @@ describe('styling', () => {
     @Component({
       template: ` <div [style.width]="widthExp" [style.background-image]="bgImageExp"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       widthExp = '';
@@ -2382,6 +2535,8 @@ describe('styling', () => {
     @Component({
       template: ` <div [style.width]="widthExp" [style]="styleMapExp"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       widthExp = '';
@@ -2414,6 +2569,8 @@ describe('styling', () => {
     @Component({
       template: ` <div [style.width.px]="widthExp" [style.height.em]="heightExp"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       widthExp: string | number | null = '';
@@ -2453,6 +2610,8 @@ describe('styling', () => {
         <span [style.color]="getColorUnsafe()"></span>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       constructor(private sanitizer: DomSanitizer) {}
@@ -2529,6 +2688,8 @@ describe('styling', () => {
     @Component({
       template: ` <div #div [style]="map" dir-with-styling dir-with-styling-part2></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       map: any = null;
@@ -2557,6 +2718,8 @@ describe('styling', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       items = [1, 2, 3];
@@ -2615,6 +2778,8 @@ describe('styling', () => {
         <footer class="footer">footer</footer>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       items = [1, 2, 3];
@@ -2671,6 +2836,8 @@ describe('styling', () => {
         <dir-two></dir-two>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -2711,6 +2878,8 @@ describe('styling', () => {
         <div class="c" [style.color]="c" two></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       w = 100;
@@ -2759,6 +2928,8 @@ describe('styling', () => {
         <p [style.height.px]="h"></p>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       items: any[] = [];
@@ -2809,6 +2980,8 @@ describe('styling', () => {
     @Component({
       template: '<div #target one two></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       @ViewChild('target', {read: DirOne, static: true}) one!: DirOne;
@@ -2838,6 +3011,8 @@ describe('styling', () => {
     @Component({
       template: ` <div [style.width]="w" style.height="{{ h }}" [style.opacity]="o"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       w: any = null;
@@ -2872,6 +3047,8 @@ describe('styling', () => {
     @Component({
       template: ` <div [ngClass]="c" [ngStyle]="s"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       c: any = 'foo bar';
@@ -2892,6 +3069,8 @@ describe('styling', () => {
     @Component({
       template: ` <div [ngStyle]="s"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       s: any = {opacity: '1'};
@@ -2920,6 +3099,8 @@ describe('styling', () => {
       selector: 'child',
       template: ` <div [class.ready-child]="readyTpl"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ChildCmp {
       readyTpl = false;
@@ -2939,6 +3120,8 @@ describe('styling', () => {
         '[style.color]': 'color',
       },
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ParentCmp {
       private _prop = '';
@@ -2969,6 +3152,8 @@ describe('styling', () => {
     @Component({
       template: `<parent [prop]="prop"></parent>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       prop = 'a';
@@ -2998,6 +3183,8 @@ describe('styling', () => {
       selector: 'child',
       template: ` <div [class.ready-child]="readyTpl"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ChildCmp {
       readyTpl = false;
@@ -3014,6 +3201,8 @@ describe('styling', () => {
         </div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ParentCmp {
       updateChild = false;
@@ -3038,6 +3227,8 @@ describe('styling', () => {
     @Component({
       template: `<parent #parent></parent>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild('parent', {static: true}) public parent: ParentCmp | null = null;
@@ -3068,6 +3259,8 @@ describe('styling', () => {
         <div [style.width]="w" [style.height]="h" [style]="s1" [dir-with-styling]="s2"></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       h = '100px';
@@ -3125,6 +3318,8 @@ describe('styling', () => {
     @Component({
       template: `<div dir></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -3158,6 +3353,8 @@ describe('styling', () => {
     @Component({
       template: `<div dir></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {}
 
@@ -3191,6 +3388,8 @@ describe('styling', () => {
         <div [style.background]="background"></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class AppComponent {
       isDisabled = false;
@@ -3223,6 +3422,8 @@ describe('styling', () => {
     @Component({
       template: `<div class="container" [ngClass]="{disabled: isDisabled}" blockStyles></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class AppComponent {
       isDisabled = false;
@@ -3244,6 +3445,8 @@ describe('styling', () => {
     @Component({
       template: ` <div [style.color]="color" [class.foo]="fooClass"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       color = 'red';
@@ -3267,6 +3470,8 @@ describe('styling', () => {
     @Component({
       template: ` <div [style]="style" [class]="klass"></div> `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       style: any = 'width: 100px';
@@ -3290,6 +3495,8 @@ describe('styling', () => {
     @Component({
       template: `<div class="zero {{ one }}" [class.two]="true" [ngClass]="'three'"></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       one = 'one';
@@ -3313,6 +3520,8 @@ describe('styling', () => {
         <div id="second" [class]="'two'" class="zero {{ one }}"></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       one = 'one';
@@ -3340,6 +3549,8 @@ describe('styling', () => {
         <div id="second" [style]="'padding: 20px;'" style="margin: {{ margin }}"></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       margin = '10px';
@@ -3362,6 +3573,8 @@ describe('styling', () => {
     @Component({
       template: '<div [style.left.px]="left"></div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       left = '';
@@ -3391,6 +3604,8 @@ describe('styling', () => {
     @Component({
       template: `<div [class]="exp"></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       exp = '';
@@ -3425,6 +3640,8 @@ describe('styling', () => {
       @Component({
         template: `<div [style.background-image]="iconSafe"></div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         icon = 'https://i.imgur.com/4AiXzf8.jpg';
@@ -3459,6 +3676,8 @@ describe('styling', () => {
         `,
         styles: ['div { width: 100px; }'],
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {}
 
@@ -3483,6 +3702,8 @@ describe('styling', () => {
         [attr.data-foo]="'my-foo'"
       ></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {}
 
@@ -3511,6 +3732,8 @@ describe('styling', () => {
     @Component({
       template: '...',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       @HostBinding('class') public classes = '';
@@ -3539,6 +3762,8 @@ describe('styling', () => {
     @Component({
       template: `<div [class]="'fooBar'" [class.barFoo]="true"></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {}
 
@@ -3557,6 +3782,8 @@ describe('styling', () => {
     @Component({
       template: `<div [style]="myStyles"></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       myStyles = {};
@@ -3581,6 +3808,8 @@ describe('styling', () => {
     @Component({
       template: `<div [style.width]="myWidth" [style.height]="'200px'"></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       get myWidth() {
@@ -3609,6 +3838,8 @@ describe('styling', () => {
       selector: 'my-comp-with-styling',
       template: '',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyCompWithStyling {
       @HostBinding('style') myStyles: any = {width: '300px'};
@@ -3637,6 +3868,8 @@ describe('styling', () => {
         </my-comp-with-styling>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       myStyles: {width?: string} = {width: '100px'};
@@ -3680,6 +3913,8 @@ describe('styling', () => {
       host: {style: 'color: blue'},
       template: '',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyCompWithStyling {}
 
@@ -3693,6 +3928,8 @@ describe('styling', () => {
     @Component({
       template: `<my-comp-with-styling my-dir-with-styling></my-comp-with-styling>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {}
 
@@ -3731,6 +3968,8 @@ describe('styling', () => {
         <div #div2 [class.zero]="zero" dir-that-sets-one-two dir-that-sets-three-four></div>
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       @ViewChild('div1', {static: true, read: DirThatSetsOneTwo})
@@ -3813,6 +4052,8 @@ describe('styling', () => {
       template: '',
       host: {'class': 'host'},
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CompWithClasses {
       constructor(ref: ElementRef) {
@@ -3823,6 +4064,8 @@ describe('styling', () => {
     @Component({
       template: `<comp-with-classes class="inline" *ngFor="let item of items"></comp-with-classes>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {
       items = [1, 2, 3];
@@ -3854,6 +4097,8 @@ describe('styling', () => {
     @Component({
       template: `<div single-host-style-dir></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -3877,6 +4122,8 @@ describe('styling', () => {
     @Component({
       template: `<child-comp class="template"></child-comp>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
 
@@ -3885,6 +4132,8 @@ describe('styling', () => {
       host: {'class': 'parent-comp', '[class.parent-comp-active]': 'true'},
       template: '...',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ParentComp {}
 
@@ -3898,6 +4147,8 @@ describe('styling', () => {
       },
       template: '...',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ChildComp extends ParentComp {}
 
@@ -3933,6 +4184,8 @@ describe('styling', () => {
       // Note that we shouldn't have a `class` attribute here.
       template: `<div test></div>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class MyComp {}
 
@@ -3956,6 +4209,8 @@ describe('styling', () => {
         }
       `,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {}
     TestBed.configureTestingModule({declarations: [Cmp]});
@@ -3969,7 +4224,10 @@ describe('styling', () => {
   it('should class bindings to classes with special characters in a template', () => {
     const className = `data-active:text-green-300/80`;
 
-    @Component({template: `<div [class.${className}]="value"></div>`})
+    @Component({
+      template: `<div [class.${className}]="value"></div>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
+    })
     class Cmp {
       value = false;
     }
@@ -3997,6 +4255,8 @@ describe('styling', () => {
       host: {
         [`[class.${className}]`]: 'value',
       },
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       value = false;
@@ -4019,6 +4279,8 @@ describe('styling', () => {
   it('should support Set in a class binding', () => {
     @Component({
       template: '<div [class]="classes" [class.extra]="true"></div>',
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Cmp {
       classes = new Set(['a', 'b', 'c']);
@@ -4035,6 +4297,8 @@ describe('styling', () => {
       @Component({
         template: `<div [style]="style"></div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class HostBindingTestComponent {
         style: SafeStyle;
@@ -4057,6 +4321,8 @@ describe('styling', () => {
           '[class.foo]': 'hostClass',
         },
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         hostClass = true;
@@ -4076,6 +4342,8 @@ describe('styling', () => {
       @Component({
         template: `<my-cmp *ngFor="let i of [1, 2]" host-styling></my-cmp>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyApp {
         // When the first view in the list gets CD-ed, everything works.
@@ -4101,6 +4369,8 @@ describe('styling', () => {
         selector: 'my-cmp',
         template: `className = {{ className }}`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         @Input() className: string = 'unbound';
@@ -4108,6 +4378,8 @@ describe('styling', () => {
       @Component({
         template: `<my-cmp [class]="'bound'"></my-cmp>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyApp {}
 
@@ -4122,6 +4394,8 @@ describe('styling', () => {
         selector: 'my-cmp',
         template: `className = {{ className }}`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyCmp {
         @Input() className: string = 'unbound';
@@ -4129,6 +4403,8 @@ describe('styling', () => {
       @Component({
         template: `<my-cmp class="bound"></my-cmp>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyApp {}
 
