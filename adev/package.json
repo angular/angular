@@ -70,7 +70,7 @@
     "hast-util-to-html": "^9.0.5",
     "hast-util-whitespace": "^3.0.0",
     "html-void-elements": "^3.0.0",
-    "jsdom": "28.1.0",
+    "jsdom": "29.0.0",
     "jasmine-core": "6.1.0",
     "karma-chrome-launcher": "3.2.0",
     "karma-coverage": "2.2.1",
