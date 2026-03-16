@@ -12,6 +12,7 @@ import {
   AfterViewChecked,
   AfterViewInit,
   ApplicationRef,
+  ChangeDetectionStrategy,
   Compiler,
   Component,
   destroyPlatform,
@@ -28,10 +29,10 @@ import {
   OnChanges,
   OnDestroy,
   OnInit,
+  provideZoneChangeDetection,
   StaticProvider,
   Type,
   ViewRef,
-  provideZoneChangeDetection,
 } from '@angular/core';
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -1139,6 +1140,7 @@ withEachNg1Version(() => {
             <ng-content></ng-content>
           `,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Ng2Component
           implements

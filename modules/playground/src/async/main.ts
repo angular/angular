@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, NgModule, provideZoneChangeDetection} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  NgModule,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Component({
@@ -43,6 +48,7 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
     </div>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class AsyncApplication {
   val1: number = 0;

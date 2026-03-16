@@ -7,16 +7,17 @@
  */
 
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Directive,
-  Output,
-  EventEmitter,
   ErrorHandler,
+  EventEmitter,
+  Output,
   Pipe,
   PipeTransform,
-  inject,
-  ChangeDetectorRef,
   ViewChild,
+  inject,
   provideZoneChangeDetection,
 } from '../../src/core';
 import {TestBed} from '../../testing';
@@ -34,6 +35,7 @@ describe('@let declarations', () => {
         @let result = value * multiplier;
         {{ value }} times {{ multiplier }} is {{ result }}
       `,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       value = 0;
@@ -60,6 +62,8 @@ describe('@let declarations', () => {
         @let result = value * 2;
         <button (click)="log(result)"></button>
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       value = 0;
@@ -96,6 +100,8 @@ describe('@let declarations', () => {
 
         @let one = value + 1;
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       value = 0;
@@ -121,6 +127,8 @@ describe('@let declarations', () => {
         @let multiplier = 2;
         @let result = value * multiplier;
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       value = 0;
@@ -159,6 +167,8 @@ describe('@let declarations', () => {
         <div dir (testEvent)="callback(value)"></div>
         @let value = 1;
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       callback(_value: number) {}
@@ -201,6 +211,8 @@ describe('@let declarations', () => {
         Result: {{ result }}
       `,
       imports: [DoublePipe],
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       value = 2;
@@ -223,6 +235,8 @@ describe('@let declarations', () => {
         @let fullName = firstName.value + ' ' + lastName.value;
         Hello, {{ fullName }}
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {}
 
@@ -251,6 +265,8 @@ describe('@let declarations', () => {
           }
         }
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {}
 
@@ -273,6 +289,8 @@ describe('@let declarations', () => {
         @let two = one + getTwo();
         @let three = two + getThree();
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       getOne(): number {
@@ -309,6 +327,8 @@ describe('@let declarations', () => {
           </div>
         }
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       value = 0;
@@ -332,6 +352,8 @@ describe('@let declarations', () => {
         @let value = 1;
         {{ value }}
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       @ViewChild('value') value: any;
@@ -349,12 +371,16 @@ describe('@let declarations', () => {
         @let value = 123;
         <ng-content>The value is {{ value }}</ng-content>
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class InnerComponent {}
 
     @Component({
       template: '<inner/>',
       imports: [InnerComponent],
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {}
 
@@ -371,6 +397,8 @@ describe('@let declarations', () => {
         <ng-content>Fallback content</ng-content>
         <ng-content select="footer">Fallback footer</ng-content>
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class InnerComponent {}
 
@@ -384,6 +412,8 @@ describe('@let declarations', () => {
         </inner>
       `,
       imports: [InnerComponent],
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {}
 
@@ -405,6 +435,8 @@ describe('@let declarations', () => {
           The value comes from {{ value }}
         }
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       value = 'component';
@@ -425,6 +457,8 @@ describe('@let declarations', () => {
           The value comes from {{ value }}
         }
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {}
 
@@ -441,6 +475,8 @@ describe('@let declarations', () => {
           {{ calculation }}|
         }
       `,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       values = [1, 2, 3];

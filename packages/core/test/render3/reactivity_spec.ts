@@ -10,6 +10,10 @@
 import type {} from 'zone.js';
 
 import {AsyncPipe} from '@angular/common';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {withBody} from '@angular/private/testing';
+import {SIGNAL} from '../../primitives/signals';
+import {toObservable} from '../../rxjs-interop';
 import {
   AfterViewInit,
   ApplicationRef,
@@ -39,12 +43,8 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '../../src/core';
-import {SIGNAL} from '../../primitives/signals';
-import {toObservable} from '../../rxjs-interop';
 import {EffectNode} from '../../src/render3/reactivity/effect';
 import {TestBed} from '../../testing';
-import {bootstrapApplication} from '@angular/platform-browser';
-import {withBody} from '@angular/private/testing';
 
 describe('reactivity', () => {
   describe('effects', () => {
@@ -815,6 +815,7 @@ describe('reactivity', () => {
         @Component({
           selector: 'test-cmp',
           template: '',
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class TestCmp {
           ngOnInitRan = false;
@@ -835,6 +836,7 @@ describe('reactivity', () => {
               <test-cmp />
             }
           `,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class DriverCmp {
           cond = false;

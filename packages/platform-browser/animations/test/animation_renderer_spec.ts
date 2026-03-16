@@ -17,6 +17,7 @@ import {
   ɵAnimationEngine as AnimationEngine,
   ɵAnimationRendererFactory as AnimationRendererFactory,
 } from '@angular/animations/browser';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {
   APP_INITIALIZER,
   Component,
@@ -31,14 +32,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {el, isNode, withBody} from '@angular/private/testing';
 import {bootstrapApplication, platformBrowser} from '../../index';
+import {DomRendererFactory2} from '../../src/dom/dom_renderer';
+import {provideAnimationsAsync} from '../async';
 import {
   BrowserAnimationsModule,
   ɵInjectableAnimationEngine as InjectableAnimationEngine,
 } from '../index';
-import {provideAnimationsAsync} from '../async';
-import {DomRendererFactory2} from '../../src/dom/dom_renderer';
-import {withBody, isNode, el} from '@angular/private/testing';
 
 (function () {
   if (isNode) return;
@@ -214,6 +215,7 @@ import {withBody, isNode, el} from '@angular/private/testing';
             ]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           exp: any;
@@ -259,6 +261,7 @@ import {withBody, isNode, el} from '@angular/private/testing';
             trigger('animation2', [transition(':leave', [])]),
           ],
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class Cmp {
           exp1: any = true;

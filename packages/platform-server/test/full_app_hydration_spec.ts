@@ -26,6 +26,7 @@ import {computeMsgId} from '@angular/compiler';
 import {
   afterEveryRender,
   ApplicationRef,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   ɵCLIENT_RENDER_MODE_FLAG as CLIENT_RENDER_MODE_FLAG,
   Component,
@@ -5854,6 +5855,7 @@ describe('platform-server full application hydration integration', () => {
             Project?: <span>{{ project ? 'yes' : 'no' }}</span>
             <ng-content *ngIf="project" />
           `,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ProjectorCmp {
           @Input() project: boolean = false;
@@ -5868,6 +5870,7 @@ describe('platform-server full application hydration integration', () => {
               <h2>This node is not projected as well.</h2>
             </projector-cmp>
           `,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
           project = false;
@@ -5917,6 +5920,7 @@ describe('platform-server full application hydration integration', () => {
             Project?: <span>{{ project ? 'yes' : 'no' }}</span>
             <ng-content *ngIf="project" />
           `,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class ProjectorCmp {
           @Input() project: boolean = false;
@@ -5931,6 +5935,7 @@ describe('platform-server full application hydration integration', () => {
               <h2>This node is projected as well.</h2>
             </projector-cmp>
           `,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
           project = true;
@@ -6858,6 +6863,7 @@ describe('platform-server full application hydration integration', () => {
               else block
             }
           `,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
           conditionA = false;
@@ -7323,6 +7329,7 @@ describe('platform-server full application hydration integration', () => {
             @let greeting = name + '!!!';
             Hello, {{ greeting }}
           `,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
           name = 'Frodo';
@@ -7359,6 +7366,7 @@ describe('platform-server full application hydration integration', () => {
             @let result = plusTwo + 1;
             Result: {{ result }}
           `,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
           value = 1;
@@ -7406,6 +7414,7 @@ describe('platform-server full application hydration integration', () => {
             @let result = value | double;
             Result: {{ result }}
           `,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
           value = 1;
@@ -7447,6 +7456,7 @@ describe('platform-server full application hydration integration', () => {
 
             @let one = value + 1;
           `,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class SimpleComponent {
           value = 0;

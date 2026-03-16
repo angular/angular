@@ -7,7 +7,12 @@
  */
 
 import {By} from '@angular/platform-browser';
-import {Component, Directive, provideZoneChangeDetection} from '../../src/core';
+import {
+  Component,
+  Directive,
+  provideZoneChangeDetection,
+  ChangeDetectionStrategy,
+} from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('@angular/common integration', () => {
@@ -27,6 +32,8 @@ describe('@angular/common integration', () => {
       selector: 'app-child',
       template: '<div dir>comp text</div>',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class ChildComponent {}
 
@@ -34,6 +41,8 @@ describe('@angular/common integration', () => {
       selector: 'app-root',
       template: '',
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class AppComponent {
       items: string[] = ['first', 'second'];
@@ -150,6 +159,8 @@ describe('@angular/common integration', () => {
             <li *ngFor="let item of items">{{ item }}</li>
           </ul>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class ToggleComponent {
         private _data: number[] = [1, 2, 3];
@@ -206,6 +217,8 @@ describe('@angular/common integration', () => {
           </li>
         </ul>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MultiLevelComponent {
         items: any[] = [
@@ -281,6 +294,8 @@ describe('@angular/common integration', () => {
           </p>
         </div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MultiLevelWithListenerComponent {
         items: any[] = [{data: ['1'], value: 'first'}];
@@ -321,6 +336,8 @@ describe('@angular/common integration', () => {
           </div>
         </div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class SkippingContextComponent {
         name = 'app';
@@ -379,6 +396,8 @@ describe('@angular/common integration', () => {
           </span>
         </div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NineLevelsComponent {
         value = 'App';
@@ -516,6 +535,8 @@ describe('@angular/common integration', () => {
           <div *ngIf="showing">{{ valueTwo }}</div>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class SimpleConditionComponent {
         showing = true;
@@ -548,6 +569,8 @@ describe('@angular/common integration', () => {
           </div>
         </div> `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NestedConditionsComponent {
         showing = true;
@@ -577,6 +600,8 @@ describe('@angular/common integration', () => {
         template: `<ng-template #tpl>from tpl</ng-template>
           <ng-template [ngTemplateOutlet]="showing ? tpl : null"></ng-template> `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class EmbeddedViewsComponent {
         showing = false;
@@ -603,6 +628,8 @@ describe('@angular/common integration', () => {
         template: `<ng-template #tpl>from tpl</ng-template>
           <ng-container [ngTemplateOutlet]="showing ? tpl : null"></ng-container> `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class NgContainerComponent {
         showing = false;

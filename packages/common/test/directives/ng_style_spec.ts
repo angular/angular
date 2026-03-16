@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgStyle} from '../../index';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {CommonModule, NgStyle} from '../../index';
 
 describe('NgStyle', () => {
   let fixture: ComponentFixture<TestComponent>;
@@ -267,6 +268,7 @@ describe('NgStyle', () => {
       selector: 'test-component',
       imports: [NgStyle],
       template: `<div [ngStyle]="{'width.px': expr}"></div>`,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       expr = 400;
@@ -283,6 +285,7 @@ describe('NgStyle', () => {
   selector: 'test-cmp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   expr: any;

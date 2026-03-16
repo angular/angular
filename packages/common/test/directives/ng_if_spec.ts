@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgIf} from '../../index';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
+import {CommonModule, NgIf} from '../../index';
 
 describe('ngIf directive', () => {
   let fixture: ComponentFixture<any>;
@@ -324,6 +325,7 @@ describe('ngIf directive', () => {
   selector: 'test-cmp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   booleanCondition: boolean = true;

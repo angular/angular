@@ -7,7 +7,7 @@
  */
 
 import {HttpClient} from '@angular/common/http';
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
   selector: 'http-app',
@@ -18,6 +18,7 @@ import {Component} from '@angular/core';
     </ul>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class HttpCmp {
   people: {name: string}[] = [];

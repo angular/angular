@@ -24,6 +24,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By, ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {dispatchEvent, isNode, timeout, useAutoTick} from '@angular/private/testing';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -38,9 +41,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '../index';
-import {By, ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
-import {dispatchEvent, useAutoTick, timeout, isNode} from '@angular/private/testing';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('value accessors', () => {
   useAutoTick();
@@ -1800,6 +1800,7 @@ class FormControlSelectNgValue {
     </select>
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlSelectWithCompareFn {
   compareFn: (o1: any, o2: any) => boolean = (o1: any, o2: any) =>
@@ -1819,6 +1820,7 @@ class FormControlSelectWithCompareFn {
     </select>
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlSelectWithComparePerfFn {
   compareFnCalls = 0;
@@ -1846,6 +1848,7 @@ class FormControlSelectWithComparePerfFn {
     </select>
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlSelectWithCompareTrackByFn {
   compareFn: (o1: any, o2: any) => boolean = (o1: any, o2: any) =>
@@ -1866,6 +1869,7 @@ class FormControlSelectWithCompareTrackByFn {
     </select>
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlSelectMultiple {
   cities = ['SF', 'NY'];
@@ -1880,6 +1884,7 @@ class FormControlSelectMultiple {
     </select>
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlSelectMultipleNgValue {
   cities = [
@@ -1897,6 +1902,7 @@ class FormControlSelectMultipleNgValue {
     </select>
   </div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlSelectMultipleWithCompareFn {
   compareFn: (o1: any, o2: any) => boolean = (o1: any, o2: any) =>
@@ -1916,6 +1922,7 @@ class FormControlSelectMultipleWithCompareFn {
     </select>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelSelectForm {
   selectedCity: {[k: string]: string} = {};
@@ -1933,6 +1940,7 @@ class NgModelSelectForm {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelSelectWithPlaceholderForm {
   cities: any[] = [];
@@ -1961,6 +1969,7 @@ class NgModelSelectWithNullForm {
     </select>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelSelectWithCustomCompareFnForm {
   compareFn: (o1: any, o2: any) => boolean = (o1: any, o2: any) =>
@@ -1993,6 +2002,7 @@ class NgModelSelectMultipleWithCustomCompareFnForm {
     </select>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelSelectMultipleForm {
   selectedCities!: any[];
@@ -2003,6 +2013,7 @@ class NgModelSelectMultipleForm {
   selector: 'form-control-range-input',
   template: `<input type="range" [formControl]="control" />`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class FormControlRangeInput {
   control!: FormControl;
@@ -2012,6 +2023,7 @@ class FormControlRangeInput {
   selector: 'ng-model-range-form',
   template: '<input type="range" [(ngModel)]="val">',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelRangeForm {
   val: any;
@@ -2028,6 +2040,7 @@ class NgModelRangeForm {
     <input type="radio" [formControl]="showRadio" value="yes" />
     <input type="radio" [formControl]="showRadio" value="no" />`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class FormControlRadioButtons {
   form!: FormGroup;
@@ -2046,6 +2059,7 @@ export class FormControlRadioButtons {
     </form>
   `,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class NgModelRadioForm {
   food!: string;

@@ -7,7 +7,13 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, HostBinding, provideZoneChangeDetection} from '../../src/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Directive,
+  HostBinding,
+  provideZoneChangeDetection,
+} from '../../src/core';
 import {TestBed} from '../../testing';
 
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
@@ -558,6 +564,7 @@ describe('sanitization', () => {
     @Component({
       selector: 'sanitize-this',
       template: ` <a [href]="href"></a> `,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SanitizationComp {
       href = '';
@@ -611,6 +618,7 @@ describe('sanitization', () => {
       selector: 'sanitize-this',
       imports: [UnsafeUrlHostBindingDir],
       template: ` <a unsafeUrlHostBindingDir>text</a> `,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class SimpleComp {}
 

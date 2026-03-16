@@ -8,10 +8,10 @@
 
 import {
   ApplicationRef,
+  ChangeDetectionStrategy,
   Component,
   ComponentRef,
   Directive,
-  EnvironmentInjector,
   Injector,
   Input,
   NgZone,
@@ -378,6 +378,7 @@ export class CdTrackerDir {
     <ng-content select="content-1"></ng-content>
     <ng-content select="content-2"></ng-content>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class TestComponent {
   @Output('templateOutput1') output1 = new Subject();

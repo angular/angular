@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, SlicePipe} from '../../index';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
+import {CommonModule, SlicePipe} from '../../index';
 
 describe('SlicePipe', () => {
   let list: number[];
@@ -94,6 +95,7 @@ describe('SlicePipe', () => {
       selector: 'test-comp',
       template: '{{(data | slice:1).join(",") }}',
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComp {
       data: any;
@@ -123,6 +125,7 @@ describe('SlicePipe', () => {
       selector: 'test-component',
       imports: [SlicePipe],
       template: '{{ title | slice:0:5 }}',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComponent {
       title = 'Hello World!';

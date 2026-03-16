@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '../../index';
-import {NgComponentOutlet} from '../../src/directives/ng_component_outlet';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {
   Component,
   ComponentRef,
@@ -29,6 +28,8 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
+import {CommonModule} from '../../index';
+import {NgComponentOutlet} from '../../src/directives/ng_component_outlet';
 
 describe('insert/remove', () => {
   beforeEach(() => {
@@ -385,6 +386,7 @@ const TEST_TOKEN = new InjectionToken('TestToken');
   selector: 'injected-component',
   template: 'foo',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class InjectedComponent {
   constructor(@Optional() @Inject(TEST_TOKEN) public testToken: any) {}
@@ -394,6 +396,7 @@ class InjectedComponent {
   selector: 'injected-component-again',
   template: 'bar',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class InjectedComponentAgain {}
 
@@ -409,6 +412,7 @@ const TEST_CMP_TEMPLATE = `<ng-template *ngComponentOutlet="
   selector: 'test-cmp',
   template: TEST_CMP_TEMPLATE,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   currentComponent: Type<unknown> | null = null;
@@ -499,6 +503,7 @@ class AnotherComponentWithInputs {
   selector: 'test-cmp',
   imports: [NgComponentOutlet],
   template: `<ng-template *ngComponentOutlet="currentComponent; inputs: inputs"></ng-template>`,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestInputsComponent {
   currentComponent: Type<unknown> | null = null;

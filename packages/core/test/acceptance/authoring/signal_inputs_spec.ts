@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ViewEncapsulation} from '@angular/compiler';
 import {
+  ChangeDetectionStrategy,
   Component,
   ComponentRef,
   computed,
@@ -26,13 +28,12 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import {SIGNAL} from '../../../primitives/signals';
-import {fakeAsync, TestBed, tick} from '../../../testing';
-import {ViewEncapsulation} from '@angular/compiler';
 import {By} from '@angular/platform-browser';
-import {tickAnimationFrames} from '../../animation_utils/tick_animation_frames';
 import {isNode} from '@angular/private/testing';
 import {Subscription} from 'rxjs';
+import {SIGNAL} from '../../../primitives/signals';
+import {fakeAsync, TestBed, tick} from '../../../testing';
+import {tickAnimationFrames} from '../../animation_utils/tick_animation_frames';
 
 describe('signal inputs', () => {
   beforeEach(() =>
@@ -53,6 +54,7 @@ describe('signal inputs', () => {
     @Component({
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       value = 1;
@@ -83,6 +85,7 @@ describe('signal inputs', () => {
     @Component({
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       value = 1;
@@ -120,6 +123,7 @@ describe('signal inputs', () => {
     @Component({
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       value = 1;
@@ -206,6 +210,7 @@ describe('signal inputs', () => {
     @Component({
       template: `<input-comp [input]="value" />`,
       imports: [InputComp],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestCmp {
       value = 1;
@@ -233,6 +238,7 @@ describe('signal inputs', () => {
     @Component({
       template: '<div [(value)]="value" dir></div>',
       imports: [Dir],
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       @ViewChild(Dir) dir!: Dir;

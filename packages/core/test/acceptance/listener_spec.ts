@@ -22,6 +22,7 @@ import {
   ViewChild,
   ViewChildren,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
@@ -37,6 +38,8 @@ describe('event listeners', () => {
       @Component({
         template: `<button (click)="onClick()">Click me</button>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         counter = 0;
@@ -59,6 +62,8 @@ describe('event listeners', () => {
       @Component({
         template: `<button (click)="onClick(); onClick2()">Click me</button>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         counter = 0;
@@ -86,6 +91,8 @@ describe('event listeners', () => {
       @Component({
         template: `<button (click)="showing = !showing">Click me</button>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         showing = false;
@@ -107,6 +114,8 @@ describe('event listeners', () => {
       @Component({
         template: `<button (click)="onClick(data.a, data.b)">Click me</button>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         counter = 0;
@@ -136,6 +145,8 @@ describe('event listeners', () => {
       @Component({
         template: ` <button (click)="clicked(this.$event, $event)">Click me!</button> `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         $event = 10;
@@ -166,6 +177,8 @@ describe('event listeners', () => {
           <ng-container [ngTemplateOutlet]="template"></ng-container>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         message = '';
@@ -191,6 +204,8 @@ describe('event listeners', () => {
           <ng-container *ngTemplateOutlet="template; context: {$implicit: current}"></ng-container>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         one = {value: 'one'};
@@ -227,6 +242,8 @@ describe('event listeners', () => {
       @Component({
         selector: 'my-comp',
         template: ``,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {}
 
@@ -236,6 +253,8 @@ describe('event listeners', () => {
           <my-comp #comp></my-comp>
           <button (click)="onClick(comp)"></button>
         `,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class App {
         comp: MyComp | null = null;
@@ -260,6 +279,8 @@ describe('event listeners', () => {
       @Component({
         template: `<button (click)="onClick($event)">Click</button>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         handlerReturnValue: boolean | undefined;
@@ -304,6 +325,8 @@ describe('event listeners', () => {
       selector: 'with-clicks-cmpt',
       template: `<button likes-clicks (click)="count()" md-button>Click me!</button>`,
       standalone: false,
+
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class WithClicksCmpt {
       counter = 0;
@@ -365,6 +388,8 @@ describe('event listeners', () => {
         selector: 'test-cmpt',
         template: `<with-clicks-cmpt></with-clicks-cmpt><with-clicks-cmpt></with-clicks-cmpt>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmpt {}
 
@@ -399,6 +424,8 @@ describe('event listeners', () => {
         selector: 'test-cmpt',
         template: `<button likes-clicks (click)="counter = counter + 1">Click me!</button>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmpt {
         counter = 0;
@@ -432,6 +459,8 @@ describe('event listeners', () => {
         selector: 'test-cmpt',
         template: `<button throws-on-clicks likes-clicks><button></button></button>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmpt {}
 
@@ -464,6 +493,8 @@ describe('event listeners', () => {
         selector: 'test-cmpt',
         template: ` <button returns-false likes-clicks></button> `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestCmpt {}
 
@@ -509,6 +540,8 @@ describe('event listeners', () => {
         selector: 'test-component',
         template: `<div [(foo)]="someValue" (fooChange)="fooChange($event)"></div>`,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class TestComponent {
         count = 0;
@@ -543,6 +576,8 @@ describe('event listeners', () => {
         selector: 'my-comp',
         template: '<button dirA dirB (click)="count()">Click me!</button>',
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         counter = 0;
@@ -590,6 +625,8 @@ describe('event listeners', () => {
         selector: 'my-comp',
         template: ` <button *ngIf="visible" (click)="count()">Click me!</button> `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         visible = true;
@@ -622,6 +659,8 @@ describe('event listeners', () => {
         selector: 'my-comp',
         template: ` <button *ngFor="let button of buttons" (click)="count()">Click me!</button> `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         buttons = [1, 2];
@@ -659,6 +698,8 @@ describe('event listeners', () => {
           </ng-container>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         isSectionVisible = true;
@@ -699,6 +740,8 @@ describe('event listeners', () => {
       @Component({
         template: ``,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         @HostListener('click')
@@ -725,6 +768,8 @@ describe('event listeners', () => {
       @Component({
         template: ``,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {
         @HostListener('document:click')
@@ -761,6 +806,8 @@ describe('event listeners', () => {
       @Component({
         imports: [HostListenerDir],
         template: `<button hostListenerDir>Click</button>`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {}
 
@@ -792,6 +839,8 @@ describe('event listeners', () => {
       @Component({
         imports: [HostListenerDir],
         template: `<button hostListenerDir>Click</button>`,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {}
 
@@ -830,6 +879,8 @@ describe('event listeners', () => {
           </ng-container>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {}
 
@@ -865,6 +916,8 @@ describe('event listeners', () => {
           <ng-container [ngTemplateOutlet]="template"></ng-container>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {}
 
@@ -910,6 +963,8 @@ describe('event listeners', () => {
           </div>
         `,
         standalone: false,
+
+        changeDetection: ChangeDetectionStrategy.Eager,
       })
       class MyComp {}
 

@@ -7,6 +7,9 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
+import {By} from '@angular/platform-browser';
+import {isTextNode} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -41,12 +44,9 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {ComponentFixture, fakeAsync, TestBed} from '../../testing';
-import {By} from '@angular/platform-browser';
-import {isTextNode} from '@angular/private/testing';
-import {expect} from '@angular/private/testing/matchers';
 
-import {MockResourceLoader} from './resource_loader_mock';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {MockResourceLoader} from './resource_loader_mock';
 
 const TEST_COMPILER_PROVIDERS: Provider[] = [
   {provide: ResourceLoader, useClass: MockResourceLoader, deps: []},
@@ -62,7 +62,9 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
     template: string,
     compType: Type<T> = <any>TestComponent,
   ): ComponentFixture<T> {
-    TestBed.overrideComponent(compType, {set: new Component({template})});
+    TestBed.overrideComponent(compType, {
+      set: new Component({template, changeDetection: ChangeDetectionStrategy.Eager}),
+    });
 
     initHelpers();
 
@@ -1395,6 +1397,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
               ><ng-template><span [i]="log('tpl')"></span></ng-template
             ></outer-cmp>`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class MainComp {
           constructor(public cdRef: ChangeDetectorRef) {}
@@ -1410,6 +1413,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
               ><ng-template><span [i]="log('tpl')"></span></ng-template
             ></inner-cmp>`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class OuterComp {
           @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;
@@ -1427,6 +1431,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
             ></ng-container
             ><ng-container [ngTemplateOutlet]="tpl"></ng-container>`,
           standalone: false,
+          changeDetection: ChangeDetectionStrategy.Eager,
         })
         class InnerComp {
           @ContentChild(TemplateRef, {static: true}) tpl!: TemplateRef<any>;

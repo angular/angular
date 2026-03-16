@@ -8,6 +8,7 @@
 
 import {
   booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
   computed,
   Directive,
@@ -3475,6 +3476,7 @@ describe('field directive', () => {
     @Component({
       selector: 'my-input',
       template: '<input #i [value]="value" (input)="valueChange.emit(i.value)" />',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CustomInput {
       @Input({required: true}) value!: string;
@@ -3588,6 +3590,7 @@ describe('field directive', () => {
       selector: 'my-checkbox',
       template:
         '<input type="checkbox" #i [checked]="checked" (input)="checkedChange.emit(i.checked)" />',
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class CustomCheckbox {
       @Input({required: true}) checked!: boolean;

@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, JsonPipe} from '../../index';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/private/testing/matchers';
+import {CommonModule, JsonPipe} from '../../index';
 
 describe('JsonPipe', () => {
   const regNewLine = '\n';
@@ -58,6 +59,7 @@ describe('JsonPipe', () => {
       selector: 'test-comp',
       template: '{{data | json}}',
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class TestComp {
       data: any;

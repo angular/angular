@@ -316,7 +316,7 @@ export function compileComponentFromMetadata(
   if (meta.changeDetection !== null) {
     if (
       typeof meta.changeDetection === 'number' &&
-      meta.changeDetection !== core.ChangeDetectionStrategy.Default
+      meta.changeDetection !== core.ChangeDetectionStrategy.OnPush
     ) {
       // changeDetection is resolved during analysis. Only set it if not the default.
       definitionMap.set('changeDetection', o.literal(meta.changeDetection));

@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, provideZoneChangeDetection} from '../../src/core';
-import {TestBed} from '../../testing';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {ChangeDetectionStrategy, Component, provideZoneChangeDetection} from '../../src/core';
+import {TestBed} from '../../testing';
 
 describe('attribute creation', () => {
   it('should create an element', () => {
     @Component({
       template: `<div id="test" title="Hello"></div>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
@@ -30,6 +31,7 @@ describe('attribute creation', () => {
     @Component({
       template: `<div id="test" xlink:href="bar" title="Hello"></div>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {}
 
@@ -64,6 +66,7 @@ describe('attribute binding', () => {
     @Component({
       template: `<a [attr.href]="url"></a>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       url = 'https://angular.io/robots.txt';
@@ -82,6 +85,7 @@ describe('attribute binding', () => {
     @Component({
       template: `<a [attr.id]="id" [attr.href]="url" [attr.tabindex]="'-1'"></a>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       url = 'https://angular.io/robots.txt';
@@ -103,6 +107,7 @@ describe('attribute binding', () => {
     @Component({
       template: `<a [id]="id" [attr.href]="url" [title]="'hello'"></a>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       url = 'https://angular.io/robots.txt';
@@ -128,6 +133,7 @@ describe('attribute binding', () => {
         attr.tabindex="{{ 1 + 3 + 7 }}"
       ></button>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       title = 'hello';
@@ -153,6 +159,7 @@ describe('attribute binding', () => {
         </button>
       `,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       title = 'hello';
@@ -179,6 +186,7 @@ describe('attribute binding', () => {
     @Component({
       template: `<a [attr.href]="badUrl"></a>`,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class Comp {
       badUrl: string | SafeUrl = 'javascript:true';
@@ -221,6 +229,7 @@ describe('attribute interpolation', () => {
         <div attr.title="{{ a }}"></div>
       `,
       standalone: false,
+      changeDetection: ChangeDetectionStrategy.Eager,
     })
     class App {
       a = 1;

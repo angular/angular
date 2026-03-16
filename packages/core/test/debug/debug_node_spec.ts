@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgIfContext, ɵgetDOM as getDOM} from '@angular/common';
+import {CommonModule, ɵgetDOM as getDOM, NgIfContext} from '@angular/common';
+import {ChangeDetectionStrategy} from '@angular/compiler';
+import {By} from '@angular/platform-browser';
+import {createMouseEvent, hasClass} from '@angular/private/testing';
+import {expect} from '@angular/private/testing/matchers';
 import {
   Component,
   DebugElement,
@@ -29,9 +33,6 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {ComponentFixture, TestBed, waitForAsync} from '../../testing';
-import {By} from '@angular/platform-browser';
-import {createMouseEvent, hasClass} from '@angular/private/testing';
-import {expect} from '@angular/private/testing/matchers';
 
 @Injectable()
 class Logger {
@@ -147,6 +148,7 @@ class EventsComp {
   viewProviders: [Logger],
   template: `<div class="child" message="child" *ngIf="myBool"><ng-content></ng-content></div>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ConditionalContentComp {
   myBool: boolean = false;
@@ -160,6 +162,7 @@ class ConditionalContentComp {
       <span class="from-parent"></span>
     </cond-content-comp>`,
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class ConditionalParentComp {
   parentBinding: string;

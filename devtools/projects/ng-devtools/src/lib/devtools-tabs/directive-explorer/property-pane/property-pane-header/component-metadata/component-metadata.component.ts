@@ -16,13 +16,13 @@ import {
 } from '@angular/core';
 
 import {
-  AngularDirectiveMetadata,
   AcxDirectiveMetadata,
+  AngularDirectiveMetadata,
   ComponentType,
 } from '../../../../../../../../protocol';
 
-import {ElementPropertyResolver} from '../../../property-resolver/element-property-resolver';
 import {DocsRefButtonComponent} from '../../../../../shared/docs-ref-button/docs-ref-button.component';
+import {ElementPropertyResolver} from '../../../property-resolver/element-property-resolver';
 
 @Component({
   selector: 'ng-component-metadata',
@@ -77,7 +77,7 @@ export class ComponentMetadataComponent {
 
     const meta = metadata as Partial<AcxDirectiveMetadata | AngularDirectiveMetadata>;
     if (meta.onPush !== undefined) {
-      return meta.onPush ? 'OnPush' : 'Default';
+      return meta.onPush ? 'OnPush' : 'Eager';
     } else {
       return undefined;
     }

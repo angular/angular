@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgFor, NgForOf} from '../../index';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
+import {CommonModule, NgFor, NgForOf} from '../../index';
 
 let thisArg: any;
 
@@ -439,6 +440,7 @@ class Foo {
   selector: 'test-cmp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class TestComponent {
   value: any;

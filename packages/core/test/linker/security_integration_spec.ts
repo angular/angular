@@ -6,14 +6,22 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA} from '../../src/core';
-import {ComponentFixture, getTestBed, TestBed} from '../../testing';
 import {DomSanitizer} from '@angular/platform-browser';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Directive,
+  HostBinding,
+  Input,
+  NO_ERRORS_SCHEMA,
+} from '../../src/core';
+import {ComponentFixture, getTestBed, TestBed} from '../../testing';
 
 @Component({
   selector: 'my-comp',
   template: '',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
 })
 class SecuredComponent {
   ctxProp: any = 'some value';
