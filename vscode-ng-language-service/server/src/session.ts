@@ -29,6 +29,7 @@ import {
   IsInAngularProject,
 } from '../../common/requests';
 
+import {clearWorkspaceConfigurationCache} from './config';
 import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {ServerHost} from './server_host';
 import {
@@ -47,13 +48,13 @@ import {onFoldingRanges} from './handlers/folding';
 import {onHover} from './handlers/hover';
 import {onInitialize} from './handlers/initialization';
 import {onLinkedEditingRange} from './handlers/linked_editing_range';
+import {onDocumentSymbol} from './handlers/document_symbols';
 import {onRenameRequest, onPrepareRename} from './handlers/rename';
 import {onSignatureHelp} from './handlers/signature';
 import {onGetTcb} from './handlers/tcb';
 import {onGetTemplateLocationForComponent, isInAngularProject} from './handlers/template_info';
 import {onDidChangeWatchedFiles} from './handlers/did_change_watched_files';
 import {onInlayHint, onInlayHintResolve} from './handlers/inlay_hints';
-import {clearWorkspaceConfigurationCache} from './config';
 
 export interface SessionOptions {
   host: ServerHost;
@@ -257,6 +258,7 @@ export class Session {
     conn.onHover((p) => onHover(this, p));
     conn.onFoldingRanges((p) => onFoldingRanges(this, p));
     conn.languages.onLinkedEditingRange((p) => onLinkedEditingRange(this, p));
+    conn.onDocumentSymbol(async (p) => await onDocumentSymbol(this, p));
     conn.onCompletion((p) => onCompletion(this, p));
     conn.onCompletionResolve((p) => onCompletionResolve(this, p));
     conn.onRequest(GetComponentsWithTemplateFile, (p) => getComponentsWithTemplateFile(this, p));
