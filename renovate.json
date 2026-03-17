@@ -31,7 +31,6 @@
         "commands": [
           "git restore .npmrc",
           "pnpm install --frozen-lockfile",
-          "pnpm bazel mod deps --lockfile_mode=update",
           "pnpm ng-dev misc sync-module-bazel",
           "pnpm bazel run //.github/actions/deploy-docs-site:main",
           "pnpm bazel run //packages/common:base_currencies_file",
