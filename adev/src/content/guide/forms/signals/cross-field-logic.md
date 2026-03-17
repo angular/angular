@@ -103,6 +103,8 @@ export class EventForm {
 
 Both rules make use of `valueOf()` to read the other field. Because each rule is reactive, changing either date re-evaluates both validations automatically.
 
+NOTE: When a rule involves multiple fields, you need to decide where the error belongs: on a specific field, on multiple fields, or on the parent. In general, place the error where the user would most likely go to fix the problem.
+
 ### Conditional requirements
 
 In some forms, certain fields are only required under certain conditions. For example, a registration form might require a company name only when the user selects a business account type:
@@ -173,11 +175,13 @@ export class PasswordForm {
 
 The `stateOf()` call returns the other field's [field state](api/forms/signals/FieldState), giving you access to signals like `invalid()`, `touched()`, and `dirty()`. Because these are signals, the rule re-evaluates whenever the password field's validity changes.
 
+WARNING: Be careful not to read state which depends on your field's validation, as that creates a circular loop. For example, a validator which checks whether the parent field is valid will create an infinite loop because the parent's validity depends on its children's validity (which includes your validator).
+
 ## Using validateTree
 
-The examples so far use `validate()` to add an error to the field being validated. But sometimes the error belongs on a _different_ field. For example, a shipping form might need to restrict shipping methods based on package weight — the validation logic needs both fields, but the error should appear on the shipping method field.
+The examples so far use `validate()` to check individual fields. Sometimes you need to validate a group of fields where the logic is inherently about multiple fields in a group, and direct errors to specific children within it. `validateTree` handles is ideal for these kinds of scenarios.
 
-`validateTree` handles this by letting you specify which field receives the error:
+For example, in a Sudoku puzzle, each row must contain unique numbers. This is a group-level rule: you check the entire row, then flag the specific cells that violate it. This kind of validation can't be expressed cleanly with `validate` on individual fields, because each cell would need to know about every other cell.
 
 ```ts
 import {Component, signal} from '@angular/core';
@@ -186,38 +190,55 @@ import {form, validateTree} from '@angular/forms/signals';
 @Component({
   /* ... */
 })
-export class ShippingForm {
-  shippingModel = signal({
-    packageWeight: 0,
-    shippingMethod: 'standard' as 'standard' | 'express' | 'freight',
+export class SudokuRow {
+  rowModel = signal({
+    cell1: 1,
+    cell2: 3,
+    cell3: 1,
+    cell4: 4,
   });
 
-  shippingForm = form(this.shippingModel, (schemaPath) => {
-    validateTree(schemaPath, ({valueOf, fieldTreeOf}) => {
-      if (
-        valueOf(schemaPath.packageWeight) > 50 &&
-        valueOf(schemaPath.shippingMethod) === 'standard'
-      ) {
-        return {
-          kind: 'shippingUnavailable',
-          message: 'Standard shipping is not available for packages over 50 lbs',
-          fieldTree: fieldTreeOf(schemaPath.shippingMethod),
-        };
+  rowForm = form(this.rowModel, (schemaPath) => {
+    validateTree(schemaPath, ({value, fieldTreeOf}) => {
+      const row = value();
+      const entries = [
+        {val: row.cell1, fieldTree: fieldTreeOf(schemaPath.cell1)},
+        {val: row.cell2, fieldTree: fieldTreeOf(schemaPath.cell2)},
+        {val: row.cell3, fieldTree: fieldTreeOf(schemaPath.cell3)},
+        {val: row.cell4, fieldTree: fieldTreeOf(schemaPath.cell4)},
+      ];
+
+      const counts = new Map<number, number>();
+      for (const {val} of entries) {
+        if (val !== 0) {
+          counts.set(val, (counts.get(val) ?? 0) + 1);
+        }
       }
-      return null;
+
+      const errors = entries
+        .filter(({val}) => val !== 0 && (counts.get(val) ?? 0) > 1)
+        .map(({val, fieldTree}) => ({
+          kind: 'duplicateInRow',
+          message: `${val} already appears in this row`,
+          fieldTree,
+        }));
+
+      return errors.length > 0 ? errors : null;
     });
   });
 }
 ```
 
-The `fieldTree` property on the returned error tells Angular which field should receive the error. Without it, the error would apply to the root form — not where the user needs to see it.
+The validator runs on the parent field (the row), reads all cell values, counts duplicates, and returns an error for each cell that contains a repeated number. The `fieldTree` property on each error tells Angular exactly which cell should show the error. Without `fieldTree`, the errors would apply to the row itself — not where the user needs to see them.
+
+Because `validateTree` can return an array of errors, a single validator can flag multiple cells at once. Each error includes a `fieldTree` pointing to its target, so Angular routes the errors to the correct fields.
 
 ### When to use validateTree vs validate
 
-Prefer `validate()` with `valueOf()` when the error belongs on the field being validated. Reach for `validateTree` when:
+Prefer `validate()` with `valueOf()` when the error belongs on the field being validated — even if the rule reads from other fields. Reach for `validateTree` when:
 
-- The error needs to appear on a different field than where the logic runs
-- The validation logic spans multiple fields and the error target isn't the field being checked
+- The validation logic is inherently about a group of fields, not any single field
+- The validator needs to return errors targeting different child fields
 
 TIP: For an introduction to `validateTree` and its return type, see the [Validation guide](/guide/forms/signals/validation).
 
