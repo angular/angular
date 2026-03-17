@@ -9,6 +9,7 @@
 import {assertInInjectionContext, inject, Injector} from '../di';
 import {DestroyRef} from '../linker';
 import {effect} from '../render3/reactivity/effect';
+import {linkedSignal} from '../render3/reactivity/linked_signal';
 import {signal} from '../render3/reactivity/signal';
 import {untracked} from '../render3/reactivity/untracked';
 import {Resource, ResourceSnapshot, type DebouncedOptions} from './api';
@@ -43,23 +44,41 @@ export function debounced<T>(
   }
   const injector = options?.injector ?? inject(Injector);
 
-  const state = signal<ResourceSnapshot<T>>({
-    status: 'resolved',
-    value: untracked(() => {
-      try {
-        setInParamsFunction(true);
-        return source();
-      } finally {
-        setInParamsFunction(false);
-      }
-    }),
-  });
-
   let active: Promise<void> | void | undefined;
   let pendingValue: T | undefined;
 
   injector.get(DestroyRef).onDestroy(() => {
     active = undefined;
+  });
+
+  const state = linkedSignal<
+    {value: T; thrown: false} | {error: unknown; thrown: true},
+    ResourceSnapshot<T>
+  >({
+    source: () => {
+      try {
+        setInParamsFunction(true);
+        return {value: source(), thrown: false};
+      } catch (err) {
+        rethrowFatalErrors(err);
+        return {error: err, thrown: true};
+      } finally {
+        setInParamsFunction(false);
+      }
+    },
+    computation: (res, previous) => {
+      // If we already have a state from the effect or a previous read, keep it!
+      // The effect is responsible for timing and state transitions.
+      if (previous !== undefined) {
+        return previous.value;
+      }
+
+      // On the very first evaluation, determine the initial state synchronously.
+      if (res.thrown) {
+        return {status: 'error', error: res.error as Error};
+      }
+      return {status: 'resolved', value: res.value};
+    },
   });
 
   effect(
@@ -82,7 +101,7 @@ export function debounced<T>(
 
       // Check if the value is the same as the previous one.
       const equal = options?.equal ?? Object.is;
-      if (currentState.status === 'reloading') {
+      if (currentState.status === 'reloading' || currentState.status === 'loading') {
         if (equal(value, pendingValue!)) return;
       } else if (currentState.status === 'resolved') {
         if (equal(value, currentState.value!)) return;
