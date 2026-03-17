@@ -44,7 +44,7 @@ describe('FormRoot', () => {
     expect(formElement.hasAttribute('novalidate')).toBeTrue();
   });
 
-  it('should call submit on the field tree when form is submitted', async () => {
+  it('should call submit if the field tree defines submit options', async () => {
     const fixture = act(() => TestBed.createComponent(TestCmp));
     const component = fixture.componentInstance;
     const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;
@@ -53,7 +53,32 @@ describe('FormRoot', () => {
     act(() => formElement.dispatchEvent(event));
 
     expect(event.defaultPrevented).toBe(true);
+    expect(component.f().touched()).toBeTrue();
     expect(component.submitted).toBeTrue();
+  });
+
+  it('should not call submit if the field tree does not define submit options', async () => {
+    @Component({
+      template: `
+        <form [formRoot]="f">
+          <button type="submit">Submit</button>
+        </form>
+      `,
+      imports: [FormRoot],
+    })
+    class TestCmpNoSubmit {
+      readonly f = form(signal({}));
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmpNoSubmit));
+    const component = fixture.componentInstance;
+    const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+
+    const event = new Event('submit', {cancelable: true});
+    act(() => formElement.dispatchEvent(event));
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(component.f().touched()).withContext('submit would mark this as touched').toBeFalse();
   });
 
   it('works when FormsModule is imported', () => {

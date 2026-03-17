@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Directive, input} from '@angular/core';
+import {Directive, input, untracked} from '@angular/core';
 
 import {submit} from '../api/structure';
-import {FieldTree} from '../api/types';
+import {FieldState, FieldTree} from '../api/types';
+import {FieldNode} from '../field/node';
 
 /**
  * A directive that binds a `FieldTree` to a `<form>` element.
@@ -17,7 +18,7 @@ import {FieldTree} from '../api/types';
  * It automatically:
  * 1. Sets `novalidate` on the form element to disable browser validation.
  * 2. Listens for the `submit` event, prevents the default behavior, and calls `submit()` on the
- * `FieldTree`.
+ * `FieldTree` if it defines its own submission options.
  *
  * @usageNotes
  *
@@ -42,6 +43,14 @@ export class FormRoot<T> {
 
   protected onSubmit(event: Event): void {
     event.preventDefault();
-    submit(this.fieldTree());
+
+    untracked(() => {
+      const fieldTree = this.fieldTree();
+      const node = fieldTree() as FieldState<unknown> as FieldNode;
+
+      if (node.structure.fieldManager.submitOptions) {
+        submit(fieldTree);
+      }
+    });
   }
 }
