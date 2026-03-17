@@ -117,7 +117,7 @@ describe('extractValue', () => {
       const model = {a: 1, b: 2};
       const f = form(signal(model), {injector});
 
-      f().markAsTouched();
+      f().markAsTouched({skipDescendants: true});
 
       expect(extractValue(f, {touched: true})).toBeUndefined();
     });
