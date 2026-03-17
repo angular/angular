@@ -166,7 +166,7 @@ export class MockServerState {
     const url = req.url.split('?')[0];
     if (this.resources.has(url)) {
       const response = this.resources.get(url)!.clone();
-      if ((response as any).redirected && req.redirect === 'error') {
+      if (response.redirected && req.redirect === 'error') {
         throw new Error('Redirect disallowed by request policy.');
       }
       return response;
