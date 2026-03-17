@@ -384,6 +384,31 @@ describe('NgStyle migration', () => {
         export class Cmp {}`);
     });
 
+    it('should handle multiline imports array formatting with NgStyle at the end', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgStyle} from '@angular/common';
+
+        @Component({
+        template: \`<div [ngStyle]="{'background': 'red'}"></div>\`,
+        imports: [NgStyle],
+        })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`@Component({
+        template: \`<div [style.background]="'red'"></div>\`,
+        })
+        export class Cmp {}`);
+    });
+
     it('should migrate when NgStyle is provided by CommonModule', async () => {
       writeFile(
         '/app.component.ts',
