@@ -10,6 +10,7 @@ import {AnimationLViewData} from '../../animation/interfaces';
 import type {TracingService, TracingSnapshot} from '../../application/tracing';
 import type {ChangeDetectionScheduler} from '../../change_detection/scheduling/zoneless_scheduling';
 import {TDeferBlockDetails} from '../../defer/interfaces';
+import {ErrorDetails} from '../../error_handler';
 import type {Injector} from '../../di/injector';
 import {ProviderToken} from '../../di/provider_token';
 import {DehydratedView} from '../../hydration/interfaces';
@@ -72,6 +73,7 @@ export const EFFECTS = 23;
 export const REACTIVE_TEMPLATE_CONSUMER = 24;
 export const AFTER_RENDER_SEQUENCES_TO_ADD = 25;
 export const ANIMATIONS = 26;
+export const ON_ERROR = 27;
 
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
@@ -80,7 +82,7 @@ export const ANIMATIONS = 26;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 27;
+export const HEADER_OFFSET = 28;
 
 // This interface replaces the real LView interface if it is an arg or a
 // return value of a public instruction. This ensures we don't need to expose
@@ -373,6 +375,12 @@ export interface LView<T = unknown> extends Array<any> {
 
   // Enter animations that apply to nodes in this view
   [ANIMATIONS]: AnimationLViewData | null;
+
+  /**
+   * Function to be called when an error occurs during change detection or lifecycle hooks
+   * in this view or any of its descendants. The error is always encapsulated in an `Error` instance.
+   */
+  [ON_ERROR]: ((error: Error, details: ErrorDetails) => void) | null;
 }
 
 /**
