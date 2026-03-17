@@ -7,7 +7,7 @@
  */
 
 import type {ɵControlDirectiveHost as ControlDirectiveHost} from '@angular/core';
-import type {FormField} from './form_field_directive';
+import type {FormField} from './form_field';
 import {
   bindingUpdated,
   CONTROL_BINDING_NAMES,

@@ -15,7 +15,7 @@ import {
   readFieldStateBindingValue,
 } from './bindings';
 import {setNativeDomProperty} from './native';
-import type {FormField} from './form_field_directive';
+import type {FormField} from './form_field';
 
 export function cvaControlCreate(
   host: ControlDirectiveHost,
