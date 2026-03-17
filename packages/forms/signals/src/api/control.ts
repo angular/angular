@@ -7,7 +7,7 @@
  */
 
 import {InputSignal, InputSignalWithTransform, ModelSignal, OutputRef} from '@angular/core';
-import type {FormFieldBindingOptions} from '../directive/form_field_directive';
+import type {FormFieldBindingOptions} from '../directive/form_field';
 import type {ValidationError, WithOptionalFieldTree} from './rules/validation/validation_errors';
 import type {DisabledReason} from './types';
 

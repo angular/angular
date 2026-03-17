@@ -12,7 +12,7 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {disabled} from '@angular/forms/signals';
 
 import {SignalFormControl} from '../../compat';
-import {FormField} from '../../src/directive/form_field_directive';
+import {FormField} from '../../src/directive/form_field';
 
 describe('SignalFormControl (web)', () => {
   beforeEach(() => {

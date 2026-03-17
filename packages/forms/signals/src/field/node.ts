@@ -33,7 +33,7 @@ import type {
   FieldTree,
   MarkAsTouchedOptions,
 } from '../api/types';
-import type {FormField} from '../directive/form_field_directive';
+import type {FormField} from '../directive/form_field';
 import {DYNAMIC} from '../schema/logic';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';

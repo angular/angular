@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {FormField} from '../../../directive/form_field_directive';
+import type {FormField} from '../../../directive/form_field';
 import type {ReadonlyFieldTree} from '../../types';
 import type {StandardSchemaValidationError} from './standard_schema';
 

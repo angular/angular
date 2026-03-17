@@ -8,7 +8,7 @@
 
 import {Injector, Signal, WritableSignal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
-import type {FormField} from '../directive/form_field_directive';
+import type {FormField} from '../directive/form_field';
 import type {MetadataKey, ValidationError} from './rules';
 
 /**

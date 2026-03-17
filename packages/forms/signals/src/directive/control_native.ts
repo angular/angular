@@ -19,7 +19,7 @@ import {
   readFieldStateBindingValue,
   type ControlBindingKey,
 } from './bindings';
-import type {FormField} from './form_field_directive';
+import type {FormField} from './form_field';
 import {InputValidityMonitor} from './input_validity_monitor';
 import {
   getNativeControlValue,
