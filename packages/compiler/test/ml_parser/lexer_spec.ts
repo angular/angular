@@ -2094,6 +2094,47 @@ describe('HtmlLexer', () => {
       ]);
     });
 
+    it('should parse named entities containing digits', () => {
+      // Entities like &sup1;, &frac12;, &blk14;, &there4; contain digits
+      // See https://github.com/angular/angular/issues/51323
+      expect(tokenizeAndHumanizeParts('&sup1;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u00B9', '&sup1;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+      expect(tokenizeAndHumanizeParts('&frac12;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u00BD', '&frac12;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+      expect(tokenizeAndHumanizeParts('&frac34;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u00BE', '&frac34;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+      expect(tokenizeAndHumanizeParts('&blk14;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u2591', '&blk14;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+      expect(tokenizeAndHumanizeParts('a&there4;b')).toEqual([
+        [TokenType.TEXT, 'a'],
+        [TokenType.ENCODED_ENTITY, '\u2234', '&there4;'],
+        [TokenType.TEXT, 'b'],
+        [TokenType.EOF],
+      ]);
+      expect(tokenizeAndHumanizeParts('&emsp13;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u2004', '&emsp13;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should parse hexadecimal entities', () => {
       expect(tokenizeAndHumanizeParts('&#x41;&#X41;')).toEqual([
         [TokenType.TEXT, ''],
